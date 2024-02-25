@@ -296,7 +296,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         {
             var newState = new FollowerState<TMember>(this);
             await UpdateStateAsync(newState).ConfigureAwait(false);
-            newState.StartServing(ElectionTimeout, LifecycleToken);
+            newState.StartServing(ElectionTimeout);
             readinessProbe.TrySetResult();
         }
     }
@@ -341,7 +341,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <summary>
     /// Starts Follower timer.
     /// </summary>
-    protected void StartFollowing() => (state as FollowerState<TMember>)?.StartServing(ElectionTimeout, LifecycleToken);
+    protected void StartFollowing() => (state as FollowerState<TMember>)?.StartServing(ElectionTimeout);
 
     /// <inheritdoc cref="IStandbyModeSupport.RevertToNormalModeAsync(CancellationToken)"/>
     public async ValueTask<bool> RevertToNormalModeAsync(CancellationToken token = default)
@@ -362,7 +362,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 {
                     var newState = new FollowerState<TMember>(this);
                     await UpdateStateAsync(newState).ConfigureAwait(false);
-                    newState.StartServing(ElectionTimeout, LifecycleToken);
+                    newState.StartServing(ElectionTimeout);
                     return true;
                 }
             }
@@ -485,7 +485,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
         async ValueTask UpdateTermAndStepDownAsync(long newTerm)
         {
-            await auditTrail.UpdateTermAsync(newTerm, true).ConfigureAwait(false);
+            await auditTrail.UpdateTermAsync(newTerm, true, LifecycleToken).ConfigureAwait(false);
             await StepDown().ConfigureAwait(false);
         }
     }
@@ -502,7 +502,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             case LeaderState<TMember> or CandidateState<TMember>:
                 var newState = new FollowerState<TMember>(this);
                 await UpdateStateAsync(newState).ConfigureAwait(false);
-                newState.StartServing(ElectionTimeout, LifecycleToken);
+                newState.StartServing(ElectionTimeout);
                 break;
         }
 
@@ -802,7 +802,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
             if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
             {
-                await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
+                await auditTrail.UpdateVotedForAsync(sender, token).ConfigureAwait(false);
                 result = result with { Value = true };
             }
         }
@@ -838,7 +838,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     var newState = new FollowerState<TMember>(this);
                     await UpdateStateAsync(newState).ConfigureAwait(false);
                     Leader = null;
-                    newState.StartServing(ElectionTimeout, LifecycleToken);
+                    newState.StartServing(ElectionTimeout);
                     return true;
                 }
             }
@@ -1008,7 +1008,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
                 if (readyForTransition && TryGetLocalMember()?.Id is { } localMemberId)
                 {
-                    var newState = new CandidateState<TMember>(this, await auditTrail.IncrementTermAsync(localMemberId).ConfigureAwait(false));
+                    var newState = new CandidateState<TMember>(this, await auditTrail.IncrementTermAsync(localMemberId, LifecycleToken).ConfigureAwait(false));
                     await UpdateStateAsync(newState).ConfigureAwait(false);
 
                     // vote for self
@@ -1018,7 +1018,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 else
                 {
                     // resume follower state
-                    followerState.StartServing(ElectionTimeout, LifecycleToken);
+                    followerState.StartServing(ElectionTimeout);
                     Logger.DowngradedToFollowerState(Term);
                 }
             }
@@ -1047,7 +1047,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         Task<bool> IsReadyForTransitionAsync(long currentTerm)
             => state is FollowerState<TMember> { IsExpired: true, IsRefreshRequested: false } followerState && callerState.IsValid(followerState)
                 ? PreVoteAsync(currentTerm)
-                : Task.FromResult<bool>(false);
+                : Task.FromResult(false);
     }
 
     /// <inheritdoc />
@@ -1073,7 +1073,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
                 Leader = newLeader;
                 await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
-                newState.StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage, LifecycleToken);
+                newState.StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage);
 
                 Logger.TransitionToLeaderStateCompleted(currentTerm);
             }

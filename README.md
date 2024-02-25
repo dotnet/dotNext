@@ -44,28 +44,28 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 02-17-2024
+Release Date: 02-25-2024
 
-<a href="https://www.nuget.org/packages/dotnext/5.0.2">DotNext 5.0.2</a>
-* Fixed XML docs
+<a href="https://www.nuget.org/packages/dotnext/5.0.3">DotNext 5.0.3</a>
+* Fixed behavior to no-op when `GCLatencyModeScope` is initialized to default
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.0.2">DotNext.Metaprogramming 5.0.2</a>
-* Fixed [223](https://github.com/dotnet/dotNext/issues/223)
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/5.0.2">DotNext.Unsafe 5.0.2</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.0.3">DotNext.Metaprogramming 5.0.3</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.0.2">DotNext.Threading 5.0.2</a>
-* Added correct validation for maximum possible timeout for all `WaitAsync` methods
-
-<a href="https://www.nuget.org/packages/dotnext.io/5.0.2">DotNext.IO 5.0.2</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.0.3">DotNext.Unsafe 5.0.3</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.0.2">DotNext.Net.Cluster 5.0.2</a>
-* Prevent indexing of WAL files on Windows
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.0.2">DotNext.AspNetCore.Cluster 5.0.2</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/5.0.3">DotNext.Threading 5.0.3</a>
 * Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.0.3">DotNext.IO 5.0.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.0.3">DotNext.Net.Cluster 5.0.3</a>
+* Attempt to fix [221](https://github.com/dotnet/dotNext/issues/221)
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.0.3">DotNext.AspNetCore.Cluster 5.0.3</a>
+* Attempt to fix [221](https://github.com/dotnet/dotNext/issues/221)
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

@@ -869,10 +869,10 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     public long Term => state.Term;
 
     /// <inheritdoc/>
-    async ValueTask<long> IPersistentState.IncrementTermAsync(ClusterMemberId member)
+    async ValueTask<long> IPersistentState.IncrementTermAsync(ClusterMemberId member, CancellationToken token)
     {
         long result;
-        await syncRoot.AcquireAsync(LockType.WriteLock).ConfigureAwait(false);
+        await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
         try
         {
             result = state.IncrementTerm(member);
@@ -887,9 +887,9 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     }
 
     /// <inheritdoc/>
-    async ValueTask IPersistentState.UpdateTermAsync(long term, bool resetLastVote)
+    async ValueTask IPersistentState.UpdateTermAsync(long term, bool resetLastVote, CancellationToken token)
     {
-        await syncRoot.AcquireAsync(LockType.WriteLock).ConfigureAwait(false);
+        await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
         try
         {
             state.UpdateTerm(term, resetLastVote);
@@ -902,9 +902,9 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     }
 
     /// <inheritdoc/>
-    async ValueTask IPersistentState.UpdateVotedForAsync(ClusterMemberId id)
+    async ValueTask IPersistentState.UpdateVotedForAsync(ClusterMemberId id, CancellationToken token)
     {
-        await syncRoot.AcquireAsync(LockType.WriteLock).ConfigureAwait(false);
+        await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
         try
         {
             state.UpdateVotedFor(id);

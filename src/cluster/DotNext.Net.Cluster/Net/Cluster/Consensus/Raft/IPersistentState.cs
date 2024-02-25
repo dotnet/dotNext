@@ -26,8 +26,10 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     /// Increments <see cref="Term"/> value and persists the item that was voted for on in the last vote.
     /// </summary>
     /// <param name="member">The member which identifier should be stored inside of persistence storage. May be <see langword="null"/>.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The updated <see cref="Term"/> value.</returns>
-    ValueTask<long> IncrementTermAsync(ClusterMemberId member);
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    ValueTask<long> IncrementTermAsync(ClusterMemberId member, CancellationToken token = default);
 
     /// <summary>
     /// Persists the last actual Term.
@@ -37,15 +39,19 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     /// <see langword="true"/> to reset information about the last vote;
     /// <see langword="false"/> to keep information about the last vote unchanged.
     /// </param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous execution of the operation.</returns>
-    ValueTask UpdateTermAsync(long term, bool resetLastVote);
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    ValueTask UpdateTermAsync(long term, bool resetLastVote, CancellationToken token = default);
 
     /// <summary>
     /// Persists the item that was voted for on in the last vote.
     /// </summary>
     /// <param name="member">The member which identifier should be stored inside of persistence storage.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of the asynchronous execution.</returns>
-    ValueTask UpdateVotedForAsync(ClusterMemberId member);
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    ValueTask UpdateVotedForAsync(ClusterMemberId member, CancellationToken token = default);
 
     internal static bool IsVotedFor(BoxedClusterMemberId? lastVote, in ClusterMemberId expected)
         => lastVote is null || lastVote.Value == expected;
