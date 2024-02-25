@@ -13,7 +13,7 @@ public sealed class StreamSegmentTests : Test
         using var ms = new MemoryStream(Encoding.UTF8.GetBytes("This is a test"));
         using var segment = new StreamSegment(ms);
         segment.Adjust(offset, length);
-        StreamReader reader = new(segment);
+        using StreamReader reader = new(segment);
         Equal(expected, reader.ReadToEnd());
     }
 
