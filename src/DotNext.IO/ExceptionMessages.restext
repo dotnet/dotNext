@@ -4,3 +4,4 @@ StreamNotReadable=Stream is not readable
 DirectoryNotFound=Directory {0} doesn't exist
 WriterInReadMode=The writer is in read-only mode. Dispose active memory manager obtained from writer
 NoConsumerProvided=No actual consumer is provided
+FileHandleClosed=The file handle is closed
