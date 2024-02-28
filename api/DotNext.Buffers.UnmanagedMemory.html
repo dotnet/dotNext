@@ -278,6 +278,78 @@ public static IUnmanagedMemory&lt;T&gt; Allocate&lt;T&gt;(int length) where T : 
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_UnmanagedMemory_AsMemory__1___0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.UnmanagedMemory.AsMemory%60%601(%60%600*%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Buffers/UnmanagedMemory.cs/#L73">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_UnmanagedMemory_AsMemory_" data-uid="DotNext.Buffers.UnmanagedMemory.AsMemory*"></a>
+  <h4 id="DotNext_Buffers_UnmanagedMemory_AsMemory__1___0__System_Int32_" data-uid="DotNext.Buffers.UnmanagedMemory.AsMemory``1(``0*,System.Int32)">AsMemory&lt;T&gt;(T*, int)</h4>
+  <div class="markdown level1 summary"><p>Wraps unmanaged pointer to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory&lt;T&gt;</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static Memory&lt;T&gt; AsMemory&lt;T&gt;(T* pointer, int length) where T : unmanaged</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T*</td>
+        <td><span class="parametername">pointer</span></td>
+        <td><p>The pointer to a sequence of elements.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The number of elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of elements in the memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_UnmanagedMemory_GetAllocator__1_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.UnmanagedMemory.GetAllocator%60%601(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">

@@ -4813,6 +4813,22 @@ references:
   fullName.vb: DotNext.Buffers.UnmanagedMemory.Allocate(Of T)(Integer)
   nameWithType: UnmanagedMemory.Allocate<T>(int)
   nameWithType.vb: UnmanagedMemory.Allocate(Of T)(Integer)
+- uid: DotNext.Buffers.UnmanagedMemory.AsMemory*
+  name: AsMemory
+  href: api/DotNext.Buffers.UnmanagedMemory.html#DotNext_Buffers_UnmanagedMemory_AsMemory_
+  commentId: Overload:DotNext.Buffers.UnmanagedMemory.AsMemory
+  isSpec: "True"
+  fullName: DotNext.Buffers.UnmanagedMemory.AsMemory
+  nameWithType: UnmanagedMemory.AsMemory
+- uid: DotNext.Buffers.UnmanagedMemory.AsMemory``1(``0*,System.Int32)
+  name: AsMemory<T>(T*, int)
+  href: api/DotNext.Buffers.UnmanagedMemory.html#DotNext_Buffers_UnmanagedMemory_AsMemory__1___0__System_Int32_
+  commentId: M:DotNext.Buffers.UnmanagedMemory.AsMemory``1(``0*,System.Int32)
+  name.vb: AsMemory(Of T)(T*, Integer)
+  fullName: DotNext.Buffers.UnmanagedMemory.AsMemory<T>(T*, int)
+  fullName.vb: DotNext.Buffers.UnmanagedMemory.AsMemory(Of T)(T*, Integer)
+  nameWithType: UnmanagedMemory.AsMemory<T>(T*, int)
+  nameWithType.vb: UnmanagedMemory.AsMemory(Of T)(T*, Integer)
 - uid: DotNext.Buffers.UnmanagedMemory.GetAllocator*
   name: GetAllocator
   href: api/DotNext.Buffers.UnmanagedMemory.html#DotNext_Buffers_UnmanagedMemory_GetAllocator_
@@ -15995,6 +16011,19 @@ references:
   commentId: T:DotNext.IO.StreamExtensions
   fullName: DotNext.IO.StreamExtensions
   nameWithType: StreamExtensions
+- uid: DotNext.IO.StreamExtensions.AsUnbufferedStream(Microsoft.Win32.SafeHandles.SafeFileHandle,System.IO.FileAccess)
+  name: AsUnbufferedStream(SafeFileHandle, FileAccess)
+  href: api/DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_AsUnbufferedStream_Microsoft_Win32_SafeHandles_SafeFileHandle_System_IO_FileAccess_
+  commentId: M:DotNext.IO.StreamExtensions.AsUnbufferedStream(Microsoft.Win32.SafeHandles.SafeFileHandle,System.IO.FileAccess)
+  fullName: DotNext.IO.StreamExtensions.AsUnbufferedStream(Microsoft.Win32.SafeHandles.SafeFileHandle, System.IO.FileAccess)
+  nameWithType: StreamExtensions.AsUnbufferedStream(SafeFileHandle, FileAccess)
+- uid: DotNext.IO.StreamExtensions.AsUnbufferedStream*
+  name: AsUnbufferedStream
+  href: api/DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_AsUnbufferedStream_
+  commentId: Overload:DotNext.IO.StreamExtensions.AsUnbufferedStream
+  isSpec: "True"
+  fullName: DotNext.IO.StreamExtensions.AsUnbufferedStream
+  nameWithType: StreamExtensions.AsUnbufferedStream
 - uid: DotNext.IO.StreamExtensions.Combine(System.IO.Stream,System.ReadOnlySpan{System.IO.Stream})
   name: Combine(Stream, ReadOnlySpan<Stream>)
   href: api/DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Combine_System_IO_Stream_System_ReadOnlySpan_System_IO_Stream__
@@ -25706,12 +25735,12 @@ references:
   commentId: T:DotNext.Net.Cluster.Consensus.Raft.IPersistentState
   fullName: DotNext.Net.Cluster.Consensus.Raft.IPersistentState
   nameWithType: IPersistentState
-- uid: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.IncrementTermAsync(DotNext.Net.Cluster.ClusterMemberId)
-  name: IncrementTermAsync(ClusterMemberId)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html#DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IncrementTermAsync_DotNext_Net_Cluster_ClusterMemberId_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IPersistentState.IncrementTermAsync(DotNext.Net.Cluster.ClusterMemberId)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.IncrementTermAsync(DotNext.Net.Cluster.ClusterMemberId)
-  nameWithType: IPersistentState.IncrementTermAsync(ClusterMemberId)
+- uid: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.IncrementTermAsync(DotNext.Net.Cluster.ClusterMemberId,System.Threading.CancellationToken)
+  name: IncrementTermAsync(ClusterMemberId, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html#DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IncrementTermAsync_DotNext_Net_Cluster_ClusterMemberId_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IPersistentState.IncrementTermAsync(DotNext.Net.Cluster.ClusterMemberId,System.Threading.CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.IncrementTermAsync(DotNext.Net.Cluster.ClusterMemberId, System.Threading.CancellationToken)
+  nameWithType: IPersistentState.IncrementTermAsync(ClusterMemberId, CancellationToken)
 - uid: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.IncrementTermAsync*
   name: IncrementTermAsync
   href: api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html#DotNext_Net_Cluster_Consensus_Raft_IPersistentState_IncrementTermAsync_
@@ -25748,15 +25777,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.Term
   nameWithType: IPersistentState.Term
-- uid: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateTermAsync(System.Int64,System.Boolean)
-  name: UpdateTermAsync(long, bool)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html#DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateTermAsync_System_Int64_System_Boolean_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateTermAsync(System.Int64,System.Boolean)
-  name.vb: UpdateTermAsync(Long, Boolean)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateTermAsync(long, bool)
-  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateTermAsync(Long, Boolean)
-  nameWithType: IPersistentState.UpdateTermAsync(long, bool)
-  nameWithType.vb: IPersistentState.UpdateTermAsync(Long, Boolean)
+- uid: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateTermAsync(System.Int64,System.Boolean,System.Threading.CancellationToken)
+  name: UpdateTermAsync(long, bool, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html#DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateTermAsync_System_Int64_System_Boolean_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateTermAsync(System.Int64,System.Boolean,System.Threading.CancellationToken)
+  name.vb: UpdateTermAsync(Long, Boolean, CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateTermAsync(long, bool, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateTermAsync(Long, Boolean, System.Threading.CancellationToken)
+  nameWithType: IPersistentState.UpdateTermAsync(long, bool, CancellationToken)
+  nameWithType.vb: IPersistentState.UpdateTermAsync(Long, Boolean, CancellationToken)
 - uid: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateTermAsync*
   name: UpdateTermAsync
   href: api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html#DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateTermAsync_
@@ -25764,12 +25793,12 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateTermAsync
   nameWithType: IPersistentState.UpdateTermAsync
-- uid: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateVotedForAsync(DotNext.Net.Cluster.ClusterMemberId)
-  name: UpdateVotedForAsync(ClusterMemberId)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html#DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateVotedForAsync_DotNext_Net_Cluster_ClusterMemberId_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateVotedForAsync(DotNext.Net.Cluster.ClusterMemberId)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateVotedForAsync(DotNext.Net.Cluster.ClusterMemberId)
-  nameWithType: IPersistentState.UpdateVotedForAsync(ClusterMemberId)
+- uid: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateVotedForAsync(DotNext.Net.Cluster.ClusterMemberId,System.Threading.CancellationToken)
+  name: UpdateVotedForAsync(ClusterMemberId, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html#DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateVotedForAsync_DotNext_Net_Cluster_ClusterMemberId_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateVotedForAsync(DotNext.Net.Cluster.ClusterMemberId,System.Threading.CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateVotedForAsync(DotNext.Net.Cluster.ClusterMemberId, System.Threading.CancellationToken)
+  nameWithType: IPersistentState.UpdateVotedForAsync(ClusterMemberId, CancellationToken)
 - uid: DotNext.Net.Cluster.Consensus.Raft.IPersistentState.UpdateVotedForAsync*
   name: UpdateVotedForAsync
   href: api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html#DotNext_Net_Cluster_Consensus_Raft_IPersistentState_UpdateVotedForAsync_
@@ -40137,6 +40166,49 @@ references:
   commentId: T:DotNext.Span
   fullName: DotNext.Span
   nameWithType: Span
+- uid: DotNext.Span.Advance*
+  name: Advance
+  href: api/DotNext.Span.html#DotNext_Span_Advance_
+  commentId: Overload:DotNext.Span.Advance
+  isSpec: "True"
+  fullName: DotNext.Span.Advance
+  nameWithType: Span.Advance
+- uid: DotNext.Span.Advance``1(System.ReadOnlySpan{``0}@)
+  name: Advance<T>(ref ReadOnlySpan<T>)
+  href: api/DotNext.Span.html#DotNext_Span_Advance__1_System_ReadOnlySpan___0___
+  commentId: M:DotNext.Span.Advance``1(System.ReadOnlySpan{``0}@)
+  name.vb: Advance(Of T)(ReadOnlySpan(Of T))
+  fullName: DotNext.Span.Advance<T>(ref System.ReadOnlySpan<T>)
+  fullName.vb: DotNext.Span.Advance(Of T)(System.ReadOnlySpan(Of T))
+  nameWithType: Span.Advance<T>(ref ReadOnlySpan<T>)
+  nameWithType.vb: Span.Advance(Of T)(ReadOnlySpan(Of T))
+- uid: DotNext.Span.Advance``1(System.ReadOnlySpan{``0}@,System.Int32)
+  name: Advance<T>(ref ReadOnlySpan<T>, int)
+  href: api/DotNext.Span.html#DotNext_Span_Advance__1_System_ReadOnlySpan___0___System_Int32_
+  commentId: M:DotNext.Span.Advance``1(System.ReadOnlySpan{``0}@,System.Int32)
+  name.vb: Advance(Of T)(ReadOnlySpan(Of T), Integer)
+  fullName: DotNext.Span.Advance<T>(ref System.ReadOnlySpan<T>, int)
+  fullName.vb: DotNext.Span.Advance(Of T)(System.ReadOnlySpan(Of T), Integer)
+  nameWithType: Span.Advance<T>(ref ReadOnlySpan<T>, int)
+  nameWithType.vb: Span.Advance(Of T)(ReadOnlySpan(Of T), Integer)
+- uid: DotNext.Span.Advance``1(System.Span{``0}@)
+  name: Advance<T>(ref Span<T>)
+  href: api/DotNext.Span.html#DotNext_Span_Advance__1_System_Span___0___
+  commentId: M:DotNext.Span.Advance``1(System.Span{``0}@)
+  name.vb: Advance(Of T)(Span(Of T))
+  fullName: DotNext.Span.Advance<T>(ref System.Span<T>)
+  fullName.vb: DotNext.Span.Advance(Of T)(System.Span(Of T))
+  nameWithType: Span.Advance<T>(ref Span<T>)
+  nameWithType.vb: Span.Advance(Of T)(Span(Of T))
+- uid: DotNext.Span.Advance``1(System.Span{``0}@,System.Int32)
+  name: Advance<T>(ref Span<T>, int)
+  href: api/DotNext.Span.html#DotNext_Span_Advance__1_System_Span___0___System_Int32_
+  commentId: M:DotNext.Span.Advance``1(System.Span{``0}@,System.Int32)
+  name.vb: Advance(Of T)(Span(Of T), Integer)
+  fullName: DotNext.Span.Advance<T>(ref System.Span<T>, int)
+  fullName.vb: DotNext.Span.Advance(Of T)(System.Span(Of T), Integer)
+  nameWithType: Span.Advance<T>(ref Span<T>, int)
+  nameWithType.vb: Span.Advance(Of T)(Span(Of T), Integer)
 - uid: DotNext.Span.AsBytes*
   name: AsBytes
   href: api/DotNext.Span.html#DotNext_Span_AsBytes_
