@@ -287,10 +287,12 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     /// <inheritdoc/>
-    ValueTask<long> IPersistentState.IncrementTermAsync(ClusterMemberId member)
+    ValueTask<long> IPersistentState.IncrementTermAsync(ClusterMemberId member, CancellationToken token)
     {
         lastVote = BoxedClusterMemberId.Box(member);
-        return new(Interlocked.Increment(ref term));
+        return token.IsCancellationRequested
+            ? ValueTask.FromCanceled<long>(token)
+            : ValueTask.FromResult(Interlocked.Increment(ref term));
     }
 
     /// <inheritdoc/>
@@ -348,20 +350,20 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     /// <inheritdoc/>
-    ValueTask IPersistentState.UpdateTermAsync(long value, bool resetLastVote)
+    ValueTask IPersistentState.UpdateTermAsync(long value, bool resetLastVote, CancellationToken token)
     {
         Term = value;
         if (resetLastVote)
             lastVote = null;
 
-        return new();
+        return token.IsCancellationRequested ? ValueTask.FromCanceled(token) : ValueTask.CompletedTask;
     }
 
     /// <inheritdoc/>
-    ValueTask IPersistentState.UpdateVotedForAsync(ClusterMemberId id)
+    ValueTask IPersistentState.UpdateVotedForAsync(ClusterMemberId id, CancellationToken token)
     {
         lastVote = BoxedClusterMemberId.Box(id);
-        return new();
+        return token.IsCancellationRequested ? ValueTask.FromCanceled(token) : ValueTask.CompletedTask;
     }
 
     /// <inheritdoc/>

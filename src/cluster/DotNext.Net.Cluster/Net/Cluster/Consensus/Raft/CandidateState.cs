@@ -7,63 +7,66 @@ using IO.Log;
 using Runtime.CompilerServices;
 using Threading.Tasks;
 
-internal sealed class CandidateState<TMember>(IRaftStateMachine<TMember> stateMachine, long term) : RaftState<TMember>(stateMachine)
+internal sealed class CandidateState<TMember> : RaftState<TMember>
     where TMember : class, IRaftClusterMember
 {
-    private enum VotingResult : byte
-    {
-        Rejected = 0,
-        Granted,
-        Canceled,
-        NotAvailable,
-    }
-
-    private readonly CancellationTokenSource votingCancellation = new();
-    internal readonly long Term = term;
+    private readonly CancellationTokenSource votingCancellation;
+    private readonly CancellationToken votingCancellationToken; // cached to prevent ObjectDisposedException
+    internal readonly long Term;
     private Task? votingTask;
 
+    public CandidateState(IRaftStateMachine<TMember> stateMachine, long term)
+        : base(stateMachine)
+    {
+        Term = term;
+        votingCancellation = new();
+        votingCancellationToken = votingCancellation.Token;
+    }
+
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task VoteAsync(TimeSpan timeout, IAuditTrail<IRaftLogEntry> auditTrail)
     {
         // Perf: reuse index and related term once for all members
         var lastIndex = auditTrail.LastEntryIndex;
-        var lastTerm = await auditTrail.GetTermAsync(lastIndex, votingCancellation.Token).ConfigureAwait(false);
+        var lastTerm = await auditTrail.GetTermAsync(lastIndex, votingCancellationToken).ConfigureAwait(false);
 
         // start voting in parallel
-        var voters = StartVoting(Members, Term, lastIndex, lastTerm, votingCancellation.Token);
+        var voters = StartVoting(Members, Term, lastIndex, lastTerm, votingCancellationToken);
         votingCancellation.CancelAfter(timeout);
 
         // finish voting
         await EndVoting(voters.GetConsumer(), votingCancellation.Token).ConfigureAwait(false);
 
-        static TaskCompletionPipe<Task<(TMember, long, VotingResult)>> StartVoting(IReadOnlyCollection<TMember> members, long currentTerm, long lastIndex, long lastTerm, CancellationToken token)
+        static TaskCompletionPipe<Task<(TMember, long, bool?)>> StartVoting(IReadOnlyCollection<TMember> members, long currentTerm, long lastIndex, long lastTerm, CancellationToken token)
         {
-            var voters = new TaskCompletionPipe<Task<(TMember, long, VotingResult)>>();
+            var voters = new TaskCompletionPipe<Task<(TMember, long, bool?)>>();
 
             // start voting in parallel
-            foreach (var member in members)
-                voters.Add(VoteAsync(member, currentTerm, lastIndex, lastTerm, token));
+            using (var enumerator = members.GetEnumerator())
+            {
+                while (enumerator.MoveNext() && !token.IsCancellationRequested)
+                {
+                    voters.Add(VoteAsync(enumerator.Current, currentTerm, lastIndex, lastTerm, token));
+                }
+            }
 
             voters.Complete();
             return voters;
         }
 
         [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
-        static async Task<(TMember, long, VotingResult)> VoteAsync(TMember voter, long currentTerm, long lastIndex, long lastTerm, CancellationToken token)
+        static async Task<(TMember, long, bool?)> VoteAsync(TMember voter, long currentTerm, long lastIndex, long lastTerm, CancellationToken token)
         {
-            VotingResult result;
+            bool? result;
             try
             {
                 var response = await voter.VoteAsync(currentTerm, lastIndex, lastTerm, token).ConfigureAwait(false);
                 currentTerm = response.Term;
-                result = response.Value ? VotingResult.Granted : VotingResult.Rejected;
-            }
-            catch (OperationCanceledException)
-            {
-                result = VotingResult.Canceled;
+                result = response.Value;
             }
             catch (MemberUnavailableException)
             {
-                result = VotingResult.NotAvailable;
+                result = null;
                 currentTerm = -1L;
             }
 
@@ -71,50 +74,68 @@ internal sealed class CandidateState<TMember>(IRaftStateMachine<TMember> stateMa
         }
     }
 
-    private async Task EndVoting(IAsyncEnumerable<(TMember, long, VotingResult)> voters, CancellationToken token)
+    private async Task EndVoting(TaskCompletionPipe.Consumer<(TMember, long, bool?)> voters, CancellationToken token)
     {
         var votes = 0;
         var localMember = default(TMember);
-        await foreach (var (member, term, result) in voters.ConfigureAwait(false))
+
+        var enumerator = voters.GetAsyncEnumerator(token);
+        try
         {
-            if (IsDisposingOrDisposed)
-                return;
-
-            // current node is outdated
-            if (term > Term)
+            while (await enumerator.MoveNextAsync().ConfigureAwait(false))
             {
-                MoveToFollowerState(randomizeTimeout: false, term);
-                return;
-            }
+                var (member, term, result) = enumerator.Current;
 
-            switch (result)
-            {
-                case VotingResult.Canceled: // candidate timeout happened
-                    MoveToFollowerState(randomizeTimeout: false);
+                if (IsDisposingOrDisposed)
                     return;
-                case VotingResult.Granted:
-                    Logger.VoteGranted(member.EndPoint);
-                    votes += 1;
-                    break;
-                case VotingResult.Rejected:
-                    Logger.VoteRejected(member.EndPoint);
-                    votes -= 1;
-                    break;
-                case VotingResult.NotAvailable:
-                    Logger.MemberUnavailable(member.EndPoint);
-                    votes -= 1;
-                    break;
-            }
 
-            if (!member.IsRemote)
-                localMember = member;
+                // current node is outdated
+                if (term > Term)
+                {
+                    MoveToFollowerState(randomizeTimeout: false, term);
+                    return;
+                }
+
+                switch (result)
+                {
+                    case true:
+                        Logger.VoteGranted(member.EndPoint);
+                        votes += 1;
+                        break;
+                    case false:
+                        Logger.VoteRejected(member.EndPoint);
+                        votes -= 1;
+                        break;
+                    default:
+                        Logger.MemberUnavailable(member.EndPoint);
+                        votes -= 1;
+                        break;
+                }
+
+                if (!member.IsRemote)
+                    localMember = member;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // candidate timeout happened
+            MoveToFollowerState(randomizeTimeout: false);
+            return;
+        }
+        finally
+        {
+            await enumerator.DisposeAsync().ConfigureAwait(false);
         }
 
         Logger.VotingCompleted(votes, Term);
         if (token.IsCancellationRequested || votes <= 0 || localMember is null)
+        {
             MoveToFollowerState(randomizeTimeout: true); // no clear consensus
+        }
         else
+        {
             MoveToLeaderState(localMember); // becomes a leader
+        }
     }
 
     /// <summary>
@@ -133,7 +154,7 @@ internal sealed class CandidateState<TMember>(IRaftStateMachine<TMember> stateMa
     {
         try
         {
-            votingCancellation.Cancel();
+            votingCancellation.Cancel(throwOnFirstException: false);
             await (votingTask ?? Task.CompletedTask).ConfigureAwait(false);
         }
         catch (Exception e)
@@ -151,6 +172,7 @@ internal sealed class CandidateState<TMember>(IRaftStateMachine<TMember> stateMa
         if (disposing)
         {
             votingCancellation.Dispose();
+            votingTask = null;
         }
 
         base.Dispose(disposing);

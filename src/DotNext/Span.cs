@@ -776,4 +776,70 @@ public static partial class Span
             buffer.Dispose();
         }
     }
+
+    /// <summary>
+    /// Takes the specified number of elements and adjusts the span.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the span.</typeparam>
+    /// <param name="source">The source span.</param>
+    /// <param name="count">The number of elements to take.</param>
+    /// <returns>The span containing <paramref name="count"/> elements.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of <paramref name="source"/>.</exception>
+    public static ReadOnlySpan<T> Advance<T>(this ref ReadOnlySpan<T> source, int count)
+    {
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)source.Length, nameof(count));
+
+        ref var ptr = ref MemoryMarshal.GetReference(source);
+        source = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, count), source.Length - count);
+        return MemoryMarshal.CreateReadOnlySpan(ref ptr, count);
+    }
+
+    /// <summary>
+    /// Takes the first element and adjusts the span.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the span.</typeparam>
+    /// <param name="source">The source span.</param>
+    /// <returns>The reference to the first element in the span.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="source"/> is empty.</exception>
+    public static ref readonly T Advance<T>(this ref ReadOnlySpan<T> source)
+    {
+        ArgumentOutOfRangeException.ThrowIfZero(source.Length, nameof(source));
+
+        ref T ptr = ref MemoryMarshal.GetReference(source);
+        source = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, 1), source.Length - 1);
+        return ref ptr;
+    }
+
+    /// <summary>
+    /// Takes the specified number of elements and adjusts the span.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the span.</typeparam>
+    /// <param name="source">The source span.</param>
+    /// <param name="count">The number of elements to take.</param>
+    /// <returns>The span containing <paramref name="count"/> elements.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of <paramref name="source"/>.</exception>
+    public static Span<T> Advance<T>(this ref Span<T> source, int count)
+    {
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)source.Length, nameof(count));
+
+        ref var ptr = ref MemoryMarshal.GetReference(source);
+        source = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, count), source.Length - count);
+        return MemoryMarshal.CreateSpan(ref ptr, count);
+    }
+
+    /// <summary>
+    /// Takes the first element and adjusts the span.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the span.</typeparam>
+    /// <param name="source">The source span.</param>
+    /// <returns>The reference to the first element in the span.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="source"/> is empty.</exception>
+    public static ref T Advance<T>(this ref Span<T> source)
+    {
+        ArgumentOutOfRangeException.ThrowIfZero(source.Length, nameof(source));
+
+        ref T ptr = ref MemoryMarshal.GetReference(source);
+        source = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, 1), source.Length - 1);
+        return ref ptr;
+    }
 }

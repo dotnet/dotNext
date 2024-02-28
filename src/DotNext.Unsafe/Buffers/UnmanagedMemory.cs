@@ -62,6 +62,32 @@ public static class UnmanagedMemory
         static MemoryOwner<T> AllocateZeroed(int length)
             => new(UnmanagedMemoryOwner<T>.CreateZeroed, length);
     }
+
+    /// <summary>
+    /// Wraps unmanaged pointer to <see cref="Memory{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the memory.</typeparam>
+    /// <param name="pointer">The pointer to a sequence of elements.</param>
+    /// <param name="length">The number of elements.</param>
+    /// <returns></returns>
+    [CLSCompliant(false)]
+    public static unsafe Memory<T> AsMemory<T>(T* pointer, int length)
+        where T : unmanaged
+    {
+        ArgumentNullException.ThrowIfNull(pointer);
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
+
+        if (length > 0)
+        {
+            MemoryManager<T> manager = new UnmanagedMemory<T>((nint)pointer, length);
+
+            // GC perf: manager doesn't own the memory represented by the pointer, no need to call Dispose from finalizer
+            GC.SuppressFinalize(manager);
+            return manager.Memory;
+        }
+
+        return Memory<T>.Empty;
+    }
 }
 
 internal unsafe class UnmanagedMemory<T> : MemoryManager<T>

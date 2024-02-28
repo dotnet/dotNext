@@ -534,4 +534,20 @@ public sealed class SpanTests : Test
         // out of range
         Throws<ArgumentOutOfRangeException>(() => new int[] { 1, 2, 3, 4, 5, 6 }.AsSpan().Move(0..2, 1));
     }
+
+    [Fact]
+    public static void AdvanceReadOnlySpan()
+    {
+        ReadOnlySpan<int> array = new int[] { 10, 20, 30 };
+        Equal(10, array.Advance());
+        Equal(new int[] { 20, 30 }, array.Advance(2));
+    }
+
+    [Fact]
+    public static void AdvanceSpan()
+    {
+        Span<int> array = [10, 20, 30];
+        Equal(10, array.Advance());
+        Equal([20, 30], array.Advance(2));
+    }
 }

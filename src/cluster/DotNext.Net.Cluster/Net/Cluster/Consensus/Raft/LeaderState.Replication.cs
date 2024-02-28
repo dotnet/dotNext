@@ -98,7 +98,7 @@ internal partial class LeaderState<TMember>
             PrecedingTerm = precedingTerm;
         }
 
-        public virtual void Reset()
+        public void Reset()
         {
             replicationAwaiter = default;
             configuration = this;

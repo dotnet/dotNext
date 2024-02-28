@@ -1,5 +1,6 @@
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
-using IEnumerable = System.Collections.IEnumerable;
+using System.Reflection;
 
 namespace DotNext.Reflection;
 
@@ -17,7 +18,7 @@ public static class CollectionType
     /// <param name="collectionType">Any collection type implementing <see cref="IEnumerable{T}"/>.</param>
     /// <param name="enumerableInterface">The type <see cref="IEnumerable{T}"/> with actual generic argument.</param>
     /// <returns>Type of items in the collection; or <see langword="null"/> if <paramref name="collectionType"/> is not a generic collection.</returns>
-    public static Type? GetItemType([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type collectionType, out Type? enumerableInterface)
+    public static Type? GetItemType([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicMethods)] this Type collectionType, out Type? enumerableInterface)
     {
         enumerableInterface = collectionType.FindGenericInstance(typeof(IEnumerable<>));
         if (enumerableInterface is not null)
@@ -34,8 +35,11 @@ public static class CollectionType
         if (enumerableInterface is not null)
             return enumerableInterface.GetGenericArguments()[0];
 
-        enumerableInterface = null;
-        return null;
+        // determine via GetEnumerator public method
+        return collectionType.GetMethod(nameof(IEnumerable.GetEnumerator), BindingFlags.Public | BindingFlags.FlattenHierarchy | BindingFlags.Instance, []) is { ReturnType: { } returnType }
+            && returnType.GetProperty(nameof(IEnumerator.Current), BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance) is { PropertyType: { } elementType }
+            ? elementType
+            : null;
     }
 
     /// <summary>
@@ -43,7 +47,7 @@ public static class CollectionType
     /// </summary>
     /// <param name="collectionType">Any collection type implementing <see cref="IEnumerable{T}"/>.</param>
     /// <returns>Type of items in the collection; or <see langword="null"/> if <paramref name="collectionType"/> is not a generic collection.</returns>
-    public static Type? GetItemType([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type collectionType)
+    public static Type? GetItemType([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces | DynamicallyAccessedMemberTypes.PublicMethods)] this Type collectionType)
         => collectionType.GetItemType(out _);
 
     /// <summary>
@@ -58,8 +62,8 @@ public static class CollectionType
     /// <seealso cref="IReadOnlyCollection{T}"/>
     public static Type? GetImplementedCollection([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type type)
     {
-        var collectionTypes = (typeof(IReadOnlyCollection<>), typeof(ICollection<>));
-        foreach (var collectionType in collectionTypes.AsReadOnlySpan())
+        ReadOnlySpan<Type> collectionTypes = [typeof(IReadOnlyCollection<>), typeof(ICollection<>)];
+        foreach (var collectionType in collectionTypes)
         {
             if (type.FindGenericInstance(collectionType) is { } result)
                 return result;

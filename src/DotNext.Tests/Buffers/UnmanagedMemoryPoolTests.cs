@@ -226,4 +226,13 @@ public sealed class UnmanagedMemoryPoolTests : Test
         memory.Unpin();
         handle.Dispose();
     }
+
+    [Fact]
+    public static unsafe void MarshalAsMemory()
+    {
+        int* ptr = stackalloc int[] { 10, 20, 30 };
+        var memory = UnmanagedMemory.AsMemory(ptr, 3);
+        False(memory.IsEmpty);
+        Equal([10, 20, 30], memory.Span);
+    }
 }

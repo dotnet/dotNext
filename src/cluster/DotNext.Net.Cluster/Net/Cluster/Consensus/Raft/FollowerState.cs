@@ -6,14 +6,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Threading;
 
-internal sealed class FollowerState<TMember>(IRaftStateMachine<TMember> stateMachine) : RaftState<TMember>(stateMachine)
+internal sealed class FollowerState<TMember> : RaftState<TMember>
     where TMember : class, IRaftClusterMember
 {
-    private readonly AsyncAutoResetEvent refreshEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
-    private readonly AsyncManualResetEvent suppressionEvent = new(initialState: true) { MeasurementTags = stateMachine.MeasurementTags };
-    private readonly CancellationTokenSource trackerCancellation = new();
+    private readonly AsyncAutoResetEvent refreshEvent;
+    private readonly AsyncManualResetEvent suppressionEvent;
+    private readonly CancellationTokenSource trackerCancellation;
+    private readonly CancellationToken trackerCancellationToken; // cached to prevent ObjectDisposedException
     private Task? tracker;
     private volatile bool timedOut;
+
+    public FollowerState(IRaftStateMachine<TMember> stateMachine)
+        : base(stateMachine)
+    {
+        refreshEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
+        suppressionEvent = new(initialState: true) { MeasurementTags = stateMachine.MeasurementTags };
+        trackerCancellation = new();
+        trackerCancellationToken = trackerCancellation.Token;
+    }
 
     private void SuspendTracking()
     {
@@ -23,18 +33,14 @@ internal sealed class FollowerState<TMember>(IRaftStateMachine<TMember> stateMac
 
     private void ResumeTracking() => suppressionEvent.Set();
 
-    private async Task Track(TimeSpan timeout, CancellationToken token)
+    private async Task Track(TimeSpan timeout)
     {
-        Debug.Assert(token != trackerCancellation.Token);
-
-        using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(token, trackerCancellation.Token);
-
         // spin loop to wait for the timeout
-        while (await refreshEvent.WaitAsync(timeout, tokenSource.Token).ConfigureAwait(false))
+        while (await refreshEvent.WaitAsync(timeout, trackerCancellationToken).ConfigureAwait(false))
         {
             // Transition can be suppressed. If so, resume the loop and reset the timer.
             // If the event is in signaled state then the returned task is completed synchronously.
-            await suppressionEvent.WaitAsync(tokenSource.Token).ConfigureAwait(false);
+            await suppressionEvent.WaitAsync(trackerCancellationToken).ConfigureAwait(false);
         }
 
         timedOut = true;
@@ -50,19 +56,11 @@ internal sealed class FollowerState<TMember>(IRaftStateMachine<TMember> stateMac
         MoveToCandidateState();
     }
 
-    internal void StartServing(TimeSpan timeout, CancellationToken token)
+    internal void StartServing(TimeSpan timeout)
     {
-        if (token.IsCancellationRequested)
-        {
-            trackerCancellation.Cancel(false);
-            tracker = null;
-        }
-        else
-        {
-            refreshEvent.Reset();
-            timedOut = false;
-            tracker = Track(timeout, token);
-        }
+        refreshEvent.Reset();
+        timedOut = false;
+        tracker = Track(timeout);
 
         FollowerState.TransitionRateMeter.Add(1, in MeasurementTags);
     }
@@ -82,7 +80,7 @@ internal sealed class FollowerState<TMember>(IRaftStateMachine<TMember> stateMac
     {
         try
         {
-            trackerCancellation.Cancel(false);
+            trackerCancellation.Cancel(throwOnFirstException: false);
             await (tracker ?? Task.CompletedTask).ConfigureAwait(false);
         }
         catch (Exception e)
