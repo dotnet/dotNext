@@ -23,4 +23,6 @@ internal static class ExceptionMessages
     internal static string WriterInReadMode => (string)Resources.Get();
 
     internal static string NoConsumerProvided => (string)Resources.Get();
+
+    internal static string FileHandleClosed => (string)Resources.Get();
 }

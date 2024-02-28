@@ -4,8 +4,6 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.InteropServices;
 
-using Threading;
-
 public sealed class PointerTests : Test
 {
     [Fact]

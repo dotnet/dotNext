@@ -32,8 +32,12 @@ public sealed class TypeExtensionsTests : Test
     {
         Equal(typeof(string), typeof(MyList).GetItemType(out var enumerable));
         Equal(typeof(IEnumerable<string>), enumerable);
+
         Equal(typeof(int), typeof(int[]).GetItemType(out enumerable));
         Equal(typeof(IEnumerable<int>), enumerable);
+
+        Equal(typeof(int).MakeByRefType(), typeof(Span<int>).GetItemType(out enumerable));
+        Null(enumerable);
     }
 
     private struct ManagedStruct

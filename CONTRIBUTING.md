@@ -17,6 +17,8 @@ contact [conduct@dotnetfoundation.org](mailto:conduct@dotnetfoundation.org) with
 ## Branching Model
 This repository uses branching model known as [git flow](https://nvie.com/posts/a-successful-git-branching-model/). Use **develop** as the destination branch in your Pull Request.
 
+Since 5.x release, squash commit is used to merge all commits related to the release when moving to `main` branch.
+
 ## Backward Compatibility
 Contributions must not contain breaking changes such as backward incompatible modification of API signatures. The only exception is a new major version of the library. However, it should pass through code review and discussion.
 
