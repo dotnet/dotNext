@@ -1,25 +1,13 @@
-using Debug = System.Diagnostics.Debug;
-
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 
 public partial class RaftCluster<TMember>
 {
-    private sealed class ReplicationWithSenderTermDetector<TEntry> : ILogEntryProducer<TEntry>
+    private sealed class ReplicationWithSenderTermDetector<TEntry>(ILogEntryProducer<TEntry> entries, long expectedTerm) : ILogEntryProducer<TEntry>
         where TEntry : notnull, IRaftLogEntry
     {
-        private readonly ILogEntryProducer<TEntry> entries;
-        private readonly long expectedTerm;
         private bool replicatedWithExpectedTerm;
-
-        internal ReplicationWithSenderTermDetector(ILogEntryProducer<TEntry> entries, long expectedTerm)
-        {
-            Debug.Assert(entries is not null);
-
-            this.entries = entries;
-            this.expectedTerm = expectedTerm;
-        }
 
         internal bool IsReplicatedWithExpectedTerm => replicatedWithExpectedTerm;
 
