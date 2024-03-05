@@ -95,12 +95,12 @@ public static class Func
         // slow path - allocates a new delegate
         return obj is null
             ? Default!
-            : obj.ConstantCore<T>;
+            : obj.UnboxAny<T>;
 
         static T? Default() => default;
     }
 
-    private static T ConstantCore<T>(this object obj) => (T)obj;
+    private static T UnboxAny<T>(this object obj) => (T)obj;
 
     private static Func<bool> Constant(bool value)
     {
