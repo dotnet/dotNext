@@ -147,9 +147,14 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     public void Return(int value)
     {
         if (value < 0 || value > maxValue)
-            throw new ArgumentOutOfRangeException(nameof(value));
+            ThrowArgumentOutOfRangeException();
 
         Interlocked.Or(ref bitmask, 1UL << value);
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowArgumentOutOfRangeException()
+            => throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     /// <summary>
