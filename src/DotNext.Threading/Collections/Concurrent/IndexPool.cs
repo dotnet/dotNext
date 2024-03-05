@@ -186,9 +186,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     }
 
     private static bool Contains(ulong bitmask, int index)
-    {
-        return (bitmask & (1UL << index)) is not 0UL;
-    }
+        => (bitmask & (1UL << index)) is not 0UL;
 
     /// <summary>
     /// Gets the number of available indicies.
