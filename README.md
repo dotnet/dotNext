@@ -46,28 +46,26 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 # What's new
 Release Date: 02-28-2024
 
-<a href="https://www.nuget.org/packages/dotnext/5.1.0">DotNext 5.1.0</a>
-* Added `Span.Advance<T>` extension method for spans
-* `CollectionType.GetItemType` now correctly recognizes enumerable pattern even if target type doesn't implement `IEnumerable<T>`
+<a href="https://www.nuget.org/packages/dotnext/5.1.1">DotNext 5.1.1</a>
+* Fixed AOT compatibility issues
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.1.0">DotNext.Metaprogramming 5.1.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.1.1">DotNext.Metaprogramming 5.1.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/5.1.0">DotNext.Unsafe 5.1.0</a>
-* Added `UnmanagedMemory.AsMemory` static method that allows to wrap unmanaged pointer into [Memory&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.memory-1)
-
-<a href="https://www.nuget.org/packages/dotnext.threading/5.1.0">DotNext.Threading 5.1.0</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.1.1">DotNext.Unsafe 5.1.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.1.0">DotNext.IO 5.1.0</a>
-* Merged [225](https://github.com/dotnet/dotNext/pull/225)
-* Added `AsUnbufferedStream` extension method for [SafeFileHandle](https://learn.microsoft.com/en-us/dotnet/api/microsoft.win32.safehandles.safefilehandle) class
+<a href="https://www.nuget.org/packages/dotnext.threading/5.1.1">DotNext.Threading 5.1.1</a>
+* Added specialized `IndexPool` data type that can be useful for implementing fast object pools
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.1.0">DotNext.Net.Cluster 5.1.0</a>
+<a href="https://www.nuget.org/packages/dotnext.io/5.1.1">DotNext.IO 5.1.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.1.0">DotNext.AspNetCore.Cluster 5.1.0</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.1.1">DotNext.Net.Cluster 5.1.1</a>
+* Fixed [226](https://github.com/dotnet/dotNext/issues/226)
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.1.1">DotNext.AspNetCore.Cluster 5.1.1</a>
+* Fixed [226](https://github.com/dotnet/dotNext/issues/226)
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
