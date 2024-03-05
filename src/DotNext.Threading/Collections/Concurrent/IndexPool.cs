@@ -181,14 +181,8 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// </summary>
     /// <param name="value">The value to check.</param>
     /// <returns><see langword="true"/> if <paramref name="value"/> is available for rent; otherwise, <see langword="false"/>.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
     public readonly bool Contains(int value)
-    {
-        if (value < 0 || value > maxValue)
-            throw new ArgumentOutOfRangeException(nameof(value));
-
-        return Contains(Volatile.Read(in bitmask), value);
-    }
+        => value >= 0 && value <= maxValue && Contains(Volatile.Read(in bitmask), value);
 
     private static bool Contains(ulong bitmask, int index)
         => (bitmask & (1UL << index)) is not 0UL;
