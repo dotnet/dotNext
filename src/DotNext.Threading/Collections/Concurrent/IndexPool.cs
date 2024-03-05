@@ -196,7 +196,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// <summary>
     /// Gets an enumerator over available indicies in the pool.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The enumerator over available indicies in this pool.</returns>
     public readonly Enumerator GetEnumerator() => new(Volatile.Read(in bitmask), maxValue);
 
     /// <inheritdoc/>
