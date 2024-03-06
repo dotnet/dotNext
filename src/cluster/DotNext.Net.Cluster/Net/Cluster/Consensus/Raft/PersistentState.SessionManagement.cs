@@ -21,7 +21,7 @@ public partial class PersistentState
 
     private sealed class FastSessionIdPool : SessionIdPool
     {
-        private IndexPool indicies;
+        private IndexPool indicies = new();
 
         internal static int MaxReadersCount => IndexPool.Capacity;
 
