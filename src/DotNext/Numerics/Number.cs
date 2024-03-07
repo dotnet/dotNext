@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -99,4 +100,125 @@ public static partial class Number
     /// <returns>The normalized value in range [0..1).</returns>
     public static float Normalize(this int value)
         => Normalize(unchecked((uint)value));
+
+    /// <summary>
+    /// Determines whether the specified value is a prime number.
+    /// </summary>
+    /// <typeparam name="T">The integer type.</typeparam>
+    /// <param name="value">The value to check.</param>
+    /// <returns><see langword="true"/> if <paramref name="value"/> is a prime number; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is negative or zero.</exception>
+    public static bool IsPrime<T>(T value)
+        where T : struct, IBinaryInteger<T>, ISignedNumber<T>
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
+
+        if (value == T.One)
+            return false;
+
+        var two = T.One << 1;
+
+        if ((value & T.One) != T.Zero)
+        {
+            for (T divisor = two + T.One, limit = Sqrt(value); divisor <= limit; divisor += two)
+            {
+                if ((value % divisor) == T.Zero)
+                    return false;
+            }
+
+            return true;
+        }
+
+        return value == two;
+
+        // https://math.stackexchange.com/questions/2469446/what-is-a-fast-algorithm-for-finding-the-integer-square-root
+        static T Sqrt(T value)
+        {
+            var log2x = T.Log2(value) - T.One;
+            var log2y = int.CreateChecked(log2x >> 1);
+
+            var y = T.One << log2y;
+            var y_squared = T.One << (2 * log2y);
+
+            var sqr_diff = value - y_squared;
+
+            // Perform lerp between powers of four
+            y += (sqr_diff / (T.One + T.One + T.One)) >> log2y;
+
+            // The estimate is probably too low, refine it upward
+            y_squared = y * y;
+            sqr_diff = value - y_squared;
+
+            y += sqr_diff / (y << 1);
+
+            // The estimate may be too high. If so, refine it downward
+            y_squared = y * y;
+            sqr_diff = value - y_squared;
+            if (sqr_diff >= T.Zero)
+            {
+                return y;
+            }
+
+            y -= (-sqr_diff / (y << 1)) + T.One;
+
+            // The estimate may still be 1 too high
+            y_squared = y * y;
+            sqr_diff = value - y_squared;
+            if (sqr_diff < T.Zero)
+            {
+                --y;
+            }
+
+            return y;
+        }
+    }
+
+    /// <summary>
+    /// Gets a prime number which is greater than the specified value.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="cachedPrimes">The table with cached prime numbers sorted in ascending order.</param>
+    /// <param name="lowerBound">The value which is smaller than the requested prime number.</param>
+    /// <returns>The prime number which is greater than <paramref name="lowerBound"/>.</returns>
+    /// <exception cref="OverflowException">There is no prime number that is greater than <paramref name="lowerBound"/> and less than <see cref="IMinMaxValue{T}.MaxValue"/>.</exception>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static T GetPrime<T>(ReadOnlySpan<T> cachedPrimes, T lowerBound)
+        where T : struct, IBinaryInteger<T>, ISignedNumber<T>, IMinMaxValue<T>
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(lowerBound);
+
+        if (TryGetFromTable(cachedPrimes, lowerBound, out T result))
+            return result;
+
+        //outside of predefined table
+        for (result = lowerBound | T.One; result < T.MaxValue; result += T.One + T.One)
+        {
+            if (IsPrime(result))
+                return result;
+        }
+
+        throw new OverflowException();
+
+        static bool TryGetFromTable(ReadOnlySpan<T> cachedPrimes, T value, out T result)
+        {
+            var low = 0;
+            for (var high = cachedPrimes.Length; low < high;)
+            {
+                var mid = (low + high) / 2;
+                result = T.CreateChecked(cachedPrimes[mid]);
+                var cmp = result.CompareTo(value);
+                if (cmp > 0)
+                    high = mid;
+                else
+                    low = mid + 1;
+            }
+
+            bool success;
+            result = (success = low < cachedPrimes.Length)
+                ? T.CreateChecked(cachedPrimes[low])
+                : default;
+
+            return success;
+        }
+    }
 }
