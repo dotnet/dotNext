@@ -148,7 +148,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                     int quorum = 0, commitQuorum = 0, majority;
                     (long currentIndex, long commitIndex, majority) = ForkHeartbeats(responsePipe, auditTrail, configurationStorage, enumerator);
 
-                    while (await responsePipe.WaitToReadAsync(LeadershipToken).ConfigureAwait(false))
+                    while (await responsePipe.WaitToReadAsync().ConfigureAwait(false))
                     {
                         while (responsePipe.TryRead(out var response, out var replicator))
                         {
