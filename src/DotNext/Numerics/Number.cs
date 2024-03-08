@@ -205,7 +205,7 @@ public static partial class Number
             for (var high = cachedPrimes.Length; low < high;)
             {
                 var mid = (low + high) / 2;
-                result = T.CreateChecked(cachedPrimes[mid]);
+                result = cachedPrimes[mid];
                 var cmp = result.CompareTo(value);
                 if (cmp > 0)
                     high = mid;
