@@ -1,6 +1,31 @@
 Release Notes
 ====
 
+# 03-08-2024
+<a href="https://www.nuget.org/packages/dotnext/5.2.0">DotNext 5.2.0</a>
+* Added `Number.IsPrime` static method that allows to check whether the specified number is a prime number
+* Fixed AOT compatibility issues
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.2.0">DotNext.Metaprogramming 5.2.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.2.0">DotNext.Unsafe 5.2.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.2.0">DotNext.Threading 5.2.0</a>
+* Added specialized `IndexPool` data type that can be useful for implementing fast object pools
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.2.0">DotNext.IO 5.2.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.2.0">DotNext.Net.Cluster 5.2.0</a>
+* Fixed [226](https://github.com/dotnet/dotNext/issues/226)
+* Fixed [221](https://github.com/dotnet/dotNext/issues/221)
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.2.0">DotNext.AspNetCore.Cluster 5.2.0</a>
+* Fixed [226](https://github.com/dotnet/dotNext/issues/226)
+* Fixed [221](https://github.com/dotnet/dotNext/issues/221)
+
 # 02-28-2024
 <a href="https://www.nuget.org/packages/dotnext/5.1.0">DotNext 5.1.0</a>
 * Added `Span.Advance<T>` extension method for spans
