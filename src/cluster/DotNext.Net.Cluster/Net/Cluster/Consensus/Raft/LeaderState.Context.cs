@@ -24,13 +24,11 @@ internal partial class LeaderState<TMember>
 
         internal int HashCode => hashCode;
 
-        [DisallowNull]
         internal TMember? Key
         {
             get => Unsafe.As<TMember>(handle.Target);
         }
 
-        [DisallowNull]
         internal Replicator? Value
         {
             get => Unsafe.As<Replicator>(handle.Dependent);
@@ -41,13 +39,6 @@ internal partial class LeaderState<TMember>
             handle.Target = key;
             handle.Dependent = result = factory.Invoke(key);
             this.hashCode = hashCode;
-        }
-
-        internal void Deconstruct(out TMember? key, out Replicator? context)
-        {
-            var pair = handle.TargetAndDependent;
-            key = Unsafe.As<TMember>(pair.Target);
-            context = Unsafe.As<Replicator>(pair.Dependent);
         }
 
         protected override void Dispose(bool disposing)
