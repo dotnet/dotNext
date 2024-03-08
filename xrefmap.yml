@@ -5103,6 +5103,225 @@ references:
   isSpec: "True"
   fullName: DotNext.CharComparer.GetHashCode
   nameWithType: CharComparer.GetHashCode
+- uid: DotNext.Collections.Concurrent
+  name: DotNext.Collections.Concurrent
+  href: api/DotNext.Collections.Concurrent.html
+  commentId: N:DotNext.Collections.Concurrent
+  fullName: DotNext.Collections.Concurrent
+  nameWithType: DotNext.Collections.Concurrent
+- uid: DotNext.Collections.Concurrent.IndexPool
+  name: IndexPool
+  href: api/DotNext.Collections.Concurrent.IndexPool.html
+  commentId: T:DotNext.Collections.Concurrent.IndexPool
+  fullName: DotNext.Collections.Concurrent.IndexPool
+  nameWithType: IndexPool
+- uid: DotNext.Collections.Concurrent.IndexPool.#ctor
+  name: IndexPool()
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool__ctor
+  commentId: M:DotNext.Collections.Concurrent.IndexPool.#ctor
+  name.vb: New()
+  fullName: DotNext.Collections.Concurrent.IndexPool.IndexPool()
+  fullName.vb: DotNext.Collections.Concurrent.IndexPool.New()
+  nameWithType: IndexPool.IndexPool()
+  nameWithType.vb: IndexPool.New()
+- uid: DotNext.Collections.Concurrent.IndexPool.#ctor(System.Int32)
+  name: IndexPool(int)
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool__ctor_System_Int32_
+  commentId: M:DotNext.Collections.Concurrent.IndexPool.#ctor(System.Int32)
+  name.vb: New(Integer)
+  fullName: DotNext.Collections.Concurrent.IndexPool.IndexPool(int)
+  fullName.vb: DotNext.Collections.Concurrent.IndexPool.New(Integer)
+  nameWithType: IndexPool.IndexPool(int)
+  nameWithType.vb: IndexPool.New(Integer)
+- uid: DotNext.Collections.Concurrent.IndexPool.#ctor*
+  name: IndexPool
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool__ctor_
+  commentId: Overload:DotNext.Collections.Concurrent.IndexPool.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Collections.Concurrent.IndexPool.IndexPool
+  fullName.vb: DotNext.Collections.Concurrent.IndexPool.New
+  nameWithType: IndexPool.IndexPool
+  nameWithType.vb: IndexPool.New
+- uid: DotNext.Collections.Concurrent.IndexPool.Capacity
+  name: Capacity
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Capacity
+  commentId: P:DotNext.Collections.Concurrent.IndexPool.Capacity
+  fullName: DotNext.Collections.Concurrent.IndexPool.Capacity
+  nameWithType: IndexPool.Capacity
+- uid: DotNext.Collections.Concurrent.IndexPool.Capacity*
+  name: Capacity
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Capacity_
+  commentId: Overload:DotNext.Collections.Concurrent.IndexPool.Capacity
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.IndexPool.Capacity
+  nameWithType: IndexPool.Capacity
+- uid: DotNext.Collections.Concurrent.IndexPool.Contains(System.Int32)
+  name: Contains(int)
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Contains_System_Int32_
+  commentId: M:DotNext.Collections.Concurrent.IndexPool.Contains(System.Int32)
+  name.vb: Contains(Integer)
+  fullName: DotNext.Collections.Concurrent.IndexPool.Contains(int)
+  fullName.vb: DotNext.Collections.Concurrent.IndexPool.Contains(Integer)
+  nameWithType: IndexPool.Contains(int)
+  nameWithType.vb: IndexPool.Contains(Integer)
+- uid: DotNext.Collections.Concurrent.IndexPool.Contains*
+  name: Contains
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Contains_
+  commentId: Overload:DotNext.Collections.Concurrent.IndexPool.Contains
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.IndexPool.Contains
+  nameWithType: IndexPool.Contains
+- uid: DotNext.Collections.Concurrent.IndexPool.Count
+  name: Count
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Count
+  commentId: P:DotNext.Collections.Concurrent.IndexPool.Count
+  fullName: DotNext.Collections.Concurrent.IndexPool.Count
+  nameWithType: IndexPool.Count
+- uid: DotNext.Collections.Concurrent.IndexPool.Count*
+  name: Count
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Count_
+  commentId: Overload:DotNext.Collections.Concurrent.IndexPool.Count
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.IndexPool.Count
+  nameWithType: IndexPool.Count
+- uid: DotNext.Collections.Concurrent.IndexPool.Enumerator
+  name: IndexPool.Enumerator
+  href: api/DotNext.Collections.Concurrent.IndexPool.Enumerator.html
+  commentId: T:DotNext.Collections.Concurrent.IndexPool.Enumerator
+  fullName: DotNext.Collections.Concurrent.IndexPool.Enumerator
+  nameWithType: IndexPool.Enumerator
+- uid: DotNext.Collections.Concurrent.IndexPool.Enumerator.Current
+  name: Current
+  href: api/DotNext.Collections.Concurrent.IndexPool.Enumerator.html#DotNext_Collections_Concurrent_IndexPool_Enumerator_Current
+  commentId: P:DotNext.Collections.Concurrent.IndexPool.Enumerator.Current
+  fullName: DotNext.Collections.Concurrent.IndexPool.Enumerator.Current
+  nameWithType: IndexPool.Enumerator.Current
+- uid: DotNext.Collections.Concurrent.IndexPool.Enumerator.Current*
+  name: Current
+  href: api/DotNext.Collections.Concurrent.IndexPool.Enumerator.html#DotNext_Collections_Concurrent_IndexPool_Enumerator_Current_
+  commentId: Overload:DotNext.Collections.Concurrent.IndexPool.Enumerator.Current
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.IndexPool.Enumerator.Current
+  nameWithType: IndexPool.Enumerator.Current
+- uid: DotNext.Collections.Concurrent.IndexPool.Enumerator.MoveNext
+  name: MoveNext()
+  href: api/DotNext.Collections.Concurrent.IndexPool.Enumerator.html#DotNext_Collections_Concurrent_IndexPool_Enumerator_MoveNext
+  commentId: M:DotNext.Collections.Concurrent.IndexPool.Enumerator.MoveNext
+  fullName: DotNext.Collections.Concurrent.IndexPool.Enumerator.MoveNext()
+  nameWithType: IndexPool.Enumerator.MoveNext()
+- uid: DotNext.Collections.Concurrent.IndexPool.Enumerator.MoveNext*
+  name: MoveNext
+  href: api/DotNext.Collections.Concurrent.IndexPool.Enumerator.html#DotNext_Collections_Concurrent_IndexPool_Enumerator_MoveNext_
+  commentId: Overload:DotNext.Collections.Concurrent.IndexPool.Enumerator.MoveNext
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.IndexPool.Enumerator.MoveNext
+  nameWithType: IndexPool.Enumerator.MoveNext
+- uid: DotNext.Collections.Concurrent.IndexPool.GetEnumerator
+  name: GetEnumerator()
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_GetEnumerator
+  commentId: M:DotNext.Collections.Concurrent.IndexPool.GetEnumerator
+  fullName: DotNext.Collections.Concurrent.IndexPool.GetEnumerator()
+  nameWithType: IndexPool.GetEnumerator()
+- uid: DotNext.Collections.Concurrent.IndexPool.GetEnumerator*
+  name: GetEnumerator
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_GetEnumerator_
+  commentId: Overload:DotNext.Collections.Concurrent.IndexPool.GetEnumerator
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.IndexPool.GetEnumerator
+  nameWithType: IndexPool.GetEnumerator
+- uid: DotNext.Collections.Concurrent.IndexPool.MaxValue
+  name: MaxValue
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_MaxValue
+  commentId: P:DotNext.Collections.Concurrent.IndexPool.MaxValue
+  fullName: DotNext.Collections.Concurrent.IndexPool.MaxValue
+  nameWithType: IndexPool.MaxValue
+- uid: DotNext.Collections.Concurrent.IndexPool.MaxValue*
+  name: MaxValue
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_MaxValue_
+  commentId: Overload:DotNext.Collections.Concurrent.IndexPool.MaxValue
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.IndexPool.MaxValue
+  nameWithType: IndexPool.MaxValue
+- uid: DotNext.Collections.Concurrent.IndexPool.Return(System.Int32)
+  name: Return(int)
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Return_System_Int32_
+  commentId: M:DotNext.Collections.Concurrent.IndexPool.Return(System.Int32)
+  name.vb: Return(Integer)
+  fullName: DotNext.Collections.Concurrent.IndexPool.Return(int)
+  fullName.vb: DotNext.Collections.Concurrent.IndexPool.Return(Integer)
+  nameWithType: IndexPool.Return(int)
+  nameWithType.vb: IndexPool.Return(Integer)
+- uid: DotNext.Collections.Concurrent.IndexPool.Return(System.ReadOnlySpan{System.Int32})
+  name: Return(ReadOnlySpan<int>)
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Return_System_ReadOnlySpan_System_Int32__
+  commentId: M:DotNext.Collections.Concurrent.IndexPool.Return(System.ReadOnlySpan{System.Int32})
+  name.vb: Return(ReadOnlySpan(Of Integer))
+  fullName: DotNext.Collections.Concurrent.IndexPool.Return(System.ReadOnlySpan<int>)
+  fullName.vb: DotNext.Collections.Concurrent.IndexPool.Return(System.ReadOnlySpan(Of Integer))
+  nameWithType: IndexPool.Return(ReadOnlySpan<int>)
+  nameWithType.vb: IndexPool.Return(ReadOnlySpan(Of Integer))
+- uid: DotNext.Collections.Concurrent.IndexPool.Return*
+  name: Return
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Return_
+  commentId: Overload:DotNext.Collections.Concurrent.IndexPool.Return
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.IndexPool.Return
+  nameWithType: IndexPool.Return
+- uid: DotNext.Collections.Concurrent.IndexPool.Take
+  name: Take()
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Take
+  commentId: M:DotNext.Collections.Concurrent.IndexPool.Take
+  fullName: DotNext.Collections.Concurrent.IndexPool.Take()
+  nameWithType: IndexPool.Take()
+- uid: DotNext.Collections.Concurrent.IndexPool.Take(System.Span{System.Int32})
+  name: Take(Span<int>)
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Take_System_Span_System_Int32__
+  commentId: M:DotNext.Collections.Concurrent.IndexPool.Take(System.Span{System.Int32})
+  name.vb: Take(Span(Of Integer))
+  fullName: DotNext.Collections.Concurrent.IndexPool.Take(System.Span<int>)
+  fullName.vb: DotNext.Collections.Concurrent.IndexPool.Take(System.Span(Of Integer))
+  nameWithType: IndexPool.Take(Span<int>)
+  nameWithType.vb: IndexPool.Take(Span(Of Integer))
+- uid: DotNext.Collections.Concurrent.IndexPool.Take*
+  name: Take
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Take_
+  commentId: Overload:DotNext.Collections.Concurrent.IndexPool.Take
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.IndexPool.Take
+  nameWithType: IndexPool.Take
+- uid: DotNext.Collections.Concurrent.IndexPool.TryPeek(System.Int32@)
+  name: TryPeek(out int)
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_TryPeek_System_Int32__
+  commentId: M:DotNext.Collections.Concurrent.IndexPool.TryPeek(System.Int32@)
+  name.vb: TryPeek(Integer)
+  fullName: DotNext.Collections.Concurrent.IndexPool.TryPeek(out int)
+  fullName.vb: DotNext.Collections.Concurrent.IndexPool.TryPeek(Integer)
+  nameWithType: IndexPool.TryPeek(out int)
+  nameWithType.vb: IndexPool.TryPeek(Integer)
+- uid: DotNext.Collections.Concurrent.IndexPool.TryPeek*
+  name: TryPeek
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_TryPeek_
+  commentId: Overload:DotNext.Collections.Concurrent.IndexPool.TryPeek
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.IndexPool.TryPeek
+  nameWithType: IndexPool.TryPeek
+- uid: DotNext.Collections.Concurrent.IndexPool.TryTake(System.Int32@)
+  name: TryTake(out int)
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_TryTake_System_Int32__
+  commentId: M:DotNext.Collections.Concurrent.IndexPool.TryTake(System.Int32@)
+  name.vb: TryTake(Integer)
+  fullName: DotNext.Collections.Concurrent.IndexPool.TryTake(out int)
+  fullName.vb: DotNext.Collections.Concurrent.IndexPool.TryTake(Integer)
+  nameWithType: IndexPool.TryTake(out int)
+  nameWithType.vb: IndexPool.TryTake(Integer)
+- uid: DotNext.Collections.Concurrent.IndexPool.TryTake*
+  name: TryTake
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_TryTake_
+  commentId: Overload:DotNext.Collections.Concurrent.IndexPool.TryTake
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.IndexPool.TryTake
+  nameWithType: IndexPool.TryTake
 - uid: DotNext.Collections.Generic
   name: DotNext.Collections.Generic
   href: api/DotNext.Collections.Generic.html
@@ -33136,6 +33355,22 @@ references:
   fullName.vb: DotNext.Numerics.Number.GetMaxByteCount(Of T)()
   nameWithType: Number.GetMaxByteCount<T>()
   nameWithType.vb: Number.GetMaxByteCount(Of T)()
+- uid: DotNext.Numerics.Number.IsPrime*
+  name: IsPrime
+  href: api/DotNext.Numerics.Number.html#DotNext_Numerics_Number_IsPrime_
+  commentId: Overload:DotNext.Numerics.Number.IsPrime
+  isSpec: "True"
+  fullName: DotNext.Numerics.Number.IsPrime
+  nameWithType: Number.IsPrime
+- uid: DotNext.Numerics.Number.IsPrime``1(``0)
+  name: IsPrime<T>(T)
+  href: api/DotNext.Numerics.Number.html#DotNext_Numerics_Number_IsPrime__1___0_
+  commentId: M:DotNext.Numerics.Number.IsPrime``1(``0)
+  name.vb: IsPrime(Of T)(T)
+  fullName: DotNext.Numerics.Number.IsPrime<T>(T)
+  fullName.vb: DotNext.Numerics.Number.IsPrime(Of T)(T)
+  nameWithType: Number.IsPrime<T>(T)
+  nameWithType.vb: Number.IsPrime(Of T)(T)
 - uid: DotNext.Numerics.Number.IsSigned*
   name: IsSigned
   href: api/DotNext.Numerics.Number.html#DotNext_Numerics_Number_IsSigned_
