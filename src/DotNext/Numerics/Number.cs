@@ -177,12 +177,12 @@ public static partial class Number
     /// Gets a prime number which is greater than the specified value.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
-    /// <param name="cachedPrimes">The table with cached prime numbers sorted in ascending order.</param>
     /// <param name="lowerBound">The value which is smaller than the requested prime number.</param>
+    /// <param name="cachedPrimes">The table with cached prime numbers sorted in ascending order.</param>
     /// <returns>The prime number which is greater than <paramref name="lowerBound"/>.</returns>
     /// <exception cref="OverflowException">There is no prime number that is greater than <paramref name="lowerBound"/> and less than <see cref="IMinMaxValue{T}.MaxValue"/>.</exception>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static T GetPrime<T>(ReadOnlySpan<T> cachedPrimes, T lowerBound)
+    public static T GetPrime<T>(T lowerBound, ReadOnlySpan<T> cachedPrimes = default)
         where T : struct, IBinaryInteger<T>, ISignedNumber<T>, IMinMaxValue<T>
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(lowerBound);

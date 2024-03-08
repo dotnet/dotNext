@@ -84,7 +84,7 @@ internal partial class LeaderState<TMember>
         {
             Debug.Assert(sizeHint > 0);
 
-            entries = new ContextEntry?[GetPrime(Primes, sizeHint)];
+            entries = new ContextEntry?[GetPrime(sizeHint, Primes)];
         }
 
         private static int Grow(int size)
@@ -97,7 +97,7 @@ internal partial class LeaderState<TMember>
                 ? throw new InsufficientMemoryException()
                 : (uint)(newSize = size << 1) > maxPrimeLength && maxPrimeLength > size
                 ? maxPrimeLength
-                : GetPrime(Primes, newSize);
+                : GetPrime(newSize, Primes);
         }
 
         public Context() => entries = [];
