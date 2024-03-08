@@ -63,4 +63,15 @@ public sealed class NumberTests : Test
         Equal(sizeof(int), Number.GetMaxByteCount<int>());
         Equal(sizeof(long), Number.GetMaxByteCount<long>());
     }
+
+    [Fact]
+    public static void IsPrime()
+    {
+        False(Number.IsPrime(1L));
+        True(Number.IsPrime(2L));
+        True(Number.IsPrime<sbyte>(3));
+        False(Number.IsPrime(4));
+
+        True(Number.IsPrime(1669));
+    }
 }

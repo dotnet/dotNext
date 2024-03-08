@@ -96,4 +96,19 @@ public sealed class LeaderStateContextTests : Test
 
     private static LeaderState<DummyRaftClusterMember>.Replicator CreateReplicator(DummyRaftClusterMember member)
         => new(member, NullLogger.Instance);
+
+    [Fact]
+    public static void RegressionIssue221()
+    {
+        const int length = 16;
+        using var context = new LeaderState<DummyRaftClusterMember>.Context(length);
+
+        var keys = new DummyRaftClusterMember[length];
+        Span.Initialize<DummyRaftClusterMember>(keys);
+
+        for (var i = 0; i < length; i++)
+        {
+            var ctx = context.GetOrCreate(keys[i], CreateReplicator);
+        }
+    }
 }

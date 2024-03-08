@@ -53,7 +53,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         commitEvent = new() { MeasurementTags = configuration.MeasurementTags };
         bufferManager = new(configuration);
         concurrentReads = configuration.MaxConcurrentReads;
-        sessionManager = concurrentReads < FastSessionIdPool.MaxReadersCount
+        sessionManager = concurrentReads < FastSessionIdPool.MaxReadersCount // not <=, see LockManager for more info
             ? new FastSessionIdPool()
             : new SlowSessionIdPool(concurrentReads);
         parallelIO = configuration.ParallelIO;

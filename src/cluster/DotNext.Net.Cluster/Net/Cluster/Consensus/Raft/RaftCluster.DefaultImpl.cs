@@ -121,7 +121,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// <returns>The task representing asynchronous execution of the method.</returns>
     public override async Task StartAsync(CancellationToken token = default)
     {
-        ConfigurationStorage.ActiveConfigurationChanged += GetConfigurationEventHandler(configurationEvents.Writer);
+        ConfigurationStorage.ActiveConfigurationChanged += configurationEvents.Writer.WriteConfigurationEvent;
 
         if (coldStart)
         {
@@ -151,17 +151,6 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
             await announcer(LocalMemberAddress, metadata, token).ConfigureAwait(false);
     }
 
-    private static Func<EndPoint, bool, CancellationToken, ValueTask> GetConfigurationEventHandler(ChannelWriter<(EndPoint, bool)> writer)
-    {
-        unsafe
-        {
-            return DelegateHelpers.CreateDelegate<ChannelWriter<(EndPoint, bool)>, EndPoint, bool, CancellationToken, ValueTask>(&WriteConfigurationEvent, writer);
-        }
-
-        static ValueTask WriteConfigurationEvent(ChannelWriter<(EndPoint, bool)> writer, EndPoint address, bool isAdded, CancellationToken token)
-            => writer.WriteAsync(new(address, isAdded), token);
-    }
-
     /// <inheritdoc />
     protected override ValueTask<bool> DetectLocalMemberAsync(RaftClusterMember candidate, CancellationToken token)
         => new(EndPointComparer.Equals(LocalMemberAddress, candidate.EndPoint));
@@ -181,7 +170,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
             {
                 await (server?.DisposeAsync() ?? ValueTask.CompletedTask).ConfigureAwait(false);
                 server = null;
-                ConfigurationStorage.ActiveConfigurationChanged -= GetConfigurationEventHandler(configurationEvents.Writer);
+                ConfigurationStorage.ActiveConfigurationChanged -= configurationEvents.Writer.WriteConfigurationEvent;
                 configurationEvents.Writer.TryComplete();
                 await pollingLoopTask.ConfigureAwait(false);
                 pollingLoopTask = Task.CompletedTask;
@@ -355,4 +344,10 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
 
         base.Dispose(disposing);
     }
+}
+
+file static class RaftClusterHelpers
+{
+    internal static ValueTask WriteConfigurationEvent(this ChannelWriter<(EndPoint, bool)> writer, EndPoint address, bool isAdded, CancellationToken token)
+        => writer.WriteAsync(new(address, isAdded), token);
 }

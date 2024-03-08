@@ -33,8 +33,10 @@ public partial class PersistentState
         private uint readerCount;
         private bool allowWrite;
 
+        // maximum possible number of concurrent locks is max readers count + 1 because WriteLock can be acquired
+        // when all readers are active
         internal LockManager(int concurrencyLevel)
-            : base(concurrencyLevel + 2) // + write lock + compaction lock
+            : base(concurrencyLevel + 1) // + write lock or compaction lock
         {
             maxReadCount = (uint)concurrencyLevel;
             allowWrite = true;

@@ -1,10 +1,10 @@
-﻿using System.Numerics;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using AtomicBoolean = Threading.Atomic.Boolean;
+using IndexPool = Collections.Concurrent.IndexPool;
 
 public partial class PersistentState
 {
@@ -21,37 +21,13 @@ public partial class PersistentState
 
     private sealed class FastSessionIdPool : SessionIdPool
     {
-        internal const int MaxReadersCount = 63;
+        private IndexPool indicies = new();
 
-        // all bits are set to 1
-        // if bit at position N is 1 then N is available session identifier;
-        // otherwise, session identifier N is acquired by another thread
-        private ulong control = ulong.MaxValue;
+        internal static int MaxReadersCount => IndexPool.Capacity;
 
-        internal override int Take()
-        {
-            int sessionId;
-            ulong current, newValue = Volatile.Read(in control);
-            do
-            {
-                sessionId = BitOperations.TrailingZeroCount(current = newValue);
-                newValue = current ^ (1UL << sessionId);
-            }
-            while ((newValue = Interlocked.CompareExchange(ref control, newValue, current)) != current);
+        internal override int Take() => indicies.Take();
 
-            return sessionId;
-        }
-
-        internal override void Return(int sessionId)
-        {
-            ulong current, newValue = Volatile.Read(ref control);
-            do
-            {
-                current = newValue;
-                newValue = current | (1UL << sessionId);
-            }
-            while ((newValue = Interlocked.CompareExchange(ref control, newValue, current)) != current);
-        }
+        internal override void Return(int sessionId) => indicies.Return(sessionId);
     }
 
     private sealed class SlowSessionIdPool : SessionIdPool

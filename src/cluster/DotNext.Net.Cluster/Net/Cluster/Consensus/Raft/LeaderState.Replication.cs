@@ -178,7 +178,7 @@ internal partial class LeaderState<TMember>
             where TEntry : notnull, IRaftLogEntry
             where TList : notnull, IReadOnlyList<TEntry>
         {
-            logger.ReplicaSize(Member.EndPoint, entries.Count, replicationIndex, precedingTerm, Member.State.ConfigurationFingerprint, fingerprint, applyConfig);
+            logger.ReplicaSize(Member.EndPoint, entries.Count, replicationIndex, precedingTerm, fingerprint, Member.State.ConfigurationFingerprint, applyConfig);
             var result = Member.AppendEntriesAsync<TEntry, TList>(term, entries, replicationIndex, precedingTerm, commitIndex, configuration, applyConfig, token).ConfigureAwait(false).GetAwaiter();
             replicationIndex += entries.Count;
             return result;

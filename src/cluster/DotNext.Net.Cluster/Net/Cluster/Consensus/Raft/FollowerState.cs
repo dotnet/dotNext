@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics.Metrics;
 using System.Runtime.InteropServices;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
