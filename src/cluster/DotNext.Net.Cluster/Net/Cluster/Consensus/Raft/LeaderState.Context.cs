@@ -3,9 +3,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
+
+using static Numerics.Number;
 
 internal partial class LeaderState<TMember>
 {
@@ -23,13 +24,11 @@ internal partial class LeaderState<TMember>
 
         internal int HashCode => hashCode;
 
-        [DisallowNull]
         internal TMember? Key
         {
             get => Unsafe.As<TMember>(handle.Target);
         }
 
-        [DisallowNull]
         internal Replicator? Value
         {
             get => Unsafe.As<Replicator>(handle.Dependent);
@@ -40,13 +39,6 @@ internal partial class LeaderState<TMember>
             handle.Target = key;
             handle.Dependent = result = factory.Invoke(key);
             this.hashCode = hashCode;
-        }
-
-        internal void Deconstruct(out TMember? key, out Replicator? context)
-        {
-            var pair = handle.TargetAndDependent;
-            key = Unsafe.As<TMember>(pair.Target);
-            context = Unsafe.As<Replicator>(pair.Dependent);
         }
 
         protected override void Dispose(bool disposing)
@@ -70,14 +62,33 @@ internal partial class LeaderState<TMember>
 #endif
     struct Context : IDisposable
     {
-        private static readonly int HalfMaxSize = Array.MaxLength >> 1;
+        private static ReadOnlySpan<int> Primes => [
+            3, 7, 11, 17, 23, 29, 37, 47, 59, 71, 89, 107, 131, 163, 197, 239, 293, 353, 431, 521, 631, 761, 919,
+            1103, 1327, 1597, 1931, 2333, 2801, 3371, 4049, 4861, 5839, 7013, 8419, 10103, 12143, 14591,
+            17519, 21023, 25229, 30293, 36353, 43627, 52361, 62851, 75431, 90523, 108631, 130363, 156437,
+            187751, 225307, 270371, 324449, 389357, 467237, 560689, 672827, 807403, 968897, 1162687, 1395263,
+            1674319, 2009191, 2411033, 2893249, 3471899, 4166287, 4999559, 5999471, 7199369];
+
         private ContextEntry?[] entries;
 
         public Context(int sizeHint)
         {
             Debug.Assert(sizeHint > 0);
 
-            entries = new ContextEntry?[sizeHint <= HalfMaxSize ? sizeHint << 1 : sizeHint];
+            entries = new ContextEntry?[GetPrime(sizeHint, Primes)];
+        }
+
+        private static int Grow(int size)
+        {
+            // This is the maximum prime smaller than Array.MaxLength
+            const int maxPrimeLength = 0x7FEFFFFD;
+
+            int newSize;
+            return size is maxPrimeLength
+                ? throw new InsufficientMemoryException()
+                : (uint)(newSize = size << 1) > maxPrimeLength && maxPrimeLength > size
+                ? maxPrimeLength
+                : GetPrime(newSize, Primes);
         }
 
         public Context() => entries = [];
@@ -91,21 +102,19 @@ internal partial class LeaderState<TMember>
         private readonly ref ContextEntry? GetEntry(TMember member, out int hashCode)
             => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), GetIndex(member, out hashCode));
 
-        private void ResizeAndRemoveDeadEntries()
+        private void ResizeAndRemoveDeadEntries(CancellationToken token)
         {
-            if (entries.Length == Array.MaxLength)
-                throw new InsufficientMemoryException();
-
             var oldEntries = entries;
-            entries = new ContextEntry?[entries.Length <= HalfMaxSize ? entries.Length << 1 : entries.Length + 1];
+            entries = new ContextEntry?[Grow(oldEntries.Length)];
 
             // copy elements from old array to a new one
-            for (var i = 0; i < oldEntries.Length; i++)
+            for (var i = 0; i < oldEntries.Length; i++, token.ThrowIfCancellationRequested())
             {
                 ref var oldEntry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(oldEntries), i);
                 for (ContextEntry? current = oldEntry, next; current is not null; current = next)
                 {
-                    next = current.Next; // make a copy because Next can be modified by Insert operation
+                    next = current.Next;
+                    current.Next = null;
 
                     if (current.Key is { } key)
                     {
@@ -124,17 +133,22 @@ internal partial class LeaderState<TMember>
             }
         }
 
-        private readonly void Insert(ContextEntry entry)
+        private readonly bool Insert(ContextEntry entry)
         {
+            Debug.Assert(entry.Next is null);
+
+            const int maxCollisions = 3;
             ref var location = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), GetIndex(entry.HashCode, entries.Length));
 
-            while (location is not null)
+            int collisions;
+            for (collisions = 0; location is not null; collisions++)
                 location = ref location.Next;
 
             location = entry;
+            return collisions <= maxCollisions;
         }
 
-        public Replicator GetOrCreate(TMember key, Func<TMember, Replicator> factory)
+        public Replicator GetOrCreate(TMember key, Func<TMember, Replicator> factory, CancellationToken token = default)
         {
             Debug.Assert(key is not null);
 
@@ -151,10 +165,9 @@ internal partial class LeaderState<TMember>
                 ContextEntry? entryToReuse = null;
 
                 // try to get from dictionary
-                for (var current = entry; current is not null; current = current.Next)
+                for (var current = entry; current is not null; current = current.Next, token.ThrowIfCancellationRequested())
                 {
-                    var tmp = current.Key;
-                    if (tmp is null)
+                    if (current.Key is not { } tmp)
                     {
                         entryToReuse ??= current;
                     }
@@ -174,11 +187,10 @@ internal partial class LeaderState<TMember>
                 {
                     entryToReuse.Reuse(key, hashCode, factory, out result);
                 }
-                else
+                else if (!Insert(new(key, hashCode, factory, out result)))
                 {
-                    // failed to reuse, add a new element
-                    ResizeAndRemoveDeadEntries();
-                    Insert(new(key, hashCode, factory, out result));
+                    // too many collisions, resize
+                    ResizeAndRemoveDeadEntries(token);
                 }
             }
 

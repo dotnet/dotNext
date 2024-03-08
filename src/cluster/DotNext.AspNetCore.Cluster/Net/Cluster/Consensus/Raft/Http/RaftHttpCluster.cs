@@ -150,7 +150,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
     public override async Task StartAsync(CancellationToken token)
     {
         configurator?.OnStart(this, metadata);
-        ConfigurationStorage.ActiveConfigurationChanged += GetConfigurationEventHandler(configurationEvents.Writer);
+        ConfigurationStorage.ActiveConfigurationChanged += configurationEvents.Writer.WriteConfigurationEvent;
 
         if (coldStart)
         {
@@ -193,7 +193,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
             {
                 configurator?.OnStop(this);
                 duplicationDetector.Trim(100);
-                ConfigurationStorage.ActiveConfigurationChanged -= GetConfigurationEventHandler(configurationEvents.Writer);
+                ConfigurationStorage.ActiveConfigurationChanged -= configurationEvents.Writer.WriteConfigurationEvent;
                 configurationEvents.Writer.TryComplete();
                 await pollingLoopTask.ConfigureAwait(false);
                 pollingLoopTask = Task.CompletedTask;
@@ -203,17 +203,6 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
                 await base.StopAsync(token).ConfigureAwait(false);
             }
         }
-    }
-
-    private static Func<UriEndPoint, bool, CancellationToken, ValueTask> GetConfigurationEventHandler(ChannelWriter<(UriEndPoint, bool)> writer)
-    {
-        unsafe
-        {
-            return DelegateHelpers.CreateDelegate<ChannelWriter<(UriEndPoint, bool)>, UriEndPoint, bool, CancellationToken, ValueTask>(&WriteConfigurationEvent, writer);
-        }
-
-        static ValueTask WriteConfigurationEvent(ChannelWriter<(UriEndPoint, bool)> writer, UriEndPoint address, bool isAdded, CancellationToken token)
-            => writer.WriteAsync(new(address, isAdded), token);
     }
 
     /// <inheritdoc />
@@ -243,4 +232,10 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
 
         base.Dispose(disposing);
     }
+}
+
+file static class RaftHttpClusterHelpers
+{
+    internal static ValueTask WriteConfigurationEvent(this ChannelWriter<(UriEndPoint, bool)> writer, UriEndPoint address, bool isAdded, CancellationToken token)
+        => writer.WriteAsync(new(address, isAdded), token);
 }

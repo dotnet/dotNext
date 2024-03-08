@@ -92,20 +92,15 @@ public static class Func
         if (typeof(T) == typeof(bool))
             return Unsafe.As<Func<T>>(Constant(Unsafe.As<T, bool>(ref obj)));
 
-        // cache nulls
-        if (obj is null)
-            return Default!;
-
         // slow path - allocates a new delegate
-        unsafe
-        {
-            return DelegateHelpers.CreateDelegate<object?, T>(&ConstantCore, obj);
-        }
-
-        static T ConstantCore(object? obj) => (T)obj!;
+        return obj is null
+            ? Default!
+            : obj.UnboxAny<T>;
 
         static T? Default() => default;
     }
+
+    private static T UnboxAny<T>(this object obj) => (T)obj;
 
     private static Func<bool> Constant(bool value)
     {
