@@ -56,13 +56,13 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                 var precedingIndex = member.State.PrecedingIndex;
 
                 // fork replication procedure
-                replicator = context.GetOrCreate(member, replicatorFactory);
+                replicator = context.GetOrCreate(member, replicatorFactory, LeadershipToken);
                 replicator.Initialize(activeConfig, proposedConfig, commitIndex, currentTerm, precedingIndex);
                 response = SpawnReplicationAsync(replicator, auditTrail, currentIndex, LeadershipToken);
             }
             else
             {
-                replicator = context.GetOrCreate(member, localReplicatorFactory);
+                replicator = context.GetOrCreate(member, localReplicatorFactory, LeadershipToken);
                 response = localMemberResponse;
             }
         }

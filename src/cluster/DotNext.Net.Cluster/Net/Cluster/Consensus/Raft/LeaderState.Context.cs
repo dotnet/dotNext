@@ -102,13 +102,13 @@ internal partial class LeaderState<TMember>
         private readonly ref ContextEntry? GetEntry(TMember member, out int hashCode)
             => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), GetIndex(member, out hashCode));
 
-        private void ResizeAndRemoveDeadEntries()
+        private void ResizeAndRemoveDeadEntries(CancellationToken token)
         {
             var oldEntries = entries;
             entries = new ContextEntry?[Grow(oldEntries.Length)];
 
             // copy elements from old array to a new one
-            for (var i = 0; i < oldEntries.Length; i++)
+            for (var i = 0; i < oldEntries.Length; i++, token.ThrowIfCancellationRequested())
             {
                 ref var oldEntry = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(oldEntries), i);
                 for (ContextEntry? current = oldEntry, next; current is not null; current = next)
@@ -148,7 +148,7 @@ internal partial class LeaderState<TMember>
             return collisions <= maxCollisions;
         }
 
-        public Replicator GetOrCreate(TMember key, Func<TMember, Replicator> factory)
+        public Replicator GetOrCreate(TMember key, Func<TMember, Replicator> factory, CancellationToken token = default)
         {
             Debug.Assert(key is not null);
 
@@ -165,7 +165,7 @@ internal partial class LeaderState<TMember>
                 ContextEntry? entryToReuse = null;
 
                 // try to get from dictionary
-                for (var current = entry; current is not null; current = current.Next)
+                for (var current = entry; current is not null; current = current.Next, token.ThrowIfCancellationRequested())
                 {
                     if (current.Key is not { } tmp)
                     {
@@ -190,7 +190,7 @@ internal partial class LeaderState<TMember>
                 else if (!Insert(new(key, hashCode, factory, out result)))
                 {
                     // too many collisions, resize
-                    ResizeAndRemoveDeadEntries();
+                    ResizeAndRemoveDeadEntries(token);
                 }
             }
 
