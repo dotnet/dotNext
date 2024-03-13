@@ -2,8 +2,6 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO;
 
-using Buffers;
-
 internal abstract class ReadOnlyStream : Stream
 {
     public sealed override bool CanRead => true;
