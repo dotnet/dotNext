@@ -1,4 +1,6 @@
 using System.Buffers;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.IO;
 
@@ -6,10 +8,18 @@ using static Buffers.Memory;
 
 internal sealed class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequence) : ReadOnlyStream
 {
-    private readonly AsyncLocal<SequencePosition> position = new();
+    // don't use BoxedValue due to limitations of AsyncLocal
+    private readonly AsyncLocal<StrongBox<SequencePosition>> position = new();
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private SequencePosition LocalPosition
+    {
+        get => position.Value?.Value ?? sequence.Start;
+        set => (position.Value ??= new()).Value = value;
+    }
 
     private ReadOnlySequence<byte> GetRemainingSequence(out SequencePosition start)
-        => sequence.Slice(start = position.Value);
+        => sequence.Slice(start = LocalPosition);
 
     public override bool CanSeek => true;
 
@@ -17,12 +27,12 @@ internal sealed class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequence
 
     public override long Position
     {
-        get => sequence.GetOffset(position.Value);
+        get => sequence.GetOffset(LocalPosition);
         set
         {
             ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value, (ulong)sequence.Length, nameof(value));
 
-            position.Value = sequence.GetPosition(value);
+            LocalPosition = sequence.GetPosition(value);
         }
     }
 
@@ -33,7 +43,7 @@ internal sealed class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequence
         foreach (var segment in GetRemainingSequence(out _))
             await destination.WriteAsync(segment, token).ConfigureAwait(false);
 
-        position.Value = sequence.End;
+        LocalPosition = sequence.End;
     }
 
     public override void CopyTo(Stream destination, int bufferSize)
@@ -43,7 +53,7 @@ internal sealed class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequence
         foreach (var segment in GetRemainingSequence(out _))
             destination.Write(segment.Span);
 
-        position.Value = sequence.End;
+        LocalPosition = sequence.End;
     }
 
     public override void SetLength(long value) => throw new NotSupportedException();
@@ -51,7 +61,7 @@ internal sealed class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequence
     public override int Read(Span<byte> buffer)
     {
         GetRemainingSequence(out var startPos).CopyTo(buffer, out var writtenCount);
-        position.Value = sequence.GetPosition(writtenCount, startPos);
+        LocalPosition = sequence.GetPosition(writtenCount, startPos);
         return writtenCount;
     }
 
@@ -60,7 +70,7 @@ internal sealed class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequence
         var newPosition = origin switch
         {
             SeekOrigin.Begin => offset,
-            SeekOrigin.Current => sequence.GetOffset(position.Value) + offset,
+            SeekOrigin.Current => sequence.GetOffset(LocalPosition) + offset,
             SeekOrigin.End => sequence.Length + offset,
             _ => throw new ArgumentOutOfRangeException(nameof(origin))
         };
@@ -70,7 +80,7 @@ internal sealed class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequence
 
         ArgumentOutOfRangeException.ThrowIfGreaterThan(newPosition, sequence.Length, nameof(offset));
 
-        position.Value = sequence.GetPosition(newPosition);
+        LocalPosition = sequence.GetPosition(newPosition);
         return newPosition;
     }
 
