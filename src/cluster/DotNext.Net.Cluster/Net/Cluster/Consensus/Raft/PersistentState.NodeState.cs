@@ -86,8 +86,9 @@ public partial class PersistentState
             // reopen handle in asynchronous mode
             handle.Dispose();
 
-            const FileOptions dontSkipBuffer = FileOptions.Asynchronous | FileOptions.SequentialScan;
-            const FileOptions skipBuffer = FileOptions.Asynchronous | FileOptions.WriteThrough | FileOptions.SequentialScan;
+            // FileOptions.RandomAccess to keep the whole file cached in the page cache
+            const FileOptions dontSkipBuffer = FileOptions.Asynchronous | FileOptions.RandomAccess;
+            const FileOptions skipBuffer = FileOptions.Asynchronous | FileOptions.WriteThrough | FileOptions.RandomAccess;
             handle = File.OpenHandle(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, writeThrough ? skipBuffer : dontSkipBuffer);
 
             // restore state
