@@ -77,9 +77,15 @@ public bool TryGetValue&lt;TKey&gt;(out TValue value);
 <ul>
 <li><a class="xref" href="../../api/DotNext.Collections.Specialized.ITypeMap-1.html">ITypeMap&lt;TValue&gt;</a> interface that provides a set of methods similar to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.idictionary-2">IDictionary&lt;TKey,TValue&gt;</a> interface</li>
 <li><a class="xref" href="../../api/DotNext.Collections.Specialized.TypeMap-1.html">TypeMap&lt;TValue&gt;</a> is an implementation of <code>ITypeMap&lt;TValue&gt;</code> interface with very fast access to the values associated with generic arguments. However, this type is not thread-safe</li>
-<li><a class="xref" href="../../api/DotNext.Collections.Specialized.ConcurrentTypeMap-1.html">ConcurrentTypeMap&lt;TValue&gt;</a> is a thread-safe implementation of <code>ITypeMap&lt;TValue&gt;</code> interface with convenient methods for concurrent access</li>
+<li><a class="xref" href="../../api/DotNext.Collections.Specialized.ConcurrentTypeMap-1.html">ConcurrentTypeMap&lt;TValue&gt;</a> is a thread-safe implementation of <code>ITypeMap&lt;TValue&gt;</code> interface with a convenient methods for concurrent access</li>
 </ul>
 <p>Both implementations are highly optimized for fast access to the value associated with the types.</p>
+<p>Additionally, the library provides set-like counterpart of this API:</p>
+<ul>
+<li>Non-generic <a class="xref" href="../../api/DotNext.Collections.Specialized.ITypeMap.html">ITypeMap</a> interface that provides a set of methods similar to <a href="https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.iset-1">ISet&lt;T&gt;</a></li>
+<li>Non-generic <a class="xref" href="../../api/DotNext.Collections.Specialized.TypeMap.html">TypeMap</a> is an implementation of <code>ITypeMap</code> interface with very fast acces to the typed values</li>
+<li>Non-generic <a class="xref" href="../../api/DotNext.Collections.Specialized.ConcurrentTypeMap.html">ConcurrentTypeMap</a> is a thread-safe implementation of <code>ITypeMap</code> interface with a convenient methods for concurrent access</li>
+</ul>
 
 </article>
           </div>

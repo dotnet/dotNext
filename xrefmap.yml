@@ -17070,6 +17070,22 @@ references:
   fullName.vb: DotNext.IO.StreamSource.AsAsynchronousStream(Of TOutput)(TOutput)
   nameWithType: StreamSource.AsAsynchronousStream<TOutput>(TOutput)
   nameWithType.vb: StreamSource.AsAsynchronousStream(Of TOutput)(TOutput)
+- uid: DotNext.IO.StreamSource.AsSharedStream(System.Buffers.ReadOnlySequence{System.Byte})
+  name: AsSharedStream(ReadOnlySequence<byte>)
+  href: api/DotNext.IO.StreamSource.html#DotNext_IO_StreamSource_AsSharedStream_System_Buffers_ReadOnlySequence_System_Byte__
+  commentId: M:DotNext.IO.StreamSource.AsSharedStream(System.Buffers.ReadOnlySequence{System.Byte})
+  name.vb: AsSharedStream(ReadOnlySequence(Of Byte))
+  fullName: DotNext.IO.StreamSource.AsSharedStream(System.Buffers.ReadOnlySequence<byte>)
+  fullName.vb: DotNext.IO.StreamSource.AsSharedStream(System.Buffers.ReadOnlySequence(Of Byte))
+  nameWithType: StreamSource.AsSharedStream(ReadOnlySequence<byte>)
+  nameWithType.vb: StreamSource.AsSharedStream(ReadOnlySequence(Of Byte))
+- uid: DotNext.IO.StreamSource.AsSharedStream*
+  name: AsSharedStream
+  href: api/DotNext.IO.StreamSource.html#DotNext_IO_StreamSource_AsSharedStream_
+  commentId: Overload:DotNext.IO.StreamSource.AsSharedStream
+  isSpec: "True"
+  fullName: DotNext.IO.StreamSource.AsSharedStream
+  nameWithType: StreamSource.AsSharedStream
 - uid: DotNext.IO.StreamSource.AsStream(DotNext.Buffers.SparseBufferWriter{System.Byte},System.Boolean)
   name: AsStream(SparseBufferWriter<byte>, bool)
   href: api/DotNext.IO.StreamSource.html#DotNext_IO_StreamSource_AsStream_DotNext_Buffers_SparseBufferWriter_System_Byte__System_Boolean_
