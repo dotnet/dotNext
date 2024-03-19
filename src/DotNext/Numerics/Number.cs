@@ -131,7 +131,7 @@ public static partial class Number
 
         return value == two;
 
-        // https://math.stackexchange.com/questions/2469446/what-is-a-fast-algorithm-for-finding-the-integer-square-root
+        // https://math.stackexchange.com/questions/2469446/what-is-a-fast-algorithm-for-finding-the-integer-square-root/4674078#4674078
         static T Sqrt(T value)
         {
             var log2x = T.Log2(value) - T.One;

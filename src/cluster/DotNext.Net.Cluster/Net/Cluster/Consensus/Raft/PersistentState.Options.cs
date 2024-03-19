@@ -5,7 +5,6 @@ using System.Formats.Tar;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
-using IO.Log;
 
 public partial class PersistentState
 {

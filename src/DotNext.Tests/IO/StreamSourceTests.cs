@@ -1,8 +1,10 @@
 using System.Buffers;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.IO;
 
 using Buffers;
+using Runtime.CompilerServices;
 
 public sealed class StreamSourceTests : Test
 {
@@ -601,5 +603,58 @@ public sealed class StreamSourceTests : Test
         stream.EndWrite(ar);
         Equal(3, stream.Position);
         Equal(content, writer.WrittenMemory.ToArray());
+    }
+
+    [Fact]
+    public static async Task SharedStreamConcurrentReadAsync()
+    {
+        byte[] expected = [10, 20, 30, 40, 50, 60];
+
+        await using var stream = StreamSource.AsSharedStream(new(expected));
+
+        var task1 = ReadStreamAsync(stream);
+        var task2 = ReadStreamAsync(stream);
+
+        await Task.WhenAll(task1, task2);
+
+        Equal(expected, task1.Result);
+        Equal(expected, task2.Result);
+
+        [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
+        static async Task<byte[]> ReadStreamAsync(Stream source)
+        {
+            source.Position = 0L;
+            await Task.Yield();
+
+            var result = new byte[source.Length];
+            await source.ReadExactlyAsync(result);
+            return result;
+        }
+    }
+
+    [Fact]
+    public static void SharedStreamConcurrentRead()
+    {
+        byte[] expected = [10, 20, 30, 40, 50, 60];
+
+        using var stream = StreamSource.AsSharedStream(new(expected));
+
+        var thread1 = new Thread(ReadStream);
+        var thread2 = new Thread(ReadStream);
+
+        thread1.Start();
+        thread2.Start();
+
+        thread1.Join();
+        thread2.Join();
+
+        void ReadStream()
+        {
+            stream.Position = 0L;
+
+            var actual = new byte[stream.Length];
+            stream.ReadExactly(actual);
+            Equal(expected, actual);
+        }
     }
 }

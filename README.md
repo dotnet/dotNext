@@ -44,31 +44,28 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 03-08-2024
+Release Date: 03-19-2024
 
-<a href="https://www.nuget.org/packages/dotnext/5.2.0">DotNext 5.2.0</a>
-* Added `Number.IsPrime` static method that allows to check whether the specified number is a prime number
-* Fixed AOT compatibility issues
+<a href="https://www.nuget.org/packages/dotnext/5.3.0">DotNext 5.3.0</a>
+* Added `StreamSource.AsSharedStream` extension method that allows to obtain read-only stream over memory block which position is local for each consuming async flow or thread. In other words, the stream can be shared between async flows for independent reads.
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.2.0">DotNext.Metaprogramming 5.2.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.3.0">DotNext.Metaprogramming 5.3.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/5.2.0">DotNext.Unsafe 5.2.0</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.3.0">DotNext.Unsafe 5.3.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.2.0">DotNext.Threading 5.2.0</a>
-* Added specialized `IndexPool` data type that can be useful for implementing fast object pools
+<a href="https://www.nuget.org/packages/dotnext.threading/5.3.0">DotNext.Threading 5.3.0</a>
+* Improved performance of `IndexPool.Take` method
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.2.0">DotNext.IO 5.2.0</a>
+<a href="https://www.nuget.org/packages/dotnext.io/5.3.0">DotNext.IO 5.3.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.2.0">DotNext.Net.Cluster 5.2.0</a>
-* Fixed [226](https://github.com/dotnet/dotNext/issues/226)
-* Fixed [221](https://github.com/dotnet/dotNext/issues/221)
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.3.0">DotNext.Net.Cluster 5.3.0</a>
+* Smallish performance improvements of WAL
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.2.0">DotNext.AspNetCore.Cluster 5.2.0</a>
-* Fixed [226](https://github.com/dotnet/dotNext/issues/226)
-* Fixed [221](https://github.com/dotnet/dotNext/issues/221)
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.3.0">DotNext.AspNetCore.Cluster 5.3.0</a>
+* Smallish performance improvements of WAL
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
