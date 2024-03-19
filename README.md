@@ -56,9 +56,9 @@ Release Date: 03-19-2024
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/5.3.0">DotNext.Threading 5.3.0</a>
-* Added specialized `IndexPool` data type that can be useful for implementing fast object pools
+* Improved performance of `IndexPool.Take` method
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.2.0">DotNext.IO 5.3.0</a>
+<a href="https://www.nuget.org/packages/dotnext.io/5.3.0">DotNext.IO 5.3.0</a>
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/5.3.0">DotNext.Net.Cluster 5.3.0</a>
