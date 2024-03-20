@@ -605,12 +605,14 @@ public sealed class StreamSourceTests : Test
         Equal(content, writer.WrittenMemory.ToArray());
     }
 
-    [Fact]
-    public static async Task SharedStreamConcurrentReadAsync()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public static async Task SharedStreamConcurrentReadAsync(bool compatWithAsync)
     {
-        byte[] expected = [10, 20, 30, 40, 50, 60];
+        byte[] expected = RandomBytes(512);
 
-        await using var stream = StreamSource.AsSharedStream(new(expected));
+        await using var stream = StreamSource.AsSharedStream(new(expected), compatWithAsync);
 
         var task1 = ReadStreamAsync(stream);
         var task2 = ReadStreamAsync(stream);
