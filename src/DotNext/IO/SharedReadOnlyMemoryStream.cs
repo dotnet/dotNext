@@ -6,26 +6,24 @@ namespace DotNext.IO;
 
 using static Buffers.Memory;
 
-internal sealed class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequence) : ReadOnlyStream
+internal abstract class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequence) : ReadOnlyStream
 {
-    // don't use BoxedValue due to limitations of AsyncLocal
-    private readonly AsyncLocal<StrongBox<SequencePosition>> position = new();
-
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private SequencePosition LocalPosition
+    private protected abstract SequencePosition LocalPosition
     {
-        get => position.Value?.Value ?? sequence.Start;
-        set => (position.Value ??= new()).Value = value;
+        get;
+        set;
     }
+
+    private protected SequencePosition StartPosition => sequence.Start;
 
     private ReadOnlySequence<byte> GetRemainingSequence(out SequencePosition start)
         => sequence.Slice(start = LocalPosition);
 
-    public override bool CanSeek => true;
+    public sealed override bool CanSeek => true;
 
-    public override long Length => sequence.Length;
+    public sealed override long Length => sequence.Length;
 
-    public override long Position
+    public sealed override long Position
     {
         get => sequence.GetOffset(LocalPosition);
         set
@@ -36,7 +34,7 @@ internal sealed class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequence
         }
     }
 
-    public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
+    public sealed override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
     {
         ValidateCopyToArguments(destination, bufferSize);
 
@@ -46,7 +44,7 @@ internal sealed class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequence
         LocalPosition = sequence.End;
     }
 
-    public override void CopyTo(Stream destination, int bufferSize)
+    public sealed override void CopyTo(Stream destination, int bufferSize)
     {
         ValidateCopyToArguments(destination, bufferSize);
 
@@ -56,16 +54,16 @@ internal sealed class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequence
         LocalPosition = sequence.End;
     }
 
-    public override void SetLength(long value) => throw new NotSupportedException();
+    public sealed override void SetLength(long value) => throw new NotSupportedException();
 
-    public override int Read(Span<byte> buffer)
+    public sealed override int Read(Span<byte> buffer)
     {
         GetRemainingSequence(out var startPos).CopyTo(buffer, out var writtenCount);
         LocalPosition = sequence.GetPosition(writtenCount, startPos);
         return writtenCount;
     }
 
-    public override long Seek(long offset, SeekOrigin origin)
+    public sealed override long Seek(long offset, SeekOrigin origin)
     {
         var newPosition = origin switch
         {
@@ -84,5 +82,45 @@ internal sealed class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequence
         return newPosition;
     }
 
-    public override string ToString() => sequence.ToString();
+    public sealed override string ToString() => sequence.ToString();
+
+    internal static SharedReadOnlyMemoryStream CreateAsyncLocalStream(ReadOnlySequence<byte> sequence)
+        => new AsyncLocalStream(sequence);
+
+    internal static SharedReadOnlyMemoryStream CreateThreadLocalStream(ReadOnlySequence<byte> sequence)
+        => new ThreadLocalStream(sequence);
+}
+
+file sealed class AsyncLocalStream(ReadOnlySequence<byte> sequence) : SharedReadOnlyMemoryStream(sequence)
+{
+    // don't use BoxedValue due to limitations of AsyncLocal
+    private readonly AsyncLocal<StrongBox<SequencePosition>> position = new();
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private protected override SequencePosition LocalPosition
+    {
+        get => position.Value?.Value ?? StartPosition;
+        set => (position.Value ??= new()).Value = value;
+    }
+}
+
+file sealed class ThreadLocalStream(ReadOnlySequence<byte> sequence) : SharedReadOnlyMemoryStream(sequence)
+{
+    private readonly ThreadLocal<SequencePosition> position = new(Func.Constant(sequence.Start), trackAllValues: false);
+
+    private protected override SequencePosition LocalPosition
+    {
+        get => position.Value;
+        set => position.Value = value;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            position.Dispose();
+        }
+
+        base.Dispose(disposing);
+    }
 }
