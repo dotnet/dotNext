@@ -1,6 +1,11 @@
 Release Notes
 ====
 
+# 03-20-2024
+<a href="https://www.nuget.org/packages/dotnext/5.3.1">DotNext 5.3.1</a>
+* Provided support of thread-local storage for `StreamSource.AsSharedStream`
+* Remove type cast for `Func.Constant` static method
+
 # 03-19-2024
 <a href="https://www.nuget.org/packages/dotnext/5.3.0">DotNext 5.3.0</a>
 * Added `StreamSource.AsSharedStream` extension method that allows to obtain read-only stream over memory block which position is local for each consuming async flow or thread. In other words, the stream can be shared between async flows for independent reads.

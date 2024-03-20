@@ -44,16 +44,24 @@ public static partial class StreamSource
         => AsStream(new ReadOnlySequence<byte>(memory));
 
     /// <summary>
-    /// Gets read-only stream that can be shared across async flows for independent reads.
+    /// Gets read-only stream that can be shared across async flows or threads for independent reads.
     /// </summary>
     /// <remarks>
     /// You need to set a position explicitly before using stream for each parallel async flow.
     /// <see cref="Stream.SetLength(long)"/> is not supported to avoid different views of the same stream.
     /// </remarks>
     /// <param name="sequence">The sequence of bytes.</param>
+    /// <param name="compatWithAsync">
+    /// <see langword="true"/> to create a stream than can be shared across async flows and different threads;
+    /// <see langword="false"/> to create a stream that is safe to share between different threads only.
+    /// </param>
     /// <returns>The stream over sequence of bytes.</returns>
-    public static Stream AsSharedStream(this ReadOnlySequence<byte> sequence)
-        => sequence.IsEmpty ? Stream.Null : new SharedReadOnlyMemoryStream(sequence);
+    public static Stream AsSharedStream(this ReadOnlySequence<byte> sequence, bool compatWithAsync = true)
+        => sequence.IsEmpty
+            ? Stream.Null
+            : compatWithAsync
+            ? SharedReadOnlyMemoryStream.CreateAsyncLocalStream(sequence)
+            : SharedReadOnlyMemoryStream.CreateThreadLocalStream(sequence);
 
     /// <summary>
     /// Returns writable synchronous stream.
