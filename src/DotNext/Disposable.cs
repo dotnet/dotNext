@@ -4,8 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext;
 
-using static Runtime.Intrinsics;
-
 /// <summary>
 /// Provides implementation of dispose pattern.
 /// </summary>
