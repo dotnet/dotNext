@@ -862,9 +862,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <param name="commitIndex">The index of the last committed log entry on the sender side.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The index of the last committed log entry known by the leader.</returns>
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))] // hot path, avoid allocations
-    protected async ValueTask<long?> SynchronizeAsync(long commitIndex, CancellationToken token)
+    protected ValueTask<long?> SynchronizeAsync(long commitIndex, CancellationToken token)
     {
+        long? result = null;
+
         // do not execute the next round of heartbeats if the sender is already in sync with the leader
         if (state is LeaderState<TMember> leaderState)
         {
@@ -872,19 +873,24 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             {
                 try
                 {
-                    await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
+                    leaderState.ForceReplication();
                 }
                 catch (InvalidOperationException)
                 {
                     // local node is not a leader
-                    return null;
+                    goto exit;
+                }
+                catch (Exception e)
+                {
+                    return ValueTask.FromException<long?>(e);
                 }
             }
 
-            return auditTrail.LastCommittedEntryIndex;
+            result = auditTrail.LastCommittedEntryIndex;
         }
 
-        return null;
+    exit:
+        return new(result);
     }
 
     /// <summary>
@@ -896,11 +902,19 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     public async ValueTask ApplyReadBarrierAsync(CancellationToken token = default)
     {
-        for (; ; )
+        for (; ; token.ThrowIfCancellationRequested())
         {
             if (state is LeaderState<TMember> leaderState)
             {
-                await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
+                try
+                {
+                    await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
+                }
+                catch (InvalidOperationException)
+                {
+                    // local node is not a leader, retry
+                    continue;
+                }
             }
             else if (Leader is { } leader)
             {
