@@ -139,9 +139,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         return false;
     }
 
-    /// <summary>
-    /// Gets the cancellation token that tracks the leader state of the current node.
-    /// </summary>
+    /// <inheritdoc cref="IRaftCluster.LeadershipToken"/>
     public CancellationToken LeadershipToken => (state as LeaderState<TMember>)?.LeadershipToken ?? new(true);
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
