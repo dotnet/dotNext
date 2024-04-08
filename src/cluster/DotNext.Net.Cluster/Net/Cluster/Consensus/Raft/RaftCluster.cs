@@ -140,7 +140,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     }
 
     /// <inheritdoc cref="IRaftCluster.LeadershipToken"/>
-    public CancellationToken LeadershipToken => (state as LeaderState<TMember>)?.LeadershipToken ?? new(true);
+    public CancellationToken LeadershipToken => (state as LeaderState<TMember>)?.Token ?? new(true);
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private LeaderState<TMember> LeaderStateOrException
@@ -1179,7 +1179,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         var leaderState = LeaderStateOrException;
-        var tokenSource = token.LinkTo(leaderState.LeadershipToken);
+        var tokenSource = token.LinkTo(leaderState.Token);
         try
         {
             // 1 - append entry to the log
@@ -1194,7 +1194,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         catch (OperationCanceledException e)
         {
             token = tokenSource?.CancellationOrigin ?? e.CancellationToken;
-            throw token == leaderState.LeadershipToken
+            throw token == leaderState.Token
                 ? new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e)
                 : new OperationCanceledException(e.Message, e, token);
         }

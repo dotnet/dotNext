@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.Metrics;
-using System.Runtime;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
@@ -13,12 +12,11 @@ using Runtime.CompilerServices;
 using Threading.Tasks;
 using GCLatencyModeScope = Runtime.GCLatencyModeScope;
 
-internal sealed partial class LeaderState<TMember> : RaftState<TMember>
+internal sealed partial class LeaderState<TMember> : TokenizedState<TMember>
     where TMember : class, IRaftClusterMember
 {
     private readonly long currentTerm;
     private readonly CancellationTokenSource timerCancellation;
-    internal readonly CancellationToken LeadershipToken; // cached to prevent ObjectDisposedException
     private readonly Task<Result<bool>> localMemberResponse;
 
     private Task? heartbeatTask;
@@ -29,7 +27,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         currentTerm = term;
         localMemberResponse = Task.FromResult(new Result<bool> { Term = term, Value = true });
         timerCancellation = new();
-        LeadershipToken = timerCancellation.Token;
+        Token = timerCancellation.Token;
         this.maxLease = maxLease;
         lease = new();
         replicationEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
@@ -37,6 +35,8 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         context = new();
         replicatorFactory = localReplicatorFactory = CreateDefaultReplicator;
     }
+
+    internal override CancellationToken Token { get; } // cached to prevent ObjectDisposedException
 
     private (long, long, int) ForkHeartbeats(TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IEnumerator<TMember> members)
     {
@@ -48,7 +48,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         var majority = 0;
 
         // send heartbeat in parallel
-        for (IClusterConfiguration? activeConfig = configurationStorage.ActiveConfiguration, proposedConfig = configurationStorage.ProposedConfiguration; members.MoveNext() && !LeadershipToken.IsCancellationRequested; responsePipe.Add(response, replicator), majority++)
+        for (IClusterConfiguration? activeConfig = configurationStorage.ActiveConfiguration, proposedConfig = configurationStorage.ProposedConfiguration; members.MoveNext() && !Token.IsCancellationRequested; responsePipe.Add(response, replicator), majority++)
         {
             var member = members.Current;
             if (member.IsRemote)
@@ -56,13 +56,13 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                 var precedingIndex = member.State.PrecedingIndex;
 
                 // fork replication procedure
-                replicator = context.GetOrCreate(member, replicatorFactory, LeadershipToken);
+                replicator = context.GetOrCreate(member, replicatorFactory, Token);
                 replicator.Initialize(activeConfig, proposedConfig, commitIndex, currentTerm, precedingIndex);
-                response = SpawnReplicationAsync(replicator, auditTrail, currentIndex, LeadershipToken);
+                response = SpawnReplicationAsync(replicator, auditTrail, currentIndex, Token);
             }
             else
             {
-                replicator = context.GetOrCreate(member, localReplicatorFactory, LeadershipToken);
+                replicator = context.GetOrCreate(member, localReplicatorFactory, Token);
                 response = localMemberResponse;
             }
         }
@@ -116,7 +116,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                 Logger.UnknownHealthStatus(member.EndPoint);
                 break;
             case { IsHealthy: false }:
-                UnavailableMemberDetected(member, LeadershipToken);
+                UnavailableMemberDetected(member, Token);
                 break;
         }
     }
@@ -129,7 +129,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         try
         {
             var forced = false;
-            for (var responsePipe = new TaskCompletionPipe<Task<Result<bool>>>(); !LeadershipToken.IsCancellationRequested; responsePipe.Reset(), ReuseEnumerator(ref members, ref enumerator))
+            for (var responsePipe = new TaskCompletionPipe<Task<Result<bool>>>(); !Token.IsCancellationRequested; responsePipe.Reset(), ReuseEnumerator(ref members, ref enumerator))
             {
                 var startTime = new Timestamp();
 
@@ -169,13 +169,13 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                             {
                                 RenewLease(startTime.Elapsed);
                                 UpdateLeaderStickiness();
-                                await configurationStorage.ApplyAsync(LeadershipToken).ConfigureAwait(false);
+                                await configurationStorage.ApplyAsync(Token).ConfigureAwait(false);
                             }
 
                             if (result.Value && ++commitQuorum == majority)
                             {
                                 // majority of nodes accept entries with at least one entry from the current term
-                                var count = await auditTrail.CommitAsync(currentIndex, LeadershipToken).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
+                                var count = await auditTrail.CommitAsync(currentIndex, Token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
                                 Logger.CommitSuccessful(currentIndex, count);
                             }
                         }
@@ -203,7 +203,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
                 replicationQueue.Drain();
 
                 // wait for heartbeat timeout or forced replication
-                forced = await WaitForReplicationAsync(startTime, period, LeadershipToken).ConfigureAwait(false);
+                forced = await WaitForReplicationAsync(startTime, period, Token).ConfigureAwait(false);
             }
         }
         finally
@@ -256,7 +256,7 @@ internal sealed partial class LeaderState<TMember> : RaftState<TMember>
         try
         {
             timerCancellation.Cancel(throwOnFirstException: false);
-            replicationEvent.CancelSuspendedCallers(LeadershipToken);
+            replicationEvent.CancelSuspendedCallers(Token);
             await (heartbeatTask ?? Task.CompletedTask).ConfigureAwait(false); // may throw OperationCanceledException
         }
         catch (Exception e)

@@ -5,13 +5,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Threading;
 
-internal sealed class FollowerState<TMember> : RaftState<TMember>
+internal sealed class FollowerState<TMember> : TokenizedState<TMember>
     where TMember : class, IRaftClusterMember
 {
     private readonly AsyncAutoResetEvent refreshEvent;
     private readonly AsyncManualResetEvent suppressionEvent;
     private readonly CancellationTokenSource trackerCancellation;
-    private readonly CancellationToken trackerCancellationToken; // cached to prevent ObjectDisposedException
     private Task? tracker;
     private volatile bool timedOut;
 
@@ -21,8 +20,10 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
         refreshEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
         suppressionEvent = new(initialState: true) { MeasurementTags = stateMachine.MeasurementTags };
         trackerCancellation = new();
-        trackerCancellationToken = trackerCancellation.Token;
+        Token = trackerCancellation.Token;
     }
+
+    internal override CancellationToken Token { get; } // cached to prevent ObjectDisposedException
 
     private void SuspendTracking()
     {
@@ -35,11 +36,11 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
     private async Task Track(TimeSpan timeout)
     {
         // spin loop to wait for the timeout
-        while (await refreshEvent.WaitAsync(timeout, trackerCancellationToken).ConfigureAwait(false))
+        while (await refreshEvent.WaitAsync(timeout, Token).ConfigureAwait(false))
         {
             // Transition can be suppressed. If so, resume the loop and reset the timer.
             // If the event is in signaled state then the returned task is completed synchronously.
-            await suppressionEvent.WaitAsync(trackerCancellationToken).ConfigureAwait(false);
+            await suppressionEvent.WaitAsync(Token).ConfigureAwait(false);
         }
 
         timedOut = true;
