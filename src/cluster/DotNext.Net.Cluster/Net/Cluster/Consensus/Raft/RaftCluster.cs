@@ -75,7 +75,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         readinessProbe = new(TaskCreationOptions.RunContinuationsAsynchronously);
         aggressiveStickiness = config.AggressiveLeaderStickiness;
         electionEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        state = new StandbyState<TMember>(this);
+        state = new StandbyState<TMember>(this, TimeSpan.FromMilliseconds(electionTimeout));
         EndPointComparer = config.EndPointComparer;
         this.measurementTags = measurementTags;
     }
@@ -141,6 +141,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
     /// <inheritdoc cref="IRaftCluster.LeadershipToken"/>
     public CancellationToken LeadershipToken => (state as LeaderState<TMember>)?.Token ?? new(true);
+
+    /// <inheritdoc cref="IRaftCluster.ConsensusToken"/>
+    public CancellationToken ConsensusToken => (state as TokenizedState<TMember>)?.Token ?? new(true);
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private LeaderState<TMember> LeaderStateOrException
@@ -324,7 +327,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         {
             if (await DetectLocalMemberAsync(member, token).ConfigureAwait(false))
             {
-                state = standbyNode ? new StandbyState<TMember>(this) : new FollowerState<TMember>(this);
+                state = standbyNode ? new StandbyState<TMember>(this, LeaderLeaseDuration) : new FollowerState<TMember>(this);
                 readinessProbe.TrySetResult();
                 Logger.StartedAsFollower(member.EndPoint);
                 return;
@@ -332,7 +335,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         }
 
         // local member is not known. Start in frozen state and wait when the current node will be added to the cluster
-        state = new StandbyState<TMember>(this);
+        state = new StandbyState<TMember>(this, LeaderLeaseDuration);
         Logger.StartedAsFrozen();
     }
 
@@ -397,7 +400,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 // ensure that we trying to update the same state
                 if (ReferenceEquals(state, currentState))
                 {
-                    await UpdateStateAsync(new StandbyState<TMember>(this)).ConfigureAwait(false);
+                    await UpdateStateAsync(new StandbyState<TMember>(this, LeaderLeaseDuration)).ConfigureAwait(false);
                     return true;
                 }
             }
@@ -494,8 +497,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         Logger.DowngradingToFollowerState(Term);
         switch (state)
         {
-            case FollowerState<TMember> followerState:
-                followerState.Refresh();
+            case ConsensusTrackerState<TMember> followerOrStandbyState:
+                followerOrStandbyState.Refresh();
                 break;
             case LeaderState<TMember> or CandidateState<TMember>:
                 var newState = new FollowerState<TMember>(this);
@@ -785,13 +788,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 Leader = null;
                 await StepDown(senderTerm).ConfigureAwait(false);
             }
-            else if (state is FollowerState<TMember> follower)
+            else if (state is ConsensusTrackerState<TMember> followerOrStandbyState)
             {
-                follower.Refresh();
-            }
-            else if (state is StandbyState<TMember>)
-            {
-                FollowerState.HeartbeatRateMeter.Add(1, in measurementTags);
+                followerOrStandbyState.Refresh();
             }
             else
             {
@@ -942,7 +941,44 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private ValueTask MoveToStandbyState(bool resumable = true)
     {
         Leader = null;
-        return UpdateStateAsync(new StandbyState<TMember>(this) { Resumable = resumable });
+        return UpdateStateAsync(new StandbyState<TMember>(this, LeaderLeaseDuration) { Resumable = resumable });
+    }
+
+    async void IRaftStateMachine<TMember>.IncomingHeartbeatTimedOut(IRaftStateMachine.IWeakCallerStateIdentity callerState)
+    {
+        var lockTaken = false;
+        try
+        {
+            await transitionLock.AcquireAsync(LifecycleToken).ConfigureAwait(false);
+            lockTaken = true;
+
+            if (state is StandbyState<TMember> standby && callerState.IsValid(standby))
+            {
+                if (standby.IsRefreshRequested)
+                {
+                    standby.Refresh();
+                }
+                else
+                {
+                    Leader = null;
+                }
+            }
+        }
+        catch (OperationCanceledException) when (lockTaken is false)
+        {
+            // ignore cancellation of lock acquisition
+        }
+        catch (ObjectDisposedException) when (lockTaken is false)
+        {
+            // ignore destroyed lock
+        }
+        finally
+        {
+            callerState.Clear();
+
+            if (lockTaken)
+                transitionLock.Release();
+        }
     }
 
     /// <inheritdoc />

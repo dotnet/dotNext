@@ -340,4 +340,12 @@ internal static partial class LogMessages
         EventName = $"{EventIdPrefix}.{nameof(StartedAsFrozen)}"
     )]
     public static partial void StartedAsFrozen(this ILogger logger);
+
+    [LoggerMessage(
+        EventIdOffset + 42,
+        LogLevel.Debug,
+        "Standby loop stopped with error",
+        EventName = $"{EventIdPrefix}.{nameof(StandbyStateExitedWithError)}"
+    )]
+    public static partial void StandbyStateExitedWithError(this ILogger logger, Exception e);
 }

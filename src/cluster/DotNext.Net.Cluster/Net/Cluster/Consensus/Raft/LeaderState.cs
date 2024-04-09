@@ -36,7 +36,7 @@ internal sealed partial class LeaderState<TMember> : TokenizedState<TMember>
         replicatorFactory = localReplicatorFactory = CreateDefaultReplicator;
     }
 
-    internal override CancellationToken Token { get; } // cached to prevent ObjectDisposedException
+    public override CancellationToken Token { get; } // cached to prevent ObjectDisposedException
 
     private (long, long, int) ForkHeartbeats(TaskCompletionPipe<Task<Result<bool>>> responsePipe, IAuditTrail<IRaftLogEntry> auditTrail, IClusterConfigurationStorage configurationStorage, IEnumerator<TMember> members)
     {

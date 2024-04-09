@@ -255,7 +255,7 @@ public partial class RaftCluster<TMember>
             throw new ConcurrentMembershipModificationException();
 
         var leaderState = LeaderStateOrException;
-        var tokenSource = token.LinkTo(leaderState.LeadershipToken);
+        var tokenSource = token.LinkTo(leaderState.Token);
         try
         {
             // catch up node
@@ -293,7 +293,7 @@ public partial class RaftCluster<TMember>
         catch (OperationCanceledException e)
         {
             token = tokenSource?.CancellationOrigin ?? e.CancellationToken;
-            throw token == leaderState.LeadershipToken
+            throw token == leaderState.Token
                 ? new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e)
                 : new OperationCanceledException(e.Message, e, token);
         }
@@ -337,7 +337,7 @@ public partial class RaftCluster<TMember>
         if (members.TryGetValue(id, out var member))
         {
             var leaderState = LeaderStateOrException;
-            var tokenSource = token.LinkTo(leaderState.LeadershipToken);
+            var tokenSource = token.LinkTo(leaderState.Token);
             try
             {
                 // ensure that previous configuration has been committed
@@ -356,7 +356,7 @@ public partial class RaftCluster<TMember>
             catch (OperationCanceledException e)
             {
                 token = tokenSource?.CancellationOrigin ?? e.CancellationToken;
-                throw token == leaderState.LeadershipToken
+                throw token == leaderState.Token
                     ? new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e)
                     : new OperationCanceledException(e.Message, e, token);
             }

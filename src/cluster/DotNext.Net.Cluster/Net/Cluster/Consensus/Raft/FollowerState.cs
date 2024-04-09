@@ -1,15 +1,10 @@
 ﻿using System.Diagnostics.Metrics;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using Threading;
-
-internal sealed class FollowerState<TMember> : TokenizedState<TMember>
+internal sealed class FollowerState<TMember> : ConsensusTrackerState<TMember>
     where TMember : class, IRaftClusterMember
 {
-    private readonly AsyncAutoResetEvent refreshEvent;
-    private readonly AsyncManualResetEvent suppressionEvent;
     private readonly CancellationTokenSource trackerCancellation;
     private Task? tracker;
     private volatile bool timedOut;
@@ -17,21 +12,11 @@ internal sealed class FollowerState<TMember> : TokenizedState<TMember>
     public FollowerState(IRaftStateMachine<TMember> stateMachine)
         : base(stateMachine)
     {
-        refreshEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
-        suppressionEvent = new(initialState: true) { MeasurementTags = stateMachine.MeasurementTags };
         trackerCancellation = new();
         Token = trackerCancellation.Token;
     }
 
-    internal override CancellationToken Token { get; } // cached to prevent ObjectDisposedException
-
-    private void SuspendTracking()
-    {
-        suppressionEvent.Reset();
-        refreshEvent.Set();
-    }
-
-    private void ResumeTracking() => suppressionEvent.Set();
+    public override CancellationToken Token { get; } // cached to prevent ObjectDisposedException
 
     private async Task Track(TimeSpan timeout)
     {
@@ -67,13 +52,10 @@ internal sealed class FollowerState<TMember> : TokenizedState<TMember>
 
     internal bool IsExpired => timedOut;
 
-    internal bool IsRefreshRequested => refreshEvent.IsSet;
-
-    internal void Refresh()
+    public override void Refresh()
     {
-        Logger.TimeoutReset();
         refreshEvent.Set();
-        FollowerState.HeartbeatRateMeter.Add(1, MeasurementTags);
+        base.Refresh();
     }
 
     protected override async ValueTask DisposeAsyncCore()
@@ -97,32 +79,15 @@ internal sealed class FollowerState<TMember> : TokenizedState<TMember>
     {
         if (disposing)
         {
-            refreshEvent.Dispose();
-            suppressionEvent.Dispose();
             trackerCancellation.Dispose();
             tracker = null;
         }
 
         base.Dispose(disposing);
     }
-
-    [StructLayout(LayoutKind.Auto)]
-    internal readonly struct TransitionSuppressionScope : IDisposable
-    {
-        private readonly FollowerState<TMember>? state;
-
-        internal TransitionSuppressionScope(FollowerState<TMember>? state)
-        {
-            state?.SuspendTracking();
-            this.state = state;
-        }
-
-        public void Dispose() => state?.ResumeTracking();
-    }
 }
 
-internal static class FollowerState
+file static class FollowerState
 {
     internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitions-to-follower-count", description: "Number of Transitions to Follower State");
-    internal static readonly Counter<int> HeartbeatRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("incoming-heartbeats-count", description: "Incoming Heartbeats from Leader");
 }

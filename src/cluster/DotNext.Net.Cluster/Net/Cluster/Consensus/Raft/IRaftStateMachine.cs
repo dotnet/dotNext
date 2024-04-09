@@ -35,4 +35,6 @@ internal interface IRaftStateMachine<TMember> : IRaftStateMachine
     void MoveToLeaderState(IWeakCallerStateIdentity callerState, TMember leader);
 
     void UnavailableMemberDetected(IWeakCallerStateIdentity callerState, TMember member, CancellationToken token);
+
+    void IncomingHeartbeatTimedOut(IWeakCallerStateIdentity callerState);
 }
