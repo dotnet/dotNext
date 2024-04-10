@@ -251,7 +251,7 @@ public partial class PersistentState
             }
         }
 
-        private void UpdateCache(in CachedLogEntry entry, int index, long offset)
+        private void UpdateCache(in CachedLogEntry entry, int index)
         {
             Debug.Assert(entryCache.IsEmpty is false);
             Debug.Assert((uint)index < (uint)entryCache.Length);
@@ -261,29 +261,29 @@ public partial class PersistentState
             cachedEntry = entry;
 
             // save new log entry to the allocation table
-            WriteMetadata(index, LogEntryMetadata.Create(in entry, offset));
+            WriteMetadata(index, LogEntryMetadata.Create(in entry, writeAddress));
         }
 
-        private async ValueTask WriteAsync<TEntry>(TEntry entry, int index, long offset, CancellationToken token)
+        private async ValueTask WriteAsync<TEntry>(TEntry entry, int index, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
             // slow path - persist log entry
-            await SetWritePositionAsync(offset, token).ConfigureAwait(false);
+            await SetWritePositionAsync(writeAddress, token).ConfigureAwait(false);
             await entry.WriteToAsync(writer, token).ConfigureAwait(false);
 
             // save new log entry to the allocation table
-            var length = writer.WritePosition - offset;
-            WriteMetadata(index, LogEntryMetadata.Create(entry, offset, length));
-            writeAddress = offset + length;
+            var length = writer.WritePosition - writeAddress;
+            WriteMetadata(index, LogEntryMetadata.Create(entry, writeAddress, length));
+            writeAddress += length;
         }
 
-        private async ValueTask WriteThroughAsync(ReadOnlyMemory<byte> content, long offset, CancellationToken token)
+        private async ValueTask WriteThroughAsync(ReadOnlyMemory<byte> content, CancellationToken token)
         {
-            await SetWritePositionAsync(offset, token).ConfigureAwait(false);
+            await SetWritePositionAsync(writeAddress, token).ConfigureAwait(false);
             Debug.Assert(writer.HasBufferedData is false);
 
-            await RandomAccess.WriteAsync(Handle, content, offset, token).ConfigureAwait(false);
-            writer.FilePosition = writeAddress = offset + content.Length;
+            await RandomAccess.WriteAsync(Handle, content, writeAddress, token).ConfigureAwait(false);
+            writer.FilePosition = writeAddress += content.Length;
         }
 
         internal ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
@@ -299,17 +299,17 @@ public partial class PersistentState
                 ref readonly var cachedEntry = ref Unsafe.As<TEntry, CachedLogEntry>(ref entry);
 
                 // fast path - just add cached log entry to the cache table
-                UpdateCache(in cachedEntry, relativeIndex, writeAddress);
+                UpdateCache(in cachedEntry, relativeIndex);
 
                 // Perf: we can skip FileWriter internal buffer and write cached log entry directly to the disk
                 ValueTask result;
                 switch (cachedEntry.PersistenceMode)
                 {
                     case CachedLogEntryPersistenceMode.CopyToBuffer:
-                        result = WriteAsync(entry, relativeIndex, writeAddress, token);
+                        result = WriteAsync(entry, relativeIndex, token);
                         break;
                     case CachedLogEntryPersistenceMode.SkipBuffer:
-                        result = WriteThroughAsync(cachedEntry.Content.Memory, writeAddress, token);
+                        result = WriteThroughAsync(cachedEntry.Content.Memory, token);
                         break;
                     default:
                         writeAddress += cachedEntry.Length;
@@ -324,7 +324,7 @@ public partial class PersistentState
             if (!entryCache.IsEmpty)
                 entryCache[relativeIndex].Dispose();
 
-            return WriteAsync(entry, relativeIndex, writeAddress, token);
+            return WriteAsync(entry, relativeIndex, token);
         }
 
         protected override void Dispose(bool disposing)
