@@ -375,8 +375,8 @@ public partial class PersistentState
         internal readonly long StartIndex, EndIndex;
         internal readonly int SessionId;
         private readonly bool metadataOnly;
-        private readonly Partition? head; // partition containing the first log entry in the list
-        private Partition? cache;
+        private readonly PartitionBase? head; // partition containing the first log entry in the list
+        private PartitionBase? cache;
         internal IAsyncBinaryReader? Snapshot;
 
         internal LogEntryList(PersistentState state, int sessionId, long startIndex, long endIndex, int count, bool metadataOnly)
@@ -446,7 +446,7 @@ public partial class PersistentState
                 runningIndex += 1L;
             }
 
-            for (Partition? partition = head; runningIndex <= EndIndex && state.TryGetPartition(runningIndex, ref partition); runningIndex++)
+            for (PartitionBase? partition = head; runningIndex <= EndIndex && state.TryGetPartition(runningIndex, ref partition); runningIndex++)
                 yield return partition.Read(SessionId, runningIndex, metadataOnly);
         }
 
