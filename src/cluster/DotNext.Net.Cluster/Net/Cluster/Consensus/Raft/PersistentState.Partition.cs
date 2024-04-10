@@ -334,7 +334,7 @@ public partial class PersistentState
                 switch (cachedEntry.PersistenceMode)
                 {
                     case CachedLogEntryPersistenceMode.CopyToBuffer:
-                        result = WriteAsync<TEntry>(entry, relativeIndex, token);
+                        result = WriteAsync(entry, relativeIndex, token);
                         break;
                     case CachedLogEntryPersistenceMode.SkipBuffer:
                         result = WriteThroughAsync(cachedEntry.Content.Memory, token);
