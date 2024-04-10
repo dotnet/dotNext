@@ -73,7 +73,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
                 // Remove log entry from the cache according to eviction policy
                 if (!persisted)
                 {
-                    await partition.PersistCachedEntryAsync(startIndex, entry.Position, snapshotLength.HasValue).ConfigureAwait(false);
+                    await partition.PersistCachedEntryAsync(startIndex, snapshotLength.HasValue).ConfigureAwait(false);
 
                     // Flush partition if we are finished or at the last entry in it
                     if (startIndex == commitIndex || startIndex == partition.LastIndex)

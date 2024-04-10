@@ -93,7 +93,7 @@ public partial class PersistentState
 
         internal abstract LogEntry Read(int sessionId, long absoluteIndex, out bool persisted);
 
-        internal abstract ValueTask PersistCachedEntryAsync(long absoluteIndex, long offset, bool removeFromMemory);
+        internal abstract ValueTask PersistCachedEntryAsync(long absoluteIndex, bool removeFromMemory);
 
         internal abstract long GetTerm(long absoluteIndex);
 
@@ -240,13 +240,14 @@ public partial class PersistentState
         internal override LogEntry Read(int sessionId, long absoluteIndex, out bool persisted)
             => Read(sessionId, absoluteIndex, out persisted, metadataOnly: false);
 
-        internal override ValueTask PersistCachedEntryAsync(long absoluteIndex, long offset, bool removeFromMemory)
+        internal override ValueTask PersistCachedEntryAsync(long absoluteIndex, bool removeFromMemory)
         {
             Debug.Assert(entryCache.IsEmpty is false);
 
             var index = ToRelativeIndex(absoluteIndex);
             Debug.Assert((uint)index < (uint)entryCache.Length);
 
+            var offset = LogEntryMetadata.GetOffset(GetMetadata(index, out _));
             ref var cachedEntry = ref entryCache[index];
             Debug.Assert(cachedEntry.PersistenceMode is CachedLogEntryPersistenceMode.None);
             cachedEntry.PersistenceMode = CachedLogEntryPersistenceMode.CopyToBuffer;
