@@ -65,17 +65,33 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             MeasurementTags = configuration.MeasurementTags,
         };
 
-        var partitionTable = new SortedSet<Table>(Comparer<Table>.Create(ComparePartitions));
+        var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
 
         // load all partitions from file system
-        foreach (var file in path.EnumerateFiles())
+        if (maxLogEntrySize.HasValue)
         {
-            if (long.TryParse(file.Name, out var partitionNumber))
-            {
-                var partition = new Table(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize);
-                partition.Initialize();
-                partitionTable.Add(partition);
-            }
+            CreateSparsePartitions(
+                partitionTable,
+                path,
+                bufferSize,
+                recordsPerPartition,
+                in bufferManager,
+                concurrentReads,
+                writeMode,
+                initialSize,
+                maxLogEntrySize.GetValueOrDefault());
+        }
+        else
+        {
+            CreateTables(
+                partitionTable,
+                path,
+                bufferSize,
+                recordsPerPartition,
+                in bufferManager,
+                concurrentReads,
+                writeMode,
+                initialSize);
         }
 
         // constructed sorted list of partitions
@@ -98,7 +114,33 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         state = new(path, bufferManager.BufferAllocator, configuration.IntegrityCheck, writeMode is not WriteMode.NoFlush);
         measurementTags = configuration.MeasurementTags;
 
-        static int ComparePartitions(Table x, Table y) => x.PartitionNumber.CompareTo(y.PartitionNumber);
+        static int ComparePartitions(Partition x, Partition y) => x.PartitionNumber.CompareTo(y.PartitionNumber);
+
+        static void CreateTables(SortedSet<Partition> partitionTable, DirectoryInfo path, int bufferSize, int recordsPerPartition, in BufferManager manager, int concurrentReads, WriteMode writeMode, long initialSize)
+        {
+            foreach (var file in path.EnumerateFiles())
+            {
+                if (long.TryParse(file.Name, out var partitionNumber))
+                {
+                    var partition = new Table(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in manager, concurrentReads, writeMode, initialSize);
+                    partition.Initialize();
+                    partitionTable.Add(partition);
+                }
+            }
+        }
+
+        static void CreateSparsePartitions(SortedSet<Partition> partitionTable, DirectoryInfo path, int bufferSize, int recordsPerPartition, in BufferManager manager, int concurrentReads, WriteMode writeMode, long initialSize, long maxLogEntrySize)
+        {
+            foreach (var file in path.EnumerateFiles())
+            {
+                if (long.TryParse(file.Name, out var partitionNumber))
+                {
+                    var partition = new SparsePartition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in manager, concurrentReads, writeMode, initialSize, maxLogEntrySize);
+                    partition.Initialize();
+                    partitionTable.Add(partition);
+                }
+            }
+        }
     }
 
     private protected static Meter MeterRoot => ReadRateMeter.Meter;

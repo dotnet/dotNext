@@ -199,12 +199,14 @@ public sealed class MemoryBasedStateMachineTests : Test
         }
     }
 
-    [Fact]
-    public static async Task ParallelReads()
+    [Theory]
+    [InlineData(null)]
+    [InlineData(1024L * 1024L * 100L)]
+    public static async Task ParallelReads(long? maxLogEntrySize)
     {
         var entry = new TestLogEntry("SET X = 0") { Term = 42L };
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        IPersistentState state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { CopyOnReadOptions = new() });
+        IPersistentState state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { CopyOnReadOptions = new(), MaxLogEntrySize = maxLogEntrySize });
         try
         {
             Equal(1L, await state.AppendAsync(new LogEntryList(entry)));
@@ -235,11 +237,13 @@ public sealed class MemoryBasedStateMachineTests : Test
         }
     }
 
-    [Fact]
-    public static async Task AppendWhileReading()
+    [Theory]
+    [InlineData(null)]
+    [InlineData(1024L * 1024L * 100L)]
+    public static async Task AppendWhileReading(long? maxLogEntrySize)
     {
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition);
+        using var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { MaxLogEntrySize = maxLogEntrySize });
         var entry = new TestLogEntry("SET X = 0") { Term = 42L };
         await state.AppendAsync(entry);
 
@@ -281,8 +285,10 @@ public sealed class MemoryBasedStateMachineTests : Test
         Equal(0L, state.LastCommittedEntryIndex);
     }
 
-    [Fact]
-    public static async Task Overwrite()
+    [Theory]
+    [InlineData(null)]
+    [InlineData(1024L * 1024L * 100L)]
+    public static async Task Overwrite(long? maxLogEntrySize)
     {
         var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
         var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
@@ -291,7 +297,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition))
+        using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { MaxLogEntrySize = maxLogEntrySize }))
         {
             Equal(1L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
             Equal(4L, state.LastEntryIndex);
@@ -302,7 +308,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         }
 
         //read again
-        using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition))
+        using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { MaxLogEntrySize = maxLogEntrySize }))
         {
             Equal(1L, state.LastEntryIndex);
             Equal(0L, state.LastCommittedEntryIndex);

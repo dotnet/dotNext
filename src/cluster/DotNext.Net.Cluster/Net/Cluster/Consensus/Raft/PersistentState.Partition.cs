@@ -191,7 +191,7 @@ public partial class PersistentState
         protected abstract ValueTask PersistAsync<TEntry>(TEntry entry, int index, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry;
 
-        protected abstract ValueTask WriteThroughAsync(CachedLogEntry content, int index, CancellationToken token);
+        protected abstract ValueTask WriteThroughAsync(CachedLogEntry entry, int index, CancellationToken token);
 
         protected abstract void OnCached(in CachedLogEntry cachedEntry, int index);
 
@@ -247,11 +247,14 @@ public partial class PersistentState
         private readonly long maxLogEntrySize;
         private MemoryOwner<CachedLogEntryMetadata> metadataTable;
         private MemoryOwner<byte> metadataBuffer;
+        private ReadOnlyMemory<byte>[]? bufferList;
 
         internal SparsePartition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize, long maxLogEntrySize)
             : base(location, offset: 0, bufferSize, recordsPerPartition, partitionNumber, in manager, readersCount, writeMode, initialSize, FileAttributes.NotContentIndexed | FileAttributes.SparseFile)
         {
             metadataTable = manager.Allocate<CachedLogEntryMetadata>(recordsPerPartition);
+            metadataTable.Span.Clear(); // to prevent pre-filled objects
+
             this.maxLogEntrySize = maxLogEntrySize;
             metadataBuffer = manager.BufferAllocator.AllocateExactly(LogEntryMetadata.Size);
         }
@@ -279,7 +282,7 @@ public partial class PersistentState
         }
 
         protected override void OnCached(in CachedLogEntry cachedEntry, int index)
-            => metadataTable[index].Metadata = LogEntryMetadata.Create(cachedEntry, offset: 0L);
+            => metadataTable[index].Metadata = LogEntryMetadata.Create(cachedEntry, GetMetadataOffset(index) + LogEntryMetadata.Size);
 
         protected override async ValueTask PersistAsync<TEntry>(TEntry entry, int index, CancellationToken token)
         {
@@ -298,14 +301,14 @@ public partial class PersistentState
                 if (length > maxLogEntrySize)
                     goto too_large_entry;
 
-                metadata = LogEntryMetadata.Create(entry, offset: 0L, length);
+                metadata = LogEntryMetadata.Create(entry, metadataOffset + LogEntryMetadata.Size, length);
                 metadata.Format(metadataBuffer.Span);
                 await RandomAccess.WriteAsync(Handle, metadataBuffer.Memory, metadataOffset, token).ConfigureAwait(false);
             }
             else if (length <= maxLogEntrySize)
             {
                 // fast path - length is known, metadata and the log entry can be written sequentially
-                metadata = LogEntryMetadata.Create(entry, offset: 0L, length);
+                metadata = LogEntryMetadata.Create(entry, metadataOffset + LogEntryMetadata.Size, length);
                 await SetWritePositionAsync(metadataOffset, token).ConfigureAwait(false);
 
                 await writer.WriteAsync(metadata, token).ConfigureAwait(false);
@@ -320,12 +323,26 @@ public partial class PersistentState
             return;
 
         too_large_entry:
-            throw new InvalidOperationException();
+            throw new InvalidOperationException(ExceptionMessages.LogEntryPayloadTooLarge);
         }
 
-        protected override ValueTask WriteThroughAsync(CachedLogEntry content, int index, CancellationToken token)
+        protected override async ValueTask WriteThroughAsync(CachedLogEntry entry, int index, CancellationToken token)
         {
-            throw new NotImplementedException();
+            if (entry.Length > maxLogEntrySize)
+                throw new InvalidOperationException(ExceptionMessages.LogEntryPayloadTooLarge);
+
+            var metadata = LogEntryMetadata.Create(entry, GetMetadataOffset(index) + LogEntryMetadata.Size);
+            metadata.Format(metadataBuffer.Span);
+
+            if (bufferList is null)
+            {
+                bufferList = new ReadOnlyMemory<byte>[2];
+                bufferList[0] = metadataBuffer.Memory;
+            }
+
+            bufferList[1] = entry.Content.Memory;
+            await RandomAccess.WriteAsync(Handle, bufferList, GetMetadataOffset(index), token).ConfigureAwait(false);
+            metadataTable[index].Metadata = metadata;
         }
 
         protected override void Dispose(bool disposing)
