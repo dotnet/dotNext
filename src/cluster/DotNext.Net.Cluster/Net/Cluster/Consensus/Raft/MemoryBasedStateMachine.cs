@@ -681,12 +681,12 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         {
             if (TryGetPartition(startIndex, ref partition))
             {
-                var entry = partition.Read(sessionId, startIndex, out var persisted);
+                var entry = partition.Read(sessionId, startIndex);
                 await ApplyCoreAsync(entry).ConfigureAwait(false);
                 Volatile.Write(ref lastTerm, entry.Term);
 
                 // Remove log entry from the cache according to eviction policy
-                if (!persisted)
+                if (!entry.IsPersisted)
                 {
                     await partition.PersistCachedEntryAsync(startIndex, evictOnCommit).ConfigureAwait(false);
 

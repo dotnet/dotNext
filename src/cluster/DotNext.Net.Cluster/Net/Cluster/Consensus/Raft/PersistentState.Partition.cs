@@ -91,8 +91,6 @@ public partial class PersistentState
 
         internal abstract LogEntry Read(int sessionId, long absoluteIndex, bool metadataOnly = false);
 
-        internal abstract LogEntry Read(int sessionId, long absoluteIndex, out bool persisted);
-
         internal abstract ValueTask PersistCachedEntryAsync(long absoluteIndex, bool removeFromMemory);
 
         internal abstract long GetTerm(long absoluteIndex);
@@ -207,8 +205,7 @@ public partial class PersistentState
             return LogEntryMetadata.GetTerm(GetMetadata(ToRelativeIndex(absoluteIndex), out _));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private LogEntry Read(int sessionId, long absoluteIndex, out bool persisted, bool metadataOnly)
+        internal override LogEntry Read(int sessionId, long absoluteIndex, bool metadataOnly)
         {
             Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
@@ -225,20 +222,20 @@ public partial class PersistentState
 
             if (cachedContent.Content.IsEmpty && metadata.Length > 0L)
             {
-                persisted = true;
-                return new(in metadata, absoluteIndex) { ContentReader = GetSessionReader(sessionId) };
+                return new(in metadata, absoluteIndex)
+                {
+                    ContentReader = GetSessionReader(sessionId),
+                    IsPersisted = true,
+                };
             }
 
         return_cached:
-            persisted = cachedContent.PersistenceMode is not CachedLogEntryPersistenceMode.None;
-            return new(in metadata, absoluteIndex) { ContentBuffer = cachedContent.Content.Memory };
+            return new(in metadata, absoluteIndex)
+            {
+                ContentBuffer = cachedContent.Content.Memory,
+                IsPersisted = cachedContent.PersistenceMode is not CachedLogEntryPersistenceMode.None,
+            };
         }
-
-        internal override LogEntry Read(int sessionId, long absoluteIndex, bool metadataOnly = false)
-            => Read(sessionId, absoluteIndex, out _, metadataOnly);
-
-        internal override LogEntry Read(int sessionId, long absoluteIndex, out bool persisted)
-            => Read(sessionId, absoluteIndex, out persisted, metadataOnly: false);
 
         internal override ValueTask PersistCachedEntryAsync(long absoluteIndex, bool removeFromMemory)
         {
