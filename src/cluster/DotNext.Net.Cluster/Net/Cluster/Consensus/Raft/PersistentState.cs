@@ -28,6 +28,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private protected readonly int concurrentReads;
     private protected readonly WriteMode writeMode;
     private readonly bool parallelIO;
+    private readonly long? maxLogEntrySize;
 
     static PersistentState()
     {
@@ -39,7 +40,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     private protected PersistentState(DirectoryInfo path, int recordsPerPartition, Options configuration)
     {
-        if (recordsPerPartition < 2 || recordsPerPartition > PartitionBase.MaxRecordsPerPartition)
+        if (recordsPerPartition < 2 || recordsPerPartition > Partition.MaxRecordsPerPartition)
             throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
         if (!path.Exists)
             path.Create();
@@ -57,20 +58,21 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             ? new FastSessionIdPool()
             : new SlowSessionIdPool(concurrentReads);
         parallelIO = configuration.ParallelIO;
+        maxLogEntrySize = configuration.MaxLogEntrySize;
 
         syncRoot = new(configuration.MaxConcurrentReads)
         {
             MeasurementTags = configuration.MeasurementTags,
         };
 
-        var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
+        var partitionTable = new SortedSet<Table>(Comparer<Table>.Create(ComparePartitions));
 
         // load all partitions from file system
         foreach (var file in path.EnumerateFiles())
         {
             if (long.TryParse(file.Name, out var partitionNumber))
             {
-                var partition = new Partition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize);
+                var partition = new Table(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize);
                 partition.Initialize();
                 partitionTable.Add(partition);
             }
@@ -96,7 +98,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         state = new(path, bufferManager.BufferAllocator, configuration.IntegrityCheck, writeMode is not WriteMode.NoFlush);
         measurementTags = configuration.MeasurementTags;
 
-        static int ComparePartitions(Partition x, Partition y) => x.PartitionNumber.CompareTo(y.PartitionNumber);
+        static int ComparePartitions(Table x, Table y) => x.PartitionNumber.CompareTo(y.PartitionNumber);
     }
 
     private protected static Meter MeterRoot => ReadRateMeter.Meter;
@@ -110,8 +112,10 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     bool IAuditTrail.IsLogEntryLengthAlwaysPresented => true;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private partial PartitionBase CreatePartition(long partitionNumber)
-        => new Partition(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize);
+    private partial Partition CreatePartition(long partitionNumber)
+        => maxLogEntrySize.HasValue
+            ? new SparsePartition(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize, maxLogEntrySize.GetValueOrDefault())
+            : new Table(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize);
 
     private ValueTask<TResult> UnsafeReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, bool snapshotRequested, CancellationToken token)
     {
@@ -351,7 +355,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private async ValueTask AppendCachedAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool writeThrough, bool skipCommitted, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
-        for (PartitionBase? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
+        for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
         {
             var currentEntry = supplier.Current;
 
@@ -389,7 +393,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private async Task AppendUncachedAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
     {
-        for (PartitionBase? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
+        for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
         {
             var currentEntry = supplier.Current;
 
@@ -473,7 +477,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private ValueTask UnsafeAppendAsync<TEntry>(TEntry entry, long startIndex, [NotNull] out PartitionBase? partition, CancellationToken token = default)
+    private ValueTask UnsafeAppendAsync<TEntry>(TEntry entry, long startIndex, [NotNull] out Partition? partition, CancellationToken token = default)
         where TEntry : notnull, IRaftLogEntry
     {
         partition = LastPartition;
@@ -554,7 +558,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         {
             Debug.Assert(entry.IsSnapshot);
 
-            PartitionBase? removedHead;
+            Partition? removedHead;
 
             // Snapshot requires exclusive lock. However, snapshot installation is very rare operation
             await syncRoot.AcquireAsync(LockType.ExclusiveLock, token).ConfigureAwait(false);
@@ -753,7 +757,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         void DropPartitions(long upToIndex)
         {
-            for (PartitionBase? partition = LastPartition, previous; partition is not null && partition.FirstIndex >= upToIndex; partition = previous)
+            for (Partition? partition = LastPartition, previous; partition is not null && partition.FirstIndex >= upToIndex; partition = previous)
             {
                 previous = partition.Previous;
                 DropPartition(partition);
@@ -762,7 +766,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             InvalidatePartitions(upToIndex);
         }
 
-        void DropPartition(PartitionBase partition)
+        void DropPartition(Partition partition)
         {
             if (ReferenceEquals(FirstPartition, partition))
                 FirstPartition = partition.Next;
@@ -924,7 +928,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     {
         if (disposing)
         {
-            for (PartitionBase? current = FirstPartition, next; current is not null; current = next)
+            for (Partition? current = FirstPartition, next; current is not null; current = next)
             {
                 next = current.Next;
                 current.Dispose();

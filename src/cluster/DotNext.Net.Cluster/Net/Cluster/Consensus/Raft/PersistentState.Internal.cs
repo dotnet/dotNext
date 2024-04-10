@@ -248,7 +248,7 @@ public partial class PersistentState
         // This field is used to control 'freshness' of the read buffers
         private ulong version; // volatile
 
-        private protected ConcurrentStorageAccess(string fileName, int fileOffset, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, WriteMode writeMode, long initialSize)
+        private protected ConcurrentStorageAccess(string fileName, int fileOffset, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, WriteMode writeMode, long initialSize, FileAttributes attributes = FileAttributes.NotContentIndexed)
         {
             var options = writeMode is WriteMode.WriteThrough
                 ? FileOptions.Asynchronous | FileOptions.WriteThrough | FileOptions.SequentialScan
@@ -270,7 +270,7 @@ public partial class PersistentState
 
             if (fileMode is FileMode.CreateNew)
             {
-                File.SetAttributes(Handle, FileAttributes.NotContentIndexed);
+                File.SetAttributes(Handle, attributes);
             }
 
             this.fileOffset = fileOffset;
@@ -378,8 +378,8 @@ public partial class PersistentState
         internal readonly long StartIndex, EndIndex;
         internal readonly int SessionId;
         private readonly bool metadataOnly;
-        private readonly PartitionBase? head; // partition containing the first log entry in the list
-        private PartitionBase? cache;
+        private readonly Partition? head; // partition containing the first log entry in the list
+        private Partition? cache;
         internal IAsyncBinaryReader? Snapshot;
 
         internal LogEntryList(PersistentState state, int sessionId, long startIndex, long endIndex, int count, bool metadataOnly)
@@ -449,7 +449,7 @@ public partial class PersistentState
                 runningIndex += 1L;
             }
 
-            for (PartitionBase? partition = head; runningIndex <= EndIndex && state.TryGetPartition(runningIndex, ref partition); runningIndex++)
+            for (Partition? partition = head; runningIndex <= EndIndex && state.TryGetPartition(runningIndex, ref partition); runningIndex++)
                 yield return partition.Read(SessionId, runningIndex, metadataOnly);
         }
 

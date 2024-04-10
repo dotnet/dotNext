@@ -46,6 +46,7 @@ public partial class PersistentState
         private int concurrencyLevel = Math.Max(3, Environment.ProcessorCount);
         private long partitionSize;
         private bool parallelIO;
+        private long maxLogEntrySize;
 
         /// <summary>
         /// Gets or sets a value indicating how the log interacts with underlying storage device.
@@ -131,6 +132,18 @@ public partial class PersistentState
         /// to create backup archive.
         /// </summary>
         public TarEntryFormat BackupFormat { get; set; } = TarEntryFormat.Pax;
+
+        /// <summary>
+        /// Gets or sets maximum size of the log entry, in bytes.
+        /// </summary>
+        /// <remarks>
+        /// If enabled, WAL uses sparse files to optimize performance.
+        /// </remarks>
+        public long? MaxLogEntrySize
+        {
+            get => maxLogEntrySize > 0L ? maxLogEntrySize : null;
+            set => maxLogEntrySize = value.GetValueOrDefault();
+        }
 
         /// <summary>
         /// If set then every read operations will be performed

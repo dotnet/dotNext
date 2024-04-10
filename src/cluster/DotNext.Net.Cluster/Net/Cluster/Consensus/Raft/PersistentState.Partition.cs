@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -10,17 +11,17 @@ using IntegrityException = IO.Log.IntegrityException;
 
 public partial class PersistentState
 {
-    private protected abstract class PartitionBase : ConcurrentStorageAccess
+    private protected abstract class Partition : ConcurrentStorageAccess
     {
         internal const int MaxRecordsPerPartition = int.MaxValue / LogEntryMetadata.Size;
         protected static readonly CacheRecord EmptyRecord = new();
 
         internal readonly long FirstIndex, PartitionNumber, LastIndex;
-        private PartitionBase? previous, next;
+        private Partition? previous, next;
         protected MemoryOwner<CacheRecord> entryCache;
 
-        protected PartitionBase(DirectoryInfo location, int offset, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize)
-            : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), offset, bufferSize, manager.BufferAllocator, readersCount, writeMode, initialSize)
+        protected Partition(DirectoryInfo location, int offset, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize, FileAttributes attributes = FileAttributes.NotContentIndexed)
+            : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), offset, bufferSize, manager.BufferAllocator, readersCount, writeMode, initialSize, attributes)
         {
             FirstIndex = partitionNumber * recordsPerPartition;
             LastIndex = FirstIndex + recordsPerPartition - 1L;
@@ -39,11 +40,11 @@ public partial class PersistentState
         [MemberNotNullWhen(false, nameof(Next))]
         internal bool IsLast => next is null;
 
-        internal PartitionBase? Next => next;
+        internal Partition? Next => next;
 
-        internal PartitionBase? Previous => previous;
+        internal Partition? Previous => previous;
 
-        internal void Append(PartitionBase partition)
+        internal void Append(Partition partition)
         {
             Debug.Assert(PartitionNumber < partition.PartitionNumber);
             partition.previous = this;
@@ -53,7 +54,7 @@ public partial class PersistentState
             next = partition;
         }
 
-        internal void Prepend(PartitionBase partition)
+        internal void Prepend(Partition partition)
         {
             Debug.Assert(PartitionNumber > partition.PartitionNumber);
             partition.previous = previous;
@@ -241,19 +242,118 @@ public partial class PersistentState
         }
     }
 
-    // private protected sealed class SparsePartition : PartitionBase
-    // {
-    //     internal SparsePartition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize)
-    //         : base(location, offset: 0, bufferSize, recordsPerPartition, partitionNumber, in manager, readersCount, writeMode, initialSize)
-    //     {
-    //         File.SetAttributes(Handle, FileAttributes.SparseFile);
-    //     }
+    private sealed class SparsePartition : Partition
+    {
+        private readonly long maxLogEntrySize;
+        private MemoryOwner<CachedLogEntryMetadata> metadataTable;
+        private MemoryOwner<byte> metadataBuffer;
 
-    //     protected override ValueTask WriteAsync<TEntry>(TEntry entry, int index, CancellationToken token)
-    //     {
-    //         throw new NotImplementedException();
-    //     }
-    // }
+        internal SparsePartition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize, long maxLogEntrySize)
+            : base(location, offset: 0, bufferSize, recordsPerPartition, partitionNumber, in manager, readersCount, writeMode, initialSize, FileAttributes.NotContentIndexed | FileAttributes.SparseFile)
+        {
+            metadataTable = manager.Allocate<CachedLogEntryMetadata>(recordsPerPartition);
+            this.maxLogEntrySize = maxLogEntrySize;
+            metadataBuffer = manager.BufferAllocator.AllocateExactly(LogEntryMetadata.Size);
+        }
+
+        internal override void Initialize()
+        {
+            // do nothing
+        }
+
+        private long GetMetadataOffset(int index) => index * (maxLogEntrySize + LogEntryMetadata.Size);
+
+        protected override LogEntryMetadata GetMetadata(int index)
+        {
+            ref var entry = ref metadataTable[index];
+
+            if (!entry.IsLoaded)
+            {
+                // very rare so can be done synchronously
+                Span<byte> buffer = stackalloc byte[LogEntryMetadata.Size];
+                RandomAccess.Read(Handle, buffer, GetMetadataOffset(index));
+                entry.Metadata = new(buffer);
+            }
+
+            return entry.Metadata;
+        }
+
+        protected override void OnCached(in CachedLogEntry cachedEntry, int index)
+            => metadataTable[index].Metadata = LogEntryMetadata.Create(cachedEntry, offset: 0L);
+
+        protected override async ValueTask PersistAsync<TEntry>(TEntry entry, int index, CancellationToken token)
+        {
+            var metadataOffset = GetMetadataOffset(index);
+            LogEntryMetadata metadata;
+
+            if (entry.Length is not { } length)
+            {
+                // slow path - write the entry first and then write metadata
+                await SetWritePositionAsync(metadataOffset + LogEntryMetadata.Size, token).ConfigureAwait(false);
+                length = writer.WritePosition;
+
+                await entry.WriteToAsync(writer, token).ConfigureAwait(false);
+                length = writer.WritePosition - length;
+
+                if (length > maxLogEntrySize)
+                    goto too_large_entry;
+
+                metadata = LogEntryMetadata.Create(entry, offset: 0L, length);
+                metadata.Format(metadataBuffer.Span);
+                await RandomAccess.WriteAsync(Handle, metadataBuffer.Memory, metadataOffset, token).ConfigureAwait(false);
+            }
+            else if (length <= maxLogEntrySize)
+            {
+                // fast path - length is known, metadata and the log entry can be written sequentially
+                metadata = LogEntryMetadata.Create(entry, offset: 0L, length);
+                await SetWritePositionAsync(metadataOffset, token).ConfigureAwait(false);
+
+                await writer.WriteAsync(metadata, token).ConfigureAwait(false);
+                await entry.WriteToAsync(writer, token).ConfigureAwait(false);
+            }
+            else
+            {
+                goto too_large_entry;
+            }
+
+            metadataTable[index].Metadata = metadata;
+            return;
+
+        too_large_entry:
+            throw new InvalidOperationException();
+        }
+
+        protected override ValueTask WriteThroughAsync(CachedLogEntry content, int index, CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            metadataTable.Dispose();
+            metadataBuffer.Dispose();
+            base.Dispose(disposing);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private struct CachedLogEntryMetadata
+        {
+            private LogEntryMetadata metadata;
+            private volatile bool loaded;
+
+            internal readonly bool IsLoaded => loaded;
+
+            internal LogEntryMetadata Metadata
+            {
+                readonly get => metadata;
+                set
+                {
+                    metadata = value;
+                    loaded = true;
+                }
+            }
+        }
+    }
 
     /*
         Partition file format:
@@ -262,7 +362,7 @@ public partial class PersistentState
         [struct LogEntryMetadata] X Capacity - prologue with metadata
         [octet string] X number of entries
      */
-    private protected sealed class Partition : PartitionBase
+    private sealed class Table : Partition
     {
         // metadata management
         private MemoryOwner<byte> metadata;
@@ -272,7 +372,7 @@ public partial class PersistentState
         // represents offset within the file from which a newly added log entry payload can be recorded
         private long writeAddress;
 
-        internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize)
+        internal Table(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize)
             : base(location, checked(LogEntryMetadata.Size * recordsPerPartition), bufferSize, recordsPerPartition, partitionNumber, in manager, readersCount, writeMode, initialSize)
         {
             // allocate metadata segment
@@ -376,11 +476,7 @@ public partial class PersistentState
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                metadata.Dispose();
-            }
-
+            metadata.Dispose();
             base.Dispose(disposing);
         }
     }
@@ -410,13 +506,13 @@ public partial class PersistentState
     // 4. The thread that is responsible for removing partitions from the head (compaction thread) doesn't have
     // concurrency with the thread that is adding new partitions
     // Under the hood, this is simply a sorted linked list
-    private protected PartitionBase? FirstPartition
+    private protected Partition? FirstPartition
     {
         get;
         private set;
     }
 
-    private protected PartitionBase? LastPartition
+    private protected Partition? LastPartition
     {
         get;
         private set;
@@ -425,11 +521,11 @@ public partial class PersistentState
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private long PartitionOf(long recordIndex) => recordIndex / recordsPerPartition;
 
-    private partial PartitionBase CreatePartition(long partitionNumber);
+    private partial Partition CreatePartition(long partitionNumber);
 
     // during insertion the index is growing monothonically so
     // this method is optimized for forward lookup in sorted list of partitions
-    private void GetOrCreatePartition(long recordIndex, [NotNull] ref PartitionBase? partition)
+    private void GetOrCreatePartition(long recordIndex, [NotNull] ref Partition? partition)
     {
         var partitionNumber = PartitionOf(recordIndex);
 
@@ -490,14 +586,14 @@ public partial class PersistentState
     exit:
         return;
 
-        PartitionBase Prepend(long partitionNumber, PartitionBase partition)
+        Partition Prepend(long partitionNumber, Partition partition)
         {
             var tmp = CreatePartition(partitionNumber);
             partition.Prepend(tmp);
             return tmp;
         }
 
-        PartitionBase Append(long partitionNumber, PartitionBase partition)
+        Partition Append(long partitionNumber, Partition partition)
         {
             var tmp = CreatePartition(partitionNumber);
             partition.Append(tmp);
@@ -505,9 +601,9 @@ public partial class PersistentState
         }
     }
 
-    private PartitionBase? TryGetPartition(long partitionNumber)
+    private Partition? TryGetPartition(long partitionNumber)
     {
-        PartitionBase? result = LastPartition;
+        Partition? result = LastPartition;
         if (result is null)
             goto exit;
 
@@ -545,7 +641,7 @@ public partial class PersistentState
     }
 
     // during reads the index is growing monothonically
-    private protected bool TryGetPartition(long recordIndex, [NotNullWhen(true)] ref PartitionBase? partition)
+    private protected bool TryGetPartition(long recordIndex, [NotNullWhen(true)] ref Partition? partition)
     {
         if (partition?.Contains(recordIndex) ?? false)
             goto success;
@@ -592,7 +688,7 @@ public partial class PersistentState
         return false;
     }
 
-    private static void DeletePartition(PartitionBase partition)
+    private static void DeletePartition(Partition partition)
     {
         var fileName = partition.FileName;
         partition.Dispose();
@@ -600,18 +696,18 @@ public partial class PersistentState
     }
 
     // this method should be called for detached partition only
-    private protected static void DeletePartitions(PartitionBase? head)
+    private protected static void DeletePartitions(Partition? head)
     {
-        for (PartitionBase? next; head is not null; head = next)
+        for (Partition? next; head is not null; head = next)
         {
             next = head.Next;
             DeletePartition(head);
         }
     }
 
-    private protected PartitionBase? DetachPartitions(long upperBoundIndex)
+    private protected Partition? DetachPartitions(long upperBoundIndex)
     {
-        PartitionBase? result = FirstPartition, current;
+        Partition? result = FirstPartition, current;
         for (current = result; current is not null && current.LastIndex <= upperBoundIndex; current = current.Next);
 
         if (current is null)
@@ -633,7 +729,7 @@ public partial class PersistentState
 
     private void InvalidatePartitions(long upToIndex)
     {
-        for (PartitionBase? partition = LastPartition; partition is not null && partition.LastIndex >= upToIndex; partition = partition.Previous)
+        for (Partition? partition = LastPartition; partition is not null && partition.LastIndex >= upToIndex; partition = partition.Previous)
             partition.Invalidate();
     }
 }

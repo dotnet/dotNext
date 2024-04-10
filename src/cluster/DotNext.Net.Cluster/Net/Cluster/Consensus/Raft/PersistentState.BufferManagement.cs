@@ -153,6 +153,8 @@ public partial class PersistentState
 
         internal MemoryOwner<CacheRecord> AllocLogEntryCache(int recordsPerPartition)
             => cacheAllocator is null ? default : cacheAllocator(recordsPerPartition);
+
+        internal MemoryOwner<T> Allocate<T>(int length) where T : unmanaged => options.GetMemoryAllocator<T>().AllocateExactly(length);
     }
 
     private readonly BufferingLogEntryConsumer? bufferingConsumer;
