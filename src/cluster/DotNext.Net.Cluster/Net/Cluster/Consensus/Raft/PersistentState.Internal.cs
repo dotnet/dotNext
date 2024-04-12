@@ -151,7 +151,7 @@ public partial class PersistentState
         internal static long GetOffset(ReadOnlySpan<byte> input)
             => BinaryPrimitives.ReadInt64LittleEndian(input.Slice(0, sizeof(long) + sizeof(long) + sizeof(long))); // skip Term, Timestamp, Length
 
-        private long End => Length + Offset;
+        internal long End => Length + Offset;
 
         internal static long GetEndOfLogEntry(ReadOnlySpan<byte> input)
         {
