@@ -512,6 +512,7 @@ public partial class PersistentState
             {
                 // write footer with metadata table
                 await RandomAccess.WriteAsync(Handle, footer.Memory, metadata.End, token).ConfigureAwait(false);
+                RandomAccess.SetLength(Handle, metadata.End + footer.Length);
 
                 // seal the partition
                 IsSealed = true;
@@ -547,6 +548,7 @@ public partial class PersistentState
             {
                 // write footer with metadata table
                 await RandomAccess.WriteAsync(Handle, footer.Memory, metadata.End, token).ConfigureAwait(false);
+                RandomAccess.SetLength(Handle, metadata.End + footer.Length);
 
                 // seal the partition
                 IsSealed = true;
