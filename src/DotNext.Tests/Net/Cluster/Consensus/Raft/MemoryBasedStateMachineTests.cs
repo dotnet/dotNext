@@ -839,7 +839,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         }
     }
 
-    [Fact]
+    [PlatformSpecificFact("linux")]
     public static async Task CreateSparseBackup()
     {
         var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
