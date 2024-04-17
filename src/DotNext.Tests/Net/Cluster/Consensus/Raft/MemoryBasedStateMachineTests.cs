@@ -840,6 +840,37 @@ public sealed class MemoryBasedStateMachineTests : Test
     }
 
     [Fact]
+    public static async Task CreateSparseBackup()
+    {
+        var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
+        var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
+        var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
+        var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
+        var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
+        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var backupFile = Path.GetTempFileName();
+        IPersistentState state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { MaxLogEntrySize = 1024 * 1024, BackupFormat = System.Formats.Tar.TarEntryFormat.Gnu });
+        var member = ClusterMemberId.FromEndPoint(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
+        try
+        {
+            //define node state
+            Equal(1, await state.IncrementTermAsync(member));
+            True(state.IsVotedFor(member));
+            //define log entries
+            Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
+            //commit some of them
+            Equal(2L, await state.CommitAsync(2L));
+            //save backup
+            await using var backupStream = new FileStream(backupFile, FileMode.Truncate, FileAccess.Write, FileShare.None, 1024, true);
+            await state.CreateBackupAsync(backupStream);
+        }
+        finally
+        {
+            (state as IDisposable)?.Dispose();
+        }
+    }
+
+    [Fact]
     public static async Task Reconstruction()
     {
         var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];

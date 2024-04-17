@@ -138,6 +138,9 @@ public partial class PersistentState
         /// </summary>
         /// <remarks>
         /// If enabled, WAL uses sparse files to optimize performance.
+        /// <see cref="CreateBackupAsync(Stream, CancellationToken)"/> method supports backup of sparse
+        /// files on Linux only. <see cref="RestoreFromBackupAsync(Stream, DirectoryInfo, CancellationToken)"/>
+        /// method cannot restore the backup, you need to use <c>tar</c> utility to extract files.
         /// </remarks>
         public long? MaxLogEntrySize
         {
