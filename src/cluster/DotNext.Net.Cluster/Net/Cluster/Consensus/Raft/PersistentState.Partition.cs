@@ -661,6 +661,130 @@ public partial class PersistentState
         }
     }
 
+    /*
+       Partition file format:
+       FileName - number of partition
+       Payload:
+       [struct LogEntryMetadata] X Capacity - prologue with metadata
+       [octet string] X number of entries
+    */
+    [Obsolete]
+    private sealed class LegacyPartition : Partition
+    {
+        // metadata management
+        private MemoryOwner<byte> metadata;
+        private int metadataFlushStartAddress;
+        private int metadataFlushEndAddress;
+
+        // represents offset within the file from which a newly added log entry payload can be recorded
+        private long writeAddress;
+
+        internal LegacyPartition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize)
+            : base(location, checked(LogEntryMetadata.Size * recordsPerPartition), bufferSize, recordsPerPartition, partitionNumber, in manager, readersCount, writeMode, initialSize)
+        {
+            // allocate metadata segment
+            metadata = manager.BufferAllocator.AllocateExactly(fileOffset);
+            metadataFlushStartAddress = int.MaxValue;
+
+            writeAddress = fileOffset;
+        }
+
+        internal override void Initialize()
+        {
+            using var handle = File.OpenHandle(FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.SequentialScan);
+            if (RandomAccess.Read(handle, metadata.Span, 0L) < fileOffset)
+            {
+                metadata.Span.Clear();
+                RandomAccess.Write(handle, metadata.Span, 0L);
+            }
+            else
+            {
+                writeAddress = Math.Max(fileOffset, GetWriteAddress(metadata.Span));
+            }
+
+            static long GetWriteAddress(ReadOnlySpan<byte> metadataTable)
+            {
+                long result;
+
+                for (result = 0L; !metadataTable.IsEmpty; metadataTable = metadataTable.Slice(LogEntryMetadata.Size))
+                {
+                    result = Math.Max(result, LogEntryMetadata.GetEndOfLogEntry(metadataTable));
+                }
+
+                return result;
+            }
+        }
+
+        private async ValueTask FlushAsync(ReadOnlyMemory<byte> metadata, CancellationToken token)
+        {
+            await RandomAccess.WriteAsync(Handle, metadata, metadataFlushStartAddress, token).ConfigureAwait(false);
+            metadataFlushStartAddress = int.MaxValue;
+            metadataFlushEndAddress = 0;
+
+            await base.FlushAsync(token).ConfigureAwait(false);
+        }
+
+        public override ValueTask FlushAsync(CancellationToken token = default)
+        {
+            var size = metadataFlushEndAddress - metadataFlushStartAddress;
+            return size > 0
+                ? FlushAsync(metadata.Memory.Slice(metadataFlushStartAddress, size), token)
+                : base.FlushAsync(token);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Span<byte> GetMetadata(int index, out int offset)
+        {
+            Debug.Assert(metadata.Length == fileOffset);
+
+            return metadata.Span.Slice(offset = index * LogEntryMetadata.Size);
+        }
+
+        protected override LogEntryMetadata GetMetadata(int index)
+            => new(GetMetadata(index, out _));
+
+        private void WriteMetadata(int index, in LogEntryMetadata metadata)
+        {
+            metadata.Format(GetMetadata(index, out var offset));
+
+            metadataFlushStartAddress = Math.Min(metadataFlushStartAddress, offset);
+            metadataFlushEndAddress = Math.Max(metadataFlushEndAddress, offset + LogEntryMetadata.Size);
+        }
+
+        protected override async ValueTask PersistAsync<TEntry>(TEntry entry, int index, CancellationToken token)
+        {
+            // slow path - persist log entry
+            await SetWritePositionAsync(writeAddress, token).ConfigureAwait(false);
+            await entry.WriteToAsync(writer, token).ConfigureAwait(false);
+
+            // save new log entry to the allocation table
+            var length = writer.WritePosition - writeAddress;
+            WriteMetadata(index, LogEntryMetadata.Create(entry, writeAddress, length));
+            writeAddress += length;
+        }
+
+        protected override async ValueTask WriteThroughAsync(CachedLogEntry entry, int index, CancellationToken token)
+        {
+            await RandomAccess.WriteAsync(Handle, entry.Content.Memory, writeAddress, token).ConfigureAwait(false);
+
+            // save new log entry to the allocation table
+            WriteMetadata(index, LogEntryMetadata.Create(entry, writeAddress, entry.Length));
+            writeAddress += entry.Length;
+        }
+
+        protected override void OnCached(in CachedLogEntry cachedEntry, int index)
+        {
+            WriteMetadata(index, LogEntryMetadata.Create(cachedEntry, writeAddress, cachedEntry.Length));
+            writeAddress += cachedEntry.Length;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            metadata.Dispose();
+            base.Dispose(disposing);
+        }
+    }
+
     /// <summary>
     /// Indicates that the log entry doesn't have a partition.
     /// </summary>

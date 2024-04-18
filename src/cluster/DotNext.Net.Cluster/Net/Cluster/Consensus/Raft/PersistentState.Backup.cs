@@ -62,7 +62,7 @@ public partial class PersistentState
     /// <returns>A task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task CreateBackupAsync(Stream output, CancellationToken token = default)
-        => maxLogEntrySize.HasValue ? CreateSparseBackupAsync(output, token) : CreateRegularBackupAsync(output, token);
+        => maxLogEntrySize > 0L ? CreateSparseBackupAsync(output, token) : CreateRegularBackupAsync(output, token);
 
     private async Task CreateSparseBackupAsync(Stream output, CancellationToken token)
     {

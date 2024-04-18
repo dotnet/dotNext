@@ -46,7 +46,7 @@ public partial class PersistentState
         private int concurrencyLevel = Math.Max(3, Environment.ProcessorCount);
         private long partitionSize;
         private bool parallelIO;
-        private long maxLogEntrySize;
+        internal long maxLogEntrySize;
 
         /// <summary>
         /// Gets or sets a value indicating how the log interacts with underlying storage device.
@@ -146,6 +146,16 @@ public partial class PersistentState
         {
             get => maxLogEntrySize > 0L ? maxLogEntrySize : null;
             set => maxLogEntrySize = value.GetValueOrDefault();
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating that legacy binary format must be used.
+        /// </summary>
+        [Obsolete("Use default partition format.")]
+        public bool UseLegacyBinaryFormat
+        {
+            get => maxLogEntrySize < 0L;
+            set => maxLogEntrySize = value ? -1L : 0L;
         }
 
         /// <summary>

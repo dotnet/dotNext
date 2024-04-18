@@ -324,6 +324,44 @@ public sealed class MemoryBasedStateMachineTests : Test
         }
     }
 
+    [Obsolete]
+    [Fact]
+    public static async Task LegacyOverwrite()
+    {
+        var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
+        var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
+        var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
+        var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
+        var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
+        Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
+        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { UseLegacyBinaryFormat = true }))
+        {
+            Equal(1L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
+            Equal(4L, state.LastEntryIndex);
+            Equal(0L, state.LastCommittedEntryIndex);
+            await state.AppendAsync(entry1, 1L);
+            Equal(1L, state.LastEntryIndex);
+            Equal(0L, state.LastCommittedEntryIndex);
+        }
+
+        //read again
+        using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { UseLegacyBinaryFormat = true }))
+        {
+            Equal(1L, state.LastEntryIndex);
+            Equal(0L, state.LastCommittedEntryIndex);
+            checker = async (entries, snapshotIndex, token) =>
+            {
+                Null(snapshotIndex);
+                Single(entries);
+                False(entries[0].IsSnapshot);
+                Equal(entry1.Content, await entries[0].ToStringAsync(Encoding.UTF8));
+                return Missing.Value;
+            };
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1L, CancellationToken.None);
+        }
+    }
+
     [Theory]
     [InlineData(true)]
     [InlineData(false)]

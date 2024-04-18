@@ -28,7 +28,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private protected readonly int concurrentReads;
     private protected readonly WriteMode writeMode;
     private readonly bool parallelIO;
-    private readonly long? maxLogEntrySize;
+    private readonly long maxLogEntrySize; // 0 - modern partition, > 0 - sparse partition, < 0 - legacy partition
 
     static PersistentState()
     {
@@ -58,7 +58,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             ? new FastSessionIdPool()
             : new SlowSessionIdPool(concurrentReads);
         parallelIO = configuration.ParallelIO;
-        maxLogEntrySize = configuration.MaxLogEntrySize;
+        maxLogEntrySize = configuration.maxLogEntrySize;
 
         syncRoot = new(configuration.MaxConcurrentReads)
         {
@@ -68,9 +68,10 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         var partitionTable = new SortedSet<Partition>(Comparer<Partition>.Create(ComparePartitions));
 
         // load all partitions from file system
-        if (maxLogEntrySize.HasValue)
+        switch (maxLogEntrySize)
         {
-            CreateSparsePartitions(
+            case > 0L:
+                CreateSparsePartitions(
                 partitionTable,
                 path,
                 bufferSize,
@@ -79,11 +80,10 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 concurrentReads,
                 writeMode,
                 initialSize,
-                maxLogEntrySize.GetValueOrDefault());
-        }
-        else
-        {
-            CreateTables(
+                maxLogEntrySize);
+                break;
+            case 0L:
+                CreateTables(
                 partitionTable,
                 path,
                 bufferSize,
@@ -92,6 +92,20 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 concurrentReads,
                 writeMode,
                 initialSize);
+                break;
+            case < 0L:
+#pragma warning disable CS0618,CS0612
+                CreateLegacyPartitions(
+                partitionTable,
+                path,
+                bufferSize,
+                recordsPerPartition,
+                in bufferManager,
+                concurrentReads,
+                writeMode,
+                initialSize);
+                break;
+#pragma warning restore CS0618,CS0612
         }
 
         // constructed sorted list of partitions
@@ -141,6 +155,20 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 }
             }
         }
+
+        [Obsolete]
+        static void CreateLegacyPartitions(SortedSet<Partition> partitionTable, DirectoryInfo path, int bufferSize, int recordsPerPartition, in BufferManager manager, int concurrentReads, WriteMode writeMode, long initialSize)
+        {
+            foreach (var file in path.EnumerateFiles())
+            {
+                if (long.TryParse(file.Name, out var partitionNumber))
+                {
+                    var partition = new LegacyPartition(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in manager, concurrentReads, writeMode, initialSize);
+                    partition.Initialize();
+                    partitionTable.Add(partition);
+                }
+            }
+        }
     }
 
     private protected static Meter MeterRoot => ReadRateMeter.Meter;
@@ -154,10 +182,14 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     bool IAuditTrail.IsLogEntryLengthAlwaysPresented => true;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private partial Partition CreatePartition(long partitionNumber)
-        => maxLogEntrySize.HasValue
-            ? new SparsePartition(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize, maxLogEntrySize.GetValueOrDefault())
-            : new Table(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize);
+    private partial Partition CreatePartition(long partitionNumber) => maxLogEntrySize switch
+    {
+        > 0L => new SparsePartition(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize, maxLogEntrySize),
+        0L => new Table(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize),
+#pragma warning disable CS0618,CS0612
+        < 0L => new LegacyPartition(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize),
+#pragma warning restore CS0618,CS0612
+    };
 
     private ValueTask<TResult> UnsafeReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, int sessionId, long startIndex, long endIndex, int length, bool snapshotRequested, CancellationToken token)
     {
