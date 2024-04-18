@@ -151,7 +151,7 @@ public partial class PersistentState
         /// <summary>
         /// Gets or sets a value indicating that legacy binary format must be used.
         /// </summary>
-        [Obsolete("Use default partition format.")]
+        [Obsolete("Use default format instead.")]
         public bool UseLegacyBinaryFormat
         {
             get => maxLogEntrySize < 0L;
