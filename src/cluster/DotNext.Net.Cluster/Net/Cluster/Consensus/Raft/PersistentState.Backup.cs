@@ -93,7 +93,7 @@ public partial class PersistentState
             await tarProcess.WaitForExitAsync(token).ConfigureAwait(false);
 
             if (tarProcess.ExitCode is not 0)
-                throw new InvalidOperationException() { HResult = tarProcess.ExitCode };
+                throw new PlatformNotSupportedException(ExceptionMessages.SparseFileNotSupported) { HResult = tarProcess.ExitCode };
 
             archiveStream = new(outputArchive, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan | FileOptions.Asynchronous | FileOptions.DeleteOnClose);
             await archiveStream.CopyToAsync(output, token).ConfigureAwait(false);

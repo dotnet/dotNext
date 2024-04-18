@@ -19,3 +19,4 @@ UnknownRaftMessageType=Unknown Raft message type {0}
 PersistentStateBroken=Internal state of the WAL didn't pass the integrity check
 ConcurrentMembershipUpdate=Cluster membership cannot be modified concurrently
 LogEntryPayloadTooLarge=The size of the log entry is larger than specified threshold
+SparseFileNotSupported=TAR archive doesn't support sparse files on the target platform
