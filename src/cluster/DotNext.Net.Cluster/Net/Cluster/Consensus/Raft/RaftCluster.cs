@@ -388,7 +388,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         RaftState<TMember> currentState;
-        if ((currentState = state) is FollowerState<TMember> or CandidateState<TMember>)
+        if ((currentState = state) is not StandbyState<TMember>)
         {
             var tokenSource = token.LinkTo(LifecycleToken);
             var lockTaken = false;

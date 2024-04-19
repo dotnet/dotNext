@@ -448,7 +448,6 @@ public sealed class RaftHttpClusterTests : RaftTest
         await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
 
         // suspend two nodes
-        False(await GetLocalClusterView(host1).EnableStandbyModeAsync());
         True(await GetLocalClusterView(host2).EnableStandbyModeAsync());
         True(GetLocalClusterView(host2).Standby);
         True(await GetLocalClusterView(host3).EnableStandbyModeAsync());
