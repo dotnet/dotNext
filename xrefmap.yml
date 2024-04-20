@@ -13152,6 +13152,19 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileWriter.WritePosition
   nameWithType: FileWriter.WritePosition
+- uid: DotNext.IO.FileWriter.WrittenBuffer
+  name: WrittenBuffer
+  href: api/DotNext.IO.FileWriter.html#DotNext_IO_FileWriter_WrittenBuffer
+  commentId: P:DotNext.IO.FileWriter.WrittenBuffer
+  fullName: DotNext.IO.FileWriter.WrittenBuffer
+  nameWithType: FileWriter.WrittenBuffer
+- uid: DotNext.IO.FileWriter.WrittenBuffer*
+  name: WrittenBuffer
+  href: api/DotNext.IO.FileWriter.html#DotNext_IO_FileWriter_WrittenBuffer_
+  commentId: Overload:DotNext.IO.FileWriter.WrittenBuffer
+  isSpec: "True"
+  fullName: DotNext.IO.FileWriter.WrittenBuffer
+  nameWithType: FileWriter.WrittenBuffer
 - uid: DotNext.IO.FileWriter.handle
   name: handle
   href: api/DotNext.IO.FileWriter.html#DotNext_IO_FileWriter_handle
@@ -26073,6 +26086,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.AuditTrail
   nameWithType: IRaftCluster.AuditTrail
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConsensusToken
+  name: ConsensusToken
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ConsensusToken
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConsensusToken
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConsensusToken
+  nameWithType: IRaftCluster.ConsensusToken
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConsensusToken*
+  name: ConsensusToken
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ConsensusToken_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConsensusToken
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ConsensusToken
+  nameWithType: IRaftCluster.ConsensusToken
 - uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ElectionTimeout
   name: ElectionTimeout
   href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ElectionTimeout
@@ -28313,6 +28339,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MaxConcurrentReads
   nameWithType: PersistentState.Options.MaxConcurrentReads
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MaxLogEntrySize
+  name: MaxLogEntrySize
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_MaxLogEntrySize
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MaxLogEntrySize
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MaxLogEntrySize
+  nameWithType: PersistentState.Options.MaxLogEntrySize
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MaxLogEntrySize*
+  name: MaxLogEntrySize
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_MaxLogEntrySize_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MaxLogEntrySize
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MaxLogEntrySize
+  nameWithType: PersistentState.Options.MaxLogEntrySize
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MeasurementTags
   name: MeasurementTags
   href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_MeasurementTags
@@ -28352,6 +28391,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseCaching
   nameWithType: PersistentState.Options.UseCaching
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseLegacyBinaryFormat
+  name: UseLegacyBinaryFormat
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_UseLegacyBinaryFormat
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseLegacyBinaryFormat
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseLegacyBinaryFormat
+  nameWithType: PersistentState.Options.UseLegacyBinaryFormat
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseLegacyBinaryFormat*
+  name: UseLegacyBinaryFormat
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_UseLegacyBinaryFormat_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseLegacyBinaryFormat
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseLegacyBinaryFormat
+  nameWithType: PersistentState.Options.UseLegacyBinaryFormat
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.WriteMode
   name: WriteMode
   href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_WriteMode
@@ -29428,6 +29480,23 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).ConfigurationStorage
   nameWithType: RaftCluster<TMember>.ConfigurationStorage
   nameWithType.vb: RaftCluster(Of TMember).ConfigurationStorage
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ConsensusToken
+  name: ConsensusToken
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ConsensusToken
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ConsensusToken
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.ConsensusToken
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).ConsensusToken
+  nameWithType: RaftCluster<TMember>.ConsensusToken
+  nameWithType.vb: RaftCluster(Of TMember).ConsensusToken
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ConsensusToken*
+  name: ConsensusToken
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_ConsensusToken_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ConsensusToken
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.ConsensusToken
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).ConsensusToken
+  nameWithType: RaftCluster<TMember>.ConsensusToken
+  nameWithType.vb: RaftCluster(Of TMember).ConsensusToken
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.DetectLocalMemberAsync(`0,System.Threading.CancellationToken)
   name: DetectLocalMemberAsync(TMember, CancellationToken)
   href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_DetectLocalMemberAsync__0_System_Threading_CancellationToken_
