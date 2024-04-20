@@ -67,7 +67,10 @@ public partial class FileWriter : Disposable, IFlushable
             throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
     }
 
-    private ReadOnlyMemory<byte> WrittenMemory => buffer.Memory.Slice(0, bufferOffset);
+    /// <summary>
+    /// Gets written part of the buffer.
+    /// </summary>
+    public ReadOnlyMemory<byte> WrittenBuffer => buffer.Memory.Slice(0, bufferOffset);
 
     private int FreeCapacity => buffer.Length - bufferOffset;
 
@@ -138,11 +141,11 @@ public partial class FileWriter : Disposable, IFlushable
     public long WritePosition => fileOffset + bufferOffset;
 
     private ValueTask FlushCoreAsync(CancellationToken token)
-        => Submit(RandomAccess.WriteAsync(handle, WrittenMemory, fileOffset, token), writeCallback);
+        => Submit(RandomAccess.WriteAsync(handle, WrittenBuffer, fileOffset, token), writeCallback);
 
     private void FlushCore()
     {
-        RandomAccess.Write(handle, WrittenMemory.Span, fileOffset);
+        RandomAccess.Write(handle, WrittenBuffer.Span, fileOffset);
         fileOffset += bufferOffset;
         bufferOffset = 0;
     }
@@ -198,7 +201,7 @@ public partial class FileWriter : Disposable, IFlushable
     {
         if (input.Length >= buffer.Length)
         {
-            RandomAccess.Write(handle, WrittenMemory.Span, fileOffset);
+            RandomAccess.Write(handle, WrittenBuffer.Span, fileOffset);
             fileOffset += bufferOffset;
 
             RandomAccess.Write(handle, input, fileOffset);
@@ -207,7 +210,7 @@ public partial class FileWriter : Disposable, IFlushable
         }
         else
         {
-            RandomAccess.Write(handle, WrittenMemory.Span, fileOffset);
+            RandomAccess.Write(handle, WrittenBuffer.Span, fileOffset);
             fileOffset += bufferOffset;
             input.CopyTo(buffer.Span);
             bufferOffset += input.Length;
@@ -271,7 +274,7 @@ public partial class FileWriter : Disposable, IFlushable
         Debug.Assert(HasBufferedData);
 
         secondBuffer = input;
-        return Submit(RandomAccess.WriteAsync(handle, WrittenMemory, fileOffset, token), writeAndCopyCallback);
+        return Submit(RandomAccess.WriteAsync(handle, WrittenBuffer, fileOffset, token), writeAndCopyCallback);
     }
 
     /// <summary>
