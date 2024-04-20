@@ -427,7 +427,7 @@ public partial class PersistentState
 
         // metadata management
         private MemoryOwner<byte> header, footer, metadataBuffer;
-        private ReadOnlyMemory<byte> payloadBuffer;
+        private (ReadOnlyMemory<byte>, ReadOnlyMemory<byte>) bufferTuple;
 
         internal Table(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize)
             : base(location, HeaderSize, bufferSize, recordsPerPartition, partitionNumber, in manager, readersCount, writeMode, initialSize)
@@ -552,9 +552,9 @@ public partial class PersistentState
             var metadata = LogEntryMetadata.Create(entry, startPos, entry.Length);
             metadata.Format(metadataBuffer.Span);
 
-            payloadBuffer = entry.Content.Memory;
+            bufferTuple = (metadataBuffer.Memory, entry.Content.Memory);
             await RandomAccess.WriteAsync(Handle, this, writeAddress, token).ConfigureAwait(false);
-            payloadBuffer = default;
+            bufferTuple = default;
 
             metadata.Format(GetMetadataSpan(index));
             runningIndex = index;
@@ -580,10 +580,20 @@ public partial class PersistentState
 
         private async ValueTask FlushAndSealAsync(CancellationToken token)
         {
-            await writer.WriteAsync(token).ConfigureAwait(false);
+            // use scatter I/O to flush the rest of the partition
+            if (writer.HasBufferedData)
+            {
+                bufferTuple = (writer.WrittenBuffer, footer.Memory);
+                await RandomAccess.WriteAsync(Handle, this, writer.FilePosition, token).ConfigureAwait(false);
+                writer.ClearBuffer();
+                writer.FilePosition += bufferTuple.Item1.Length;
+                bufferTuple = default;
+            }
+            else
+            {
+                await WriteFooterAsync(token).ConfigureAwait(false);
+            }
 
-            // write footer with metadata table
-            await WriteFooterAsync(token).ConfigureAwait(false);
             RandomAccess.SetLength(Handle, writer.FilePosition + footer.Length);
 
             IsSealed = true;
@@ -634,8 +644,8 @@ public partial class PersistentState
 
         ReadOnlyMemory<byte> IReadOnlyList<ReadOnlyMemory<byte>>.this[int index] => index switch
         {
-            0 => metadataBuffer.Memory,
-            1 => payloadBuffer,
+            0 => bufferTuple.Item1,
+            1 => bufferTuple.Item2,
             _ => throw new ArgumentOutOfRangeException(nameof(index)),
         };
 
@@ -643,8 +653,8 @@ public partial class PersistentState
 
         private IEnumerator<ReadOnlyMemory<byte>> GetEnumerator()
         {
-            yield return metadataBuffer.Memory;
-            yield return payloadBuffer;
+            yield return bufferTuple.Item1;
+            yield return bufferTuple.Item2;
         }
 
         IEnumerator<ReadOnlyMemory<byte>> IEnumerable<ReadOnlyMemory<byte>>.GetEnumerator()
