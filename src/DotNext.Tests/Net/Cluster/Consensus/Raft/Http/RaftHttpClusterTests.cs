@@ -11,6 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 using Diagnostics;
 using Messaging;
 using Replication;
+using Threading;
 using static DotNext.Extensions.Logging.TestLoggers;
 
 [Collection(TestCollections.Raft)]
@@ -447,7 +448,6 @@ public sealed class RaftHttpClusterTests : RaftTest
         await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
 
         // suspend two nodes
-        False(await GetLocalClusterView(host1).EnableStandbyModeAsync());
         True(await GetLocalClusterView(host2).EnableStandbyModeAsync());
         True(GetLocalClusterView(host2).Standby);
         True(await GetLocalClusterView(host3).EnableStandbyModeAsync());
@@ -774,5 +774,47 @@ public sealed class RaftHttpClusterTests : RaftTest
 
         static IFailureDetector CreateFailureDetector(TimeSpan estimate, IRaftClusterMember member)
             => new PhiAccrualFailureDetector(estimate) { Threshold = 3D, TreatUnknownValueAsUnhealthy = true };
+    }
+
+    [Fact]
+    public static async Task ConsensusToken()
+    {
+        var config1 = new Dictionary<string, string>
+            {
+                {"publicEndPoint", "http://localhost:3262"},
+                {"coldStart", "true"},
+                // {"requestTimeout", "00:00:01"},
+                // {"rpcTimeout", "00:00:01"},
+                // {"lowerElectionTimeout", "6000" },
+                // {"upperElectionTimeout", "9000" },
+            };
+
+        var config2 = new Dictionary<string, string>
+            {
+                {"publicEndPoint", "http://localhost:3263"},
+                {"coldStart", "false"},
+                {"standby", "true"},
+            };
+
+        using var host1 = CreateHost<Startup>(3262, config1);
+        await host1.StartAsync();
+
+        using var host2 = CreateHost<Startup>(3263, config2);
+        True(GetLocalClusterView(host2).ConsensusToken.IsCancellationRequested);
+        await host2.StartAsync();
+
+        await GetLocalClusterView(host1).WaitForLeaderAsync(DefaultTimeout);
+        Equal(GetLocalClusterView(host1).LeadershipToken, GetLocalClusterView(host1).ConsensusToken);
+        True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host2).LocalMemberAddress));
+
+        await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
+
+        var token = GetLocalClusterView(host2).ConsensusToken;
+        False(token.IsCancellationRequested);
+
+        await host1.StopAsync();
+
+        await token.WaitAsync();
+        await host2.StopAsync();
     }
 }

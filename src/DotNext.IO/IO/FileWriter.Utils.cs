@@ -17,14 +17,14 @@ public partial class FileWriter : IDynamicInterfaceCastable
 
     private ReadOnlyMemory<byte> GetBuffer(int index) => index switch
     {
-        0 => WrittenMemory,
+        0 => WrittenBuffer,
         1 => secondBuffer,
         _ => ReadOnlyMemory<byte>.Empty,
     };
 
     private IEnumerator<ReadOnlyMemory<byte>> EnumerateBuffers()
     {
-        yield return WrittenMemory;
+        yield return WrittenBuffer;
         yield return secondBuffer;
     }
 

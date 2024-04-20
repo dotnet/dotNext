@@ -31,6 +31,9 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
     private protected void UnavailableMemberDetected(TMember member, CancellationToken token)
         => ThreadPool.UnsafeQueueUserWorkItem(new UnavailableMemberNotification(this, member, token), preferLocal: false);
 
+    private protected void IncomingHeartbeatTimedOut()
+        => ThreadPool.UnsafeQueueUserWorkItem(new IncomingHeartbeatTimedOutNotification(this), preferLocal: true);
+
     public new ValueTask DisposeAsync() => base.DisposeAsync();
 
     // holds weak reference to the state that was an initiator of the work item
@@ -142,5 +145,11 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
 
         private protected override void Execute(IRaftStateMachine<TMember> stateMachine)
             => stateMachine.UnavailableMemberDetected(this, member, token);
+    }
+
+    private sealed class IncomingHeartbeatTimedOutNotification(RaftState<TMember> currentState) : StateTransitionWorkItem(currentState)
+    {
+        private protected override void Execute(IRaftStateMachine<TMember> stateMachine)
+            => stateMachine.IncomingHeartbeatTimedOut(this);
     }
 }

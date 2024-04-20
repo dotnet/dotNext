@@ -46,6 +46,12 @@ public partial class PersistentState
 
             File.SetUnixFileMode(handle, entry.Mode);
         }
+
+        var attributes = FileAttributes.NotContentIndexed;
+        if (entry.EntryType is TarEntryType.SparseFile)
+            attributes |= FileAttributes.SparseFile;
+
+        File.SetAttributes(handle, attributes);
     }
 
     /// <summary>
@@ -55,7 +61,64 @@ public partial class PersistentState
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>A task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public async Task CreateBackupAsync(Stream output, CancellationToken token = default)
+    public Task CreateBackupAsync(Stream output, CancellationToken token = default)
+        => maxLogEntrySize > 0L ? CreateSparseBackupAsync(output, token) : CreateRegularBackupAsync(output, token);
+
+    private async Task CreateSparseBackupAsync(Stream output, CancellationToken token)
+    {
+        var tarProcess = new Process
+        {
+            StartInfo = new()
+            {
+                FileName = "tar",
+                WorkingDirectory = Location.FullName,
+            },
+        };
+
+        var outputArchive = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        tarProcess.StartInfo.ArgumentList.Add("cfS");
+        tarProcess.StartInfo.ArgumentList.Add(outputArchive);
+
+        FileStream? archiveStream = null;
+        await syncRoot.AcquireAsync(LockType.StrongReadLock, token).ConfigureAwait(false);
+        try
+        {
+            foreach (var file in Location.EnumerateFiles())
+            {
+                tarProcess.StartInfo.ArgumentList.Add(file.Name);
+            }
+
+            tarProcess.StartInfo.ArgumentList.Add($"--format={GetArchiveFormat(backupFormat)}");
+            tarProcess.Start();
+            await tarProcess.WaitForExitAsync(token).ConfigureAwait(false);
+
+            if (tarProcess.ExitCode is not 0)
+                throw new PlatformNotSupportedException(ExceptionMessages.SparseFileNotSupported) { HResult = tarProcess.ExitCode };
+
+            archiveStream = new(outputArchive, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, FileOptions.SequentialScan | FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+            await archiveStream.CopyToAsync(output, token).ConfigureAwait(false);
+            await output.FlushAsync(token).ConfigureAwait(false);
+        }
+        finally
+        {
+            syncRoot.Release(LockType.StrongReadLock);
+            tarProcess.Dispose();
+
+            if (archiveStream is not null)
+                await archiveStream.DisposeAsync().ConfigureAwait(false);
+        }
+
+        static string GetArchiveFormat(TarEntryFormat format) => format switch
+        {
+            TarEntryFormat.Gnu => "gnu",
+            TarEntryFormat.Pax => "pax",
+            TarEntryFormat.Ustar => "ustar",
+            TarEntryFormat.V7 => "v7",
+            _ => "gnu",
+        };
+    }
+
+    private async Task CreateRegularBackupAsync(Stream output, CancellationToken token)
     {
         TarWriter? archive = null;
         await syncRoot.AcquireAsync(LockType.StrongReadLock, token).ConfigureAwait(false);
