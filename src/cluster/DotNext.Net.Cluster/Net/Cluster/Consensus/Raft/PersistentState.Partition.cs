@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System.Collections;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -10,69 +12,24 @@ using IntegrityException = IO.Log.IntegrityException;
 
 public partial class PersistentState
 {
-    /*
-        Partition file format:
-        FileName - number of partition
-        Payload:
-        [struct LogEntryMetadata] X Capacity - prologue with metadata
-        [octet string] X number of entries
-     */
-    private protected sealed class Partition : ConcurrentStorageAccess
+    private protected abstract class Partition : ConcurrentStorageAccess
     {
         internal const int MaxRecordsPerPartition = int.MaxValue / LogEntryMetadata.Size;
-        private static readonly CacheRecord EmptyRecord = new();
+        protected static readonly CacheRecord EmptyRecord = new();
 
         internal readonly long FirstIndex, PartitionNumber, LastIndex;
-        private MemoryOwner<CacheRecord> entryCache;
         private Partition? previous, next;
+        protected MemoryOwner<CacheRecord> entryCache;
+        protected int runningIndex;
 
-        // metadata management
-        private MemoryOwner<byte> metadata;
-        private int metadataFlushStartAddress;
-        private int metadataFlushEndAddress;
-
-        // represents offset within the file from which a newly added log entry payload can be recorded
-        private long writeAddress;
-
-        internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize)
-            : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), checked(LogEntryMetadata.Size * recordsPerPartition), bufferSize, manager.BufferAllocator, readersCount, writeMode, initialSize)
+        protected Partition(DirectoryInfo location, int offset, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize, FileAttributes attributes = FileAttributes.NotContentIndexed)
+            : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), offset, bufferSize, manager.BufferAllocator, readersCount, writeMode, initialSize, attributes)
         {
             FirstIndex = partitionNumber * recordsPerPartition;
             LastIndex = FirstIndex + recordsPerPartition - 1L;
             PartitionNumber = partitionNumber;
 
-            // allocate metadata segment
-            metadata = manager.BufferAllocator.AllocateExactly(fileOffset);
-            metadataFlushStartAddress = int.MaxValue;
-
             entryCache = manager.AllocLogEntryCache(recordsPerPartition);
-            writeAddress = fileOffset;
-        }
-
-        internal void Initialize()
-        {
-            using var handle = File.OpenHandle(FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.SequentialScan);
-            if (RandomAccess.Read(handle, metadata.Span, 0L) < fileOffset)
-            {
-                metadata.Span.Clear();
-                RandomAccess.Write(handle, metadata.Span, 0L);
-            }
-            else
-            {
-                writeAddress = Math.Max(fileOffset, GetWriteAddress(metadata.Span));
-            }
-
-            static long GetWriteAddress(ReadOnlySpan<byte> metadataTable)
-            {
-                long result;
-
-                for (result = 0L; !metadataTable.IsEmpty; metadataTable = metadataTable.Slice(LogEntryMetadata.Size))
-                {
-                    result = Math.Max(result, LogEntryMetadata.GetEndOfLogEntry(metadataTable));
-                }
-
-                return result;
-            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -136,6 +93,638 @@ public partial class PersistentState
         internal bool Contains(long recordIndex)
             => recordIndex >= FirstIndex && recordIndex <= LastIndex;
 
+        internal abstract void Initialize();
+
+        internal LogEntry Read(int sessionId, long absoluteIndex, bool metadataOnly = false)
+        {
+            Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
+
+            var relativeIndex = ToRelativeIndex(absoluteIndex);
+            var metadata = GetMetadata(relativeIndex);
+
+            ref readonly var cachedContent = ref EmptyRecord;
+
+            if (metadataOnly)
+                goto return_cached;
+
+            if (!entryCache.IsEmpty)
+                cachedContent = ref entryCache[relativeIndex];
+
+            if (cachedContent.Content.IsEmpty && metadata.Length > 0L)
+            {
+                return new(in metadata, absoluteIndex)
+                {
+                    ContentReader = GetSessionReader(sessionId),
+                    IsPersisted = true,
+                };
+            }
+
+        return_cached:
+            return new(in metadata, absoluteIndex)
+            {
+                ContentBuffer = cachedContent.Content.Memory,
+                IsPersisted = cachedContent.PersistenceMode is not CachedLogEntryPersistenceMode.None,
+            };
+        }
+
+        internal ValueTask PersistCachedEntryAsync(long absoluteIndex, bool removeFromMemory)
+        {
+            Debug.Assert(entryCache.IsEmpty is false);
+
+            var index = ToRelativeIndex(absoluteIndex);
+            Debug.Assert((uint)index < (uint)entryCache.Length);
+
+            ref var cachedEntry = ref entryCache[index];
+            Debug.Assert(cachedEntry.PersistenceMode is CachedLogEntryPersistenceMode.None);
+            cachedEntry.PersistenceMode = CachedLogEntryPersistenceMode.CopyToBuffer;
+            var offset = GetOffset(index);
+
+            return cachedEntry.Content.IsEmpty
+                ? ValueTask.CompletedTask
+                : removeFromMemory
+                ? PersistAndDeleteAsync(cachedEntry.Content.Memory, index, offset)
+                : PersistAsync(cachedEntry.Content.Memory, index, offset);
+        }
+
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        private async ValueTask PersistAsync(ReadOnlyMemory<byte> content, int index, long offset)
+        {
+            await SetWritePositionAsync(offset).ConfigureAwait(false);
+            await writer.WriteAsync(content).ConfigureAwait(false);
+
+            runningIndex = index;
+        }
+
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        private async ValueTask PersistAndDeleteAsync(ReadOnlyMemory<byte> content, int index, long offset)
+        {
+            try
+            {
+                // manually inlined body of PersistAsync method
+                await SetWritePositionAsync(offset).ConfigureAwait(false);
+                await writer.WriteAsync(content).ConfigureAwait(false);
+            }
+            finally
+            {
+                entryCache[index].Dispose();
+            }
+
+            runningIndex = index;
+        }
+
+        internal long GetTerm(long absoluteIndex)
+        {
+            Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
+
+            return GetMetadata(ToRelativeIndex(absoluteIndex)).Term;
+        }
+
+        private long GetOffset(int index)
+            => GetMetadata(index).Offset;
+
+        private void UpdateCache(in CachedLogEntry entry, int index)
+        {
+            Debug.Assert(entryCache.IsEmpty is false);
+            Debug.Assert((uint)index < (uint)entryCache.Length);
+
+            ref var cachedEntry = ref entryCache[index];
+            cachedEntry.Dispose();
+            cachedEntry = entry;
+        }
+
+        protected abstract LogEntryMetadata GetMetadata(int index);
+
+        protected abstract ValueTask PersistAsync<TEntry>(TEntry entry, int index, CancellationToken token)
+            where TEntry : notnull, IRaftLogEntry;
+
+        protected abstract ValueTask WriteThroughAsync(CachedLogEntry entry, int index, CancellationToken token);
+
+        protected abstract void OnCached(in CachedLogEntry cachedEntry, int index);
+
+        internal ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token)
+            where TEntry : notnull, IRaftLogEntry
+        {
+            // write operation always expects absolute index so we need to convert it to the relative index
+            var relativeIndex = ToRelativeIndex(absoluteIndex);
+            Debug.Assert(absoluteIndex >= FirstIndex && relativeIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
+
+            if (typeof(TEntry) == typeof(CachedLogEntry))
+            {
+                ref readonly var cachedEntry = ref Unsafe.As<TEntry, CachedLogEntry>(ref entry);
+
+                // fast path - just add cached log entry to the cache table
+                UpdateCache(in cachedEntry, relativeIndex);
+
+                // Perf: we can skip FileWriter internal buffer and write cached log entry directly to the disk
+                switch (cachedEntry.PersistenceMode)
+                {
+                    case CachedLogEntryPersistenceMode.SkipBuffer when !writer.HasBufferedData:
+                        return WriteThroughAsync(cachedEntry, relativeIndex, token);
+                    case CachedLogEntryPersistenceMode.None:
+                        OnCached(in cachedEntry, relativeIndex);
+                        return ValueTask.CompletedTask;
+                    default:
+                        goto exit;
+                }
+            }
+
+            // invalidate cached log entry on write
+            if (!entryCache.IsEmpty)
+                entryCache[relativeIndex].Dispose();
+
+            exit:
+            return PersistAsync(entry, relativeIndex, token);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                previous = next = null;
+                entryCache.ReleaseAll();
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+
+    private sealed class SparsePartition : Partition, IReadOnlyList<ReadOnlyMemory<byte>>
+    {
+        private readonly long maxLogEntrySize;
+        private MemoryOwner<CachedLogEntryMetadata> metadataTable;
+        private MemoryOwner<byte> metadataBuffer;
+        private ReadOnlyMemory<byte> payloadBuffer;
+
+        internal SparsePartition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize, long maxLogEntrySize)
+            : base(location, offset: 0, bufferSize, recordsPerPartition, partitionNumber, in manager, readersCount, writeMode, initialSize, FileAttributes.NotContentIndexed | FileAttributes.SparseFile)
+        {
+            metadataTable = manager.Allocate<CachedLogEntryMetadata>(recordsPerPartition);
+            metadataTable.Span.Clear(); // to prevent pre-filled objects
+
+            this.maxLogEntrySize = maxLogEntrySize;
+            metadataBuffer = manager.BufferAllocator.AllocateExactly(LogEntryMetadata.Size);
+        }
+
+        internal override void Initialize()
+        {
+            // do nothing
+        }
+
+        private long GetMetadataOffset(int index) => index * (maxLogEntrySize + LogEntryMetadata.Size);
+
+        protected override LogEntryMetadata GetMetadata(int index)
+        {
+            ref var entry = ref metadataTable[index];
+
+            if (!entry.IsLoaded)
+            {
+                // very rare so can be done synchronously
+                Span<byte> buffer = stackalloc byte[LogEntryMetadata.Size];
+                RandomAccess.Read(Handle, buffer, GetMetadataOffset(index));
+                entry.Metadata = new(buffer);
+            }
+
+            return entry.Metadata;
+        }
+
+        protected override void OnCached(in CachedLogEntry cachedEntry, int index)
+            => metadataTable[index].Metadata = LogEntryMetadata.Create(cachedEntry, GetMetadataOffset(index) + LogEntryMetadata.Size);
+
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        protected override async ValueTask PersistAsync<TEntry>(TEntry entry, int index, CancellationToken token)
+        {
+            var metadataOffset = GetMetadataOffset(index);
+            LogEntryMetadata metadata;
+
+            if (entry.Length is not { } length)
+            {
+                // slow path - write the entry first and then write metadata
+                await SetWritePositionAsync(metadataOffset + LogEntryMetadata.Size, token).ConfigureAwait(false);
+                length = writer.WritePosition;
+
+                await entry.WriteToAsync(writer, token).ConfigureAwait(false);
+                length = writer.WritePosition - length;
+
+                if (length > maxLogEntrySize)
+                    goto too_large_entry;
+
+                metadata = LogEntryMetadata.Create(entry, metadataOffset + LogEntryMetadata.Size, length);
+                metadata.Format(metadataBuffer.Span);
+                await RandomAccess.WriteAsync(Handle, metadataBuffer.Memory, metadataOffset, token).ConfigureAwait(false);
+            }
+            else if (length <= maxLogEntrySize)
+            {
+                // fast path - length is known, metadata and the log entry can be written sequentially
+                metadata = LogEntryMetadata.Create(entry, metadataOffset + LogEntryMetadata.Size, length);
+                await SetWritePositionAsync(metadataOffset, token).ConfigureAwait(false);
+
+                await writer.WriteAsync(metadata, token).ConfigureAwait(false);
+                await entry.WriteToAsync(writer, token).ConfigureAwait(false);
+            }
+            else
+            {
+                goto too_large_entry;
+            }
+
+            metadataTable[index].Metadata = metadata;
+            return;
+
+        too_large_entry:
+            throw new InvalidOperationException(ExceptionMessages.LogEntryPayloadTooLarge);
+        }
+
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        protected override async ValueTask WriteThroughAsync(CachedLogEntry entry, int index, CancellationToken token)
+        {
+            Debug.Assert(writer.HasBufferedData is false);
+
+            if (entry.Length > maxLogEntrySize)
+                throw new InvalidOperationException(ExceptionMessages.LogEntryPayloadTooLarge);
+
+            var metadata = LogEntryMetadata.Create(entry, GetMetadataOffset(index) + LogEntryMetadata.Size);
+            metadata.Format(metadataBuffer.Span);
+
+            payloadBuffer = entry.Content.Memory;
+            await RandomAccess.WriteAsync(Handle, this, GetMetadataOffset(index), token).ConfigureAwait(false);
+            payloadBuffer = default;
+            metadataTable[index].Metadata = metadata;
+
+            writer.FilePosition = metadata.End;
+        }
+
+        ReadOnlyMemory<byte> IReadOnlyList<ReadOnlyMemory<byte>>.this[int index] => index switch
+        {
+            0 => metadataBuffer.Memory,
+            1 => payloadBuffer,
+            _ => throw new ArgumentOutOfRangeException(nameof(index)),
+        };
+
+        int IReadOnlyCollection<ReadOnlyMemory<byte>>.Count => 2;
+
+        private IEnumerator<ReadOnlyMemory<byte>> GetEnumerator()
+        {
+            yield return metadataBuffer.Memory;
+            yield return payloadBuffer;
+        }
+
+        IEnumerator<ReadOnlyMemory<byte>> IEnumerable<ReadOnlyMemory<byte>>.GetEnumerator()
+            => GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        protected override void Dispose(bool disposing)
+        {
+            metadataTable.Dispose();
+            metadataBuffer.Dispose();
+            base.Dispose(disposing);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private struct CachedLogEntryMetadata
+        {
+            private LogEntryMetadata metadata;
+            private volatile bool loaded;
+
+            internal readonly bool IsLoaded => loaded;
+
+            internal LogEntryMetadata Metadata
+            {
+                readonly get => metadata;
+                set
+                {
+                    metadata = value;
+                    loaded = true;
+                }
+            }
+        }
+    }
+
+    /*
+        Partition file format:
+        FileName - number of partition
+        Payload:
+        [512 bytes] - header:
+            [1 byte] - true if completed partition
+        [struct LogEntryMetadata] [octet string] X Capacity - log entries prefixed with metadata
+        [struct LogEntryMetadata] X Capacity - a table of log entries within the file, if partition is completed
+     */
+    private sealed class Table : Partition, IReadOnlyList<ReadOnlyMemory<byte>>
+    {
+        private const int HeaderSize = 512;
+
+        private static readonly ReadOnlyMemory<byte> EmptyMetadata;
+        private static readonly ReadOnlyMemory<byte> EphemeralMetadata;
+
+        static Table()
+        {
+            EmptyMetadata = new byte[LogEntryMetadata.Size]; // all zeroes
+
+            var ephemeral = LogEntryMetadata.Create(LogEntry.Initial, HeaderSize + LogEntryMetadata.Size, length: 0L);
+            var buffer = new byte[LogEntryMetadata.Size];
+            ephemeral.Format(buffer);
+            EphemeralMetadata = buffer;
+        }
+
+        // metadata management
+        private MemoryOwner<byte> header, footer, metadataBuffer;
+        private (ReadOnlyMemory<byte>, ReadOnlyMemory<byte>) bufferTuple;
+
+        internal Table(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize)
+            : base(location, HeaderSize, bufferSize, recordsPerPartition, partitionNumber, in manager, readersCount, writeMode, initialSize)
+        {
+            footer = manager.BufferAllocator.AllocateExactly(recordsPerPartition * LogEntryMetadata.Size);
+
+            header = manager.BufferAllocator.AllocateExactly(HeaderSize);
+            header.Span.Clear();
+
+            metadataBuffer = manager.BufferAllocator.AllocateExactly(LogEntryMetadata.Size);
+
+            // init ephemeral 0 entry
+            if (PartitionNumber is 0L)
+            {
+                EphemeralMetadata.CopyTo(footer.Memory);
+            }
+        }
+
+        private bool IsSealed
+        {
+            get => Unsafe.BitCast<byte, bool>(MemoryMarshal.GetReference(header.Span));
+            set => MemoryMarshal.GetReference(header.Span) = Unsafe.BitCast<bool, byte>(value);
+        }
+
+        internal override void Initialize()
+        {
+            using var handle = File.OpenHandle(FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.SequentialScan);
+
+            // read header
+            if (RandomAccess.Read(Handle, header.Span, fileOffset: 0L) < HeaderSize)
+            {
+                header.Span.Clear();
+            }
+            else if (IsSealed)
+            {
+                // partition is completed, read table
+                var tableStart = RandomAccess.GetLength(Handle);
+                RandomAccess.Read(Handle, footer.Span, tableStart - footer.Length);
+            }
+            else
+            {
+                // read sequentially every log entry
+                int footerOffset;
+                long fileOffset;
+
+                if (PartitionNumber is 0L)
+                {
+                    footerOffset = LogEntryMetadata.Size;
+                    fileOffset = HeaderSize + LogEntryMetadata.Size;
+                }
+                else
+                {
+                    footerOffset = 0;
+                    fileOffset = HeaderSize;
+                }
+
+                for (Span<byte> metadataBuffer = this.metadataBuffer.Span, metadataTable = footer.Span; ; footerOffset += LogEntryMetadata.Size)
+                {
+                    var count = RandomAccess.Read(Handle, metadataBuffer, fileOffset);
+                    if (count < LogEntryMetadata.Size)
+                        break;
+
+                    fileOffset = LogEntryMetadata.GetEndOfLogEntry(metadataBuffer);
+                    if (fileOffset <= 0L)
+                        break;
+
+                    metadataBuffer.CopyTo(metadataTable.Slice(footerOffset, LogEntryMetadata.Size));
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Span<byte> GetMetadataSpan(int index)
+            => footer.Span.Slice(index * LogEntryMetadata.Size, LogEntryMetadata.Size);
+
+        protected override LogEntryMetadata GetMetadata(int index)
+            => new(GetMetadataSpan(index));
+
+        private long GetWriteAddress(int index)
+            => index is 0 ? fileOffset : LogEntryMetadata.GetEndOfLogEntry(GetMetadataSpan(index - 1));
+
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        protected override async ValueTask PersistAsync<TEntry>(TEntry entry, int index, CancellationToken token)
+        {
+            var writeAddress = GetWriteAddress(index);
+
+            LogEntryMetadata metadata;
+            var startPos = writeAddress + LogEntryMetadata.Size;
+            if (entry.Length is { } length)
+            {
+                // fast path - write metadata and entry sequentially
+                metadata = LogEntryMetadata.Create(entry, startPos, length);
+
+                await SetWritePositionAsync(writeAddress, token).ConfigureAwait(false);
+                await writer.WriteAsync(metadata, token).ConfigureAwait(false);
+                await entry.WriteToAsync(writer, token).ConfigureAwait(false);
+            }
+            else
+            {
+                // slow path - write entry first
+                await SetWritePositionAsync(startPos, token).ConfigureAwait(false);
+
+                await entry.WriteToAsync(writer, token).ConfigureAwait(false);
+                length = writer.WritePosition - startPos;
+
+                metadata = LogEntryMetadata.Create(entry, startPos, length);
+                metadata.Format(metadataBuffer.Span);
+                await RandomAccess.WriteAsync(Handle, metadataBuffer.Memory, writeAddress, token).ConfigureAwait(false);
+            }
+
+            metadata.Format(GetMetadataSpan(index));
+            runningIndex = index;
+        }
+
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+        protected override async ValueTask WriteThroughAsync(CachedLogEntry entry, int index, CancellationToken token)
+        {
+            Debug.Assert(writer.HasBufferedData is false);
+
+            var writeAddress = GetWriteAddress(index);
+            var startPos = writeAddress + LogEntryMetadata.Size;
+            var metadata = LogEntryMetadata.Create(entry, startPos, entry.Length);
+            metadata.Format(metadataBuffer.Span);
+
+            bufferTuple = (metadataBuffer.Memory, entry.Content.Memory);
+            await RandomAccess.WriteAsync(Handle, this, writeAddress, token).ConfigureAwait(false);
+            bufferTuple = default;
+
+            metadata.Format(GetMetadataSpan(index));
+            runningIndex = index;
+
+            writer.FilePosition = metadata.End;
+        }
+
+        protected override void OnCached(in CachedLogEntry cachedEntry, int index)
+        {
+            var startPos = GetWriteAddress(index) + LogEntryMetadata.Size;
+            var metadata = LogEntryMetadata.Create(in cachedEntry, startPos);
+            metadata.Format(GetMetadataSpan(index));
+        }
+
+        public override ValueTask FlushAsync(CancellationToken token = default)
+        {
+            return runningIndex == LastIndex
+                ? FlushAndSealAsync(token)
+                : IsSealed
+                ? FlushAndUnsealAsync(token)
+                : base.FlushAsync(token);
+        }
+
+        private async ValueTask FlushAndSealAsync(CancellationToken token)
+        {
+            // use scatter I/O to flush the rest of the partition
+            if (writer.HasBufferedData)
+            {
+                bufferTuple = (writer.WrittenBuffer, footer.Memory);
+                await RandomAccess.WriteAsync(Handle, this, writer.FilePosition, token).ConfigureAwait(false);
+                writer.ClearBuffer();
+                writer.FilePosition += bufferTuple.Item1.Length;
+                bufferTuple = default;
+            }
+            else
+            {
+                await WriteFooterAsync(token).ConfigureAwait(false);
+            }
+
+            RandomAccess.SetLength(Handle, writer.FilePosition + footer.Length);
+
+            IsSealed = true;
+            await WriteHeaderAsync(token).ConfigureAwait(false);
+
+            writer.FlushToDisk();
+        }
+
+        private async ValueTask FlushAndUnsealAsync(CancellationToken token)
+        {
+            await FlushAndEraseNextEntryAsync(token).ConfigureAwait(false);
+
+            IsSealed = false;
+            await WriteHeaderAsync(token).ConfigureAwait(false);
+
+            writer.FlushToDisk();
+        }
+
+        private ValueTask FlushAndEraseNextEntryAsync(CancellationToken token)
+        {
+            ValueTask task;
+
+            // write the rest of the entry,
+            // then cleanup next entry header to indicate that the current entry is the last entry
+            if (!writer.HasBufferedData)
+            {
+                task = RandomAccess.WriteAsync(Handle, EmptyMetadata, writer.FilePosition, token);
+            }
+            else if (writer.Buffer is { Length: >= LogEntryMetadata.Size } emptyMetadataStub)
+            {
+                emptyMetadataStub.Span.Slice(0, LogEntryMetadata.Size).Clear();
+                writer.Produce(LogEntryMetadata.Size);
+                task = writer.WriteAsync(token);
+            }
+            else
+            {
+                task = writer.WriteAsync(EmptyMetadata, token);
+            }
+
+            return task;
+        }
+
+        private ValueTask WriteHeaderAsync(CancellationToken token)
+            => RandomAccess.WriteAsync(Handle, header.Memory, fileOffset: 0L, token);
+
+        private ValueTask WriteFooterAsync(CancellationToken token)
+            => RandomAccess.WriteAsync(Handle, footer.Memory, writer.FilePosition, token);
+
+        ReadOnlyMemory<byte> IReadOnlyList<ReadOnlyMemory<byte>>.this[int index] => index switch
+        {
+            0 => bufferTuple.Item1,
+            1 => bufferTuple.Item2,
+            _ => throw new ArgumentOutOfRangeException(nameof(index)),
+        };
+
+        int IReadOnlyCollection<ReadOnlyMemory<byte>>.Count => 2;
+
+        private IEnumerator<ReadOnlyMemory<byte>> GetEnumerator()
+        {
+            yield return bufferTuple.Item1;
+            yield return bufferTuple.Item2;
+        }
+
+        IEnumerator<ReadOnlyMemory<byte>> IEnumerable<ReadOnlyMemory<byte>>.GetEnumerator()
+            => GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        protected override void Dispose(bool disposing)
+        {
+            header.Dispose();
+            footer.Dispose();
+            metadataBuffer.Dispose();
+            base.Dispose(disposing);
+        }
+    }
+
+    /*
+       Partition file format:
+       FileName - number of partition
+       Payload:
+       [struct LogEntryMetadata] X Capacity - prologue with metadata
+       [octet string] X number of entries
+    */
+    [Obsolete]
+    private sealed class LegacyPartition : Partition
+    {
+        // metadata management
+        private MemoryOwner<byte> metadata;
+        private int metadataFlushStartAddress;
+        private int metadataFlushEndAddress;
+
+        // represents offset within the file from which a newly added log entry payload can be recorded
+        private long writeAddress;
+
+        internal LegacyPartition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize)
+            : base(location, checked(LogEntryMetadata.Size * recordsPerPartition), bufferSize, recordsPerPartition, partitionNumber, in manager, readersCount, writeMode, initialSize)
+        {
+            // allocate metadata segment
+            metadata = manager.BufferAllocator.AllocateExactly(fileOffset);
+            metadataFlushStartAddress = int.MaxValue;
+
+            writeAddress = fileOffset;
+        }
+
+        internal override void Initialize()
+        {
+            using var handle = File.OpenHandle(FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.SequentialScan);
+            if (RandomAccess.Read(handle, metadata.Span, 0L) < fileOffset)
+            {
+                metadata.Span.Clear();
+                RandomAccess.Write(handle, metadata.Span, 0L);
+            }
+            else
+            {
+                writeAddress = Math.Max(fileOffset, GetWriteAddress(metadata.Span));
+            }
+
+            static long GetWriteAddress(ReadOnlySpan<byte> metadataTable)
+            {
+                long result;
+
+                for (result = 0L; !metadataTable.IsEmpty; metadataTable = metadataTable.Slice(LogEntryMetadata.Size))
+                {
+                    result = Math.Max(result, LogEntryMetadata.GetEndOfLogEntry(metadataTable));
+                }
+
+                return result;
+            }
+        }
+
         private async ValueTask FlushAsync(ReadOnlyMemory<byte> metadata, CancellationToken token)
         {
             await RandomAccess.WriteAsync(Handle, metadata, metadataFlushStartAddress, token).ConfigureAwait(false);
@@ -161,6 +750,9 @@ public partial class PersistentState
             return metadata.Span.Slice(offset = index * LogEntryMetadata.Size);
         }
 
+        protected override LogEntryMetadata GetMetadata(int index)
+            => new(GetMetadata(index, out _));
+
         private void WriteMetadata(int index, in LogEntryMetadata metadata)
         {
             metadata.Format(GetMetadata(index, out var offset));
@@ -169,173 +761,36 @@ public partial class PersistentState
             metadataFlushEndAddress = Math.Max(metadataFlushEndAddress, offset + LogEntryMetadata.Size);
         }
 
-        internal long GetTerm(long absoluteIndex)
-        {
-            Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
-
-            return LogEntryMetadata.GetTerm(GetMetadata(ToRelativeIndex(absoluteIndex), out _));
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private LogEntry Read(int sessionId, long absoluteIndex, out bool persisted, bool metadataOnly)
-        {
-            Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
-
-            var relativeIndex = ToRelativeIndex(absoluteIndex);
-            var metadata = new LogEntryMetadata(GetMetadata(relativeIndex, out _));
-
-            ref readonly var cachedContent = ref EmptyRecord;
-
-            if (metadataOnly)
-                goto return_cached;
-
-            if (!entryCache.IsEmpty)
-                cachedContent = ref entryCache[relativeIndex];
-
-            if (cachedContent.Content.IsEmpty && metadata.Length > 0L)
-            {
-                persisted = true;
-                return new(in metadata, absoluteIndex) { ContentReader = GetSessionReader(sessionId) };
-            }
-
-        return_cached:
-            persisted = cachedContent.PersistenceMode is not CachedLogEntryPersistenceMode.None;
-            return new(in metadata, absoluteIndex) { ContentBuffer = cachedContent.Content.Memory };
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        internal LogEntry Read(int sessionId, long absoluteIndex, bool metadataOnly = false)
-            => Read(sessionId, absoluteIndex, out _, metadataOnly);
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        internal LogEntry Read(int sessionId, long absoluteIndex, out bool persisted)
-            => Read(sessionId, absoluteIndex, out persisted, metadataOnly: false);
-
-        internal ValueTask PersistCachedEntryAsync(long absoluteIndex, long offset, bool removeFromMemory)
-        {
-            Debug.Assert(entryCache.IsEmpty is false);
-
-            var index = ToRelativeIndex(absoluteIndex);
-            Debug.Assert((uint)index < (uint)entryCache.Length);
-
-            ref var cachedEntry = ref entryCache[index];
-            Debug.Assert(cachedEntry.PersistenceMode is CachedLogEntryPersistenceMode.None);
-            cachedEntry.PersistenceMode = CachedLogEntryPersistenceMode.CopyToBuffer;
-
-            return cachedEntry.Content.IsEmpty
-                ? ValueTask.CompletedTask
-                : removeFromMemory
-                ? PersistAndDeleteAsync(cachedEntry.Content.Memory, index, offset)
-                : PersistAsync(cachedEntry.Content.Memory, offset);
-        }
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-        private async ValueTask PersistAsync(ReadOnlyMemory<byte> content, long offset)
-        {
-            await SetWritePositionAsync(offset).ConfigureAwait(false);
-            await writer.WriteAsync(content).ConfigureAwait(false);
-        }
-
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-        private async ValueTask PersistAndDeleteAsync(ReadOnlyMemory<byte> content, int index, long offset)
-        {
-            try
-            {
-                // manually inlined body of PersistAsync method
-                await SetWritePositionAsync(offset).ConfigureAwait(false);
-                await writer.WriteAsync(content).ConfigureAwait(false);
-            }
-            finally
-            {
-                entryCache[index].Dispose();
-            }
-        }
-
-        private void UpdateCache(in CachedLogEntry entry, int index, long offset)
-        {
-            Debug.Assert(entryCache.IsEmpty is false);
-            Debug.Assert((uint)index < (uint)entryCache.Length);
-
-            ref var cachedEntry = ref entryCache[index];
-            cachedEntry.Dispose();
-            cachedEntry = entry;
-
-            // save new log entry to the allocation table
-            WriteMetadata(index, LogEntryMetadata.Create(in entry, offset));
-        }
-
-        private async ValueTask WriteAsync<TEntry>(TEntry entry, int index, long offset, CancellationToken token)
-            where TEntry : notnull, IRaftLogEntry
+        protected override async ValueTask PersistAsync<TEntry>(TEntry entry, int index, CancellationToken token)
         {
             // slow path - persist log entry
-            await SetWritePositionAsync(offset, token).ConfigureAwait(false);
+            await SetWritePositionAsync(writeAddress, token).ConfigureAwait(false);
             await entry.WriteToAsync(writer, token).ConfigureAwait(false);
 
             // save new log entry to the allocation table
-            var length = writer.WritePosition - offset;
-            WriteMetadata(index, LogEntryMetadata.Create(entry, offset, length));
-            writeAddress = offset + length;
+            var length = writer.WritePosition - writeAddress;
+            WriteMetadata(index, LogEntryMetadata.Create(entry, writeAddress, length));
+            writeAddress += length;
         }
 
-        private async ValueTask WriteThroughAsync(ReadOnlyMemory<byte> content, long offset, CancellationToken token)
+        protected override async ValueTask WriteThroughAsync(CachedLogEntry entry, int index, CancellationToken token)
         {
-            await SetWritePositionAsync(offset, token).ConfigureAwait(false);
-            Debug.Assert(writer.HasBufferedData is false);
+            await RandomAccess.WriteAsync(Handle, entry.Content.Memory, writeAddress, token).ConfigureAwait(false);
 
-            await RandomAccess.WriteAsync(Handle, content, offset, token).ConfigureAwait(false);
-            writer.FilePosition = writeAddress = offset + content.Length;
+            // save new log entry to the allocation table
+            WriteMetadata(index, LogEntryMetadata.Create(entry, writeAddress, entry.Length));
+            writeAddress += entry.Length;
         }
 
-        internal ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token = default)
-            where TEntry : notnull, IRaftLogEntry
+        protected override void OnCached(in CachedLogEntry cachedEntry, int index)
         {
-            // write operation always expects absolute index so we need to convert it to the relative index
-            var relativeIndex = ToRelativeIndex(absoluteIndex);
-            Debug.Assert(absoluteIndex >= FirstIndex && relativeIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
-            Debug.Assert(writeAddress > 0L);
-
-            if (typeof(TEntry) == typeof(CachedLogEntry))
-            {
-                ref readonly var cachedEntry = ref Unsafe.As<TEntry, CachedLogEntry>(ref entry);
-
-                // fast path - just add cached log entry to the cache table
-                UpdateCache(in cachedEntry, relativeIndex, writeAddress);
-
-                // Perf: we can skip FileWriter internal buffer and write cached log entry directly to the disk
-                ValueTask result;
-                switch (cachedEntry.PersistenceMode)
-                {
-                    case CachedLogEntryPersistenceMode.CopyToBuffer:
-                        result = WriteAsync(entry, relativeIndex, writeAddress, token);
-                        break;
-                    case CachedLogEntryPersistenceMode.SkipBuffer:
-                        result = WriteThroughAsync(cachedEntry.Content.Memory, writeAddress, token);
-                        break;
-                    default:
-                        writeAddress += cachedEntry.Length;
-                        result = ValueTask.CompletedTask;
-                        break;
-                }
-
-                return result;
-            }
-
-            // invalidate cached log entry on write
-            if (!entryCache.IsEmpty)
-                entryCache[relativeIndex].Dispose();
-
-            return WriteAsync(entry, relativeIndex, writeAddress, token);
+            WriteMetadata(index, LogEntryMetadata.Create(cachedEntry, writeAddress, cachedEntry.Length));
+            writeAddress += cachedEntry.Length;
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                metadata.Dispose();
-                entryCache.ReleaseAll();
-                previous = next = null;
-            }
-
+            metadata.Dispose();
             base.Dispose(disposing);
         }
     }
@@ -393,7 +848,7 @@ public partial class PersistentState
             Debug.Assert(FirstPartition is null);
             Debug.Assert(partition is null);
             FirstPartition = LastPartition = partition = CreatePartition(partitionNumber);
-            goto exit;
+            return;
         }
 
         Debug.Assert(FirstPartition is not null);
@@ -407,14 +862,14 @@ public partial class PersistentState
                     if (previous < 0)
                     {
                         partition = Append(partitionNumber, partition);
-                        goto exit;
+                        return;
                     }
 
                     // nothing on the right side, create new tail
                     if (partition.IsLast)
                     {
                         LastPartition = partition = Append(partitionNumber, partition);
-                        goto exit;
+                        return;
                     }
 
                     partition = partition.Next;
@@ -423,27 +878,24 @@ public partial class PersistentState
                     if (previous > 0)
                     {
                         partition = Prepend(partitionNumber, partition);
-                        goto exit;
+                        return;
                     }
 
                     // nothing on the left side, create new head
                     if (partition.IsFirst)
                     {
                         FirstPartition = partition = Prepend(partitionNumber, partition);
-                        goto exit;
+                        return;
                     }
 
                     partition = partition.Previous;
                     break;
                 default:
-                    goto exit;
+                    return;
             }
 
             Debug.Assert(partition is not null);
         }
-
-    exit:
-        return;
 
         Partition Prepend(long partitionNumber, Partition partition)
         {

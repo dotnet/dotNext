@@ -148,7 +148,10 @@ public partial class PersistentState
         internal static long GetTerm(ReadOnlySpan<byte> input)
             => BinaryPrimitives.ReadInt64LittleEndian(input);
 
-        private long End => Length + Offset;
+        internal static long GetOffset(ReadOnlySpan<byte> input)
+            => BinaryPrimitives.ReadInt64LittleEndian(input.Slice(0, sizeof(long) + sizeof(long) + sizeof(long))); // skip Term, Timestamp, Length
+
+        internal long End => Length + Offset;
 
         internal static long GetEndOfLogEntry(ReadOnlySpan<byte> input)
         {
@@ -245,7 +248,7 @@ public partial class PersistentState
         // This field is used to control 'freshness' of the read buffers
         private ulong version; // volatile
 
-        private protected ConcurrentStorageAccess(string fileName, int fileOffset, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, WriteMode writeMode, long initialSize)
+        private protected ConcurrentStorageAccess(string fileName, int fileOffset, int bufferSize, MemoryAllocator<byte> allocator, int readersCount, WriteMode writeMode, long initialSize, FileAttributes attributes = FileAttributes.NotContentIndexed)
         {
             var options = writeMode is WriteMode.WriteThrough
                 ? FileOptions.Asynchronous | FileOptions.WriteThrough | FileOptions.SequentialScan
@@ -267,7 +270,7 @@ public partial class PersistentState
 
             if (fileMode is FileMode.CreateNew)
             {
-                File.SetAttributes(Handle, FileAttributes.NotContentIndexed);
+                File.SetAttributes(Handle, attributes);
             }
 
             this.fileOffset = fileOffset;

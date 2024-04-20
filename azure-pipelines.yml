@@ -31,10 +31,9 @@ stages:
               nobuild: false
               testRunTitle: 'Debug on Windows'
               publishTestResults: true
-          - task: PublishCodeCoverageResults@1
+          - task: PublishCodeCoverageResults@2
             displayName: 'Publish code coverage'
             inputs:
-              codeCoverageTool: Cobertura
               summaryFileLocation: $(Agent.TempDirectory)/*/coverage.cobertura.xml
       - job: Linux
         pool:
@@ -57,10 +56,9 @@ stages:
               nobuild: false
               testRunTitle: 'Debug on Linux'
               publishTestResults: true
-          - task: PublishCodeCoverageResults@1
+          - task: PublishCodeCoverageResults@2
             displayName: 'Publish code coverage'
             inputs:
-              codeCoverageTool: Cobertura
               summaryFileLocation: $(Agent.TempDirectory)/*/coverage.cobertura.xml
       - job: MacOS
         pool:
@@ -83,10 +81,9 @@ stages:
               nobuild: false
               testRunTitle: 'Debug on MacOS'
               publishTestResults: true
-          - task: PublishCodeCoverageResults@1
+          - task: PublishCodeCoverageResults@2
             displayName: 'Publish code coverage'
             inputs:
-              codeCoverageTool: Cobertura
               summaryFileLocation: $(Agent.TempDirectory)/*/coverage.cobertura.xml
   - stage: BuildPackages
     condition: and(succeeded('Tests'), eq(variables.isMain, true))

@@ -44,6 +44,12 @@ public partial class PersistentState
             index = -metadata.Index;
         }
 
+        internal bool IsPersisted
+        {
+            get;
+            init;
+        }
+
         internal IAsyncBinaryReader? ContentReader
         {
             init => content = metadata.Length > 0L ? value : IAsyncBinaryReader.Empty;

@@ -46,6 +46,7 @@ public partial class PersistentState
         private int concurrencyLevel = Math.Max(3, Environment.ProcessorCount);
         private long partitionSize;
         private bool parallelIO;
+        internal long maxLogEntrySize;
 
         /// <summary>
         /// Gets or sets a value indicating how the log interacts with underlying storage device.
@@ -131,6 +132,31 @@ public partial class PersistentState
         /// to create backup archive.
         /// </summary>
         public TarEntryFormat BackupFormat { get; set; } = TarEntryFormat.Pax;
+
+        /// <summary>
+        /// Gets or sets maximum size of the log entry, in bytes.
+        /// </summary>
+        /// <remarks>
+        /// If enabled, WAL uses sparse files to optimize performance.
+        /// <see cref="CreateBackupAsync(Stream, CancellationToken)"/> method supports backup of sparse
+        /// files on Linux only. <see cref="RestoreFromBackupAsync(Stream, DirectoryInfo, CancellationToken)"/>
+        /// method cannot restore the backup, you need to use <c>tar</c> utility to extract files.
+        /// </remarks>
+        public long? MaxLogEntrySize
+        {
+            get => maxLogEntrySize > 0L ? maxLogEntrySize : null;
+            set => maxLogEntrySize = value.GetValueOrDefault();
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating that legacy binary format must be used.
+        /// </summary>
+        [Obsolete("Use default format instead.")]
+        public bool UseLegacyBinaryFormat
+        {
+            get => maxLogEntrySize < 0L;
+            set => maxLogEntrySize = value ? -1L : 0L;
+        }
 
         /// <summary>
         /// If set then every read operations will be performed

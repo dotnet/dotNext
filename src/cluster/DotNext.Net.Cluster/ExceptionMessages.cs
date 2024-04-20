@@ -52,4 +52,8 @@ internal static class ExceptionMessages
     internal static string PersistentStateBroken => (string)Resources.Get();
 
     internal static string ConcurrentMembershipUpdate => (string)Resources.Get();
+
+    internal static string LogEntryPayloadTooLarge => (string)Resources.Get();
+
+    internal static string SparseFileNotSupported => (string)Resources.Get();
 }

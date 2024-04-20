@@ -199,12 +199,14 @@ public sealed class MemoryBasedStateMachineTests : Test
         }
     }
 
-    [Fact]
-    public static async Task ParallelReads()
+    [Theory]
+    [InlineData(null)]
+    [InlineData(1024L * 1024L * 100L)]
+    public static async Task ParallelReads(long? maxLogEntrySize)
     {
         var entry = new TestLogEntry("SET X = 0") { Term = 42L };
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        IPersistentState state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { CopyOnReadOptions = new() });
+        IPersistentState state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { CopyOnReadOptions = new(), MaxLogEntrySize = maxLogEntrySize });
         try
         {
             Equal(1L, await state.AppendAsync(new LogEntryList(entry)));
@@ -235,11 +237,13 @@ public sealed class MemoryBasedStateMachineTests : Test
         }
     }
 
-    [Fact]
-    public static async Task AppendWhileReading()
+    [Theory]
+    [InlineData(null)]
+    [InlineData(1024L * 1024L * 100L)]
+    public static async Task AppendWhileReading(long? maxLogEntrySize)
     {
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition);
+        using var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { MaxLogEntrySize = maxLogEntrySize });
         var entry = new TestLogEntry("SET X = 0") { Term = 42L };
         await state.AppendAsync(entry);
 
@@ -281,8 +285,10 @@ public sealed class MemoryBasedStateMachineTests : Test
         Equal(0L, state.LastCommittedEntryIndex);
     }
 
-    [Fact]
-    public static async Task Overwrite()
+    [Theory]
+    [InlineData(null)]
+    [InlineData(1024L * 1024L * 100L)]
+    public static async Task Overwrite(long? maxLogEntrySize)
     {
         var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
         var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
@@ -291,7 +297,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition))
+        using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { MaxLogEntrySize = maxLogEntrySize }))
         {
             Equal(1L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
             Equal(4L, state.LastEntryIndex);
@@ -302,7 +308,45 @@ public sealed class MemoryBasedStateMachineTests : Test
         }
 
         //read again
-        using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition))
+        using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { MaxLogEntrySize = maxLogEntrySize }))
+        {
+            Equal(1L, state.LastEntryIndex);
+            Equal(0L, state.LastCommittedEntryIndex);
+            checker = async (entries, snapshotIndex, token) =>
+            {
+                Null(snapshotIndex);
+                Single(entries);
+                False(entries[0].IsSnapshot);
+                Equal(entry1.Content, await entries[0].ToStringAsync(Encoding.UTF8));
+                return Missing.Value;
+            };
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1L, CancellationToken.None);
+        }
+    }
+
+    [Obsolete]
+    [Fact]
+    public static async Task LegacyOverwrite()
+    {
+        var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
+        var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
+        var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
+        var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
+        var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
+        Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
+        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { UseLegacyBinaryFormat = true }))
+        {
+            Equal(1L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
+            Equal(4L, state.LastEntryIndex);
+            Equal(0L, state.LastCommittedEntryIndex);
+            await state.AppendAsync(entry1, 1L);
+            Equal(1L, state.LastEntryIndex);
+            Equal(0L, state.LastCommittedEntryIndex);
+        }
+
+        //read again
+        using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { UseLegacyBinaryFormat = true }))
         {
             Equal(1L, state.LastEntryIndex);
             Equal(0L, state.LastCommittedEntryIndex);
@@ -826,6 +870,37 @@ public sealed class MemoryBasedStateMachineTests : Test
                 return default;
             };
             await state.ReadAsync(new LogEntryConsumer(checker), 1L, 5L);
+        }
+        finally
+        {
+            (state as IDisposable)?.Dispose();
+        }
+    }
+
+    [PlatformSpecificFact("linux")]
+    public static async Task CreateSparseBackup()
+    {
+        var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
+        var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
+        var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
+        var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
+        var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
+        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var backupFile = Path.GetTempFileName();
+        IPersistentState state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { MaxLogEntrySize = 1024 * 1024, BackupFormat = System.Formats.Tar.TarEntryFormat.Gnu });
+        var member = ClusterMemberId.FromEndPoint(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
+        try
+        {
+            //define node state
+            Equal(1, await state.IncrementTermAsync(member));
+            True(state.IsVotedFor(member));
+            //define log entries
+            Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
+            //commit some of them
+            Equal(2L, await state.CommitAsync(2L));
+            //save backup
+            await using var backupStream = new FileStream(backupFile, FileMode.Truncate, FileAccess.Write, FileShare.None, 1024, true);
+            await state.CreateBackupAsync(backupStream);
         }
         finally
         {

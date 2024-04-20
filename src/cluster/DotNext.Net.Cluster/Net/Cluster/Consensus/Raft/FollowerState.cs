@@ -1,45 +1,31 @@
 ﻿using System.Diagnostics.Metrics;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using Threading;
-
-internal sealed class FollowerState<TMember> : RaftState<TMember>
+internal sealed class FollowerState<TMember> : ConsensusTrackerState<TMember>
     where TMember : class, IRaftClusterMember
 {
-    private readonly AsyncAutoResetEvent refreshEvent;
-    private readonly AsyncManualResetEvent suppressionEvent;
     private readonly CancellationTokenSource trackerCancellation;
-    private readonly CancellationToken trackerCancellationToken; // cached to prevent ObjectDisposedException
     private Task? tracker;
     private volatile bool timedOut;
 
     public FollowerState(IRaftStateMachine<TMember> stateMachine)
         : base(stateMachine)
     {
-        refreshEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
-        suppressionEvent = new(initialState: true) { MeasurementTags = stateMachine.MeasurementTags };
         trackerCancellation = new();
-        trackerCancellationToken = trackerCancellation.Token;
+        Token = trackerCancellation.Token;
     }
 
-    private void SuspendTracking()
-    {
-        suppressionEvent.Reset();
-        refreshEvent.Set();
-    }
-
-    private void ResumeTracking() => suppressionEvent.Set();
+    public override CancellationToken Token { get; } // cached to prevent ObjectDisposedException
 
     private async Task Track(TimeSpan timeout)
     {
         // spin loop to wait for the timeout
-        while (await refreshEvent.WaitAsync(timeout, trackerCancellationToken).ConfigureAwait(false))
+        while (await refreshEvent.WaitAsync(timeout, Token).ConfigureAwait(false))
         {
             // Transition can be suppressed. If so, resume the loop and reset the timer.
             // If the event is in signaled state then the returned task is completed synchronously.
-            await suppressionEvent.WaitAsync(trackerCancellationToken).ConfigureAwait(false);
+            await suppressionEvent.WaitAsync(Token).ConfigureAwait(false);
         }
 
         timedOut = true;
@@ -66,13 +52,10 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
 
     internal bool IsExpired => timedOut;
 
-    internal bool IsRefreshRequested => refreshEvent.IsSet;
-
-    internal void Refresh()
+    public override void Refresh()
     {
-        Logger.TimeoutReset();
         refreshEvent.Set();
-        FollowerState.HeartbeatRateMeter.Add(1, MeasurementTags);
+        base.Refresh();
     }
 
     protected override async ValueTask DisposeAsyncCore()
@@ -96,32 +79,15 @@ internal sealed class FollowerState<TMember> : RaftState<TMember>
     {
         if (disposing)
         {
-            refreshEvent.Dispose();
-            suppressionEvent.Dispose();
             trackerCancellation.Dispose();
             tracker = null;
         }
 
         base.Dispose(disposing);
     }
-
-    [StructLayout(LayoutKind.Auto)]
-    internal readonly struct TransitionSuppressionScope : IDisposable
-    {
-        private readonly FollowerState<TMember>? state;
-
-        internal TransitionSuppressionScope(FollowerState<TMember>? state)
-        {
-            state?.SuspendTracking();
-            this.state = state;
-        }
-
-        public void Dispose() => state?.ResumeTracking();
-    }
 }
 
-internal static class FollowerState
+file static class FollowerState
 {
     internal static readonly Counter<int> TransitionRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("transitions-to-follower-count", description: "Number of Transitions to Follower State");
-    internal static readonly Counter<int> HeartbeatRateMeter = Metrics.Instrumentation.ServerSide.CreateCounter<int>("incoming-heartbeats-count", description: "Incoming Heartbeats from Leader");
 }

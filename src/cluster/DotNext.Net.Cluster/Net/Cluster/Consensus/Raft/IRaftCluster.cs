@@ -49,6 +49,15 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     CancellationToken LeadershipToken { get; }
 
     /// <summary>
+    /// Gets a token that remains non-canceled while the local node is a part of the majority of the cluster and
+    /// has communication with the leader.
+    /// </summary>
+    /// <remarks>
+    /// The token moves to canceled state if the current node upgrades to the candidate state or looses connection with the leader.
+    /// </remarks>
+    CancellationToken ConsensusToken { get; }
+
+    /// <summary>
     /// Represents a task indicating that the current node is ready to serve requests.
     /// </summary>
     Task Readiness { get; }
