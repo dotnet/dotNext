@@ -121,7 +121,7 @@ internal sealed class TcpClient : Client, ITcpTransport
         try
         {
             connectDurationTracker.CancelAfter(ConnectTimeout);
-            await socket.ConnectAsync(EndPoint, token).ConfigureAwait(false);
+            await socket.ConnectAsync(EndPoint, connectDurationTracker.Token).ConfigureAwait(false);
         }
         catch
         {
