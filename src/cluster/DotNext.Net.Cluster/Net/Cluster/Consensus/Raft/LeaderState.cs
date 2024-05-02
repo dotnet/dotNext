@@ -163,15 +163,14 @@ internal sealed partial class LeaderState<TMember> : TokenizedState<TMember>
                                     goto case MemberResponse.Canceled;
                                 case MemberResponse.Canceled:
                                     return;
+                                case MemberResponse.Successful when ++quorum == majority:
+                                    RenewLease(startTime.Elapsed);
+                                    UpdateLeaderStickiness();
+                                    goto default;
+                                default:
+                                    commitQuorum += Unsafe.BitCast<bool, byte>(result.Value);
+                                    continue;
                             }
-
-                            if (++quorum == majority)
-                            {
-                                RenewLease(startTime.Elapsed);
-                                UpdateLeaderStickiness();
-                            }
-
-                            commitQuorum += Unsafe.BitCast<bool, byte>(result.Value);
                         }
                     }
 
