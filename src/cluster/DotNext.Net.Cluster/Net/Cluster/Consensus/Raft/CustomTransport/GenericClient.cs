@@ -81,6 +81,7 @@ internal sealed class GenericClient : Client
     {
         // connection has separated timeout
         using var connectDurationTracker = CancellationTokenSource.CreateLinkedTokenSource(token);
+        connectDurationTracker.CancelAfter(ConnectTimeout);
         return new GenericConnectionContext(await factory.ConnectAsync(EndPoint, connectDurationTracker.Token).ConfigureAwait(false), defaultAllocator);
     }
 }
