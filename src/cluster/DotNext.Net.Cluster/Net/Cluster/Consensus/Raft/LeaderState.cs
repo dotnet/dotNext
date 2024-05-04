@@ -163,30 +163,33 @@ internal sealed partial class LeaderState<TMember> : TokenizedState<TMember>
                                     goto case MemberResponse.Canceled;
                                 case MemberResponse.Canceled:
                                     return;
-                            }
-
-                            if (++quorum == majority)
-                            {
-                                RenewLease(startTime.Elapsed);
-                                UpdateLeaderStickiness();
-                                await configurationStorage.ApplyAsync(Token).ConfigureAwait(false);
-                            }
-
-                            if (result.Value && ++commitQuorum == majority)
-                            {
-                                // majority of nodes accept entries with at least one entry from the current term
-                                var count = await auditTrail.CommitAsync(currentIndex, Token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
-                                Logger.CommitSuccessful(currentIndex, count);
+                                case MemberResponse.Successful when ++quorum == majority:
+                                    RenewLease(startTime.Elapsed);
+                                    UpdateLeaderStickiness();
+                                    goto default;
+                                default:
+                                    commitQuorum += Unsafe.BitCast<bool, byte>(result.Value);
+                                    continue;
                             }
                         }
                     }
 
-                    if (commitQuorum < majority)
+                    if (commitQuorum >= majority)
+                    {
+                        // majority of nodes accept entries with at least one entry from the current term
+                        var count = await auditTrail.CommitAsync(currentIndex, Token).ConfigureAwait(false); // commit all entries starting from the first uncommitted index to the end
+                        Logger.CommitSuccessful(currentIndex, count);
+                    }
+                    else
                     {
                         Logger.CommitFailed(quorum, commitIndex);
                     }
 
-                    if (quorum < majority)
+                    if (quorum >= majority)
+                    {
+                        await configurationStorage.ApplyAsync(Token).ConfigureAwait(false);
+                    }
+                    else
                     {
                         MoveToFollowerState(randomizeTimeout: false);
                         return;

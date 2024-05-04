@@ -111,7 +111,7 @@ internal partial class LeaderState<TMember>
             var startIndex = replicationIndex + 1L;
             Debug.Assert(startIndex == Member.State.NextIndex);
 
-            logger.ReplicationStarted(Member.EndPoint, startIndex);
+            logger.ReplicationStarted(Member.EndPoint, startIndex, currentIndex);
             return auditTrail.ReadAsync(this, startIndex, currentIndex, token);
         }
 
@@ -168,7 +168,7 @@ internal partial class LeaderState<TMember>
         {
             Debug.Assert(snapshot.IsSnapshot);
 
-            logger.InstallingSnapshot(replicationIndex = snapshotIndex);
+            logger.InstallingSnapshot(Member.EndPoint, replicationIndex = snapshotIndex);
             var result = Member.InstallSnapshotAsync(term, snapshot, snapshotIndex, token).ConfigureAwait(false).GetAwaiter();
             fingerprint = Member.State.ConfigurationFingerprint; // keep local version unchanged
             return result;

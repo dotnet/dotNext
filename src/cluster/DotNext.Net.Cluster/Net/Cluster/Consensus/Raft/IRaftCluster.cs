@@ -53,7 +53,7 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// has communication with the leader.
     /// </summary>
     /// <remarks>
-    /// The token moves to canceled state if the current node upgrades to the candidate state or looses connection with the leader.
+    /// The token moves to canceled state if the current node upgrades to the candidate state or loses connection with the leader.
     /// </remarks>
     CancellationToken ConsensusToken { get; }
 
@@ -72,4 +72,16 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask ApplyReadBarrierAsync(CancellationToken token = default);
+
+    /// <summary>
+    /// Waits until the local node is elected as the leader.
+    /// </summary>
+    /// <param name="timeout">The time to wait; or <see cref="Timeout.InfiniteTimeSpan"/>.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The leadership token.</returns>
+    /// <exception cref="TimeoutException">The operation is timed out.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The local node is disposed.</exception>
+    /// <seealso cref="LeadershipToken"/>
+    ValueTask<CancellationToken> WaitForLeadershipAsync(TimeSpan timeout, CancellationToken token = default);
 }

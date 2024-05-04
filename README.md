@@ -44,16 +44,14 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 04-20-2024
+Release Date: 05-04-2024
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.4.0">DotNext.IO 5.4.0</a>
-* Added `FileWriter.WrittenBuffer` property
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.5.0">DotNext.Net.Cluster 5.5.0</a>
+* Introduced `IRaftCluster.WaitForLeadershipAsync` method that waits for the local node to be elected as a leader of the cluster
+* Fixed [233](https://github.com/dotnet/dotNext/issues/233)
+* Fixed correctness of appending no-op entry by a leader used as a write barrier
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.4.0">DotNext.Net.Cluster 5.4.0</a>
-* Changed binary file format for WAL for more efficient I/O. A new format is incompatible with all previous versions. To enable legacy format, set `PersistentState.Options.UseLegacyBinaryFormat` property to **true**
-* Introduced a new experimental binary format for WAL based on sparse files. Can be enabled with `PersistentState.Options.MaxLogEntrySize` property
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.4.0">DotNext.AspNetCore.Cluster 5.4.0</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.5.0">DotNext.AspNetCore.Cluster 5.5.0</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
