@@ -74,12 +74,12 @@ internal sealed class GenericServer : Server
             // reset by client
             logger.ConnectionWasResetByClient(clientAddress);
         }
-        catch (OperationCanceledException) when (tokenSource is not null && tokenSource.CancellationOrigin == connection.ConnectionClosed)
+        catch (OperationCanceledException) when (tokenSource?.CancellationOrigin == connection.ConnectionClosed)
         {
             // closed by client
             logger.ConnectionWasResetByClient(clientAddress);
         }
-        catch (OperationCanceledException) when (tokenSource is not null && tokenSource.CancellationOrigin == lifecycleToken)
+        catch (OperationCanceledException) when (tokenSource?.CancellationOrigin == lifecycleToken)
         {
             // server stopped, suppress exception
         }

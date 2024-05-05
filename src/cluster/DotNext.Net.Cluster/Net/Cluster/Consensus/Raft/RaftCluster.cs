@@ -35,6 +35,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
     private volatile RaftState<TMember> state;
     private volatile TaskCompletionSource<TMember> electionEvent;
+    private volatile TaskCompletionSource<CancellationToken> leadershipEvent;
     private InvocationList<Action<RaftCluster<TMember>, TMember?>> leaderChangedHandlers;
     private InvocationList<Action<RaftCluster<TMember>, TMember>> replicationHandlers;
     private volatile int electionTimeout;
@@ -75,6 +76,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         readinessProbe = new(TaskCreationOptions.RunContinuationsAsynchronously);
         aggressiveStickiness = config.AggressiveLeaderStickiness;
         electionEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        leadershipEvent = new(TaskCreationOptions.RunContinuationsAsynchronously);
         state = new StandbyState<TMember>(this, TimeSpan.FromMilliseconds(electionTimeout));
         EndPointComparer = config.EndPointComparer;
         this.measurementTags = measurementTags;
@@ -256,21 +258,17 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         }
     }
 
-    /// <summary>
-    /// Waits for the leader election asynchronously.
-    /// </summary>
-    /// <param name="timeout">The time to wait; or <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The elected leader.</returns>
-    /// <exception cref="TimeoutException">The operation is timed out.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ObjectDisposedException">The local node is disposed.</exception>
+    /// <inheritdoc cref="ICluster.WaitForLeaderAsync(TimeSpan, CancellationToken)"/>
     public Task<TMember> WaitForLeaderAsync(TimeSpan timeout, CancellationToken token = default)
         => electionEvent.Task.WaitAsync(timeout, token);
 
     /// <inheritdoc />
     ValueTask<IClusterMember> ICluster.WaitForLeaderAsync(TimeSpan timeout, CancellationToken token)
         => new(WaitForLeaderAsync(timeout, token).Convert<TMember, IClusterMember>());
+
+    /// <inheritdoc cref="IRaftCluster.WaitForLeadershipAsync(TimeSpan, CancellationToken)"/>
+    public ValueTask<CancellationToken> WaitForLeadershipAsync(TimeSpan timeout, CancellationToken token = default)
+        => new(leadershipEvent.Task.WaitAsync(timeout, token));
 
     private ValueTask UnfreezeAsync()
     {
@@ -441,7 +439,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     }
 
     private ValueTask UpdateStateAsync(RaftState<TMember> newState)
-        => Interlocked.Exchange(ref state, newState).DisposeAsync();
+    {
+        if (leadershipEvent is { Task.IsCompletedSuccessfully: true } leadershipEventCopy)
+        {
+            Interlocked.CompareExchange(ref leadershipEvent, new(TaskCreationOptions.RunContinuationsAsynchronously), leadershipEventCopy);
+        }
+
+        return Interlocked.Exchange(ref state, newState).DisposeAsync();
+    }
 
     /// <summary>
     /// Stops serving local member.
@@ -1118,11 +1123,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 };
 
                 await UpdateStateAsync(newState).ConfigureAwait(false);
-
-                Leader = newLeader;
                 await auditTrail.AppendNoOpEntry(LifecycleToken).ConfigureAwait(false);
-                newState.StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage);
 
+                // ensure that the leader is visible to the consumers after no-op entry is added to the log (which acts as a write barrier)
+                Leader = newLeader;
+                leadershipEvent.TrySetResult(newState.Token);
+
+                newState.StartLeading(HeartbeatTimeout, auditTrail, ConfigurationStorage);
                 Logger.TransitionToLeaderStateCompleted(currentTerm);
             }
         }
@@ -1293,6 +1300,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             memberAddedHandlers = memberRemovedHandlers = default;
             leaderChangedHandlers = default;
             TrySetDisposedException(electionEvent);
+            TrySetDisposedException(leadershipEvent);
         }
 
         base.Dispose(disposing);

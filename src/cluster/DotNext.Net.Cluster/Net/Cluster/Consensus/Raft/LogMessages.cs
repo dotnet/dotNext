@@ -110,10 +110,10 @@ internal static partial class LogMessages
     [LoggerMessage(
         EventIdOffset + 12,
         LogLevel.Debug,
-        "Replication of member {Member} started at log index {EntryIndex}",
+        "Replication of member {Member} started from {StartIndex} log index to {EndIndex}",
         EventName = $"{EventIdPrefix}.{nameof(ReplicationStarted)}"
     )]
-    public static partial void ReplicationStarted(this ILogger logger, EndPoint member, long entryIndex);
+    public static partial void ReplicationStarted(this ILogger logger, EndPoint member, long startIndex, long endIndex);
 
     [LoggerMessage(
         EventIdOffset + 13,
@@ -158,10 +158,10 @@ internal static partial class LogMessages
     [LoggerMessage(
         EventIdOffset + 18,
         LogLevel.Information,
-        "Installing snapshot at index {EntryIndex}",
+        "Installing snapshot at index {EntryIndex} for member {Member}",
         EventName = $"{EventIdPrefix}.{nameof(InstallingSnapshot)}"
     )]
-    public static partial void InstallingSnapshot(this ILogger logger, long entryIndex);
+    public static partial void InstallingSnapshot(this ILogger logger, EndPoint member, long entryIndex);
 
     public const string SnapshotInstallationFailed = "Critical error detected while installing snapshot of audit trail";
 
