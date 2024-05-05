@@ -26186,6 +26186,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.TryGetLeaseToken
   nameWithType: IRaftCluster.TryGetLeaseToken
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.WaitForLeadershipAsync(System.TimeSpan,System.Threading.CancellationToken)
+  name: WaitForLeadershipAsync(TimeSpan, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_WaitForLeadershipAsync_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.WaitForLeadershipAsync(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.WaitForLeadershipAsync(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: IRaftCluster.WaitForLeadershipAsync(TimeSpan, CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.WaitForLeadershipAsync*
+  name: WaitForLeadershipAsync
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_WaitForLeadershipAsync_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.WaitForLeadershipAsync
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.WaitForLeadershipAsync
+  nameWithType: IRaftCluster.WaitForLeadershipAsync
 - uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember
   name: IRaftClusterMember
   href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.html
@@ -30089,6 +30102,23 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).WaitForLeaderAsync
   nameWithType: RaftCluster<TMember>.WaitForLeaderAsync
   nameWithType.vb: RaftCluster(Of TMember).WaitForLeaderAsync
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.WaitForLeadershipAsync(System.TimeSpan,System.Threading.CancellationToken)
+  name: WaitForLeadershipAsync(TimeSpan, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_WaitForLeadershipAsync_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.WaitForLeadershipAsync(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.WaitForLeadershipAsync(System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).WaitForLeadershipAsync(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: RaftCluster<TMember>.WaitForLeadershipAsync(TimeSpan, CancellationToken)
+  nameWithType.vb: RaftCluster(Of TMember).WaitForLeadershipAsync(TimeSpan, CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.WaitForLeadershipAsync*
+  name: WaitForLeadershipAsync
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_WaitForLeadershipAsync_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.WaitForLeadershipAsync
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.WaitForLeadershipAsync
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).WaitForLeadershipAsync
+  nameWithType: RaftCluster<TMember>.WaitForLeadershipAsync
+  nameWithType.vb: RaftCluster(Of TMember).WaitForLeadershipAsync
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftProtocolException
   name: RaftProtocolException
   href: api/DotNext.Net.Cluster.Consensus.Raft.RaftProtocolException.html
