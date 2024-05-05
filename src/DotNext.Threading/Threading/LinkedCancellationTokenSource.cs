@@ -27,32 +27,22 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource
         }
     }
 
-    private const int UnsetStatus = 0;
-    private const int InProgressStatus = 1;
-    private const int ReadyStatus = 2;
-    private volatile int status;
-    private CancellationToken originalToken;
+    private Atomic.Boolean status;
 
-    private protected LinkedCancellationTokenSource()
-    {
-    }
+    private protected LinkedCancellationTokenSource() => CancellationOrigin = Token;
 
     private void Cancel(CancellationToken token)
     {
-        if (Interlocked.CompareExchange(ref status, InProgressStatus, UnsetStatus) is UnsetStatus)
+        if (status.FalseToTrue())
         {
+            CancellationOrigin = token;
             try
             {
-                originalToken = token;
                 Cancel(throwOnFirstException: false);
             }
             catch (ObjectDisposedException)
             {
                 // suppress exception
-            }
-            finally
-            {
-                status = ReadyStatus;
             }
         }
     }
@@ -64,17 +54,14 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource
     /// It is recommended to request this property after cancellation.
     /// </remarks>
     public CancellationToken CancellationOrigin
-        => status is ReadyStatus ? originalToken : Token;
+    {
+        get;
+        private set;
+    }
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            originalToken = default;
-        }
-
-        status = UnsetStatus;
         base.Dispose(disposing);
     }
 }
