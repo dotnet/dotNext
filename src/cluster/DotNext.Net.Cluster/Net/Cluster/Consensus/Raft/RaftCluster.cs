@@ -610,7 +610,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     }
 
                     // prevent Follower state transition during processing of received log entries
-                    using (new FollowerState<TMember>.TransitionSuppressionScope(state as FollowerState<TMember>))
+                    using (new ConsensusTrackerState<TMember>.TransitionSuppressionScope(state as ConsensusTrackerState<TMember>))
                     {
                         /*
                         * AppendAsync is called with skipCommitted=true because HTTP response from the previous
