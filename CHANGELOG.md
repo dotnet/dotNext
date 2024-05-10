@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 05-09-2024
+# 05-10-2024
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/5.5.1">DotNext.Net.Cluster 5.5.1</a>
 * Fixed behavior of `IRaftCluster.ConsensusToken` when a node is in **standby** mode
 
