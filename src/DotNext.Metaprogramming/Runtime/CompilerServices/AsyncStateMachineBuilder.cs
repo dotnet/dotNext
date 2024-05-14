@@ -532,12 +532,12 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
             Type stateMachineType;
             if (returnType == typeof(void))
             {
-                stateMachineType = usePooling ? typeof(AsyncStateMachine<>) : typeof(PoolingAsyncStateMachine<>);
+                stateMachineType = usePooling ? typeof(PoolingAsyncStateMachine<>) : typeof(AsyncStateMachine<>);
                 stateMachineType = stateMachineType.MakeGenericType(stateType);
             }
             else
             {
-                stateMachineType = usePooling ? typeof(AsyncStateMachine<,>) : typeof(PoolingAsyncStateMachine<,>);
+                stateMachineType = usePooling ? typeof(PoolingAsyncStateMachine<,>) : typeof(AsyncStateMachine<,>);
                 stateMachineType = stateMachineType.MakeGenericType(stateType, returnType);
             }
 
