@@ -1,6 +1,11 @@
 Release Notes
 ====
 
+# 05-15-2024
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.3.1">DotNext.Metaprogramming 5.3.1</a>
+* Fixed [234](https://github.com/dotnet/dotNext/issues/234)
+* Updated dependencies
+
 # 05-10-2024
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/5.5.1">DotNext.Net.Cluster 5.5.1</a>
 * Fixed behavior of `IRaftCluster.ConsensusToken` when a node is in **standby** mode
