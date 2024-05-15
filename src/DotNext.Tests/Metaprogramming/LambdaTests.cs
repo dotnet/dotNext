@@ -475,4 +475,22 @@ public sealed class LambdaTests : Test
 
         Equal("hello, world", await lambda.Compile().Invoke(", world"));
     }
+
+    [Fact]
+    public static async Task RegressionIssue234()
+    {
+        var asyncMethod = new Func<Task>(DoAsync).Method;
+        var lambda = AsyncLambda<Func<ValueTask<int>>>(usePooling: true, (ctx, result) =>
+        {
+            Await(Expression.Call(asyncMethod));
+            Assign(result, 42.Const());
+        }).Compile();
+
+        Equal(42, await lambda.Invoke());
+        Equal(42, await lambda.Invoke());
+        Equal(42, await lambda.Invoke());
+        Equal(42, await lambda.Invoke());
+
+        static Task DoAsync() => Task.Delay(1);
+    }
 }

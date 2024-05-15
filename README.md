@@ -44,12 +44,10 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 05-10-2024
+Release Date: 05-15-2024
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.5.1">DotNext.Net.Cluster 5.5.1</a>
-* Fixed behavior of `IRaftCluster.ConsensusToken` when a node is in **standby** mode
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.5.1">DotNext.AspNetCore.Cluster 5.5.1</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.3.1">DotNext.Metaprogramming 5.3.1</a>
+* Fixed [234](https://github.com/dotnet/dotNext/issues/234)
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
