@@ -39,7 +39,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// </exception>
     public IndexPool(int maxValue)
     {
-        if (maxValue < 0 || maxValue > MaxValue)
+        if ((uint)maxValue > (uint)MaxValue)
             throw new ArgumentOutOfRangeException(nameof(maxValue));
 
         bitmask = ulong.MaxValue;
@@ -148,7 +148,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// value specified for this pool.</exception>
     public void Return(int value)
     {
-        if (value < 0 || value > maxValue)
+        if ((uint)value > (uint)maxValue)
             ThrowArgumentOutOfRangeException();
 
         Interlocked.Or(ref bitmask, 1UL << value);
@@ -184,7 +184,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// <param name="value">The value to check.</param>
     /// <returns><see langword="true"/> if <paramref name="value"/> is available for rent; otherwise, <see langword="false"/>.</returns>
     public readonly bool Contains(int value)
-        => value >= 0 && value <= maxValue && Contains(Volatile.Read(in bitmask), value);
+        => (uint)value <= (uint)maxValue && Contains(Volatile.Read(in bitmask), value);
 
     private static bool Contains(ulong bitmask, int index)
         => (bitmask & (1UL << index)) is not 0UL;
