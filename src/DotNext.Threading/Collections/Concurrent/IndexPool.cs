@@ -47,18 +47,12 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     }
 
     /// <summary>
-    /// Initializes a new pool that can return an integer within the range [0..<paramref name="maxValue"/>].
+    /// Gets or sets a value indicating that the pool is empty.
     /// </summary>
-    /// <param name="maxValue">The maximum possible value to return, inclusive.</param>
-    /// <param name="isEmpty"><see langword="true"/> to initialize a pool with an empty set of integers; otherwise, <see langword="false"/>.</param>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    public IndexPool(int maxValue, bool isEmpty)
+    public bool IsEmpty
     {
-        if ((uint)maxValue > (uint)MaxValue)
-            throw new ArgumentOutOfRangeException(nameof(maxValue));
-
-        this.maxValue = maxValue;
-        bitmask = isEmpty ? 0UL : ulong.MaxValue;
+        readonly get => Count is 0;
+        init => bitmask = value ? 0UL : ulong.MaxValue;
     }
 
     /// <summary>
