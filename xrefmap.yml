@@ -5230,6 +5230,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Collections.Concurrent.IndexPool.GetEnumerator
   nameWithType: IndexPool.GetEnumerator
+- uid: DotNext.Collections.Concurrent.IndexPool.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_IsEmpty
+  commentId: P:DotNext.Collections.Concurrent.IndexPool.IsEmpty
+  fullName: DotNext.Collections.Concurrent.IndexPool.IsEmpty
+  nameWithType: IndexPool.IsEmpty
+- uid: DotNext.Collections.Concurrent.IndexPool.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_IsEmpty_
+  commentId: Overload:DotNext.Collections.Concurrent.IndexPool.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.IndexPool.IsEmpty
+  nameWithType: IndexPool.IsEmpty
 - uid: DotNext.Collections.Concurrent.IndexPool.MaxValue
   name: MaxValue
   href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_MaxValue
@@ -5243,6 +5256,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Collections.Concurrent.IndexPool.MaxValue
   nameWithType: IndexPool.MaxValue
+- uid: DotNext.Collections.Concurrent.IndexPool.Reset
+  name: Reset()
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Reset
+  commentId: M:DotNext.Collections.Concurrent.IndexPool.Reset
+  fullName: DotNext.Collections.Concurrent.IndexPool.Reset()
+  nameWithType: IndexPool.Reset()
+- uid: DotNext.Collections.Concurrent.IndexPool.Reset*
+  name: Reset
+  href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Reset_
+  commentId: Overload:DotNext.Collections.Concurrent.IndexPool.Reset
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.IndexPool.Reset
+  nameWithType: IndexPool.Reset
 - uid: DotNext.Collections.Concurrent.IndexPool.Return(System.Int32)
   name: Return(int)
   href: api/DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Return_System_Int32_

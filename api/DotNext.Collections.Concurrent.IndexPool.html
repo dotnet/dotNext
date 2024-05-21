@@ -82,6 +82,7 @@
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
+    <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -108,7 +109,7 @@
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
   <h5 id="DotNext_Collections_Concurrent_IndexPool_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct IndexPool : ISupplier&lt;int&gt;, IFunctional&lt;Func&lt;int&gt;&gt;, IConsumer&lt;int&gt;, IFunctional&lt;Action&lt;int&gt;&gt;, IReadOnlyCollection&lt;int&gt;, IEnumerable&lt;int&gt;, IEnumerable</code></pre>
+    <pre><code class="lang-csharp hljs">public struct IndexPool : ISupplier&lt;int&gt;, IFunctional&lt;Func&lt;int&gt;&gt;, IConsumer&lt;int&gt;, IFunctional&lt;Action&lt;int&gt;&gt;, IReadOnlyCollection&lt;int&gt;, IEnumerable&lt;int&gt;, IEnumerable, IResettable</code></pre>
   </div>
   <h5 id="DotNext_Collections_Concurrent_IndexPool_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This type is thread-safe.</p>
@@ -189,7 +190,7 @@ or greater than <a class="xref" href="DotNext.Collections.Concurrent.IndexPool.h
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Concurrent_IndexPool_Capacity.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.IndexPool.Capacity%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L58">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L67">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_Capacity_" data-uid="DotNext.Collections.Concurrent.IndexPool.Capacity*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_Capacity" data-uid="DotNext.Collections.Concurrent.IndexPool.Capacity">Capacity</h4>
@@ -220,11 +221,11 @@ or greater than <a class="xref" href="DotNext.Collections.Concurrent.IndexPool.h
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Concurrent_IndexPool_Count.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.IndexPool.Count%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L195">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L209">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_Count_" data-uid="DotNext.Collections.Concurrent.IndexPool.Count*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_Count" data-uid="DotNext.Collections.Concurrent.IndexPool.Count">Count</h4>
-  <div class="markdown level1 summary"><p>Gets the number of available indicies.</p>
+  <div class="markdown level1 summary"><p>Gets the number of available indices.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -248,10 +249,41 @@ or greater than <a class="xref" href="DotNext.Collections.Concurrent.IndexPool.h
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Concurrent_IndexPool_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.IndexPool.IsEmpty%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L52">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_IndexPool_IsEmpty_" data-uid="DotNext.Collections.Concurrent.IndexPool.IsEmpty*"></a>
+  <h4 id="DotNext_Collections_Concurrent_IndexPool_IsEmpty" data-uid="DotNext.Collections.Concurrent.IndexPool.IsEmpty">IsEmpty</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating that the pool is empty.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsEmpty { readonly get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Concurrent_IndexPool_MaxValue.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.IndexPool.MaxValue%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L53">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L62">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_MaxValue_" data-uid="DotNext.Collections.Concurrent.IndexPool.MaxValue*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_MaxValue" data-uid="DotNext.Collections.Concurrent.IndexPool.MaxValue">MaxValue</h4>
@@ -285,7 +317,7 @@ or greater than <a class="xref" href="DotNext.Collections.Concurrent.IndexPool.h
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Concurrent_IndexPool_Contains_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.IndexPool.Contains(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L186">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L200">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_Contains_" data-uid="DotNext.Collections.Concurrent.IndexPool.Contains*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_Contains_System_Int32_" data-uid="DotNext.Collections.Concurrent.IndexPool.Contains(System.Int32)">Contains(int)</h4>
@@ -335,11 +367,11 @@ or greater than <a class="xref" href="DotNext.Collections.Concurrent.IndexPool.h
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Concurrent_IndexPool_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.IndexPool.GetEnumerator%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L201">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L215">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_GetEnumerator_" data-uid="DotNext.Collections.Concurrent.IndexPool.GetEnumerator*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_GetEnumerator" data-uid="DotNext.Collections.Concurrent.IndexPool.GetEnumerator">GetEnumerator()</h4>
-  <div class="markdown level1 summary"><p>Gets an enumerator over available indicies in the pool.</p>
+  <div class="markdown level1 summary"><p>Gets an enumerator over available indices in the pool.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -357,17 +389,33 @@ or greater than <a class="xref" href="DotNext.Collections.Concurrent.IndexPool.h
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Collections.Concurrent.IndexPool.html">IndexPool</a>.<a class="xref" href="DotNext.Collections.Concurrent.IndexPool.Enumerator.html">Enumerator</a></td>
-        <td><p>The enumerator over available indicies in this pool.</p>
+        <td><p>The enumerator over available indices in this pool.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Concurrent_IndexPool_Reset.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.IndexPool.Reset%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L190">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Concurrent_IndexPool_Reset_" data-uid="DotNext.Collections.Concurrent.IndexPool.Reset*"></a>
+  <h4 id="DotNext_Collections_Concurrent_IndexPool_Reset" data-uid="DotNext.Collections.Concurrent.IndexPool.Reset">Reset()</h4>
+  <div class="markdown level1 summary"><p>Returns all values to the pool.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Reset()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Concurrent_IndexPool_Return_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.IndexPool.Return(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L149">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L158">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_Return_" data-uid="DotNext.Collections.Concurrent.IndexPool.Return*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_Return_System_Int32_" data-uid="DotNext.Collections.Concurrent.IndexPool.Return(System.Int32)">Return(int)</h4>
@@ -417,16 +465,16 @@ value specified for this pool.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Concurrent_IndexPool_Return_System_ReadOnlySpan_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.IndexPool.Return(System.ReadOnlySpan%7BSystem.Int32%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L166">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L175">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_Return_" data-uid="DotNext.Collections.Concurrent.IndexPool.Return*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_Return_System_ReadOnlySpan_System_Int32__" data-uid="DotNext.Collections.Concurrent.IndexPool.Return(System.ReadOnlySpan{System.Int32})">Return(ReadOnlySpan&lt;int&gt;)</h4>
-  <div class="markdown level1 summary"><p>Returns multiple indicies, atomically.</p>
+  <div class="markdown level1 summary"><p>Returns multiple indices, atomically.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Return(ReadOnlySpan&lt;int&gt; indicies)</code></pre>
+    <pre><code class="lang-csharp hljs">public void Return(ReadOnlySpan&lt;int&gt; indices)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -440,8 +488,8 @@ value specified for this pool.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</td>
-        <td><span class="parametername">indicies</span></td>
-        <td><p>The buffer of indicies to return back to the pool.</p>
+        <td><span class="parametername">indices</span></td>
+        <td><p>The buffer of indices to return back to the pool.</p>
 </td>
       </tr>
     </tbody>
@@ -451,7 +499,7 @@ value specified for this pool.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Concurrent_IndexPool_Take.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.IndexPool.Take%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L99">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L108">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_Take_" data-uid="DotNext.Collections.Concurrent.IndexPool.Take*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_Take" data-uid="DotNext.Collections.Concurrent.IndexPool.Take">Take()</h4>
@@ -503,16 +551,16 @@ value specified for this pool.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Concurrent_IndexPool_Take_System_Span_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.IndexPool.Take(System.Span%7BSystem.Int32%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L121">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L130">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_Take_" data-uid="DotNext.Collections.Concurrent.IndexPool.Take*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_Take_System_Span_System_Int32__" data-uid="DotNext.Collections.Concurrent.IndexPool.Take(System.Span{System.Int32})">Take(Span&lt;int&gt;)</h4>
-  <div class="markdown level1 summary"><p>Takes all available indicies, atomically.</p>
+  <div class="markdown level1 summary"><p>Takes all available indices, atomically.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public int Take(Span&lt;int&gt; indicies)</code></pre>
+    <pre><code class="lang-csharp hljs">public int Take(Span&lt;int&gt; indices)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -526,8 +574,8 @@ value specified for this pool.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</td>
-        <td><span class="parametername">indicies</span></td>
-        <td><p>The buffer to be modified with the indicies taken from the pool.
+        <td><span class="parametername">indices</span></td>
+        <td><p>The buffer to be modified with the indices taken from the pool.
 The size of the buffer should not be less than <a class="xref" href="DotNext.Collections.Concurrent.IndexPool.html#DotNext_Collections_Concurrent_IndexPool_Capacity">Capacity</a>.</p>
 </td>
       </tr>
@@ -544,7 +592,7 @@ The size of the buffer should not be less than <a class="xref" href="DotNext.Col
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The number of indicies written to the buffer.</p>
+        <td><p>The number of indices written to the buffer.</p>
 </td>
       </tr>
     </tbody>
@@ -560,7 +608,7 @@ The size of the buffer should not be less than <a class="xref" href="DotNext.Col
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">indicies</code> is too small to place indicies.</p>
+        <td><p><code class="paramref">indices</code> is too small to place indices.</p>
 </td>
       </tr>
     </tbody>
@@ -574,7 +622,7 @@ The size of the buffer should not be less than <a class="xref" href="DotNext.Col
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Concurrent_IndexPool_TryPeek_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.IndexPool.TryPeek(System.Int32%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L65">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L74">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_TryPeek_" data-uid="DotNext.Collections.Concurrent.IndexPool.TryPeek*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_TryPeek_System_Int32__" data-uid="DotNext.Collections.Concurrent.IndexPool.TryPeek(System.Int32@)">TryPeek(out int)</h4>
@@ -624,7 +672,7 @@ The size of the buffer should not be less than <a class="xref" href="DotNext.Col
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Concurrent_IndexPool_TryTake_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Concurrent.IndexPool.TryTake(System.Int32%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L74">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Collections/Concurrent/IndexPool.cs/#L83">View Source</a>
   </span>
   <a id="DotNext_Collections_Concurrent_IndexPool_TryTake_" data-uid="DotNext.Collections.Concurrent.IndexPool.TryTake*"></a>
   <h4 id="DotNext_Collections_Concurrent_IndexPool_TryTake_System_Int32__" data-uid="DotNext.Collections.Concurrent.IndexPool.TryTake(System.Int32@)">TryTake(out int)</h4>
@@ -694,6 +742,9 @@ The size of the buffer should not be less than <a class="xref" href="DotNext.Col
   </div>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IResettable.html">IResettable</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
