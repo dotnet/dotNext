@@ -44,18 +44,11 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 05-05-2024
+Release Date: 05-21-2024
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.3.1">DotNext.Threading 5.3.1</a>
-* Fixed race condition caused by `LinkedCancellationTokenSource.CancellationOrigin` property that leads to incorrectly returned cancellation token
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.5.0">DotNext.Net.Cluster 5.5.0</a>
-* Introduced `IRaftCluster.WaitForLeadershipAsync` method that waits for the local node to be elected as a leader of the cluster
-* Fixed [233](https://github.com/dotnet/dotNext/issues/233)
-* Fixed correctness of appending no-op entry by a leader used as a write barrier
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.5.0">DotNext.AspNetCore.Cluster 5.5.0</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.threading/5.4.0">DotNext.Metaprogramming 5.4.0</a>
+* Smallish performance improvements of `IndexPool` instance methods
+* Added ability to instantiate empty `IndexPool`
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

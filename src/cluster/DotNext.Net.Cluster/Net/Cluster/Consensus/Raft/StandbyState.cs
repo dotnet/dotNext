@@ -62,7 +62,6 @@ internal sealed class StandbyState<TMember> : ConsensusTrackerState<TMember>
         {
             using var cts = Interlocked.Exchange(ref consensusTokenSource, null);
             cts.Cancel(throwOnFirstException: false);
-            cts.Dispose();
         }
 
         // Ignored if timeout tracking is aborted by OperationCanceledException.

@@ -136,17 +136,16 @@ internal struct PoolingAsyncStateMachine<TState> : IAsyncStateMachine<TState>
         }
 
         // finalize state machine
-        if (StateId == IAsyncStateMachine<TState>.FinalState)
+        if (StateId is IAsyncStateMachine<TState>.FinalState)
         {
-            if (exception is null)
-                builder.SetResult();
+            if (exception?.SourceException is { } e)
+            {
+                builder.SetException(e);
+            }
             else
-                builder.SetException(exception.SourceException);
-
-            // perform cleanup after resuming of all suspended tasks
-            guardedRegionsCounter = 0;
-            exception = null;
-            State = default;
+            {
+                builder.SetResult();
+            }
         }
     }
 
@@ -376,18 +375,16 @@ internal struct PoolingAsyncStateMachine<TState, TResult> : IAsyncStateMachine<T
         }
 
         // finalize state machine
-        if (StateId == IAsyncStateMachine<TState>.FinalState)
+        if (StateId is IAsyncStateMachine<TState>.FinalState)
         {
-            if (exception is null)
-                builder.SetResult(result);
+            if (exception?.SourceException is { } e)
+            {
+                builder.SetException(e);
+            }
             else
-                builder.SetException(exception.SourceException);
-
-            // perform cleanup after resuming of all suspended tasks
-            guardedRegionsCounter = 0;
-            exception = null;
-            result = default;
-            State = default;
+            {
+                builder.SetResult(result);
+            }
         }
     }
 
