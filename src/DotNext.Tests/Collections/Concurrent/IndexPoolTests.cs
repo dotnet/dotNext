@@ -13,6 +13,20 @@ public sealed class IndexPoolTests : Test
     }
 
     [Fact]
+    public static void EmptyPool2()
+    {
+        var pool = new IndexPool() { IsEmpty = true };
+        False(pool.TryPeek(out _));
+        False(pool.TryTake(out _));
+        DoesNotContain(10, pool);
+        Empty(pool);
+
+        pool.Reset();
+        NotEmpty(pool);
+        Contains(10, pool);
+    }
+
+    [Fact]
     public static void TakeAll()
     {
         var pool = new IndexPool();
