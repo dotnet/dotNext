@@ -1,6 +1,11 @@
 Release Notes
 ====
 
+# 05-21-2024
+<a href="https://www.nuget.org/packages/dotnext.threading/5.4.0">DotNext.Metaprogramming 5.4.0</a>
+* Smallish performance improvements of `IndexPool` instance methods
+* Added ability to instantiate empty `IndexPool`
+
 # 05-15-2024
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.3.1">DotNext.Metaprogramming 5.3.1</a>
 * Fixed [234](https://github.com/dotnet/dotNext/issues/234)
