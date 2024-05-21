@@ -15,7 +15,7 @@ namespace DotNext.Collections.Concurrent;
 /// </remarks>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 [StructLayout(LayoutKind.Auto)]
-public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<int>
+public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<int>, IResettable
 {
     private readonly int maxValue;
     private ulong bitmask;
@@ -44,6 +44,21 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
 
         bitmask = ulong.MaxValue;
         this.maxValue = maxValue;
+    }
+
+    /// <summary>
+    /// Initializes a new pool that can return an integer within the range [0..<paramref name="maxValue"/>].
+    /// </summary>
+    /// <param name="maxValue">The maximum possible value to return, inclusive.</param>
+    /// <param name="isEmpty"><see langword="true"/> to initialize a pool with an empty set of integers; otherwise, <see langword="false"/>.</param>
+    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    public IndexPool(int maxValue, bool isEmpty)
+    {
+        if ((uint)maxValue > (uint)MaxValue)
+            throw new ArgumentOutOfRangeException(nameof(maxValue));
+
+        this.maxValue = maxValue;
+        bitmask = isEmpty ? 0UL : ulong.MaxValue;
     }
 
     /// <summary>
@@ -109,28 +124,28 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     }
 
     /// <summary>
-    /// Takes all available indicies, atomically.
+    /// Takes all available indices, atomically.
     /// </summary>
-    /// <param name="indicies">
-    /// The buffer to be modified with the indicies taken from the pool.
+    /// <param name="indices">
+    /// The buffer to be modified with the indices taken from the pool.
     /// The size of the buffer should not be less than <see cref="Capacity"/>.
     /// </param>
-    /// <returns>The number of indicies written to the buffer.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="indicies"/> is too small to place indicies.</exception>
+    /// <returns>The number of indices written to the buffer.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="indices"/> is too small to place indices.</exception>
     /// <seealso cref="Return(ReadOnlySpan{int})"/>
-    public int Take(Span<int> indicies)
+    public int Take(Span<int> indices)
     {
-        if (indicies.Length < Capacity)
-            throw new ArgumentOutOfRangeException(nameof(indicies));
+        if (indices.Length < Capacity)
+            throw new ArgumentOutOfRangeException(nameof(indices));
 
         var oldValue = Interlocked.Exchange(ref bitmask, 0UL);
         var bufferOffset = 0;
 
-        for (int bitPosition = 0; bitPosition < Capacity; bitPosition++)
+        for (var bitPosition = 0; bitPosition < Capacity; bitPosition++)
         {
             if (Contains(oldValue, bitPosition))
             {
-                indicies[bufferOffset++] = bitPosition;
+                indices[bufferOffset++] = bitPosition;
             }
         }
 
@@ -160,20 +175,25 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     }
 
     /// <summary>
-    /// Returns multiple indicies, atomically.
+    /// Returns multiple indices, atomically.
     /// </summary>
-    /// <param name="indicies">The buffer of indicies to return back to the pool.</param>
-    public void Return(ReadOnlySpan<int> indicies)
+    /// <param name="indices">The buffer of indices to return back to the pool.</param>
+    public void Return(ReadOnlySpan<int> indices)
     {
         var newValue = 0UL;
 
-        foreach (var index in indicies)
+        foreach (var index in indices)
         {
             newValue |= 1UL << index;
         }
 
         Interlocked.Or(ref bitmask, newValue);
     }
+
+    /// <summary>
+    /// Returns all values to the pool.
+    /// </summary>
+    public void Reset() => Volatile.Write(ref bitmask, ulong.MaxValue);
 
     /// <inheritdoc/>
     void IConsumer<int>.Invoke(int value) => Return(value);
@@ -190,14 +210,14 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
         => (bitmask & (1UL << index)) is not 0UL;
 
     /// <summary>
-    /// Gets the number of available indicies.
+    /// Gets the number of available indices.
     /// </summary>
     public readonly int Count => Math.Min(BitOperations.PopCount(bitmask), maxValue + 1);
 
     /// <summary>
-    /// Gets an enumerator over available indicies in the pool.
+    /// Gets an enumerator over available indices in the pool.
     /// </summary>
-    /// <returns>The enumerator over available indicies in this pool.</returns>
+    /// <returns>The enumerator over available indices in this pool.</returns>
     public readonly Enumerator GetEnumerator() => new(Volatile.Read(in bitmask), maxValue);
 
     /// <inheritdoc/>
@@ -207,7 +227,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator().AsClassicEnumerator();
 
     /// <summary>
-    /// Represents an enumerator over available indicies in the pool.
+    /// Represents an enumerator over available indices in the pool.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
     public struct Enumerator
