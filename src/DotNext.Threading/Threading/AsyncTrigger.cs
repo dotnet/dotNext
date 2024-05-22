@@ -189,7 +189,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                     suspendedCallers = Detach(resumeAll)?.SetResult(true, out signaled);
                     factory = !signaled && throwOnEmptyQueue
                         ? EmptyWaitQueueExceptionFactory.Instance
-                        : EnqueueNode(ref pool, ref manager, throwOnTimeout: false);
+                        : EnqueueNode<DefaultWaitNode, LockManager>(ref pool, WaitNodeFlags.None);
                 }
 
                 suspendedCallers?.Unwind();
@@ -229,7 +229,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
             suspendedCallers = Detach(resumeAll)?.SetResult(true, out signaled);
             factory = !signaled && throwOnEmptyQueue
                 ? EmptyWaitQueueExceptionFactory.Instance
-                : EnqueueNode(ref pool, ref manager, throwOnTimeout: true);
+                : EnqueueNode<DefaultWaitNode, LockManager>(ref pool, WaitNodeFlags.ThrowOnTimeout);
         }
 
         suspendedCallers?.Unwind();

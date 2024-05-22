@@ -293,7 +293,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                         goto resume_suspended_callers;
                     }
 
-                    factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: false);
+                    factory = EnqueueNode<DefaultWaitNode, StateManager>(ref pool, WaitNodeFlags.None);
                 }
 
                 completedSynchronously = false;
@@ -335,7 +335,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                 goto resume_suspended_callers;
             }
 
-            factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: true);
+            factory = EnqueueNode<DefaultWaitNode, StateManager>(ref pool, WaitNodeFlags.ThrowOnTimeout);
         }
 
         completedSynchronously = false;
