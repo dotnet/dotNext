@@ -12,7 +12,7 @@ using IO.Log;
 /// </summary>
 /// <typeparam name="T">Binary-formattable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct BinaryLogEntry<T>() : IBinaryLogEntry
+public readonly struct BinaryLogEntry<T>() : IRaftLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
     where T : notnull, IBinaryFormattable<T>
 {
     /// <summary>
@@ -45,7 +45,7 @@ public readonly struct BinaryLogEntry<T>() : IBinaryLogEntry
     long? IDataTransferObject.Length => T.Size;
 
     /// <inheritdoc />
-    MemoryOwner<byte> IBinaryLogEntry.ToBuffer(MemoryAllocator<byte> allocator)
+    MemoryOwner<byte> ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>.Invoke(MemoryAllocator<byte> allocator)
         => IBinaryFormattable<T>.Format(Content, allocator);
 
     /// <inheritdoc />
@@ -57,7 +57,7 @@ public readonly struct BinaryLogEntry<T>() : IBinaryLogEntry
 /// Represents default implementation of <see cref="IRaftLogEntry"/>.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct BinaryLogEntry() : IBinaryLogEntry
+public readonly struct BinaryLogEntry() : IRaftLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
 {
     private readonly ReadOnlyMemory<byte> content;
 
@@ -106,7 +106,7 @@ public readonly struct BinaryLogEntry() : IBinaryLogEntry
     }
 
     /// <inheritdoc />
-    MemoryOwner<byte> IBinaryLogEntry.ToBuffer(MemoryAllocator<byte> allocator)
+    MemoryOwner<byte> ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>.Invoke(MemoryAllocator<byte> allocator)
         => content.Span.Copy(allocator);
 
     /// <inheritdoc />

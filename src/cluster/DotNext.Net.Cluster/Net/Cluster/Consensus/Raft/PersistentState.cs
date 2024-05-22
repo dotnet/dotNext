@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Collections.Specialized;
+using DotNext.Buffers;
 using IO.Log;
 using static IO.DataTransferObject;
 using AsyncTrigger = Threading.AsyncTrigger;
@@ -744,8 +745,8 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         }
         else if (bufferManager.IsCachingEnabled && addToCache)
         {
-            result = entry is IBinaryLogEntry
-                ? AppendCachedAsync(new CachedLogEntry { Content = ((IBinaryLogEntry)entry).ToBuffer(bufferManager.BufferAllocator), Term = entry.Term, Timestamp = entry.Timestamp, CommandId = entry.CommandId }, token)
+            result = entry is ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
+                ? AppendCachedAsync(new CachedLogEntry { Content = ((ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>)entry).Invoke(bufferManager.BufferAllocator), Term = entry.Term, Timestamp = entry.Timestamp, CommandId = entry.CommandId }, token)
                 : AppendCachedAsync(entry, token);
         }
         else
