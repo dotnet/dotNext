@@ -14,6 +14,17 @@ public partial class CommandInterpreter : IBuildable<CommandInterpreter, Command
         private readonly Dictionary<Type, int> identifiers = new();
         private int? snapshotCommandId;
 
+        private Builder Add<TCommand>(int commandId, CommandHandler<TCommand> handler, bool snapshotHandler)
+            where TCommand : notnull, ISerializable<TCommand>
+        {
+            identifiers.Add(typeof(TCommand), commandId);
+            interpreters.Add(commandId, handler);
+            if (snapshotHandler)
+                snapshotCommandId = commandId;
+
+            return this;
+        }
+
         /// <summary>
         /// Registers command handler.
         /// </summary>
@@ -32,11 +43,28 @@ public partial class CommandInterpreter : IBuildable<CommandInterpreter, Command
         {
             ArgumentNullException.ThrowIfNull(handler);
 
-            identifiers.Add(typeof(TCommand), commandId);
-            interpreters.Add(commandId, new CommandHandler<TCommand>(handler));
-            if (snapshotHandler)
-                snapshotCommandId = commandId;
-            return this;
+            return Add(commandId, new CommandHandler<TCommand>(handler), snapshotHandler);
+        }
+
+        /// <summary>
+        /// Registers command handler.
+        /// </summary>
+        /// <param name="commandId">The identifier of the command.</param>
+        /// <param name="handler">The command handler.</param>
+        /// <param name="snapshotHandler">
+        /// <see langword="true"/> to register a handler for snapshot log entry;
+        /// <see langword="false"/> to register a handler for regular log entry.
+        /// </param>
+        /// <typeparam name="TCommand">The type of the command supported by the handler.</typeparam>
+        /// <returns>This builder.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <see langword="null"/>.</exception>
+        /// <exception cref="GenericArgumentException">Type <typaparamref name="TCommand"/> is not annotated with <see cref="CommandAttribute"/> attribute.</exception>
+        public Builder Add<TCommand>(int commandId, Func<TCommand, object?, CancellationToken, ValueTask> handler, bool snapshotHandler = false)
+            where TCommand : notnull, ISerializable<TCommand>
+        {
+            ArgumentNullException.ThrowIfNull(handler);
+
+            return Add(commandId, new CommandHandler<TCommand>(handler), snapshotHandler);
         }
 
         /// <summary>
