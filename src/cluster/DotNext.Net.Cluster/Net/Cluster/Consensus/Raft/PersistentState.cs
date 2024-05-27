@@ -344,7 +344,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         var session = sessionManager.Take();
         try
         {
-            (bufferedEntries, snapshotIndex) = await UnsafeReadAsync<(BufferedLogEntryList, long?)>(bufferingConsumer, session, startIndex, endIndex ?? state.LastIndex, token).ConfigureAwait(false);
+            (bufferedEntries, snapshotIndex) = await UnsafeReadAsync(bufferingConsumer, session, startIndex, endIndex ?? state.LastIndex, token).ConfigureAwait(false);
         }
         finally
         {
@@ -677,7 +677,14 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     private async ValueTask<long> AppendCachedAsync<TEntry>(TEntry entry, CancellationToken token)
         where TEntry : notnull, IRaftLogEntry
-        => await AppendCachedAsync(new CachedLogEntry { Content = await entry.ToMemoryAsync(bufferManager.BufferAllocator, token).ConfigureAwait(false), Term = entry.Term, Timestamp = entry.Timestamp, CommandId = entry.CommandId }, token).ConfigureAwait(false);
+        => await AppendCachedAsync(new CachedLogEntry
+        {
+            Content = await entry.ToMemoryAsync(bufferManager.BufferAllocator, token).ConfigureAwait(false),
+            Term = entry.Term,
+            Timestamp = entry.Timestamp,
+            CommandId = entry.CommandId,
+            Context = entry is IInputLogEntry ? ((IInputLogEntry)entry).Context : null,
+        }, token).ConfigureAwait(false);
 
     private async ValueTask<long> AppendCachedAsync(CachedLogEntry cachedEntry, CancellationToken token)
     {
@@ -746,7 +753,14 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         else if (bufferManager.IsCachingEnabled && addToCache)
         {
             result = entry is ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
-                ? AppendCachedAsync(new CachedLogEntry { Content = ((ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>)entry).Invoke(bufferManager.BufferAllocator), Term = entry.Term, Timestamp = entry.Timestamp, CommandId = entry.CommandId }, token)
+                ? AppendCachedAsync(new CachedLogEntry
+                {
+                    Content = ((ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>)entry).Invoke(bufferManager.BufferAllocator),
+                    Term = entry.Term,
+                    Timestamp = entry.Timestamp,
+                    CommandId = entry.CommandId,
+                    Context = entry is IInputLogEntry ? ((IInputLogEntry)entry).Context : null,
+                }, token)
                 : AppendCachedAsync(entry, token);
         }
         else

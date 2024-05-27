@@ -12,7 +12,7 @@ using IO.Log;
 /// </summary>
 /// <typeparam name="T">Binary-formattable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct BinaryLogEntry<T>() : IRaftLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
+public readonly struct BinaryLogEntry<T>() : IInputLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
     where T : notnull, IBinaryFormattable<T>
 {
     /// <summary>
@@ -44,6 +44,13 @@ public readonly struct BinaryLogEntry<T>() : IRaftLogEntry, ISupplier<MemoryAllo
     /// <inheritdoc />
     long? IDataTransferObject.Length => T.Size;
 
+    /// <inheritdoc cref="IInputLogEntry.Context"/>
+    public object? Context
+    {
+        get;
+        init;
+    }
+
     /// <inheritdoc />
     MemoryOwner<byte> ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>.Invoke(MemoryAllocator<byte> allocator)
         => IBinaryFormattable<T>.Format(Content, allocator);
@@ -57,7 +64,7 @@ public readonly struct BinaryLogEntry<T>() : IRaftLogEntry, ISupplier<MemoryAllo
 /// Represents default implementation of <see cref="IRaftLogEntry"/>.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct BinaryLogEntry() : IRaftLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
+public readonly struct BinaryLogEntry() : IInputLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
 {
     private readonly ReadOnlyMemory<byte> content;
 
@@ -97,6 +104,13 @@ public readonly struct BinaryLogEntry() : IRaftLogEntry, ISupplier<MemoryAllocat
 
     /// <inheritdoc />
     bool IDataTransferObject.IsReusable => true;
+
+    /// <inheritdoc cref="IInputLogEntry.Context"/>
+    public object? Context
+    {
+        get;
+        init;
+    }
 
     /// <inheritdoc />
     bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)

@@ -9,12 +9,17 @@ using IO.Log;
 public partial class PersistentState
 {
     [StructLayout(LayoutKind.Auto)]
-    internal struct CacheRecord() : IDisposable
+    internal struct CacheRecord : IDisposable
     {
         internal MemoryOwner<byte> Content;
-        internal CachedLogEntryPersistenceMode PersistenceMode = CachedLogEntryPersistenceMode.CopyToBuffer;
+        internal CachedLogEntryPersistenceMode PersistenceMode;
+        internal object? Context;
 
-        public void Dispose() => Content.Dispose();
+        public void Dispose()
+        {
+            Context = null;
+            Content.Dispose();
+        }
     }
 
     internal enum CachedLogEntryPersistenceMode : byte
@@ -28,9 +33,15 @@ public partial class PersistentState
     /// Represents buffered Raft log entry.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct CachedLogEntry : IRaftLogEntry
+    internal readonly struct CachedLogEntry : IInputLogEntry
     {
         private readonly CacheRecord record;
+
+        public object? Context
+        {
+            get => record.Context;
+            init => record.Context = value;
+        }
 
         internal CachedLogEntryPersistenceMode PersistenceMode
         {
@@ -46,7 +57,7 @@ public partial class PersistentState
 
         required public long Term { get; init; }
 
-        public int? CommandId { get; init; }
+        required public int? CommandId { get; init; }
 
         internal long Length => record.Content.Length;
 

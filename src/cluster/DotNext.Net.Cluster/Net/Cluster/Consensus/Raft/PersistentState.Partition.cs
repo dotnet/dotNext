@@ -15,10 +15,11 @@ public partial class PersistentState
     private protected abstract class Partition : ConcurrentStorageAccess
     {
         internal const int MaxRecordsPerPartition = int.MaxValue / LogEntryMetadata.Size;
-        protected static readonly CacheRecord EmptyRecord = new();
+        protected static readonly CacheRecord EmptyRecord = new() { PersistenceMode = CachedLogEntryPersistenceMode.CopyToBuffer };
 
         internal readonly long FirstIndex, PartitionNumber, LastIndex;
         private Partition? previous, next;
+        private object?[]? context;
         protected MemoryOwner<CacheRecord> entryCache;
         protected int runningIndex;
 
@@ -95,6 +96,27 @@ public partial class PersistentState
 
         internal abstract void Initialize();
 
+        internal void ClearContext(long absoluteIndex)
+        {
+            Debug.Assert(absoluteIndex >= FirstIndex);
+            Debug.Assert(absoluteIndex <= LastIndex);
+
+            if (context is not null)
+            {
+                var relativeIndex = ToRelativeIndex(absoluteIndex);
+
+                if (relativeIndex == context.Length - 1)
+                {
+                    Array.Clear(context);
+                    context = null;
+                }
+                else
+                {
+                    Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(context), relativeIndex) = null;
+                }
+            }
+        }
+
         internal LogEntry Read(int sessionId, long absoluteIndex, bool metadataOnly = false)
         {
             Debug.Assert(absoluteIndex >= FirstIndex && absoluteIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
@@ -116,6 +138,7 @@ public partial class PersistentState
                 {
                     ContentReader = GetSessionReader(sessionId),
                     IsPersisted = true,
+                    Context = GetContext(relativeIndex),
                 };
             }
 
@@ -124,7 +147,17 @@ public partial class PersistentState
             {
                 ContentBuffer = cachedContent.Content.Memory,
                 IsPersisted = cachedContent.PersistenceMode is not CachedLogEntryPersistenceMode.None,
+                Context = cachedContent.Context,
             };
+
+            object? GetContext(int index)
+            {
+                Debug.Assert(index <= ToRelativeIndex(LastIndex));
+
+                return context is not null
+                    ? Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(context), index)
+                    : null;
+            }
         }
 
         internal ValueTask PersistCachedEntryAsync(long absoluteIndex, bool removeFromMemory)
@@ -227,6 +260,10 @@ public partial class PersistentState
                         goto exit;
                 }
             }
+            else if (entry is IInputLogEntry && ((IInputLogEntry)entry).Context is { } context)
+            {
+                SetContext(relativeIndex, context);
+            }
 
             // invalidate cached log entry on write
             if (!entryCache.IsEmpty)
@@ -234,6 +271,14 @@ public partial class PersistentState
 
             exit:
             return PersistAsync(entry, relativeIndex, token);
+
+            void SetContext(int relativeIndex, object context)
+            {
+                Debug.Assert(context is not null);
+
+                this.context ??= new object?[ToRelativeIndex(LastIndex) + 1];
+                Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(this.context), relativeIndex) = context;
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -241,6 +286,13 @@ public partial class PersistentState
             if (disposing)
             {
                 previous = next = null;
+
+                if (context is not null)
+                {
+                    Array.Clear(context);
+                    context = null;
+                }
+
                 entryCache.ReleaseAll();
             }
 

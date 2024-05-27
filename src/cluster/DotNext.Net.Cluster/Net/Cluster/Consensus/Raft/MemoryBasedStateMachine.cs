@@ -671,7 +671,8 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// <seealso cref="Commands.CommandInterpreter"/>
     protected abstract ValueTask ApplyAsync(LogEntry entry);
 
-    private ValueTask ApplyCoreAsync(LogEntry entry) => entry.IsEmpty ? new() : ApplyAsync(entry); // skip empty log entry
+    private ValueTask ApplyCoreAsync(LogEntry entry)
+        => entry.IsEmpty ? new() : ApplyAsync(entry); // skip empty log entry
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask ApplyAsync(int sessionId, long startIndex, CancellationToken token)
@@ -686,13 +687,21 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 Volatile.Write(ref lastTerm, entry.Term);
 
                 // Remove log entry from the cache according to eviction policy
+                var lastEntryInPartition = startIndex == commitIndex || startIndex == partition.LastIndex;
                 if (!entry.IsPersisted)
                 {
                     await partition.PersistCachedEntryAsync(startIndex, evictOnCommit).ConfigureAwait(false);
 
                     // Flush partition if we are finished or at the last entry in it
-                    if (startIndex == commitIndex || startIndex == partition.LastIndex)
+                    if (lastEntryInPartition)
+                    {
                         await partition.FlushAsync(token).ConfigureAwait(false);
+                        partition.ClearContext(startIndex);
+                    }
+                }
+                else if (lastEntryInPartition)
+                {
+                    partition.ClearContext(startIndex);
                 }
             }
             else
