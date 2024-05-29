@@ -679,7 +679,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     protected abstract ValueTask ApplyAsync(LogEntry entry);
 
     private ValueTask ApplyCoreAsync(LogEntry entry)
-        => entry.IsEmpty ? new() : ApplyAsync(entry); // skip empty log entry
+        => entry.IsEmpty ? ValueTask.CompletedTask : ApplyAsync(entry); // skip empty log entry
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask ApplyAsync(int sessionId, long startIndex, CancellationToken token)
