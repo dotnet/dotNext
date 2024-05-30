@@ -24258,6 +24258,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry.Content
   nameWithType: BinaryLogEntry.Content
+- uid: DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry.Context
+  name: Context
+  href: api/DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry.html#DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_Context
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry.Context
+  fullName: DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry.Context
+  nameWithType: BinaryLogEntry.Context
+- uid: DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry.Context*
+  name: Context
+  href: api/DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry.html#DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_Context_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry.Context
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry.Context
+  nameWithType: BinaryLogEntry.Context
 - uid: DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry.Term
   name: Term
   href: api/DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry.html#DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_Term
@@ -24346,6 +24359,23 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry(Of T).Content
   nameWithType: BinaryLogEntry<T>.Content
   nameWithType.vb: BinaryLogEntry(Of T).Content
+- uid: DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.Context
+  name: Context
+  href: api/DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry-1.html#DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_Context
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.Context
+  fullName: DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry<T>.Context
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry(Of T).Context
+  nameWithType: BinaryLogEntry<T>.Context
+  nameWithType.vb: BinaryLogEntry(Of T).Context
+- uid: DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.Context*
+  name: Context
+  href: api/DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry-1.html#DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_Context_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.Context
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry<T>.Context
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry(Of T).Context
+  nameWithType: BinaryLogEntry<T>.Context
+  nameWithType.vb: BinaryLogEntry(Of T).Context
 - uid: DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry`1.Term
   name: Term
   href: api/DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry-1.html#DotNext_Net_Cluster_Consensus_Raft_BinaryLogEntry_1_Term
@@ -24802,6 +24832,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.Add
   nameWithType: CommandInterpreter.Builder.Add
+- uid: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.Add``1(System.Int32,System.Func{``0,System.Object,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask},System.Boolean)
+  name: Add<TCommand>(int, Func<TCommand, object?, CancellationToken, ValueTask>, bool)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.html#DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter_Builder_Add__1_System_Int32_System_Func___0_System_Object_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Boolean_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.Add``1(System.Int32,System.Func{``0,System.Object,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask},System.Boolean)
+  name.vb: Add(Of TCommand)(Integer, Func(Of TCommand, Object, CancellationToken, ValueTask), Boolean)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.Add<TCommand>(int, System.Func<TCommand, object?, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask>, bool)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.Add(Of TCommand)(Integer, System.Func(Of TCommand, Object, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask), Boolean)
+  nameWithType: CommandInterpreter.Builder.Add<TCommand>(int, Func<TCommand, object?, CancellationToken, ValueTask>, bool)
+  nameWithType.vb: CommandInterpreter.Builder.Add(Of TCommand)(Integer, Func(Of TCommand, Object, CancellationToken, ValueTask), Boolean)
 - uid: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.Add``1(System.Int32,System.Func{``0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask},System.Boolean)
   name: Add<TCommand>(int, Func<TCommand, CancellationToken, ValueTask>, bool)
   href: api/DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.Builder.html#DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter_Builder_Add__1_System_Int32_System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Boolean_
@@ -24879,6 +24918,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.InterpretAsync
   nameWithType: CommandInterpreter.InterpretAsync
+- uid: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.InterpretAsync``1(``0,System.Object,System.Threading.CancellationToken)
+  name: InterpretAsync<TEntry>(TEntry, object?, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.html#DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter_InterpretAsync__1___0_System_Object_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.InterpretAsync``1(``0,System.Object,System.Threading.CancellationToken)
+  name.vb: InterpretAsync(Of TEntry)(TEntry, Object, CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.InterpretAsync<TEntry>(TEntry, object?, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.InterpretAsync(Of TEntry)(TEntry, Object, System.Threading.CancellationToken)
+  nameWithType: CommandInterpreter.InterpretAsync<TEntry>(TEntry, object?, CancellationToken)
+  nameWithType.vb: CommandInterpreter.InterpretAsync(Of TEntry)(TEntry, Object, CancellationToken)
 - uid: DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.InterpretAsync``1(``0,System.Threading.CancellationToken)
   name: InterpretAsync<TEntry>(TEntry, CancellationToken)
   href: api/DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.html#DotNext_Net_Cluster_Consensus_Raft_Commands_CommandInterpreter_InterpretAsync__1___0_System_Threading_CancellationToken_
@@ -26003,6 +26051,25 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime.OnStop
   nameWithType: IClusterMemberLifetime.OnStop
+- uid: DotNext.Net.Cluster.Consensus.Raft.IInputLogEntry
+  name: IInputLogEntry
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IInputLogEntry.html
+  commentId: T:DotNext.Net.Cluster.Consensus.Raft.IInputLogEntry
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IInputLogEntry
+  nameWithType: IInputLogEntry
+- uid: DotNext.Net.Cluster.Consensus.Raft.IInputLogEntry.Context
+  name: Context
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IInputLogEntry.html#DotNext_Net_Cluster_Consensus_Raft_IInputLogEntry_Context
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.IInputLogEntry.Context
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IInputLogEntry.Context
+  nameWithType: IInputLogEntry.Context
+- uid: DotNext.Net.Cluster.Consensus.Raft.IInputLogEntry.Context*
+  name: Context
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IInputLogEntry.html#DotNext_Net_Cluster_Consensus_Raft_IInputLogEntry_Context_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.IInputLogEntry.Context
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IInputLogEntry.Context
+  nameWithType: IInputLogEntry.Context
 - uid: DotNext.Net.Cluster.Consensus.Raft.IPersistentState
   name: IPersistentState
   href: api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html
@@ -26444,6 +26511,23 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry(Of T).Content
   nameWithType: JsonLogEntry<T>.Content
   nameWithType.vb: JsonLogEntry(Of T).Content
+- uid: DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry`1.Context
+  name: Context
+  href: api/DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry-1.html#DotNext_Net_Cluster_Consensus_Raft_JsonLogEntry_1_Context
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry`1.Context
+  fullName: DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry<T>.Context
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry(Of T).Context
+  nameWithType: JsonLogEntry<T>.Context
+  nameWithType.vb: JsonLogEntry(Of T).Context
+- uid: DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry`1.Context*
+  name: Context
+  href: api/DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry-1.html#DotNext_Net_Cluster_Consensus_Raft_JsonLogEntry_1_Context_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry`1.Context
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry<T>.Context
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry(Of T).Context
+  nameWithType: JsonLogEntry<T>.Context
+  nameWithType.vb: JsonLogEntry(Of T).Context
 - uid: DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry`1.Term
   name: Term
   href: api/DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry-1.html#DotNext_Net_Cluster_Consensus_Raft_JsonLogEntry_1_Term
@@ -28149,6 +28233,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.CommandId
   nameWithType: PersistentState.LogEntry.CommandId
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.Context
+  name: Context
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_Context
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.Context
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.Context
+  nameWithType: PersistentState.LogEntry.Context
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.Context*
+  name: Context
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_Context_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.Context
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.Context
+  nameWithType: PersistentState.LogEntry.Context
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.GetReader
   name: GetReader()
   href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_GetReader
