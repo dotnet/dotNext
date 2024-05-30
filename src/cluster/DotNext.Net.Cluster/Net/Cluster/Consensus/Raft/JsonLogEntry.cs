@@ -10,7 +10,7 @@ using Text.Json;
 /// </summary>
 /// <typeparam name="T">JSON-serializable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct JsonLogEntry<T>() : IRaftLogEntry
+public readonly struct JsonLogEntry<T>() : IInputLogEntry
     where T : notnull, IJsonSerializable<T>
 {
     /// <summary>
@@ -36,6 +36,13 @@ public readonly struct JsonLogEntry<T>() : IRaftLogEntry
 
     /// <inheritdoc />
     int? IRaftLogEntry.CommandId => null;
+
+    /// <inheritdoc cref="IInputLogEntry.Context"/>
+    public object? Context
+    {
+        get;
+        init;
+    }
 
     /// <inheritdoc />
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)

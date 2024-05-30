@@ -18,7 +18,7 @@ public partial class PersistentState
     /// Use <see cref="TransformAsync"/> to decode the log entry.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    protected internal readonly struct LogEntry : IRaftLogEntry
+    protected internal readonly struct LogEntry : IInputLogEntry
     {
         // null (if empty), FileReader, IAsyncBinaryReader, or byte[], or MemoryManager<byte>
         private readonly object? content;
@@ -45,6 +45,15 @@ public partial class PersistentState
         }
 
         internal bool IsPersisted
+        {
+            get;
+            init;
+        }
+
+        /// <summary>
+        /// Gets or sets context associated with this log entry.
+        /// </summary>
+        public object? Context
         {
             get;
             init;

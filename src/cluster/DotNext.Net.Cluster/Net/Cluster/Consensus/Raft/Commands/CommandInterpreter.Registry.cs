@@ -25,9 +25,15 @@ public partial class CommandInterpreter
             this.id = id;
         }
 
+        internal object? Context
+        {
+            private get;
+            init;
+        }
+
         async ValueTask<int> IDataTransferObject.ITransformation<int>.TransformAsync<TReader>(TReader reader, CancellationToken token)
         {
-            await handler.InterpretAsync(reader, token).ConfigureAwait(false);
+            await handler.InterpretAsync(reader, Context, token).ConfigureAwait(false);
             return id;
         }
     }
