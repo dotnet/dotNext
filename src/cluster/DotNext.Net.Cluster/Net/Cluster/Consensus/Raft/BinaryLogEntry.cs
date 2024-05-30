@@ -12,7 +12,7 @@ using IO.Log;
 /// </summary>
 /// <typeparam name="T">Binary-formattable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct BinaryLogEntry<T>() : IBinaryLogEntry
+public readonly struct BinaryLogEntry<T>() : IInputLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
     where T : notnull, IBinaryFormattable<T>
 {
     /// <summary>
@@ -44,8 +44,15 @@ public readonly struct BinaryLogEntry<T>() : IBinaryLogEntry
     /// <inheritdoc />
     long? IDataTransferObject.Length => T.Size;
 
+    /// <inheritdoc cref="IInputLogEntry.Context"/>
+    public object? Context
+    {
+        get;
+        init;
+    }
+
     /// <inheritdoc />
-    MemoryOwner<byte> IBinaryLogEntry.ToBuffer(MemoryAllocator<byte> allocator)
+    MemoryOwner<byte> ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>.Invoke(MemoryAllocator<byte> allocator)
         => IBinaryFormattable<T>.Format(Content, allocator);
 
     /// <inheritdoc />
@@ -57,7 +64,7 @@ public readonly struct BinaryLogEntry<T>() : IBinaryLogEntry
 /// Represents default implementation of <see cref="IRaftLogEntry"/>.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct BinaryLogEntry() : IBinaryLogEntry
+public readonly struct BinaryLogEntry() : IInputLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
 {
     private readonly ReadOnlyMemory<byte> content;
 
@@ -98,6 +105,13 @@ public readonly struct BinaryLogEntry() : IBinaryLogEntry
     /// <inheritdoc />
     bool IDataTransferObject.IsReusable => true;
 
+    /// <inheritdoc cref="IInputLogEntry.Context"/>
+    public object? Context
+    {
+        get;
+        init;
+    }
+
     /// <inheritdoc />
     bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
     {
@@ -106,7 +120,7 @@ public readonly struct BinaryLogEntry() : IBinaryLogEntry
     }
 
     /// <inheritdoc />
-    MemoryOwner<byte> IBinaryLogEntry.ToBuffer(MemoryAllocator<byte> allocator)
+    MemoryOwner<byte> ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>.Invoke(MemoryAllocator<byte> allocator)
         => content.Span.Copy(allocator);
 
     /// <inheritdoc />

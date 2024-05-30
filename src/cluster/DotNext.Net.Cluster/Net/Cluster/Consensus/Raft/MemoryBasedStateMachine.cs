@@ -666,12 +666,20 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// <summary>
     /// Applies the command represented by the log entry to the underlying database engine.
     /// </summary>
+    /// <remarks>
+    /// <see cref="PersistentState.LogEntry.Context"/> can be used to pass custom data
+    /// through WAL processing pipeline. The value of this property is not persistent.
+    /// The data can be passed as a part of log entry which is used as
+    /// the argument of <see cref="PersistentState.AppendAsync{TEntry}(TEntry, CancellationToken)"/> method.
+    /// The passed log entry type must implement <see cref="IInputLogEntry"/> interface.
+    /// </remarks>
     /// <param name="entry">The entry to be applied to the state machine.</param>
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <seealso cref="Commands.CommandInterpreter"/>
     protected abstract ValueTask ApplyAsync(LogEntry entry);
 
-    private ValueTask ApplyCoreAsync(LogEntry entry) => entry.IsEmpty ? new() : ApplyAsync(entry); // skip empty log entry
+    private ValueTask ApplyCoreAsync(LogEntry entry)
+        => entry.IsEmpty ? ValueTask.CompletedTask : ApplyAsync(entry); // skip empty log entry
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask ApplyAsync(int sessionId, long startIndex, CancellationToken token)
@@ -686,13 +694,21 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                 Volatile.Write(ref lastTerm, entry.Term);
 
                 // Remove log entry from the cache according to eviction policy
+                var lastEntryInPartition = startIndex == commitIndex || startIndex == partition.LastIndex;
                 if (!entry.IsPersisted)
                 {
                     await partition.PersistCachedEntryAsync(startIndex, evictOnCommit).ConfigureAwait(false);
 
                     // Flush partition if we are finished or at the last entry in it
-                    if (startIndex == commitIndex || startIndex == partition.LastIndex)
+                    if (lastEntryInPartition)
+                    {
                         await partition.FlushAsync(token).ConfigureAwait(false);
+                        partition.ClearContext(startIndex);
+                    }
+                }
+                else if (lastEntryInPartition)
+                {
+                    partition.ClearContext(startIndex);
                 }
             }
             else

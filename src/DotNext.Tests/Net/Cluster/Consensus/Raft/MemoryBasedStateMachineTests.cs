@@ -41,6 +41,14 @@ public sealed class MemoryBasedStateMachineTests : Test
             False(entry.IsEmpty);
             True(entry.GetReader().TryGetRemainingBytesCount(out var length));
             NotEqual(0L, length);
+
+            switch (entry.Context)
+            {
+                case int value:
+                    Equal(56, value);
+                    break;
+            }
+
             return ValueTask.CompletedTask;
         }
 
@@ -96,9 +104,9 @@ public sealed class MemoryBasedStateMachineTests : Test
         {
             Equal(0, state.Term);
             Equal(1, await state.IncrementTermAsync(default));
-            True(state.IsVotedFor(default(ClusterMemberId)));
+            True(state.IsVotedFor(default));
             await state.UpdateVotedForAsync(member);
-            False(state.IsVotedFor(default(ClusterMemberId)));
+            False(state.IsVotedFor(default));
             True(state.IsVotedFor(member));
         }
         finally
@@ -111,7 +119,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         try
         {
             Equal(1, state.Term);
-            False(state.IsVotedFor(default(ClusterMemberId)));
+            False(state.IsVotedFor(default));
             True(state.IsVotedFor(member));
         }
         finally
@@ -149,7 +157,7 @@ public sealed class MemoryBasedStateMachineTests : Test
     [InlineData(1024, false, 65)]
     public static async Task QueryAppendEntries(long partitionSize, bool caching, int concurrentReads)
     {
-        var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
+        var entry1 = new TestLogEntry("SET X = 0") { Term = 42L, Context = 56 };
         var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
@@ -175,6 +183,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Equal(0L, entries.First().Term);          // element 0
                 Equal(42L, entries.Skip(1).First().Term); // element 1
                 Equal(entry1.Content, await entries[1].ToStringAsync(Encoding.UTF8));
+                Equal(entry1.Context, IsAssignableFrom<IInputLogEntry>(entries[1]).Context);
                 return Missing.Value;
             };
 
@@ -460,7 +469,7 @@ public sealed class MemoryBasedStateMachineTests : Test
     [InlineData(false)]
     public static async Task Commit(bool useCaching)
     {
-        var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
+        var entry1 = new TestLogEntry("SET X = 0") { Term = 42L, Context = 56 };
         var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
         var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
         var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };

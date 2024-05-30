@@ -127,8 +127,11 @@ public sealed class CommandInterpreterTests : Test
         }
 
         [CommandHandler]
-        public ValueTask DoBinaryOperation(BinaryOperationCommand command, CancellationToken token)
-            => DoBinaryOperation(ref Value, command, token);
+        public ValueTask DoBinaryOperation(BinaryOperationCommand command, object context, CancellationToken token)
+        {
+            Null(context);
+            return DoBinaryOperation(ref Value, command, token);
+        }
 
         internal static ValueTask DoUnaryOperation(ref int value, UnaryOperationCommand command, CancellationToken token)
         {
@@ -213,18 +216,11 @@ public sealed class CommandInterpreterTests : Test
     public static async Task DelegatesAsHandlers()
     {
         var state = new StrongBox<int>();
-        Func<BinaryOperationCommand, CancellationToken, ValueTask> binaryOp = (command, token) => CustomInterpreter.DoBinaryOperation(ref state.Value, command, token);
-        Func<UnaryOperationCommand, CancellationToken, ValueTask> unaryOp = (command, token) => CustomInterpreter.DoUnaryOperation(ref state.Value, command, token);
-        Func<AssignCommand, CancellationToken, ValueTask> assignOp = (command, token) =>
-        {
-            state.Value = command.Value;
-            return new ValueTask();
-        };
 
         var interpreter = new CommandInterpreter.Builder()
-            .Add(BinaryOperationCommand.Id, binaryOp)
-            .Add(UnaryOperationCommand.Id, unaryOp)
-            .Add(AssignCommand.Id, assignOp)
+            .Add(BinaryOperationCommand.Id, new Func<BinaryOperationCommand, CancellationToken, ValueTask>(BinaryOp))
+            .Add(UnaryOperationCommand.Id, new Func<UnaryOperationCommand, CancellationToken, ValueTask>(UnaryOp))
+            .Add(AssignCommand.Id, new Func<AssignCommand, object, CancellationToken, ValueTask>(AssignOp))
             .Build();
 
         var entry1 = interpreter.CreateLogEntry(new BinaryOperationCommand { X = 40, Y = 2, Type = BinaryOperation.Add }, 1L);
@@ -240,8 +236,19 @@ public sealed class CommandInterpreterTests : Test
 
         var entry3 = interpreter.CreateLogEntry(new AssignCommand { Value = int.MaxValue }, 68L);
         Equal(68L, entry3.Term);
-        Equal(3, await interpreter.InterpretAsync(entry3));
+        Equal(3, await interpreter.InterpretAsync(entry3, string.Empty));
         Equal(int.MaxValue, state.Value);
+
+        ValueTask BinaryOp(BinaryOperationCommand command, CancellationToken token) => CustomInterpreter.DoBinaryOperation(ref state.Value, command, token);
+
+        ValueTask UnaryOp(UnaryOperationCommand command, CancellationToken token) => CustomInterpreter.DoUnaryOperation(ref state.Value, command, token);
+
+        ValueTask AssignOp(AssignCommand command, object context, CancellationToken token)
+        {
+            NotNull(context);
+            state.Value = command.Value;
+            return ValueTask.CompletedTask;
+        }
     }
 
     [Fact]

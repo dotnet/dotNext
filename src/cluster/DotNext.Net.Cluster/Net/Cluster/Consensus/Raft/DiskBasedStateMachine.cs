@@ -71,13 +71,21 @@ public abstract partial class DiskBasedStateMachine : PersistentState
                 Volatile.Write(ref lastTerm, entry.Term);
 
                 // Remove log entry from the cache according to eviction policy
+                var lastEntryInPartition = startIndex == commitIndex || startIndex == partition.LastIndex;
                 if (!entry.IsPersisted)
                 {
                     await partition.PersistCachedEntryAsync(startIndex, snapshotLength.HasValue).ConfigureAwait(false);
 
                     // Flush partition if we are finished or at the last entry in it
-                    if (startIndex == commitIndex || startIndex == partition.LastIndex)
+                    if (lastEntryInPartition)
+                    {
                         await partition.FlushAsync(token).ConfigureAwait(false);
+                        partition.ClearContext(startIndex);
+                    }
+                }
+                else if (lastEntryInPartition)
+                {
+                    partition.ClearContext(startIndex);
                 }
 
                 if (snapshotLength.HasValue)

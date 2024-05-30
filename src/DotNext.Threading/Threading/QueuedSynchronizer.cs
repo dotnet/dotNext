@@ -138,7 +138,7 @@ public class QueuedSynchronizer : Disposable
         SuspendedCallersMeter.Add(1, measurementTags);
     }
 
-    private protected TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, bool throwOnTimeout)
+    private protected TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, WaitNodeFlags flags)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
     {
@@ -146,7 +146,7 @@ public class QueuedSynchronizer : Disposable
 
         var node = pool.Get();
         TLockManager.InitializeNode(node);
-        node.Initialize(this, throwOnTimeout);
+        node.Initialize(this, flags);
         EnqueueNode(node);
         return node;
     }
@@ -226,7 +226,7 @@ public class QueuedSynchronizer : Disposable
                         break;
                     }
 
-                    factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: true);
+                    factory = EnqueueNode<TNode, TLockManager>(ref pool, WaitNodeFlags.ThrowOnTimeout);
                 }
 
                 interruptedCallers?.Unwind();
@@ -296,7 +296,7 @@ public class QueuedSynchronizer : Disposable
                         break;
                     }
 
-                    factory = EnqueueNode(ref pool, ref manager, throwOnTimeout: false);
+                    factory = EnqueueNode<TNode, TLockManager>(ref pool, WaitNodeFlags.None);
                 }
 
                 interruptedCallers?.Unwind();
@@ -460,11 +460,18 @@ public class QueuedSynchronizer : Disposable
         }
     }
 
+    [Flags]
+    internal enum WaitNodeFlags
+    {
+        None = 0,
+        ThrowOnTimeout = 1,
+    }
+
     private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>
     {
         private readonly WeakReference<QueuedSynchronizer?> owner = new(target: null, trackResurrection: false);
         private Timestamp createdAt;
-        private bool throwOnTimeout;
+        private WaitNodeFlags flags;
 
         // stores information about suspended caller for debugging purposes
         internal object? CallerInfo
@@ -483,17 +490,18 @@ public class QueuedSynchronizer : Disposable
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal bool NeedsRemoval => CompletionData is null;
 
-        internal void Initialize(QueuedSynchronizer owner, bool throwOnTimeout)
+        internal void Initialize(QueuedSynchronizer owner, WaitNodeFlags flags)
         {
             Debug.Assert(owner is not null);
 
-            this.throwOnTimeout = throwOnTimeout;
+            this.flags = flags;
             this.owner.SetTarget(owner);
             CallerInfo = owner.callerInfo?.Capture();
             createdAt = new();
         }
 
-        protected sealed override Result<bool> OnTimeout() => throwOnTimeout ? base.OnTimeout() : false;
+        protected sealed override Result<bool> OnTimeout()
+            => (flags & WaitNodeFlags.ThrowOnTimeout) is not 0 ? base.OnTimeout() : false;
 
         private protected static void AfterConsumed<T>(T node)
             where T : WaitNode, IPooledManualResetCompletionSource<Action<T>>
@@ -806,13 +814,13 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
         return false;
     }
 
-    private WaitNode EnqueueNode(TContext context, bool throwOnTimeout)
+    private WaitNode EnqueueNode(TContext context, WaitNodeFlags flags)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         var node = pool.Get();
         node.Context = context;
-        node.Initialize(this, throwOnTimeout);
+        node.Initialize(this, flags);
         EnqueueNode(node);
         return node;
     }
@@ -868,7 +876,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
                         break;
                     }
 
-                    factory = EnqueueNode(context, throwOnTimeout: false);
+                    factory = EnqueueNode(context, WaitNodeFlags.None);
                 }
 
                 task = factory.Invoke(timeout, token);
@@ -932,7 +940,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
                         break;
                     }
 
-                    factory = EnqueueNode(context, throwOnTimeout: true);
+                    factory = EnqueueNode(context, WaitNodeFlags.ThrowOnTimeout);
                 }
 
                 task = factory.Invoke(timeout, token);

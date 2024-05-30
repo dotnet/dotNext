@@ -6,7 +6,7 @@ using ILogEntry = IO.Log.ILogEntry;
 using TextMessage = Messaging.TextMessage;
 
 [ExcludeFromCodeCoverage]
-internal sealed class TestLogEntry : TextMessage, IRaftLogEntry
+internal sealed class TestLogEntry : TextMessage, IInputLogEntry
 {
     public TestLogEntry(string command)
         : base(command, "Entry")
@@ -19,4 +19,10 @@ internal sealed class TestLogEntry : TextMessage, IRaftLogEntry
     public long Term { get; set; }
 
     bool ILogEntry.IsSnapshot => false;
+
+    public object Context
+    {
+        get;
+        init;
+    }
 }
