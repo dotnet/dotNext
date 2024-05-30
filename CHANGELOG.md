@@ -1,6 +1,13 @@
 Release Notes
 ====
 
+# 05-30-2024
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.6.0">DotNext.Net.Cluster 5.6.0</a>
+* Added support of custom data to be passed to `PersistentState.ApplyAsync` method through WAL processing pipeline
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.6.0">DotNext.AspNetCore.Cluster 5.6.0</a>
+* Updated dependencies
+
 # 05-21-2024
 <a href="https://www.nuget.org/packages/dotnext.threading/5.4.0">DotNext.Metaprogramming 5.4.0</a>
 * Smallish performance improvements of `IndexPool` instance methods

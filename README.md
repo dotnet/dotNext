@@ -44,11 +44,13 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 05-21-2024
+Release Date: 05-30-2024
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.4.0">DotNext.Metaprogramming 5.4.0</a>
-* Smallish performance improvements of `IndexPool` instance methods
-* Added ability to instantiate empty `IndexPool`
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.6.0">DotNext.Net.Cluster 5.6.0</a>
+* Added support of custom data to be passed to `PersistentState.ApplyAsync` method through WAL processing pipeline
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.6.0">DotNext.AspNetCore.Cluster 5.6.0</a>
+* Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
