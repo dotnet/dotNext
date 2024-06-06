@@ -256,7 +256,9 @@ public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
                 task = As<AsyncReaderWriterLock>(lockedObject).UpgradeToWriteLockAsync(timeout, token);
                 break;
             case Type.Semaphore:
-                task = CheckOnTimeoutAsync(As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token));
+                task = timeout == InfiniteTimeSpan
+                    ? new(As<SemaphoreSlim>(lockedObject).WaitAsync(token))
+                    : CheckOnTimeoutAsync(As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token));
                 break;
             case Type.Strong:
                 task = As<AsyncSharedLock>(lockedObject).AcquireAsync(true, timeout, token);

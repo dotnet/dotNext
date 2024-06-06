@@ -69,8 +69,9 @@ public static class AsyncLockAcquisition
     /// <param name="timeout">The interval to wait for the lock.</param>
     /// <returns>The acquired lock holder.</returns>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-    public static ValueTask<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, TimeSpan timeout)
-        where T : class => obj.GetExclusiveLock().AcquireAsync(timeout);
+    [Obsolete("Use AcquireLockAsync(T, TimeSpan, CancellationToken) overload instead.", error: true)]
+    public static ValueTask<AsyncLock.Holder> AcquireLockAsync<T>(T obj, TimeSpan timeout)
+        where T : class => AcquireLockAsync(obj, timeout, CancellationToken.None);
 
     /// <summary>
     /// Acquires exclusive lock associated with the given object.
@@ -79,8 +80,22 @@ public static class AsyncLockAcquisition
     /// <param name="obj">The object to be locked.</param>
     /// <param name="token">The token that can be used to abort acquisition operation.</param>
     /// <returns>The acquired lock holder.</returns>
-    public static ValueTask<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, CancellationToken token)
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static ValueTask<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, CancellationToken token = default)
         where T : class => obj.GetExclusiveLock().AcquireAsync(token);
+
+    /// <summary>
+    /// Acquires exclusive lock associated with the given object.
+    /// </summary>
+    /// <typeparam name="T">The type of the object to be locked.</typeparam>
+    /// <param name="obj">The object to be locked.</param>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort acquisition operation.</param>
+    /// <returns>The acquired lock holder.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+    public static ValueTask<AsyncLock.Holder> AcquireLockAsync<T>(this T obj, TimeSpan timeout, CancellationToken token = default)
+        where T : class => obj.GetExclusiveLock().AcquireAsync(timeout, token);
 
     /// <summary>
     /// Acquires reader lock associated with the given object.
@@ -90,8 +105,9 @@ public static class AsyncLockAcquisition
     /// <param name="timeout">The interval to wait for the lock.</param>
     /// <returns>The acquired lock holder.</returns>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-    public static ValueTask<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, TimeSpan timeout)
-        where T : class => AsyncLock.ReadLock(obj.GetReaderWriterLock()).AcquireAsync(timeout);
+    [Obsolete("Use AcquireReadLockAsync(T, TimeSpan, CancellationToken) overload instead.", error: true)]
+    public static ValueTask<AsyncLock.Holder> AcquireReadLockAsync<T>(T obj, TimeSpan timeout)
+        where T : class => AcquireReadLockAsync(obj, timeout, CancellationToken.None);
 
     /// <summary>
     /// Acquires reader lock associated with the given object.
@@ -100,8 +116,22 @@ public static class AsyncLockAcquisition
     /// <param name="obj">The object to be locked.</param>
     /// <param name="token">The token that can be used to abort acquisition operation.</param>
     /// <returns>The acquired lock holder.</returns>
-    public static ValueTask<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, CancellationToken token)
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static ValueTask<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, CancellationToken token = default)
         where T : class => AsyncLock.ReadLock(obj.GetReaderWriterLock()).AcquireAsync(token);
+
+    /// <summary>
+    /// Acquires reader lock associated with the given object.
+    /// </summary>
+    /// <typeparam name="T">The type of the object to be locked.</typeparam>
+    /// <param name="obj">The object to be locked.</param>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort acquisition operation.</param>
+    /// <returns>The acquired lock holder.</returns>
+    /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static ValueTask<AsyncLock.Holder> AcquireReadLockAsync<T>(this T obj, TimeSpan timeout, CancellationToken token = default)
+        where T : class => AsyncLock.ReadLock(obj.GetReaderWriterLock()).AcquireAsync(timeout, token);
 
     /// <summary>
     /// Acquires writer lock associated with the given object.
@@ -111,8 +141,9 @@ public static class AsyncLockAcquisition
     /// <param name="timeout">The interval to wait for the lock.</param>
     /// <returns>The acquired lock holder.</returns>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-    public static ValueTask<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, TimeSpan timeout)
-        where T : class => AsyncLock.WriteLock(obj.GetReaderWriterLock()).AcquireAsync(timeout);
+    [Obsolete("Use AcquireWriteLockAsync(T, TimeSpan, CancellationToken) overload instead.", error: true)]
+    public static ValueTask<AsyncLock.Holder> AcquireWriteLockAsync<T>(T obj, TimeSpan timeout)
+        where T : class => AcquireWriteLockAsync(obj, timeout, CancellationToken.None);
 
     /// <summary>
     /// Acquires reader lock associated with the given object.
@@ -121,6 +152,19 @@ public static class AsyncLockAcquisition
     /// <param name="obj">The object to be locked.</param>
     /// <param name="token">The token that can be used to abort acquisition operation.</param>
     /// <returns>The acquired lock holder.</returns>
-    public static ValueTask<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, CancellationToken token)
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static ValueTask<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, CancellationToken token = default)
         where T : class => AsyncLock.WriteLock(obj.GetReaderWriterLock()).AcquireAsync(token);
+
+    /// <summary>
+    /// Acquires reader lock associated with the given object.
+    /// </summary>
+    /// <typeparam name="T">The type of the object to be locked.</typeparam>
+    /// <param name="obj">The object to be locked.</param>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort acquisition operation.</param>
+    /// <returns>The acquired lock holder.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static ValueTask<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, TimeSpan timeout, CancellationToken token = default)
+        where T : class => AsyncLock.WriteLock(obj.GetReaderWriterLock()).AcquireAsync(timeout, token);
 }
