@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 06-07-2024
+<a href="https://www.nuget.org/packages/dotnext.threading/5.5.0">DotNext.Metaprogramming 5.5.0</a>
+* Fixed [240](https://github.com/dotnet/dotNext/issues/240)
+
 # 05-30-2024
 <a href="https://www.nuget.org/packages/dotnext.threading/5.4.1">DotNext.Metaprogramming 5.4.1</a>
 * Smallish performance improvements for all synchronization primitives
