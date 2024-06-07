@@ -43861,6 +43861,15 @@ references:
   fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(Of T)(T, System.TimeSpan)
   nameWithType: AsyncLockAcquisition.AcquireLockAsync<T>(T, TimeSpan)
   nameWithType.vb: AsyncLockAcquisition.AcquireLockAsync(Of T)(T, TimeSpan)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync``1(``0,System.TimeSpan,System.Threading.CancellationToken)
+  name: AcquireLockAsync<T>(T, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync``1(``0,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: AcquireLockAsync(Of T)(T, TimeSpan, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync<T>(T, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(Of T)(T, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireLockAsync<T>(T, TimeSpan, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireLockAsync(Of T)(T, TimeSpan, CancellationToken)
 - uid: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync*
   name: AcquireReadLockAsync
   href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync_
@@ -43886,6 +43895,15 @@ references:
   fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync(Of T)(T, System.TimeSpan)
   nameWithType: AsyncLockAcquisition.AcquireReadLockAsync<T>(T, TimeSpan)
   nameWithType.vb: AsyncLockAcquisition.AcquireReadLockAsync(Of T)(T, TimeSpan)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync``1(``0,System.TimeSpan,System.Threading.CancellationToken)
+  name: AcquireReadLockAsync<T>(T, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync``1(``0,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: AcquireReadLockAsync(Of T)(T, TimeSpan, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync<T>(T, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync(Of T)(T, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireReadLockAsync<T>(T, TimeSpan, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireReadLockAsync(Of T)(T, TimeSpan, CancellationToken)
 - uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync*
   name: AcquireWriteLockAsync
   href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync_
@@ -43911,6 +43929,15 @@ references:
   fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, System.TimeSpan)
   nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, TimeSpan)
   nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, TimeSpan)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.TimeSpan,System.Threading.CancellationToken)
+  name: AcquireWriteLockAsync<T>(T, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: AcquireWriteLockAsync(Of T)(T, TimeSpan, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, TimeSpan, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, TimeSpan, CancellationToken)
 - uid: DotNext.Threading.AsyncManualResetEvent
   name: AsyncManualResetEvent
   href: api/DotNext.Threading.AsyncManualResetEvent.html
