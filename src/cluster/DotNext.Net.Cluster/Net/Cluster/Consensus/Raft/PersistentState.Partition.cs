@@ -104,18 +104,11 @@ public partial class PersistentState
             if (context is not null)
             {
                 var relativeIndex = ToRelativeIndex(absoluteIndex);
-
-                if (relativeIndex == context.Length - 1)
-                {
-                    Array.Clear(context);
-                    context = null;
-                }
-                else
-                {
-                    Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(context), relativeIndex) = null;
-                }
+                Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(context), relativeIndex) = null;
             }
         }
+
+        internal void ClearContext() => context = null;
 
         internal LogEntry Read(int sessionId, long absoluteIndex, bool metadataOnly = false)
         {
