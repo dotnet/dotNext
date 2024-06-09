@@ -505,11 +505,12 @@ public partial class PersistentState
             if (RandomAccess.Read(Handle, header.Span, fileOffset: 0L) < HeaderSize)
             {
                 header.Span.Clear();
+                writer.FilePosition = HeaderSize;
             }
             else if (IsSealed)
             {
                 // partition is completed, read table
-                fileOffset = RandomAccess.GetLength(Handle);
+                writer.FilePosition = fileOffset = RandomAccess.GetLength(Handle);
 
                 if (fileOffset < footer.Length + HeaderSize)
                     throw new IntegrityException(ExceptionMessages.InvalidPartitionFormat);
@@ -533,7 +534,7 @@ public partial class PersistentState
                     fileOffset = HeaderSize;
                 }
 
-                for (Span<byte> metadataBuffer = stackalloc byte[LogEntryMetadata.Size], metadataTable = footer.Span; ; footerOffset += LogEntryMetadata.Size)
+                for (Span<byte> metadataBuffer = stackalloc byte[LogEntryMetadata.Size], metadataTable = footer.Span; footerOffset < footer.Length; footerOffset += LogEntryMetadata.Size)
                 {
                     var count = RandomAccess.Read(Handle, metadataBuffer, fileOffset);
                     if (count < LogEntryMetadata.Size)
@@ -543,6 +544,7 @@ public partial class PersistentState
                     if (fileOffset <= 0L)
                         break;
 
+                    writer.FilePosition = fileOffset;
                     metadataBuffer.CopyTo(metadataTable.Slice(footerOffset, LogEntryMetadata.Size));
                 }
             }
@@ -562,6 +564,7 @@ public partial class PersistentState
         protected override async ValueTask PersistAsync<TEntry>(TEntry entry, int index, CancellationToken token)
         {
             var writeAddress = GetWriteAddress(index);
+            await UnsealIfNeededAsync(writeAddress, token).ConfigureAwait(false);
 
             LogEntryMetadata metadata;
             Memory<byte> metadataBuffer;
@@ -601,6 +604,8 @@ public partial class PersistentState
             Debug.Assert(writer.HasBufferedData is false);
 
             var writeAddress = GetWriteAddress(index);
+            await UnsealIfNeededAsync(writeAddress, token).ConfigureAwait(false);
+
             var startPos = writeAddress + LogEntryMetadata.Size;
             var metadata = LogEntryMetadata.Create(entry, startPos, entry.Length);
             var metadataBuffer = GetMetadataBuffer(index);
@@ -621,12 +626,59 @@ public partial class PersistentState
             metadata.Format(GetMetadataBuffer(index).Span);
         }
 
+        private ValueTask UnsealIfNeededAsync(long truncatePosition, CancellationToken token)
+        {
+            ValueTask task;
+            if (IsSealed)
+            {
+                task = UnsealAsync(truncatePosition, token);
+            }
+            else if (token.IsCancellationRequested)
+            {
+                task = ValueTask.FromCanceled(token);
+            }
+            else if (truncatePosition < writer.FilePosition)
+            {
+                task = new();
+                try
+                {
+                    // The caller is trying to rewrite the log entry.
+                    // For a correctness of Initialize() method for unsealed partitions, we
+                    // need to adjust file size. This is expensive syscall which can lead to file fragmentation.
+                    // However, this is acceptable because rare.
+                    RandomAccess.SetLength(Handle, truncatePosition);
+                }
+                catch (Exception e)
+                {
+                    task = ValueTask.FromException(e);
+                }
+            }
+            else
+            {
+                task = new();
+            }
+
+            return task;
+        }
+
+        private async ValueTask UnsealAsync(long truncatePosition, CancellationToken token)
+        {
+            // This is expensive operation in terms of I/O. However, it is needed only when
+            // the consumer decided to rewrite the existing log entry, which is rare.
+            IsSealed = false;
+            await WriteHeaderAsync(token).ConfigureAwait(false);
+            RandomAccess.FlushToDisk(Handle);
+
+            // destroy all entries in the tail of partition
+            RandomAccess.SetLength(Handle, truncatePosition);
+        }
+
         public override ValueTask FlushAsync(CancellationToken token = default)
         {
-            return runningIndex == LastIndex
+            return IsSealed
+                ? ValueTask.CompletedTask
+                : runningIndex == LastIndex
                 ? FlushAndSealAsync(token)
-                : IsSealed
-                ? FlushAndUnsealAsync(token)
                 : base.FlushAsync(token);
         }
 
@@ -651,41 +703,7 @@ public partial class PersistentState
             IsSealed = true;
             await WriteHeaderAsync(token).ConfigureAwait(false);
 
-            writer.FlushToDisk();
-        }
-
-        private async ValueTask FlushAndUnsealAsync(CancellationToken token)
-        {
-            await FlushAndEraseNextEntryAsync(token).ConfigureAwait(false);
-
-            IsSealed = false;
-            await WriteHeaderAsync(token).ConfigureAwait(false);
-
-            writer.FlushToDisk();
-        }
-
-        private ValueTask FlushAndEraseNextEntryAsync(CancellationToken token)
-        {
-            ValueTask task;
-
-            // write the rest of the entry,
-            // then cleanup next entry header to indicate that the current entry is the last entry
-            if (!writer.HasBufferedData)
-            {
-                task = RandomAccess.WriteAsync(Handle, EmptyMetadata, writer.FilePosition, token);
-            }
-            else if (writer.Buffer is { Length: >= LogEntryMetadata.Size } emptyMetadataStub)
-            {
-                emptyMetadataStub.Span.Slice(0, LogEntryMetadata.Size).Clear();
-                writer.Produce(LogEntryMetadata.Size);
-                task = writer.WriteAsync(token);
-            }
-            else
-            {
-                task = writer.WriteAsync(EmptyMetadata, token);
-            }
-
-            return task;
+            RandomAccess.FlushToDisk(Handle);
         }
 
         private ValueTask WriteHeaderAsync(CancellationToken token)

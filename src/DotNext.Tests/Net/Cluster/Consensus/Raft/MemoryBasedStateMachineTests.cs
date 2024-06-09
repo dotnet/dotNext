@@ -333,6 +333,34 @@ public sealed class MemoryBasedStateMachineTests : Test
         }
     }
 
+    [Fact]
+    public static async Task OverwriteUnsealed()
+    {
+        var entry1 = new TestLogEntry("SET A = 0 SET B=1 SET C=2 SET D=3 SET E=4 SET F=5") { Term = 42L };
+        var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
+        Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
+        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { UseCaching = false }))
+        {
+            Equal(1L, await state.AppendAsync(entry1));
+            await state.AppendAsync(entry2, 1L);
+        }
+
+        //read again
+        using (var state = new PersistentStateWithoutSnapshot(dir, RecordsPerPartition, new() { UseCaching = false }))
+        {
+            checker = async (entries, snapshotIndex, token) =>
+            {
+                Null(snapshotIndex);
+                Single(entries);
+                False(entries[0].IsSnapshot);
+                Equal(entry2.Content, await entries[0].ToStringAsync(Encoding.UTF8));
+                return Missing.Value;
+            };
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1L, CancellationToken.None);
+        }
+    }
+
     [Obsolete]
     [Fact]
     public static async Task LegacyOverwrite()
