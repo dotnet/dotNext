@@ -508,6 +508,8 @@ public partial class PersistentState
         {
             using var handle = File.OpenHandle(FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.SequentialScan);
 
+            long fileOffset;
+
             // read header
             if (RandomAccess.Read(Handle, header.Span, fileOffset: 0L) < HeaderSize)
             {
@@ -516,14 +518,18 @@ public partial class PersistentState
             else if (IsSealed)
             {
                 // partition is completed, read table
-                var tableStart = RandomAccess.GetLength(Handle);
-                RandomAccess.Read(Handle, footer.Span, tableStart - footer.Length);
+                fileOffset = RandomAccess.GetLength(Handle);
+
+                if (fileOffset < footer.Length + HeaderSize)
+                    throw new IntegrityException(ExceptionMessages.InvalidPartitionFormat);
+
+                fileOffset -= footer.Length;
+                RandomAccess.Read(Handle, footer.Span, fileOffset);
             }
             else
             {
                 // read sequentially every log entry
                 int footerOffset;
-                long fileOffset;
 
                 if (PartitionNumber is 0L)
                 {
