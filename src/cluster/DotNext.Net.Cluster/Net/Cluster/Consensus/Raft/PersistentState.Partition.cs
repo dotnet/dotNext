@@ -478,7 +478,7 @@ public partial class PersistentState
         }
 
         // metadata management
-        private MemoryOwner<byte> header, footer, metadataBuffer;
+        private MemoryOwner<byte> header, footer;
         private (ReadOnlyMemory<byte>, ReadOnlyMemory<byte>) bufferTuple;
 
         internal Table(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize)
@@ -488,8 +488,6 @@ public partial class PersistentState
 
             header = manager.BufferAllocator.AllocateExactly(HeaderSize);
             header.Span.Clear();
-
-            metadataBuffer = manager.BufferAllocator.AllocateExactly(LogEntryMetadata.Size);
 
             // init ephemeral 0 entry
             if (PartitionNumber is 0L)
@@ -542,7 +540,7 @@ public partial class PersistentState
                     fileOffset = HeaderSize;
                 }
 
-                for (Span<byte> metadataBuffer = this.metadataBuffer.Span, metadataTable = footer.Span; ; footerOffset += LogEntryMetadata.Size)
+                for (Span<byte> metadataBuffer = stackalloc byte[LogEntryMetadata.Size], metadataTable = footer.Span; ; footerOffset += LogEntryMetadata.Size)
                 {
                     var count = RandomAccess.Read(Handle, metadataBuffer, fileOffset);
                     if (count < LogEntryMetadata.Size)
@@ -558,14 +556,14 @@ public partial class PersistentState
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Span<byte> GetMetadataSpan(int index)
-            => footer.Span.Slice(index * LogEntryMetadata.Size, LogEntryMetadata.Size);
+        private Memory<byte> GetMetadataBuffer(int index)
+            => footer.Memory.Slice(index * LogEntryMetadata.Size, LogEntryMetadata.Size);
 
         protected override LogEntryMetadata GetMetadata(int index)
-            => new(GetMetadataSpan(index));
+            => new(GetMetadataBuffer(index).Span);
 
         private long GetWriteAddress(int index)
-            => index is 0 ? fileOffset : LogEntryMetadata.GetEndOfLogEntry(GetMetadataSpan(index - 1));
+            => index is 0 ? fileOffset : LogEntryMetadata.GetEndOfLogEntry(GetMetadataBuffer(index - 1).Span);
 
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
         protected override async ValueTask PersistAsync<TEntry>(TEntry entry, int index, CancellationToken token)
@@ -573,6 +571,7 @@ public partial class PersistentState
             var writeAddress = GetWriteAddress(index);
 
             LogEntryMetadata metadata;
+            Memory<byte> metadataBuffer;
             var startPos = writeAddress + LogEntryMetadata.Size;
             if (entry.Length is { } length)
             {
@@ -582,6 +581,9 @@ public partial class PersistentState
                 await SetWritePositionAsync(writeAddress, token).ConfigureAwait(false);
                 await writer.WriteAsync(metadata, token).ConfigureAwait(false);
                 await entry.WriteToAsync(writer, token).ConfigureAwait(false);
+
+                metadataBuffer = GetMetadataBuffer(index);
+                metadata.Format(metadataBuffer.Span);
             }
             else
             {
@@ -592,11 +594,11 @@ public partial class PersistentState
                 length = writer.WritePosition - startPos;
 
                 metadata = LogEntryMetadata.Create(entry, startPos, length);
+                metadataBuffer = GetMetadataBuffer(index);
                 metadata.Format(metadataBuffer.Span);
-                await RandomAccess.WriteAsync(Handle, metadataBuffer.Memory, writeAddress, token).ConfigureAwait(false);
+                await RandomAccess.WriteAsync(Handle, metadataBuffer, writeAddress, token).ConfigureAwait(false);
             }
 
-            metadata.Format(GetMetadataSpan(index));
             runningIndex = index;
         }
 
@@ -608,15 +610,14 @@ public partial class PersistentState
             var writeAddress = GetWriteAddress(index);
             var startPos = writeAddress + LogEntryMetadata.Size;
             var metadata = LogEntryMetadata.Create(entry, startPos, entry.Length);
+            var metadataBuffer = GetMetadataBuffer(index);
             metadata.Format(metadataBuffer.Span);
 
-            bufferTuple = (metadataBuffer.Memory, entry.Content.Memory);
+            bufferTuple = (metadataBuffer, entry.Content.Memory);
             await RandomAccess.WriteAsync(Handle, this, writeAddress, token).ConfigureAwait(false);
             bufferTuple = default;
 
-            metadata.Format(GetMetadataSpan(index));
             runningIndex = index;
-
             writer.FilePosition = metadata.End;
         }
 
@@ -624,7 +625,7 @@ public partial class PersistentState
         {
             var startPos = GetWriteAddress(index) + LogEntryMetadata.Size;
             var metadata = LogEntryMetadata.Create(in cachedEntry, startPos);
-            metadata.Format(GetMetadataSpan(index));
+            metadata.Format(GetMetadataBuffer(index).Span);
         }
 
         public override ValueTask FlushAsync(CancellationToken token = default)
@@ -724,7 +725,6 @@ public partial class PersistentState
         {
             header.Dispose();
             footer.Dispose();
-            metadataBuffer.Dispose();
             base.Dispose(disposing);
         }
     }
