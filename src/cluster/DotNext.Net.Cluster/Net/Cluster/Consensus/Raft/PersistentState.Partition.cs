@@ -567,7 +567,7 @@ public partial class PersistentState
             await UnsealIfNeededAsync(writeAddress, token).ConfigureAwait(false);
 
             LogEntryMetadata metadata;
-            Memory<byte> metadataBuffer;
+            var metadataBuffer = GetMetadataBuffer(index);
             var startPos = writeAddress + LogEntryMetadata.Size;
             if (entry.Length is { } length)
             {
@@ -578,7 +578,6 @@ public partial class PersistentState
                 await writer.WriteAsync(metadata, token).ConfigureAwait(false);
                 await entry.WriteToAsync(writer, token).ConfigureAwait(false);
 
-                metadataBuffer = GetMetadataBuffer(index);
                 metadata.Format(metadataBuffer.Span);
             }
             else
@@ -590,7 +589,6 @@ public partial class PersistentState
                 length = writer.WritePosition - startPos;
 
                 metadata = LogEntryMetadata.Create(entry, startPos, length);
-                metadataBuffer = GetMetadataBuffer(index);
                 metadata.Format(metadataBuffer.Span);
                 await RandomAccess.WriteAsync(Handle, metadataBuffer, writeAddress, token).ConfigureAwait(false);
             }
