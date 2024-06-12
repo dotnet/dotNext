@@ -365,7 +365,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     return true;
                 }
             }
-            catch (OperationCanceledException e) when (tokenSource is not null)
+            catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
             {
                 throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }
@@ -402,7 +402,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     return true;
                 }
             }
-            catch (OperationCanceledException e) when (tokenSource is not null)
+            catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
             {
                 throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }
@@ -844,7 +844,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     return true;
                 }
             }
-            catch (OperationCanceledException e) when (tokenSource is not null)
+            catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
             {
                 throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }

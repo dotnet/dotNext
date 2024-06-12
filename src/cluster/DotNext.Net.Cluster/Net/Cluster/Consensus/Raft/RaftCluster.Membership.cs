@@ -162,7 +162,7 @@ public partial class RaftCluster<TMember>
             // synchronize with reader thread
             Interlocked.MemoryBarrierProcessWide();
         }
-        catch (OperationCanceledException e) when (tokenHolder is not null)
+        catch (OperationCanceledException e) when (tokenHolder?.Token == e.CancellationToken)
         {
             throw new OperationCanceledException(e.Message, e, tokenHolder.CancellationOrigin);
         }
@@ -212,7 +212,7 @@ public partial class RaftCluster<TMember>
                     Leader = null;
             }
         }
-        catch (OperationCanceledException e) when (tokenHolder is not null)
+        catch (OperationCanceledException e) when (tokenHolder?.Token == e.CancellationToken)
         {
             throw new OperationCanceledException(e.Message, e, tokenHolder.CancellationOrigin);
         }
