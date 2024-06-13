@@ -5,7 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Threading;
 
-internal abstract class ConsensusTrackerState<TMember>(IRaftStateMachine<TMember> stateMachine) : TokenizedState<TMember>(stateMachine)
+internal abstract class RefreshableState<TMember>(IRaftStateMachine<TMember> stateMachine) : ConsensusState<TMember>(stateMachine)
     where TMember : class, IRaftClusterMember
 {
     protected readonly AsyncAutoResetEvent refreshEvent = new(initialState: false) { MeasurementTags = stateMachine.MeasurementTags };
@@ -41,9 +41,9 @@ internal abstract class ConsensusTrackerState<TMember>(IRaftStateMachine<TMember
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct TransitionSuppressionScope : IDisposable
     {
-        private readonly ConsensusTrackerState<TMember>? state;
+        private readonly RefreshableState<TMember>? state;
 
-        internal TransitionSuppressionScope(ConsensusTrackerState<TMember>? state)
+        internal TransitionSuppressionScope(RefreshableState<TMember>? state)
         {
             state?.SuspendTracking();
             this.state = state;
