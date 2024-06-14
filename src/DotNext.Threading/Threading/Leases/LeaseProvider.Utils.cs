@@ -29,7 +29,9 @@ public partial class LeaseProvider<TMetadata>
         bool ITransitionCondition.Invoke(in State state, TimeProvider provider, TimeSpan timeToLive, out TimeSpan remainingTime)
         {
             remainingTime = timeToLive;
-            return state.Identity == identity && (reacquire || !state.IsExpired(provider, timeToLive, out remainingTime));
+            return identity.Version is not LeaseIdentity.InitialVersion
+                && state.Identity == identity
+                && (reacquire || !state.IsExpired(provider, timeToLive, out remainingTime));
         }
     }
 

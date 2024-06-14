@@ -31,6 +31,32 @@ public readonly struct LeaseIdentity : IEquatable<LeaseIdentity>
     /// </remarks>
     public Guid Id { get; init; }
 
+    /// <summary>
+    /// Determines whether this identity immediately precedes the specified identity.
+    /// </summary>
+    /// <param name="other">The identity to compare.</param>
+    /// <returns><see langword="true"/> if this identity immediately precedes <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+    public bool Precedes(in LeaseIdentity other)
+        => other.Version - Version is 1UL && Id == other.Id;
+
+    /// <summary>
+    /// Determines whether identity <paramref name="x"/> immediately supersedes identity <paramref name="y"/>.
+    /// </summary>
+    /// <param name="x">The first identity to compare.</param>
+    /// <param name="y">The second identity to compare.</param>
+    /// <returns><see langword="true"/> if identity <paramref name="x"/> immediately supersedes <paramref name="y"/>; otherwise, <see langword="false"/>.</returns>
+    public static bool operator >>(in LeaseIdentity x, in LeaseIdentity y)
+        => y.Precedes(in x);
+
+    /// <summary>
+    /// Determines whether identity <paramref name="x"/> immediately precedes identity <paramref name="y"/>.
+    /// </summary>
+    /// <param name="x">The first identity to compare.</param>
+    /// <param name="y">The second identity to compare.</param>
+    /// <returns><see langword="true"/> if identity <paramref name="x"/> immediately precedes <paramref name="y"/>; otherwise, <see langword="false"/>.</returns>
+    public static bool operator <<(in LeaseIdentity x, in LeaseIdentity y)
+        => x.Precedes(in y);
+
     private bool Equals(in LeaseIdentity other)
         => Version == other.Version && Id == other.Id;
 

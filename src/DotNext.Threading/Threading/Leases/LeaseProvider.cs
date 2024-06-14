@@ -484,7 +484,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         public required DateTimeOffset CreatedAt { get; init; }
 
         internal bool IsExpired(TimeProvider provider, TimeSpan ttl, out TimeSpan remaining)
-            => (remaining = provider.GetUtcNow() - CreatedAt) < ttl;
+            => (remaining = provider.GetUtcNow() - CreatedAt) >= ttl;
     }
 
     /// <summary>
