@@ -17,7 +17,7 @@ public abstract class LeaseConsumer : Disposable
     /// <summary>
     /// Initializes a new lease consumer.
     /// </summary>
-    protected LeaseConsumer() => clockDriftBound = 0.5D;
+    protected LeaseConsumer() => clockDriftBound = 0.3D;
 
     /// <summary>
     /// Gets or sets wall clock desync degree in the cluster, in percents.
