@@ -44,7 +44,7 @@ public abstract class LeaseConsumer : Disposable
     /// <see cref="TryAcquireAsync(CancellationToken)"/> or <see cref="TryRenewAsync(CancellationToken)"/>
     /// should not be used after. The typical use case to invoke these methods and then obtain the token.
     /// </remarks>
-    public CancellationToken Token => source?.Token ?? new(true);
+    public CancellationToken Token => source?.Token ?? new(canceled: true);
 
     private void CancelAndDispose()
     {
@@ -109,7 +109,7 @@ public abstract class LeaseConsumer : Disposable
 
         var ts = new Timestamp();
         TimeSpan remainingTime;
-        if (await TryRenewAsync(identity, token).ConfigureAwait(false) is { } response && (remainingTime = AdjustTimeToLive(response.TimeToLive - ts.Elapsed)) > TimeSpan.Zero)
+        if (await TryRenewCoreAsync(identity, token).ConfigureAwait(false) is { } response && (remainingTime = AdjustTimeToLive(response.TimeToLive - ts.Elapsed)) > TimeSpan.Zero)
         {
             identity = response.Identity;
 
@@ -140,7 +140,7 @@ public abstract class LeaseConsumer : Disposable
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The response from the lease provider; or <see langword="null"/> if the lease cannot be taken.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    protected abstract ValueTask<AcquisitionResult?> TryRenewAsync(LeaseIdentity identity, CancellationToken token);
+    protected abstract ValueTask<AcquisitionResult?> TryRenewCoreAsync(LeaseIdentity identity, CancellationToken token);
 
     /// <summary>
     /// Releases a lease.
@@ -162,7 +162,7 @@ public abstract class LeaseConsumer : Disposable
             throw new InvalidOperationException();
 
         CancelAndDispose();
-        if (await ReleaseAsync(this.identity, token).ConfigureAwait(false) is { } identity)
+        if (await ReleaseCoreAsync(this.identity, token).ConfigureAwait(false) is { } identity)
         {
             this.identity = identity;
             return true;
@@ -179,7 +179,7 @@ public abstract class LeaseConsumer : Disposable
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The response from the lease provider; or <see langword="null"/> if the lease cannot be taken.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    protected abstract ValueTask<LeaseIdentity?> ReleaseAsync(LeaseIdentity identity, CancellationToken token);
+    protected abstract ValueTask<LeaseIdentity?> ReleaseCoreAsync(LeaseIdentity identity, CancellationToken token);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
