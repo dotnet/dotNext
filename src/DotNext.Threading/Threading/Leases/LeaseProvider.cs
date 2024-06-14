@@ -89,43 +89,6 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         }
     }
 
-    private async ValueTask<(LeaseIdentity Identity, TimeSpan RemainingTime, bool IsAcquired)> TryAcquireAsync<TUpdater>(TUpdater updater, CancellationToken token = default)
-        where TUpdater : notnull, ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
-    {
-        var cts = token.LinkTo(LifetimeToken);
-        try
-        {
-            var state = await GetStateAsync(token).ConfigureAwait(false);
-
-            if (!state.IsExpired(provider, TimeToLive, out var remainingTime))
-                return new(state.Identity, remainingTime, false);
-
-            state = state with
-            {
-                CreatedAt = provider.GetUtcNow(),
-                Identity = state.Identity.BumpVersion(),
-                Metadata = await updater.Invoke(state.Metadata, token).ConfigureAwait(false),
-            };
-
-            var ts = new Timestamp();
-            if (!await TryUpdateStateAsync(state, token).ConfigureAwait(false))
-                return new(state.Identity, TimeToLive, false);
-
-            remainingTime = TimeToLive - ts.Elapsed;
-            return remainingTime > TimeSpan.Zero
-                ? new(state.Identity, remainingTime, true)
-                : new(state.Identity, TimeSpan.Zero, false);
-        }
-        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
-        {
-            throw new ObjectDisposedException(GetType().Name);
-        }
-        finally
-        {
-            cts?.Dispose();
-        }
-    }
-
     /// <summary>
     /// Tries to acquire the lease.
     /// </summary>
