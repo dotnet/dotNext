@@ -89,7 +89,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
             var current = Volatile.Read(in bitmask);
             for (ulong newValue; ; current = newValue)
             {
-                newValue = current & (current - 1UL); // Reset lowest set bit, the same as BLSR instruction
+                newValue = current & (current - 1UL); // Reset the lowest set bit, the same as BLSR instruction
                 newValue = Interlocked.CompareExchange(ref bitmask, newValue, current);
                 if (newValue == current)
                     break;

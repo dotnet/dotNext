@@ -75,7 +75,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <summary>
     /// Attempts to obtain exclusive lock synchronously without blocking caller thread.
     /// </summary>
-    /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/> if lock is taken successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public bool TryAcquire()
     {

@@ -96,7 +96,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <param name="arg">The argument to be passed to the metadata updater.</param>
     /// <param name="updater">An idempotent operation to update the metadata on successful acquisition of the lease.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The acquistion result; or <see langword="null"/> if the lease is already taken.</returns>
+    /// <returns>The acquisition result; or <see langword="null"/> if the lease is already taken.</returns>
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
@@ -107,7 +107,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// Tries to acquire the lease.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The acquistion result; or <see langword="null"/> if the lease is already taken.</returns>
+    /// <returns>The acquisition result; or <see langword="null"/> if the lease is already taken.</returns>
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<AcquisitionResult?> TryAcquireAsync(CancellationToken token = default)
@@ -125,7 +125,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
 
                 if (state.IsExpired(provider, TimeToLive, out var remainingTime))
                 {
-                    state = state with
+                    state = new()
                     {
                         CreatedAt = provider.GetUtcNow(),
                         Identity = state.Identity.BumpVersion(),
@@ -223,7 +223,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
             if (state.IsExpired(provider, TimeToLive, out _) || state.Identity != identity)
                 return null;
 
-            state = state with
+            state = new()
             {
                 CreatedAt = default,
                 Identity = identity.BumpVersion(),
@@ -276,7 +276,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         {
             var state = await GetStateAsync(token).ConfigureAwait(false);
 
-            state = state with
+            state = new()
             {
                 CreatedAt = default,
                 Identity = state.Identity.BumpVersion(),
@@ -338,7 +338,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
             {
                 state = await GetStateAsync(token).ConfigureAwait(false);
 
-                state = state with
+                state = new()
                 {
                     CreatedAt = default,
                     Identity = state.Identity.BumpVersion(),
