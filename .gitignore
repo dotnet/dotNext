@@ -2,6 +2,7 @@
 obj/
 .vs/
 .vscode/
+.idea/
 .nuget/
 logo.svg
 favicon.ico
