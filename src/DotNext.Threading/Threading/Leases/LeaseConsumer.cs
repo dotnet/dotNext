@@ -26,7 +26,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// </summary>
     protected LeaseConsumer(TimeProvider? provider = null)
     {
-        clockDriftBound = 0.3D;
+        clockDriftBound = 1D;
         this.provider = provider ?? TimeProvider.System;
         callback = LeaseExpired;
         timer = this.provider.CreateTimer(callback, state: null, InfiniteTimeSpan, InfiniteTimeSpan);
@@ -54,21 +54,17 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     }
 
     /// <summary>
-    /// Gets or sets wall clock desync degree in the cluster, in percents.
+    /// Gets or sets wall clock desync degree in the cluster.
     /// </summary>
-    /// <remarks>
-    /// 0 means that wall clocks for this consumer and lease provider are in sync. To reduce contention between
-    /// concurrent consumers it's better to renew a lease earlier than its expiration timeout.
-    /// </remarks>
-    /// <value>A value in range [0..1). The default value is 0.3.</value>
+    /// <value>A value in range [1..∞). The default value is 1.</value>
     public double ClockDriftBound
     {
         get => clockDriftBound;
-        init => clockDriftBound = double.IsFinite(value) && value >= 0D ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        init => clockDriftBound = double.IsFinite(value) && value >= 1D ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     private TimeSpan AdjustTimeToLive(TimeSpan originalTtl)
-        => originalTtl - (originalTtl * clockDriftBound);
+        => originalTtl / clockDriftBound;
 
     /// <summary>
     /// Gets the token bounded to the lease lifetime.
@@ -102,10 +98,10 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// can be used to perform async operation bounded to the lease lifetime.
     /// </remarks>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns><see langword="true"/> if lease taken successfully; otherwise, <see langword="false"/>.</returns>
+    /// <returns>The expiration timeout; otherwise, <see cref="Timeout.Expired"/>.</returns>
     /// <exception cref="ObjectDisposedException">The consumer is disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public async ValueTask<bool> TryAcquireAsync(CancellationToken token = default)
+    public async ValueTask<Timeout> TryAcquireAsync(CancellationToken token = default)
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
@@ -115,15 +111,15 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
             identity = response.Identity;
             await CancelAndStopTimerAsync().ConfigureAwait(false);
 
-            var remainingTime = AdjustTimeToLive(response.TimeToLive - ts.Elapsed);
+            var remainingTime = AdjustTimeToLive(response.TimeToLive) - ts.Elapsed;
             if (remainingTime > TimeSpan.Zero)
             {
                 timer = provider.CreateTimer(callback, source = new(), remainingTime, InfiniteTimeSpan);
-                return true;
+                return new(remainingTime);
             }
         }
 
-        return false;
+        return Timeout.Expired;
     }
 
     /// <summary>
@@ -138,11 +134,11 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// Tries to renew a lease.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns><see langword="true"/> if lease renewed successfully; otherwise, <see langword="false"/>.</returns>
+    /// /// <returns>The expiration timeout; otherwise, <see cref="Timeout.Expired"/>.</returns>
     /// <exception cref="ObjectDisposedException">The consumer is disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="InvalidOperationException">This consumer never took the lease.</exception>
-    public async ValueTask<bool> TryRenewAsync(CancellationToken token = default)
+    public async ValueTask<Timeout> TryRenewAsync(CancellationToken token = default)
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
@@ -156,7 +152,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
 
             // ensure that the timer has been stopped
             await timer.DisposeAsync().ConfigureAwait(false);
-            var remainingTime = AdjustTimeToLive(response.TimeToLive - ts.Elapsed);
+            var remainingTime = AdjustTimeToLive(response.TimeToLive) - ts.Elapsed;
 
             if (remainingTime > TimeSpan.Zero)
             {
@@ -164,11 +160,11 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
                     source = sourceCopy = new();
 
                 timer = provider.CreateTimer(callback, sourceCopy, remainingTime, InfiniteTimeSpan);
-                return true;
+                return new(remainingTime);
             }
         }
 
-        return false;
+        return Timeout.Expired;
     }
 
     /// <summary>
