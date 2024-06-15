@@ -83,7 +83,7 @@ public readonly record struct Timestamp :
     /// <summary>
     /// Gets the total elapsed time measured by the current instance, in timer ticks.
     /// </summary>
-    public long ElapsedTicks => Math.Max(0L, GetTimestamp() - ticks);
+    public long ElapsedTicks => Math.Max(1L, GetTimestamp() - ticks);
 
     /// <summary>
     /// Gets the total elapsed time measured by the current instance, in milliseconds.
