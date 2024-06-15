@@ -101,7 +101,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
     public ValueTask<AcquisitionResult?> TryAcquireAsync<TArg>(TArg arg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>> updater, CancellationToken token = default)
-        => updater is not null ? TryChangeStateAsync(AcqusitionCondition.Instance, new Updater<TArg>(arg, updater), token) : ValueTask.FromException<AcquisitionResult?>(new ArgumentNullException(nameof(updater)));
+        => updater is not null ? TryChangeStateAsync(AcquisitionCondition.Instance, new Updater<TArg>(arg, updater), token) : ValueTask.FromException<AcquisitionResult?>(new ArgumentNullException(nameof(updater)));
 
     /// <summary>
     /// Tries to acquire the lease.
@@ -111,7 +111,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// <exception cref="ObjectDisposedException">The provider has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<AcquisitionResult?> TryAcquireAsync(CancellationToken token = default)
-        => TryChangeStateAsync(AcqusitionCondition.Instance, NoOpUpdater.Instance, token);
+        => TryChangeStateAsync(AcquisitionCondition.Instance, NoOpUpdater.Instance, token);
 
     private async ValueTask<AcquisitionResult> AcquireAsync<TUpdater>(TUpdater updater, CancellationToken token)
         where TUpdater : notnull, ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>

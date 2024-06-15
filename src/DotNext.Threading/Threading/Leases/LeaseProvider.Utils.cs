@@ -11,11 +11,11 @@ public partial class LeaseProvider<TMetadata>
         bool Invoke(in State state, TimeProvider provider, TimeSpan timeToLive, out TimeSpan remainingTime);
     }
 
-    private sealed class AcqusitionCondition : ITransitionCondition, ISingleton<AcqusitionCondition>
+    private sealed class AcquisitionCondition : ITransitionCondition, ISingleton<AcquisitionCondition>
     {
-        public static AcqusitionCondition Instance { get; } = new();
+        public static AcquisitionCondition Instance { get; } = new();
 
-        private AcqusitionCondition()
+        private AcquisitionCondition()
         {
         }
 
