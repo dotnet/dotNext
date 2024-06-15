@@ -1,4 +1,6 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Leases;
 
@@ -8,16 +10,48 @@ using Diagnostics;
 /// Represents client side of a lease in a distributed environment.
 /// </summary>
 /// <seealso cref="LeaseProvider{TMetadata}"/>
-public abstract class LeaseConsumer : Disposable
+public abstract class LeaseConsumer : Disposable, IAsyncDisposable
 {
     private readonly double clockDriftBound;
+    private readonly TimeProvider provider;
+    private readonly TimerCallback callback;
     private LeaseIdentity identity;
-    private CancellationTokenSource? source;
+
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive.")]
+    private volatile CancellationTokenSource? source;
+    private ITimer timer;
 
     /// <summary>
     /// Initializes a new lease consumer.
     /// </summary>
-    protected LeaseConsumer() => clockDriftBound = 0.3D;
+    protected LeaseConsumer(TimeProvider? provider = null)
+    {
+        clockDriftBound = 0.3D;
+        this.provider = provider ?? TimeProvider.System;
+        callback = LeaseExpired;
+        timer = this.provider.CreateTimer(callback, state: null, InfiniteTimeSpan, InfiniteTimeSpan);
+    }
+
+    private void LeaseExpired(CancellationTokenSource cts)
+    {
+        if (ReferenceEquals(Interlocked.CompareExchange(ref source, null, cts), cts))
+        {
+            try
+            {
+                cts.Cancel(throwOnFirstException: false);
+            }
+            finally
+            {
+                cts.Dispose();
+            }
+        }
+    }
+
+    private void LeaseExpired(object? state)
+    {
+        if (state is CancellationTokenSource cts)
+            LeaseExpired(cts);
+    }
 
     /// <summary>
     /// Gets or sets wall clock desync degree in the cluster, in percents.
@@ -39,19 +73,25 @@ public abstract class LeaseConsumer : Disposable
     /// <summary>
     /// Gets the token bounded to the lease lifetime.
     /// </summary>
-    /// <remarks>
-    /// Use that token to perform lease-bounded operation. The token acquired before a call to
-    /// <see cref="TryAcquireAsync(CancellationToken)"/> or <see cref="TryRenewAsync(CancellationToken)"/>
-    /// should not be used after. The typical use case to invoke these methods and then obtain the token.
-    /// </remarks>
     public CancellationToken Token => source?.Token ?? new(canceled: true);
 
-    private void CancelAndDispose()
+    private ValueTask CancelAndStopTimerAsync()
     {
-        using (source)
+        // Cancel existing source. There is a potential concurrency with LeaseExpired
+        if (Interlocked.Exchange(ref source, null) is { } sourceCopy)
         {
-            source?.Cancel(throwOnFirstException: false);
+            try
+            {
+                sourceCopy.Cancel(throwOnFirstException: false);
+            }
+            finally
+            {
+                sourceCopy.Dispose();
+            }
         }
+
+        // ensure that the timer has stopped
+        return timer.DisposeAsync();
     }
 
     /// <summary>
@@ -69,16 +109,18 @@ public abstract class LeaseConsumer : Disposable
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
-        CancelAndDispose();
-
         var ts = new Timestamp();
-        TimeSpan remainingTime;
-        if (await TryAcquireCoreAsync(token).ConfigureAwait(false) is { } response && (remainingTime = AdjustTimeToLive(response.TimeToLive - ts.Elapsed)) > TimeSpan.Zero)
+        if (await TryAcquireCoreAsync(token).ConfigureAwait(false) is { } response)
         {
-            source = new();
             identity = response.Identity;
-            source.CancelAfter(remainingTime);
-            return true;
+            await CancelAndStopTimerAsync().ConfigureAwait(false);
+
+            var remainingTime = AdjustTimeToLive(response.TimeToLive - ts.Elapsed);
+            if (remainingTime > TimeSpan.Zero)
+            {
+                timer = provider.CreateTimer(callback, source = new(), remainingTime, InfiniteTimeSpan);
+                return true;
+            }
         }
 
         return false;
@@ -108,28 +150,25 @@ public abstract class LeaseConsumer : Disposable
             throw new InvalidOperationException();
 
         var ts = new Timestamp();
-        TimeSpan remainingTime;
-        if (await TryRenewCoreAsync(identity, token).ConfigureAwait(false) is { } response && (remainingTime = AdjustTimeToLive(response.TimeToLive - ts.Elapsed)) > TimeSpan.Zero)
+        if (await TryRenewCoreAsync(identity, token).ConfigureAwait(false) is { } response)
         {
             identity = response.Identity;
 
-            if (source is null || !TryResetOrDestroy(source))
-                source = new();
+            // ensure that the timer has been stopped
+            await timer.DisposeAsync().ConfigureAwait(false);
+            var remainingTime = AdjustTimeToLive(response.TimeToLive - ts.Elapsed);
 
-            source.CancelAfter(remainingTime);
-            return true;
+            if (remainingTime > TimeSpan.Zero)
+            {
+                if (source is not { } sourceCopy)
+                    source = sourceCopy = new();
+
+                timer = provider.CreateTimer(callback, sourceCopy, remainingTime, InfiniteTimeSpan);
+                return true;
+            }
         }
 
         return false;
-
-        static bool TryResetOrDestroy(CancellationTokenSource source)
-        {
-            var result = source.TryReset();
-            if (!result)
-                source.Dispose();
-
-            return result;
-        }
     }
 
     /// <summary>
@@ -161,7 +200,7 @@ public abstract class LeaseConsumer : Disposable
         if (this.identity.Version is LeaseIdentity.InitialVersion)
             throw new InvalidOperationException();
 
-        CancelAndDispose();
+        await CancelAndStopTimerAsync().ConfigureAwait(false);
         if (await ReleaseCoreAsync(this.identity, token).ConfigureAwait(false) is { } identity)
         {
             this.identity = identity;
@@ -186,15 +225,22 @@ public abstract class LeaseConsumer : Disposable
     {
         if (disposing)
         {
-            if (source is not null)
-            {
-                source.Dispose();
-                source = null;
-            }
+            Interlocked.Exchange(ref source, null)?.Dispose();
+            timer.Dispose();
         }
 
         base.Dispose(disposing);
     }
+
+    /// <inheritdoc/>
+    protected override ValueTask DisposeAsyncCore()
+    {
+        Interlocked.Exchange(ref source, null)?.Dispose();
+        return timer.DisposeAsync();
+    }
+
+    /// <inheritdoc cref="IAsyncDisposable.DisposeAsync()"/>
+    public new ValueTask DisposeAsync() => base.DisposeAsync();
 
     /// <summary>
     /// Represents a result of lease acquisition operation.
