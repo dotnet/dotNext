@@ -24,6 +24,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// <summary>
     /// Initializes a new lease consumer.
     /// </summary>
+    /// <param name="provider">The timer factory.</param>
     protected LeaseConsumer(TimeProvider? provider = null)
     {
         clockDriftBound = 1D;
