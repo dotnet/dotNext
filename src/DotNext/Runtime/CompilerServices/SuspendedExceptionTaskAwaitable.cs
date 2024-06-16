@@ -44,7 +44,7 @@ public readonly struct SuspendedExceptionTaskAwaitable
     /// Gets the awaiter for this object.
     /// </summary>
     /// <returns>The awaiter for this object.</returns>
-    public Awaiter GetAwaiter() => new(task, ContinueOnCapturedContext);
+    public Awaiter GetAwaiter() => new(task, ContinueOnCapturedContext) { Filter = Filter };
 
     /// <summary>
     /// Represents the awaiter that suspends exception.
@@ -61,11 +61,13 @@ public readonly struct SuspendedExceptionTaskAwaitable
 
         internal Predicate<Exception>? Filter
         {
-            get;
+            private get;
             init;
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Gets a value indicating that <see cref="SuspendedExceptionTaskAwaitable"/> has completed.
+        /// </summary>
         public bool IsCompleted => awaiter.IsCompleted;
 
         /// <inheritdoc/>
