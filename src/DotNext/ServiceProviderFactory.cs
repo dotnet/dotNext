@@ -143,9 +143,7 @@ public static partial class ServiceProviderFactory
     /// <param name="types">The array of supported types by the service provider.</param>
     /// <returns>The delegate that can be used to instantiate specialized service provider.</returns>
     public static Func<object[], IServiceProvider> CreateFactory(params Type[] types)
-        => RuntimeFeature.IsDynamicCodeCompiled ?
-            new Func<object[], IServiceProvider>(CreateResolver(types).Create) :
-            new Func<object[], IServiceProvider>(types.Create);
+        => RuntimeFeature.IsDynamicCodeCompiled ? CreateResolver(types).Create : types.Create;
 
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(IServiceProvider))]
     [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "IServiceProvider.GetService() is known to be used")]
@@ -172,13 +170,11 @@ public static partial class ServiceProviderFactory
     /// <param name="types">The array of supported types by the service provider.</param>
     /// <returns>The delegate that can be used to instantiate specialized service provider.</returns>
     public static Func<object[], IServiceProvider, IServiceProvider> CreateDelegatingFactory(params Type[] types)
-        => RuntimeFeature.IsDynamicCodeCompiled ?
-            new Func<object[], IServiceProvider, IServiceProvider>(CreateDelegatingResolver(types).Create) :
-            new Func<object[], IServiceProvider, IServiceProvider>(types.Create);
+        => RuntimeFeature.IsDynamicCodeCompiled ? CreateDelegatingResolver(types).Create : types.Create;
 
     private static IServiceProvider Create<T>(this Func<object[], IServiceProvider> factory, T service)
         where T : notnull
-        => factory(new object[] { service });
+        => factory([service]);
 
     /// <summary>
     /// Creates factory that can be used to construct the service provider.
@@ -191,7 +187,7 @@ public static partial class ServiceProviderFactory
 
     private static IServiceProvider Create<T>(this Func<object[], IServiceProvider, IServiceProvider> factory, T service, IServiceProvider fallback)
         where T : notnull
-        => factory(new object[] { service }, fallback);
+        => factory([service], fallback);
 
     /// <summary>
     /// Creates factory that can be used to construct delegating service provider.
@@ -205,7 +201,7 @@ public static partial class ServiceProviderFactory
     private static IServiceProvider Create<T1, T2>(this Func<object[], IServiceProvider> factory, T1 service1, T2 service2)
         where T1 : notnull
         where T2 : notnull
-        => factory(new object[] { service1, service2 });
+        => factory([service1, service2]);
 
     /// <summary>
     /// Creates factory that can be used to construct the service provider.
@@ -218,10 +214,11 @@ public static partial class ServiceProviderFactory
         where T2 : notnull
         => CreateFactory(typeof(T1), typeof(T2)).Create;
 
-    private static IServiceProvider Create<T1, T2>(this Func<object[], IServiceProvider, IServiceProvider> factory, T1 service1, T2 service2, IServiceProvider fallback)
+    private static IServiceProvider Create<T1, T2>(this Func<object[], IServiceProvider, IServiceProvider> factory, T1 service1, T2 service2,
+        IServiceProvider fallback)
         where T1 : notnull
         where T2 : notnull
-        => factory(new object[] { service1, service2 }, fallback);
+        => factory([service1, service2], fallback);
 
     /// <summary>
     /// Creates factory that can be used to construct delegating service provider.
@@ -238,7 +235,7 @@ public static partial class ServiceProviderFactory
         where T1 : notnull
         where T2 : notnull
         where T3 : notnull
-        => factory(new object[] { service1, service2, service3 });
+        => factory([service1, service2, service3]);
 
     /// <summary>
     /// Creates factory that can be used to construct the service provider.
@@ -253,11 +250,12 @@ public static partial class ServiceProviderFactory
         where T3 : notnull
         => CreateFactory(typeof(T1), typeof(T2), typeof(T3)).Create;
 
-    private static IServiceProvider Create<T1, T2, T3>(this Func<object[], IServiceProvider, IServiceProvider> factory, T1 service1, T2 service2, T3 service3, IServiceProvider fallback)
+    private static IServiceProvider Create<T1, T2, T3>(this Func<object[], IServiceProvider, IServiceProvider> factory, T1 service1, T2 service2,
+        T3 service3, IServiceProvider fallback)
         where T1 : notnull
         where T2 : notnull
         where T3 : notnull
-        => factory(new object[] { service1, service2, service3 }, fallback);
+        => factory([service1, service2, service3], fallback);
 
     /// <summary>
     /// Creates factory that can be used to construct delegating service provider.
@@ -272,12 +270,13 @@ public static partial class ServiceProviderFactory
         where T3 : notnull
         => CreateDelegatingFactory(typeof(T1), typeof(T2), typeof(T3)).Create;
 
-    private static IServiceProvider Create<T1, T2, T3, T4>(this Func<object[], IServiceProvider> factory, T1 service1, T2 service2, T3 service3, T4 service4)
+    private static IServiceProvider Create<T1, T2, T3, T4>(this Func<object[], IServiceProvider> factory, T1 service1, T2 service2, T3 service3,
+        T4 service4)
         where T1 : notnull
         where T2 : notnull
         where T3 : notnull
         where T4 : notnull
-        => factory(new object[] { service1, service2, service3, service4 });
+        => factory([service1, service2, service3, service4]);
 
     /// <summary>
     /// Creates factory that can be used to construct the service provider.
@@ -294,12 +293,13 @@ public static partial class ServiceProviderFactory
         where T4 : notnull
         => CreateFactory(typeof(T1), typeof(T2), typeof(T3), typeof(T4)).Create;
 
-    private static IServiceProvider Create<T1, T2, T3, T4>(this Func<object[], IServiceProvider, IServiceProvider> factory, T1 service1, T2 service2, T3 service3, T4 service4, IServiceProvider fallback)
+    private static IServiceProvider Create<T1, T2, T3, T4>(this Func<object[], IServiceProvider, IServiceProvider> factory, T1 service1, T2 service2,
+        T3 service3, T4 service4, IServiceProvider fallback)
         where T1 : notnull
         where T2 : notnull
         where T3 : notnull
         where T4 : notnull
-        => factory(new object[] { service1, service2, service3, service4 }, fallback);
+        => factory([service1, service2, service3, service4], fallback);
 
     /// <summary>
     /// Creates factory that can be used to construct delegating service provider.
@@ -316,13 +316,14 @@ public static partial class ServiceProviderFactory
         where T4 : notnull
         => CreateDelegatingFactory(typeof(T1), typeof(T2), typeof(T3), typeof(T4)).Create;
 
-    private static IServiceProvider Create<T1, T2, T3, T4, T5>(this Func<object[], IServiceProvider> factory, T1 service1, T2 service2, T3 service3, T4 service4, T5 service5)
+    private static IServiceProvider Create<T1, T2, T3, T4, T5>(this Func<object[], IServiceProvider> factory, T1 service1, T2 service2, T3 service3,
+        T4 service4, T5 service5)
         where T1 : notnull
         where T2 : notnull
         where T3 : notnull
         where T4 : notnull
         where T5 : notnull
-        => factory(new object[] { service1, service2, service3, service4, service5 });
+        => factory([service1, service2, service3, service4, service5]);
 
     /// <summary>
     /// Creates factory that can be used to construct the service provider.
@@ -341,13 +342,14 @@ public static partial class ServiceProviderFactory
         where T5 : notnull
         => CreateFactory(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)).Create;
 
-    private static IServiceProvider Create<T1, T2, T3, T4, T5>(this Func<object[], IServiceProvider, IServiceProvider> factory, T1 service1, T2 service2, T3 service3, T4 service4, T5 service5, IServiceProvider fallback)
+    private static IServiceProvider Create<T1, T2, T3, T4, T5>(this Func<object[], IServiceProvider, IServiceProvider> factory, T1 service1,
+        T2 service2, T3 service3, T4 service4, T5 service5, IServiceProvider fallback)
         where T1 : notnull
         where T2 : notnull
         where T3 : notnull
         where T4 : notnull
         where T5 : notnull
-        => factory(new object[] { service1, service2, service3, service4, service5 }, fallback);
+        => factory([service1, service2, service3, service4, service5], fallback);
 
     /// <summary>
     /// Creates factory that can be used to construct delegating service provider.
