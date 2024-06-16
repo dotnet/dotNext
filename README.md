@@ -44,10 +44,20 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 06-07-2024
+Release Date: 06-16-2024
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.5.0">DotNext.Metaprogramming 5.5.0</a>
-* Fixed [240](https://github.com/dotnet/dotNext/issues/240)
+<a href="https://www.nuget.org/packages/dotnext/5.3.2">DotNext 5.3.2</a>
+* `Timestamp.ElapsedTicks` returns a value that is always greater than zero
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.7.0">DotNext.Threading 5.7.0</a>
+* Fixed [241](https://github.com/dotnet/dotNext/issues/241)
+* Introduced API for implementing leases, see `DotNext.Threading.Leases` namespace
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.6.1">DotNext.Threading 5.6.1</a>
+* Fixed [242](https://github.com/dotnet/dotNext/issues/242)
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.6.1">DotNext.AspNetCore.Cluster 5.6.1</a>
+* Fixed [242](https://github.com/dotnet/dotNext/issues/242)
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
