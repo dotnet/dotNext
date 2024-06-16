@@ -13,7 +13,6 @@ using Threading;
 /// This class can be used as allocation-free alternative to <see cref="System.Diagnostics.Stopwatch"/>.
 /// </remarks>
 public readonly record struct Timestamp :
-    IEquatable<Timestamp>,
     IComparable<Timestamp>,
     IComparisonOperators<Timestamp, Timestamp, bool>,
     IAdditionOperators<Timestamp, TimeSpan, Timestamp>,
@@ -49,12 +48,12 @@ public readonly record struct Timestamp :
     public bool IsEmpty => ticks is 0L;
 
     /// <summary>
-    /// Gets a value indcating that the current timestamp represents the future point in time.
+    /// Gets a value indicating that the current timestamp represents the future point in time.
     /// </summary>
     public bool IsFuture => ticks > GetTimestamp();
 
     /// <summary>
-    /// Gets a value indcating that the current timestamp represents the past point in time.
+    /// Gets a value indicating that the current timestamp represents the past point in time.
     /// </summary>
     public bool IsPast => ticks < GetTimestamp();
 
@@ -212,7 +211,7 @@ public readonly record struct Timestamp :
         => new(Volatile.Read(in location.ticks));
 
     /// <summary>
-    /// Writes the timestamp and prevents the proces from reordering memory operations.
+    /// Writes the timestamp and prevents the processor from reordering memory operations.
     /// </summary>
     /// <param name="location">The managed pointer to the timestamp.</param>
     /// <param name="newValue">The value to write.</param>
@@ -220,9 +219,9 @@ public readonly record struct Timestamp :
         => Volatile.Write(ref Unsafe.AsRef(in location.ticks), newValue.ticks);
 
     /// <summary>
-    /// Updates the timestamp to the current point in time and prevents the proces from reordering memory operations.
+    /// Updates the timestamp to the current point in time and prevents the processor from reordering memory operations.
     /// </summary>
-    /// <param name="location">The location of the timestampt to update.</param>
+    /// <param name="location">The location of the timestamp to update.</param>
     public static void Refresh(ref Timestamp location)
         => Volatile.Write(ref Unsafe.AsRef(in location.ticks), Math.Max(1L, GetTimestamp()));
 
