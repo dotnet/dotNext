@@ -40,6 +40,17 @@ public readonly struct Timeout
     /// <param name="timeout">Max duration of operation.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     public Timeout(TimeSpan timeout)
+        : this(timeout, TimeProvider.System)
+    {
+    }
+
+    /// <summary>
+    /// Constructs a new timeout control object.
+    /// </summary>
+    /// <param name="timeout">Max duration of operation.</param>
+    /// <param name="provider">Time provider.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
+    public Timeout(TimeSpan timeout, TimeProvider provider)
     {
         switch (timeout.Ticks)
         {
@@ -49,7 +60,7 @@ public readonly struct Timeout
             case < 0L:
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             default:
-                created = new();
+                created = new(provider);
                 this.timeout = timeout;
                 break;
         }
@@ -73,9 +84,16 @@ public readonly struct Timeout
     /// <summary>
     /// Throws <see cref="TimeoutException"/> if timeout occurs.
     /// </summary>
-    public void ThrowIfExpired()
+    /// <exception cref="TimeoutException">Timeout occurred.</exception>
+    public void ThrowIfExpired() => ThrowIfExpired(TimeProvider.System);
+
+    /// <summary>
+    /// Throws <see cref="TimeoutException"/> if timeout occurs.
+    /// </summary>
+    /// <exception cref="TimeoutException">Timeout occurred.</exception>
+    public void ThrowIfExpired(TimeProvider provider)
     {
-        if (IsExpired)
+        if (!IsInfinite && created.GetElapsedTime(provider) > timeout)
             throw new TimeoutException();
     }
 
@@ -83,9 +101,18 @@ public readonly struct Timeout
     /// Throws <see cref="TimeoutException"/> if timeout occurs.
     /// </summary>
     /// <param name="remainingTime">The remaining time before timeout.</param>
-    public void ThrowIfExpired(out TimeSpan remainingTime)
+    /// <exception cref="TimeoutException">Timeout occurred.</exception>
+    public void ThrowIfExpired(out TimeSpan remainingTime) => ThrowIfExpired(TimeProvider.System, out remainingTime);
+    
+    /// <summary>
+    /// Throws <see cref="TimeoutException"/> if timeout occurs.
+    /// </summary>
+    /// <param name="provider">Time provider.</param>
+    /// <param name="remainingTime">The remaining time before timeout.</param>
+    /// <exception cref="TimeoutException">Timeout occurred.</exception>
+    public void ThrowIfExpired(TimeProvider provider, out TimeSpan remainingTime)
     {
-        if (TryGetRemainingTime(out remainingTime) is false)
+        if (TryGetRemainingTime(provider, out remainingTime) is false)
             throw new TimeoutException();
     }
 
@@ -94,7 +121,15 @@ public readonly struct Timeout
     /// </summary>
     /// <param name="remainingTime">The remaining time before timeout.</param>
     /// <returns><see langword="true"/> if timeout hasn't happened yet; otherwise, <see langword="false"/>.</returns>
-    public bool TryGetRemainingTime(out TimeSpan remainingTime)
+    public bool TryGetRemainingTime(out TimeSpan remainingTime) => TryGetRemainingTime(TimeProvider.System, out remainingTime);
+
+    /// <summary>
+    /// Gets the remaining time.
+    /// </summary>
+    /// <param name="provider">Time provider.</param>
+    /// <param name="remainingTime">The remaining time before timeout.</param>
+    /// <returns><see langword="true"/> if timeout hasn't happened yet; otherwise, <see langword="false"/>.</returns>
+    public bool TryGetRemainingTime(TimeProvider provider, out TimeSpan remainingTime)
     {
         if (IsInfinite)
         {
@@ -102,7 +137,7 @@ public readonly struct Timeout
             return true;
         }
 
-        return (remainingTime = timeout - created.Elapsed) >= TimeSpan.Zero;
+        return (remainingTime = timeout - created.GetElapsedTime(provider)) >= TimeSpan.Zero;
     }
 
     /// <summary>
