@@ -20,7 +20,7 @@ public class MtuDiscovery : Ping
     /// <param name="timeout">The maximum number of milliseconds to wait for the ICMP echo reply message. It's not a time-out of entire operation.</param>
     /// <param name="options">Discovery options.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The discovered MTU size, in bytes; or <see langword="null"/> if remote host is not reacheable.</returns>
+    /// <returns>The discovered MTU size, in bytes; or <see langword="null"/> if remote host is not reachable.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is less than 0.</exception>
     /// <exception cref="InvalidOperationException">Discovery is in progress.</exception>
     /// <exception cref="PingException">An exception was thrown while sending or receiving the ICMP messages.</exception>
@@ -46,7 +46,7 @@ public class MtuDiscovery : Ping
                     bestMtu = currentMtu + IcmpEchoHeaderSize;
                     mtuLowerBound = currentMtu + 1;
                     continue;
-                case IPStatus.TimedOut when Environment.OSVersion.Platform == PlatformID.Unix: // TODO: This is required due to https://github.com/dotnet/runtime/issues/34855
+                case IPStatus.TimedOut when Environment.OSVersion is { Platform: PlatformID.Unix }: // https://github.com/dotnet/runtime/issues/34855
                 case IPStatus.PacketTooBig:
                     mtuUpperBound = currentMtu - 1;
                     continue;
@@ -63,7 +63,7 @@ public class MtuDiscovery : Ping
     /// <param name="timeout">The maximum number of milliseconds to wait for the ICMP echo reply message. It's not a time-out of entire operation.</param>
     /// <param name="options">Discovery options.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The discovered MTU size, in bytes; or <see langword="null"/> if remote host is not reacheable.</returns>
+    /// <returns>The discovered MTU size, in bytes; or <see langword="null"/> if remote host is not reachable.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is less than 0.</exception>
     /// <exception cref="InvalidOperationException">Discovery is in progress.</exception>
     /// <exception cref="PingException">An exception was thrown while sending or receiving the ICMP messages.</exception>
@@ -89,7 +89,7 @@ public class MtuDiscovery : Ping
                     bestMtu = currentMtu + IcmpEchoHeaderSize;
                     mtuLowerBound = currentMtu + 1;
                     continue;
-                case IPStatus.TimedOut when Environment.OSVersion.Platform == PlatformID.Unix: // TODO: This is required due to https://github.com/dotnet/runtime/issues/34855
+                case IPStatus.TimedOut when Environment.OSVersion is { Platform: PlatformID.Unix }: // https://github.com/dotnet/runtime/issues/34855
                 case IPStatus.PacketTooBig:
                     mtuUpperBound = currentMtu - 1;
                     continue;
