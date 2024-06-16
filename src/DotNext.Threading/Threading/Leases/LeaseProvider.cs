@@ -63,7 +63,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
             if (!condition.Invoke(in state, provider, TimeToLive, out var remainingTime))
                 return null;
 
-            state = state with
+            state = new()
             {
                 CreatedAt = provider.GetUtcNow(),
                 Identity = state.Identity.BumpVersion(),
