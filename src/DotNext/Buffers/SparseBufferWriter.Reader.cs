@@ -197,7 +197,7 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         NormalizePosition(ref start);
-        for (long count = length; Read(ref start, ref count) is { IsEmpty: false } block;)
+        for (var count = length; Read(ref start, ref count) is { IsEmpty: false } block;)
         {
             consumer.Invoke(block.Span);
         }

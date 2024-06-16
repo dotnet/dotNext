@@ -222,7 +222,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
         where TConsumer : notnull, IReadOnlySpanConsumer<T>
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        for (MemoryChunk? current = first; current is not null; current = current.Next)
+        for (var current = first; current is not null; current = current.Next)
         {
             consumer.Invoke(current.WrittenMemory.Span);
         }
@@ -322,7 +322,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
             {
                 input = chunk.WrittenMemory.Span;
                 ref var firstChar = ref Unsafe.As<T, char>(ref GetReference(input));
-                CreateReadOnlySpan<char>(ref firstChar, input.Length).CopyTo(output);
+                CreateReadOnlySpan(ref firstChar, input.Length).CopyTo(output);
             }
         }
 
