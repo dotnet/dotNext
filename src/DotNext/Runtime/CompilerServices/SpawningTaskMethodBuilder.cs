@@ -78,7 +78,7 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>
     /// Completes asynchronous operation successfully.
     /// </summary>
     /// <param name="result">The result to be returned by the asynchronous method associated with this builder.</param>
-    public readonly void SetResult(TResult result)
+    public void SetResult(TResult result)
         => builder.SetResult(result);
 
     /// <summary>
@@ -202,6 +202,6 @@ public struct SpawningAsyncTaskMethodBuilder
         ValueTaskSourceStatus IValueTaskSource.GetStatus(short token) => ValueTaskSourceStatus.Pending;
 
         void IValueTaskSource.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
-            => capturedArgs = new(continuation, state);
+            => capturedArgs = (continuation, state);
     }
 }
