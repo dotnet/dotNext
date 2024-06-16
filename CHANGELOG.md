@@ -2,21 +2,28 @@ Release Notes
 ====
 
 # 06-17-2024
-<a href="https://www.nuget.org/packages/dotnext/5.3.2">DotNext 5.3.2</a>
+<a href="https://www.nuget.org/packages/dotnext/5.7.0">DotNext 5.7.0</a>
 * `Timestamp.ElapsedTicks` returns a value that is always greater than zero
 * Fixed hidden copies of value types caused by **in** modifier
+* Added support of [TimeProvider](https://learn.microsoft.com/en-us/dotnet/api/system.timeprovider) to `Timestamp` and `Timeout` types
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.7.0">DotNext.Metaprogramming 5.7.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.7.0">DotNext.Unsafe 5.7.0</a>
+* Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/5.7.0">DotNext.Threading 5.7.0</a>
 * Fixed [241](https://github.com/dotnet/dotNext/issues/241)
 * Introduced API for implementing leases, see `DotNext.Threading.Leases` namespace
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.4.1">DotNext.IO 5.4.1</a>
-* Fixed hidden copies of value types caused by **in** modifier
+<a href="https://www.nuget.org/packages/dotnext.io/5.7.0">DotNext.IO 5.7.0</a>
+* Various performance improvements
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.6.1">DotNext.Net.Cluster 5.6.1</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.7.0">DotNext.Net.Cluster 5.7.0</a>
 * Fixed [242](https://github.com/dotnet/dotNext/issues/242)
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.6.1">DotNext.AspNetCore.Cluster 5.6.1</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.7.0">DotNext.AspNetCore.Cluster 5.7.0</a>
 * Fixed [242](https://github.com/dotnet/dotNext/issues/242)
 
 # 06-07-2024
