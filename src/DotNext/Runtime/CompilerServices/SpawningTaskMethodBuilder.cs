@@ -14,14 +14,9 @@ namespace DotNext.Runtime.CompilerServices;
 /// </remarks>
 /// <typeparam name="TResult">The type of the value to be returned by asynchronous method.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public struct SpawningAsyncTaskMethodBuilder<TResult>
+public struct SpawningAsyncTaskMethodBuilder<TResult>()
 {
-    private AsyncTaskMethodBuilder<TResult> builder;
-
-    /// <summary>
-    /// Initializes a new builder.
-    /// </summary>
-    public SpawningAsyncTaskMethodBuilder() => builder = AsyncTaskMethodBuilder<TResult>.Create();
+    private AsyncTaskMethodBuilder<TResult> builder = AsyncTaskMethodBuilder<TResult>.Create();
 
     /// <summary>
     /// Initializes a new builder.
@@ -103,19 +98,14 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>
 /// less memory.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
-public struct SpawningAsyncTaskMethodBuilder
+public struct SpawningAsyncTaskMethodBuilder()
 {
     internal static readonly ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter Awaiter = new ValueTask(new SpecialCallbackDetector(), 0).ConfigureAwait(false).GetAwaiter();
 
     [ThreadStatic]
     private static (Action<object?> WorkItem, object? State) capturedArgs;
 
-    private AsyncTaskMethodBuilder builder;
-
-    /// <summary>
-    /// Initializes a new builder.
-    /// </summary>
-    public SpawningAsyncTaskMethodBuilder() => builder = AsyncTaskMethodBuilder.Create();
+    private AsyncTaskMethodBuilder builder = AsyncTaskMethodBuilder.Create();
 
     /// <summary>
     /// Initializes a new builder.
