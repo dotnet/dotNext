@@ -67,6 +67,31 @@ public readonly struct Timeout
     }
 
     /// <summary>
+    /// Constructs a new timeout control object.
+    /// </summary>
+    /// <param name="timeout">Max duration of operation.</param>
+    /// <param name="startedAt">The point in time when operation was started.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative; or <paramref name="startedAt"/> is empty.</exception>
+    public Timeout(TimeSpan timeout, Timestamp startedAt)
+    {
+        if (startedAt.IsEmpty)
+            throw new ArgumentOutOfRangeException(nameof(startedAt));
+        
+        switch (timeout.Ticks)
+        {
+            case InfiniteTicks:
+                this = default;
+                break;
+            case < 0L:
+                throw new ArgumentOutOfRangeException(nameof(timeout));
+            default:
+                created = startedAt;
+                this.timeout = timeout;
+                break;
+        }
+    }
+
+    /// <summary>
     /// Gets value of this timeout.
     /// </summary>
     public TimeSpan Value => IsInfinite ? new(InfiniteTicks) : timeout;
