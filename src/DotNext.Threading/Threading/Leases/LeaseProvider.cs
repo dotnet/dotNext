@@ -70,11 +70,11 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                 Metadata = await updater.Invoke(state.Metadata, token).ConfigureAwait(false),
             };
 
-            var ts = new Timestamp();
+            var ts = new Timestamp(provider);
             if (!await TryUpdateStateAsync(state, token).ConfigureAwait(false))
                 return null;
 
-            remainingTime = TimeToLive - ts.Elapsed;
+            remainingTime = TimeToLive - ts.GetElapsedTime(provider);
             return remainingTime > TimeSpan.Zero
                 ? new(in state, remainingTime)
                 : null;
@@ -132,11 +132,11 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                         Metadata = await updater.Invoke(state.Metadata, token).ConfigureAwait(false),
                     };
 
-                    var ts = new Timestamp();
+                    var ts = new Timestamp(provider);
                     if (!await TryUpdateStateAsync(state, token).ConfigureAwait(false))
                         continue;
 
-                    remainingTime = TimeToLive - ts.Elapsed;
+                    remainingTime = TimeToLive - ts.GetElapsedTime(provider);
 
                     if (remainingTime <= TimeSpan.Zero)
                         continue;

@@ -106,17 +106,17 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
-        var ts = new Timestamp();
+        var ts = new Timestamp(provider);
         if (await TryAcquireCoreAsync(token).ConfigureAwait(false) is { } response)
         {
             identity = response.Identity;
             await CancelAndStopTimerAsync().ConfigureAwait(false);
 
-            var remainingTime = AdjustTimeToLive(response.TimeToLive) - ts.Elapsed;
+            var remainingTime = AdjustTimeToLive(response.TimeToLive) - ts.GetElapsedTime(provider);
             if (remainingTime > TimeSpan.Zero)
             {
                 timer = provider.CreateTimer(callback, source = new(), remainingTime, InfiniteTimeSpan);
-                return new(remainingTime);
+                return new(remainingTime, provider);
             }
         }
 
@@ -146,14 +146,14 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
         if (identity.Version is LeaseIdentity.InitialVersion)
             throw new InvalidOperationException();
 
-        var ts = new Timestamp();
+        var ts = new Timestamp(provider);
         if (await TryRenewCoreAsync(identity, token).ConfigureAwait(false) is { } response)
         {
             identity = response.Identity;
 
             // ensure that the timer has been stopped
             await timer.DisposeAsync().ConfigureAwait(false);
-            var remainingTime = AdjustTimeToLive(response.TimeToLive) - ts.Elapsed;
+            var remainingTime = AdjustTimeToLive(response.TimeToLive) - ts.GetElapsedTime(provider);
 
             if (remainingTime > TimeSpan.Zero)
             {
@@ -161,7 +161,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
                     source = sourceCopy = new();
 
                 timer = provider.CreateTimer(callback, sourceCopy, remainingTime, InfiniteTimeSpan);
-                return new(remainingTime);
+                return new(remainingTime, provider);
             }
         }
 
