@@ -70,7 +70,7 @@ public readonly record struct Timestamp :
     private static long ToTicks(double duration)
         => unchecked((long)(TickFrequency * duration));
 
-    private long ToTicks(double duration, TimeProvider provider)
+    private static long ToTicks(double duration, TimeProvider provider)
         => unchecked((long)(GetTickFrequency(provider) * duration));
 
     private static long FromTimeSpan(TimeSpan value)
