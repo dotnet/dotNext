@@ -789,7 +789,7 @@ public static class Span
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)source.Length, nameof(count));
 
-        ref var ptr = ref MemoryMarshal.GetReference(source);
+        ref T ptr = ref MemoryMarshal.GetReference(source);
         source = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, count), source.Length - count);
         return MemoryMarshal.CreateReadOnlySpan(ref ptr, count);
     }
@@ -805,7 +805,7 @@ public static class Span
     {
         ArgumentOutOfRangeException.ThrowIfZero(source.Length, nameof(source));
 
-        ref var ptr = ref MemoryMarshal.GetReference(source);
+        ref T ptr = ref MemoryMarshal.GetReference(source);
         source = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, 1), source.Length - 1);
         return ref ptr;
     }
@@ -838,7 +838,7 @@ public static class Span
     {
         ArgumentOutOfRangeException.ThrowIfZero(source.Length, nameof(source));
 
-        ref var ptr = ref MemoryMarshal.GetReference(source);
+        ref T ptr = ref MemoryMarshal.GetReference(source);
         source = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, 1), source.Length - 1);
         return ref ptr;
     }
