@@ -20,6 +20,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     [SuppressMessage("Usage", "CA2213", Justification = "False positive.")]
     private volatile CancellationTokenSource? source;
     private ITimer timer;
+    private Timeout timeout;
 
     /// <summary>
     /// Initializes a new lease consumer.
@@ -71,6 +72,11 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// Gets the token bounded to the lease lifetime.
     /// </summary>
     public CancellationToken Token => source?.Token ?? new(canceled: true);
+    
+    /// <summary>
+    /// Gets lease expiration timeout.
+    /// </summary>
+    public ref readonly Timeout Expiration => ref timeout;
 
     private ValueTask CancelAndStopTimerAsync()
     {
@@ -102,7 +108,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// <returns>The expiration timeout; otherwise, <see cref="Timeout.Expired"/>.</returns>
     /// <exception cref="ObjectDisposedException">The consumer is disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public async ValueTask<Timeout> TryAcquireAsync(CancellationToken token = default)
+    public async ValueTask<bool> TryAcquireAsync(CancellationToken token = default)
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
@@ -112,15 +118,15 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
             identity = response.Identity;
             await CancelAndStopTimerAsync().ConfigureAwait(false);
 
-            var remainingTime = AdjustTimeToLive(response.TimeToLive) - ts.GetElapsedTime(provider);
-            if (remainingTime > TimeSpan.Zero)
+            timeout = new(AdjustTimeToLive(response.TimeToLive), ts);
+            if (timeout.TryGetRemainingTime(provider, out var remainingTime))
             {
                 timer = provider.CreateTimer(callback, source = new(), remainingTime, InfiniteTimeSpan);
-                return new(remainingTime, provider);
+                return true;
             }
         }
 
-        return Timeout.Expired;
+        return false;
     }
 
     /// <summary>
@@ -139,7 +145,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">The consumer is disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="InvalidOperationException">This consumer never took the lease.</exception>
-    public async ValueTask<Timeout> TryRenewAsync(CancellationToken token = default)
+    public async ValueTask<bool> TryRenewAsync(CancellationToken token = default)
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
@@ -153,19 +159,18 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
 
             // ensure that the timer has been stopped
             await timer.DisposeAsync().ConfigureAwait(false);
-            var remainingTime = AdjustTimeToLive(response.TimeToLive) - ts.GetElapsedTime(provider);
-
-            if (remainingTime > TimeSpan.Zero)
+            timeout = new(AdjustTimeToLive(response.TimeToLive), ts);
+            if (timeout.TryGetRemainingTime(out var remainingTime))
             {
                 if (source is not { } sourceCopy)
                     source = sourceCopy = new();
 
                 timer = provider.CreateTimer(callback, sourceCopy, remainingTime, InfiniteTimeSpan);
-                return new(remainingTime, provider);
+                return true;
             }
         }
 
-        return Timeout.Expired;
+        return false;
     }
 
     /// <summary>
@@ -198,6 +203,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
             throw new InvalidOperationException();
 
         await CancelAndStopTimerAsync().ConfigureAwait(false);
+        timeout = Timeout.Expired;
         if (await ReleaseCoreAsync(this.identity, token).ConfigureAwait(false) is { } identity)
         {
             this.identity = identity;
