@@ -70,6 +70,9 @@ public readonly record struct Timestamp :
     private static long ToTicks(double duration)
         => unchecked((long)(TickFrequency * duration));
 
+    private long ToTicks(double duration, TimeProvider provider)
+        => unchecked((long)(GetTickFrequency(provider) * duration));
+
     private static long FromTimeSpan(TimeSpan value)
         => unchecked((long)(value.Ticks / TickFrequency));
 
@@ -94,7 +97,7 @@ public readonly record struct Timestamp :
     /// </summary>
     /// <param name="provider">Time provider.</param>
     /// <returns>The elapsed time between the starting timestamp and the time of this call.</returns>
-    public TimeSpan GetElapsedTime(TimeProvider provider) => new(GetElapsedTicks(provider));
+    public TimeSpan GetElapsedTime(TimeProvider provider) => new(ToTicks(GetElapsedTicks(provider), provider));
 
     /// <summary>
     /// Gets the total elapsed time measured by the current instance, in timer ticks.

@@ -79,7 +79,7 @@ public sealed class LeaseTests : Test
 
         var tasks = await Task.WhenAll(acquisition1, acquisition2);
 
-        True(tasks is [{ IsExpired: false }, { IsExpired: true }] or [{ IsExpired: true }, { IsExpired: false }]);
+        True(tasks is [false, true] or [true, false]);
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public sealed class LeaseTests : Test
         await using var consumer = new TestLeaseConsumer(provider);
         True(consumer.Token.IsCancellationRequested);
 
-        False((await consumer.TryAcquireAsync()).IsExpired);
+        True((await consumer.TryAcquireAsync()));
         False(consumer.Token.IsCancellationRequested);
 
         await Task.Delay(150);
@@ -176,7 +176,7 @@ public sealed class LeaseTests : Test
         protected override async ValueTask<AcquisitionResult?> TryAcquireCoreAsync(CancellationToken token = default)
         {
             return await provider.TryAcquireAsync(token) is { } result
-                ? new AcquisitionResult { Identity = result.State.Identity, TimeToLive = result.Lifetime.Value }
+                ? new AcquisitionResult { Identity = result.State.Identity, TimeToLive = result.Expiration.Value }
                 : null;
         }
 
@@ -184,7 +184,7 @@ public sealed class LeaseTests : Test
             CancellationToken token)
         {
             return await provider.TryAcquireOrRenewAsync(identity, token) is { } result
-                ? new AcquisitionResult { Identity = result.State.Identity, TimeToLive = result.Lifetime.Value }
+                ? new AcquisitionResult { Identity = result.State.Identity, TimeToLive = result.Expiration.Value }
                 : null;
         }
 
