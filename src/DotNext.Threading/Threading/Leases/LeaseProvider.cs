@@ -76,7 +76,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
 
             remainingTime = TimeToLive - ts.GetElapsedTime(provider);
             return remainingTime > TimeSpan.Zero
-                ? new(in state, remainingTime)
+                ? new AcquisitionResult(in state, remainingTime, provider)
                 : null;
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
@@ -141,7 +141,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                     if (remainingTime <= TimeSpan.Zero)
                         continue;
 
-                    return new(in state, remainingTime);
+                    return new AcquisitionResult(in state, remainingTime, provider);
                 }
 
                 await Task.Delay(remainingTime, provider, token).ConfigureAwait(false);
@@ -501,14 +501,14 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         /// <summary>
         /// The remaining lease time.
         /// </summary>
-        public readonly Timeout Lifetime;
+        public readonly Timeout Expiration;
 
-        internal AcquisitionResult(in State state, TimeSpan ttl)
+        internal AcquisitionResult(in State state, TimeSpan ttl, TimeProvider provider)
         {
             Debug.Assert(ttl > TimeSpan.Zero);
 
             State = state;
-            Lifetime = new(ttl);
+            Expiration = new(ttl, provider);
         }
 
         /// <summary>
@@ -520,7 +520,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         public void Deconstruct(out State state, out Timeout lifetime)
         {
             state = State;
-            lifetime = Lifetime;
+            lifetime = Expiration;
         }
     }
 }
