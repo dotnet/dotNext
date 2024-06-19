@@ -113,20 +113,25 @@ public sealed class LeaseTests : Test
     public static async Task DisposeConcurrently()
     {
         Task task;
+        CancellationToken token;
         using (var provider = new TestLeaseProvider(DefaultTimeout))
         {
             await provider.AcquireAsync();
             task = provider.AcquireAsync().AsTask();
             False(task.IsCompleted);
+            token = provider.Token;
         }
 
         await ThrowsAsync<ObjectDisposedException>(Func.Constant(task));
+        True(token.IsCancellationRequested);
     }
 
     private sealed class TestLeaseProvider(TimeSpan ttl) : LeaseProvider<int>(ttl)
     {
         private readonly AsyncReaderWriterLock syncRoot = new();
         private State currentState;
+
+        internal CancellationToken Token => base.LifetimeToken;
 
         protected override async ValueTask<State> GetStateAsync(CancellationToken token)
         {
