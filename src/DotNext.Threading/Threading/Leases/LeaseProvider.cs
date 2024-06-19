@@ -499,7 +499,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         public readonly State State;
 
         /// <summary>
-        /// The remaining lease time.
+        /// The expiration timeout.
         /// </summary>
         public readonly Timeout Expiration;
 
