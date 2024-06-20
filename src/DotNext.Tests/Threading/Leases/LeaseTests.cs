@@ -88,9 +88,11 @@ public sealed class LeaseTests : Test
         using var provider = new TestLeaseProvider(TimeSpan.FromMilliseconds(100));
         await using var consumer = new TestLeaseConsumer(provider);
         True(consumer.Token.IsCancellationRequested);
+        True(consumer.Expiration.IsExpired);
 
         True((await consumer.TryAcquireAsync()));
         False(consumer.Token.IsCancellationRequested);
+        False(consumer.Expiration.IsExpired);
 
         await Task.Delay(150);
         True(consumer.Token.IsCancellationRequested);
@@ -101,12 +103,22 @@ public sealed class LeaseTests : Test
     public static async Task ConsumerRenew()
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
-        await using var consumer = new TestLeaseConsumer(provider);
-        await consumer.TryAcquireAsync();
+        await using var consumer = new TestLeaseConsumer(provider) { ClockDriftBound = 1 };
+        True(await consumer.TryAcquireAsync());
         var expected = consumer.Token;
 
-        await consumer.TryRenewAsync();
+        True(await consumer.TryRenewAsync());
         Equal(consumer.Token, expected);
+    }
+
+    [Fact]
+    public static async Task AcquireUsingConsumer()
+    {
+        var pause = TimeSpan.FromMilliseconds(100);
+        using var provider = new TestLeaseProvider(pause);
+        await using var consumer = new TestLeaseConsumer(provider);
+        True(await consumer.TryAcquireAsync());
+        await consumer.AcquireAsync(pause, Random.Shared);
     }
 
     [Fact]

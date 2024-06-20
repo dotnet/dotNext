@@ -32,6 +32,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
         this.provider = provider ?? TimeProvider.System;
         callback = LeaseExpired;
         timer = this.provider.CreateTimer(callback, state: null, InfiniteTimeSpan, InfiniteTimeSpan);
+        timeout = Timeout.Expired;
     }
 
     private void LeaseExpired(CancellationTokenSource cts)
@@ -127,6 +128,34 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Acquires the lease.
+    /// </summary>
+    /// <param name="pauseDuration">The time to wait between <see cref="TryAcquireAsync(CancellationToken)"/> calls.</param>
+    /// <param name="pauseRandomizer">
+    /// The source of random values that can be used to generate random pauses between <see cref="TryAcquireAsync(CancellationToken)"/> calls.
+    /// If <see langword="null"/> then use a value of <paramref name="pauseDuration"/>.
+    /// </param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing state of asynchronous execution of this method.</returns>
+    /// <exception cref="ObjectDisposedException">The consumer is disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="pauseDuration"/> is less than or equal to <see cref="TimeSpan.Zero"/>; or greater than <see cref="Timeout.MaxTimeoutParameterTicks"/>.</exception>
+    public async ValueTask AcquireAsync(TimeSpan pauseDuration, Random? pauseRandomizer = null, CancellationToken token = default)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(pauseDuration, TimeSpan.Zero);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(pauseDuration.Ticks, Timeout.MaxTimeoutParameterTicks, nameof(pauseDuration));
+
+        while (!await TryAcquireAsync(token).ConfigureAwait(false))
+        {
+            var delay = pauseRandomizer is null
+                ? pauseDuration
+                : new(pauseRandomizer.NextInt64(pauseDuration.Ticks) + 1L);
+
+            await Task.Delay(delay, provider, token).ConfigureAwait(false);
+        }
     }
 
     /// <summary>

@@ -27,10 +27,11 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     /// </summary>
     /// <param name="ttl">The lease expiration timeout.</param>
     /// <param name="provider">The time provider.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="ttl"/> is not positive.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="ttl"/> is not positive or greater than <see cref="Timeout.MaxTimeoutParameterTicks"/>.</exception>
     protected LeaseProvider(TimeSpan ttl, TimeProvider? provider = null)
     {
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(ttl, TimeSpan.Zero);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(ttl.Ticks, Timeout.MaxTimeoutParameterTicks, nameof(ttl));
 
         this.provider = provider ?? TimeProvider.System;
         TimeToLive = ttl;
