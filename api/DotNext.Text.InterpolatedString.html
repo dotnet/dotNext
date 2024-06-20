@@ -118,13 +118,13 @@
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/InterpolatedString.cs/#L28">View Source</a>
   </span>
   <a id="DotNext_Text_InterpolatedString_Interpolate_" data-uid="DotNext.Text.InterpolatedString.Interpolate*"></a>
-  <h4 id="DotNext_Text_InterpolatedString_Interpolate_DotNext_Buffers_MemoryAllocator_System_Char__DotNext_Buffers_PoolingInterpolatedStringHandler__" data-uid="DotNext.Text.InterpolatedString.Interpolate(DotNext.Buffers.MemoryAllocator{System.Char},DotNext.Buffers.PoolingInterpolatedStringHandler@)">Interpolate(MemoryAllocator&lt;char&gt;?, in PoolingInterpolatedStringHandler)</h4>
+  <h4 id="DotNext_Text_InterpolatedString_Interpolate_DotNext_Buffers_MemoryAllocator_System_Char__DotNext_Buffers_PoolingInterpolatedStringHandler__" data-uid="DotNext.Text.InterpolatedString.Interpolate(DotNext.Buffers.MemoryAllocator{System.Char},DotNext.Buffers.PoolingInterpolatedStringHandler@)">Interpolate(MemoryAllocator&lt;char&gt;?, ref PoolingInterpolatedStringHandler)</h4>
   <div class="markdown level1 summary"><p>Formats interpolated string as a rented buffer of characters.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;char&gt; Interpolate(MemoryAllocator&lt;char&gt;? allocator, in PoolingInterpolatedStringHandler handler)</code></pre>
+    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;char&gt; Interpolate(MemoryAllocator&lt;char&gt;? allocator, ref PoolingInterpolatedStringHandler handler)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -174,13 +174,13 @@
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Text/InterpolatedString.cs/#L19">View Source</a>
   </span>
   <a id="DotNext_Text_InterpolatedString_Interpolate_" data-uid="DotNext.Text.InterpolatedString.Interpolate*"></a>
-  <h4 id="DotNext_Text_InterpolatedString_Interpolate_DotNext_Buffers_MemoryAllocator_System_Char__System_IFormatProvider_DotNext_Buffers_PoolingInterpolatedStringHandler__" data-uid="DotNext.Text.InterpolatedString.Interpolate(DotNext.Buffers.MemoryAllocator{System.Char},System.IFormatProvider,DotNext.Buffers.PoolingInterpolatedStringHandler@)">Interpolate(MemoryAllocator&lt;char&gt;?, IFormatProvider?, in PoolingInterpolatedStringHandler)</h4>
+  <h4 id="DotNext_Text_InterpolatedString_Interpolate_DotNext_Buffers_MemoryAllocator_System_Char__System_IFormatProvider_DotNext_Buffers_PoolingInterpolatedStringHandler__" data-uid="DotNext.Text.InterpolatedString.Interpolate(DotNext.Buffers.MemoryAllocator{System.Char},System.IFormatProvider,DotNext.Buffers.PoolingInterpolatedStringHandler@)">Interpolate(MemoryAllocator&lt;char&gt;?, IFormatProvider?, ref PoolingInterpolatedStringHandler)</h4>
   <div class="markdown level1 summary"><p>Formats interpolated string as a rented buffer of characters.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;char&gt; Interpolate(MemoryAllocator&lt;char&gt;? allocator, IFormatProvider? provider, in PoolingInterpolatedStringHandler handler)</code></pre>
+    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;char&gt; Interpolate(MemoryAllocator&lt;char&gt;? allocator, IFormatProvider? provider, ref PoolingInterpolatedStringHandler handler)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

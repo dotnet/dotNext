@@ -884,13 +884,13 @@ references:
   nameWithType: BufferWriterSlim<T>.TryDetachBuffer
   nameWithType.vb: BufferWriterSlim(Of T).TryDetachBuffer
 - uid: DotNext.Buffers.BufferWriterSlim`1.TryPeek(`0@)
-  name: TryPeek(out T?)
+  name: TryPeek(out T)
   href: api/DotNext.Buffers.BufferWriterSlim-1.html#DotNext_Buffers_BufferWriterSlim_1_TryPeek__0__
   commentId: M:DotNext.Buffers.BufferWriterSlim`1.TryPeek(`0@)
   name.vb: TryPeek(T)
-  fullName: DotNext.Buffers.BufferWriterSlim<T>.TryPeek(out T?)
+  fullName: DotNext.Buffers.BufferWriterSlim<T>.TryPeek(out T)
   fullName.vb: DotNext.Buffers.BufferWriterSlim(Of T).TryPeek(T)
-  nameWithType: BufferWriterSlim<T>.TryPeek(out T?)
+  nameWithType: BufferWriterSlim<T>.TryPeek(out T)
   nameWithType.vb: BufferWriterSlim(Of T).TryPeek(T)
 - uid: DotNext.Buffers.BufferWriterSlim`1.TryPeek*
   name: TryPeek
@@ -911,13 +911,13 @@ references:
   nameWithType: BufferWriterSlim<T>.TryPop(scoped Span<T>)
   nameWithType.vb: BufferWriterSlim(Of T).TryPop(Span(Of T))
 - uid: DotNext.Buffers.BufferWriterSlim`1.TryPop(`0@)
-  name: TryPop(out T?)
+  name: TryPop(out T)
   href: api/DotNext.Buffers.BufferWriterSlim-1.html#DotNext_Buffers_BufferWriterSlim_1_TryPop__0__
   commentId: M:DotNext.Buffers.BufferWriterSlim`1.TryPop(`0@)
   name.vb: TryPop(T)
-  fullName: DotNext.Buffers.BufferWriterSlim<T>.TryPop(out T?)
+  fullName: DotNext.Buffers.BufferWriterSlim<T>.TryPop(out T)
   fullName.vb: DotNext.Buffers.BufferWriterSlim(Of T).TryPop(T)
-  nameWithType: BufferWriterSlim<T>.TryPop(out T?)
+  nameWithType: BufferWriterSlim<T>.TryPop(out T)
   nameWithType.vb: BufferWriterSlim(Of T).TryPop(T)
 - uid: DotNext.Buffers.BufferWriterSlim`1.TryPop*
   name: TryPop
@@ -10301,6 +10301,15 @@ references:
   fullName.vb: DotNext.Diagnostics.Timestamp.New()
   nameWithType: Timestamp.Timestamp()
   nameWithType.vb: Timestamp.New()
+- uid: DotNext.Diagnostics.Timestamp.#ctor(System.TimeProvider)
+  name: Timestamp(TimeProvider)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp__ctor_System_TimeProvider_
+  commentId: M:DotNext.Diagnostics.Timestamp.#ctor(System.TimeProvider)
+  name.vb: New(TimeProvider)
+  fullName: DotNext.Diagnostics.Timestamp.Timestamp(System.TimeProvider)
+  fullName.vb: DotNext.Diagnostics.Timestamp.New(System.TimeProvider)
+  nameWithType: Timestamp.Timestamp(TimeProvider)
+  nameWithType.vb: Timestamp.New(TimeProvider)
 - uid: DotNext.Diagnostics.Timestamp.#ctor(System.TimeSpan)
   name: Timestamp(TimeSpan)
   href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp__ctor_System_TimeSpan_
@@ -10381,6 +10390,12 @@ references:
   commentId: M:DotNext.Diagnostics.Timestamp.ElapsedSince(DotNext.Diagnostics.Timestamp)
   fullName: DotNext.Diagnostics.Timestamp.ElapsedSince(DotNext.Diagnostics.Timestamp)
   nameWithType: Timestamp.ElapsedSince(Timestamp)
+- uid: DotNext.Diagnostics.Timestamp.ElapsedSince(DotNext.Diagnostics.Timestamp,System.TimeProvider)
+  name: ElapsedSince(Timestamp, TimeProvider)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_ElapsedSince_DotNext_Diagnostics_Timestamp_System_TimeProvider_
+  commentId: M:DotNext.Diagnostics.Timestamp.ElapsedSince(DotNext.Diagnostics.Timestamp,System.TimeProvider)
+  fullName: DotNext.Diagnostics.Timestamp.ElapsedSince(DotNext.Diagnostics.Timestamp, System.TimeProvider)
+  nameWithType: Timestamp.ElapsedSince(Timestamp, TimeProvider)
 - uid: DotNext.Diagnostics.Timestamp.ElapsedSince*
   name: ElapsedSince
   href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_ElapsedSince_
@@ -10401,6 +10416,45 @@ references:
   isSpec: "True"
   fullName: DotNext.Diagnostics.Timestamp.ElapsedTicks
   nameWithType: Timestamp.ElapsedTicks
+- uid: DotNext.Diagnostics.Timestamp.GetElapsedMilliseconds(System.TimeProvider)
+  name: GetElapsedMilliseconds(TimeProvider)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_GetElapsedMilliseconds_System_TimeProvider_
+  commentId: M:DotNext.Diagnostics.Timestamp.GetElapsedMilliseconds(System.TimeProvider)
+  fullName: DotNext.Diagnostics.Timestamp.GetElapsedMilliseconds(System.TimeProvider)
+  nameWithType: Timestamp.GetElapsedMilliseconds(TimeProvider)
+- uid: DotNext.Diagnostics.Timestamp.GetElapsedMilliseconds*
+  name: GetElapsedMilliseconds
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_GetElapsedMilliseconds_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.GetElapsedMilliseconds
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.GetElapsedMilliseconds
+  nameWithType: Timestamp.GetElapsedMilliseconds
+- uid: DotNext.Diagnostics.Timestamp.GetElapsedTicks(System.TimeProvider)
+  name: GetElapsedTicks(TimeProvider)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_GetElapsedTicks_System_TimeProvider_
+  commentId: M:DotNext.Diagnostics.Timestamp.GetElapsedTicks(System.TimeProvider)
+  fullName: DotNext.Diagnostics.Timestamp.GetElapsedTicks(System.TimeProvider)
+  nameWithType: Timestamp.GetElapsedTicks(TimeProvider)
+- uid: DotNext.Diagnostics.Timestamp.GetElapsedTicks*
+  name: GetElapsedTicks
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_GetElapsedTicks_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.GetElapsedTicks
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.GetElapsedTicks
+  nameWithType: Timestamp.GetElapsedTicks
+- uid: DotNext.Diagnostics.Timestamp.GetElapsedTime(System.TimeProvider)
+  name: GetElapsedTime(TimeProvider)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_GetElapsedTime_System_TimeProvider_
+  commentId: M:DotNext.Diagnostics.Timestamp.GetElapsedTime(System.TimeProvider)
+  fullName: DotNext.Diagnostics.Timestamp.GetElapsedTime(System.TimeProvider)
+  nameWithType: Timestamp.GetElapsedTime(TimeProvider)
+- uid: DotNext.Diagnostics.Timestamp.GetElapsedTime*
+  name: GetElapsedTime
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_GetElapsedTime_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.GetElapsedTime
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.GetElapsedTime
+  nameWithType: Timestamp.GetElapsedTime
 - uid: DotNext.Diagnostics.Timestamp.IsEmpty
   name: IsEmpty
   href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_IsEmpty
@@ -10449,6 +10503,15 @@ references:
   fullName.vb: DotNext.Diagnostics.Timestamp.Refresh(DotNext.Diagnostics.Timestamp)
   nameWithType: Timestamp.Refresh(ref Timestamp)
   nameWithType.vb: Timestamp.Refresh(Timestamp)
+- uid: DotNext.Diagnostics.Timestamp.Refresh(DotNext.Diagnostics.Timestamp@,System.TimeProvider)
+  name: Refresh(ref Timestamp, TimeProvider)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_Refresh_DotNext_Diagnostics_Timestamp__System_TimeProvider_
+  commentId: M:DotNext.Diagnostics.Timestamp.Refresh(DotNext.Diagnostics.Timestamp@,System.TimeProvider)
+  name.vb: Refresh(Timestamp, TimeProvider)
+  fullName: DotNext.Diagnostics.Timestamp.Refresh(ref DotNext.Diagnostics.Timestamp, System.TimeProvider)
+  fullName.vb: DotNext.Diagnostics.Timestamp.Refresh(DotNext.Diagnostics.Timestamp, System.TimeProvider)
+  nameWithType: Timestamp.Refresh(ref Timestamp, TimeProvider)
+  nameWithType.vb: Timestamp.Refresh(Timestamp, TimeProvider)
 - uid: DotNext.Diagnostics.Timestamp.Refresh*
   name: Refresh
   href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_Refresh_
@@ -17472,22 +17535,22 @@ references:
   fullName: DotNext.IO.TextStreamExtensions.ReadAllAsync
   nameWithType: TextStreamExtensions.ReadAllAsync
 - uid: DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter,DotNext.Buffers.MemoryAllocator{System.Char},DotNext.Buffers.PoolingInterpolatedStringHandler@)
-  name: Write(TextWriter, MemoryAllocator<char>?, in PoolingInterpolatedStringHandler)
+  name: Write(TextWriter, MemoryAllocator<char>?, ref PoolingInterpolatedStringHandler)
   href: api/DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_Write_System_IO_TextWriter_DotNext_Buffers_MemoryAllocator_System_Char__DotNext_Buffers_PoolingInterpolatedStringHandler__
   commentId: M:DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter,DotNext.Buffers.MemoryAllocator{System.Char},DotNext.Buffers.PoolingInterpolatedStringHandler@)
   name.vb: Write(TextWriter, MemoryAllocator(Of Char), PoolingInterpolatedStringHandler)
-  fullName: DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter, DotNext.Buffers.MemoryAllocator<char>?, in DotNext.Buffers.PoolingInterpolatedStringHandler)
+  fullName: DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter, DotNext.Buffers.MemoryAllocator<char>?, ref DotNext.Buffers.PoolingInterpolatedStringHandler)
   fullName.vb: DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter, DotNext.Buffers.MemoryAllocator(Of Char), DotNext.Buffers.PoolingInterpolatedStringHandler)
-  nameWithType: TextStreamExtensions.Write(TextWriter, MemoryAllocator<char>?, in PoolingInterpolatedStringHandler)
+  nameWithType: TextStreamExtensions.Write(TextWriter, MemoryAllocator<char>?, ref PoolingInterpolatedStringHandler)
   nameWithType.vb: TextStreamExtensions.Write(TextWriter, MemoryAllocator(Of Char), PoolingInterpolatedStringHandler)
 - uid: DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter,DotNext.Buffers.MemoryAllocator{System.Char},System.IFormatProvider,DotNext.Buffers.PoolingInterpolatedStringHandler@)
-  name: Write(TextWriter, MemoryAllocator<char>?, IFormatProvider?, in PoolingInterpolatedStringHandler)
+  name: Write(TextWriter, MemoryAllocator<char>?, IFormatProvider?, ref PoolingInterpolatedStringHandler)
   href: api/DotNext.IO.TextStreamExtensions.html#DotNext_IO_TextStreamExtensions_Write_System_IO_TextWriter_DotNext_Buffers_MemoryAllocator_System_Char__System_IFormatProvider_DotNext_Buffers_PoolingInterpolatedStringHandler__
   commentId: M:DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter,DotNext.Buffers.MemoryAllocator{System.Char},System.IFormatProvider,DotNext.Buffers.PoolingInterpolatedStringHandler@)
   name.vb: Write(TextWriter, MemoryAllocator(Of Char), IFormatProvider, PoolingInterpolatedStringHandler)
-  fullName: DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter, DotNext.Buffers.MemoryAllocator<char>?, System.IFormatProvider?, in DotNext.Buffers.PoolingInterpolatedStringHandler)
+  fullName: DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter, DotNext.Buffers.MemoryAllocator<char>?, System.IFormatProvider?, ref DotNext.Buffers.PoolingInterpolatedStringHandler)
   fullName.vb: DotNext.IO.TextStreamExtensions.Write(System.IO.TextWriter, DotNext.Buffers.MemoryAllocator(Of Char), System.IFormatProvider, DotNext.Buffers.PoolingInterpolatedStringHandler)
-  nameWithType: TextStreamExtensions.Write(TextWriter, MemoryAllocator<char>?, IFormatProvider?, in PoolingInterpolatedStringHandler)
+  nameWithType: TextStreamExtensions.Write(TextWriter, MemoryAllocator<char>?, IFormatProvider?, ref PoolingInterpolatedStringHandler)
   nameWithType.vb: TextStreamExtensions.Write(TextWriter, MemoryAllocator(Of Char), IFormatProvider, PoolingInterpolatedStringHandler)
 - uid: DotNext.IO.TextStreamExtensions.Write*
   name: Write
@@ -41789,22 +41852,22 @@ references:
   fullName: DotNext.Text.InterpolatedString
   nameWithType: InterpolatedString
 - uid: DotNext.Text.InterpolatedString.Interpolate(DotNext.Buffers.MemoryAllocator{System.Char},DotNext.Buffers.PoolingInterpolatedStringHandler@)
-  name: Interpolate(MemoryAllocator<char>?, in PoolingInterpolatedStringHandler)
+  name: Interpolate(MemoryAllocator<char>?, ref PoolingInterpolatedStringHandler)
   href: api/DotNext.Text.InterpolatedString.html#DotNext_Text_InterpolatedString_Interpolate_DotNext_Buffers_MemoryAllocator_System_Char__DotNext_Buffers_PoolingInterpolatedStringHandler__
   commentId: M:DotNext.Text.InterpolatedString.Interpolate(DotNext.Buffers.MemoryAllocator{System.Char},DotNext.Buffers.PoolingInterpolatedStringHandler@)
   name.vb: Interpolate(MemoryAllocator(Of Char), PoolingInterpolatedStringHandler)
-  fullName: DotNext.Text.InterpolatedString.Interpolate(DotNext.Buffers.MemoryAllocator<char>?, in DotNext.Buffers.PoolingInterpolatedStringHandler)
+  fullName: DotNext.Text.InterpolatedString.Interpolate(DotNext.Buffers.MemoryAllocator<char>?, ref DotNext.Buffers.PoolingInterpolatedStringHandler)
   fullName.vb: DotNext.Text.InterpolatedString.Interpolate(DotNext.Buffers.MemoryAllocator(Of Char), DotNext.Buffers.PoolingInterpolatedStringHandler)
-  nameWithType: InterpolatedString.Interpolate(MemoryAllocator<char>?, in PoolingInterpolatedStringHandler)
+  nameWithType: InterpolatedString.Interpolate(MemoryAllocator<char>?, ref PoolingInterpolatedStringHandler)
   nameWithType.vb: InterpolatedString.Interpolate(MemoryAllocator(Of Char), PoolingInterpolatedStringHandler)
 - uid: DotNext.Text.InterpolatedString.Interpolate(DotNext.Buffers.MemoryAllocator{System.Char},System.IFormatProvider,DotNext.Buffers.PoolingInterpolatedStringHandler@)
-  name: Interpolate(MemoryAllocator<char>?, IFormatProvider?, in PoolingInterpolatedStringHandler)
+  name: Interpolate(MemoryAllocator<char>?, IFormatProvider?, ref PoolingInterpolatedStringHandler)
   href: api/DotNext.Text.InterpolatedString.html#DotNext_Text_InterpolatedString_Interpolate_DotNext_Buffers_MemoryAllocator_System_Char__System_IFormatProvider_DotNext_Buffers_PoolingInterpolatedStringHandler__
   commentId: M:DotNext.Text.InterpolatedString.Interpolate(DotNext.Buffers.MemoryAllocator{System.Char},System.IFormatProvider,DotNext.Buffers.PoolingInterpolatedStringHandler@)
   name.vb: Interpolate(MemoryAllocator(Of Char), IFormatProvider, PoolingInterpolatedStringHandler)
-  fullName: DotNext.Text.InterpolatedString.Interpolate(DotNext.Buffers.MemoryAllocator<char>?, System.IFormatProvider?, in DotNext.Buffers.PoolingInterpolatedStringHandler)
+  fullName: DotNext.Text.InterpolatedString.Interpolate(DotNext.Buffers.MemoryAllocator<char>?, System.IFormatProvider?, ref DotNext.Buffers.PoolingInterpolatedStringHandler)
   fullName.vb: DotNext.Text.InterpolatedString.Interpolate(DotNext.Buffers.MemoryAllocator(Of Char), System.IFormatProvider, DotNext.Buffers.PoolingInterpolatedStringHandler)
-  nameWithType: InterpolatedString.Interpolate(MemoryAllocator<char>?, IFormatProvider?, in PoolingInterpolatedStringHandler)
+  nameWithType: InterpolatedString.Interpolate(MemoryAllocator<char>?, IFormatProvider?, ref PoolingInterpolatedStringHandler)
   nameWithType.vb: InterpolatedString.Interpolate(MemoryAllocator(Of Char), IFormatProvider, PoolingInterpolatedStringHandler)
 - uid: DotNext.Text.InterpolatedString.Interpolate*
   name: Interpolate
@@ -43911,6 +43974,24 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync
   nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.Boolean,System.Threading.CancellationToken)
+  name: AcquireWriteLockAsync<T>(T, bool, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Boolean_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.Boolean,System.Threading.CancellationToken)
+  name.vb: AcquireWriteLockAsync(Of T)(T, Boolean, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, bool, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, Boolean, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, bool, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, Boolean, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.Boolean,System.TimeSpan,System.Threading.CancellationToken)
+  name: AcquireWriteLockAsync<T>(T, bool, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Boolean_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.Boolean,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: AcquireWriteLockAsync(Of T)(T, Boolean, TimeSpan, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, bool, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, Boolean, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, bool, TimeSpan, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, Boolean, TimeSpan, CancellationToken)
 - uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.Threading.CancellationToken)
   name: AcquireWriteLockAsync<T>(T, CancellationToken)
   href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_
@@ -46343,6 +46424,807 @@ references:
   fullName.vb: DotNext.Threading.IInterlockedOperations(Of T).VolatileWrite
   nameWithType: IInterlockedOperations<T>.VolatileWrite
   nameWithType.vb: IInterlockedOperations(Of T).VolatileWrite
+- uid: DotNext.Threading.Leases
+  name: DotNext.Threading.Leases
+  href: api/DotNext.Threading.Leases.html
+  commentId: N:DotNext.Threading.Leases
+  fullName: DotNext.Threading.Leases
+  nameWithType: DotNext.Threading.Leases
+- uid: DotNext.Threading.Leases.LeaseConsumer
+  name: LeaseConsumer
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html
+  commentId: T:DotNext.Threading.Leases.LeaseConsumer
+  fullName: DotNext.Threading.Leases.LeaseConsumer
+  nameWithType: LeaseConsumer
+- uid: DotNext.Threading.Leases.LeaseConsumer.#ctor(System.TimeProvider)
+  name: LeaseConsumer(TimeProvider?)
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer__ctor_System_TimeProvider_
+  commentId: M:DotNext.Threading.Leases.LeaseConsumer.#ctor(System.TimeProvider)
+  name.vb: New(TimeProvider)
+  fullName: DotNext.Threading.Leases.LeaseConsumer.LeaseConsumer(System.TimeProvider?)
+  fullName.vb: DotNext.Threading.Leases.LeaseConsumer.New(System.TimeProvider)
+  nameWithType: LeaseConsumer.LeaseConsumer(TimeProvider?)
+  nameWithType.vb: LeaseConsumer.New(TimeProvider)
+- uid: DotNext.Threading.Leases.LeaseConsumer.#ctor*
+  name: LeaseConsumer
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer__ctor_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Threading.Leases.LeaseConsumer.LeaseConsumer
+  fullName.vb: DotNext.Threading.Leases.LeaseConsumer.New
+  nameWithType: LeaseConsumer.LeaseConsumer
+  nameWithType.vb: LeaseConsumer.New
+- uid: DotNext.Threading.Leases.LeaseConsumer.AcquireAsync(System.TimeSpan,System.Random,System.Threading.CancellationToken)
+  name: AcquireAsync(TimeSpan, Random?, CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_AcquireAsync_System_TimeSpan_System_Random_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseConsumer.AcquireAsync(System.TimeSpan,System.Random,System.Threading.CancellationToken)
+  name.vb: AcquireAsync(TimeSpan, Random, CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseConsumer.AcquireAsync(System.TimeSpan, System.Random?, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseConsumer.AcquireAsync(System.TimeSpan, System.Random, System.Threading.CancellationToken)
+  nameWithType: LeaseConsumer.AcquireAsync(TimeSpan, Random?, CancellationToken)
+  nameWithType.vb: LeaseConsumer.AcquireAsync(TimeSpan, Random, CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseConsumer.AcquireAsync*
+  name: AcquireAsync
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_AcquireAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.AcquireAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.AcquireAsync
+  nameWithType: LeaseConsumer.AcquireAsync
+- uid: DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult
+  name: LeaseConsumer.AcquisitionResult
+  href: api/DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.html
+  commentId: T:DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult
+  fullName: DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult
+  nameWithType: LeaseConsumer.AcquisitionResult
+- uid: DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.Identity
+  name: Identity
+  href: api/DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.html#DotNext_Threading_Leases_LeaseConsumer_AcquisitionResult_Identity
+  commentId: P:DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.Identity
+  fullName: DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.Identity
+  nameWithType: LeaseConsumer.AcquisitionResult.Identity
+- uid: DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.Identity*
+  name: Identity
+  href: api/DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.html#DotNext_Threading_Leases_LeaseConsumer_AcquisitionResult_Identity_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.Identity
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.Identity
+  nameWithType: LeaseConsumer.AcquisitionResult.Identity
+- uid: DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.TimeToLive
+  name: TimeToLive
+  href: api/DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.html#DotNext_Threading_Leases_LeaseConsumer_AcquisitionResult_TimeToLive
+  commentId: P:DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.TimeToLive
+  fullName: DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.TimeToLive
+  nameWithType: LeaseConsumer.AcquisitionResult.TimeToLive
+- uid: DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.TimeToLive*
+  name: TimeToLive
+  href: api/DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.html#DotNext_Threading_Leases_LeaseConsumer_AcquisitionResult_TimeToLive_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.TimeToLive
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.AcquisitionResult.TimeToLive
+  nameWithType: LeaseConsumer.AcquisitionResult.TimeToLive
+- uid: DotNext.Threading.Leases.LeaseConsumer.ClockDriftBound
+  name: ClockDriftBound
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_ClockDriftBound
+  commentId: P:DotNext.Threading.Leases.LeaseConsumer.ClockDriftBound
+  fullName: DotNext.Threading.Leases.LeaseConsumer.ClockDriftBound
+  nameWithType: LeaseConsumer.ClockDriftBound
+- uid: DotNext.Threading.Leases.LeaseConsumer.ClockDriftBound*
+  name: ClockDriftBound
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_ClockDriftBound_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.ClockDriftBound
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.ClockDriftBound
+  nameWithType: LeaseConsumer.ClockDriftBound
+- uid: DotNext.Threading.Leases.LeaseConsumer.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_Dispose_System_Boolean_
+  commentId: M:DotNext.Threading.Leases.LeaseConsumer.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: DotNext.Threading.Leases.LeaseConsumer.Dispose(bool)
+  fullName.vb: DotNext.Threading.Leases.LeaseConsumer.Dispose(Boolean)
+  nameWithType: LeaseConsumer.Dispose(bool)
+  nameWithType.vb: LeaseConsumer.Dispose(Boolean)
+- uid: DotNext.Threading.Leases.LeaseConsumer.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_Dispose_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.Dispose
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.Dispose
+  nameWithType: LeaseConsumer.Dispose
+- uid: DotNext.Threading.Leases.LeaseConsumer.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_DisposeAsync
+  commentId: M:DotNext.Threading.Leases.LeaseConsumer.DisposeAsync
+  fullName: DotNext.Threading.Leases.LeaseConsumer.DisposeAsync()
+  nameWithType: LeaseConsumer.DisposeAsync()
+- uid: DotNext.Threading.Leases.LeaseConsumer.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_DisposeAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.DisposeAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.DisposeAsync
+  nameWithType: LeaseConsumer.DisposeAsync
+- uid: DotNext.Threading.Leases.LeaseConsumer.DisposeAsyncCore
+  name: DisposeAsyncCore()
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_DisposeAsyncCore
+  commentId: M:DotNext.Threading.Leases.LeaseConsumer.DisposeAsyncCore
+  fullName: DotNext.Threading.Leases.LeaseConsumer.DisposeAsyncCore()
+  nameWithType: LeaseConsumer.DisposeAsyncCore()
+- uid: DotNext.Threading.Leases.LeaseConsumer.DisposeAsyncCore*
+  name: DisposeAsyncCore
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_DisposeAsyncCore_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.DisposeAsyncCore
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.DisposeAsyncCore
+  nameWithType: LeaseConsumer.DisposeAsyncCore
+- uid: DotNext.Threading.Leases.LeaseConsumer.ExecuteAsync*
+  name: ExecuteAsync
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_ExecuteAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.ExecuteAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.ExecuteAsync
+  nameWithType: LeaseConsumer.ExecuteAsync
+- uid: DotNext.Threading.Leases.LeaseConsumer.ExecuteAsync``1(System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task{``0}},System.Threading.CancellationToken)
+  name: ExecuteAsync<TResult>(Func<CancellationToken, Task<TResult>>, CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_ExecuteAsync__1_System_Func_System_Threading_CancellationToken_System_Threading_Tasks_Task___0___System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseConsumer.ExecuteAsync``1(System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task{``0}},System.Threading.CancellationToken)
+  name.vb: ExecuteAsync(Of TResult)(Func(Of CancellationToken, Task(Of TResult)), CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseConsumer.ExecuteAsync<TResult>(System.Func<System.Threading.CancellationToken, System.Threading.Tasks.Task<TResult>>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseConsumer.ExecuteAsync(Of TResult)(System.Func(Of System.Threading.CancellationToken, System.Threading.Tasks.Task(Of TResult)), System.Threading.CancellationToken)
+  nameWithType: LeaseConsumer.ExecuteAsync<TResult>(Func<CancellationToken, Task<TResult>>, CancellationToken)
+  nameWithType.vb: LeaseConsumer.ExecuteAsync(Of TResult)(Func(Of CancellationToken, Task(Of TResult)), CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseConsumer.Expiration
+  name: Expiration
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_Expiration
+  commentId: P:DotNext.Threading.Leases.LeaseConsumer.Expiration
+  fullName: DotNext.Threading.Leases.LeaseConsumer.Expiration
+  nameWithType: LeaseConsumer.Expiration
+- uid: DotNext.Threading.Leases.LeaseConsumer.Expiration*
+  name: Expiration
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_Expiration_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.Expiration
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.Expiration
+  nameWithType: LeaseConsumer.Expiration
+- uid: DotNext.Threading.Leases.LeaseConsumer.ReleaseAsync(System.Threading.CancellationToken)
+  name: ReleaseAsync(CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_ReleaseAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseConsumer.ReleaseAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseConsumer.ReleaseAsync(System.Threading.CancellationToken)
+  nameWithType: LeaseConsumer.ReleaseAsync(CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseConsumer.ReleaseAsync*
+  name: ReleaseAsync
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_ReleaseAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.ReleaseAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.ReleaseAsync
+  nameWithType: LeaseConsumer.ReleaseAsync
+- uid: DotNext.Threading.Leases.LeaseConsumer.ReleaseCoreAsync(DotNext.Threading.Leases.LeaseIdentity,System.Threading.CancellationToken)
+  name: ReleaseCoreAsync(LeaseIdentity, CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_ReleaseCoreAsync_DotNext_Threading_Leases_LeaseIdentity_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseConsumer.ReleaseCoreAsync(DotNext.Threading.Leases.LeaseIdentity,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseConsumer.ReleaseCoreAsync(DotNext.Threading.Leases.LeaseIdentity, System.Threading.CancellationToken)
+  nameWithType: LeaseConsumer.ReleaseCoreAsync(LeaseIdentity, CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseConsumer.ReleaseCoreAsync*
+  name: ReleaseCoreAsync
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_ReleaseCoreAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.ReleaseCoreAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.ReleaseCoreAsync
+  nameWithType: LeaseConsumer.ReleaseCoreAsync
+- uid: DotNext.Threading.Leases.LeaseConsumer.Token
+  name: Token
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_Token
+  commentId: P:DotNext.Threading.Leases.LeaseConsumer.Token
+  fullName: DotNext.Threading.Leases.LeaseConsumer.Token
+  nameWithType: LeaseConsumer.Token
+- uid: DotNext.Threading.Leases.LeaseConsumer.Token*
+  name: Token
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_Token_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.Token
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.Token
+  nameWithType: LeaseConsumer.Token
+- uid: DotNext.Threading.Leases.LeaseConsumer.TryAcquireAsync(System.Threading.CancellationToken)
+  name: TryAcquireAsync(CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_TryAcquireAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseConsumer.TryAcquireAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseConsumer.TryAcquireAsync(System.Threading.CancellationToken)
+  nameWithType: LeaseConsumer.TryAcquireAsync(CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseConsumer.TryAcquireAsync*
+  name: TryAcquireAsync
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_TryAcquireAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.TryAcquireAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.TryAcquireAsync
+  nameWithType: LeaseConsumer.TryAcquireAsync
+- uid: DotNext.Threading.Leases.LeaseConsumer.TryAcquireCoreAsync(System.Threading.CancellationToken)
+  name: TryAcquireCoreAsync(CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_TryAcquireCoreAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseConsumer.TryAcquireCoreAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseConsumer.TryAcquireCoreAsync(System.Threading.CancellationToken)
+  nameWithType: LeaseConsumer.TryAcquireCoreAsync(CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseConsumer.TryAcquireCoreAsync*
+  name: TryAcquireCoreAsync
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_TryAcquireCoreAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.TryAcquireCoreAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.TryAcquireCoreAsync
+  nameWithType: LeaseConsumer.TryAcquireCoreAsync
+- uid: DotNext.Threading.Leases.LeaseConsumer.TryRenewAsync(System.Threading.CancellationToken)
+  name: TryRenewAsync(CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_TryRenewAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseConsumer.TryRenewAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseConsumer.TryRenewAsync(System.Threading.CancellationToken)
+  nameWithType: LeaseConsumer.TryRenewAsync(CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseConsumer.TryRenewAsync*
+  name: TryRenewAsync
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_TryRenewAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.TryRenewAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.TryRenewAsync
+  nameWithType: LeaseConsumer.TryRenewAsync
+- uid: DotNext.Threading.Leases.LeaseConsumer.TryRenewCoreAsync(DotNext.Threading.Leases.LeaseIdentity,System.Threading.CancellationToken)
+  name: TryRenewCoreAsync(LeaseIdentity, CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_TryRenewCoreAsync_DotNext_Threading_Leases_LeaseIdentity_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseConsumer.TryRenewCoreAsync(DotNext.Threading.Leases.LeaseIdentity,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseConsumer.TryRenewCoreAsync(DotNext.Threading.Leases.LeaseIdentity, System.Threading.CancellationToken)
+  nameWithType: LeaseConsumer.TryRenewCoreAsync(LeaseIdentity, CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseConsumer.TryRenewCoreAsync*
+  name: TryRenewCoreAsync
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_TryRenewCoreAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.TryRenewCoreAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.TryRenewCoreAsync
+  nameWithType: LeaseConsumer.TryRenewCoreAsync
+- uid: DotNext.Threading.Leases.LeaseIdentity
+  name: LeaseIdentity
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html
+  commentId: T:DotNext.Threading.Leases.LeaseIdentity
+  fullName: DotNext.Threading.Leases.LeaseIdentity
+  nameWithType: LeaseIdentity
+- uid: DotNext.Threading.Leases.LeaseIdentity.Equals(DotNext.Threading.Leases.LeaseIdentity)
+  name: Equals(LeaseIdentity)
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_Equals_DotNext_Threading_Leases_LeaseIdentity_
+  commentId: M:DotNext.Threading.Leases.LeaseIdentity.Equals(DotNext.Threading.Leases.LeaseIdentity)
+  fullName: DotNext.Threading.Leases.LeaseIdentity.Equals(DotNext.Threading.Leases.LeaseIdentity)
+  nameWithType: LeaseIdentity.Equals(LeaseIdentity)
+- uid: DotNext.Threading.Leases.LeaseIdentity.Equals(System.Object)
+  name: Equals(object?)
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_Equals_System_Object_
+  commentId: M:DotNext.Threading.Leases.LeaseIdentity.Equals(System.Object)
+  name.vb: Equals(Object)
+  fullName: DotNext.Threading.Leases.LeaseIdentity.Equals(object?)
+  fullName.vb: DotNext.Threading.Leases.LeaseIdentity.Equals(Object)
+  nameWithType: LeaseIdentity.Equals(object?)
+  nameWithType.vb: LeaseIdentity.Equals(Object)
+- uid: DotNext.Threading.Leases.LeaseIdentity.Equals*
+  name: Equals
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_Equals_
+  commentId: Overload:DotNext.Threading.Leases.LeaseIdentity.Equals
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseIdentity.Equals
+  nameWithType: LeaseIdentity.Equals
+- uid: DotNext.Threading.Leases.LeaseIdentity.GetHashCode
+  name: GetHashCode()
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_GetHashCode
+  commentId: M:DotNext.Threading.Leases.LeaseIdentity.GetHashCode
+  fullName: DotNext.Threading.Leases.LeaseIdentity.GetHashCode()
+  nameWithType: LeaseIdentity.GetHashCode()
+- uid: DotNext.Threading.Leases.LeaseIdentity.GetHashCode*
+  name: GetHashCode
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_GetHashCode_
+  commentId: Overload:DotNext.Threading.Leases.LeaseIdentity.GetHashCode
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseIdentity.GetHashCode
+  nameWithType: LeaseIdentity.GetHashCode
+- uid: DotNext.Threading.Leases.LeaseIdentity.Id
+  name: Id
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_Id
+  commentId: P:DotNext.Threading.Leases.LeaseIdentity.Id
+  fullName: DotNext.Threading.Leases.LeaseIdentity.Id
+  nameWithType: LeaseIdentity.Id
+- uid: DotNext.Threading.Leases.LeaseIdentity.Id*
+  name: Id
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_Id_
+  commentId: Overload:DotNext.Threading.Leases.LeaseIdentity.Id
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseIdentity.Id
+  nameWithType: LeaseIdentity.Id
+- uid: DotNext.Threading.Leases.LeaseIdentity.InitialVersion
+  name: InitialVersion
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_InitialVersion
+  commentId: F:DotNext.Threading.Leases.LeaseIdentity.InitialVersion
+  fullName: DotNext.Threading.Leases.LeaseIdentity.InitialVersion
+  nameWithType: LeaseIdentity.InitialVersion
+- uid: DotNext.Threading.Leases.LeaseIdentity.Precedes(DotNext.Threading.Leases.LeaseIdentity@)
+  name: Precedes(in LeaseIdentity)
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_Precedes_DotNext_Threading_Leases_LeaseIdentity__
+  commentId: M:DotNext.Threading.Leases.LeaseIdentity.Precedes(DotNext.Threading.Leases.LeaseIdentity@)
+  name.vb: Precedes(LeaseIdentity)
+  fullName: DotNext.Threading.Leases.LeaseIdentity.Precedes(in DotNext.Threading.Leases.LeaseIdentity)
+  fullName.vb: DotNext.Threading.Leases.LeaseIdentity.Precedes(DotNext.Threading.Leases.LeaseIdentity)
+  nameWithType: LeaseIdentity.Precedes(in LeaseIdentity)
+  nameWithType.vb: LeaseIdentity.Precedes(LeaseIdentity)
+- uid: DotNext.Threading.Leases.LeaseIdentity.Precedes*
+  name: Precedes
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_Precedes_
+  commentId: Overload:DotNext.Threading.Leases.LeaseIdentity.Precedes
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseIdentity.Precedes
+  nameWithType: LeaseIdentity.Precedes
+- uid: DotNext.Threading.Leases.LeaseIdentity.Version
+  name: Version
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_Version
+  commentId: P:DotNext.Threading.Leases.LeaseIdentity.Version
+  fullName: DotNext.Threading.Leases.LeaseIdentity.Version
+  nameWithType: LeaseIdentity.Version
+- uid: DotNext.Threading.Leases.LeaseIdentity.Version*
+  name: Version
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_Version_
+  commentId: Overload:DotNext.Threading.Leases.LeaseIdentity.Version
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseIdentity.Version
+  nameWithType: LeaseIdentity.Version
+- uid: DotNext.Threading.Leases.LeaseIdentity.op_Equality(DotNext.Threading.Leases.LeaseIdentity@,DotNext.Threading.Leases.LeaseIdentity@)
+  name: operator ==(in LeaseIdentity, in LeaseIdentity)
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_op_Equality_DotNext_Threading_Leases_LeaseIdentity__DotNext_Threading_Leases_LeaseIdentity__
+  commentId: M:DotNext.Threading.Leases.LeaseIdentity.op_Equality(DotNext.Threading.Leases.LeaseIdentity@,DotNext.Threading.Leases.LeaseIdentity@)
+  name.vb: =(LeaseIdentity, LeaseIdentity)
+  fullName: DotNext.Threading.Leases.LeaseIdentity.operator ==(in DotNext.Threading.Leases.LeaseIdentity, in DotNext.Threading.Leases.LeaseIdentity)
+  fullName.vb: DotNext.Threading.Leases.LeaseIdentity.=(DotNext.Threading.Leases.LeaseIdentity, DotNext.Threading.Leases.LeaseIdentity)
+  nameWithType: LeaseIdentity.operator ==(in LeaseIdentity, in LeaseIdentity)
+  nameWithType.vb: LeaseIdentity.=(LeaseIdentity, LeaseIdentity)
+- uid: DotNext.Threading.Leases.LeaseIdentity.op_Equality*
+  name: operator ==
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_op_Equality_
+  commentId: Overload:DotNext.Threading.Leases.LeaseIdentity.op_Equality
+  isSpec: "True"
+  name.vb: =
+  fullName: DotNext.Threading.Leases.LeaseIdentity.operator ==
+  fullName.vb: DotNext.Threading.Leases.LeaseIdentity.=
+  nameWithType: LeaseIdentity.operator ==
+  nameWithType.vb: LeaseIdentity.=
+- uid: DotNext.Threading.Leases.LeaseIdentity.op_Inequality(DotNext.Threading.Leases.LeaseIdentity@,DotNext.Threading.Leases.LeaseIdentity@)
+  name: operator !=(in LeaseIdentity, in LeaseIdentity)
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_op_Inequality_DotNext_Threading_Leases_LeaseIdentity__DotNext_Threading_Leases_LeaseIdentity__
+  commentId: M:DotNext.Threading.Leases.LeaseIdentity.op_Inequality(DotNext.Threading.Leases.LeaseIdentity@,DotNext.Threading.Leases.LeaseIdentity@)
+  name.vb: <>(LeaseIdentity, LeaseIdentity)
+  fullName: DotNext.Threading.Leases.LeaseIdentity.operator !=(in DotNext.Threading.Leases.LeaseIdentity, in DotNext.Threading.Leases.LeaseIdentity)
+  fullName.vb: DotNext.Threading.Leases.LeaseIdentity.<>(DotNext.Threading.Leases.LeaseIdentity, DotNext.Threading.Leases.LeaseIdentity)
+  nameWithType: LeaseIdentity.operator !=(in LeaseIdentity, in LeaseIdentity)
+  nameWithType.vb: LeaseIdentity.<>(LeaseIdentity, LeaseIdentity)
+- uid: DotNext.Threading.Leases.LeaseIdentity.op_Inequality*
+  name: operator !=
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_op_Inequality_
+  commentId: Overload:DotNext.Threading.Leases.LeaseIdentity.op_Inequality
+  isSpec: "True"
+  name.vb: <>
+  fullName: DotNext.Threading.Leases.LeaseIdentity.operator !=
+  fullName.vb: DotNext.Threading.Leases.LeaseIdentity.<>
+  nameWithType: LeaseIdentity.operator !=
+  nameWithType.vb: LeaseIdentity.<>
+- uid: DotNext.Threading.Leases.LeaseIdentity.op_LeftShift(DotNext.Threading.Leases.LeaseIdentity@,DotNext.Threading.Leases.LeaseIdentity@)
+  name: operator <<(in LeaseIdentity, in LeaseIdentity)
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_op_LeftShift_DotNext_Threading_Leases_LeaseIdentity__DotNext_Threading_Leases_LeaseIdentity__
+  commentId: M:DotNext.Threading.Leases.LeaseIdentity.op_LeftShift(DotNext.Threading.Leases.LeaseIdentity@,DotNext.Threading.Leases.LeaseIdentity@)
+  name.vb: <<(LeaseIdentity, LeaseIdentity)
+  fullName: DotNext.Threading.Leases.LeaseIdentity.operator <<(in DotNext.Threading.Leases.LeaseIdentity, in DotNext.Threading.Leases.LeaseIdentity)
+  fullName.vb: DotNext.Threading.Leases.LeaseIdentity.<<(DotNext.Threading.Leases.LeaseIdentity, DotNext.Threading.Leases.LeaseIdentity)
+  nameWithType: LeaseIdentity.operator <<(in LeaseIdentity, in LeaseIdentity)
+  nameWithType.vb: LeaseIdentity.<<(LeaseIdentity, LeaseIdentity)
+- uid: DotNext.Threading.Leases.LeaseIdentity.op_LeftShift*
+  name: operator <<
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_op_LeftShift_
+  commentId: Overload:DotNext.Threading.Leases.LeaseIdentity.op_LeftShift
+  isSpec: "True"
+  name.vb: <<
+  fullName: DotNext.Threading.Leases.LeaseIdentity.operator <<
+  fullName.vb: DotNext.Threading.Leases.LeaseIdentity.<<
+  nameWithType: LeaseIdentity.operator <<
+  nameWithType.vb: LeaseIdentity.<<
+- uid: DotNext.Threading.Leases.LeaseIdentity.op_RightShift(DotNext.Threading.Leases.LeaseIdentity@,DotNext.Threading.Leases.LeaseIdentity@)
+  name: operator >>(in LeaseIdentity, in LeaseIdentity)
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_op_RightShift_DotNext_Threading_Leases_LeaseIdentity__DotNext_Threading_Leases_LeaseIdentity__
+  commentId: M:DotNext.Threading.Leases.LeaseIdentity.op_RightShift(DotNext.Threading.Leases.LeaseIdentity@,DotNext.Threading.Leases.LeaseIdentity@)
+  name.vb: '>>(LeaseIdentity, LeaseIdentity)'
+  fullName: DotNext.Threading.Leases.LeaseIdentity.operator >>(in DotNext.Threading.Leases.LeaseIdentity, in DotNext.Threading.Leases.LeaseIdentity)
+  fullName.vb: DotNext.Threading.Leases.LeaseIdentity.>>(DotNext.Threading.Leases.LeaseIdentity, DotNext.Threading.Leases.LeaseIdentity)
+  nameWithType: LeaseIdentity.operator >>(in LeaseIdentity, in LeaseIdentity)
+  nameWithType.vb: LeaseIdentity.>>(LeaseIdentity, LeaseIdentity)
+- uid: DotNext.Threading.Leases.LeaseIdentity.op_RightShift*
+  name: operator >>
+  href: api/DotNext.Threading.Leases.LeaseIdentity.html#DotNext_Threading_Leases_LeaseIdentity_op_RightShift_
+  commentId: Overload:DotNext.Threading.Leases.LeaseIdentity.op_RightShift
+  isSpec: "True"
+  name.vb: '>>'
+  fullName: DotNext.Threading.Leases.LeaseIdentity.operator >>
+  fullName.vb: DotNext.Threading.Leases.LeaseIdentity.>>
+  nameWithType: LeaseIdentity.operator >>
+  nameWithType.vb: LeaseIdentity.>>
+- uid: DotNext.Threading.Leases.LeaseProvider`1
+  name: LeaseProvider<TMetadata>
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html
+  commentId: T:DotNext.Threading.Leases.LeaseProvider`1
+  name.vb: LeaseProvider(Of TMetadata)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata)
+  nameWithType: LeaseProvider<TMetadata>
+  nameWithType.vb: LeaseProvider(Of TMetadata)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.#ctor(System.TimeSpan,System.TimeProvider)
+  name: LeaseProvider(TimeSpan, TimeProvider?)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1__ctor_System_TimeSpan_System_TimeProvider_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.#ctor(System.TimeSpan,System.TimeProvider)
+  name.vb: New(TimeSpan, TimeProvider)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.LeaseProvider(System.TimeSpan, System.TimeProvider?)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).New(System.TimeSpan, System.TimeProvider)
+  nameWithType: LeaseProvider<TMetadata>.LeaseProvider(TimeSpan, TimeProvider?)
+  nameWithType.vb: LeaseProvider(Of TMetadata).New(TimeSpan, TimeProvider)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.#ctor*
+  name: LeaseProvider
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1__ctor_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.LeaseProvider
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).New
+  nameWithType: LeaseProvider<TMetadata>.LeaseProvider
+  nameWithType.vb: LeaseProvider(Of TMetadata).New
+- uid: DotNext.Threading.Leases.LeaseProvider`1.AcquireAsync(System.Threading.CancellationToken)
+  name: AcquireAsync(CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_AcquireAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.AcquireAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.AcquireAsync(System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).AcquireAsync(System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.AcquireAsync(CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).AcquireAsync(CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.AcquireAsync*
+  name: AcquireAsync
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_AcquireAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.AcquireAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.AcquireAsync
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).AcquireAsync
+  nameWithType: LeaseProvider<TMetadata>.AcquireAsync
+  nameWithType.vb: LeaseProvider(Of TMetadata).AcquireAsync
+- uid: DotNext.Threading.Leases.LeaseProvider`1.AcquireAsync``1(``0,System.Func{``0,`0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`0}},System.Threading.CancellationToken)
+  name: AcquireAsync<TArg>(TArg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>>, CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_AcquireAsync__1___0_System_Func___0__0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__0___System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.AcquireAsync``1(``0,System.Func{``0,`0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`0}},System.Threading.CancellationToken)
+  name.vb: AcquireAsync(Of TArg)(TArg, Func(Of TArg, TMetadata, CancellationToken, ValueTask(Of TMetadata)), CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.AcquireAsync<TArg>(TArg, System.Func<TArg, TMetadata, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask<TMetadata>>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).AcquireAsync(Of TArg)(TArg, System.Func(Of TArg, TMetadata, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask(Of TMetadata)), System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.AcquireAsync<TArg>(TArg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>>, CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).AcquireAsync(Of TArg)(TArg, Func(Of TArg, TMetadata, CancellationToken, ValueTask(Of TMetadata)), CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.AcquisitionResult
+  name: LeaseProvider<TMetadata>.AcquisitionResult
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.AcquisitionResult.html
+  commentId: T:DotNext.Threading.Leases.LeaseProvider`1.AcquisitionResult
+  name.vb: LeaseProvider(Of TMetadata).AcquisitionResult
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.AcquisitionResult
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).AcquisitionResult
+  nameWithType: LeaseProvider<TMetadata>.AcquisitionResult
+  nameWithType.vb: LeaseProvider(Of TMetadata).AcquisitionResult
+- uid: DotNext.Threading.Leases.LeaseProvider`1.AcquisitionResult.Expiration
+  name: Expiration
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.AcquisitionResult.html#DotNext_Threading_Leases_LeaseProvider_1_AcquisitionResult_Expiration
+  commentId: F:DotNext.Threading.Leases.LeaseProvider`1.AcquisitionResult.Expiration
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.AcquisitionResult.Expiration
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).AcquisitionResult.Expiration
+  nameWithType: LeaseProvider<TMetadata>.AcquisitionResult.Expiration
+  nameWithType.vb: LeaseProvider(Of TMetadata).AcquisitionResult.Expiration
+- uid: DotNext.Threading.Leases.LeaseProvider`1.AcquisitionResult.State
+  name: State
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.AcquisitionResult.html#DotNext_Threading_Leases_LeaseProvider_1_AcquisitionResult_State
+  commentId: F:DotNext.Threading.Leases.LeaseProvider`1.AcquisitionResult.State
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.AcquisitionResult.State
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).AcquisitionResult.State
+  nameWithType: LeaseProvider<TMetadata>.AcquisitionResult.State
+  nameWithType.vb: LeaseProvider(Of TMetadata).AcquisitionResult.State
+- uid: DotNext.Threading.Leases.LeaseProvider`1.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_Dispose_System_Boolean_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.Dispose(bool)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).Dispose(Boolean)
+  nameWithType: LeaseProvider<TMetadata>.Dispose(bool)
+  nameWithType.vb: LeaseProvider(Of TMetadata).Dispose(Boolean)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_Dispose_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.Dispose
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.Dispose
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).Dispose
+  nameWithType: LeaseProvider<TMetadata>.Dispose
+  nameWithType.vb: LeaseProvider(Of TMetadata).Dispose
+- uid: DotNext.Threading.Leases.LeaseProvider`1.GetStateAsync(System.Threading.CancellationToken)
+  name: GetStateAsync(CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_GetStateAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.GetStateAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.GetStateAsync(System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).GetStateAsync(System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.GetStateAsync(CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).GetStateAsync(CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.GetStateAsync*
+  name: GetStateAsync
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_GetStateAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.GetStateAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.GetStateAsync
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).GetStateAsync
+  nameWithType: LeaseProvider<TMetadata>.GetStateAsync
+  nameWithType.vb: LeaseProvider(Of TMetadata).GetStateAsync
+- uid: DotNext.Threading.Leases.LeaseProvider`1.LifetimeToken
+  name: LifetimeToken
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_LifetimeToken
+  commentId: P:DotNext.Threading.Leases.LeaseProvider`1.LifetimeToken
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.LifetimeToken
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).LifetimeToken
+  nameWithType: LeaseProvider<TMetadata>.LifetimeToken
+  nameWithType.vb: LeaseProvider(Of TMetadata).LifetimeToken
+- uid: DotNext.Threading.Leases.LeaseProvider`1.LifetimeToken*
+  name: LifetimeToken
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_LifetimeToken_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.LifetimeToken
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.LifetimeToken
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).LifetimeToken
+  nameWithType: LeaseProvider<TMetadata>.LifetimeToken
+  nameWithType.vb: LeaseProvider(Of TMetadata).LifetimeToken
+- uid: DotNext.Threading.Leases.LeaseProvider`1.ReleaseAsync(DotNext.Threading.Leases.LeaseIdentity,System.Threading.CancellationToken)
+  name: ReleaseAsync(LeaseIdentity, CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_ReleaseAsync_DotNext_Threading_Leases_LeaseIdentity_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.ReleaseAsync(DotNext.Threading.Leases.LeaseIdentity,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.ReleaseAsync(DotNext.Threading.Leases.LeaseIdentity, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).ReleaseAsync(DotNext.Threading.Leases.LeaseIdentity, System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.ReleaseAsync(LeaseIdentity, CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).ReleaseAsync(LeaseIdentity, CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.ReleaseAsync*
+  name: ReleaseAsync
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_ReleaseAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.ReleaseAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.ReleaseAsync
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).ReleaseAsync
+  nameWithType: LeaseProvider<TMetadata>.ReleaseAsync
+  nameWithType.vb: LeaseProvider(Of TMetadata).ReleaseAsync
+- uid: DotNext.Threading.Leases.LeaseProvider`1.ReleaseAsync``1(DotNext.Threading.Leases.LeaseIdentity,``0,System.Func{``0,`0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`0}},System.Threading.CancellationToken)
+  name: ReleaseAsync<TArg>(LeaseIdentity, TArg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>>, CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_ReleaseAsync__1_DotNext_Threading_Leases_LeaseIdentity___0_System_Func___0__0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__0___System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.ReleaseAsync``1(DotNext.Threading.Leases.LeaseIdentity,``0,System.Func{``0,`0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`0}},System.Threading.CancellationToken)
+  name.vb: ReleaseAsync(Of TArg)(LeaseIdentity, TArg, Func(Of TArg, TMetadata, CancellationToken, ValueTask(Of TMetadata)), CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.ReleaseAsync<TArg>(DotNext.Threading.Leases.LeaseIdentity, TArg, System.Func<TArg, TMetadata, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask<TMetadata>>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).ReleaseAsync(Of TArg)(DotNext.Threading.Leases.LeaseIdentity, TArg, System.Func(Of TArg, TMetadata, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask(Of TMetadata)), System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.ReleaseAsync<TArg>(LeaseIdentity, TArg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>>, CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).ReleaseAsync(Of TArg)(LeaseIdentity, TArg, Func(Of TArg, TMetadata, CancellationToken, ValueTask(Of TMetadata)), CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.State
+  name: LeaseProvider<TMetadata>.State
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.State.html
+  commentId: T:DotNext.Threading.Leases.LeaseProvider`1.State
+  name.vb: LeaseProvider(Of TMetadata).State
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.State
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).State
+  nameWithType: LeaseProvider<TMetadata>.State
+  nameWithType.vb: LeaseProvider(Of TMetadata).State
+- uid: DotNext.Threading.Leases.LeaseProvider`1.State.CreatedAt
+  name: CreatedAt
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.State.html#DotNext_Threading_Leases_LeaseProvider_1_State_CreatedAt
+  commentId: P:DotNext.Threading.Leases.LeaseProvider`1.State.CreatedAt
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.State.CreatedAt
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).State.CreatedAt
+  nameWithType: LeaseProvider<TMetadata>.State.CreatedAt
+  nameWithType.vb: LeaseProvider(Of TMetadata).State.CreatedAt
+- uid: DotNext.Threading.Leases.LeaseProvider`1.State.CreatedAt*
+  name: CreatedAt
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.State.html#DotNext_Threading_Leases_LeaseProvider_1_State_CreatedAt_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.State.CreatedAt
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.State.CreatedAt
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).State.CreatedAt
+  nameWithType: LeaseProvider<TMetadata>.State.CreatedAt
+  nameWithType.vb: LeaseProvider(Of TMetadata).State.CreatedAt
+- uid: DotNext.Threading.Leases.LeaseProvider`1.State.Identity
+  name: Identity
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.State.html#DotNext_Threading_Leases_LeaseProvider_1_State_Identity
+  commentId: P:DotNext.Threading.Leases.LeaseProvider`1.State.Identity
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.State.Identity
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).State.Identity
+  nameWithType: LeaseProvider<TMetadata>.State.Identity
+  nameWithType.vb: LeaseProvider(Of TMetadata).State.Identity
+- uid: DotNext.Threading.Leases.LeaseProvider`1.State.Identity*
+  name: Identity
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.State.html#DotNext_Threading_Leases_LeaseProvider_1_State_Identity_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.State.Identity
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.State.Identity
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).State.Identity
+  nameWithType: LeaseProvider<TMetadata>.State.Identity
+  nameWithType.vb: LeaseProvider(Of TMetadata).State.Identity
+- uid: DotNext.Threading.Leases.LeaseProvider`1.State.Metadata
+  name: Metadata
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.State.html#DotNext_Threading_Leases_LeaseProvider_1_State_Metadata
+  commentId: P:DotNext.Threading.Leases.LeaseProvider`1.State.Metadata
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.State.Metadata
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).State.Metadata
+  nameWithType: LeaseProvider<TMetadata>.State.Metadata
+  nameWithType.vb: LeaseProvider(Of TMetadata).State.Metadata
+- uid: DotNext.Threading.Leases.LeaseProvider`1.State.Metadata*
+  name: Metadata
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.State.html#DotNext_Threading_Leases_LeaseProvider_1_State_Metadata_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.State.Metadata
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.State.Metadata
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).State.Metadata
+  nameWithType: LeaseProvider<TMetadata>.State.Metadata
+  nameWithType.vb: LeaseProvider(Of TMetadata).State.Metadata
+- uid: DotNext.Threading.Leases.LeaseProvider`1.TimeToLive
+  name: TimeToLive
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_TimeToLive
+  commentId: P:DotNext.Threading.Leases.LeaseProvider`1.TimeToLive
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.TimeToLive
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).TimeToLive
+  nameWithType: LeaseProvider<TMetadata>.TimeToLive
+  nameWithType.vb: LeaseProvider(Of TMetadata).TimeToLive
+- uid: DotNext.Threading.Leases.LeaseProvider`1.TimeToLive*
+  name: TimeToLive
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_TimeToLive_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.TimeToLive
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.TimeToLive
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).TimeToLive
+  nameWithType: LeaseProvider<TMetadata>.TimeToLive
+  nameWithType.vb: LeaseProvider(Of TMetadata).TimeToLive
+- uid: DotNext.Threading.Leases.LeaseProvider`1.TryAcquireAsync(System.Threading.CancellationToken)
+  name: TryAcquireAsync(CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_TryAcquireAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.TryAcquireAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.TryAcquireAsync(System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).TryAcquireAsync(System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.TryAcquireAsync(CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).TryAcquireAsync(CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.TryAcquireAsync*
+  name: TryAcquireAsync
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_TryAcquireAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.TryAcquireAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.TryAcquireAsync
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).TryAcquireAsync
+  nameWithType: LeaseProvider<TMetadata>.TryAcquireAsync
+  nameWithType.vb: LeaseProvider(Of TMetadata).TryAcquireAsync
+- uid: DotNext.Threading.Leases.LeaseProvider`1.TryAcquireAsync``1(``0,System.Func{``0,`0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`0}},System.Threading.CancellationToken)
+  name: TryAcquireAsync<TArg>(TArg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>>, CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_TryAcquireAsync__1___0_System_Func___0__0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__0___System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.TryAcquireAsync``1(``0,System.Func{``0,`0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`0}},System.Threading.CancellationToken)
+  name.vb: TryAcquireAsync(Of TArg)(TArg, Func(Of TArg, TMetadata, CancellationToken, ValueTask(Of TMetadata)), CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.TryAcquireAsync<TArg>(TArg, System.Func<TArg, TMetadata, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask<TMetadata>>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).TryAcquireAsync(Of TArg)(TArg, System.Func(Of TArg, TMetadata, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask(Of TMetadata)), System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.TryAcquireAsync<TArg>(TArg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>>, CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).TryAcquireAsync(Of TArg)(TArg, Func(Of TArg, TMetadata, CancellationToken, ValueTask(Of TMetadata)), CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.TryAcquireOrRenewAsync(DotNext.Threading.Leases.LeaseIdentity,System.Threading.CancellationToken)
+  name: TryAcquireOrRenewAsync(LeaseIdentity, CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_TryAcquireOrRenewAsync_DotNext_Threading_Leases_LeaseIdentity_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.TryAcquireOrRenewAsync(DotNext.Threading.Leases.LeaseIdentity,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.TryAcquireOrRenewAsync(DotNext.Threading.Leases.LeaseIdentity, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).TryAcquireOrRenewAsync(DotNext.Threading.Leases.LeaseIdentity, System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.TryAcquireOrRenewAsync(LeaseIdentity, CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).TryAcquireOrRenewAsync(LeaseIdentity, CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.TryAcquireOrRenewAsync*
+  name: TryAcquireOrRenewAsync
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_TryAcquireOrRenewAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.TryAcquireOrRenewAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.TryAcquireOrRenewAsync
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).TryAcquireOrRenewAsync
+  nameWithType: LeaseProvider<TMetadata>.TryAcquireOrRenewAsync
+  nameWithType.vb: LeaseProvider(Of TMetadata).TryAcquireOrRenewAsync
+- uid: DotNext.Threading.Leases.LeaseProvider`1.TryAcquireOrRenewAsync``1(DotNext.Threading.Leases.LeaseIdentity,``0,System.Func{``0,`0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`0}},System.Threading.CancellationToken)
+  name: TryAcquireOrRenewAsync<TArg>(LeaseIdentity, TArg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>>, CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_TryAcquireOrRenewAsync__1_DotNext_Threading_Leases_LeaseIdentity___0_System_Func___0__0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__0___System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.TryAcquireOrRenewAsync``1(DotNext.Threading.Leases.LeaseIdentity,``0,System.Func{``0,`0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`0}},System.Threading.CancellationToken)
+  name.vb: TryAcquireOrRenewAsync(Of TArg)(LeaseIdentity, TArg, Func(Of TArg, TMetadata, CancellationToken, ValueTask(Of TMetadata)), CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.TryAcquireOrRenewAsync<TArg>(DotNext.Threading.Leases.LeaseIdentity, TArg, System.Func<TArg, TMetadata, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask<TMetadata>>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).TryAcquireOrRenewAsync(Of TArg)(DotNext.Threading.Leases.LeaseIdentity, TArg, System.Func(Of TArg, TMetadata, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask(Of TMetadata)), System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.TryAcquireOrRenewAsync<TArg>(LeaseIdentity, TArg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>>, CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).TryAcquireOrRenewAsync(Of TArg)(LeaseIdentity, TArg, Func(Of TArg, TMetadata, CancellationToken, ValueTask(Of TMetadata)), CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.TryRenewAsync(DotNext.Threading.Leases.LeaseIdentity,System.Boolean,System.Threading.CancellationToken)
+  name: TryRenewAsync(LeaseIdentity, bool, CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_TryRenewAsync_DotNext_Threading_Leases_LeaseIdentity_System_Boolean_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.TryRenewAsync(DotNext.Threading.Leases.LeaseIdentity,System.Boolean,System.Threading.CancellationToken)
+  name.vb: TryRenewAsync(LeaseIdentity, Boolean, CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.TryRenewAsync(DotNext.Threading.Leases.LeaseIdentity, bool, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).TryRenewAsync(DotNext.Threading.Leases.LeaseIdentity, Boolean, System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.TryRenewAsync(LeaseIdentity, bool, CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).TryRenewAsync(LeaseIdentity, Boolean, CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.TryRenewAsync*
+  name: TryRenewAsync
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_TryRenewAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.TryRenewAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.TryRenewAsync
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).TryRenewAsync
+  nameWithType: LeaseProvider<TMetadata>.TryRenewAsync
+  nameWithType.vb: LeaseProvider(Of TMetadata).TryRenewAsync
+- uid: DotNext.Threading.Leases.LeaseProvider`1.TryRenewAsync``1(DotNext.Threading.Leases.LeaseIdentity,System.Boolean,``0,System.Func{``0,`0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`0}},System.Threading.CancellationToken)
+  name: TryRenewAsync<TArg>(LeaseIdentity, bool, TArg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>>, CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_TryRenewAsync__1_DotNext_Threading_Leases_LeaseIdentity_System_Boolean___0_System_Func___0__0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__0___System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.TryRenewAsync``1(DotNext.Threading.Leases.LeaseIdentity,System.Boolean,``0,System.Func{``0,`0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`0}},System.Threading.CancellationToken)
+  name.vb: TryRenewAsync(Of TArg)(LeaseIdentity, Boolean, TArg, Func(Of TArg, TMetadata, CancellationToken, ValueTask(Of TMetadata)), CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.TryRenewAsync<TArg>(DotNext.Threading.Leases.LeaseIdentity, bool, TArg, System.Func<TArg, TMetadata, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask<TMetadata>>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).TryRenewAsync(Of TArg)(DotNext.Threading.Leases.LeaseIdentity, Boolean, TArg, System.Func(Of TArg, TMetadata, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask(Of TMetadata)), System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.TryRenewAsync<TArg>(LeaseIdentity, bool, TArg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>>, CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).TryRenewAsync(Of TArg)(LeaseIdentity, Boolean, TArg, Func(Of TArg, TMetadata, CancellationToken, ValueTask(Of TMetadata)), CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.TryUpdateStateAsync(DotNext.Threading.Leases.LeaseProvider{`0}.State,System.Threading.CancellationToken)
+  name: TryUpdateStateAsync(State, CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_TryUpdateStateAsync_DotNext_Threading_Leases_LeaseProvider__0__State_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.TryUpdateStateAsync(DotNext.Threading.Leases.LeaseProvider{`0}.State,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.TryUpdateStateAsync(DotNext.Threading.Leases.LeaseProvider<TMetadata>.State, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).TryUpdateStateAsync(DotNext.Threading.Leases.LeaseProvider(Of TMetadata).State, System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.TryUpdateStateAsync(LeaseProvider<TMetadata>.State, CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).TryUpdateStateAsync(LeaseProvider(Of TMetadata).State, CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.TryUpdateStateAsync*
+  name: TryUpdateStateAsync
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_TryUpdateStateAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.TryUpdateStateAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.TryUpdateStateAsync
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).TryUpdateStateAsync
+  nameWithType: LeaseProvider<TMetadata>.TryUpdateStateAsync
+  nameWithType.vb: LeaseProvider(Of TMetadata).TryUpdateStateAsync
+- uid: DotNext.Threading.Leases.LeaseProvider`1.UnsafeReleaseAsync(System.Threading.CancellationToken)
+  name: UnsafeReleaseAsync(CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_UnsafeReleaseAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.UnsafeReleaseAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.UnsafeReleaseAsync(System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).UnsafeReleaseAsync(System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.UnsafeReleaseAsync(CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).UnsafeReleaseAsync(CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.UnsafeReleaseAsync*
+  name: UnsafeReleaseAsync
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_UnsafeReleaseAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.UnsafeReleaseAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.UnsafeReleaseAsync
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).UnsafeReleaseAsync
+  nameWithType: LeaseProvider<TMetadata>.UnsafeReleaseAsync
+  nameWithType.vb: LeaseProvider(Of TMetadata).UnsafeReleaseAsync
+- uid: DotNext.Threading.Leases.LeaseProvider`1.UnsafeReleaseAsync``1(``0,System.Func{``0,`0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`0}},System.Threading.CancellationToken)
+  name: UnsafeReleaseAsync<TArg>(TArg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>>, CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_UnsafeReleaseAsync__1___0_System_Func___0__0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__0___System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.UnsafeReleaseAsync``1(``0,System.Func{``0,`0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`0}},System.Threading.CancellationToken)
+  name.vb: UnsafeReleaseAsync(Of TArg)(TArg, Func(Of TArg, TMetadata, CancellationToken, ValueTask(Of TMetadata)), CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.UnsafeReleaseAsync<TArg>(TArg, System.Func<TArg, TMetadata, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask<TMetadata>>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).UnsafeReleaseAsync(Of TArg)(TArg, System.Func(Of TArg, TMetadata, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask(Of TMetadata)), System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.UnsafeReleaseAsync<TArg>(TArg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>>, CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).UnsafeReleaseAsync(Of TArg)(TArg, Func(Of TArg, TMetadata, CancellationToken, ValueTask(Of TMetadata)), CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.UnsafeTryReleaseAsync(System.Threading.CancellationToken)
+  name: UnsafeTryReleaseAsync(CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_UnsafeTryReleaseAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.UnsafeTryReleaseAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.UnsafeTryReleaseAsync(System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).UnsafeTryReleaseAsync(System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.UnsafeTryReleaseAsync(CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).UnsafeTryReleaseAsync(CancellationToken)
+- uid: DotNext.Threading.Leases.LeaseProvider`1.UnsafeTryReleaseAsync*
+  name: UnsafeTryReleaseAsync
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_UnsafeTryReleaseAsync_
+  commentId: Overload:DotNext.Threading.Leases.LeaseProvider`1.UnsafeTryReleaseAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.UnsafeTryReleaseAsync
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).UnsafeTryReleaseAsync
+  nameWithType: LeaseProvider<TMetadata>.UnsafeTryReleaseAsync
+  nameWithType.vb: LeaseProvider(Of TMetadata).UnsafeTryReleaseAsync
+- uid: DotNext.Threading.Leases.LeaseProvider`1.UnsafeTryReleaseAsync``1(``0,System.Func{``0,`0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`0}},System.Threading.CancellationToken)
+  name: UnsafeTryReleaseAsync<TArg>(TArg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>>, CancellationToken)
+  href: api/DotNext.Threading.Leases.LeaseProvider-1.html#DotNext_Threading_Leases_LeaseProvider_1_UnsafeTryReleaseAsync__1___0_System_Func___0__0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__0___System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Leases.LeaseProvider`1.UnsafeTryReleaseAsync``1(``0,System.Func{``0,`0,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask{`0}},System.Threading.CancellationToken)
+  name.vb: UnsafeTryReleaseAsync(Of TArg)(TArg, Func(Of TArg, TMetadata, CancellationToken, ValueTask(Of TMetadata)), CancellationToken)
+  fullName: DotNext.Threading.Leases.LeaseProvider<TMetadata>.UnsafeTryReleaseAsync<TArg>(TArg, System.Func<TArg, TMetadata, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask<TMetadata>>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Leases.LeaseProvider(Of TMetadata).UnsafeTryReleaseAsync(Of TArg)(TArg, System.Func(Of TArg, TMetadata, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask(Of TMetadata)), System.Threading.CancellationToken)
+  nameWithType: LeaseProvider<TMetadata>.UnsafeTryReleaseAsync<TArg>(TArg, Func<TArg, TMetadata, CancellationToken, ValueTask<TMetadata>>, CancellationToken)
+  nameWithType.vb: LeaseProvider(Of TMetadata).UnsafeTryReleaseAsync(Of TArg)(TArg, Func(Of TArg, TMetadata, CancellationToken, ValueTask(Of TMetadata)), CancellationToken)
 - uid: DotNext.Threading.LinkedCancellationTokenSource
   name: LinkedCancellationTokenSource
   href: api/DotNext.Threading.LinkedCancellationTokenSource.html
@@ -46362,28 +47244,28 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.LinkedCancellationTokenSource.CancellationOrigin
   nameWithType: LinkedCancellationTokenSource.CancellationOrigin
-- uid: DotNext.Threading.LinkedCancellationTokenSource.Dispose(System.Boolean)
-  name: Dispose(bool)
-  href: api/DotNext.Threading.LinkedCancellationTokenSource.html#DotNext_Threading_LinkedCancellationTokenSource_Dispose_System_Boolean_
-  commentId: M:DotNext.Threading.LinkedCancellationTokenSource.Dispose(System.Boolean)
-  name.vb: Dispose(Boolean)
-  fullName: DotNext.Threading.LinkedCancellationTokenSource.Dispose(bool)
-  fullName.vb: DotNext.Threading.LinkedCancellationTokenSource.Dispose(Boolean)
-  nameWithType: LinkedCancellationTokenSource.Dispose(bool)
-  nameWithType.vb: LinkedCancellationTokenSource.Dispose(Boolean)
-- uid: DotNext.Threading.LinkedCancellationTokenSource.Dispose*
-  name: Dispose
-  href: api/DotNext.Threading.LinkedCancellationTokenSource.html#DotNext_Threading_LinkedCancellationTokenSource_Dispose_
-  commentId: Overload:DotNext.Threading.LinkedCancellationTokenSource.Dispose
-  isSpec: "True"
-  fullName: DotNext.Threading.LinkedCancellationTokenSource.Dispose
-  nameWithType: LinkedCancellationTokenSource.Dispose
 - uid: DotNext.Threading.LinkedTokenSourceFactory
   name: LinkedTokenSourceFactory
   href: api/DotNext.Threading.LinkedTokenSourceFactory.html
   commentId: T:DotNext.Threading.LinkedTokenSourceFactory
   fullName: DotNext.Threading.LinkedTokenSourceFactory
   nameWithType: LinkedTokenSourceFactory
+- uid: DotNext.Threading.LinkedTokenSourceFactory.CausedBy(System.OperationCanceledException,DotNext.Threading.LinkedCancellationTokenSource,System.Threading.CancellationToken)
+  name: CausedBy(OperationCanceledException, LinkedCancellationTokenSource?, CancellationToken)
+  href: api/DotNext.Threading.LinkedTokenSourceFactory.html#DotNext_Threading_LinkedTokenSourceFactory_CausedBy_System_OperationCanceledException_DotNext_Threading_LinkedCancellationTokenSource_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.LinkedTokenSourceFactory.CausedBy(System.OperationCanceledException,DotNext.Threading.LinkedCancellationTokenSource,System.Threading.CancellationToken)
+  name.vb: CausedBy(OperationCanceledException, LinkedCancellationTokenSource, CancellationToken)
+  fullName: DotNext.Threading.LinkedTokenSourceFactory.CausedBy(System.OperationCanceledException, DotNext.Threading.LinkedCancellationTokenSource?, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.LinkedTokenSourceFactory.CausedBy(System.OperationCanceledException, DotNext.Threading.LinkedCancellationTokenSource, System.Threading.CancellationToken)
+  nameWithType: LinkedTokenSourceFactory.CausedBy(OperationCanceledException, LinkedCancellationTokenSource?, CancellationToken)
+  nameWithType.vb: LinkedTokenSourceFactory.CausedBy(OperationCanceledException, LinkedCancellationTokenSource, CancellationToken)
+- uid: DotNext.Threading.LinkedTokenSourceFactory.CausedBy*
+  name: CausedBy
+  href: api/DotNext.Threading.LinkedTokenSourceFactory.html#DotNext_Threading_LinkedTokenSourceFactory_CausedBy_
+  commentId: Overload:DotNext.Threading.LinkedTokenSourceFactory.CausedBy
+  isSpec: "True"
+  fullName: DotNext.Threading.LinkedTokenSourceFactory.CausedBy
+  nameWithType: LinkedTokenSourceFactory.CausedBy
 - uid: DotNext.Threading.LinkedTokenSourceFactory.LinkTo(System.Threading.CancellationToken@,System.Threading.CancellationToken)
   name: LinkTo(ref CancellationToken, CancellationToken)
   href: api/DotNext.Threading.LinkedTokenSourceFactory.html#DotNext_Threading_LinkedTokenSourceFactory_LinkTo_System_Threading_CancellationToken__System_Threading_CancellationToken_
@@ -48761,6 +49643,24 @@ references:
   fullName.vb: DotNext.Threading.Timeout.New(System.TimeSpan)
   nameWithType: Timeout.Timeout(TimeSpan)
   nameWithType.vb: Timeout.New(TimeSpan)
+- uid: DotNext.Threading.Timeout.#ctor(System.TimeSpan,DotNext.Diagnostics.Timestamp)
+  name: Timeout(TimeSpan, Timestamp)
+  href: api/DotNext.Threading.Timeout.html#DotNext_Threading_Timeout__ctor_System_TimeSpan_DotNext_Diagnostics_Timestamp_
+  commentId: M:DotNext.Threading.Timeout.#ctor(System.TimeSpan,DotNext.Diagnostics.Timestamp)
+  name.vb: New(TimeSpan, Timestamp)
+  fullName: DotNext.Threading.Timeout.Timeout(System.TimeSpan, DotNext.Diagnostics.Timestamp)
+  fullName.vb: DotNext.Threading.Timeout.New(System.TimeSpan, DotNext.Diagnostics.Timestamp)
+  nameWithType: Timeout.Timeout(TimeSpan, Timestamp)
+  nameWithType.vb: Timeout.New(TimeSpan, Timestamp)
+- uid: DotNext.Threading.Timeout.#ctor(System.TimeSpan,System.TimeProvider)
+  name: Timeout(TimeSpan, TimeProvider)
+  href: api/DotNext.Threading.Timeout.html#DotNext_Threading_Timeout__ctor_System_TimeSpan_System_TimeProvider_
+  commentId: M:DotNext.Threading.Timeout.#ctor(System.TimeSpan,System.TimeProvider)
+  name.vb: New(TimeSpan, TimeProvider)
+  fullName: DotNext.Threading.Timeout.Timeout(System.TimeSpan, System.TimeProvider)
+  fullName.vb: DotNext.Threading.Timeout.New(System.TimeSpan, System.TimeProvider)
+  nameWithType: Timeout.Timeout(TimeSpan, TimeProvider)
+  nameWithType.vb: Timeout.New(TimeSpan, TimeProvider)
 - uid: DotNext.Threading.Timeout.#ctor*
   name: Timeout
   href: api/DotNext.Threading.Timeout.html#DotNext_Threading_Timeout__ctor_
@@ -48841,6 +49741,21 @@ references:
   commentId: M:DotNext.Threading.Timeout.ThrowIfExpired
   fullName: DotNext.Threading.Timeout.ThrowIfExpired()
   nameWithType: Timeout.ThrowIfExpired()
+- uid: DotNext.Threading.Timeout.ThrowIfExpired(System.TimeProvider)
+  name: ThrowIfExpired(TimeProvider)
+  href: api/DotNext.Threading.Timeout.html#DotNext_Threading_Timeout_ThrowIfExpired_System_TimeProvider_
+  commentId: M:DotNext.Threading.Timeout.ThrowIfExpired(System.TimeProvider)
+  fullName: DotNext.Threading.Timeout.ThrowIfExpired(System.TimeProvider)
+  nameWithType: Timeout.ThrowIfExpired(TimeProvider)
+- uid: DotNext.Threading.Timeout.ThrowIfExpired(System.TimeProvider,System.TimeSpan@)
+  name: ThrowIfExpired(TimeProvider, out TimeSpan)
+  href: api/DotNext.Threading.Timeout.html#DotNext_Threading_Timeout_ThrowIfExpired_System_TimeProvider_System_TimeSpan__
+  commentId: M:DotNext.Threading.Timeout.ThrowIfExpired(System.TimeProvider,System.TimeSpan@)
+  name.vb: ThrowIfExpired(TimeProvider, TimeSpan)
+  fullName: DotNext.Threading.Timeout.ThrowIfExpired(System.TimeProvider, out System.TimeSpan)
+  fullName.vb: DotNext.Threading.Timeout.ThrowIfExpired(System.TimeProvider, System.TimeSpan)
+  nameWithType: Timeout.ThrowIfExpired(TimeProvider, out TimeSpan)
+  nameWithType.vb: Timeout.ThrowIfExpired(TimeProvider, TimeSpan)
 - uid: DotNext.Threading.Timeout.ThrowIfExpired(System.TimeSpan@)
   name: ThrowIfExpired(out TimeSpan)
   href: api/DotNext.Threading.Timeout.html#DotNext_Threading_Timeout_ThrowIfExpired_System_TimeSpan__
@@ -48857,6 +49772,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.Timeout.ThrowIfExpired
   nameWithType: Timeout.ThrowIfExpired
+- uid: DotNext.Threading.Timeout.TryGetRemainingTime(System.TimeProvider,System.TimeSpan@)
+  name: TryGetRemainingTime(TimeProvider, out TimeSpan)
+  href: api/DotNext.Threading.Timeout.html#DotNext_Threading_Timeout_TryGetRemainingTime_System_TimeProvider_System_TimeSpan__
+  commentId: M:DotNext.Threading.Timeout.TryGetRemainingTime(System.TimeProvider,System.TimeSpan@)
+  name.vb: TryGetRemainingTime(TimeProvider, TimeSpan)
+  fullName: DotNext.Threading.Timeout.TryGetRemainingTime(System.TimeProvider, out System.TimeSpan)
+  fullName.vb: DotNext.Threading.Timeout.TryGetRemainingTime(System.TimeProvider, System.TimeSpan)
+  nameWithType: Timeout.TryGetRemainingTime(TimeProvider, out TimeSpan)
+  nameWithType.vb: Timeout.TryGetRemainingTime(TimeProvider, TimeSpan)
 - uid: DotNext.Threading.Timeout.TryGetRemainingTime(System.TimeSpan@)
   name: TryGetRemainingTime(out TimeSpan)
   href: api/DotNext.Threading.Timeout.html#DotNext_Threading_Timeout_TryGetRemainingTime_System_TimeSpan__

@@ -152,6 +152,118 @@
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout__ctor_System_TimeSpan_DotNext_Diagnostics_Timestamp_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.%23ctor(System.TimeSpan%2CDotNext.Diagnostics.Timestamp)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L75">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Timeout__ctor_" data-uid="DotNext.Threading.Timeout.#ctor*"></a>
+  <h4 id="DotNext_Threading_Timeout__ctor_System_TimeSpan_DotNext_Diagnostics_Timestamp_" data-uid="DotNext.Threading.Timeout.#ctor(System.TimeSpan,DotNext.Diagnostics.Timestamp)">Timeout(TimeSpan, Timestamp)</h4>
+  <div class="markdown level1 summary"><p>Constructs a new timeout control object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Timeout(TimeSpan timeout, Timestamp startedAt)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>Max duration of operation.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Diagnostics.Timestamp.html">Timestamp</a></td>
+        <td><span class="parametername">startedAt</span></td>
+        <td><p>The point in time when operation was started.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">timeout</code> is negative; or <code class="paramref">startedAt</code> is empty.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout__ctor_System_TimeSpan_System_TimeProvider_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.%23ctor(System.TimeSpan%2CSystem.TimeProvider)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L53">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Timeout__ctor_" data-uid="DotNext.Threading.Timeout.#ctor*"></a>
+  <h4 id="DotNext_Threading_Timeout__ctor_System_TimeSpan_System_TimeProvider_" data-uid="DotNext.Threading.Timeout.#ctor(System.TimeSpan,System.TimeProvider)">Timeout(TimeSpan, TimeProvider)</h4>
+  <div class="markdown level1 summary"><p>Constructs a new timeout control object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Timeout(TimeSpan timeout, TimeProvider provider)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>Max duration of operation.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeprovider">TimeProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>Time provider.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">timeout</code> is negative.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="fields">Fields
 </h3>
   <span class="small pull-right mobile-hide">
@@ -284,7 +396,7 @@ some methods such as <a class="xref" href="https://learn.microsoft.com/dotnet/ap
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_IsExpired.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.IsExpired%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L71">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L107">View Source</a>
   </span>
   <a id="DotNext_Threading_Timeout_IsExpired_" data-uid="DotNext.Threading.Timeout.IsExpired*"></a>
   <h4 id="DotNext_Threading_Timeout_IsExpired" data-uid="DotNext.Threading.Timeout.IsExpired">IsExpired</h4>
@@ -315,7 +427,7 @@ some methods such as <a class="xref" href="https://learn.microsoft.com/dotnet/ap
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_IsInfinite.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.IsInfinite%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L66">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L102">View Source</a>
   </span>
   <a id="DotNext_Threading_Timeout_IsInfinite_" data-uid="DotNext.Threading.Timeout.IsInfinite*"></a>
   <h4 id="DotNext_Threading_Timeout_IsInfinite" data-uid="DotNext.Threading.Timeout.IsInfinite">IsInfinite</h4>
@@ -346,7 +458,7 @@ some methods such as <a class="xref" href="https://learn.microsoft.com/dotnet/ap
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_Value.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.Value%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L61">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L97">View Source</a>
   </span>
   <a id="DotNext_Threading_Timeout_Value_" data-uid="DotNext.Threading.Timeout.Value*"></a>
   <h4 id="DotNext_Threading_Timeout_Value" data-uid="DotNext.Threading.Timeout.Value">Value</h4>
@@ -379,7 +491,7 @@ some methods such as <a class="xref" href="https://learn.microsoft.com/dotnet/ap
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_ThrowIfExpired.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.ThrowIfExpired%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L76">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L113">View Source</a>
   </span>
   <a id="DotNext_Threading_Timeout_ThrowIfExpired_" data-uid="DotNext.Threading.Timeout.ThrowIfExpired*"></a>
   <h4 id="DotNext_Threading_Timeout_ThrowIfExpired" data-uid="DotNext.Threading.Timeout.ThrowIfExpired">ThrowIfExpired()</h4>
@@ -390,12 +502,133 @@ some methods such as <a class="xref" href="https://learn.microsoft.com/dotnet/ap
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void ThrowIfExpired()</code></pre>
   </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>Timeout occurred.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_ThrowIfExpired_System_TimeProvider_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.ThrowIfExpired(System.TimeProvider)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L119">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Timeout_ThrowIfExpired_" data-uid="DotNext.Threading.Timeout.ThrowIfExpired*"></a>
+  <h4 id="DotNext_Threading_Timeout_ThrowIfExpired_System_TimeProvider_" data-uid="DotNext.Threading.Timeout.ThrowIfExpired(System.TimeProvider)">ThrowIfExpired(TimeProvider)</h4>
+  <div class="markdown level1 summary"><p>Throws <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a> if timeout occurs.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ThrowIfExpired(TimeProvider provider)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeprovider">TimeProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>Timeout occurred.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_ThrowIfExpired_System_TimeProvider_System_TimeSpan__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.ThrowIfExpired(System.TimeProvider%2CSystem.TimeSpan%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L138">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Timeout_ThrowIfExpired_" data-uid="DotNext.Threading.Timeout.ThrowIfExpired*"></a>
+  <h4 id="DotNext_Threading_Timeout_ThrowIfExpired_System_TimeProvider_System_TimeSpan__" data-uid="DotNext.Threading.Timeout.ThrowIfExpired(System.TimeProvider,System.TimeSpan@)">ThrowIfExpired(TimeProvider, out TimeSpan)</h4>
+  <div class="markdown level1 summary"><p>Throws <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a> if timeout occurs.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void ThrowIfExpired(TimeProvider provider, out TimeSpan remainingTime)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeprovider">TimeProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>Time provider.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">remainingTime</span></td>
+        <td><p>The remaining time before timeout.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>Timeout occurred.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_ThrowIfExpired_System_TimeSpan__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.ThrowIfExpired(System.TimeSpan%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L86">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L130">View Source</a>
   </span>
   <a id="DotNext_Threading_Timeout_ThrowIfExpired_" data-uid="DotNext.Threading.Timeout.ThrowIfExpired*"></a>
   <h4 id="DotNext_Threading_Timeout_ThrowIfExpired_System_TimeSpan__" data-uid="DotNext.Threading.Timeout.ThrowIfExpired(System.TimeSpan@)">ThrowIfExpired(out TimeSpan)</h4>
@@ -424,12 +657,84 @@ some methods such as <a class="xref" href="https://learn.microsoft.com/dotnet/ap
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>Timeout occurred.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_TryGetRemainingTime_System_TimeProvider_System_TimeSpan__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.TryGetRemainingTime(System.TimeProvider%2CSystem.TimeSpan%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L157">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Timeout_TryGetRemainingTime_" data-uid="DotNext.Threading.Timeout.TryGetRemainingTime*"></a>
+  <h4 id="DotNext_Threading_Timeout_TryGetRemainingTime_System_TimeProvider_System_TimeSpan__" data-uid="DotNext.Threading.Timeout.TryGetRemainingTime(System.TimeProvider,System.TimeSpan@)">TryGetRemainingTime(TimeProvider, out TimeSpan)</h4>
+  <div class="markdown level1 summary"><p>Gets the remaining time.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryGetRemainingTime(TimeProvider provider, out TimeSpan remainingTime)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeprovider">TimeProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>Time provider.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">remainingTime</span></td>
+        <td><p>The remaining time before timeout.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if timeout hasn't happened yet; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_TryGetRemainingTime_System_TimeSpan__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.TryGetRemainingTime(System.TimeSpan%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L97">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L149">View Source</a>
   </span>
   <a id="DotNext_Threading_Timeout_TryGetRemainingTime_" data-uid="DotNext.Threading.Timeout.TryGetRemainingTime*"></a>
   <h4 id="DotNext_Threading_Timeout_TryGetRemainingTime_System_TimeSpan__" data-uid="DotNext.Threading.Timeout.TryGetRemainingTime(System.TimeSpan@)">TryGetRemainingTime(out TimeSpan)</h4>
@@ -481,7 +786,7 @@ some methods such as <a class="xref" href="https://learn.microsoft.com/dotnet/ap
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_op_False_DotNext_Threading_Timeout__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.op_False(DotNext.Threading.Timeout%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L120">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L180">View Source</a>
   </span>
   <a id="DotNext_Threading_Timeout_op_False_" data-uid="DotNext.Threading.Timeout.op_False*"></a>
   <h4 id="DotNext_Threading_Timeout_op_False_DotNext_Threading_Timeout__" data-uid="DotNext.Threading.Timeout.op_False(DotNext.Threading.Timeout@)">operator false(in Timeout)</h4>
@@ -531,7 +836,7 @@ some methods such as <a class="xref" href="https://learn.microsoft.com/dotnet/ap
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_op_Implicit_DotNext_Threading_Timeout___System_TimeSpan.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.op_Implicit(DotNext.Threading.Timeout%40)~System.TimeSpan%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L127">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L187">View Source</a>
   </span>
   <a id="DotNext_Threading_Timeout_op_Implicit_" data-uid="DotNext.Threading.Timeout.op_Implicit*"></a>
   <h4 id="DotNext_Threading_Timeout_op_Implicit_DotNext_Threading_Timeout___System_TimeSpan" data-uid="DotNext.Threading.Timeout.op_Implicit(DotNext.Threading.Timeout@)~System.TimeSpan">implicit operator TimeSpan(in Timeout)</h4>
@@ -581,7 +886,7 @@ some methods such as <a class="xref" href="https://learn.microsoft.com/dotnet/ap
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Timeout_op_True_DotNext_Threading_Timeout__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Timeout.op_True(DotNext.Threading.Timeout%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L113">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Timeout.cs/#L173">View Source</a>
   </span>
   <a id="DotNext_Threading_Timeout_op_True_" data-uid="DotNext.Threading.Timeout.op_True*"></a>
   <h4 id="DotNext_Threading_Timeout_op_True_DotNext_Threading_Timeout__" data-uid="DotNext.Threading.Timeout.op_True(DotNext.Threading.Timeout@)">operator true(in Timeout)</h4>
