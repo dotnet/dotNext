@@ -159,6 +159,69 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     }
 
     /// <summary>
+    /// Executes the specified long-running operation that is protected by the lease lifetime.
+    /// </summary>
+    /// <remarks>
+    /// During execution, the lease is renewed automatically. On return, this method guarantees that the execution
+    /// of <paramref name="worker"/> is completed.
+    /// </remarks>
+    /// <param name="worker">The function to be executed in the background.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <returns>The value returned by <paramref name="worker"/>.</returns>
+    /// <exception cref="ObjectDisposedException">The consumer is disposed.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="TimeoutException">The lease has been expired.</exception>
+    /// <exception cref="AggregateException"><see cref="TryRenewAsync"/> throws an exception, and it is combined with the exception from <paramref name="worker"/>.</exception>
+    public async Task<TResult> ExecuteAsync<TResult>(Func<CancellationToken, Task<TResult>> worker, CancellationToken token = default)
+    {
+        ArgumentNullException.ThrowIfNull(worker);
+
+        var exception = default(Exception?);
+        var leaseToken = Token;
+        var operationToken = token;
+        var cts = operationToken.LinkTo(leaseToken);
+        
+        var task = Fork(worker, operationToken);
+        try
+        {
+            Task completedTask;
+            do
+            {
+                completedTask = await Task.WhenAny(Task.Delay(Expiration.Value / 2, operationToken), task).ConfigureAwait(false);
+            } while (!ReferenceEquals(completedTask, task) && await TryRenewAsync(token).ConfigureAwait(false));
+        }
+        catch (Exception e)
+        {
+            exception = e;
+        }
+        finally
+        {
+            cts?.Cancel(throwOnFirstException: false);
+        }
+
+        try
+        {
+            return await task.ConfigureAwait(false);
+        }
+        catch (Exception e) when (exception is not null)
+        {
+            throw new AggregateException(exception, e);
+        }
+        catch (OperationCanceledException e) when (e.CausedBy(cts, leaseToken))
+        {
+            throw new TimeoutException(ExceptionMessages.LeaseExpired, e);
+        }
+        finally
+        {
+            cts?.Dispose();
+        }
+    }
+
+    private static Task<TResult> Fork<TResult>(Func<CancellationToken, Task<TResult>> function, CancellationToken token)
+        => Task.Run(() => function(token), token);
+
+    /// <summary>
     /// Performs a call to <see cref="LeaseProvider{TMetadata}.TryAcquireAsync(CancellationToken)"/> across the application boundaries.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -199,6 +262,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
             }
         }
 
+        await CancelAndStopTimerAsync().ConfigureAwait(false);
         return false;
     }
 

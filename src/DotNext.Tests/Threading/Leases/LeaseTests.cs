@@ -120,6 +120,41 @@ public sealed class LeaseTests : Test
         True(await consumer.TryAcquireAsync());
         await consumer.AcquireAsync(pause, Random.Shared);
     }
+    
+    [Fact]
+    public static async Task WorkerProtectedWithLease()
+    {
+        var pause = TimeSpan.FromMilliseconds(100);
+        using var provider = new TestLeaseProvider(pause);
+        await using var consumer = new TestLeaseConsumer(provider);
+        True(await consumer.TryAcquireAsync());
+
+        var result = await consumer.ExecuteAsync(Worker);
+        Equal(42, result);
+
+        static async Task<int> Worker(CancellationToken token)
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(250), token);
+            return 42;
+        }
+    }
+    
+    [Fact]
+    public static async Task WorkerLeaseExpired()
+    {
+        using var provider = new TestLeaseProvider(TimeSpan.FromMilliseconds(100));
+        await using var consumer = new TestLeaseConsumer(provider);
+        True(await consumer.TryAcquireAsync());
+        await provider.UnsafeReleaseAsync();
+
+        await ThrowsAsync<TimeoutException>(() => consumer.ExecuteAsync(Worker));
+
+        static async Task<int> Worker(CancellationToken token)
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(250_000), token);
+            return 42;
+        }
+    }
 
     [Fact]
     public static async Task DisposeConcurrently()
@@ -200,7 +235,7 @@ public sealed class LeaseTests : Test
         protected override async ValueTask<AcquisitionResult?> TryRenewCoreAsync(LeaseIdentity identity,
             CancellationToken token)
         {
-            return await provider.TryAcquireOrRenewAsync(identity, token) is { } result
+            return await provider.TryRenewAsync(identity, reacquire: false, token) is { } result
                 ? new AcquisitionResult { Identity = result.State.Identity, TimeToLive = result.Expiration.Value }
                 : null;
         }
