@@ -56,4 +56,6 @@ internal static class ExceptionMessages
     internal static string LogEntryPayloadTooLarge => (string)Resources.Get();
 
     internal static string SparseFileNotSupported => (string)Resources.Get();
+
+    internal static string InvalidPartitionFormat => (string)Resources.Get();
 }

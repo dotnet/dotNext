@@ -191,7 +191,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     }
 
     /// <inheritdoc/>
-    void ICollection<T>.Clear() => Clear(false);
+    void ICollection<T>.Clear() => Clear();
 
     /// <inheritdoc />
     public override int Capacity

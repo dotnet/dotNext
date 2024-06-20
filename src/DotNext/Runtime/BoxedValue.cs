@@ -82,7 +82,7 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     /// Converts a typed reference to a boxed value to untyped reference.
     /// </summary>
     /// <param name="boxedValue">The boxed value.</param>
-    /// <returns>Untyped refernece to a boxed value.</returns>
+    /// <returns>Untyped reference to a boxed value.</returns>
     [return: NotNullIfNotNull(nameof(boxedValue))]
     public static implicit operator ValueType?(BoxedValue<T>? boxedValue)
         => Unsafe.As<ValueType>(boxedValue);
@@ -102,11 +102,11 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     public static explicit operator BoxedValue<T>?(in T? value) => TryBox(in value);
 
     /// <inheritdoc />
-    public override abstract bool Equals(object? obj);  // abstract to avoid inlining by AOT/JIT
+    public abstract override bool Equals([NotNullWhen(true)] object? obj);  // abstract to avoid inlining by AOT/JIT
 
     /// <inheritdoc />
-    public override abstract int GetHashCode(); // abstract to avoid inlining by AOT/JIT
+    public abstract override int GetHashCode(); // abstract to avoid inlining by AOT/JIT
 
     /// <inheritdoc />
-    public override abstract string ToString(); // abstract to avoid inlining by AOT/JIT
+    public abstract override string ToString(); // abstract to avoid inlining by AOT/JIT
 }

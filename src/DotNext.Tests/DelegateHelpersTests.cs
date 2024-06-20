@@ -492,4 +492,10 @@ public sealed class DelegateHelpersTests : Test
 
         void SetLocalValue(int value) => i = value;
     }
+
+    [Fact]
+    public static void Identity()
+    {
+        Equal(42, Func.Identity<int>().Invoke(42));
+    }
 }

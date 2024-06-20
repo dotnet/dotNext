@@ -235,7 +235,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
 /// Represents fast implementation of <see cref="ITypeMap"/>
 /// which is not thread safe.
 /// </summary>
-public partial class TypeMap : ITypeMap
+public class TypeMap : ITypeMap
 {
     private object?[] entries;
 

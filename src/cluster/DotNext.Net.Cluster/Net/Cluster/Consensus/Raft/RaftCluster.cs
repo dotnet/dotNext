@@ -142,10 +142,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     }
 
     /// <inheritdoc cref="IRaftCluster.LeadershipToken"/>
-    public CancellationToken LeadershipToken => (state as LeaderState<TMember>)?.Token ?? new(true);
+    public CancellationToken LeadershipToken => (state as LeaderState<TMember>)?.Token ?? new(canceled: true);
 
     /// <inheritdoc cref="IRaftCluster.ConsensusToken"/>
-    public CancellationToken ConsensusToken => (state as TokenizedState<TMember>)?.Token ?? new(true);
+    public CancellationToken ConsensusToken => (state as ConsensusState<TMember>)?.Token ?? new(canceled: true);
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private LeaderState<TMember> LeaderStateOrException
@@ -293,7 +293,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
         async ValueTask UnfreezeCoreAsync()
         {
-            var newState = new FollowerState<TMember>(this);
+            var newState = new FollowerState<TMember>(this, consensusReached: true);
             await UpdateStateAsync(newState).ConfigureAwait(false);
             newState.StartServing(ElectionTimeout);
             readinessProbe.TrySetResult();
@@ -325,7 +325,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         {
             if (await DetectLocalMemberAsync(member, token).ConfigureAwait(false))
             {
-                state = standbyNode ? new StandbyState<TMember>(this, LeaderLeaseDuration) : new FollowerState<TMember>(this);
+                state = standbyNode ? new StandbyState<TMember>(this, LeaderLeaseDuration) : new FollowerState<TMember>(this, consensusReached: false);
                 readinessProbe.TrySetResult();
                 Logger.StartedAsFollower(member.EndPoint);
                 return;
@@ -359,13 +359,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 // ensure that we trying to update the same state
                 if (TryGetLocalMember() is not null && ReferenceEquals(state, standbyState))
                 {
-                    var newState = new FollowerState<TMember>(this);
+                    var newState = new FollowerState<TMember>(this, consensusReached: standbyState.Token.IsCancellationRequested is false);
                     await UpdateStateAsync(newState).ConfigureAwait(false);
                     newState.StartServing(ElectionTimeout);
                     return true;
                 }
             }
-            catch (OperationCanceledException e) when (tokenSource is not null)
+            catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
             {
                 throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }
@@ -402,7 +402,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     return true;
                 }
             }
-            catch (OperationCanceledException e) when (tokenSource is not null)
+            catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
             {
                 throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }
@@ -485,28 +485,26 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         }
     }
 
-    private ValueTask StepDown(long newTerm)
-    {
-        return newTerm > auditTrail.Term ? UpdateTermAndStepDownAsync(newTerm) : StepDown();
+    private ValueTask StepDownAsync(long newTerm, bool consensusReached)
+        => newTerm > auditTrail.Term ? UpdateTermAndStepDownAsync(newTerm, consensusReached) : StepDownAsync(consensusReached);
 
-        async ValueTask UpdateTermAndStepDownAsync(long newTerm)
-        {
-            await auditTrail.UpdateTermAsync(newTerm, true, LifecycleToken).ConfigureAwait(false);
-            await StepDown().ConfigureAwait(false);
-        }
+    private async ValueTask UpdateTermAndStepDownAsync(long newTerm, bool consensusReached)
+    {
+        await auditTrail.UpdateTermAsync(newTerm, resetLastVote: true, LifecycleToken).ConfigureAwait(false);
+        await StepDownAsync(consensusReached).ConfigureAwait(false);
     }
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-    private async ValueTask StepDown()
+    private async ValueTask StepDownAsync(bool consensusReached)
     {
         Logger.DowngradingToFollowerState(Term);
         switch (state)
         {
-            case ConsensusTrackerState<TMember> followerOrStandbyState:
+            case RefreshableState<TMember> followerOrStandbyState:
                 followerOrStandbyState.Refresh();
                 break;
             case LeaderState<TMember> or CandidateState<TMember>:
-                var newState = new FollowerState<TMember>(this);
+                var newState = new FollowerState<TMember>(this, consensusReached);
                 await UpdateStateAsync(newState).ConfigureAwait(false);
                 newState.StartServing(ElectionTimeout);
                 break;
@@ -540,7 +538,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             if (snapshot.IsSnapshot && senderTerm >= result.Term && snapshotIndex > auditTrail.LastCommittedEntryIndex)
             {
                 Timestamp.Refresh(ref lastUpdated);
-                await StepDown(senderTerm).ConfigureAwait(false);
+                await StepDownAsync(senderTerm, consensusReached: true).ConfigureAwait(false);
                 Leader = TryGetMember(sender);
                 await auditTrail.AppendAsync(snapshot, snapshotIndex, token).ConfigureAwait(false);
                 result = result with
@@ -592,7 +590,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             if (result.Term <= senderTerm)
             {
                 Timestamp.Refresh(ref lastUpdated);
-                await StepDown(senderTerm).ConfigureAwait(false);
+                await StepDownAsync(senderTerm, consensusReached: true).ConfigureAwait(false);
                 var senderMember = TryGetMember(sender);
                 Leader = senderMember;
                 if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, token).ConfigureAwait(false))
@@ -610,7 +608,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     }
 
                     // prevent Follower state transition during processing of received log entries
-                    using (new ConsensusTrackerState<TMember>.TransitionSuppressionScope(state as ConsensusTrackerState<TMember>))
+                    using (new RefreshableState<TMember>.TransitionSuppressionScope(state as RefreshableState<TMember>))
                     {
                         /*
                         * AppendAsync is called with skipCommitted=true because HTTP response from the previous
@@ -791,9 +789,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             else if (result.Term != senderTerm)
             {
                 Leader = null;
-                await StepDown(senderTerm).ConfigureAwait(false);
+                await StepDownAsync(senderTerm, consensusReached: false).ConfigureAwait(false);
             }
-            else if (state is ConsensusTrackerState<TMember> followerOrStandbyState)
+            else if (state is RefreshableState<TMember> followerOrStandbyState)
             {
                 followerOrStandbyState.Refresh();
             }
@@ -837,14 +835,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
                 if (ReferenceEquals(state, leaderState))
                 {
-                    var newState = new FollowerState<TMember>(this);
+                    var newState = new FollowerState<TMember>(this, consensusReached: false);
                     await UpdateStateAsync(newState).ConfigureAwait(false);
                     Leader = null;
                     newState.StartServing(ElectionTimeout);
                     return true;
                 }
             }
-            catch (OperationCanceledException e) when (tokenSource is not null)
+            catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
             {
                 throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }
@@ -1000,7 +998,9 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 if (randomizeTimeout)
                     electionTimeout = electionTimeoutProvider.RandomTimeout(random);
 
-                await (newTerm.HasValue ? StepDown(newTerm.GetValueOrDefault()) : StepDown()).ConfigureAwait(false);
+                await (newTerm.HasValue
+                    ? StepDownAsync(newTerm.GetValueOrDefault(), consensusReached: false)
+                    : StepDownAsync(consensusReached: false)).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException) when (lockTaken is false)

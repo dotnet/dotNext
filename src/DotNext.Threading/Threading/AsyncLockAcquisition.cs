@@ -154,7 +154,7 @@ public static class AsyncLockAcquisition
     /// <returns>The acquired lock holder.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, CancellationToken token = default)
-        where T : class => AsyncLock.WriteLock(obj.GetReaderWriterLock()).AcquireAsync(token);
+        where T : class => AcquireWriteLockAsync(obj, upgrade: false, token);
 
     /// <summary>
     /// Acquires reader lock associated with the given object.
@@ -164,7 +164,40 @@ public static class AsyncLockAcquisition
     /// <param name="timeout">The interval to wait for the lock.</param>
     /// <param name="token">The token that can be used to abort acquisition operation.</param>
     /// <returns>The acquired lock holder.</returns>
+    /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, TimeSpan timeout, CancellationToken token = default)
-        where T : class => AsyncLock.WriteLock(obj.GetReaderWriterLock()).AcquireAsync(timeout, token);
+        where T : class => AcquireWriteLockAsync(obj, upgrade: false, timeout, token);
+
+    /// <summary>
+    /// Acquires reader lock associated with the given object.
+    /// </summary>
+    /// <typeparam name="T">The type of the object to be locked.</typeparam>
+    /// <param name="obj">The object to be locked.</param>
+    /// <param name="upgrade">
+    /// <see langword="true"/> to upgrade from read lock;
+    /// otherwise, <see langword="false"/>.
+    /// </param>
+    /// <param name="token">The token that can be used to abort acquisition operation.</param>
+    /// <returns>The acquired lock holder.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static ValueTask<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, bool upgrade, CancellationToken token = default)
+        where T : class => AsyncLock.WriteLock(obj.GetReaderWriterLock(), upgrade).AcquireAsync(token);
+
+    /// <summary>
+    /// Acquires reader lock associated with the given object.
+    /// </summary>
+    /// <typeparam name="T">The type of the object to be locked.</typeparam>
+    /// <param name="obj">The object to be locked.</param>
+    /// <param name="upgrade">
+    /// <see langword="true"/> to upgrade from read lock;
+    /// otherwise, <see langword="false"/>.
+    /// </param>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <param name="token">The token that can be used to abort acquisition operation.</param>
+    /// <returns>The acquired lock holder.</returns>
+    /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static ValueTask<AsyncLock.Holder> AcquireWriteLockAsync<T>(this T obj, bool upgrade, TimeSpan timeout, CancellationToken token = default)
+        where T : class => AsyncLock.WriteLock(obj.GetReaderWriterLock(), upgrade).AcquireAsync(timeout, token);
 }

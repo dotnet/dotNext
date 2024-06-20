@@ -12,7 +12,7 @@ using Runtime;
 /// <summary>
 /// Provides extension methods for type <see cref="Span{T}"/> and <see cref="ReadOnlySpan{T}"/>.
 /// </summary>
-public static partial class Span
+public static class Span
 {
     /// <summary>
     /// Determines whether two memory blocks identified by the given spans contain the same set of elements.
@@ -557,7 +557,7 @@ public static partial class Span
         }
         else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
-            T[] buffer = ArrayPool<T>.Shared.Rent(bufferSize);
+            var buffer = ArrayPool<T>.Shared.Rent(bufferSize);
             Swap(x, y, buffer);
             ArrayPool<T>.Shared.Return(buffer, clearArray: true);
         }
@@ -789,7 +789,7 @@ public static partial class Span
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)source.Length, nameof(count));
 
-        ref var ptr = ref MemoryMarshal.GetReference(source);
+        ref T ptr = ref MemoryMarshal.GetReference(source);
         source = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, count), source.Length - count);
         return MemoryMarshal.CreateReadOnlySpan(ref ptr, count);
     }

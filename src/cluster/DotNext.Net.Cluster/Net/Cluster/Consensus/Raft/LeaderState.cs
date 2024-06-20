@@ -12,7 +12,7 @@ using Runtime.CompilerServices;
 using Threading.Tasks;
 using GCLatencyModeScope = Runtime.GCLatencyModeScope;
 
-internal sealed partial class LeaderState<TMember> : TokenizedState<TMember>
+internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     where TMember : class, IRaftClusterMember
 {
     private readonly long currentTerm;

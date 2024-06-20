@@ -170,7 +170,7 @@ public partial class GCNotification
                     ? new UnsafeCallback<T>(callback, state)
                     : new SafeCallback<T>(callback, state, executionContext);
             }
-            else if (SynchronizationContext.Current is SynchronizationContext syncContext && syncContext.GetType() != typeof(SynchronizationContext))
+            else if (SynchronizationContext.Current is { } syncContext && syncContext.GetType() != typeof(SynchronizationContext))
             {
                 this.callback = executionContext is null
                     ? new SynchronizationContextBoundCallback<T>(callback, state, syncContext)

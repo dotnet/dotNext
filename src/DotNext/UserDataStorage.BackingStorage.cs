@@ -38,9 +38,7 @@ public partial struct UserDataStorage
         [MethodImpl(MethodImplOptions.Synchronized)]
         internal Optional<TValue> Get<TValue>(int index)
         {
-            Optional<TValue>[]? array = Unsafe.As<Optional<TValue>[]>(this.array);
-
-            return array is not null && (uint)index < (uint)array.Length
+            return Unsafe.As<Optional<TValue>[]>(this.array) is { } array && (uint)index < (uint)array.Length
                 ? Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index)
                 : Optional.None<TValue>();
         }
@@ -50,10 +48,8 @@ public partial struct UserDataStorage
         {
             Debug.Assert(this.array is null or Optional<TValue>[]);
 
-            Optional<TValue>[]? array = Unsafe.As<Optional<TValue>[]>(this.array);
-
             // resize if needed
-            if (array is null)
+            if (Unsafe.As<Optional<TValue>[]>(this.array) is not { } array)
             {
                 this.array = array = new Optional<TValue>[index + 1];
             }
@@ -63,7 +59,7 @@ public partial struct UserDataStorage
                 this.array = array;
             }
 
-            ref Optional<TValue> valueRef = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
+            ref var valueRef = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
             if (valueRef.HasValue)
             {
                 value = valueRef.ValueOrDefault;
@@ -81,10 +77,8 @@ public partial struct UserDataStorage
         {
             Debug.Assert(this.array is null or Optional<TValue>[]);
 
-            Optional<TValue>[]? array = Unsafe.As<Optional<TValue>[]>(this.array);
-
             // resize if needed
-            if (array is null)
+            if (Unsafe.As<Optional<TValue>[]>(this.array) is not { } array)
             {
                 this.array = array = new Optional<TValue>[index + 1];
             }
@@ -102,48 +96,20 @@ public partial struct UserDataStorage
         {
             Debug.Assert(this.array is null or Optional<TValue>[]);
 
-            Optional<TValue>[]? array = Unsafe.As<Optional<TValue>[]>(this.array);
             Optional<TValue> result;
 
-            if (array is null || (uint)index >= (uint)array.Length)
+            if (Unsafe.As<Optional<TValue>[]>(this.array) is not { } array || (uint)index >= (uint)array.Length)
             {
                 result = Optional.None<TValue>();
             }
             else
             {
-                ref Optional<TValue> valueRef = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
+                ref var valueRef = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
                 result = valueRef;
                 valueRef = Optional.None<TValue>();
             }
 
             return result;
-        }
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        internal bool TryAdd<TValue>(int index, TValue value)
-        {
-            Debug.Assert(this.array is null or Optional<TValue>[]);
-
-            Optional<TValue>[]? array = Unsafe.As<Optional<TValue>[]>(this.array);
-
-            // resize if needed
-            if (array is null)
-            {
-                this.array = array = new Optional<TValue>[index + 1];
-            }
-            else if ((uint)index >= (uint)array.Length)
-            {
-                Array.Resize(ref array, index + 1);
-                this.array = array;
-            }
-
-            ref Optional<TValue> valueRef = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
-
-            if (valueRef.HasValue)
-                return false;
-
-            valueRef = value;
-            return true;
         }
     }
 

@@ -218,7 +218,7 @@ public ref partial struct BufferWriterSlim<T>
     /// </summary>
     /// <param name="item">The last added item.</param>
     /// <returns><see langword="true"/> if this buffer is not empty; otherwise, <see langword="false"/>.</returns>
-    public readonly bool TryPeek([MaybeNullWhen(false)] out T? item)
+    public readonly bool TryPeek([MaybeNullWhen(false)] out T item)
     {
         if (position > 0)
         {
@@ -235,7 +235,7 @@ public ref partial struct BufferWriterSlim<T>
     /// </summary>
     /// <param name="item">The removed item.</param>
     /// <returns><see langword="true"/> if the item is removed successfully; otherwise, <see langword="false"/>.</returns>
-    public bool TryPop([MaybeNullWhen(false)] out T? item)
+    public bool TryPop([MaybeNullWhen(false)] out T item)
     {
         if (position > 0)
         {
