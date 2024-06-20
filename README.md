@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 06-17-2024
+Release Date: 06-20-2024
 
 <a href="https://www.nuget.org/packages/dotnext/5.7.0">DotNext 5.7.0</a>
 * `Timestamp.ElapsedTicks` returns a value that is always greater than zero

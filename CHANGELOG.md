@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 06-17-2024
+# 06-20-2024
 <a href="https://www.nuget.org/packages/dotnext/5.7.0">DotNext 5.7.0</a>
 * `Timestamp.ElapsedTicks` returns a value that is always greater than zero
 * Fixed hidden copies of value types caused by **in** modifier
