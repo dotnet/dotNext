@@ -208,8 +208,7 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     public void Advance(int count)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        if (count < 0)
-            ThrowCountOutOfRangeException();
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
         var newPosition = position + count;
         if ((uint)newPosition > (uint)Capacity)
@@ -232,16 +231,10 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
     public void Rewind(int count)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        if ((uint)count > (uint)position)
-            ThrowCountOutOfRangeException();
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)position, nameof(count));
 
         position -= count;
     }
-
-    [DoesNotReturn]
-    [StackTraceHidden]
-    private static void ThrowCountOutOfRangeException()
-        => throw new ArgumentOutOfRangeException("count");
 
     /// <summary>
     /// Returns the memory to write to that is at least the requested size.

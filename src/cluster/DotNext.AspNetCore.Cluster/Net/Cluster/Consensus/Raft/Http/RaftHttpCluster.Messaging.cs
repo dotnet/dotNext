@@ -48,7 +48,7 @@ internal partial class RaftHttpCluster : IOutputChannel
                 // keep in sync with ReceiveMessage behavior
                 Logger.FailedToRouteMessage(message.Name, e);
             }
-            catch (OperationCanceledException e) when (tokenSource is not null)
+            catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
             {
                 throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }
@@ -88,7 +88,7 @@ internal partial class RaftHttpCluster : IOutputChannel
                 // keep in sync with ReceiveMessage behavior
                 Logger.FailedToRouteMessage(message.Name, e);
             }
-            catch (OperationCanceledException e) when (tokenSource is not null)
+            catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
             {
                 throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }
@@ -131,7 +131,7 @@ internal partial class RaftHttpCluster : IOutputChannel
                 // keep in sync with ReceiveMessage behavior
                 Logger.FailedToRouteMessage(message.Name, e);
             }
-            catch (OperationCanceledException e) when (tokenSource is not null)
+            catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
             {
                 throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }

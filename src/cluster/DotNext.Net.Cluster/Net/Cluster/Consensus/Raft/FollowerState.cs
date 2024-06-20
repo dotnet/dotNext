@@ -2,30 +2,33 @@
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-internal sealed class FollowerState<TMember> : ConsensusTrackerState<TMember>
+internal sealed class FollowerState<TMember> : RefreshableState<TMember>
     where TMember : class, IRaftClusterMember
 {
     private readonly CancellationTokenSource trackerCancellation;
+    private readonly CancellationToken stateToken; // cached to prevent ObjectDisposedException
     private Task? tracker;
     private volatile bool timedOut;
+    private volatile bool refreshed;
 
-    public FollowerState(IRaftStateMachine<TMember> stateMachine)
+    public FollowerState(IRaftStateMachine<TMember> stateMachine, bool consensusReached)
         : base(stateMachine)
     {
         trackerCancellation = new();
-        Token = trackerCancellation.Token;
+        stateToken = trackerCancellation.Token;
+        refreshed = consensusReached;
     }
 
-    public override CancellationToken Token { get; } // cached to prevent ObjectDisposedException
+    public override CancellationToken Token => refreshed ? stateToken : new(canceled: true);
 
     private async Task Track(TimeSpan timeout)
     {
         // spin loop to wait for the timeout
-        while (await refreshEvent.WaitAsync(timeout, Token).ConfigureAwait(false))
+        while (await refreshEvent.WaitAsync(timeout, stateToken).ConfigureAwait(false))
         {
             // Transition can be suppressed. If so, resume the loop and reset the timer.
             // If the event is in signaled state then the returned task is completed synchronously.
-            await suppressionEvent.WaitAsync(Token).ConfigureAwait(false);
+            await suppressionEvent.WaitAsync(stateToken).ConfigureAwait(false);
         }
 
         timedOut = true;
@@ -55,6 +58,7 @@ internal sealed class FollowerState<TMember> : ConsensusTrackerState<TMember>
     public override void Refresh()
     {
         refreshEvent.Set();
+        refreshed = true;
         base.Refresh();
     }
 

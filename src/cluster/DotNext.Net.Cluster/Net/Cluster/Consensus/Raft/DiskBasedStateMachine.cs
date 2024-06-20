@@ -69,23 +69,24 @@ public abstract partial class DiskBasedStateMachine : PersistentState
                 var entry = partition.Read(sessionId, startIndex);
                 var snapshotLength = await ApplyCoreAsync(entry).ConfigureAwait(false);
                 Volatile.Write(ref lastTerm, entry.Term);
+                partition.ClearContext(startIndex);
 
                 // Remove log entry from the cache according to eviction policy
-                var lastEntryInPartition = startIndex == commitIndex || startIndex == partition.LastIndex;
+                var completedPartition = startIndex == partition.LastIndex;
                 if (!entry.IsPersisted)
                 {
                     await partition.PersistCachedEntryAsync(startIndex, snapshotLength.HasValue).ConfigureAwait(false);
 
                     // Flush partition if we are finished or at the last entry in it
-                    if (lastEntryInPartition)
+                    if (startIndex == commitIndex | completedPartition)
                     {
                         await partition.FlushAsync(token).ConfigureAwait(false);
-                        partition.ClearContext(startIndex);
                     }
                 }
-                else if (lastEntryInPartition)
+
+                if (completedPartition)
                 {
-                    partition.ClearContext(startIndex);
+                    partition.ClearContext();
                 }
 
                 if (snapshotLength.HasValue)

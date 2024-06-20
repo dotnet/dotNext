@@ -112,7 +112,7 @@ public readonly ref partial struct UserDataStorage
     private readonly object source;
 
     internal UserDataStorage(object source)
-        => this.source = (source as IContainer)?.Source ?? source ?? throw new ArgumentNullException(nameof(UserDataStorage.source));
+        => this.source = (source as IContainer)?.Source ?? source ?? throw new ArgumentNullException(nameof(source));
 
     /// <summary>
     /// Gets a value indicating that this storage is valid.
@@ -377,8 +377,7 @@ public readonly ref partial struct UserDataStorage
                 break;
         }
 
-        var source = GetStorage();
-        if (source is not null)
+        if (GetStorage() is { } source)
         {
             if (obj is BackingStorage destination)
                 source.CopyTo(destination);

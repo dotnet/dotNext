@@ -58,10 +58,4 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource
         get;
         private set;
     }
-
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        base.Dispose(disposing);
-    }
 }

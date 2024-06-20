@@ -1,6 +1,5 @@
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using static System.Diagnostics.Stopwatch;
 
 namespace DotNext.Diagnostics;
 
@@ -13,14 +12,13 @@ using Threading;
 /// This class can be used as allocation-free alternative to <see cref="System.Diagnostics.Stopwatch"/>.
 /// </remarks>
 public readonly record struct Timestamp :
-    IEquatable<Timestamp>,
     IComparable<Timestamp>,
     IComparisonOperators<Timestamp, Timestamp, bool>,
     IAdditionOperators<Timestamp, TimeSpan, Timestamp>,
     ISubtractionOperators<Timestamp, TimeSpan, Timestamp>,
     IInterlockedOperations<Timestamp>
 {
-    private static readonly double TickFrequency = (double)TimeSpan.TicksPerSecond / Frequency;
+    private static readonly double TickFrequency = GetTickFrequency(TimeProvider.System);
     private readonly long ticks;
 
     private Timestamp(long ticks) => this.ticks = ticks;
@@ -29,7 +27,7 @@ public readonly record struct Timestamp :
     /// Captures the current point in time.
     /// </summary>
     public Timestamp()
-        : this(Math.Max(GetTimestamp(), 1L)) // ensure that timestamp is not empty
+        : this(TimeProvider.System) // ensure that timestamp is not empty
     {
     }
 
@@ -44,22 +42,36 @@ public readonly record struct Timestamp :
     }
 
     /// <summary>
+    /// Captures the current point in time.
+    /// </summary>
+    /// <param name="provider">The time provider.</param>
+    public Timestamp(TimeProvider provider)
+        : this(Math.Max(provider.GetTimestamp(), 1L)) // ensure that timestamp is not empty
+    {
+    }
+
+    /// <summary>
     /// Gets a value indicating that the timestamp is zero.
     /// </summary>
     public bool IsEmpty => ticks is 0L;
 
     /// <summary>
-    /// Gets a value indcating that the current timestamp represents the future point in time.
+    /// Gets a value indicating that the current timestamp represents the future point in time.
     /// </summary>
-    public bool IsFuture => ticks > GetTimestamp();
+    public bool IsFuture => ticks > TimeProvider.System.GetTimestamp();
 
     /// <summary>
-    /// Gets a value indcating that the current timestamp represents the past point in time.
+    /// Gets a value indicating that the current timestamp represents the past point in time.
     /// </summary>
-    public bool IsPast => ticks < GetTimestamp();
+    public bool IsPast => ticks < TimeProvider.System.GetTimestamp();
+    
+    private static double GetTickFrequency(TimeProvider provider) => (double)TimeSpan.TicksPerSecond / provider.TimestampFrequency;
 
     private static long ToTicks(double duration)
         => unchecked((long)(TickFrequency * duration));
+
+    private static long ToTicks(double duration, TimeProvider provider)
+        => unchecked((long)(GetTickFrequency(provider) * duration));
 
     private static long FromTimeSpan(TimeSpan value)
         => unchecked((long)(value.Ticks / TickFrequency));
@@ -78,25 +90,55 @@ public readonly record struct Timestamp :
     /// <remarks>
     /// This property is always greater than or equal to <see cref="TimeSpan.Zero"/>.
     /// </remarks>
-    public TimeSpan Elapsed => new(ToTicks(ElapsedTicks));
+    public TimeSpan Elapsed => GetElapsedTime(TimeProvider.System);
+
+    /// <summary>
+    /// Gets precise difference between the current point in time and this timestamp.
+    /// </summary>
+    /// <param name="provider">Time provider.</param>
+    /// <returns>The elapsed time between the starting timestamp and the time of this call.</returns>
+    public TimeSpan GetElapsedTime(TimeProvider provider) => new(ToTicks(GetElapsedTicks(provider), provider));
 
     /// <summary>
     /// Gets the total elapsed time measured by the current instance, in timer ticks.
     /// </summary>
-    public long ElapsedTicks => Math.Max(0L, GetTimestamp() - ticks);
+    public long ElapsedTicks => GetElapsedTicks(TimeProvider.System);
+    
+    /// <summary>
+    /// Gets the total elapsed time measured by the current instance, in timer ticks.
+    /// </summary>
+    /// <param name="provider">Time provider.</param>
+    /// <returns>The elapsed time, in ticks, between the starting timestamp and the time of this call.</returns>
+    public long GetElapsedTicks(TimeProvider provider) => Math.Max(1L, provider.GetTimestamp() - ticks);
 
     /// <summary>
     /// Gets the total elapsed time measured by the current instance, in milliseconds.
     /// </summary>
-    public double ElapsedMilliseconds => (double)ElapsedTicks / Frequency * 1_000D;
+    public double ElapsedMilliseconds => GetElapsedMilliseconds(TimeProvider.System);
+
+    /// <summary>
+    /// Gets the total elapsed time measured by the current instance, in milliseconds.
+    /// </summary>
+    /// <param name="provider">Time provider.</param>
+    /// <returns>The elapsed time, in ms, between the starting timestamp and the time of this call.</returns>
+    public double GetElapsedMilliseconds(TimeProvider provider)
+        => (double)GetElapsedTicks(provider) / provider.TimestampFrequency * 1_000D;
 
     /// <summary>
     /// Gets a difference between two timestamps, in milliseconds.
     /// </summary>
     /// <param name="past">The timestamp in the past.</param>
     /// <returns>The number of milliseconds since <paramref name="past"/>.</returns>
-    public double ElapsedSince(Timestamp past)
-        => (double)(ticks - past.ticks) / Frequency * 1_000D;
+    public double ElapsedSince(Timestamp past) => ElapsedSince(past, TimeProvider.System);
+
+    /// <summary>
+    /// Gets a difference between two timestamps, in milliseconds.
+    /// </summary>
+    /// <param name="past">The timestamp in the past.</param>
+    /// <param name="provider">Time provider.</param>
+    /// <returns>The number of milliseconds since <paramref name="past"/>.</returns>
+    public double ElapsedSince(Timestamp past, TimeProvider provider)
+        => (double)(ticks - past.ticks) / provider.TimestampFrequency * 1_000D;
 
     /// <summary>
     /// Gets <see cref="TimeSpan"/> representing the given timestamp.
@@ -212,7 +254,7 @@ public readonly record struct Timestamp :
         => new(Volatile.Read(in location.ticks));
 
     /// <summary>
-    /// Writes the timestamp and prevents the proces from reordering memory operations.
+    /// Writes the timestamp and prevents the processor from reordering memory operations.
     /// </summary>
     /// <param name="location">The managed pointer to the timestamp.</param>
     /// <param name="newValue">The value to write.</param>
@@ -220,11 +262,19 @@ public readonly record struct Timestamp :
         => Volatile.Write(ref Unsafe.AsRef(in location.ticks), newValue.ticks);
 
     /// <summary>
-    /// Updates the timestamp to the current point in time and prevents the proces from reordering memory operations.
+    /// Updates the timestamp to the current point in time and prevents the processor from reordering memory operations.
     /// </summary>
-    /// <param name="location">The location of the timestampt to update.</param>
+    /// <param name="location">The location of the timestamp to update.</param>
     public static void Refresh(ref Timestamp location)
-        => Volatile.Write(ref Unsafe.AsRef(in location.ticks), Math.Max(1L, GetTimestamp()));
+        => Refresh(ref location, TimeProvider.System);
+
+    /// <summary>
+    /// Updates the timestamp to the current point in time and prevents the processor from reordering memory operations.
+    /// </summary>
+    /// <param name="location">The location of the timestamp to update.</param>
+    /// <param name="provider">Time provider.</param>
+    public static void Refresh(ref Timestamp location, TimeProvider provider)
+        => Volatile.Write(ref Unsafe.AsRef(in location.ticks), Math.Max(1L, provider.GetTimestamp()));
 
     /// <inheritdoc cref="IInterlockedOperations{T}.CompareExchange(ref T, T, T)"/>
     public static Timestamp CompareExchange(ref Timestamp location, Timestamp value, Timestamp comparand)

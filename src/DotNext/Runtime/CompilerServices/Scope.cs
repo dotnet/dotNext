@@ -28,21 +28,22 @@ public struct Scope : IDisposable, IAsyncDisposable
 
     private void Add(object callback)
     {
-        if (callback is null)
-            throw new ArgumentNullException(nameof(callback));
-
         Debug.Assert(callback is Action or Func<ValueTask> or IDisposable or IAsyncDisposable);
 
-        foreach (ref var slot in callbacks.AsSpan())
+        if (rest is null)
         {
-            if (slot is null)
+            foreach (ref var slot in callbacks.AsSpan())
             {
-                slot = callback;
-                return;
+                if (slot is null)
+                {
+                    slot = callback;
+                    return;
+                }
             }
+
+            rest = new();
         }
 
-        rest ??= new();
         rest.Add(callback);
     }
 
@@ -51,26 +52,48 @@ public struct Scope : IDisposable, IAsyncDisposable
     /// </summary>
     /// <param name="callback">The callback to be attached to the current scope.</param>
     /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <see langword="null"/>.</exception>
-    public void Defer(Action callback) => Add(callback);
+    public void Defer(Action callback)
+    {
+        ArgumentNullException.ThrowIfNull(callback);
+
+        Add(callback);
+    }
 
     /// <summary>
     /// Attaches callback to this lexical scope.
     /// </summary>
     /// <param name="callback">The callback to be attached to the current scope.</param>
     /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <see langword="null"/>.</exception>
-    public void Defer(Func<ValueTask> callback) => Add(callback);
+    public void Defer(Func<ValueTask> callback)
+    {
+        ArgumentNullException.ThrowIfNull(callback);
+
+        Add(callback);
+    }
 
     /// <summary>
     /// Registers an object for disposal.
     /// </summary>
     /// <param name="disposable">The object to be disposed.</param>
-    public void RegisterForDispose(IDisposable disposable) => Add(disposable);
+    /// <exception cref="ArgumentNullException"><paramref name="disposable"/> is <see langword="null"/>.</exception>
+    public void RegisterForDispose(IDisposable disposable)
+    {
+        ArgumentNullException.ThrowIfNull(disposable);
+
+        Add(disposable);
+    }
 
     /// <summary>
     ///  Registers an object for asynchronous disposal.
     /// </summary>
     /// <param name="disposable">The object to be disposed asynchronously.</param>
-    public void RegisterForDisposeAsync(IAsyncDisposable disposable) => Add(disposable);
+    /// <exception cref="ArgumentNullException"><paramref name="disposable"/> is <see langword="null"/>.</exception>
+    public void RegisterForDisposeAsync(IAsyncDisposable disposable)
+    {
+        ArgumentNullException.ThrowIfNull(disposable);
+
+        Add(disposable);
+    }
 
     /// <summary>
     /// Executes all attached callbacks synchronously.
@@ -82,7 +105,7 @@ public struct Scope : IDisposable, IAsyncDisposable
 
         if (rest is not null)
         {
-            ExecuteCallbacks(CollectionsMarshal.AsSpan(rest)!, ref exceptions);
+            ExecuteCallbacks(CollectionsMarshal.AsSpan(rest), ref exceptions);
             rest.Clear();
         }
 

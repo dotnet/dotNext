@@ -110,11 +110,11 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 return;
 
             // do resize
-            var firstUnitialized = entries.Length;
+            var firstUninitialized = entries.Length;
             Array.Resize(ref entries, ITypeMap.RecommendedCapacity);
 
             // initializes the rest of the array
-            entries.AsSpan(firstUnitialized).Initialize();
+            entries.AsSpan(firstUninitialized).Initialize();
 
             // commit resized storage
             this.entries = entries; // write barrier is provided by monitor lock

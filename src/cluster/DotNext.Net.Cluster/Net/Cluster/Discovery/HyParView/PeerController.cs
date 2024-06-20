@@ -119,7 +119,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
         {
             await queue.Writer.WriteAsync(command, token).ConfigureAwait(false);
         }
-        catch (OperationCanceledException e) when (tokenSource is not null)
+        catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
         {
             throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
         }

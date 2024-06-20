@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -7,7 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 /// This is ephemeral state indicating that
 /// the cluster member will not become a leader.
 /// </summary>
-internal sealed class StandbyState<TMember> : ConsensusTrackerState<TMember>
+internal sealed class StandbyState<TMember> : RefreshableState<TMember>
     where TMember : class, IRaftClusterMember
 {
     private readonly TimeSpan consensusTimeout;
