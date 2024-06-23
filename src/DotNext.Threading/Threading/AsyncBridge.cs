@@ -1,4 +1,6 @@
-﻿using static System.Threading.Timeout;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
@@ -57,8 +59,13 @@ public static partial class AsyncBridge
         else if (!HandlePool.TryTake(out result))
             result = new(WaitHandleTaskCompletionCallback);
 
-        IEquatable<short> token = result.Reset();
-        var registration = ThreadPool.UnsafeRegisterWaitForSingleObject(handle, result.Complete, token, timeout, executeOnlyOnce: true);
+        var token = result.Reset();
+        var registration = ThreadPool.UnsafeRegisterWaitForSingleObject(
+            handle,
+            Complete,
+            new Tuple<WaitHandleValueTask, short>(result, token),
+            timeout,
+            executeOnlyOnce: true);
 
         if (result.IsCompleted)
         {
@@ -70,6 +77,14 @@ public static partial class AsyncBridge
         }
 
         return result;
+
+        static void Complete(object? state, bool timedOut)
+        {
+            Debug.Assert(state is Tuple<WaitHandleValueTask, short>);
+
+            var (source, token) = Unsafe.As<Tuple<WaitHandleValueTask, short>>(state);
+            source.TrySetResult(token, timedOut is false);
+        }
     }
 
     /// <summary>
