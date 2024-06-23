@@ -92,8 +92,10 @@ public static partial class AsyncBridge
     /// </summary>
     /// <param name="handle">The handle to await.</param>
     /// <param name="timeout">The timeout used to await completion.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if handle is signaled; otherwise, <see langword="false"/> if timeout occurred.</returns>
-    public static ValueTask<bool> WaitAsync(this WaitHandle handle, TimeSpan timeout)
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static ValueTask<bool> WaitAsync(this WaitHandle handle, TimeSpan timeout, CancellationToken token = default)
     {
         ValueTask<bool> result;
         if (handle.WaitOne(0))
@@ -106,7 +108,7 @@ public static partial class AsyncBridge
         }
         else
         {
-            result = GetCompletionSource(handle, timeout).CreateTask(InfiniteTimeSpan, CancellationToken.None);
+            result = GetCompletionSource(handle, timeout).CreateTask(InfiniteTimeSpan, token);
         }
 
         return result;
@@ -118,13 +120,15 @@ public static partial class AsyncBridge
     /// Obtains a task that can be used to await handle completion.
     /// </summary>
     /// <param name="handle">The handle to await.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task that will be completed .</returns>
-    public static ValueTask WaitAsync(this WaitHandle handle)
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static ValueTask WaitAsync(this WaitHandle handle, CancellationToken token = default)
         => handle.WaitOne(0)
             ? ValueTask.CompletedTask
             : GetCompletionSource(handle, InfiniteTimeSpan)
                 .As<ISupplier<TimeSpan, CancellationToken, ValueTask>>()
-                .Invoke(InfiniteTimeSpan, CancellationToken.None);
+                .Invoke(InfiniteTimeSpan, token);
     
     /// <summary>
     /// Gets or sets the capacity of the internal pool used to create awaitable tasks returned

@@ -27,6 +27,15 @@ public sealed class AsyncBridgeTests : Test
     }
 
     [Fact]
+    public static async Task CancelWaitForSignal()
+    {
+        using var ev = new ManualResetEvent(false);
+        using var cts = new CancellationTokenSource();
+        cts.CancelAfter(150);
+        await ThrowsAsync<OperationCanceledException>(async () => await ev.WaitAsync(cts.Token));
+    }
+
+    [Fact]
     public static async Task AlreadySignaled()
     {
         using var ev = new ManualResetEvent(true);
