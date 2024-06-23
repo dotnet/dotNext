@@ -47,20 +47,8 @@ public static partial class AsyncBridge
         return result.CreateTask(InfiniteTimeSpan, token);
     }
 
-    /// <summary>
-    /// Obtains a task that can be used to await handle completion.
-    /// </summary>
-    /// <param name="handle">The handle to await.</param>
-    /// <param name="timeout">The timeout used to await completion.</param>
-    /// <returns><see langword="true"/> if handle is signaled; otherwise, <see langword="false"/> if timeout occurred.</returns>
-    public static ValueTask<bool> WaitAsync(this WaitHandle handle, TimeSpan timeout)
+    private static WaitHandleValueTask GetCompletionSource(WaitHandle handle, TimeSpan timeout)
     {
-        if (handle.WaitOne(0))
-            return new(true);
-
-        if (timeout == TimeSpan.Zero)
-            return new(false);
-
         WaitHandleValueTask? result;
 
         // do not keep long references when limit is reached
@@ -81,7 +69,32 @@ public static partial class AsyncBridge
             result.Registration = registration;
         }
 
-        return result.CreateTask(InfiniteTimeSpan, CancellationToken.None);
+        return result;
+    }
+
+    /// <summary>
+    /// Obtains a task that can be used to await handle completion.
+    /// </summary>
+    /// <param name="handle">The handle to await.</param>
+    /// <param name="timeout">The timeout used to await completion.</param>
+    /// <returns><see langword="true"/> if handle is signaled; otherwise, <see langword="false"/> if timeout occurred.</returns>
+    public static ValueTask<bool> WaitAsync(this WaitHandle handle, TimeSpan timeout)
+    {
+        ValueTask<bool> result;
+        if (handle.WaitOne(0))
+        {
+            result = new(true);
+        }
+        else if (timeout == TimeSpan.Zero)
+        {
+            result = new(false);
+        }
+        else
+        {
+            result = GetCompletionSource(handle, timeout).CreateTask(InfiniteTimeSpan, CancellationToken.None);
+        }
+
+        return result;
     }
 
     private static void Reset(ManualResetCompletionSource source) => source.Reset();
@@ -91,8 +104,13 @@ public static partial class AsyncBridge
     /// </summary>
     /// <param name="handle">The handle to await.</param>
     /// <returns>The task that will be completed .</returns>
-    public static ValueTask<bool> WaitAsync(this WaitHandle handle) => WaitAsync(handle, InfiniteTimeSpan);
-
+    public static ValueTask WaitAsync(this WaitHandle handle)
+        => handle.WaitOne(0)
+            ? ValueTask.CompletedTask
+            : GetCompletionSource(handle, InfiniteTimeSpan)
+                .As<ISupplier<TimeSpan, CancellationToken, ValueTask>>()
+                .Invoke(InfiniteTimeSpan, CancellationToken.None);
+    
     /// <summary>
     /// Gets or sets the capacity of the internal pool used to create awaitable tasks returned
     /// from the public methods in this class.

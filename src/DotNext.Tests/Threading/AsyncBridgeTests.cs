@@ -31,6 +31,7 @@ public sealed class AsyncBridgeTests : Test
     {
         using var ev = new ManualResetEvent(true);
         True(await ev.WaitAsync(DefaultTimeout));
+        True(ev.WaitAsync().IsCompletedSuccessfully);
     }
 
     [Fact]
