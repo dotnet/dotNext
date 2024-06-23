@@ -31,8 +31,12 @@ public sealed class AsyncBridgeTests : Test
     {
         using var ev = new ManualResetEvent(false);
         using var cts = new CancellationTokenSource();
-        cts.CancelAfter(150);
-        await ThrowsAsync<OperationCanceledException>(async () => await ev.WaitAsync(cts.Token));
+
+        var task = ev.WaitAsync(cts.Token).AsTask();
+        cts.Cancel();
+
+        var e = await ThrowsAsync<OperationCanceledException>(Func.Constant(task));
+        Equal(cts.Token, e.CancellationToken);
     }
 
     [Fact]
