@@ -49,6 +49,35 @@ public static partial class AsyncBridge
         return result.CreateTask(InfiniteTimeSpan, token);
     }
 
+    /// <summary>
+    /// Creates a task that will complete when any of the supplied tokens have canceled.
+    /// </summary>
+    /// <param name="tokens">The tokens to wait on for cancellation.</param>
+    /// <returns>The canceled token.</returns>
+    /// <exception cref="InvalidOperationException"><paramref name="tokens"/> is empty.</exception>
+    public static Task<CancellationToken> WaitAnyAsync(this ReadOnlySpan<CancellationToken> tokens)
+    {
+        Task<CancellationToken> result;
+        try
+        {
+            CancellationTokenCompletionSource source = tokens switch
+            {
+                [] => throw new InvalidOperationException(),
+                [var token] => new CancellationTokenCompletionSource1(token),
+                [var token1, var token2] => new CancellationTokenCompletionSource2(token1, token2),
+                _ => new CancellationTokenCompletionSourceN(tokens),
+            };
+
+            result = source.Task;
+        }
+        catch (Exception e)
+        {
+            result = Task.FromException<CancellationToken>(e);
+        }
+
+        return result;
+    }
+
     private static WaitHandleValueTask GetCompletionSource(WaitHandle handle, TimeSpan timeout)
     {
         WaitHandleValueTask? result;
