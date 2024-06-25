@@ -1,6 +1,11 @@
 Release Notes
 ====
 
+# 06-25-2024
+<a href="https://www.nuget.org/packages/dotnext.threading/5.8.0">DotNext.Threading 5.8.0</a>
+* Introduced `WaitAnyAsync` method to wait on a group of cancellation tokens
+* Added cancellation support for `WaitAsync` extension method for [WaitHandle](https://learn.microsoft.com/en-us/dotnet/api/system.threading.waithandle) class
+
 # 06-20-2024
 <a href="https://www.nuget.org/packages/dotnext/5.7.0">DotNext 5.7.0</a>
 * `Timestamp.ElapsedTicks` returns a value that is always greater than zero

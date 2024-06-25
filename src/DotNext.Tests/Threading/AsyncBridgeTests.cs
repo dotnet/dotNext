@@ -27,10 +27,24 @@ public sealed class AsyncBridgeTests : Test
     }
 
     [Fact]
+    public static async Task CancelWaitForSignal()
+    {
+        using var ev = new ManualResetEvent(false);
+        using var cts = new CancellationTokenSource();
+
+        var task = ev.WaitAsync(cts.Token).AsTask();
+        cts.Cancel();
+
+        var e = await ThrowsAsync<OperationCanceledException>(Func.Constant(task));
+        Equal(cts.Token, e.CancellationToken);
+    }
+
+    [Fact]
     public static async Task AlreadySignaled()
     {
         using var ev = new ManualResetEvent(true);
         True(await ev.WaitAsync(DefaultTimeout));
+        True(ev.WaitAsync().IsCompletedSuccessfully);
     }
 
     [Fact]
@@ -67,5 +81,44 @@ public sealed class AsyncBridgeTests : Test
         await ThrowsAnyAsync<OperationCanceledException>(new CancellationToken(true).WaitAsync(completeAsCanceled: true).AsTask);
         await new CancellationToken(true).WaitAsync();
         await ThrowsAsync<ArgumentException>(new CancellationToken(false).WaitAsync().AsTask);
+    }
+
+    [Fact]
+    public static async Task WaitForCancellationSingleToken()
+    {
+        using var cts = new CancellationTokenSource();
+        var task = AsyncBridge.WaitAnyAsync([cts.Token]);
+        False(task.IsCompletedSuccessfully);
+        
+        cts.Cancel();
+        Equal(cts.Token, await task);
+    }
+    
+    [Fact]
+    public static async Task WaitForCancellationTwoTokens()
+    {
+        using var cts1 = new CancellationTokenSource();
+        using var cts2 = new CancellationTokenSource();
+        var task = AsyncBridge.WaitAnyAsync([cts1.Token, cts2.Token]);
+        False(task.IsCompletedSuccessfully);
+        
+        cts2.Cancel();
+        cts1.Cancel();
+        Equal(cts2.Token, await task);
+    }
+
+    [Fact]
+    public static async Task WaitForCancellationMultipleTokens()
+    {
+        using var cts1 = new CancellationTokenSource();
+        using var cts2 = new CancellationTokenSource();
+        using var cts3 = new CancellationTokenSource();
+        var task = AsyncBridge.WaitAnyAsync([cts1.Token, cts2.Token, cts3.Token]);
+        False(task.IsCompletedSuccessfully);
+
+        cts3.Cancel();
+        cts2.Cancel();
+        cts1.Cancel();
+        Equal(cts3.Token, await task);
     }
 }
