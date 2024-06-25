@@ -44,31 +44,11 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 06-20-2024
+Release Date: 06-25-2024
 
-<a href="https://www.nuget.org/packages/dotnext/5.7.0">DotNext 5.7.0</a>
-* `Timestamp.ElapsedTicks` returns a value that is always greater than zero
-* Fixed hidden copies of value types caused by **in** modifier
-* Added support of [TimeProvider](https://learn.microsoft.com/en-us/dotnet/api/system.timeprovider) to `Timestamp` and `Timeout` types
-
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.7.0">DotNext.Metaprogramming 5.7.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/5.7.0">DotNext.Unsafe 5.7.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.threading/5.7.0">DotNext.Threading 5.7.0</a>
-* Fixed [241](https://github.com/dotnet/dotNext/issues/241)
-* Introduced API for implementing leases, see `DotNext.Threading.Leases` namespace
-
-<a href="https://www.nuget.org/packages/dotnext.io/5.7.0">DotNext.IO 5.7.0</a>
-* Various performance improvements
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.7.0">DotNext.Net.Cluster 5.7.0</a>
-* Fixed [242](https://github.com/dotnet/dotNext/issues/242)
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.7.0">DotNext.AspNetCore.Cluster 5.7.0</a>
-* Fixed [242](https://github.com/dotnet/dotNext/issues/242)
+<a href="https://www.nuget.org/packages/dotnext.threading/5.8.0">DotNext.Threading 5.8.0</a>
+* Introduced `WaitAnyAsync` method to wait on a group of cancellation tokens
+* Added cancellation support for `WaitAsync` extension method for [WaitHandle](https://learn.microsoft.com/en-us/dotnet/api/system.threading.waithandle) class
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
