@@ -696,6 +696,7 @@ public partial class PersistentState
                 await WriteFooterAsync(token).ConfigureAwait(false);
             }
 
+            RandomAccess.FlushToDisk(Handle);
             RandomAccess.SetLength(Handle, writer.FilePosition + footer.Length);
 
             IsSealed = true;
