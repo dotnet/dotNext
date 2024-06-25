@@ -205,7 +205,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// </remarks>
     /// <param name="timeout">The timeout associated with the task.</param>
     /// <param name="token">The cancellation token that can be used to cancel the task.</param>
-    /// <returns>A fresh incompleted task.</returns>
+    /// <returns>A fresh uncompleted task.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is less than zero but not equals to <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</exception>
     /// <exception cref="InvalidOperationException">The source is in invalid state.</exception>
     public ValueTask<T> CreateTask(TimeSpan timeout, CancellationToken token)

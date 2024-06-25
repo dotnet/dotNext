@@ -30,13 +30,6 @@ public static partial class AsyncBridge
             Interlocked.Decrement(ref instantiatedTasks);
             backToPool(this);
         }
-
-        internal void Complete(object? token, bool timedOut)
-        {
-            Debug.Assert(token is short);
-
-            TrySetResult(Unsafe.Unbox<short>(token), !timedOut);
-        }
     }
 
     private sealed class WaitHandleValueTaskPool : ConcurrentBag<WaitHandleValueTask>
