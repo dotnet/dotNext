@@ -42483,6 +42483,22 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncBridge.MaxPoolSize
   nameWithType: AsyncBridge.MaxPoolSize
+- uid: DotNext.Threading.AsyncBridge.WaitAnyAsync(System.ReadOnlySpan{System.Threading.CancellationToken})
+  name: WaitAnyAsync(ReadOnlySpan<CancellationToken>)
+  href: api/DotNext.Threading.AsyncBridge.html#DotNext_Threading_AsyncBridge_WaitAnyAsync_System_ReadOnlySpan_System_Threading_CancellationToken__
+  commentId: M:DotNext.Threading.AsyncBridge.WaitAnyAsync(System.ReadOnlySpan{System.Threading.CancellationToken})
+  name.vb: WaitAnyAsync(ReadOnlySpan(Of CancellationToken))
+  fullName: DotNext.Threading.AsyncBridge.WaitAnyAsync(System.ReadOnlySpan<System.Threading.CancellationToken>)
+  fullName.vb: DotNext.Threading.AsyncBridge.WaitAnyAsync(System.ReadOnlySpan(Of System.Threading.CancellationToken))
+  nameWithType: AsyncBridge.WaitAnyAsync(ReadOnlySpan<CancellationToken>)
+  nameWithType.vb: AsyncBridge.WaitAnyAsync(ReadOnlySpan(Of CancellationToken))
+- uid: DotNext.Threading.AsyncBridge.WaitAnyAsync*
+  name: WaitAnyAsync
+  href: api/DotNext.Threading.AsyncBridge.html#DotNext_Threading_AsyncBridge_WaitAnyAsync_
+  commentId: Overload:DotNext.Threading.AsyncBridge.WaitAnyAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncBridge.WaitAnyAsync
+  nameWithType: AsyncBridge.WaitAnyAsync
 - uid: DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.CancellationToken,System.Boolean)
   name: WaitAsync(CancellationToken, bool)
   href: api/DotNext.Threading.AsyncBridge.html#DotNext_Threading_AsyncBridge_WaitAsync_System_Threading_CancellationToken_System_Boolean_
@@ -42492,18 +42508,18 @@ references:
   fullName.vb: DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.CancellationToken, Boolean)
   nameWithType: AsyncBridge.WaitAsync(CancellationToken, bool)
   nameWithType.vb: AsyncBridge.WaitAsync(CancellationToken, Boolean)
-- uid: DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle)
-  name: WaitAsync(WaitHandle)
-  href: api/DotNext.Threading.AsyncBridge.html#DotNext_Threading_AsyncBridge_WaitAsync_System_Threading_WaitHandle_
-  commentId: M:DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle)
-  fullName: DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle)
-  nameWithType: AsyncBridge.WaitAsync(WaitHandle)
-- uid: DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle,System.TimeSpan)
-  name: WaitAsync(WaitHandle, TimeSpan)
-  href: api/DotNext.Threading.AsyncBridge.html#DotNext_Threading_AsyncBridge_WaitAsync_System_Threading_WaitHandle_System_TimeSpan_
-  commentId: M:DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle,System.TimeSpan)
-  fullName: DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle, System.TimeSpan)
-  nameWithType: AsyncBridge.WaitAsync(WaitHandle, TimeSpan)
+- uid: DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle,System.Threading.CancellationToken)
+  name: WaitAsync(WaitHandle, CancellationToken)
+  href: api/DotNext.Threading.AsyncBridge.html#DotNext_Threading_AsyncBridge_WaitAsync_System_Threading_WaitHandle_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle, System.Threading.CancellationToken)
+  nameWithType: AsyncBridge.WaitAsync(WaitHandle, CancellationToken)
+- uid: DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle,System.TimeSpan,System.Threading.CancellationToken)
+  name: WaitAsync(WaitHandle, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncBridge.html#DotNext_Threading_AsyncBridge_WaitAsync_System_Threading_WaitHandle_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle,System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncBridge.WaitAsync(WaitHandle, TimeSpan, CancellationToken)
 - uid: DotNext.Threading.AsyncBridge.WaitAsync*
   name: WaitAsync
   href: api/DotNext.Threading.AsyncBridge.html#DotNext_Threading_AsyncBridge_WaitAsync_
