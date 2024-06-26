@@ -1,6 +1,13 @@
 Release Notes
 ====
 
+# 06-26-2024
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.7.1">DotNext.Net.Cluster 5.7.1</a>
+* Improved reliability of disk I/O for the new WAL binary format
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.7.1">DotNext.AspNetCore.Cluster 5.7.1</a>
+* Improved reliability of disk I/O for the new WAL binary format
+
 # 06-25-2024
 <a href="https://www.nuget.org/packages/dotnext.threading/5.8.0">DotNext.Threading 5.8.0</a>
 * Introduced `WaitAnyAsync` method to wait on a group of cancellation tokens
