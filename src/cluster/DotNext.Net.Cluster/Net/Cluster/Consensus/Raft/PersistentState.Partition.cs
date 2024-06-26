@@ -457,13 +457,10 @@ public partial class PersistentState
     {
         private const int HeaderSize = 512;
 
-        private static readonly ReadOnlyMemory<byte> EmptyMetadata;
         private static readonly ReadOnlyMemory<byte> EphemeralMetadata;
 
         static Table()
         {
-            EmptyMetadata = new byte[LogEntryMetadata.Size]; // all zeroes
-
             var ephemeral = LogEntryMetadata.Create(LogEntry.Initial, HeaderSize + LogEntryMetadata.Size, length: 0L);
             var buffer = new byte[LogEntryMetadata.Size];
             ephemeral.Format(buffer);
