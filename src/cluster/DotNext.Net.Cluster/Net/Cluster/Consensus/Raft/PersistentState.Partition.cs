@@ -15,12 +15,12 @@ public partial class PersistentState
     private protected abstract class Partition : ConcurrentStorageAccess
     {
         internal const int MaxRecordsPerPartition = int.MaxValue / LogEntryMetadata.Size;
-        protected static readonly CacheRecord EmptyRecord = new() { PersistenceMode = CachedLogEntryPersistenceMode.CopyToBuffer };
+        private static readonly CacheRecord EmptyRecord = new() { PersistenceMode = CachedLogEntryPersistenceMode.CopyToBuffer };
 
         internal readonly long FirstIndex, PartitionNumber, LastIndex;
         private Partition? previous, next;
         private object?[]? context;
-        protected MemoryOwner<CacheRecord> entryCache;
+        private MemoryOwner<CacheRecord> entryCache;
         protected int runningIndex;
 
         protected Partition(DirectoryInfo location, int offset, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize, FileAttributes attributes = FileAttributes.NotContentIndexed)
@@ -457,19 +457,6 @@ public partial class PersistentState
     {
         private const int HeaderSize = 512;
 
-        private static readonly ReadOnlyMemory<byte> EmptyMetadata;
-        private static readonly ReadOnlyMemory<byte> EphemeralMetadata;
-
-        static Table()
-        {
-            EmptyMetadata = new byte[LogEntryMetadata.Size]; // all zeroes
-
-            var ephemeral = LogEntryMetadata.Create(LogEntry.Initial, HeaderSize + LogEntryMetadata.Size, length: 0L);
-            var buffer = new byte[LogEntryMetadata.Size];
-            ephemeral.Format(buffer);
-            EphemeralMetadata = buffer;
-        }
-
         // metadata management
         private MemoryOwner<byte> header, footer;
         private (ReadOnlyMemory<byte>, ReadOnlyMemory<byte>) bufferTuple;
@@ -485,7 +472,7 @@ public partial class PersistentState
             // init ephemeral 0 entry
             if (PartitionNumber is 0L)
             {
-                EphemeralMetadata.CopyTo(footer.Memory);
+                LogEntryMetadata.Create(LogEntry.Initial, HeaderSize + LogEntryMetadata.Size, length: 0L).Format(footer.Span);
             }
         }
 
@@ -517,6 +504,7 @@ public partial class PersistentState
 
                 fileOffset -= footer.Length;
                 RandomAccess.Read(Handle, footer.Span, fileOffset);
+                runningIndex = int.CreateChecked(LastIndex - FirstIndex);
             }
             else
             {
@@ -534,7 +522,9 @@ public partial class PersistentState
                     fileOffset = HeaderSize;
                 }
 
-                for (Span<byte> metadataBuffer = stackalloc byte[LogEntryMetadata.Size], metadataTable = footer.Span; footerOffset < footer.Length; footerOffset += LogEntryMetadata.Size)
+                for (Span<byte> metadataBuffer = stackalloc byte[LogEntryMetadata.Size], metadataTable = footer.Span;
+                     footerOffset < footer.Length;
+                     footerOffset += LogEntryMetadata.Size, runningIndex++)
                 {
                     var count = RandomAccess.Read(Handle, metadataBuffer, fileOffset);
                     if (count < LogEntryMetadata.Size)
@@ -696,6 +686,7 @@ public partial class PersistentState
                 await WriteFooterAsync(token).ConfigureAwait(false);
             }
 
+            RandomAccess.FlushToDisk(Handle);
             RandomAccess.SetLength(Handle, writer.FilePosition + footer.Length);
 
             IsSealed = true;
