@@ -15,12 +15,12 @@ public partial class PersistentState
     private protected abstract class Partition : ConcurrentStorageAccess
     {
         internal const int MaxRecordsPerPartition = int.MaxValue / LogEntryMetadata.Size;
-        protected static readonly CacheRecord EmptyRecord = new() { PersistenceMode = CachedLogEntryPersistenceMode.CopyToBuffer };
+        private static readonly CacheRecord EmptyRecord = new() { PersistenceMode = CachedLogEntryPersistenceMode.CopyToBuffer };
 
         internal readonly long FirstIndex, PartitionNumber, LastIndex;
         private Partition? previous, next;
         private object?[]? context;
-        protected MemoryOwner<CacheRecord> entryCache;
+        private MemoryOwner<CacheRecord> entryCache;
         protected int runningIndex;
 
         protected Partition(DirectoryInfo location, int offset, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize, FileAttributes attributes = FileAttributes.NotContentIndexed)
@@ -514,6 +514,7 @@ public partial class PersistentState
 
                 fileOffset -= footer.Length;
                 RandomAccess.Read(Handle, footer.Span, fileOffset);
+                runningIndex = int.CreateChecked(LastIndex - FirstIndex);
             }
             else
             {
@@ -531,7 +532,9 @@ public partial class PersistentState
                     fileOffset = HeaderSize;
                 }
 
-                for (Span<byte> metadataBuffer = stackalloc byte[LogEntryMetadata.Size], metadataTable = footer.Span; footerOffset < footer.Length; footerOffset += LogEntryMetadata.Size)
+                for (Span<byte> metadataBuffer = stackalloc byte[LogEntryMetadata.Size], metadataTable = footer.Span;
+                     footerOffset < footer.Length;
+                     footerOffset += LogEntryMetadata.Size, runningIndex++)
                 {
                     var count = RandomAccess.Read(Handle, metadataBuffer, fileOffset);
                     if (count < LogEntryMetadata.Size)
