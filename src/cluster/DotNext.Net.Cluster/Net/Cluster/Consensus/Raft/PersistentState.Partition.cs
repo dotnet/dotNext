@@ -457,16 +457,6 @@ public partial class PersistentState
     {
         private const int HeaderSize = 512;
 
-        private static readonly ReadOnlyMemory<byte> EphemeralMetadata;
-
-        static Table()
-        {
-            var ephemeral = LogEntryMetadata.Create(LogEntry.Initial, HeaderSize + LogEntryMetadata.Size, length: 0L);
-            var buffer = new byte[LogEntryMetadata.Size];
-            ephemeral.Format(buffer);
-            EphemeralMetadata = buffer;
-        }
-
         // metadata management
         private MemoryOwner<byte> header, footer;
         private (ReadOnlyMemory<byte>, ReadOnlyMemory<byte>) bufferTuple;
@@ -482,7 +472,7 @@ public partial class PersistentState
             // init ephemeral 0 entry
             if (PartitionNumber is 0L)
             {
-                EphemeralMetadata.CopyTo(footer.Memory);
+                LogEntryMetadata.Create(LogEntry.Initial, HeaderSize + LogEntryMetadata.Size, length: 0L).Format(footer.Span);
             }
         }
 
