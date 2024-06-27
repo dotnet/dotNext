@@ -121,4 +121,16 @@ public sealed class AsyncBridgeTests : Test
         cts1.Cancel();
         Equal(cts3.Token, await task);
     }
+    
+    [Fact]
+    public static async Task Interruption()
+    {
+        const string interruptionReason = "Reason";
+        var task = AsyncBridge.WaitAnyAsync([new CancellationToken(canceled: false)], out var interruption);
+        False(task.IsCompletedSuccessfully);
+        True(interruption(interruptionReason));
+
+        var e = await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task));
+        Equal(interruptionReason, e.Reason);
+    }
 }

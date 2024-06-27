@@ -66,6 +66,17 @@ public static partial class AsyncBridge
             }
         }
 
+        internal bool TryInterrupt(object? reason)
+        {
+            bool result;
+            if (result = TrySetException(new PendingTaskInterruptedException { Reason = reason }))
+            {
+                Cleanup();
+            }
+
+            return result;
+        }
+
         private static void Unregister(ReadOnlySpan<CancellationTokenRegistration> registrations)
         {
             foreach (ref readonly var registration in registrations)
