@@ -163,7 +163,7 @@ public partial class PersistentState
             ref var cachedEntry = ref entryCache[index];
             Debug.Assert(cachedEntry.PersistenceMode is CachedLogEntryPersistenceMode.None);
             cachedEntry.PersistenceMode = CachedLogEntryPersistenceMode.CopyToBuffer;
-            var offset = GetOffset(index);
+            var offset = GetMetadata(index).Offset;
 
             return cachedEntry.Content.IsEmpty
                 ? ValueTask.CompletedTask
@@ -204,9 +204,6 @@ public partial class PersistentState
 
             return GetMetadata(ToRelativeIndex(absoluteIndex)).Term;
         }
-
-        private long GetOffset(int index)
-            => GetMetadata(index).Offset;
 
         private void UpdateCache(in CachedLogEntry entry, int index)
         {
