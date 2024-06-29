@@ -671,6 +671,8 @@ public partial class PersistentState
         {
             Debug.Assert(writer.FilePosition > HeaderSize);
             
+            Invalidate();
+            
             // use scatter I/O to flush the rest of the partition
             if (writer.HasBufferedData)
             {
