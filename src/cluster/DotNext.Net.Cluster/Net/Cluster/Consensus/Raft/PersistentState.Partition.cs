@@ -669,6 +669,8 @@ public partial class PersistentState
 
         private async ValueTask FlushAndSealAsync(CancellationToken token)
         {
+            Debug.Assert(writer.FilePosition > HeaderSize);
+            
             // use scatter I/O to flush the rest of the partition
             if (writer.HasBufferedData)
             {
@@ -680,7 +682,7 @@ public partial class PersistentState
             }
             else
             {
-                await WriteFooterAsync(token).ConfigureAwait(false);
+                await RandomAccess.WriteAsync(Handle, footer.Memory, writer.FilePosition, token).ConfigureAwait(false);
             }
 
             RandomAccess.FlushToDisk(Handle);
@@ -694,9 +696,6 @@ public partial class PersistentState
 
         private ValueTask WriteHeaderAsync(CancellationToken token)
             => RandomAccess.WriteAsync(Handle, header.Memory, fileOffset: 0L, token);
-
-        private ValueTask WriteFooterAsync(CancellationToken token)
-            => RandomAccess.WriteAsync(Handle, footer.Memory, writer.FilePosition, token);
 
         ReadOnlyMemory<byte> IReadOnlyList<ReadOnlyMemory<byte>>.this[int index] => index switch
         {
