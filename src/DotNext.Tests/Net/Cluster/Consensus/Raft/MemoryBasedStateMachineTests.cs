@@ -1030,7 +1030,7 @@ public sealed class MemoryBasedStateMachineTests : Test
     [InlineData(true)]
     public static async Task JsonSerialization(bool cached)
     {
-        var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         using var state = new JsonPersistentState(dir, cached);
         var entry1 = state.CreateJsonLogEntry(new TestJsonObject { StringField = "Entry1" });
         var entry2 = state.CreateJsonLogEntry(new TestJsonObject { StringField = "Entry2" });
@@ -1044,5 +1044,46 @@ public sealed class MemoryBasedStateMachineTests : Test
 
         payload = state.Entries[1];
         Equal(entry2.Content.StringField.Value, payload.StringField.Value);
+    }
+
+    [Fact]
+    public static async Task RegressionIssue244()
+    {
+        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        using (var state = new PersistentStateWithoutSnapshot(path, RecordsPerPartition, new() { UseCaching = true }))
+        {
+            var entries = RandomEntries();
+            foreach (var entry in entries[..2])
+            {
+                await state.AppendAsync(entry);
+            }
+
+            await state.CommitAsync();
+        }
+
+        using (var state = new PersistentStateWithoutSnapshot(path, RecordsPerPartition, new() { UseCaching = true }))
+        {
+            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = (entries, snapshotIndex, token) =>
+            {
+                NotEmpty(entries);
+                Null(snapshotIndex);
+                Equal(1L, entries[1].Term);
+                Equal(1L, entries[2].Term);
+                return ValueTask.FromResult(Missing.Value);
+            };
+
+            await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1L);
+        }
+
+        static Int64LogEntry[] RandomEntries()
+        {
+            var entries = new Int64LogEntry[RecordsPerPartition];
+            for (var i = 0; i < entries.Length; i++)
+            {
+                entries[i] = new Int64LogEntry() { Term = 1L, Content = i + 10L };
+            }
+
+            return entries;
+        }
     }
 }
