@@ -24,8 +24,7 @@ public partial class PersistentState
 
     internal enum CachedLogEntryPersistenceMode : byte
     {
-        None = 0,
-        CopyToBuffer,
+        CopyToBuffer = 0,
         SkipBuffer,
     }
 

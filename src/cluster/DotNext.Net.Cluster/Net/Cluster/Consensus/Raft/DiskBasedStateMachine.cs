@@ -27,7 +27,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
     /// <param name="configuration">The configuration of the persistent audit trail.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
     protected DiskBasedStateMachine(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
-        : base(path, recordsPerPartition, configuration ?? new())
+        : base(path, recordsPerPartition, configuration ??= new())
     {
     }
 
@@ -64,27 +64,22 @@ public abstract partial class DiskBasedStateMachine : PersistentState
 
         for (Partition? partition = null; startIndex <= commitIndex; LastAppliedEntryIndex = startIndex++, token.ThrowIfCancellationRequested())
         {
-            if (TryGetPartition(startIndex, ref partition))
+            if (TryGetPartition(startIndex, ref partition, out var switched))
             {
+                if (switched)
+                {
+                    await partition.FlushAsync(token).ConfigureAwait(false);
+                }
+
                 var entry = partition.Read(sessionId, startIndex);
                 var snapshotLength = await ApplyCoreAsync(entry).ConfigureAwait(false);
                 Volatile.Write(ref lastTerm, entry.Term);
                 partition.ClearContext(startIndex);
 
-                // Remove log entry from the cache according to eviction policy
-                var completedPartition = startIndex == partition.LastIndex;
-                if (!entry.IsPersisted)
-                {
-                    await partition.PersistCachedEntryAsync(startIndex, snapshotLength.HasValue).ConfigureAwait(false);
+                if (bufferManager.IsCachingEnabled)
+                    partition.Evict(startIndex);
 
-                    // Flush partition if we are finished or at the last entry in it
-                    if (startIndex == commitIndex | completedPartition)
-                    {
-                        await partition.FlushAsync(token).ConfigureAwait(false);
-                    }
-                }
-
-                if (completedPartition)
+                if (startIndex == commitIndex || startIndex == partition.LastIndex)
                 {
                     partition.ClearContext();
                 }

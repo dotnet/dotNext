@@ -44,16 +44,21 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 06-25-2024
+Release Date: 07-01-2024
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.8.0">DotNext.Threading 5.8.0</a>
-* Introduced `WaitAnyAsync` method to wait on a group of cancellation tokens
-* Added cancellation support for `WaitAsync` extension method for [WaitHandle](https://learn.microsoft.com/en-us/dotnet/api/system.threading.waithandle) class
+<a href="https://www.nuget.org/packages/dotnext.threading/5.9.0">DotNext.Threading 5.9.0</a>
+* Added `WaitAnyAsync` overload method to wait on a group of cancellation tokens that supports interruption
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.7.2">DotNext.Net.Cluster 5.7.2</a>
+* Fixed [244](https://github.com/dotnet/dotNext/issues/244)
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.7.2">DotNext.AspNetCore.Cluster 5.7.2</a>
+* Fixed [244](https://github.com/dotnet/dotNext/issues/244)
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
 # Release & Support Policy
-The libraries are versioned according with [Semantic Versioning 2.0](https://semver.org/).
+The libraries are versioned according to [Semantic Versioning 2.0](https://semver.org/).
 
 | Version | .NET compatibility | Support Level |
 | ---- | ---- | ---- |
