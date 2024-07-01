@@ -462,6 +462,9 @@ public partial class PersistentState
             : base(location, HeaderSize, bufferSize, recordsPerPartition, partitionNumber, in manager, readersCount, writeMode, initialSize)
         {
             footer = manager.BufferAllocator.AllocateExactly(recordsPerPartition * LogEntryMetadata.Size);
+#if DEBUG
+            footer.Span.Clear();
+#endif
 
             header = manager.BufferAllocator.AllocateExactly(HeaderSize);
             header.Span.Clear();
