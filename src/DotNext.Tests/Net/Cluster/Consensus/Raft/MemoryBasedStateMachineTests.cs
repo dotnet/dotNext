@@ -1067,8 +1067,8 @@ public sealed class MemoryBasedStateMachineTests : Test
             {
                 NotEmpty(entries);
                 Null(snapshotIndex);
+                Equal(1L, entries[0].Term);
                 Equal(1L, entries[1].Term);
-                Equal(1L, entries[2].Term);
                 return ValueTask.FromResult(Missing.Value);
             };
 
