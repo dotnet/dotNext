@@ -42492,6 +42492,15 @@ references:
   fullName.vb: DotNext.Threading.AsyncBridge.WaitAnyAsync(System.ReadOnlySpan(Of System.Threading.CancellationToken))
   nameWithType: AsyncBridge.WaitAnyAsync(ReadOnlySpan<CancellationToken>)
   nameWithType.vb: AsyncBridge.WaitAnyAsync(ReadOnlySpan(Of CancellationToken))
+- uid: DotNext.Threading.AsyncBridge.WaitAnyAsync(System.ReadOnlySpan{System.Threading.CancellationToken},System.Func{System.Object,System.Boolean}@)
+  name: WaitAnyAsync(ReadOnlySpan<CancellationToken>, out Func<object?, bool>)
+  href: api/DotNext.Threading.AsyncBridge.html#DotNext_Threading_AsyncBridge_WaitAnyAsync_System_ReadOnlySpan_System_Threading_CancellationToken__System_Func_System_Object_System_Boolean___
+  commentId: M:DotNext.Threading.AsyncBridge.WaitAnyAsync(System.ReadOnlySpan{System.Threading.CancellationToken},System.Func{System.Object,System.Boolean}@)
+  name.vb: WaitAnyAsync(ReadOnlySpan(Of CancellationToken), Func(Of Object, Boolean))
+  fullName: DotNext.Threading.AsyncBridge.WaitAnyAsync(System.ReadOnlySpan<System.Threading.CancellationToken>, out System.Func<object?, bool>)
+  fullName.vb: DotNext.Threading.AsyncBridge.WaitAnyAsync(System.ReadOnlySpan(Of System.Threading.CancellationToken), System.Func(Of Object, Boolean))
+  nameWithType: AsyncBridge.WaitAnyAsync(ReadOnlySpan<CancellationToken>, out Func<object?, bool>)
+  nameWithType.vb: AsyncBridge.WaitAnyAsync(ReadOnlySpan(Of CancellationToken), Func(Of Object, Boolean))
 - uid: DotNext.Threading.AsyncBridge.WaitAnyAsync*
   name: WaitAnyAsync
   href: api/DotNext.Threading.AsyncBridge.html#DotNext_Threading_AsyncBridge_WaitAnyAsync_
