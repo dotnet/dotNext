@@ -63,8 +63,11 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         snapshotBufferSize = configuration.SnapshotBufferSize;
 
         // with concurrent compaction, we will release cached log entries according to partition lifetime
-        evictOnCommit = compaction is not CompactionMode.Incremental && configuration.CacheEvictionPolicy is LogEntryCacheEvictionPolicy.OnCommit;
-        snapshot = new(path, snapshotBufferSize, in bufferManager, concurrentReads, configuration.WriteMode, initialSize: configuration.InitialPartitionSize);
+        evictOnCommit = compaction is not CompactionMode.Incremental
+                        && configuration.CacheEvictionPolicy is LogEntryCacheEvictionPolicy.OnCommit
+                        && configuration.UseCaching;
+        snapshot = new(path, snapshotBufferSize, in bufferManager, concurrentReads, configuration.WriteMode,
+            initialSize: configuration.InitialPartitionSize);
     }
 
     /// <summary>
@@ -93,7 +96,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     {
         // Calculate the term of the snapshot
         Partition? current = LastPartition;
-        builder.Term = TryGetPartition(upperBoundIndex, ref current)
+        builder.Term = TryGetPartition(upperBoundIndex, ref current, out _)
             ? current.GetTerm(upperBoundIndex)
             : throw new MissingPartitionException(upperBoundIndex);
 
@@ -113,7 +116,8 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     private bool TryGetPartition(SnapshotBuilder builder, long startIndex, long endIndex, ref long currentIndex, [NotNullWhen(true)] ref Partition? partition)
     {
         builder.AdjustIndex(startIndex, endIndex, ref currentIndex);
-        return currentIndex.IsBetween(startIndex.Enclosed(), endIndex.Enclosed()) && TryGetPartition(currentIndex, ref partition);
+        return currentIndex.IsBetween(startIndex.Enclosed(), endIndex.Enclosed())
+               && TryGetPartition(currentIndex, ref partition, out _);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -687,27 +691,24 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         var commitIndex = LastCommittedEntryIndex;
         for (Partition? partition = null; startIndex <= commitIndex; LastAppliedEntryIndex = startIndex++, token.ThrowIfCancellationRequested())
         {
-            if (TryGetPartition(startIndex, ref partition))
+            if (TryGetPartition(startIndex, ref partition, out var switched))
             {
+                if (switched)
+                {
+                    await partition.FlushAsync(token).ConfigureAwait(false);
+                }
+
                 var entry = partition.Read(sessionId, startIndex);
                 await ApplyCoreAsync(entry).ConfigureAwait(false);
                 Volatile.Write(ref lastTerm, entry.Term);
                 partition.ClearContext(startIndex);
 
-                // Remove log entry from the cache according to eviction policy
-                var completedPartition = startIndex == partition.LastIndex;
-                if (!entry.IsPersisted)
+                if (evictOnCommit && bufferManager.IsCachingEnabled)
                 {
-                    await partition.PersistCachedEntryAsync(startIndex, evictOnCommit).ConfigureAwait(false);
-
-                    // Flush partition if we are finished or at the last entry in it
-                    if (startIndex == commitIndex | completedPartition)
-                    {
-                        await partition.FlushAsync(token).ConfigureAwait(false);
-                    }
+                    partition.Evict(startIndex);
                 }
 
-                if (completedPartition)
+                if (startIndex == commitIndex || startIndex == partition.LastIndex)
                 {
                     partition.ClearContext();
                 }
@@ -758,7 +759,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             if (compaction is CompactionMode.Incremental)
             {
                 incrementalBuilder = await InitializeLongLivingSnapshotBuilderAsync(session).ConfigureAwait(false);
-                for (Partition? partition = FirstPartition; TryGetPartition(startIndex, ref partition) && partition is not null && startIndex <= LastCommittedEntryIndex; startIndex++)
+                for (var partition = FirstPartition; TryGetPartition(startIndex, ref partition, out _) && startIndex <= LastCommittedEntryIndex; startIndex++)
                 {
                     entry = partition.Read(session, startIndex);
                     incrementalBuilder.Builder.Term = entry.Term;

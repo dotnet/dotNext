@@ -44,12 +44,6 @@ public partial class PersistentState
             index = -metadata.Index;
         }
 
-        internal bool IsPersisted
-        {
-            get;
-            init;
-        }
-
         /// <summary>
         /// Gets or sets context associated with this log entry.
         /// </summary>

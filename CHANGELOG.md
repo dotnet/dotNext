@@ -1,6 +1,16 @@
 Release Notes
 ====
 
+# 07-01-2024
+<a href="https://www.nuget.org/packages/dotnext.threading/5.9.0">DotNext.Threading 5.9.0</a>
+* Added `WaitAnyAsync` overload method to wait on a group of cancellation tokens that supports interruption
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.7.2">DotNext.Net.Cluster 5.7.2</a>
+* Fixed [244](https://github.com/dotnet/dotNext/issues/244)
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.7.2">DotNext.AspNetCore.Cluster 5.7.2</a>
+* Fixed [244](https://github.com/dotnet/dotNext/issues/244)
+
 # 06-26-2024
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/5.7.1">DotNext.Net.Cluster 5.7.1</a>
 * Improved reliability of disk I/O for the new WAL binary format

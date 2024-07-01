@@ -49,6 +49,14 @@ public static partial class AsyncBridge
         return result.CreateTask(InfiniteTimeSpan, token);
     }
 
+    private static CancellationTokenCompletionSource GetCompletionSource(ReadOnlySpan<CancellationToken> tokens) => tokens switch
+    {
+        [] => throw new InvalidOperationException(),
+        [var token] => new CancellationTokenCompletionSource1(token),
+        [var token1, var token2] => new CancellationTokenCompletionSource2(token1, token2),
+        _ => new CancellationTokenCompletionSourceN(tokens),
+    };
+
     /// <summary>
     /// Creates a task that will complete when any of the supplied tokens have canceled.
     /// </summary>
@@ -60,19 +68,37 @@ public static partial class AsyncBridge
         Task<CancellationToken> result;
         try
         {
-            CancellationTokenCompletionSource source = tokens switch
-            {
-                [] => throw new InvalidOperationException(),
-                [var token] => new CancellationTokenCompletionSource1(token),
-                [var token1, var token2] => new CancellationTokenCompletionSource2(token1, token2),
-                _ => new CancellationTokenCompletionSourceN(tokens),
-            };
-
-            result = source.Task;
+            result = GetCompletionSource(tokens).Task;
         }
         catch (Exception e)
         {
             result = Task.FromException<CancellationToken>(e);
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Creates a task that will complete when any of the supplied tokens have canceled.
+    /// </summary>
+    /// <param name="tokens">The tokens to wait on for cancellation.</param>
+    /// <param name="interruption">An interruption procedure than can be used to turn the returned task into the failed state.</param>
+    /// <returns>The canceled token.</returns>
+    /// <exception cref="InvalidOperationException"><paramref name="tokens"/> is empty.</exception>
+    /// <exception cref="PendingTaskInterruptedException">The returned task is interrupted by <paramref name="interruption"/> procedure.</exception>
+    public static Task<CancellationToken> WaitAnyAsync(this ReadOnlySpan<CancellationToken> tokens, out Func<object?, bool> interruption)
+    {
+        Task<CancellationToken> result;
+        try
+        {
+            var source = GetCompletionSource(tokens);
+            result = source.Task;
+            interruption = source.TryInterrupt;
+        }
+        catch (Exception e)
+        {
+            result = Task.FromException<CancellationToken>(e);
+            interruption = static _ => false;
         }
 
         return result;

@@ -127,29 +127,17 @@ public partial class PersistentState
             // fast path without any overhead for LE byte order
             ref var ptr = ref MemoryMarshal.GetReference(output);
 
-            if (!BitConverter.IsLittleEndian)
-            {
-                // BE case
-                FormatSlow(output);
-            }
-            else if (IntPtr.Size is sizeof(long))
-            {
-                // 64-bit LE case, the pointer is always aligned to 8 bytes
-                Debug.Assert(Intrinsics.AddressOf(in ptr) % IntPtr.Size is 0);
-                Unsafe.As<byte, LogEntryMetadata>(ref ptr) = this;
-            }
-            else
+            if (BitConverter.IsLittleEndian)
             {
                 // 32-bit LE case, the pointer may not be aligned to 8 bytes
                 Unsafe.WriteUnaligned(ref ptr, this);
             }
+            else
+            {
+                // BE case
+                FormatSlow(output);
+            }
         }
-
-        internal static long GetTerm(ReadOnlySpan<byte> input)
-            => BinaryPrimitives.ReadInt64LittleEndian(input);
-
-        internal static long GetOffset(ReadOnlySpan<byte> input)
-            => BinaryPrimitives.ReadInt64LittleEndian(input.Slice(0, sizeof(long) + sizeof(long) + sizeof(long))); // skip Term, Timestamp, Length
 
         internal long End => Length + Offset;
 
@@ -388,7 +376,7 @@ public partial class PersistentState
             StartIndex = startIndex;
             EndIndex = endIndex;
             this.metadataOnly = metadataOnly;
-            if(!state.TryGetPartition(startIndex, ref head))
+            if (!state.TryGetPartition(startIndex, ref head, out _))
                 head = state.FirstPartition;
 
             cache = head;
@@ -428,7 +416,7 @@ public partial class PersistentState
 
                 Debug.Assert(absoluteIndex <= EndIndex);
 
-                return state.TryGetPartition(absoluteIndex, ref cache)
+                return state.TryGetPartition(absoluteIndex, ref cache, out _)
                     ? cache.Read(SessionId, absoluteIndex, metadataOnly)
                     : throw new MissingPartitionException(absoluteIndex);
             }
@@ -449,7 +437,7 @@ public partial class PersistentState
                 runningIndex += 1L;
             }
 
-            for (Partition? partition = head; runningIndex <= EndIndex && state.TryGetPartition(runningIndex, ref partition); runningIndex++)
+            for (var partition = head; runningIndex <= EndIndex && state.TryGetPartition(runningIndex, ref partition, out _); runningIndex++)
                 yield return partition.Read(SessionId, runningIndex, metadataOnly);
         }
 
