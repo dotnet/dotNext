@@ -129,7 +129,7 @@ public partial class PersistentState
 
             if (BitConverter.IsLittleEndian)
             {
-                // 32-bit LE case, the pointer may not be aligned to 8 bytes
+                // LE case, the pointer may not be aligned to 8 bytes
                 Unsafe.WriteUnaligned(ref ptr, this);
             }
             else
