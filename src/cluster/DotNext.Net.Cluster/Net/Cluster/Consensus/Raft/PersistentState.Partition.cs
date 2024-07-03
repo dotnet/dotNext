@@ -506,12 +506,11 @@ public partial class PersistentState
             {
                 // fast path - write metadata and entry sequentially
                 metadata = LogEntryMetadata.Create(entry, startPos, length);
+                metadata.Format(metadataBuffer.Span);
 
                 await SetWritePositionAsync(writeAddress, token).ConfigureAwait(false);
-                await writer.WriteAsync(metadata, token).ConfigureAwait(false);
+                await writer.WriteAsync(metadataBuffer, token).ConfigureAwait(false);
                 await entry.WriteToAsync(writer, token).ConfigureAwait(false);
-
-                metadata.Format(metadataBuffer.Span);
             }
             else
             {
