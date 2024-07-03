@@ -133,7 +133,7 @@ public partial class FileWriter : IAsyncBinaryWriter
 
     /// <summary>
     /// Encodes a block of memory, optionally prefixed with the length encoded as a sequence of bytes
-    /// according with the specified format.
+    /// according to the specified format.
     /// </summary>
     /// <param name="input">A block of memory.</param>
     /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded.</param>
