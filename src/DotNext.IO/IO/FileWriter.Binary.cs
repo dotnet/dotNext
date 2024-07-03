@@ -56,12 +56,9 @@ public partial class FileWriter : IAsyncBinaryWriter
 
     private async ValueTask WriteDirectAsync<T>(T arg, SpanAction<byte, T> writer, int length, CancellationToken token)
     {
-        await FlushCoreAsync(token).ConfigureAwait(false);
-
         using var buffer = allocator.AllocateExactly(length);
         writer(buffer.Span, arg);
-        await RandomAccess.WriteAsync(handle, buffer.Memory, fileOffset, token).ConfigureAwait(false);
-        fileOffset += buffer.Length;
+        await WriteDirectAsync(buffer.Memory, token).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
