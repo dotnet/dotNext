@@ -1052,8 +1052,12 @@ public sealed class MemoryBasedStateMachineTests : Test
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         using (var state = new PersistentStateWithoutSnapshot(path, RecordsPerPartition, new() { UseCaching = true }))
         {
-            var entries = RandomEntries();
-            foreach (var entry in entries[..2])
+            IReadOnlyList<Int64LogEntry> entries =
+            [
+                new() { Term = 1L, Content = 10L },
+                new() { Term = 1L, Content = 11L }
+            ];
+            foreach (var entry in entries)
             {
                 await state.AppendAsync(entry);
             }
@@ -1073,17 +1077,6 @@ public sealed class MemoryBasedStateMachineTests : Test
             };
 
             await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1L);
-        }
-
-        static Int64LogEntry[] RandomEntries()
-        {
-            var entries = new Int64LogEntry[RecordsPerPartition];
-            for (var i = 0; i < entries.Length; i++)
-            {
-                entries[i] = new Int64LogEntry() { Term = 1L, Content = i + 10L };
-            }
-
-            return entries;
         }
     }
 }
