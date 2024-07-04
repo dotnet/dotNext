@@ -1047,7 +1047,7 @@ public sealed class MemoryBasedStateMachineTests : Test
     }
 
     [Fact]
-    public static async Task RegressionIssue244()
+    public static async Task EnsureMetadataPersistence()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         using (var state = new PersistentStateWithoutSnapshot(path, RecordsPerPartition, new() { UseCaching = true }))
