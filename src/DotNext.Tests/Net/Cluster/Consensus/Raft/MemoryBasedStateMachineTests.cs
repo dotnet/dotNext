@@ -1087,11 +1087,43 @@ public sealed class MemoryBasedStateMachineTests : Test
     [Fact]
     public static async Task RegressionIssue244()
     {
-        var entries = new Int64LogEntry[RecordsPerPartition + 1];
+        Int64LogEntry snapshot;
+        long snapshotIndex;
+        
+        var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
         entries.AsSpan().ForEach((ref Int64LogEntry entry, int index) => entry = new Int64LogEntry { Content = 42L + index, Term = index });
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var state = new PersistentStateWithSnapshot(dir, true);
-        Equal(0L, await state.As<IRaftLog>().AppendAndCommitAsync(new LogEntryList(entries), 1L, false, entries.Length + 1L));
-        Equal(0L, state.LastCommittedEntryIndex);
+        using (var state = new PersistentStateWithSnapshot(dir, true))
+        {
+            Equal(5L, await state.As<IRaftLog>().AppendAndCommitAsync(new LogEntryList(entries), 1L, false, 5L));
+            Equal(5L, state.LastCommittedEntryIndex);
+
+            // take snapshot
+            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<(Int64LogEntry, long)>> snapshotReader =
+                static async (entries, snapshotIndex, token) =>
+                {
+                    NotNull(snapshotIndex);
+                    Equal(snapshotIndex, 5L);
+
+                    var entry = entries[0];
+                    var snapshot = await entry.ToByteArrayAsync(token: token);
+                    return (new Int64LogEntry() { Term = entry.Term, IsSnapshot = true, Content = BitConverter.ToInt64(snapshot) },
+                        snapshotIndex.Value);
+                };
+            (snapshot, snapshotIndex) = await state
+                .As<IRaftLog>()
+                .ReadAsync(new IO.Log.LogEntryConsumer<IRaftLogEntry, (Int64LogEntry, long)>(snapshotReader), 1L);
+        }
+
+        Directory.Delete(dir, recursive: true);
+
+        using (var state = new PersistentStateWithSnapshot(dir, true))
+        {
+            // install snapshot
+            await state.AppendAsync(snapshot, snapshotIndex);
+            Equal(5L, state.LastCommittedEntryIndex);
+
+            await state.AppendAsync(new Int64LogEntry { Content = 10L, Term = 20L }, 6L);
+        }
     }
 }
