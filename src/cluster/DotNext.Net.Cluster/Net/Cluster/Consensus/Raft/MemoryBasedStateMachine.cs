@@ -126,7 +126,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsCompactionRequired(long upperBoundIndex)
-        => upperBoundIndex - SnapshotInfo.Index >= recordsPerPartition;
+        => upperBoundIndex - SnapshotInfo.Index > recordsPerPartition;
 
     // In case of background compaction we need to have 1 fully committed partition as a divider
     // between partitions produced during writes and partitions to be compacted.
@@ -619,7 +619,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
         using (var builder = CreateSnapshotBuilder())
         {
-            var upperBoundIndex = 0L;
+            long upperBoundIndex;
 
             // initialize builder with log entries (read-only)
             await syncRoot.AcquireAsync(LockType.WeakReadLock, token).ConfigureAwait(false);
