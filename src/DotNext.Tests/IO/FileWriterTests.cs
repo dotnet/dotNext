@@ -1,6 +1,9 @@
 using System.Buffers;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.IO;
+
+using Buffers.Binary;
 
 public sealed class FileWriterTests : Test
 {
@@ -167,5 +170,34 @@ public sealed class FileWriterTests : Test
         await RandomAccess.ReadAsync(handle, actual, 0L);
         Equal(2, actual[101]);
         Equal(1, actual[100]);
+    }
+
+    [Fact]
+    public static async Task WriteDirect()
+    {
+        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var writer = new FileWriter(handle, fileOffset: 0L, bufferSize: 64);
+        await writer.WriteAsync(new Blittable<Buffer512> { Value = default });
+        False(writer.HasBufferedData);
+        Equal(writer.FilePosition, Unsafe.SizeOf<Buffer512>());
+    }
+
+    [Fact]
+    public static async Task BufferOverflow()
+    {
+        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var writer = new FileWriter(handle, fileOffset: 0L, bufferSize: 64);
+        await writer.WriteAsync(new byte[2]);
+        await writer.WriteAsync(new Blittable<Buffer512> { Value = default });
+        False(writer.HasBufferedData);
+        Equal(writer.FilePosition, Unsafe.SizeOf<Buffer512>() + 2);
+    }
+
+    [InlineArray(512)]
+    private struct Buffer512
+    {
+        private byte element0;
     }
 }
