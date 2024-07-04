@@ -247,7 +247,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     private protected sealed override async ValueTask<long> AppendAndCommitAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token)
     {
         /*
-         * The following concurrency could happened here:
+         * The following concurrency could happen here:
          * UnsafeAppendAsync invalidates readers of the partition on flush
          * while the readers are in use by ApplyAsync or snapshot building process.
          * It's happening if caching disabled, or EvictOnCommit and Sequential compaction mode.
