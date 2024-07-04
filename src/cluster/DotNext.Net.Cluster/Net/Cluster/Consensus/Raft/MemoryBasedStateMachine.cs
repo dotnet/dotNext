@@ -158,7 +158,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// This may be helpful if manual compaction is triggered by the background job.
     /// The job can wait for the commit using <see langword="WaitForCommitAsync(CancellationToken)"/>
     /// and then call this method with appropriate number of partitions to be collected
-    /// according with <see cref="CompactionCount"/> property.
+    /// according to <see cref="CompactionCount"/> property.
     /// </remarks>
     /// <param name="count">The number of partitions to be compacted.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
