@@ -670,12 +670,20 @@ public sealed class MemoryBasedStateMachineTests : Test
             Equal(entries.Length + 41L, state.Value);
             checker = static (readResult, snapshotIndex, token) =>
             {
-                Single(readResult);
-                Equal(9, snapshotIndex);
-                True(readResult[0].IsSnapshot);
+                Equal(8, snapshotIndex);
+                True(Single(readResult).IsSnapshot);
                 return default;
             };
             await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, 6, CancellationToken.None);
+            
+            checker = static (readResult, snapshotIndex, token) =>
+            {
+                NotEmpty(readResult);
+                Equal(8, snapshotIndex);
+                True(readResult[0].IsSnapshot);
+                False(readResult[1].IsSnapshot);
+                return default;
+            };
             await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, CancellationToken.None);
         }
 
@@ -692,8 +700,8 @@ public sealed class MemoryBasedStateMachineTests : Test
             Equal(0L, state.Value);
             checker = static (readResult, snapshotIndex, token) =>
             {
-                Single(readResult);
-                Equal(9, snapshotIndex);
+                NotEmpty(readResult);
+                Equal(8, snapshotIndex);
                 return default;
             };
             await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, CancellationToken.None);
@@ -1103,7 +1111,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 static async (entries, snapshotIndex, token) =>
                 {
                     NotNull(snapshotIndex);
-                    Equal(snapshotIndex, 5L);
+                    Equal(snapshotIndex, 3L);
 
                     var entry = entries[0];
                     var snapshot = await entry.ToByteArrayAsync(token: token);
@@ -1121,9 +1129,9 @@ public sealed class MemoryBasedStateMachineTests : Test
         {
             // install snapshot
             await state.AppendAsync(snapshot, snapshotIndex);
-            Equal(5L, state.LastCommittedEntryIndex);
+            Equal(3L, state.LastCommittedEntryIndex);
 
-            await state.AppendAsync(new Int64LogEntry { Content = 10L, Term = 20L }, 6L);
+            await state.AppendAsync(new Int64LogEntry { Content = 10L, Term = 20L }, 4L);
         }
     }
 }

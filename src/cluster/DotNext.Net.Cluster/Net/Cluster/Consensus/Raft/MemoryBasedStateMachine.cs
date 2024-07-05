@@ -41,6 +41,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     private readonly CompactionMode compaction;
     private readonly bool replayOnInitialize, evictOnCommit;
     private readonly int snapshotBufferSize;
+    private readonly unsafe delegate*<long, int, long> getAlignedIndex;
 
     private long lastTerm;  // term of last committed entry, volatile
 
@@ -68,6 +69,20 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                         && configuration.UseCaching;
         snapshot = new(path, snapshotBufferSize, in bufferManager, concurrentReads, configuration.WriteMode,
             initialSize: configuration.InitialPartitionSize);
+
+        unsafe
+        {
+            getAlignedIndex = int.IsPow2(recordsPerPartition)
+                ? &GetAlignedIndexFast
+                : &GetAlignedIndexSlow;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        static long GetAlignedIndexSlow(long absoluteIndex, int recordsPerPartition)
+            => absoluteIndex / (uint)recordsPerPartition * (uint)recordsPerPartition;
+
+        static long GetAlignedIndexFast(long absoluteIndex, int recordsPerPartition)
+            => absoluteIndex & -recordsPerPartition;
     }
 
     /// <summary>
@@ -126,7 +141,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsCompactionRequired(long upperBoundIndex)
-        => upperBoundIndex - SnapshotInfo.Index > recordsPerPartition;
+        => upperBoundIndex - SnapshotInfo.Index >= recordsPerPartition;
 
     // In case of background compaction we need to have 1 fully committed partition as a divider
     // between partitions produced during writes and partitions to be compacted.
@@ -314,8 +329,9 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
     private async Task<Partition?> CommitAndCompactSequentiallyAsync(int session, long commitIndex, CancellationToken token)
     {
-        Partition? removedHead;
         await ApplyAsync(session, token).ConfigureAwait(false);
+        
+        Partition? removedHead;
         if (IsCompactionRequired(commitIndex))
         {
             await ForceSequentialCompactionAsync(session, commitIndex, token).ConfigureAwait(false);
@@ -407,6 +423,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
             LastCommittedEntryIndex = commitIndex;
             await ApplyAsync(session, token).ConfigureAwait(false);
+            
             InternalStateScope scope;
             if (IsCompactionRequired(commitIndex))
             {
@@ -552,6 +569,11 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
     private async ValueTask ForceSequentialCompactionAsync(int sessionId, long upperBoundIndex, CancellationToken token)
     {
+        unsafe
+        {
+            upperBoundIndex = getAlignedIndex(upperBoundIndex, recordsPerPartition) - 1L;
+        }
+
         using var builder = CreateSnapshotBuilder();
         await BuildSnapshotAsync(sessionId, upperBoundIndex, builder, token).ConfigureAwait(false);
 
