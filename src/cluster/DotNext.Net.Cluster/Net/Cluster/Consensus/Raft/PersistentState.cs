@@ -30,6 +30,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private protected readonly WriteMode writeMode;
     private readonly bool parallelIO;
     private readonly long maxLogEntrySize; // 0 - modern partition, > 0 - sparse partition, < 0 - legacy partition
+    private MemoryOwner<byte> initializedFooter;
 
     static PersistentState()
     {
@@ -86,6 +87,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                     maxLogEntrySize);
                 break;
             case 0L:
+                initializedFooter = Table.AllocateInitializedFooter(bufferManager.BufferAllocator, recordsPerPartition);
                 CreateTables(
                     partitionTable,
                     path,
@@ -95,7 +97,8 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                     concurrentReads,
                     writeMode,
                     initialSize,
-                    state.LastIndex);
+                    state.LastIndex,
+                    initializedFooter.Span);
                 break;
             case < 0L:
 #pragma warning disable CS0618,CS0612
@@ -133,13 +136,13 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
         static int ComparePartitions(Partition x, Partition y) => x.PartitionNumber.CompareTo(y.PartitionNumber);
 
-        static void CreateTables(SortedSet<Partition> partitionTable, DirectoryInfo path, int bufferSize, int recordsPerPartition, in BufferManager manager, int concurrentReads, WriteMode writeMode, long initialSize, long lastIndex)
+        static void CreateTables(SortedSet<Partition> partitionTable, DirectoryInfo path, int bufferSize, int recordsPerPartition, in BufferManager manager, int concurrentReads, WriteMode writeMode, long initialSize, long lastIndex, ReadOnlySpan<byte> initializedFooter)
         {
             foreach (var file in path.EnumerateFiles())
             {
                 if (long.TryParse(file.Name, out var partitionNumber))
                 {
-                    var partition = new Table(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in manager, concurrentReads, writeMode, initialSize);
+                    var partition = new Table(file.Directory!, bufferSize, recordsPerPartition, partitionNumber, in manager, concurrentReads, writeMode, initialSize, initializedFooter);
                     partition.Initialize(lastIndex);
                     partitionTable.Add(partition);
                 }
@@ -187,7 +190,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     private partial Partition CreatePartition(long partitionNumber) => maxLogEntrySize switch
     {
         > 0L => new SparsePartition(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize, maxLogEntrySize),
-        0L => new Table(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize),
+        0L => new Table(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize, initializedFooter.Span),
 #pragma warning disable CS0618,CS0612
         < 0L => new LegacyPartition(Location, bufferSize, recordsPerPartition, partitionNumber, in bufferManager, concurrentReads, writeMode, initialSize),
 #pragma warning restore CS0618,CS0612
@@ -1031,6 +1034,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             commitEvent.Dispose();
             syncRoot.Dispose();
             bufferingConsumer?.Clear();
+            initializedFooter.Dispose();
         }
 
         base.Dispose(disposing);

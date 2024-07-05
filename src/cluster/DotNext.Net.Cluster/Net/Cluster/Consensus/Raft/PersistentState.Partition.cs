@@ -394,22 +394,28 @@ public partial class PersistentState
         private MemoryOwner<byte> header, footer;
         private (ReadOnlyMemory<byte>, ReadOnlyMemory<byte>) bufferTuple;
 
-        internal Table(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize)
+        internal Table(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize, ReadOnlySpan<byte> initialFooter)
             : base(location, HeaderSize, bufferSize, recordsPerPartition, partitionNumber, in manager, readersCount, writeMode, initialSize)
         {
             footer = manager.BufferAllocator.AllocateExactly(recordsPerPartition * LogEntryMetadata.Size);
-#if DEBUG
-            footer.Span.Clear();
-#endif
+            initialFooter.CopyTo(footer.Span);
 
             header = manager.BufferAllocator.AllocateExactly(HeaderSize);
             header.Span.Clear();
+        }
 
-            // init ephemeral 0 entry
-            if (PartitionNumber is 0L)
+        internal static MemoryOwner<byte> AllocateInitializedFooter(MemoryAllocator<byte> allocator, int recordsPerPartition)
+        {
+            var footer = allocator.AllocateExactly(recordsPerPartition * LogEntryMetadata.Size);
+
+            for (var index = 0; index < recordsPerPartition; index++)
             {
-                LogEntryMetadata.Create(LogEntry.Initial, HeaderSize + LogEntryMetadata.Size, length: 0L).Format(footer.Span);
+                var writeAddress = index * LogEntryMetadata.Size;
+                var metadata = new LogEntryMetadata(default, 0L, writeAddress + HeaderSize + LogEntryMetadata.Size, 0L);
+                metadata.Format(footer.Span.Slice(writeAddress));
             }
+
+            return footer;
         }
 
         private bool IsSealed

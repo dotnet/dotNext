@@ -670,7 +670,7 @@ public sealed class MemoryBasedStateMachineTests : Test
             Equal(entries.Length + 41L, state.Value);
             checker = static (readResult, snapshotIndex, token) =>
             {
-                Equal(8, snapshotIndex);
+                Equal(7, snapshotIndex);
                 True(Single(readResult).IsSnapshot);
                 return default;
             };
@@ -679,7 +679,7 @@ public sealed class MemoryBasedStateMachineTests : Test
             checker = static (readResult, snapshotIndex, token) =>
             {
                 NotEmpty(readResult);
-                Equal(8, snapshotIndex);
+                Equal(7, snapshotIndex);
                 True(readResult[0].IsSnapshot);
                 False(readResult[1].IsSnapshot);
                 return default;
@@ -701,7 +701,7 @@ public sealed class MemoryBasedStateMachineTests : Test
             checker = static (readResult, snapshotIndex, token) =>
             {
                 NotEmpty(readResult);
-                Equal(8, snapshotIndex);
+                Equal(7, snapshotIndex);
                 return default;
             };
             await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, CancellationToken.None);
