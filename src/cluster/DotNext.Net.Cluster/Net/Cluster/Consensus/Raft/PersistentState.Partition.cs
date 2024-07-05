@@ -480,10 +480,11 @@ public partial class PersistentState
                         fileOffset = previousEnd + LogEntryMetadata.Size;
                         new LogEntryMetadata(default, 0L, fileOffset, 0L).Format(metadataBuffer);
                     }
-
-                    writer.FilePosition = fileOffset;
+                    
                     metadataBuffer.CopyTo(metadataTable.Slice(footerOffset));
                 }
+                
+                writer.FilePosition = fileOffset;
             }
             else
             {
