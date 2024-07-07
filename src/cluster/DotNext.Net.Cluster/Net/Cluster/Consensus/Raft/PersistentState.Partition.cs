@@ -116,6 +116,7 @@ public partial class PersistentState
 
             var relativeIndex = ToRelativeIndex(absoluteIndex);
             var metadata = GetMetadata(relativeIndex);
+            Debug.Assert(absoluteIndex is 0L || metadata.Timestamp != default);
 
             ref readonly var cachedContent = ref EmptyRecord;
 
