@@ -467,7 +467,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         }
 
         state.LastIndex = startIndex - 1L;
-        await state.FlushAsync(NodeState.IndexesRange, token).ConfigureAwait(false);
     }
 
     private async Task AppendUncachedAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
@@ -496,7 +495,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         }
 
         state.LastIndex = startIndex - 1L;
-        await state.FlushAsync(NodeState.IndexesRange, token).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
