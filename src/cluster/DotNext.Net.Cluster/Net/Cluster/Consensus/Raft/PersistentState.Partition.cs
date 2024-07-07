@@ -434,12 +434,12 @@ public partial class PersistentState
             if (RandomAccess.Read(Handle, header.Span, fileOffset: 0L) < HeaderSize)
             {
                 RandomAccess.SetLength(Handle, HeaderSize);
-                writer.FilePosition = HeaderSize;
+                fileOffset = HeaderSize;
             }
             else if (IsSealed)
             {
                 // partition is completed, read table
-                writer.FilePosition = fileOffset = RandomAccess.GetLength(Handle);
+                fileOffset = RandomAccess.GetLength(Handle);
 
                 if (fileOffset < footer.Length + HeaderSize)
                     throw new IntegrityException(ExceptionMessages.InvalidPartitionFormat);
@@ -483,13 +483,13 @@ public partial class PersistentState
                     
                     metadataBuffer.CopyTo(metadataTable.Slice(footerOffset));
                 }
-                
-                writer.FilePosition = fileOffset;
             }
             else
             {
-                writer.FilePosition = HeaderSize;
+                fileOffset = HeaderSize;
             }
+            
+            writer.FilePosition = fileOffset;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
