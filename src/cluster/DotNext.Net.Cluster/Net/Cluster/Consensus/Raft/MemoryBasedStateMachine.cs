@@ -109,7 +109,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     // this operation doesn't require write lock
     private async ValueTask BuildSnapshotAsync(int sessionId, long upperBoundIndex, SnapshotBuilder builder, CancellationToken token)
     {
-        Debug.Assert(upperBoundIndex >= SnapshotInfo.Index);
+        Debug.Assert(upperBoundIndex > SnapshotInfo.Index);
         
         // Calculate the term of the snapshot
         Partition? current = LastPartition;
@@ -144,7 +144,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsCompactionRequired(long upperBoundIndex)
-        => upperBoundIndex - SnapshotInfo.Index >= recordsPerPartition;
+        => upperBoundIndex - SnapshotInfo.Index > recordsPerPartition;
 
     // In case of background compaction we need to have 1 fully committed partition as a divider
     // between partitions produced during writes and partitions to be compacted.
