@@ -109,6 +109,8 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     // this operation doesn't require write lock
     private async ValueTask BuildSnapshotAsync(int sessionId, long upperBoundIndex, SnapshotBuilder builder, CancellationToken token)
     {
+        Debug.Assert(upperBoundIndex >= SnapshotInfo.Index);
+        
         // Calculate the term of the snapshot
         Partition? current = LastPartition;
         builder.Term = TryGetPartition(upperBoundIndex, ref current, out _)
@@ -120,6 +122,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
         current = FirstPartition;
         Debug.Assert(current is not null);
+        
         for (long startIndex = SnapshotInfo.Index + 1L, currentIndex = startIndex; TryGetPartition(builder, startIndex, upperBoundIndex, ref currentIndex, ref current); currentIndex++, token.ThrowIfCancellationRequested())
         {
             await ApplyIfNotEmptyAsync(builder, current.Read(sessionId, currentIndex)).ConfigureAwait(false);
