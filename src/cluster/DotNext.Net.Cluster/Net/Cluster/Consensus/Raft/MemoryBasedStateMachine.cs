@@ -211,7 +211,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         // Save the snapshot into temporary file to avoid corruption caused by network connection
         string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
         var snapshotLength = snapshot.Length.GetValueOrDefault();
-        using (var tempSnapshot = new Snapshot(Location, snapshotBufferSize, in bufferManager, 0, WriteMode.NoFlush, tempSnapshot: true, initialSize: snapshotLength))
+        using (var tempSnapshot = new Snapshot(location: null, snapshotBufferSize, in bufferManager, 0, WriteMode.NoFlush, initialSize: snapshotLength))
         {
             tempSnapshotFile = tempSnapshot.FileName;
             snapshotLength = await tempSnapshot.WriteAsync(snapshot).ConfigureAwait(false);

@@ -18,11 +18,19 @@ public partial class MemoryBasedStateMachine
     internal sealed class Snapshot : ConcurrentStorageAccess
     {
         private new const string FileName = "snapshot";
-        private const string TempFileName = "snapshot.new";
 
-        internal Snapshot(DirectoryInfo location, int bufferSize, in BufferManager manager, int readersCount, WriteMode writeMode, bool tempSnapshot = false, long initialSize = 0L)
-            : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), 0, bufferSize, manager.BufferAllocator, readersCount, writeMode, initialSize)
+        internal Snapshot(DirectoryInfo? location, int bufferSize, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize = 0L)
+            : base(GetPath(location), 0, bufferSize, manager.BufferAllocator, readersCount, writeMode, initialSize)
         {
+        }
+
+        private static string GetPath(DirectoryInfo? location)
+        {
+            var (directory, fileName) = location is null
+                ? (Path.GetTempPath(), Path.GetRandomFileName())
+                : (location.FullName, FileName);
+
+            return Path.Combine(directory, fileName);
         }
 
         internal async ValueTask<long> WriteAsync<TEntry>(TEntry entry, CancellationToken token = default)
