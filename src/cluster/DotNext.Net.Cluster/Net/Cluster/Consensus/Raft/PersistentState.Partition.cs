@@ -21,7 +21,6 @@ public partial class PersistentState
         private Partition? previous, next;
         private object?[]? context;
         private MemoryOwner<CacheRecord> entryCache;
-        protected int runningIndex;
 
         protected Partition(DirectoryInfo location, int offset, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize, FileAttributes attributes = FileAttributes.NotContentIndexed)
             : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), offset, bufferSize, manager.BufferAllocator, readersCount, writeMode, initialSize, attributes)
@@ -179,7 +178,7 @@ public partial class PersistentState
         internal ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
-            // write operation always expects absolute index so we need to convert it to the relative index
+            // write operation always expects absolute index, so we need to convert it to the relative index
             var relativeIndex = ToRelativeIndex(absoluteIndex);
             Debug.Assert(absoluteIndex >= FirstIndex && relativeIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
@@ -391,9 +390,12 @@ public partial class PersistentState
     {
         private const int HeaderSize = 512;
 
+        private readonly int lastRelativeIndex;
+        private bool lastEntryWritten;
+        private (ReadOnlyMemory<byte>, ReadOnlyMemory<byte>) bufferTuple;
+
         // metadata management
         private MemoryOwner<byte> header, footer;
-        private (ReadOnlyMemory<byte>, ReadOnlyMemory<byte>) bufferTuple;
 
         internal Table(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize, ReadOnlySpan<byte> initialFooter)
             : base(location, HeaderSize, bufferSize, recordsPerPartition, partitionNumber, in manager, readersCount, writeMode, initialSize)
@@ -403,6 +405,8 @@ public partial class PersistentState
 
             header = manager.BufferAllocator.AllocateExactly(HeaderSize);
             header.Span.Clear();
+
+            lastRelativeIndex = recordsPerPartition - 1;
         }
 
         internal static MemoryOwner<byte> AllocateInitializedFooter(MemoryAllocator<byte> allocator, int recordsPerPartition)
@@ -447,27 +451,28 @@ public partial class PersistentState
 
                 fileOffset -= footer.Length;
                 RandomAccess.Read(Handle, footer.Span, fileOffset);
-                runningIndex = ToRelativeIndex(LastIndex);
             }
             else if (Contains(lastIndexHint))
             {
                 // read sequentially every log entry
-                int footerOffset, endIndex = ToRelativeIndex(lastIndexHint);
+                int footerOffset;
+                long runningIndex;
 
                 if (PartitionNumber is 0L)
                 {
-                    runningIndex = 1;
+                    runningIndex = 1L;
                     footerOffset = LogEntryMetadata.Size;
                     fileOffset = HeaderSize + LogEntryMetadata.Size;
                 }
                 else
                 {
-                    footerOffset = runningIndex = 0;
+                    footerOffset = 0;
                     fileOffset = HeaderSize;
+                    runningIndex = 0L;
                 }
 
                 for (Span<byte> metadataBuffer = stackalloc byte[LogEntryMetadata.Size], metadataTable = footer.Span;
-                     footerOffset < footer.Length && runningIndex <= endIndex;
+                     footerOffset < footer.Length && runningIndex <= lastIndexHint;
                      footerOffset += LogEntryMetadata.Size, runningIndex++)
                 {
                     var count = RandomAccess.Read(Handle, metadataBuffer, fileOffset);
@@ -537,7 +542,7 @@ public partial class PersistentState
                 await RandomAccess.WriteAsync(Handle, metadataBuffer, writeAddress, token).ConfigureAwait(false);
             }
 
-            runningIndex = index;
+            lastEntryWritten = index == lastRelativeIndex;
         }
 
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
@@ -560,7 +565,7 @@ public partial class PersistentState
             await RandomAccess.WriteAsync(Handle, this, writeAddress, token).ConfigureAwait(false);
             bufferTuple = default;
 
-            runningIndex = index;
+            lastEntryWritten = index == lastRelativeIndex;
             writer.FilePosition = metadata.End;
         }
 
@@ -580,7 +585,7 @@ public partial class PersistentState
         {
             return IsSealed
                 ? ValueTask.CompletedTask
-                : runningIndex >= LastIndex
+                : lastEntryWritten
                 ? FlushAndSealAsync(token)
                 : base.FlushAsync(token);
         }
@@ -588,6 +593,8 @@ public partial class PersistentState
         private async ValueTask FlushAndSealAsync(CancellationToken token)
         {
             Debug.Assert(writer.FilePosition > HeaderSize);
+            Debug.Assert(lastEntryWritten);
+            Debug.Assert(IsSealed is false);
             
             Invalidate();
             

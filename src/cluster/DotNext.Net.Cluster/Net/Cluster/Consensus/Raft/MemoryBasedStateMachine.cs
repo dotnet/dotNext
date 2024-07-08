@@ -104,7 +104,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// be called manually using <see cref="ForceCompactionAsync(long, CancellationToken)"/>
     /// in the background.
     /// </summary>
-    public bool IsBackgroundCompaction => compaction == CompactionMode.Background;
+    public bool IsBackgroundCompaction => compaction is CompactionMode.Background;
 
     // this operation doesn't require write lock
     private async ValueTask BuildSnapshotAsync(int sessionId, long upperBoundIndex, SnapshotBuilder builder, CancellationToken token)
@@ -162,7 +162,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// Gets approximate number of partitions that can be compacted.
     /// </summary>
     public long CompactionCount
-        => compaction == CompactionMode.Background ? GetBackgroundCompactionCount(out _) : 0L;
+        => compaction is CompactionMode.Background ? GetBackgroundCompactionCount(out _) : 0L;
 
     /// <summary>
     /// Forces log compaction.
@@ -194,7 +194,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         {
             result = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(count)));
         }
-        else if (count is 0L || !IsBackgroundCompaction)
+        else if (count is 0L || compaction is not CompactionMode.Background)
         {
             result = new();
         }
@@ -652,8 +652,8 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             try
             {
                 // check compaction range again because snapshot index can be modified by snapshot installation method
-                upperBoundIndex = ComputeUpperBoundIndex(count);
-                if (!IsCompactionRequired(upperBoundIndex))
+                upperBoundIndex = ComputeUpperBoundIndex(ref count);
+                if (count <= 0L)
                     return;
 
                 // construct snapshot (read-only operation)
@@ -685,7 +685,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         DeletePartitions(removedHead);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        long ComputeUpperBoundIndex(long count)
+        long ComputeUpperBoundIndex(ref long count)
         {
             count = Math.Min(count, GetBackgroundCompactionCount(out var snapshotIndex));
             return checked((recordsPerPartition * count) + snapshotIndex);
