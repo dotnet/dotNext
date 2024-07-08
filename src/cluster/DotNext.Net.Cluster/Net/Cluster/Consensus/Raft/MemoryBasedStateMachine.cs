@@ -684,11 +684,10 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
         DeletePartitions(removedHead);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         long ComputeUpperBoundIndex(ref long count)
         {
             count = Math.Min(count, GetBackgroundCompactionCount(out var snapshotIndex));
-            return checked((recordsPerPartition * count) + snapshotIndex);
+            return count * recordsPerPartition + snapshotIndex - Unsafe.BitCast<bool, byte>(snapshotIndex is 0L);
         }
     }
 

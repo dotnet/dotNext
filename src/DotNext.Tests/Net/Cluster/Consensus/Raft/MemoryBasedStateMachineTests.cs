@@ -728,8 +728,8 @@ public sealed class MemoryBasedStateMachineTests : Test
             await state.ForceCompactionAsync(1L, CancellationToken.None);
             checker = static (readResult, snapshotIndex, token) =>
             {
-                Equal(3, readResult.Count);
-                Equal(4, snapshotIndex);
+                Equal(4, readResult.Count);
+                Equal(3, snapshotIndex);
                 True(readResult[0].IsSnapshot);
                 False(readResult[1].IsSnapshot);
                 False(readResult[2].IsSnapshot);
@@ -738,8 +738,8 @@ public sealed class MemoryBasedStateMachineTests : Test
             await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, 6, CancellationToken.None);
             checker = static (readResult, snapshotIndex, token) =>
             {
-                Equal(6, readResult.Count);
-                Equal(4, snapshotIndex);
+                Equal(7, readResult.Count);
+                Equal(3, snapshotIndex);
                 True(readResult[0].IsSnapshot);
                 False(readResult[1].IsSnapshot);
                 False(readResult[2].IsSnapshot);
@@ -753,7 +753,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         {
             checker = static (readResult, snapshotIndex, token) =>
             {
-                Equal(3, readResult.Count);
+                Equal(4, readResult.Count);
                 NotNull(snapshotIndex);
                 return default;
             };
@@ -761,8 +761,8 @@ public sealed class MemoryBasedStateMachineTests : Test
             Equal(0L, state.Value);
             checker = static (readResult, snapshotIndex, token) =>
             {
-                Equal(6, readResult.Count);
-                Equal(4, snapshotIndex);
+                Equal(7, readResult.Count);
+                Equal(3, snapshotIndex);
                 True(readResult[0].IsSnapshot);
                 False(readResult[1].IsSnapshot);
                 False(readResult[2].IsSnapshot);
