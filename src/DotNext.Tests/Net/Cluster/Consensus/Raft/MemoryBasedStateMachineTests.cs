@@ -833,13 +833,13 @@ public sealed class MemoryBasedStateMachineTests : Test
         {
             False(state.IsBackgroundCompaction);
             await state.AppendAsync(new LogEntryList(entries));
-            await state.CommitAsync(4, CancellationToken.None);
+            await state.CommitAsync(5, CancellationToken.None);
             await state.CommitAsync(CancellationToken.None);
             Equal(entries.Length + 41L, state.Value);
             checker = static (readResult, snapshotIndex, token) =>
             {
-                Equal(3, readResult.Count);
-                Equal(4, snapshotIndex);
+                Equal(2, readResult.Count);
+                Equal(5, snapshotIndex);
                 True(readResult[0].IsSnapshot);
                 return default;
             };
@@ -851,7 +851,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         {
             checker = static (readResult, snapshotIndex, token) =>
             {
-                Equal(3, readResult.Count);
+                Equal(2, readResult.Count);
                 NotNull(snapshotIndex);
                 return default;
             };
@@ -859,8 +859,8 @@ public sealed class MemoryBasedStateMachineTests : Test
             Equal(0L, state.Value);
             checker = static (readResult, snapshotIndex, token) =>
             {
-                Equal(6, readResult.Count);
-                Equal(4, snapshotIndex);
+                Equal(5, readResult.Count);
+                Equal(5, snapshotIndex);
                 return default;
             };
             await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, CancellationToken.None);
