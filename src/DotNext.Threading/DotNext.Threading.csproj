@@ -56,7 +56,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="../stylecop.json" />
     <SourceRoot Include="$(MSBuildProjectDirectory)\..\..\" />
   </ItemGroup>
 </Project>

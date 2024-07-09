@@ -41,6 +41,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     private readonly CompactionMode compaction;
     private readonly bool replayOnInitialize, evictOnCommit;
     private readonly int snapshotBufferSize;
+    private readonly unsafe delegate*<long, int, long> getAlignedIndex;
 
     private long lastTerm;  // term of last committed entry, volatile
 
@@ -68,6 +69,20 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
                         && configuration.UseCaching;
         snapshot = new(path, snapshotBufferSize, in bufferManager, concurrentReads, configuration.WriteMode,
             initialSize: configuration.InitialPartitionSize);
+
+        unsafe
+        {
+            getAlignedIndex = int.IsPow2(recordsPerPartition)
+                ? &GetAlignedIndexFast
+                : &GetAlignedIndexSlow;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        static long GetAlignedIndexSlow(long absoluteIndex, int recordsPerPartition)
+            => absoluteIndex / (uint)recordsPerPartition * (uint)recordsPerPartition;
+
+        static long GetAlignedIndexFast(long absoluteIndex, int recordsPerPartition)
+            => absoluteIndex & -recordsPerPartition;
     }
 
     /// <summary>
@@ -89,11 +104,13 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// be called manually using <see cref="ForceCompactionAsync(long, CancellationToken)"/>
     /// in the background.
     /// </summary>
-    public bool IsBackgroundCompaction => compaction == CompactionMode.Background;
+    public bool IsBackgroundCompaction => compaction is CompactionMode.Background;
 
     // this operation doesn't require write lock
     private async ValueTask BuildSnapshotAsync(int sessionId, long upperBoundIndex, SnapshotBuilder builder, CancellationToken token)
     {
+        Debug.Assert(upperBoundIndex > SnapshotInfo.Index);
+        
         // Calculate the term of the snapshot
         Partition? current = LastPartition;
         builder.Term = TryGetPartition(upperBoundIndex, ref current, out _)
@@ -105,6 +122,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
         current = FirstPartition;
         Debug.Assert(current is not null);
+        
         for (long startIndex = SnapshotInfo.Index + 1L, currentIndex = startIndex; TryGetPartition(builder, startIndex, upperBoundIndex, ref currentIndex, ref current); currentIndex++, token.ThrowIfCancellationRequested())
         {
             await ApplyIfNotEmptyAsync(builder, current.Read(sessionId, currentIndex)).ConfigureAwait(false);
@@ -126,7 +144,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool IsCompactionRequired(long upperBoundIndex)
-        => upperBoundIndex - SnapshotInfo.Index >= recordsPerPartition;
+        => upperBoundIndex - SnapshotInfo.Index > recordsPerPartition;
 
     // In case of background compaction we need to have 1 fully committed partition as a divider
     // between partitions produced during writes and partitions to be compacted.
@@ -144,7 +162,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// Gets approximate number of partitions that can be compacted.
     /// </summary>
     public long CompactionCount
-        => compaction == CompactionMode.Background ? GetBackgroundCompactionCount(out _) : 0L;
+        => compaction is CompactionMode.Background ? GetBackgroundCompactionCount(out _) : 0L;
 
     /// <summary>
     /// Forces log compaction.
@@ -158,7 +176,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// This may be helpful if manual compaction is triggered by the background job.
     /// The job can wait for the commit using <see langword="WaitForCommitAsync(CancellationToken)"/>
     /// and then call this method with appropriate number of partitions to be collected
-    /// according with <see cref="CompactionCount"/> property.
+    /// according to <see cref="CompactionCount"/> property.
     /// </remarks>
     /// <param name="count">The number of partitions to be compacted.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -176,7 +194,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         {
             result = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(count)));
         }
-        else if (count is 0L || !IsBackgroundCompaction)
+        else if (count is 0L || compaction is not CompactionMode.Background)
         {
             result = new();
         }
@@ -193,7 +211,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
         // Save the snapshot into temporary file to avoid corruption caused by network connection
         string tempSnapshotFile, snapshotFile = this.snapshot.FileName;
         var snapshotLength = snapshot.Length.GetValueOrDefault();
-        using (var tempSnapshot = new Snapshot(Location, snapshotBufferSize, in bufferManager, 0, WriteMode.NoFlush, tempSnapshot: true, initialSize: snapshotLength))
+        using (var tempSnapshot = new Snapshot(location: null, snapshotBufferSize, in bufferManager, 0, WriteMode.NoFlush, initialSize: snapshotLength))
         {
             tempSnapshotFile = tempSnapshot.FileName;
             snapshotLength = await tempSnapshot.WriteAsync(snapshot).ConfigureAwait(false);
@@ -247,7 +265,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     private protected sealed override async ValueTask<long> AppendAndCommitAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token)
     {
         /*
-         * The following concurrency could happened here:
+         * The following concurrency could happen here:
          * UnsafeAppendAsync invalidates readers of the partition on flush
          * while the readers are in use by ApplyAsync or snapshot building process.
          * It's happening if caching disabled, or EvictOnCommit and Sequential compaction mode.
@@ -314,8 +332,9 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
     private async Task<Partition?> CommitAndCompactSequentiallyAsync(int session, long commitIndex, CancellationToken token)
     {
-        Partition? removedHead;
         await ApplyAsync(session, token).ConfigureAwait(false);
+        
+        Partition? removedHead;
         if (IsCompactionRequired(commitIndex))
         {
             await ForceSequentialCompactionAsync(session, commitIndex, token).ConfigureAwait(false);
@@ -407,6 +426,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
             LastCommittedEntryIndex = commitIndex;
             await ApplyAsync(session, token).ConfigureAwait(false);
+            
             InternalStateScope scope;
             if (IsCompactionRequired(commitIndex))
             {
@@ -552,6 +572,11 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
     private async ValueTask ForceSequentialCompactionAsync(int sessionId, long upperBoundIndex, CancellationToken token)
     {
+        unsafe
+        {
+            upperBoundIndex = getAlignedIndex(upperBoundIndex, recordsPerPartition) - 1L;
+        }
+
         using var builder = CreateSnapshotBuilder();
         await BuildSnapshotAsync(sessionId, upperBoundIndex, builder, token).ConfigureAwait(false);
 
@@ -619,7 +644,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
         using (var builder = CreateSnapshotBuilder())
         {
-            var upperBoundIndex = 0L;
+            long upperBoundIndex;
 
             // initialize builder with log entries (read-only)
             await syncRoot.AcquireAsync(LockType.WeakReadLock, token).ConfigureAwait(false);
@@ -627,8 +652,8 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             try
             {
                 // check compaction range again because snapshot index can be modified by snapshot installation method
-                upperBoundIndex = ComputeUpperBoundIndex(count);
-                if (!IsCompactionRequired(upperBoundIndex))
+                upperBoundIndex = ComputeUpperBoundIndex(ref count);
+                if (count <= 0L)
                     return;
 
                 // construct snapshot (read-only operation)
@@ -659,11 +684,10 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
         DeletePartitions(removedHead);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        long ComputeUpperBoundIndex(long count)
+        long ComputeUpperBoundIndex(ref long count)
         {
             count = Math.Min(count, GetBackgroundCompactionCount(out var snapshotIndex));
-            return checked((recordsPerPartition * count) + snapshotIndex);
+            return count * recordsPerPartition + snapshotIndex - Unsafe.BitCast<bool, byte>(snapshotIndex is 0L);
         }
     }
 

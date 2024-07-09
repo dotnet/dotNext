@@ -85,6 +85,13 @@ public class BlittableTransferObject<T> : MemoryManager<byte>, ISerializable<Bli
         source.CopyTo(destination);
         return result;
     }
+    
+    /// <inheritdoc cref="IDataTransferObject.TryGetMemory"/>
+    bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+    {
+        memory = Memory;
+        return true;
+    }
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

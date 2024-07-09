@@ -12,9 +12,9 @@ using static Runtime.Intrinsics;
 /// <typeparam name="T">The type of the value to be accessible in atomic manner.</typeparam>
 /// <remarks>
 /// Synchronized methods can be declared in classes only. If you don't need to have extra heap allocation
-/// to keep synchronization root in the form of the object or you need to have volatile field
+/// to keep synchronization root in the form of the object, or you need to have volatile field
 /// inside of value type then <see cref="Atomic{T}"/> is the best choice. Its performance is better
-/// than synchronized methods according with benchmarks.
+/// than synchronized methods according to benchmarks.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
 public struct Atomic<T> : IStrongBox, ICloneable

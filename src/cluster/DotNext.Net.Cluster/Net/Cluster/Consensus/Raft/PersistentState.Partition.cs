@@ -21,7 +21,6 @@ public partial class PersistentState
         private Partition? previous, next;
         private object?[]? context;
         private MemoryOwner<CacheRecord> entryCache;
-        protected int runningIndex;
 
         protected Partition(DirectoryInfo location, int offset, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize, FileAttributes attributes = FileAttributes.NotContentIndexed)
             : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), offset, bufferSize, manager.BufferAllocator, readersCount, writeMode, initialSize, attributes)
@@ -34,7 +33,7 @@ public partial class PersistentState
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int ToRelativeIndex(long absoluteIndex)
+        protected int ToRelativeIndex(long absoluteIndex)
             => unchecked((int)(absoluteIndex - FirstIndex));
 
         [MemberNotNullWhen(false, nameof(Previous))]
@@ -94,8 +93,6 @@ public partial class PersistentState
         internal bool Contains(long recordIndex)
             => recordIndex >= FirstIndex && recordIndex <= LastIndex;
 
-        internal abstract void Initialize();
-
         internal void ClearContext(long absoluteIndex)
         {
             Debug.Assert(absoluteIndex >= FirstIndex);
@@ -118,6 +115,7 @@ public partial class PersistentState
 
             var relativeIndex = ToRelativeIndex(absoluteIndex);
             var metadata = GetMetadata(relativeIndex);
+            Debug.Assert(absoluteIndex is 0L || metadata.Timestamp != default);
 
             ref readonly var cachedContent = ref EmptyRecord;
 
@@ -180,7 +178,7 @@ public partial class PersistentState
         internal ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
-            // write operation always expects absolute index so we need to convert it to the relative index
+            // write operation always expects absolute index, so we need to convert it to the relative index
             var relativeIndex = ToRelativeIndex(absoluteIndex);
             Debug.Assert(absoluteIndex >= FirstIndex && relativeIndex <= LastIndex, $"Invalid index value {absoluteIndex}, offset {FirstIndex}");
 
@@ -251,11 +249,6 @@ public partial class PersistentState
 
             this.maxLogEntrySize = maxLogEntrySize;
             metadataBuffer = manager.BufferAllocator.AllocateExactly(LogEntryMetadata.Size);
-        }
-
-        internal override void Initialize()
-        {
-            // do nothing
         }
 
         private long GetMetadataOffset(int index) => index * (maxLogEntrySize + LogEntryMetadata.Size);
@@ -397,26 +390,37 @@ public partial class PersistentState
     {
         private const int HeaderSize = 512;
 
-        // metadata management
-        private MemoryOwner<byte> header, footer;
+        private readonly int lastRelativeIndex;
+        private bool lastEntryWritten;
         private (ReadOnlyMemory<byte>, ReadOnlyMemory<byte>) bufferTuple;
 
-        internal Table(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize)
+        // metadata management
+        private MemoryOwner<byte> header, footer;
+
+        internal Table(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize, ReadOnlySpan<byte> initialFooter)
             : base(location, HeaderSize, bufferSize, recordsPerPartition, partitionNumber, in manager, readersCount, writeMode, initialSize)
         {
             footer = manager.BufferAllocator.AllocateExactly(recordsPerPartition * LogEntryMetadata.Size);
-#if DEBUG
-            footer.Span.Clear();
-#endif
+            initialFooter.CopyTo(footer.Span);
 
             header = manager.BufferAllocator.AllocateExactly(HeaderSize);
             header.Span.Clear();
 
-            // init ephemeral 0 entry
-            if (PartitionNumber is 0L)
+            lastRelativeIndex = recordsPerPartition - 1;
+        }
+
+        internal static MemoryOwner<byte> AllocateInitializedFooter(MemoryAllocator<byte> allocator, int recordsPerPartition)
+        {
+            var footer = allocator.AllocateExactly(recordsPerPartition * LogEntryMetadata.Size);
+
+            for (var index = 0; index < recordsPerPartition; index++)
             {
-                LogEntryMetadata.Create(LogEntry.Initial, HeaderSize + LogEntryMetadata.Size, length: 0L).Format(footer.Span);
+                var writeAddress = index * LogEntryMetadata.Size;
+                var metadata = new LogEntryMetadata(default, 0L, writeAddress + HeaderSize + LogEntryMetadata.Size, 0L);
+                metadata.Format(footer.Span.Slice(writeAddress));
             }
+
+            return footer;
         }
 
         private bool IsSealed
@@ -425,7 +429,7 @@ public partial class PersistentState
             set => MemoryMarshal.GetReference(header.Span) = Unsafe.BitCast<bool, byte>(value);
         }
 
-        internal override void Initialize()
+        internal void Initialize(long lastIndexHint)
         {
             using var handle = File.OpenHandle(FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.SequentialScan);
 
@@ -434,28 +438,29 @@ public partial class PersistentState
             // read header
             if (RandomAccess.Read(Handle, header.Span, fileOffset: 0L) < HeaderSize)
             {
-                header.Span.Clear();
-                writer.FilePosition = HeaderSize;
+                RandomAccess.SetLength(Handle, HeaderSize);
+                fileOffset = HeaderSize;
             }
             else if (IsSealed)
             {
                 // partition is completed, read table
-                writer.FilePosition = fileOffset = RandomAccess.GetLength(Handle);
+                fileOffset = RandomAccess.GetLength(Handle);
 
                 if (fileOffset < footer.Length + HeaderSize)
                     throw new IntegrityException(ExceptionMessages.InvalidPartitionFormat);
 
                 fileOffset -= footer.Length;
                 RandomAccess.Read(Handle, footer.Span, fileOffset);
-                runningIndex = int.CreateChecked(LastIndex - FirstIndex);
             }
-            else
+            else if (Contains(lastIndexHint))
             {
                 // read sequentially every log entry
                 int footerOffset;
+                long runningIndex;
 
                 if (PartitionNumber is 0L)
                 {
+                    runningIndex = 1L;
                     footerOffset = LogEntryMetadata.Size;
                     fileOffset = HeaderSize + LogEntryMetadata.Size;
                 }
@@ -463,24 +468,34 @@ public partial class PersistentState
                 {
                     footerOffset = 0;
                     fileOffset = HeaderSize;
+                    runningIndex = 0L;
                 }
 
                 for (Span<byte> metadataBuffer = stackalloc byte[LogEntryMetadata.Size], metadataTable = footer.Span;
-                     footerOffset < footer.Length;
+                     footerOffset < footer.Length && runningIndex <= lastIndexHint;
                      footerOffset += LogEntryMetadata.Size, runningIndex++)
                 {
                     var count = RandomAccess.Read(Handle, metadataBuffer, fileOffset);
                     if (count < LogEntryMetadata.Size)
                         break;
 
+                    var previousEnd = fileOffset;
                     fileOffset = LogEntryMetadata.GetEndOfLogEntry(metadataBuffer);
                     if (fileOffset <= 0L)
-                        break;
-
-                    writer.FilePosition = fileOffset;
-                    metadataBuffer.CopyTo(metadataTable.Slice(footerOffset, LogEntryMetadata.Size));
+                    {
+                        fileOffset = previousEnd + LogEntryMetadata.Size;
+                        new LogEntryMetadata(default, 0L, fileOffset, 0L).Format(metadataBuffer);
+                    }
+                    
+                    metadataBuffer.CopyTo(metadataTable.Slice(footerOffset));
                 }
             }
+            else
+            {
+                fileOffset = HeaderSize;
+            }
+            
+            writer.FilePosition = fileOffset;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -496,22 +511,23 @@ public partial class PersistentState
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
         protected override async ValueTask PersistAsync<TEntry>(TEntry entry, int index, CancellationToken token)
         {
-            var writeAddress = GetWriteAddress(index);
-            await UnsealIfNeededAsync(writeAddress, token).ConfigureAwait(false);
+            await UnsealIfNeededAsync(token).ConfigureAwait(false);
 
             LogEntryMetadata metadata;
             var metadataBuffer = GetMetadataBuffer(index);
+            var writeAddress = GetWriteAddress(index);
+            Debug.Assert(writeAddress >= HeaderSize);
+            
             var startPos = writeAddress + LogEntryMetadata.Size;
             if (entry.Length is { } length)
             {
                 // fast path - write metadata and entry sequentially
                 metadata = LogEntryMetadata.Create(entry, startPos, length);
+                metadata.Format(metadataBuffer.Span);
 
                 await SetWritePositionAsync(writeAddress, token).ConfigureAwait(false);
-                await writer.WriteAsync(metadata, token).ConfigureAwait(false);
+                await writer.WriteAsync(metadataBuffer, token).ConfigureAwait(false);
                 await entry.WriteToAsync(writer, token).ConfigureAwait(false);
-
-                metadata.Format(metadataBuffer.Span);
             }
             else
             {
@@ -526,7 +542,7 @@ public partial class PersistentState
                 await RandomAccess.WriteAsync(Handle, metadataBuffer, writeAddress, token).ConfigureAwait(false);
             }
 
-            runningIndex = index;
+            lastEntryWritten = index == lastRelativeIndex;
         }
 
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
@@ -534,10 +550,13 @@ public partial class PersistentState
         {
             Debug.Assert(writer.HasBufferedData is false);
 
-            var writeAddress = GetWriteAddress(index);
-            await UnsealIfNeededAsync(writeAddress, token).ConfigureAwait(false);
+            await UnsealIfNeededAsync(token).ConfigureAwait(false);
 
+            var writeAddress = GetWriteAddress(index);
+            Debug.Assert(writeAddress >= HeaderSize);
+            
             var startPos = writeAddress + LogEntryMetadata.Size;
+            
             var metadata = LogEntryMetadata.Create(entry, startPos, entry.Length);
             var metadataBuffer = GetMetadataBuffer(index);
             metadata.Format(metadataBuffer.Span);
@@ -546,62 +565,27 @@ public partial class PersistentState
             await RandomAccess.WriteAsync(Handle, this, writeAddress, token).ConfigureAwait(false);
             bufferTuple = default;
 
-            runningIndex = index;
+            lastEntryWritten = index == lastRelativeIndex;
             writer.FilePosition = metadata.End;
         }
 
-        private ValueTask UnsealIfNeededAsync(long truncatePosition, CancellationToken token)
-        {
-            ValueTask task;
-            if (IsSealed)
-            {
-                task = UnsealAsync(truncatePosition, token);
-            }
-            else if (token.IsCancellationRequested)
-            {
-                task = ValueTask.FromCanceled(token);
-            }
-            else if (truncatePosition < writer.FilePosition)
-            {
-                task = new();
-                try
-                {
-                    // The caller is trying to rewrite the log entry.
-                    // For a correctness of Initialize() method for unsealed partitions, we
-                    // need to adjust file size. This is expensive syscall which can lead to file fragmentation.
-                    // However, this is acceptable because rare.
-                    RandomAccess.SetLength(Handle, truncatePosition);
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException(e);
-                }
-            }
-            else
-            {
-                task = new();
-            }
+        private ValueTask UnsealIfNeededAsync(CancellationToken token)
+            => IsSealed ? UnsealAsync(token) : ValueTask.CompletedTask;
 
-            return task;
-        }
-
-        private async ValueTask UnsealAsync(long truncatePosition, CancellationToken token)
+        private async ValueTask UnsealAsync(CancellationToken token)
         {
             // This is expensive operation in terms of I/O. However, it is needed only when
             // the consumer decided to rewrite the existing log entry, which is rare.
             IsSealed = false;
             await WriteHeaderAsync(token).ConfigureAwait(false);
             RandomAccess.FlushToDisk(Handle);
-
-            // destroy all entries in the tail of partition
-            RandomAccess.SetLength(Handle, truncatePosition);
         }
 
         public override ValueTask FlushAsync(CancellationToken token = default)
         {
             return IsSealed
                 ? ValueTask.CompletedTask
-                : runningIndex == LastIndex
+                : lastEntryWritten
                 ? FlushAndSealAsync(token)
                 : base.FlushAsync(token);
         }
@@ -609,6 +593,8 @@ public partial class PersistentState
         private async ValueTask FlushAndSealAsync(CancellationToken token)
         {
             Debug.Assert(writer.FilePosition > HeaderSize);
+            Debug.Assert(lastEntryWritten);
+            Debug.Assert(IsSealed is false);
             
             Invalidate();
             
@@ -694,7 +680,7 @@ public partial class PersistentState
             writeAddress = fileOffset;
         }
 
-        internal override void Initialize()
+        internal void Initialize()
         {
             using var handle = File.OpenHandle(FileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.SequentialScan);
             if (RandomAccess.Read(handle, metadata.Span, 0L) < fileOffset)
