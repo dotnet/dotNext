@@ -1,3 +1,5 @@
+using static System.Threading.Timeout;
+
 namespace DotNext.Threading;
 
 public sealed class AsyncBarrierTests : Test
@@ -51,7 +53,7 @@ public sealed class AsyncBarrierTests : Test
         ICollection<Task> tasks = new LinkedList<Task>();
         Equal(0, barrier.CurrentPhaseNumber);
         tasks.Add(barrier.SignalAndWaitAsync().AsTask());
-        tasks.Add(barrier.SignalAndWaitAsync().AsTask());
+        tasks.Add(barrier.SignalAndWaitAsync(InfiniteTimeSpan).AsTask());
         tasks.Add(barrier.SignalAndWaitAsync().AsTask());
         await Task.WhenAll(tasks);
         Equal(1, barrier.CurrentPhaseNumber);
