@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 07-08-2024
+# 07-09-2024
 <a href="https://www.nuget.org/packages/dotnext.io/5.9.0">DotNext.IO 5.7.1</a>
 * Improved performance of `FileWriter` in some corner cases
 
