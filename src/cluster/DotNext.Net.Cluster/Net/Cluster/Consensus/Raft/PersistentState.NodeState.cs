@@ -150,7 +150,7 @@ public partial class PersistentState
             static long HashRound(long hash, long data) => unchecked((hash ^ data) * prime);
         }
 
-        internal ValueTask FlushAsync(in Range range)
+        internal ValueTask FlushAsync(in Range range, CancellationToken token = default)
         {
             ReadOnlyMemory<byte> data = buffer.Memory;
             int offset;
@@ -166,7 +166,7 @@ public partial class PersistentState
                 data = data.Slice(offset, length);
             }
 
-            return RandomAccess.WriteAsync(handle, data, offset);
+            return RandomAccess.WriteAsync(handle, data, offset, token);
         }
 
         internal ValueTask ClearAsync(CancellationToken token = default)

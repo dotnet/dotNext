@@ -18,11 +18,19 @@ public partial class MemoryBasedStateMachine
     internal sealed class Snapshot : ConcurrentStorageAccess
     {
         private new const string FileName = "snapshot";
-        private const string TempFileName = "snapshot.new";
 
-        internal Snapshot(DirectoryInfo location, int bufferSize, in BufferManager manager, int readersCount, WriteMode writeMode, bool tempSnapshot = false, long initialSize = 0L)
-            : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), 0, bufferSize, manager.BufferAllocator, readersCount, writeMode, initialSize)
+        internal Snapshot(DirectoryInfo? location, int bufferSize, in BufferManager manager, int readersCount, WriteMode writeMode, long initialSize = 0L)
+            : base(GetPath(location), 0, bufferSize, manager.BufferAllocator, readersCount, writeMode, initialSize)
         {
+        }
+
+        private static string GetPath(DirectoryInfo? location)
+        {
+            var (directory, fileName) = location is null
+                ? (Path.GetTempPath(), Path.GetRandomFileName())
+                : (location.FullName, FileName);
+
+            return Path.Combine(directory, fileName);
         }
 
         internal async ValueTask<long> WriteAsync<TEntry>(TEntry entry, CancellationToken token = default)
@@ -103,7 +111,7 @@ public partial class MemoryBasedStateMachine
         /// <remarks>
         /// If <paramref name="currentIndex"/> is modified in a way when it out of bounds
         /// then snapshot process will be terminated immediately. Moreover,
-        /// compaction algorithm is optimized for monothonic growth of this index.
+        /// compaction algorithm is optimized for monotonic growth of this index.
         /// Stepping back or random access may slow down the process.
         /// </remarks>
         /// <param name="startIndex">The lower bound of the index, inclusive.</param>

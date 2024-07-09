@@ -54,7 +54,7 @@ public static class StringExtensions
     /// </remarks>
     /// <param name="str">The instance of string.</param>
     /// <param name="range">The range of substring.</param>
-    /// <returns>The part of <paramref name="str"/> extracted according with supplied range.</returns>
+    /// <returns>The part of <paramref name="str"/> extracted according to the supplied range.</returns>
     public static string Substring(this string str, Range range)
     {
         var (start, length) = range.GetOffsetAndLength(str.Length);

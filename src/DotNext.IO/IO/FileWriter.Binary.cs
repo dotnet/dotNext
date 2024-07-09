@@ -56,12 +56,9 @@ public partial class FileWriter : IAsyncBinaryWriter
 
     private async ValueTask WriteDirectAsync<T>(T arg, SpanAction<byte, T> writer, int length, CancellationToken token)
     {
-        await FlushCoreAsync(token).ConfigureAwait(false);
-
         using var buffer = allocator.AllocateExactly(length);
         writer(buffer.Span, arg);
-        await RandomAccess.WriteAsync(handle, buffer.Memory, fileOffset, token).ConfigureAwait(false);
-        fileOffset += buffer.Length;
+        await WriteDirectAsync(buffer.Memory, token).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -136,7 +133,7 @@ public partial class FileWriter : IAsyncBinaryWriter
 
     /// <summary>
     /// Encodes a block of memory, optionally prefixed with the length encoded as a sequence of bytes
-    /// according with the specified format.
+    /// according to the specified format.
     /// </summary>
     /// <param name="input">A block of memory.</param>
     /// <param name="lengthFormat">Indicates how the length of the BLOB must be encoded.</param>
