@@ -9,7 +9,7 @@ namespace DotNext.Threading;
 /// This is asynchronous version of <see cref="Barrier"/> with small differences:
 /// <list type="bullet">
 /// <item><description>Post-phase action is presented by virtual method <see cref="PostPhase(long)"/>.</description></item>
-/// <item><description>It it possible to wait for phase completion without signal.</description></item>
+/// <item><description>It is possible to wait for phase completion without signal.</description></item>
 /// <item><description>It is possible to signal without waiting of phase completion.</description></item>
 /// <item><description>Post-phase action is asynchronous.</description></item>
 /// <item><description>Number of phases is limited by <see cref="long"/> data type.</description></item>
