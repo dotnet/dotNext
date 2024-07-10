@@ -69,10 +69,10 @@ public partial class TaskCompletionPipe<T>
 
     private LinkedTaskNode? firstTask, lastTask;
 
-    private void AddNode(LinkedTaskNode node)
+    private void AddCompletedTaskNode(LinkedTaskNode node)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
-        Debug.Assert(node is { Task: { IsCompleted: true } });
+        Debug.Assert(node is { Task.IsCompleted: true });
 
         if (lastTask is null)
         {
@@ -86,7 +86,7 @@ public partial class TaskCompletionPipe<T>
 
     private ManualResetCompletionSource? EnqueueCompletedTask(LinkedTaskNode node)
     {
-        AddNode(node);
+        AddCompletedTaskNode(node);
 
         if (--scheduledTasksCount is 0U && completionRequested && completedAll is not null)
             completedAll.TrySetResult();

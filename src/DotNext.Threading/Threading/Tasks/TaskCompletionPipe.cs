@@ -171,7 +171,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             {
                 if (task.IsCompleted)
                 {
-                    AddNode(new(task) { UserData = userData });
+                    AddCompletedTaskNode(new(task) { UserData = userData });
                     scheduledTasksCount--;
                     completionDetected = true;
                 }
