@@ -38,6 +38,8 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <summary>
     /// Gets a task that turns into completed state when all submitted tasks are completed.
     /// </summary>
+    /// <exception cref="NotSupportedException"><see cref="IsCompletionTaskSupported"/> is <see langword="false"/>.</exception>
+    /// <exception cref="PendingTaskInterruptedException"><see cref="Reset()"/> was called before completion.</exception>
     public Task Completion => Volatile.Read(in completedAll)?.Task ?? Task.FromException(new NotSupportedException());
 
     private object SyncRoot => this;
@@ -68,7 +70,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             completionRequested = true;
             if (scheduledTasksCount is 0U)
             {
-                OnCompleted();
+                completedAll?.TrySetResult();
                 suspendedCallers = DetachWaitQueue()?.SetResult(false, out _);
             }
             else
@@ -169,7 +171,8 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             {
                 if (task.IsCompleted)
                 {
-                    EnqueueCompletedTaskNoResume(new(task) { UserData = userData });
+                    AddNode(new(task) { UserData = userData });
+                    scheduledTasksCount--;
                     completionDetected = true;
                 }
                 else
@@ -182,7 +185,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
 
             if (scheduledTasksCount is 0U && complete)
             {
-                OnCompleted();
+                completedAll?.TrySetResult();
                 suspendedCaller = DetachWaitQueue()?.SetResult(false, out _);
             }
             else if (completionDetected)
@@ -197,8 +200,6 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
 
         suspendedCaller?.Unwind();
     }
-
-    private void OnCompleted() => completedAll?.TrySetResult();
 
     /// <summary>
     /// Reuses the pipe.
@@ -218,7 +219,10 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             ClearTaskQueue();
             suspendedCallers = DetachWaitQueue()?.SetResult(false, out _);
             if (completedAll is not null)
+            {
+                completedAll.TrySetException(new PendingTaskInterruptedException());
                 completedAll = new(TaskCreationOptions.RunContinuationsAsynchronously);
+            }
         }
 
         suspendedCallers?.Unwind();

@@ -69,7 +69,7 @@ public partial class TaskCompletionPipe<T>
 
     private LinkedTaskNode? firstTask, lastTask;
 
-    private void EnqueueCompletedTaskNoResume(LinkedTaskNode node)
+    private void AddNode(LinkedTaskNode node)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(node is { Task: { IsCompleted: true } });
@@ -82,14 +82,14 @@ public partial class TaskCompletionPipe<T>
         {
             lastTask = lastTask.Next = node;
         }
-
-        if (--scheduledTasksCount is 0U && completionRequested)
-            OnCompleted();
     }
 
     private ManualResetCompletionSource? EnqueueCompletedTask(LinkedTaskNode node)
     {
-        EnqueueCompletedTaskNoResume(node);
+        AddNode(node);
+
+        if (--scheduledTasksCount is 0U && completionRequested && completedAll is not null)
+            completedAll.TrySetResult();
 
         // Detaches continuation to call later out of monitor lock.
         // This approach increases response time (the time needed to submit completed task asynchronously),
