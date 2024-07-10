@@ -56,6 +56,22 @@ public sealed class AsyncTriggerTests : Test
 
         await task2;
     }
+    
+    [Fact]
+    public static async Task SignalAndWaitWithTimeout()
+    {
+        using var trigger = new AsyncTrigger();
+
+        var task1 = trigger.WaitAsync();
+        var task2 = trigger.SignalAndWaitAsync(false, true, DefaultTimeout);
+
+        await task1;
+        False(task2.IsCompleted);
+
+        True(trigger.Signal());
+
+        True(await task2);
+    }
 
     [Fact]
     public static async Task SignalEmptyQueue()
