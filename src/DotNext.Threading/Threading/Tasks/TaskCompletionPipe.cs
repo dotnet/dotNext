@@ -147,7 +147,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
         task
             .ConfigureAwait(false)
             .GetAwaiter()
-            .OnCompleted(new LazyLinkedTaskNode(task, this, expectedVersion) { UserData = userData }.Invoke);
+            .UnsafeOnCompleted(new LazyLinkedTaskNode(task, this, expectedVersion) { UserData = userData }.Invoke);
     }
 
     /// <summary>
