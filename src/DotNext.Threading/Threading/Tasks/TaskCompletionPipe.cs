@@ -18,10 +18,27 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     // Allows to skip scheduled tasks in case of reuse
     private uint version;
 
+    // if null then completion not enabled
+    private TaskCompletionSource? completedAll;
+
     /// <summary>
     /// Initializes a new pipe.
     /// </summary>
     public TaskCompletionPipe() => pool = new(OnCompleted);
+
+    /// <summary>
+    /// Gets or sets a value indicating that this pipe supports <see cref="Completion"/> property.
+    /// </summary>
+    public bool IsCompletionTaskSupported
+    {
+        get => Volatile.Read(in completedAll) is not null;
+        init => completedAll = value ? new(TaskCreationOptions.RunContinuationsAsynchronously) : null;
+    }
+
+    /// <summary>
+    /// Gets a task that turns into completed state when all submitted tasks are completed.
+    /// </summary>
+    public Task Completion => Volatile.Read(in completedAll)?.Task ?? Task.FromException(new NotSupportedException());
 
     private object SyncRoot => this;
 
@@ -49,9 +66,15 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
                 throw new InvalidOperationException();
 
             completionRequested = true;
-            suspendedCallers = scheduledTasksCount is 0U
-                ? DetachWaitQueue()?.SetResult(false, out _)
-                : null;
+            if (scheduledTasksCount is 0U)
+            {
+                OnCompleted();
+                suspendedCallers = DetachWaitQueue()?.SetResult(false, out _);
+            }
+            else
+            {
+                suspendedCallers = null;
+            }
         }
 
         suspendedCallers?.Unwind();
@@ -157,15 +180,25 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
 
             completionRequested = complete;
 
-            suspendedCaller = scheduledTasksCount is 0U && complete
-                ? DetachWaitQueue()?.SetResult(false, out _)
-                : completionDetected
-                    ? TryDetachSuspendedCaller()
-                    : null;
+            if (scheduledTasksCount is 0U && complete)
+            {
+                OnCompleted();
+                suspendedCaller = DetachWaitQueue()?.SetResult(false, out _);
+            }
+            else if (completionDetected)
+            {
+                suspendedCaller = TryDetachSuspendedCaller();
+            }
+            else
+            {
+                suspendedCaller = null;
+            }
         }
 
         suspendedCaller?.Unwind();
     }
+
+    private void OnCompleted() => completedAll?.TrySetResult();
 
     /// <summary>
     /// Reuses the pipe.
@@ -184,6 +217,8 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             completionRequested = false;
             ClearTaskQueue();
             suspendedCallers = DetachWaitQueue()?.SetResult(false, out _);
+            if (completedAll is not null)
+                completedAll = new(TaskCreationOptions.RunContinuationsAsynchronously);
         }
 
         suspendedCallers?.Unwind();

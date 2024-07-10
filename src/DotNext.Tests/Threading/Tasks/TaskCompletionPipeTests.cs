@@ -197,4 +197,27 @@ public class TaskCompletionPipeTests : Test
             return tasks.GetConsumer();
         }
     }
+
+    [Fact]
+    public static async Task CompletionTask()
+    {
+        var pipe = new TaskCompletionPipe<Task> { IsCompletionTaskSupported = true };
+        var source1 = new TaskCompletionSource();
+        var source2 = new TaskCompletionSource();
+
+        pipe.Submit([source1.Task, source2.Task], complete: true);
+
+        source1.SetResult();
+        source2.SetResult();
+
+        await pipe.Completion.WaitAsync(DefaultTimeout);
+
+        var count = 0;
+        while (pipe.TryRead(out _))
+        {
+            count++;
+        }
+
+        Equal(2, count);
+    }
 }

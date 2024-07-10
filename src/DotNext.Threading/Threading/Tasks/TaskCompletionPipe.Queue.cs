@@ -73,7 +73,7 @@ public partial class TaskCompletionPipe<T>
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(node is { Task: { IsCompleted: true } });
-        
+
         if (lastTask is null)
         {
             firstTask = lastTask = node;
@@ -83,7 +83,8 @@ public partial class TaskCompletionPipe<T>
             lastTask = lastTask.Next = node;
         }
 
-        scheduledTasksCount--;
+        if (--scheduledTasksCount is 0U && completionRequested)
+            OnCompleted();
     }
 
     private ManualResetCompletionSource? EnqueueCompletedTask(LinkedTaskNode node)
