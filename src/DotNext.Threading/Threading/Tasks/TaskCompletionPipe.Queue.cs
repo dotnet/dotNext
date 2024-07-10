@@ -69,11 +69,11 @@ public partial class TaskCompletionPipe<T>
 
     private LinkedTaskNode? firstTask, lastTask;
 
-    private ManualResetCompletionSource? EnqueueCompletedTask(LinkedTaskNode node)
+    private void EnqueueCompletedTaskNoResume(LinkedTaskNode node)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
         Debug.Assert(node is { Task: { IsCompleted: true } });
-
+        
         if (lastTask is null)
         {
             firstTask = lastTask = node;
@@ -84,12 +84,22 @@ public partial class TaskCompletionPipe<T>
         }
 
         scheduledTasksCount--;
+    }
+
+    private ManualResetCompletionSource? EnqueueCompletedTask(LinkedTaskNode node)
+    {
+        EnqueueCompletedTaskNoResume(node);
 
         // Detaches continuation to call later out of monitor lock.
         // This approach increases response time (the time needed to submit completed task asynchronously),
         // but also improves throughput (number of submitted tasks per second).
         // Typically, the pipe has single consumer and multiple producers. In that
         // case, improved throughput is most preferred.
+        return TryDetachSuspendedCaller();
+    }
+
+    private LinkedValueTaskCompletionSource<bool>? TryDetachSuspendedCaller()
+    {
         for (LinkedValueTaskCompletionSource<bool>? current = waitQueue.First, next; current is not null; current = next)
         {
             next = current.Next;

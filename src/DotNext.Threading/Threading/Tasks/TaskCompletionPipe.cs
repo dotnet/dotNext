@@ -96,7 +96,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <param name="task">The task to add.</param>
     /// <exception cref="ArgumentNullException"><paramref name="task"/> is <see langword="null"/>.</exception>
     /// <exception cref="InvalidOperationException">The pipe is closed.</exception>
-    public void Add(T task)
+    public void Add(T task) // TODO: Remove in future with optional param
         => Add(task, userData: null);
 
     /// <summary>
@@ -114,7 +114,57 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
         ArgumentNullException.ThrowIfNull(task);
 
         if (!TryAdd(task, out var expectedVersion, userData))
-            task.ConfigureAwait(false).GetAwaiter().OnCompleted(new LazyLinkedTaskNode(task, this, expectedVersion) { UserData = userData }.Invoke);
+            EnqueueCompletion(task, expectedVersion, userData);
+    }
+
+    private void EnqueueCompletion(T task, uint expectedVersion, object? userData)
+    {
+        task
+            .ConfigureAwait(false)
+            .GetAwaiter()
+            .OnCompleted(new LazyLinkedTaskNode(task, this, expectedVersion) { UserData = userData }.Invoke);
+    }
+
+    /// <summary>
+    /// Submits a group of tasks and mark this pipe as completed.
+    /// </summary>
+    /// <param name="tasks">A group of tasks.</param>
+    /// <param name="complete"><see langword="true"/> to submit tasks and complete the pipe; <see langword="false"/> to submit tasks.</param>
+    /// <param name="userData">Arbitrary object associated with the tasks.</param>
+    /// <exception cref="InvalidOperationException">The pipe is closed.</exception>
+    public void Submit(ReadOnlySpan<T> tasks, bool complete = false, object? userData = null)
+    {
+        LinkedValueTaskCompletionSource<bool>? suspendedCaller;
+        lock (SyncRoot)
+        {
+            if (completionRequested)
+                throw new InvalidOperationException();
+
+            scheduledTasksCount += (uint)tasks.Length;
+            var completionDetected = false;
+            foreach (var task in tasks)
+            {
+                if (task.IsCompleted)
+                {
+                    EnqueueCompletedTaskNoResume(new(task) { UserData = userData });
+                    completionDetected = true;
+                }
+                else
+                {
+                    EnqueueCompletion(task, version, userData);
+                }
+            }
+
+            completionRequested = complete;
+
+            suspendedCaller = scheduledTasksCount is 0U && complete
+                ? DetachWaitQueue()?.SetResult(false, out _)
+                : completionDetected
+                    ? TryDetachSuspendedCaller()
+                    : null;
+        }
+
+        suspendedCaller?.Unwind();
     }
 
     /// <summary>
