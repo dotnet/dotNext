@@ -72,7 +72,7 @@ public partial class TaskCompletionPipe<T>
     private void AddCompletedTaskNode(LinkedTaskNode node)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
-        Debug.Assert(node is { Task.IsCompleted: true });
+        Debug.Assert(node.Task.IsCompleted);
 
         if (lastTask is null)
         {
