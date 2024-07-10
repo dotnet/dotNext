@@ -190,6 +190,8 @@ public class TaskCompletionPipeTests : Test
     public static async Task CompletionTask()
     {
         var pipe = new TaskCompletionPipe<Task> { IsCompletionTaskSupported = true };
+        True(pipe.IsCompletionTaskSupported);
+        
         var source1 = new TaskCompletionSource();
         var source2 = new TaskCompletionSource();
 
