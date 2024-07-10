@@ -16,21 +16,7 @@ public static class TaskCompletionPipe
     /// <returns>The asynchronous consuming collection.</returns>
     public static Consumer<T> GetConsumer<T>(this TaskCompletionPipe<Task<T>> pipe)
         => new(pipe);
-
-    /// <summary>
-    /// Gets a collection over tasks to be available as they complete.
-    /// </summary>
-    /// <param name="tasks">A collection of tasks.</param>
-    /// <typeparam name="T">The type of tasks.</typeparam>
-    /// <returns>A collection over tasks to be available as they complete.</returns>
-    public static IAsyncEnumerable<T> GetConsumer<T>(this ReadOnlySpan<T> tasks)
-        where T : Task
-    {
-        var pipe = new TaskCompletionPipe<T>();
-        pipe.Submit(tasks, complete: true);
-        return pipe;
-    }
-
+    
     /// <summary>
     /// Gets a collection over tasks to be available as they complete.
     /// </summary>
@@ -42,6 +28,20 @@ public static class TaskCompletionPipe
         var pipe = new TaskCompletionPipe<Task<T>>();
         pipe.Submit(tasks, complete: true);
         return new(pipe);
+    }
+
+    /// <summary>
+    /// Gets a collection over tasks to be available as they complete.
+    /// </summary>
+    /// <param name="tasks">A collection of tasks.</param>
+    /// <typeparam name="T">The type of tasks.</typeparam>
+    /// <returns>A collection over tasks to be available as they complete.</returns>
+    public static IAsyncEnumerable<T> GetCompletionStream<T>(this ReadOnlySpan<T> tasks)
+        where T : Task
+    {
+        var pipe = new TaskCompletionPipe<T>();
+        pipe.Submit(tasks, complete: true);
+        return pipe;
     }
 
     private static async IAsyncEnumerator<T> GetAsyncEnumerator<T>(TaskCompletionPipe<Task<T>> pipe, uint expectedVersion, CancellationToken token)

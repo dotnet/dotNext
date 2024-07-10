@@ -162,24 +162,18 @@ public class TaskCompletionPipeTests : Test
     [Fact]
     public static async Task CompletedTaskGroupToCollection()
     {
-        await foreach (var t in GetConsumer())
+        await foreach (var t in TaskCompletionPipe.GetCompletionStream([Task.CompletedTask, Task.CompletedTask]))
         {
             True(t.IsCompleted);
         }
-
-        static IAsyncEnumerable<Task> GetConsumer()
-        {
-            ReadOnlySpan<Task> tasks = [Task.CompletedTask, Task.CompletedTask];
-            return tasks.GetConsumer();
-        }
     }
-    
+
     [Fact]
     public static async Task TaskGroupToCollection()
     {
         var source1 = new TaskCompletionSource<int>();
         var source2 = new TaskCompletionSource<int>();
-        await using var consumer = GetConsumer(source1.Task, source2.Task).GetAsyncEnumerator();
+        await using var consumer = TaskCompletionPipe.GetConsumer([source1.Task, source2.Task]).GetAsyncEnumerator();
         
         source1.SetResult(42);
         True(await consumer.MoveNextAsync());
@@ -190,12 +184,6 @@ public class TaskCompletionPipeTests : Test
         Equal(43, consumer.Current);
         
         False(await consumer.MoveNextAsync());
-
-        static IAsyncEnumerable<int> GetConsumer(Task<int> x, Task<int> y)
-        {
-            ReadOnlySpan<Task<int>> tasks = [x, y];
-            return tasks.GetConsumer();
-        }
     }
 
     [Fact]
