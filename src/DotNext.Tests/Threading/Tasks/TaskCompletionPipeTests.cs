@@ -162,7 +162,7 @@ public class TaskCompletionPipeTests : Test
     [Fact]
     public static async Task CompletedTaskGroupToCollection()
     {
-        await foreach (var t in TaskCompletionPipe.GetCompletionStream([Task.CompletedTask, Task.CompletedTask]))
+        await foreach (var t in TaskCompletionPipe.Create([Task.CompletedTask, Task.CompletedTask]))
         {
             True(t.IsCompleted);
         }
@@ -195,7 +195,7 @@ public class TaskCompletionPipeTests : Test
         var source1 = new TaskCompletionSource();
         var source2 = new TaskCompletionSource();
 
-        pipe.Submit([source1.Task, source2.Task], complete: true);
+        pipe.Add([source1.Task, source2.Task], complete: true);
 
         source1.SetResult();
         source2.SetResult();

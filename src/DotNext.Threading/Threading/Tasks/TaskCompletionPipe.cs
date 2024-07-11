@@ -157,7 +157,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <param name="complete"><see langword="true"/> to submit tasks and complete the pipe; <see langword="false"/> to submit tasks.</param>
     /// <param name="userData">Arbitrary object associated with the tasks.</param>
     /// <exception cref="InvalidOperationException">The pipe is closed.</exception>
-    public void Submit(ReadOnlySpan<T> tasks, bool complete = false, object? userData = null)
+    public void Add(ReadOnlySpan<T> tasks, bool complete = false, object? userData = null)
     {
         LinkedValueTaskCompletionSource<bool>? suspendedCaller;
         lock (SyncRoot)

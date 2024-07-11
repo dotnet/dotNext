@@ -26,21 +26,21 @@ public static class TaskCompletionPipe
     public static Consumer<T> GetConsumer<T>(this ReadOnlySpan<Task<T>> tasks)
     {
         var pipe = new TaskCompletionPipe<Task<T>>();
-        pipe.Submit(tasks, complete: true);
+        pipe.Add(tasks, complete: true);
         return new(pipe);
     }
 
     /// <summary>
-    /// Gets a collection over tasks to be available as they complete.
+    /// Creates a collection over tasks to be available as they complete.
     /// </summary>
     /// <param name="tasks">A collection of tasks.</param>
     /// <typeparam name="T">The type of tasks.</typeparam>
     /// <returns>A collection over tasks to be available as they complete.</returns>
-    public static IAsyncEnumerable<T> GetCompletionStream<T>(this ReadOnlySpan<T> tasks)
+    public static IAsyncEnumerable<T> Create<T>(ReadOnlySpan<T> tasks)
         where T : Task
     {
         var pipe = new TaskCompletionPipe<T>();
-        pipe.Submit(tasks, complete: true);
+        pipe.Add(tasks, complete: true);
         return pipe;
     }
 
