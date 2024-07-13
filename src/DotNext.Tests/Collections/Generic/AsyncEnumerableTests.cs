@@ -35,8 +35,22 @@ public sealed class AsyncEnumerableTests : Test
         Equal(3, counter.value);
         counter.value = 0;
 
-        list = new int[] { 1, 2, 10, 11, 15 }.ToAsyncEnumerable();
+        list = new[] { 1, 2, 10, 11, 15 }.ToAsyncEnumerable();
         await list.ForEachAsync(counter.Accept);
+        Equal(5, counter.value);
+    }
+
+    [Fact]
+    public static async Task ForEachTest1Async()
+    {
+        var list = new List<int> { 1, 10, 20 }.ToAsyncEnumerable();
+        var counter = new CollectionTests.Counter<int>();
+        await list.ForEachAsync(counter.AcceptAsync);
+        Equal(3, counter.value);
+        counter.value = 0;
+
+        list = new[] { 1, 2, 10, 11, 15 }.ToAsyncEnumerable();
+        await list.ForEachAsync(counter.AcceptAsync);
         Equal(5, counter.value);
     }
 

@@ -50,6 +50,21 @@ public sealed class CollectionTests : Test
         public int value;
 
         public void Accept(T item) => value += 1;
+
+        public ValueTask AcceptAsync(T item, CancellationToken token)
+        {
+            ValueTask task = ValueTask.CompletedTask;
+            try
+            {
+                Accept(item);
+            }
+            catch (Exception e)
+            {
+                task = ValueTask.FromException(e);
+            }
+
+            return task;
+        }
     }
 
     [Fact]
