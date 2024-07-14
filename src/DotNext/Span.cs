@@ -419,11 +419,10 @@ public static class Span
     /// <param name="span">The source span.</param>
     /// <param name="filter">A function to test each element for a condition.</param>
     /// <returns>The first element in the span that matches to the specified filter; or <see cref="Optional{T}.None"/>.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="filter"/> is <see langword="null"/>.</exception>
-    public static Optional<T> FirstOrNone<T>(this ReadOnlySpan<T> span, Predicate<T> filter)
+    public static Optional<T> FirstOrNone<T>(this ReadOnlySpan<T> span, Predicate<T>? filter = null)
     {
-        ArgumentNullException.ThrowIfNull(filter);
-
+        filter ??= Predicate.Constant<T>(true);
+        
         for (var i = 0; i < span.Length; i++)
         {
             var item = span[i];
@@ -432,6 +431,13 @@ public static class Span
         }
 
         return Optional<T>.None;
+    }
+
+    internal static Optional<T> LastOrNone<T>(ReadOnlySpan<T> span)
+    {
+        ref var elementRef = ref MemoryMarshal.GetReference(span);
+        var length = span.Length;
+        return length > 0 ? Unsafe.Add(ref elementRef, length - 1) : Optional<T>.None;
     }
 
     internal static bool ElementAt<T>(ReadOnlySpan<T> span, int index, [MaybeNullWhen(false)] out T element)

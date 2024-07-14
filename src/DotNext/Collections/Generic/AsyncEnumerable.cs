@@ -8,7 +8,7 @@ using Buffers;
 public static partial class AsyncEnumerable
 {
     /// <summary>
-    /// Applies specified action to each collection element asynchronously.
+    /// Applies specified action to each element of the collection asynchronously.
     /// </summary>
     /// <typeparam name="T">Type of elements in the collection.</typeparam>
     /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
@@ -23,7 +23,7 @@ public static partial class AsyncEnumerable
     }
 
     /// <summary>
-    /// Applies specified action to each collection element asynchronously.
+    /// Applies the specified action to each element of the collection asynchronously.
     /// </summary>
     /// <typeparam name="T">Type of elements in the collection.</typeparam>
     /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
@@ -38,8 +38,8 @@ public static partial class AsyncEnumerable
     }
 
     /// <summary>
-    /// Obtains first value type in the sequence; or <see langword="null"/>
-    /// if sequence is empty.
+    /// Obtains the first value of a sequence; or <see langword="null"/>
+    /// if the sequence is empty.
     /// </summary>
     /// <typeparam name="T">Type of elements in the sequence.</typeparam>
     /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
@@ -55,8 +55,8 @@ public static partial class AsyncEnumerable
     }
 
     /// <summary>
-    /// Obtains the last value type in the sequence; or <see langword="null"/>
-    /// if sequence is empty.
+    /// Obtains the last value of a sequence; or <see langword="null"/>
+    /// if the sequence is empty.
     /// </summary>
     /// <typeparam name="T">Type of elements in the sequence.</typeparam>
     /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
@@ -74,8 +74,8 @@ public static partial class AsyncEnumerable
     }
 
     /// <summary>
-    /// Obtains first element in the sequence; or <see cref="Optional{T}.None"/>
-    /// if sequence is empty.
+    /// Obtains the first element of a sequence; or <see cref="Optional{T}.None"/>
+    /// if the sequence is empty.
     /// </summary>
     /// <typeparam name="T">Type of elements in the sequence.</typeparam>
     /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
@@ -90,8 +90,8 @@ public static partial class AsyncEnumerable
     }
 
     /// <summary>
-    /// Obtains the last element in the sequence; or <see cref="Optional{T}.None"/>
-    /// if sequence is empty.
+    /// Obtains the last element of a sequence; or <see cref="Optional{T}.None"/>
+    /// if the sequence is empty.
     /// </summary>
     /// <typeparam name="T">Type of elements in the sequence.</typeparam>
     /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
@@ -118,6 +118,8 @@ public static partial class AsyncEnumerable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static async ValueTask<Optional<T>> FirstOrNoneAsync<T>(this IAsyncEnumerable<T> seq, Predicate<T> filter, CancellationToken token = default)
     {
+        ArgumentNullException.ThrowIfNull(filter);
+        
         await foreach (var item in seq.WithCancellation(token).ConfigureAwait(false))
         {
             if (filter(item))
@@ -137,11 +139,10 @@ public static partial class AsyncEnumerable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static async ValueTask<bool> SkipAsync<T>(this IAsyncEnumerator<T> enumerator, int count)
     {
-        while (count > 0)
+        for (; count > 0; count--)
         {
             if (!await enumerator.MoveNextAsync().ConfigureAwait(false))
                 return false;
-            count--;
         }
 
         return true;
@@ -161,11 +162,9 @@ public static partial class AsyncEnumerable
         var enumerator = collection.GetAsyncEnumerator(token);
         await using (enumerator.ConfigureAwait(false))
         {
-            await enumerator.SkipAsync(index).ConfigureAwait(false);
-
-            return await enumerator.MoveNextAsync().ConfigureAwait(false) ?
-                enumerator.Current :
-                Optional<T>.None;
+            return await enumerator.SkipAsync(index).ConfigureAwait(false) && await enumerator.MoveNextAsync().ConfigureAwait(false)
+                ? enumerator.Current
+                : Optional<T>.None;
         }
     }
 

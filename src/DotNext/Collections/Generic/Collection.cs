@@ -166,6 +166,67 @@ public static partial class Collection
     }
 
     /// <summary>
+    /// Obtains the first element of a sequence; or <see cref="Optional{T}.None"/>
+    /// if the sequence is empty.
+    /// </summary>
+    /// <param name="collection">The collection to return the first element of.</param>
+    /// <typeparam name="T">The type of the element of a collection.</typeparam>
+    /// <returns>The first element; or <see cref="Optional{T}.None"/></returns>
+    public static Optional<T> FirstOrNone<T>(this IEnumerable<T> collection)
+    {
+        return collection switch
+        {
+            null => throw new ArgumentNullException(nameof(collection)),
+            List<T> list => Span.FirstOrNone<T>(CollectionsMarshal.AsSpan(list)),
+            T[] array => Span.FirstOrNone<T>(array),
+            string str => Unsafe.BitCast<Optional<char>, Optional<T>>(Span.FirstOrNone<char>(str)),
+            LinkedList<T> list => list.First is { } first ? first.Value : Optional<T>.None,
+            IList<T> list => list.Count > 0 ? list[0] : Optional<T>.None,
+            IReadOnlyList<T> readOnlyList => readOnlyList.Count > 0 ? readOnlyList[0] : Optional<T>.None,
+            _ => FirstOrNoneSlow(collection),
+        };
+
+        static Optional<T> FirstOrNoneSlow(IEnumerable<T> collection)
+        {
+            using var enumerator = collection.GetEnumerator();
+            return enumerator.MoveNext() ? enumerator.Current : Optional<T>.None;
+        }
+    }
+
+    /// <summary>
+    /// Obtains the last element of a sequence; or <see cref="Optional{T}.None"/>
+    /// if the sequence is empty.
+    /// </summary>
+    /// <param name="collection">The collection to return the first element of.</param>
+    /// <typeparam name="T">The type of the element of a collection.</typeparam>
+    /// <returns>The first element; or <see cref="Optional{T}.None"/></returns>
+    public static Optional<T> LastOrNone<T>(this IEnumerable<T> collection)
+    {
+        return collection switch
+        {
+            null => throw new ArgumentNullException(nameof(collection)),
+            List<T> list => Span.LastOrNone<T>(CollectionsMarshal.AsSpan(list)),
+            T[] array => Span.LastOrNone<T>(array),
+            string str => Unsafe.BitCast<Optional<char>, Optional<T>>(Span.LastOrNone<char>(str)),
+            LinkedList<T> list => list.Last is { } last ? last.Value : Optional<T>.None,
+            IList<T> list => list.Count > 0 ? list[^1] : Optional<T>.None,
+            IReadOnlyList<T> readOnlyList => readOnlyList.Count > 0 ? readOnlyList[^1] : Optional<T>.None,
+            _ => LastOrNoneSlow(collection),
+        };
+
+        static Optional<T> LastOrNoneSlow(IEnumerable<T> collection)
+        {
+            var result = Optional.None<T>();
+            foreach (var item in collection)
+            {
+                result = item;
+            }
+
+            return result;
+        }
+    }
+
+    /// <summary>
     /// Obtains element at the specified index in the sequence.
     /// </summary>
     /// <remarks>
@@ -181,6 +242,7 @@ public static partial class Collection
     {
         return collection switch
         {
+            null => throw new ArgumentNullException(nameof(collection)),
             List<T> list => Span.ElementAt(CollectionsMarshal.AsSpan(list), index, out element),
             T[] array => Span.ElementAt(array, index, out element),
             LinkedList<T> list => NodeValueAt(list, index, out element),
@@ -211,14 +273,15 @@ public static partial class Collection
         static bool ElementAtSlow(IEnumerable<T> collection, int index, [MaybeNullWhen(false)] out T element)
         {
             using var enumerator = collection.GetEnumerator();
-            enumerator.Skip(index);
-            if (enumerator.MoveNext())
+            
+            // enumerator.Skip(index + 1) may overflow, replace it with two calls
+            if (enumerator.Skip(index) && enumerator.MoveNext())
             {
                 element = enumerator.Current;
                 return true;
             }
 
-            element = default!;
+            element = default;
             return false;
         }
 
@@ -230,7 +293,7 @@ public static partial class Collection
                 return true;
             }
 
-            element = default!;
+            element = default;
             return false;
         }
 
@@ -242,7 +305,7 @@ public static partial class Collection
                 return true;
             }
 
-            element = default!;
+            element = default;
             return false;
         }
     }
