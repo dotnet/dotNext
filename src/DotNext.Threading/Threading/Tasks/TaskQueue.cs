@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Threading.Tasks;
 
@@ -32,6 +33,16 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
         this.capacity = capacity;
     }
 
+    private ref T? this[int index]
+    {
+        get
+        {
+            Debug.Assert((uint)index < (uint)array.Length);
+
+            return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
+        }
+    }
+
     /// <summary>
     /// Gets a head of this queue.
     /// </summary>
@@ -41,7 +52,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
         {
             lock (array)
             {
-                return count > 0 ? array[head] : null;
+                return count > 0 ? this[head] : null;
             }
         }
     }
@@ -78,7 +89,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
         {
             if (result = count < capacity)
             {
-                array[tail] = task;
+                this[tail] = task;
                 MoveNext(ref tail);
                 ChangeCount(increment: true);
             }
@@ -94,7 +105,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
         {
             if (result = count < capacity)
             {
-                array[tail] = task;
+                this[tail] = task;
                 MoveNext(ref tail);
                 ChangeCount(increment: true);
                 waitTask = Task.CompletedTask;
@@ -135,7 +146,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
         {
             if (count > 0)
             {
-                result = array[head = this.head];
+                result = this[head = this.head];
                 enqueueTask = Task.CompletedTask;
                 if (completed = result is { IsCompleted: true })
                 {
@@ -161,7 +172,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
         bool result;
         lock (array)
         {
-            ref var element = ref array[expectedHead];
+            ref var element = ref this[expectedHead];
             if (result = count > 0 && head == expectedHead && ReferenceEquals(element, task))
             {
                 MoveNext(ref head);
@@ -182,7 +193,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     {
         lock (array)
         {
-            ref var element = ref array[head];
+            ref var element = ref this[head];
             task = element;
             if (count > 0 && task is { IsCompleted: true })
             {
