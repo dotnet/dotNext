@@ -16,7 +16,6 @@ namespace DotNext.Threading.Tasks;
 public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     where T : Task
 {
-    private readonly int capacity;
     private readonly T?[] array;
     private int tail, head, count;
     private Signal? signal;
@@ -30,7 +29,6 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(capacity);
 
         array = new T[capacity];
-        this.capacity = capacity;
     }
 
     private ref T? this[int index]
@@ -76,6 +74,45 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     }
 
     /// <summary>
+    /// Gets a value indicating that the queue has free space to place a task.
+    /// </summary>
+    public bool CanEnqueue
+    {
+        get
+        {
+            lock (array)
+            {
+                return count < array.Length;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Ensures that the queue has free space to enqueue a task.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous execution of the operation.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public ValueTask EnsureFreeSpaceAsync(CancellationToken token = default)
+    {
+        Task task;
+        lock (array)
+        {
+            if (count < array.Length)
+            {
+                task = Task.CompletedTask;
+            }
+            else
+            {
+                signal ??= new();
+                task = signal.Task;
+            }
+        }
+
+        return new(task.WaitAsync(token));
+    }
+
+    /// <summary>
     /// Tries to enqueue the task.
     /// </summary>
     /// <param name="task">The task to enqueue.</param>
@@ -87,7 +124,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
         bool result;
         lock (array)
         {
-            if (result = count < capacity)
+            if (result = count < array.Length)
             {
                 this[tail] = task;
                 MoveNext(ref tail);
@@ -103,7 +140,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
         bool result;
         lock (array)
         {
-            if (result = count < capacity)
+            if (result = count < array.Length)
             {
                 this[tail] = task;
                 MoveNext(ref tail);

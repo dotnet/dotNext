@@ -6,6 +6,7 @@ public class TaskQueueTests : Test
     public static async Task EmptyQueue()
     {
         var queue = new TaskQueue<Task>(10);
+        True(queue.CanEnqueue);
         Null(queue.HeadTask);
         False(queue.TryDequeue(out _));
         Null(await queue.TryDequeueAsync());
@@ -18,6 +19,7 @@ public class TaskQueueTests : Test
         True(queue.TryEnqueue(Task.CompletedTask));
         True(queue.TryEnqueue(Task.CompletedTask));
         True(queue.TryEnqueue(Task.CompletedTask));
+        False(queue.CanEnqueue);
         NotNull(queue.HeadTask);
 
         var enqueueTask = queue.EnqueueAsync(Task.CompletedTask).AsTask();
@@ -101,5 +103,22 @@ public class TaskQueueTests : Test
 
         source.SetException(new Exception());
         Same(source.Task, await dequeueTask);
+    }
+
+    [Fact]
+    public static async Task EnsureFreeSpace()
+    {
+        var queue = new TaskQueue<Task>(3);
+        await queue.EnsureFreeSpaceAsync();
+        
+        True(queue.TryEnqueue(Task.CompletedTask));
+        True(queue.TryEnqueue(Task.CompletedTask));
+        True(queue.TryEnqueue(Task.CompletedTask));
+
+        var task = queue.EnsureFreeSpaceAsync().AsTask();
+        False(task.IsCompleted);
+
+        True(queue.TryDequeue(out _));
+        await task.WaitAsync(DefaultTimeout);
     }
 }
