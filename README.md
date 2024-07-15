@@ -44,16 +44,15 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 07-09-2024
+Release Date: 07-15-2024
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.9.0">DotNext.IO 5.7.1</a>
-* Improved performance of `FileWriter` in some corner cases
+<a href="https://www.nuget.org/packages/dotnext/5.8.0">DotNext 5.8.0</a>
+* Added `FirstOrNone` and `LastOrNone` extension methods back from .NEXT 4.x as requested in [247](https://github.com/dotnet/dotNext/issues/247)
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.7.3">DotNext.Net.Cluster 5.7.3</a>
-* Fixed [244](https://github.com/dotnet/dotNext/issues/244)
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.7.3">DotNext.AspNetCore.Cluster 5.7.3</a>
-* Fixed [244](https://github.com/dotnet/dotNext/issues/244)
+<a href="https://www.nuget.org/packages/dotnext.threading/5.10.0">DotNext.Threading 5.10.0</a>
+* Added `TaskQueue<T>` class
+* Added `Completion` optional property to [TaskCompletionPipe&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Threading.Tasks.TaskCompletionPipe-1.html) that allows to synchronize on full completion of the pipe
+* Added one-shot static methods to [TaskCompletionPipe](https://dotnet.github.io/dotNext/api/DotNext.Threading.Tasks.TaskCompletionPipe.html) to take `IAsyncEnumerable<T>` over tasks as they complete
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
