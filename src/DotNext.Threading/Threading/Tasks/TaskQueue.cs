@@ -24,6 +24,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     /// Initializes a new empty queue.
     /// </summary>
     /// <param name="capacity">The maximum number of tasks in the queue.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than or equal to zero.</exception>
     public TaskQueue(int capacity)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(capacity);
