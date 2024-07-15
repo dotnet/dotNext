@@ -171,7 +171,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Collection_Append__1_System_Collections_Generic_IEnumerable___0____0___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Collection.Append%60%601(System.Collections.Generic.IEnumerable%7B%60%600%7D%2C%60%600%5B%5D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.cs/#L288">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.cs/#L351">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Collection_Append_" data-uid="DotNext.Collections.Generic.Collection.Append*"></a>
   <h4 id="DotNext_Collections_Generic_Collection_Append__1_System_Collections_Generic_IEnumerable___0____0___" data-uid="DotNext.Collections.Generic.Collection.Append``1(System.Collections.Generic.IEnumerable{``0},``0[])">Append&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</h4>
@@ -419,7 +419,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Collection_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Collection.ElementAt%60%601(System.Collections.Generic.IEnumerable%7B%60%600%7D%2CSystem.Int32%2C%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.cs/#L180">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.cs/#L241">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Collection_ElementAt_" data-uid="DotNext.Collections.Generic.Collection.ElementAt*"></a>
   <h4 id="DotNext_Collections_Generic_Collection_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__" data-uid="DotNext.Collections.Generic.Collection.ElementAt``1(System.Collections.Generic.IEnumerable{``0},System.Int32,``0@)">ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, int, out T)</h4>
@@ -496,6 +496,73 @@
   <div class="markdown level1 remarks"><p>This method is optimized for types <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList&lt;T&gt;</a>
 and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList&lt;T&gt;</a>.</p>
 </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Collection_FirstOrNone__1_System_Collections_Generic_IEnumerable___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Collection.FirstOrNone%60%601(System.Collections.Generic.IEnumerable%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.cs/#L175">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_Collection_FirstOrNone_" data-uid="DotNext.Collections.Generic.Collection.FirstOrNone*"></a>
+  <h4 id="DotNext_Collections_Generic_Collection_FirstOrNone__1_System_Collections_Generic_IEnumerable___0__" data-uid="DotNext.Collections.Generic.Collection.FirstOrNone``1(System.Collections.Generic.IEnumerable{``0})">FirstOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Obtains the first element of a sequence; or <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>
+if the sequence is empty.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; FirstOrNone&lt;T&gt;(this IEnumerable&lt;T&gt; collection)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;T&gt;</td>
+        <td><span class="parametername">collection</span></td>
+        <td><p>The collection to return the first element of.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
+        <td><p>The first element; or <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the element of a collection.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Collection_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Collection.ForEachAsync%60%601(System.Collections.Generic.IEnumerable%7B%60%600%7D%2CSystem.Func%7B%60%600%2CSystem.Threading.CancellationToken%2CSystem.Threading.Tasks.ValueTask%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
@@ -714,10 +781,77 @@ and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collecti
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Collection_LastOrNone__1_System_Collections_Generic_IEnumerable___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Collection.LastOrNone%60%601(System.Collections.Generic.IEnumerable%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.cs/#L203">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_Collection_LastOrNone_" data-uid="DotNext.Collections.Generic.Collection.LastOrNone*"></a>
+  <h4 id="DotNext_Collections_Generic_Collection_LastOrNone__1_System_Collections_Generic_IEnumerable___0__" data-uid="DotNext.Collections.Generic.Collection.LastOrNone``1(System.Collections.Generic.IEnumerable{``0})">LastOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Obtains the last element of a sequence; or <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a>
+if the sequence is empty.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; LastOrNone&lt;T&gt;(this IEnumerable&lt;T&gt; collection)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;T&gt;</td>
+        <td><span class="parametername">collection</span></td>
+        <td><p>The collection to return the first element of.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
+        <td><p>The first element; or <a class="xref" href="DotNext.Optional-1.html#DotNext_Optional_1_None">None</a></p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the element of a collection.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Collection_Prepend__1_System_Collections_Generic_IEnumerable___0____0___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Collection.Prepend%60%601(System.Collections.Generic.IEnumerable%7B%60%600%7D%2C%60%600%5B%5D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.cs/#L278">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.cs/#L341">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Collection_Prepend_" data-uid="DotNext.Collections.Generic.Collection.Prepend*"></a>
   <h4 id="DotNext_Collections_Generic_Collection_Prepend__1_System_Collections_Generic_IEnumerable___0____0___" data-uid="DotNext.Collections.Generic.Collection.Prepend``1(System.Collections.Generic.IEnumerable{``0},``0[])">Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</h4>
@@ -861,7 +995,7 @@ and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collecti
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Collection_SkipNulls__1_System_Collections_Generic_IEnumerable___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Collection.SkipNulls%60%601(System.Collections.Generic.IEnumerable%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.cs/#L256">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.cs/#L319">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Collection_SkipNulls_" data-uid="DotNext.Collections.Generic.Collection.SkipNulls*"></a>
   <h4 id="DotNext_Collections_Generic_Collection_SkipNulls__1_System_Collections_Generic_IEnumerable___0__" data-uid="DotNext.Collections.Generic.Collection.SkipNulls``1(System.Collections.Generic.IEnumerable{``0})">SkipNulls&lt;T&gt;(IEnumerable&lt;T?&gt;)</h4>
@@ -1059,7 +1193,7 @@ and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collecti
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Collection_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Collection.ToAsyncEnumerable%60%601(System.Collections.Generic.IEnumerable%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.cs/#L298">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.cs/#L361">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Collection_ToAsyncEnumerable_" data-uid="DotNext.Collections.Generic.Collection.ToAsyncEnumerable*"></a>
   <h4 id="DotNext_Collections_Generic_Collection_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__" data-uid="DotNext.Collections.Generic.Collection.ToAsyncEnumerable``1(System.Collections.Generic.IEnumerable{``0})">ToAsyncEnumerable&lt;T&gt;(IEnumerable&lt;T&gt;)</h4>
@@ -1141,7 +1275,7 @@ and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collecti
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Collection_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Collection.ToString%60%601(System.Collections.Generic.IEnumerable%7B%60%600%7D%2CSystem.String%2CSystem.String)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.cs/#L268">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.cs/#L331">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Collection_ToString_" data-uid="DotNext.Collections.Generic.Collection.ToString*"></a>
   <h4 id="DotNext_Collections_Generic_Collection_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_" data-uid="DotNext.Collections.Generic.Collection.ToString``1(System.Collections.Generic.IEnumerable{``0},System.String,System.String)">ToString&lt;T&gt;(IEnumerable&lt;T&gt;, string, string)</h4>

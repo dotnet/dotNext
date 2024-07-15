@@ -69,12 +69,13 @@
 <h1 id="task-completion-pipe">Task Completion Pipe</h1>
 
 <p><code>WhenAll</code> static method of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a> waits until all passed tasks will be completed. Thus, the maximum possible execution time of such task is equal to the slowest task in the group. It means that there is no way to obtain results from the faster tasks in the group. From other side, <code>WhenAny</code> static method allows to obtain the result of the fastest task in the group. However, it doesn't allow to wait for all tasks. In some use cases, responsiveness of the program is a critical requirement so we need to have an ability to obtain and process tasks asynchronously as they complete.</p>
-<p><a class="xref" href="../../api/DotNext.Threading.Tasks.TaskCompletionPipe-1.html">TaskCompletionPipe&lt;T&gt;</a> specially designed to process tasks as the complete using <a href="https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/generate-consume-asynchronous-stream">asynchronous streams</a>. It provides the following API surface:</p>
+<p><a class="xref" href="../../api/DotNext.Threading.Tasks.TaskCompletionPipe-1.html">TaskCompletionPipe&lt;T&gt;</a> specially designed to process tasks as they complete using <a href="https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/generate-consume-asynchronous-stream">asynchronous streams</a>. It provides the following API surface:</p>
 <ul>
 <li>Producer side:
 <ul>
 <li><code>Add</code> method to add asynchronous tasks</li>
 <li><code>Complete</code> method to inform the pipe that newly tasks will not be added</li>
+<li><code>Submit</code> method to add a group of tasks</li>
 </ul>
 </li>
 <li>Consumer side:
@@ -90,6 +91,16 @@
 <p>Performance tip: <code>TryRead</code> and <code>WaitToReadAsync</code> methods are preferred way if consumer processes completed tasks slower than producer submits new tasks. Otherwise, <strong>await foreach</strong> is preferred.</p>
 </div>
 <p>The pipe is thread-safe for both consumer and producer. Moreover, multiple consumers and multiple producers are allowed, no need to specify configuration properties like <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channeloptions.singlereader">SingleReader</a> as for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channel-1">Channel&lt;T&gt;</a> class.</p>
+<p><a class="xref" href="../../api/DotNext.Threading.Tasks.TaskCompletionPipe.html">TaskCompletionPipe</a> static class exposes one-shot helper methods to obtain async stream over the tasks:</p>
+<pre><code class="lang-csharp">Task&lt;int&gt; task1 = DoAsync();
+Task&lt;int&gt; task2 = DoAsync();
+
+int sum = 0;
+await foreach (int result in TaskCompletionPipe.GetConsumer([task1, task2]))
+{
+    sum += result;
+}
+</code></pre>
 
 </article>
           </div>

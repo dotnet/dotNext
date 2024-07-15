@@ -5725,6 +5725,22 @@ references:
   fullName.vb: DotNext.Collections.Generic.Collection.ElementAt(Of T)(System.Collections.Generic.IEnumerable(Of T), Integer, T)
   nameWithType: Collection.ElementAt<T>(IEnumerable<T>, int, out T)
   nameWithType.vb: Collection.ElementAt(Of T)(IEnumerable(Of T), Integer, T)
+- uid: DotNext.Collections.Generic.Collection.FirstOrNone*
+  name: FirstOrNone
+  href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_FirstOrNone_
+  commentId: Overload:DotNext.Collections.Generic.Collection.FirstOrNone
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.Collection.FirstOrNone
+  nameWithType: Collection.FirstOrNone
+- uid: DotNext.Collections.Generic.Collection.FirstOrNone``1(System.Collections.Generic.IEnumerable{``0})
+  name: FirstOrNone<T>(IEnumerable<T>)
+  href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_FirstOrNone__1_System_Collections_Generic_IEnumerable___0__
+  commentId: M:DotNext.Collections.Generic.Collection.FirstOrNone``1(System.Collections.Generic.IEnumerable{``0})
+  name.vb: FirstOrNone(Of T)(IEnumerable(Of T))
+  fullName: DotNext.Collections.Generic.Collection.FirstOrNone<T>(System.Collections.Generic.IEnumerable<T>)
+  fullName.vb: DotNext.Collections.Generic.Collection.FirstOrNone(Of T)(System.Collections.Generic.IEnumerable(Of T))
+  nameWithType: Collection.FirstOrNone<T>(IEnumerable<T>)
+  nameWithType.vb: Collection.FirstOrNone(Of T)(IEnumerable(Of T))
 - uid: DotNext.Collections.Generic.Collection.ForEach*
   name: ForEach
   href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ForEach_
@@ -5773,6 +5789,22 @@ references:
   fullName.vb: DotNext.Collections.Generic.Collection.GetConsumer(Of T)(System.Collections.Concurrent.IProducerConsumerCollection(Of T))
   nameWithType: Collection.GetConsumer<T>(IProducerConsumerCollection<T>)
   nameWithType.vb: Collection.GetConsumer(Of T)(IProducerConsumerCollection(Of T))
+- uid: DotNext.Collections.Generic.Collection.LastOrNone*
+  name: LastOrNone
+  href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_LastOrNone_
+  commentId: Overload:DotNext.Collections.Generic.Collection.LastOrNone
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.Collection.LastOrNone
+  nameWithType: Collection.LastOrNone
+- uid: DotNext.Collections.Generic.Collection.LastOrNone``1(System.Collections.Generic.IEnumerable{``0})
+  name: LastOrNone<T>(IEnumerable<T>)
+  href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_LastOrNone__1_System_Collections_Generic_IEnumerable___0__
+  commentId: M:DotNext.Collections.Generic.Collection.LastOrNone``1(System.Collections.Generic.IEnumerable{``0})
+  name.vb: LastOrNone(Of T)(IEnumerable(Of T))
+  fullName: DotNext.Collections.Generic.Collection.LastOrNone<T>(System.Collections.Generic.IEnumerable<T>)
+  fullName.vb: DotNext.Collections.Generic.Collection.LastOrNone(Of T)(System.Collections.Generic.IEnumerable(Of T))
+  nameWithType: Collection.LastOrNone<T>(IEnumerable<T>)
+  nameWithType.vb: Collection.LastOrNone(Of T)(IEnumerable(Of T))
 - uid: DotNext.Collections.Generic.Collection.Prepend*
   name: Prepend
   href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Prepend_
@@ -40917,13 +40949,13 @@ references:
   fullName: DotNext.Span.FirstOrNone
   nameWithType: Span.FirstOrNone
 - uid: DotNext.Span.FirstOrNone``1(System.ReadOnlySpan{``0},System.Predicate{``0})
-  name: FirstOrNone<T>(ReadOnlySpan<T>, Predicate<T>)
+  name: FirstOrNone<T>(ReadOnlySpan<T>, Predicate<T>?)
   href: api/DotNext.Span.html#DotNext_Span_FirstOrNone__1_System_ReadOnlySpan___0__System_Predicate___0__
   commentId: M:DotNext.Span.FirstOrNone``1(System.ReadOnlySpan{``0},System.Predicate{``0})
   name.vb: FirstOrNone(Of T)(ReadOnlySpan(Of T), Predicate(Of T))
-  fullName: DotNext.Span.FirstOrNone<T>(System.ReadOnlySpan<T>, System.Predicate<T>)
+  fullName: DotNext.Span.FirstOrNone<T>(System.ReadOnlySpan<T>, System.Predicate<T>?)
   fullName.vb: DotNext.Span.FirstOrNone(Of T)(System.ReadOnlySpan(Of T), System.Predicate(Of T))
-  nameWithType: Span.FirstOrNone<T>(ReadOnlySpan<T>, Predicate<T>)
+  nameWithType: Span.FirstOrNone<T>(ReadOnlySpan<T>, Predicate<T>?)
   nameWithType.vb: Span.FirstOrNone(Of T)(ReadOnlySpan(Of T), Predicate(Of T))
 - uid: DotNext.Span.ForEach*
   name: ForEach
@@ -42470,6 +42502,28 @@ references:
   commentId: T:DotNext.Threading.AsyncBridge
   fullName: DotNext.Threading.AsyncBridge
   nameWithType: AsyncBridge
+- uid: DotNext.Threading.AsyncBridge.AsCancellationToken(System.Threading.Tasks.Task)
+  name: AsCancellationToken(Task)
+  href: api/DotNext.Threading.AsyncBridge.html#DotNext_Threading_AsyncBridge_AsCancellationToken_System_Threading_Tasks_Task_
+  commentId: M:DotNext.Threading.AsyncBridge.AsCancellationToken(System.Threading.Tasks.Task)
+  fullName: DotNext.Threading.AsyncBridge.AsCancellationToken(System.Threading.Tasks.Task)
+  nameWithType: AsyncBridge.AsCancellationToken(Task)
+- uid: DotNext.Threading.AsyncBridge.AsCancellationToken(System.Threading.Tasks.Task,System.Func{System.Boolean}@)
+  name: AsCancellationToken(Task, out Func<bool>)
+  href: api/DotNext.Threading.AsyncBridge.html#DotNext_Threading_AsyncBridge_AsCancellationToken_System_Threading_Tasks_Task_System_Func_System_Boolean___
+  commentId: M:DotNext.Threading.AsyncBridge.AsCancellationToken(System.Threading.Tasks.Task,System.Func{System.Boolean}@)
+  name.vb: AsCancellationToken(Task, Func(Of Boolean))
+  fullName: DotNext.Threading.AsyncBridge.AsCancellationToken(System.Threading.Tasks.Task, out System.Func<bool>)
+  fullName.vb: DotNext.Threading.AsyncBridge.AsCancellationToken(System.Threading.Tasks.Task, System.Func(Of Boolean))
+  nameWithType: AsyncBridge.AsCancellationToken(Task, out Func<bool>)
+  nameWithType.vb: AsyncBridge.AsCancellationToken(Task, Func(Of Boolean))
+- uid: DotNext.Threading.AsyncBridge.AsCancellationToken*
+  name: AsCancellationToken
+  href: api/DotNext.Threading.AsyncBridge.html#DotNext_Threading_AsyncBridge_AsCancellationToken_
+  commentId: Overload:DotNext.Threading.AsyncBridge.AsCancellationToken
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncBridge.AsCancellationToken
+  nameWithType: AsyncBridge.AsCancellationToken
 - uid: DotNext.Threading.AsyncBridge.MaxPoolSize
   name: MaxPoolSize
   href: api/DotNext.Threading.AsyncBridge.html#DotNext_Threading_AsyncBridge_MaxPoolSize
@@ -49009,6 +49063,22 @@ references:
   fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe.Consumer(Of T).GetAsyncEnumerator
   nameWithType: TaskCompletionPipe.Consumer<T>.GetAsyncEnumerator
   nameWithType.vb: TaskCompletionPipe.Consumer(Of T).GetAsyncEnumerator
+- uid: DotNext.Threading.Tasks.TaskCompletionPipe.Create*
+  name: Create
+  href: api/DotNext.Threading.Tasks.TaskCompletionPipe.html#DotNext_Threading_Tasks_TaskCompletionPipe_Create_
+  commentId: Overload:DotNext.Threading.Tasks.TaskCompletionPipe.Create
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.TaskCompletionPipe.Create
+  nameWithType: TaskCompletionPipe.Create
+- uid: DotNext.Threading.Tasks.TaskCompletionPipe.Create``1(System.ReadOnlySpan{``0})
+  name: Create<T>(ReadOnlySpan<T>)
+  href: api/DotNext.Threading.Tasks.TaskCompletionPipe.html#DotNext_Threading_Tasks_TaskCompletionPipe_Create__1_System_ReadOnlySpan___0__
+  commentId: M:DotNext.Threading.Tasks.TaskCompletionPipe.Create``1(System.ReadOnlySpan{``0})
+  name.vb: Create(Of T)(ReadOnlySpan(Of T))
+  fullName: DotNext.Threading.Tasks.TaskCompletionPipe.Create<T>(System.ReadOnlySpan<T>)
+  fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe.Create(Of T)(System.ReadOnlySpan(Of T))
+  nameWithType: TaskCompletionPipe.Create<T>(ReadOnlySpan<T>)
+  nameWithType.vb: TaskCompletionPipe.Create(Of T)(ReadOnlySpan(Of T))
 - uid: DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer*
   name: GetConsumer
   href: api/DotNext.Threading.Tasks.TaskCompletionPipe.html#DotNext_Threading_Tasks_TaskCompletionPipe_GetConsumer_
@@ -49025,6 +49095,15 @@ references:
   fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer(Of T)(DotNext.Threading.Tasks.TaskCompletionPipe(Of System.Threading.Tasks.Task(Of T)))
   nameWithType: TaskCompletionPipe.GetConsumer<T>(TaskCompletionPipe<Task<T>>)
   nameWithType.vb: TaskCompletionPipe.GetConsumer(Of T)(TaskCompletionPipe(Of Task(Of T)))
+- uid: DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer``1(System.ReadOnlySpan{System.Threading.Tasks.Task{``0}})
+  name: GetConsumer<T>(ReadOnlySpan<Task<T>>)
+  href: api/DotNext.Threading.Tasks.TaskCompletionPipe.html#DotNext_Threading_Tasks_TaskCompletionPipe_GetConsumer__1_System_ReadOnlySpan_System_Threading_Tasks_Task___0___
+  commentId: M:DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer``1(System.ReadOnlySpan{System.Threading.Tasks.Task{``0}})
+  name.vb: GetConsumer(Of T)(ReadOnlySpan(Of Task(Of T)))
+  fullName: DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer<T>(System.ReadOnlySpan<System.Threading.Tasks.Task<T>>)
+  fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer(Of T)(System.ReadOnlySpan(Of System.Threading.Tasks.Task(Of T)))
+  nameWithType: TaskCompletionPipe.GetConsumer<T>(ReadOnlySpan<Task<T>>)
+  nameWithType.vb: TaskCompletionPipe.GetConsumer(Of T)(ReadOnlySpan(Of Task(Of T)))
 - uid: DotNext.Threading.Tasks.TaskCompletionPipe`1
   name: TaskCompletionPipe<T>
   href: api/DotNext.Threading.Tasks.TaskCompletionPipe-1.html
@@ -49053,6 +49132,15 @@ references:
   fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe(Of T).New
   nameWithType: TaskCompletionPipe<T>.TaskCompletionPipe
   nameWithType.vb: TaskCompletionPipe(Of T).New
+- uid: DotNext.Threading.Tasks.TaskCompletionPipe`1.Add(System.ReadOnlySpan{`0},System.Boolean,System.Object)
+  name: Add(ReadOnlySpan<T>, bool, object?)
+  href: api/DotNext.Threading.Tasks.TaskCompletionPipe-1.html#DotNext_Threading_Tasks_TaskCompletionPipe_1_Add_System_ReadOnlySpan__0__System_Boolean_System_Object_
+  commentId: M:DotNext.Threading.Tasks.TaskCompletionPipe`1.Add(System.ReadOnlySpan{`0},System.Boolean,System.Object)
+  name.vb: Add(ReadOnlySpan(Of T), Boolean, Object)
+  fullName: DotNext.Threading.Tasks.TaskCompletionPipe<T>.Add(System.ReadOnlySpan<T>, bool, object?)
+  fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe(Of T).Add(System.ReadOnlySpan(Of T), Boolean, Object)
+  nameWithType: TaskCompletionPipe<T>.Add(ReadOnlySpan<T>, bool, object?)
+  nameWithType.vb: TaskCompletionPipe(Of T).Add(ReadOnlySpan(Of T), Boolean, Object)
 - uid: DotNext.Threading.Tasks.TaskCompletionPipe`1.Add(`0)
   name: Add(T)
   href: api/DotNext.Threading.Tasks.TaskCompletionPipe-1.html#DotNext_Threading_Tasks_TaskCompletionPipe_1_Add__0_
@@ -49096,6 +49184,23 @@ references:
   fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe(Of T).Complete
   nameWithType: TaskCompletionPipe<T>.Complete
   nameWithType.vb: TaskCompletionPipe(Of T).Complete
+- uid: DotNext.Threading.Tasks.TaskCompletionPipe`1.Completion
+  name: Completion
+  href: api/DotNext.Threading.Tasks.TaskCompletionPipe-1.html#DotNext_Threading_Tasks_TaskCompletionPipe_1_Completion
+  commentId: P:DotNext.Threading.Tasks.TaskCompletionPipe`1.Completion
+  fullName: DotNext.Threading.Tasks.TaskCompletionPipe<T>.Completion
+  fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe(Of T).Completion
+  nameWithType: TaskCompletionPipe<T>.Completion
+  nameWithType.vb: TaskCompletionPipe(Of T).Completion
+- uid: DotNext.Threading.Tasks.TaskCompletionPipe`1.Completion*
+  name: Completion
+  href: api/DotNext.Threading.Tasks.TaskCompletionPipe-1.html#DotNext_Threading_Tasks_TaskCompletionPipe_1_Completion_
+  commentId: Overload:DotNext.Threading.Tasks.TaskCompletionPipe`1.Completion
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.TaskCompletionPipe<T>.Completion
+  fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe(Of T).Completion
+  nameWithType: TaskCompletionPipe<T>.Completion
+  nameWithType.vb: TaskCompletionPipe(Of T).Completion
 - uid: DotNext.Threading.Tasks.TaskCompletionPipe`1.GetAsyncEnumerator(System.Threading.CancellationToken)
   name: GetAsyncEnumerator(CancellationToken)
   href: api/DotNext.Threading.Tasks.TaskCompletionPipe-1.html#DotNext_Threading_Tasks_TaskCompletionPipe_1_GetAsyncEnumerator_System_Threading_CancellationToken_
@@ -49113,6 +49218,23 @@ references:
   fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe(Of T).GetAsyncEnumerator
   nameWithType: TaskCompletionPipe<T>.GetAsyncEnumerator
   nameWithType.vb: TaskCompletionPipe(Of T).GetAsyncEnumerator
+- uid: DotNext.Threading.Tasks.TaskCompletionPipe`1.IsCompletionTaskSupported
+  name: IsCompletionTaskSupported
+  href: api/DotNext.Threading.Tasks.TaskCompletionPipe-1.html#DotNext_Threading_Tasks_TaskCompletionPipe_1_IsCompletionTaskSupported
+  commentId: P:DotNext.Threading.Tasks.TaskCompletionPipe`1.IsCompletionTaskSupported
+  fullName: DotNext.Threading.Tasks.TaskCompletionPipe<T>.IsCompletionTaskSupported
+  fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe(Of T).IsCompletionTaskSupported
+  nameWithType: TaskCompletionPipe<T>.IsCompletionTaskSupported
+  nameWithType.vb: TaskCompletionPipe(Of T).IsCompletionTaskSupported
+- uid: DotNext.Threading.Tasks.TaskCompletionPipe`1.IsCompletionTaskSupported*
+  name: IsCompletionTaskSupported
+  href: api/DotNext.Threading.Tasks.TaskCompletionPipe-1.html#DotNext_Threading_Tasks_TaskCompletionPipe_1_IsCompletionTaskSupported_
+  commentId: Overload:DotNext.Threading.Tasks.TaskCompletionPipe`1.IsCompletionTaskSupported
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.TaskCompletionPipe<T>.IsCompletionTaskSupported
+  fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe(Of T).IsCompletionTaskSupported
+  nameWithType: TaskCompletionPipe<T>.IsCompletionTaskSupported
+  nameWithType.vb: TaskCompletionPipe(Of T).IsCompletionTaskSupported
 - uid: DotNext.Threading.Tasks.TaskCompletionPipe`1.Reset
   name: Reset()
   href: api/DotNext.Threading.Tasks.TaskCompletionPipe-1.html#DotNext_Threading_Tasks_TaskCompletionPipe_1_Reset
@@ -49182,6 +49304,205 @@ references:
   fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe(Of T).WaitToReadAsync
   nameWithType: TaskCompletionPipe<T>.WaitToReadAsync
   nameWithType.vb: TaskCompletionPipe(Of T).WaitToReadAsync
+- uid: DotNext.Threading.Tasks.TaskQueue`1
+  name: TaskQueue<T>
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html
+  commentId: T:DotNext.Threading.Tasks.TaskQueue`1
+  name.vb: TaskQueue(Of T)
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T)
+  nameWithType: TaskQueue<T>
+  nameWithType.vb: TaskQueue(Of T)
+- uid: DotNext.Threading.Tasks.TaskQueue`1.#ctor(System.Int32)
+  name: TaskQueue(int)
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1__ctor_System_Int32_
+  commentId: M:DotNext.Threading.Tasks.TaskQueue`1.#ctor(System.Int32)
+  name.vb: New(Integer)
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.TaskQueue(int)
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).New(Integer)
+  nameWithType: TaskQueue<T>.TaskQueue(int)
+  nameWithType.vb: TaskQueue(Of T).New(Integer)
+- uid: DotNext.Threading.Tasks.TaskQueue`1.#ctor*
+  name: TaskQueue
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1__ctor_
+  commentId: Overload:DotNext.Threading.Tasks.TaskQueue`1.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.TaskQueue
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).New
+  nameWithType: TaskQueue<T>.TaskQueue
+  nameWithType.vb: TaskQueue(Of T).New
+- uid: DotNext.Threading.Tasks.TaskQueue`1.CanEnqueue
+  name: CanEnqueue
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_CanEnqueue
+  commentId: P:DotNext.Threading.Tasks.TaskQueue`1.CanEnqueue
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.CanEnqueue
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).CanEnqueue
+  nameWithType: TaskQueue<T>.CanEnqueue
+  nameWithType.vb: TaskQueue(Of T).CanEnqueue
+- uid: DotNext.Threading.Tasks.TaskQueue`1.CanEnqueue*
+  name: CanEnqueue
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_CanEnqueue_
+  commentId: Overload:DotNext.Threading.Tasks.TaskQueue`1.CanEnqueue
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.CanEnqueue
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).CanEnqueue
+  nameWithType: TaskQueue<T>.CanEnqueue
+  nameWithType.vb: TaskQueue(Of T).CanEnqueue
+- uid: DotNext.Threading.Tasks.TaskQueue`1.Clear
+  name: Clear()
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_Clear
+  commentId: M:DotNext.Threading.Tasks.TaskQueue`1.Clear
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.Clear()
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).Clear()
+  nameWithType: TaskQueue<T>.Clear()
+  nameWithType.vb: TaskQueue(Of T).Clear()
+- uid: DotNext.Threading.Tasks.TaskQueue`1.Clear*
+  name: Clear
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_Clear_
+  commentId: Overload:DotNext.Threading.Tasks.TaskQueue`1.Clear
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.Clear
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).Clear
+  nameWithType: TaskQueue<T>.Clear
+  nameWithType.vb: TaskQueue(Of T).Clear
+- uid: DotNext.Threading.Tasks.TaskQueue`1.DequeueAsync(System.Threading.CancellationToken)
+  name: DequeueAsync(CancellationToken)
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_DequeueAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Tasks.TaskQueue`1.DequeueAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.DequeueAsync(System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).DequeueAsync(System.Threading.CancellationToken)
+  nameWithType: TaskQueue<T>.DequeueAsync(CancellationToken)
+  nameWithType.vb: TaskQueue(Of T).DequeueAsync(CancellationToken)
+- uid: DotNext.Threading.Tasks.TaskQueue`1.DequeueAsync*
+  name: DequeueAsync
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_DequeueAsync_
+  commentId: Overload:DotNext.Threading.Tasks.TaskQueue`1.DequeueAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.DequeueAsync
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).DequeueAsync
+  nameWithType: TaskQueue<T>.DequeueAsync
+  nameWithType.vb: TaskQueue(Of T).DequeueAsync
+- uid: DotNext.Threading.Tasks.TaskQueue`1.EnqueueAsync(`0,System.Threading.CancellationToken)
+  name: EnqueueAsync(T, CancellationToken)
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_EnqueueAsync__0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Tasks.TaskQueue`1.EnqueueAsync(`0,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.EnqueueAsync(T, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).EnqueueAsync(T, System.Threading.CancellationToken)
+  nameWithType: TaskQueue<T>.EnqueueAsync(T, CancellationToken)
+  nameWithType.vb: TaskQueue(Of T).EnqueueAsync(T, CancellationToken)
+- uid: DotNext.Threading.Tasks.TaskQueue`1.EnqueueAsync*
+  name: EnqueueAsync
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_EnqueueAsync_
+  commentId: Overload:DotNext.Threading.Tasks.TaskQueue`1.EnqueueAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.EnqueueAsync
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).EnqueueAsync
+  nameWithType: TaskQueue<T>.EnqueueAsync
+  nameWithType.vb: TaskQueue(Of T).EnqueueAsync
+- uid: DotNext.Threading.Tasks.TaskQueue`1.EnsureFreeSpaceAsync(System.Threading.CancellationToken)
+  name: EnsureFreeSpaceAsync(CancellationToken)
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_EnsureFreeSpaceAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Tasks.TaskQueue`1.EnsureFreeSpaceAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.EnsureFreeSpaceAsync(System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).EnsureFreeSpaceAsync(System.Threading.CancellationToken)
+  nameWithType: TaskQueue<T>.EnsureFreeSpaceAsync(CancellationToken)
+  nameWithType.vb: TaskQueue(Of T).EnsureFreeSpaceAsync(CancellationToken)
+- uid: DotNext.Threading.Tasks.TaskQueue`1.EnsureFreeSpaceAsync*
+  name: EnsureFreeSpaceAsync
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_EnsureFreeSpaceAsync_
+  commentId: Overload:DotNext.Threading.Tasks.TaskQueue`1.EnsureFreeSpaceAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.EnsureFreeSpaceAsync
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).EnsureFreeSpaceAsync
+  nameWithType: TaskQueue<T>.EnsureFreeSpaceAsync
+  nameWithType.vb: TaskQueue(Of T).EnsureFreeSpaceAsync
+- uid: DotNext.Threading.Tasks.TaskQueue`1.GetAsyncEnumerator(System.Threading.CancellationToken)
+  name: GetAsyncEnumerator(CancellationToken)
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_GetAsyncEnumerator_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Tasks.TaskQueue`1.GetAsyncEnumerator(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.GetAsyncEnumerator(System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).GetAsyncEnumerator(System.Threading.CancellationToken)
+  nameWithType: TaskQueue<T>.GetAsyncEnumerator(CancellationToken)
+  nameWithType.vb: TaskQueue(Of T).GetAsyncEnumerator(CancellationToken)
+- uid: DotNext.Threading.Tasks.TaskQueue`1.GetAsyncEnumerator*
+  name: GetAsyncEnumerator
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_GetAsyncEnumerator_
+  commentId: Overload:DotNext.Threading.Tasks.TaskQueue`1.GetAsyncEnumerator
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.GetAsyncEnumerator
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).GetAsyncEnumerator
+  nameWithType: TaskQueue<T>.GetAsyncEnumerator
+  nameWithType.vb: TaskQueue(Of T).GetAsyncEnumerator
+- uid: DotNext.Threading.Tasks.TaskQueue`1.HeadTask
+  name: HeadTask
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_HeadTask
+  commentId: P:DotNext.Threading.Tasks.TaskQueue`1.HeadTask
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.HeadTask
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).HeadTask
+  nameWithType: TaskQueue<T>.HeadTask
+  nameWithType.vb: TaskQueue(Of T).HeadTask
+- uid: DotNext.Threading.Tasks.TaskQueue`1.HeadTask*
+  name: HeadTask
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_HeadTask_
+  commentId: Overload:DotNext.Threading.Tasks.TaskQueue`1.HeadTask
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.HeadTask
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).HeadTask
+  nameWithType: TaskQueue<T>.HeadTask
+  nameWithType.vb: TaskQueue(Of T).HeadTask
+- uid: DotNext.Threading.Tasks.TaskQueue`1.TryDequeue(`0@)
+  name: TryDequeue(out T?)
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_TryDequeue__0__
+  commentId: M:DotNext.Threading.Tasks.TaskQueue`1.TryDequeue(`0@)
+  name.vb: TryDequeue(T)
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.TryDequeue(out T?)
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).TryDequeue(T)
+  nameWithType: TaskQueue<T>.TryDequeue(out T?)
+  nameWithType.vb: TaskQueue(Of T).TryDequeue(T)
+- uid: DotNext.Threading.Tasks.TaskQueue`1.TryDequeue*
+  name: TryDequeue
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_TryDequeue_
+  commentId: Overload:DotNext.Threading.Tasks.TaskQueue`1.TryDequeue
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.TryDequeue
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).TryDequeue
+  nameWithType: TaskQueue<T>.TryDequeue
+  nameWithType.vb: TaskQueue(Of T).TryDequeue
+- uid: DotNext.Threading.Tasks.TaskQueue`1.TryDequeueAsync(System.Threading.CancellationToken)
+  name: TryDequeueAsync(CancellationToken)
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_TryDequeueAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.Tasks.TaskQueue`1.TryDequeueAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.TryDequeueAsync(System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).TryDequeueAsync(System.Threading.CancellationToken)
+  nameWithType: TaskQueue<T>.TryDequeueAsync(CancellationToken)
+  nameWithType.vb: TaskQueue(Of T).TryDequeueAsync(CancellationToken)
+- uid: DotNext.Threading.Tasks.TaskQueue`1.TryDequeueAsync*
+  name: TryDequeueAsync
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_TryDequeueAsync_
+  commentId: Overload:DotNext.Threading.Tasks.TaskQueue`1.TryDequeueAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.TryDequeueAsync
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).TryDequeueAsync
+  nameWithType: TaskQueue<T>.TryDequeueAsync
+  nameWithType.vb: TaskQueue(Of T).TryDequeueAsync
+- uid: DotNext.Threading.Tasks.TaskQueue`1.TryEnqueue(`0)
+  name: TryEnqueue(T)
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_TryEnqueue__0_
+  commentId: M:DotNext.Threading.Tasks.TaskQueue`1.TryEnqueue(`0)
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.TryEnqueue(T)
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).TryEnqueue(T)
+  nameWithType: TaskQueue<T>.TryEnqueue(T)
+  nameWithType.vb: TaskQueue(Of T).TryEnqueue(T)
+- uid: DotNext.Threading.Tasks.TaskQueue`1.TryEnqueue*
+  name: TryEnqueue
+  href: api/DotNext.Threading.Tasks.TaskQueue-1.html#DotNext_Threading_Tasks_TaskQueue_1_TryEnqueue_
+  commentId: Overload:DotNext.Threading.Tasks.TaskQueue`1.TryEnqueue
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.TaskQueue<T>.TryEnqueue
+  fullName.vb: DotNext.Threading.Tasks.TaskQueue(Of T).TryEnqueue
+  nameWithType: TaskQueue<T>.TryEnqueue
+  nameWithType.vb: TaskQueue(Of T).TryEnqueue
 - uid: DotNext.Threading.Tasks.ValueTaskCompletionSource
   name: ValueTaskCompletionSource
   href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html
