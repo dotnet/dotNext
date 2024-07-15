@@ -33,7 +33,7 @@ public class TaskQueueTests : Test
     }
 
     [Fact]
-    public static async Task EnumerateTasks()
+    public static async Task EnumerateCompletedTasks()
     {
         var queue = new TaskQueue<Task>(3);
         True(queue.TryEnqueue(Task.CompletedTask));
@@ -51,7 +51,7 @@ public class TaskQueueTests : Test
     }
     
     [Fact]
-    public static async Task EnumerateTasks2()
+    public static async Task TryDequeueCompletedTasks()
     {
         var queue = new TaskQueue<Task>(3);
         True(queue.TryEnqueue(Task.CompletedTask));
@@ -62,6 +62,24 @@ public class TaskQueueTests : Test
         while (await queue.TryDequeueAsync() is { } task)
         {
             Same(Task.CompletedTask, task);
+            count++;
+        }
+
+        Equal(3, count);
+    }
+
+    [Fact]
+    public static async Task EnumerateTasks()
+    {
+        var queue = new TaskQueue<Task>(3);
+        await queue.EnqueueAsync(Task.Delay(10));
+        await queue.EnqueueAsync(Task.Delay(15));
+        await queue.EnqueueAsync(Task.Delay(20));
+
+        var count = 0;
+        await foreach (var task in queue)
+        {
+            True(task.IsCompleted);
             count++;
         }
 
