@@ -121,7 +121,7 @@ stages:
             inputs:
               command: custom
               custom: tool
-              arguments: install --tool-path . sign --version 0.9.0-beta.23127.3
+              arguments: install --tool-path . SignClient
           - download: current
             displayName: Download packages
             artifact: packages
@@ -129,7 +129,7 @@ stages:
             displayName: Download code sign config
             artifact: config
           - pwsh: |
-              .\sign code azure-key-vault `
+              .\SignClient "Sign" `
               --baseDirectory "$(Pipeline.Workspace)\packages" `
               --input "**/*.nupkg" `
               --config "$(Pipeline.Workspace)\config\signclient.json" `
