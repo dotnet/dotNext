@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
@@ -182,6 +183,50 @@ public static partial class AsyncBridge
             Debug.Assert(CancellationTokenValueTaskCompletionCallback.Target is CancellationTokenValueTaskPool);
 
             return Unsafe.As<CancellationTokenValueTaskPool>(CancellationTokenValueTaskCompletionCallback.Target);
+        }
+    }
+
+    private sealed class TaskToCancellationTokenCallback
+    {
+        private volatile WeakReference<CancellationTokenSource>? sourceRef;
+
+        internal TaskToCancellationTokenCallback(out CancellationToken token)
+        {
+            var source = new CancellationTokenSource();
+            token = source.Token;
+            sourceRef = new(source);
+        }
+
+        private bool TryStealSource([NotNullWhen(true)] out CancellationTokenSource? source)
+        {
+            source = null;
+            return Interlocked.Exchange(ref sourceRef, null) is { } weakRef
+                   && weakRef.TryGetTarget(out source);
+        }
+
+        internal bool TryDispose()
+        {
+            if (TryStealSource(out var source))
+            {
+                source.Dispose();
+            }
+
+            return source is not null;
+        }
+
+        internal void CancelAndDispose()
+        {
+            if (TryStealSource(out var source))
+            {
+                try
+                {
+                    source.Cancel();
+                }
+                finally
+                {
+                    source.Dispose();
+                }
+            }
         }
     }
 }

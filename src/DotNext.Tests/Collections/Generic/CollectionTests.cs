@@ -1,4 +1,6 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.Immutable;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Generic;
 
@@ -50,6 +52,21 @@ public sealed class CollectionTests : Test
         public int value;
 
         public void Accept(T item) => value += 1;
+
+        public ValueTask AcceptAsync(T item, CancellationToken token)
+        {
+            ValueTask task = ValueTask.CompletedTask;
+            try
+            {
+                Accept(item);
+            }
+            catch (Exception e)
+            {
+                task = ValueTask.FromException(e);
+            }
+
+            return task;
+        }
     }
 
     [Fact]
@@ -62,6 +79,20 @@ public sealed class CollectionTests : Test
         counter.value = 0;
         var array2 = new int[] { 1, 2, 10, 11, 15 };
         array2.ForEach(counter.Accept);
+        Equal(5, counter.value);
+    }
+    
+    [Fact]
+    public static async Task ForEachTestAsync()
+    {
+        IList<int> list = new List<int> { 1, 10, 20 };
+        var counter = new Counter<int>();
+        await list.ForEachAsync(counter.AcceptAsync);
+        Equal(3, counter.value);
+        counter.value = 0;
+        
+        var array2 = new int[] { 1, 2, 10, 11, 15 };
+        await array2.ForEachAsync(counter.AcceptAsync);
         Equal(5, counter.value);
     }
 
@@ -259,5 +290,58 @@ public sealed class CollectionTests : Test
     {
         using var copy = "abcd".Copy();
         Equal("abcd", copy.Memory.ToString());
+    }
+
+    [Fact]
+    public static void FirstOrNone()
+    {
+        Equal(5, new[] { 5, 6 }.FirstOrNone());
+        Equal(5, new List<int> { 5, 6 }.FirstOrNone());
+        Equal(5, new LinkedList<int>([5, 6]).FirstOrNone());
+        Equal('5', "56".FirstOrNone());
+        Equal(5, ImmutableArray.Create([5, 6]).FirstOrNone());
+        Equal(5, GetValues().FirstOrNone());
+
+        Equal(Optional<int>.None, Array.Empty<int>().FirstOrNone());
+        Equal(Optional<int>.None, new List<int>().FirstOrNone());
+        Equal(Optional<int>.None, new LinkedList<int>().FirstOrNone());
+        Equal(Optional<char>.None, string.Empty.FirstOrNone());
+        Equal(Optional<int>.None, ImmutableArray<int>.Empty.FirstOrNone());
+        Equal(Optional<int>.None, EmptyEnumerable<int>().FirstOrNone());
+
+        static IEnumerable<int> GetValues()
+        {
+            yield return 5;
+            yield return 6;
+        }
+    }
+    
+    [Fact]
+    public static void LastOrNone()
+    {
+        Equal(6, new[] { 5, 6 }.LastOrNone());
+        Equal(6, new List<int> { 5, 6 }.LastOrNone());
+        Equal(6, new LinkedList<int>([5, 6]).LastOrNone());
+        Equal('6', "56".LastOrNone());
+        Equal(6, ImmutableArray.Create([5, 6]).LastOrNone());
+        Equal(6, GetValues().LastOrNone());
+
+        Equal(Optional<int>.None, Array.Empty<int>().LastOrNone());
+        Equal(Optional<int>.None, new List<int>().LastOrNone());
+        Equal(Optional<int>.None, new LinkedList<int>().LastOrNone());
+        Equal(Optional<char>.None, string.Empty.LastOrNone());
+        Equal(Optional<int>.None, ImmutableArray<int>.Empty.LastOrNone());
+        Equal(Optional<int>.None, EmptyEnumerable<int>().LastOrNone());
+
+        static IEnumerable<int> GetValues()
+        {
+            yield return 5;
+            yield return 6;
+        }
+    }
+
+    static IEnumerable<T> EmptyEnumerable<T>()
+    {
+        yield break;
     }
 }

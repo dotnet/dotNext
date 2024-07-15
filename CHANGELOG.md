@@ -1,6 +1,15 @@
 Release Notes
 ====
 
+# 07-15-2024
+<a href="https://www.nuget.org/packages/dotnext/5.8.0">DotNext 5.8.0</a>
+* Added `FirstOrNone` and `LastOrNone` extension methods back from .NEXT 4.x as requested in [247](https://github.com/dotnet/dotNext/issues/247)
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.10.0">DotNext.Threading 5.10.0</a>
+* Added `TaskQueue<T>` class
+* Added `Completion` optional property to [TaskCompletionPipe&lt;T&gt;](https://dotnet.github.io/dotNext/api/DotNext.Threading.Tasks.TaskCompletionPipe-1.html) that allows to synchronize on full completion of the pipe
+* Added one-shot static methods to [TaskCompletionPipe](https://dotnet.github.io/dotNext/api/DotNext.Threading.Tasks.TaskCompletionPipe.html) to take `IAsyncEnumerable<T>` over tasks as they complete
+
 # 07-09-2024
 <a href="https://www.nuget.org/packages/dotnext.io/5.9.0">DotNext.IO 5.7.1</a>
 * Improved performance of `FileWriter` in some corner cases

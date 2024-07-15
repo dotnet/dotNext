@@ -11,8 +11,6 @@ internal static class ExceptionMessages
 {
     private static readonly ResourceManager Resources = new("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
-    internal static string CollectionIsEmpty => (string)Resources.Get();
-
     internal static string NotInLock => (string)Resources.Get();
 
     internal static string TokenNotCancelable => (string)Resources.Get();

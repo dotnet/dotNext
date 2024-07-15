@@ -186,6 +186,59 @@ public static partial class AsyncBridge
                 .Invoke(InfiniteTimeSpan, token);
     
     /// <summary>
+    /// Returns a cancellation token that gets signaled when the task completes.
+    /// </summary>
+    /// <param name="task">The task to observe.</param>
+    /// <returns>The token that represents completion state of the task.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="task"/> is <see langword="null"/>.</exception>
+    public static CancellationToken AsCancellationToken(this Task task)
+    {
+        ArgumentNullException.ThrowIfNull(task);
+
+        CancellationToken result;
+        if (task.IsCompleted)
+        {
+            result = new(canceled: true);
+        }
+        else
+        {
+            task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(new TaskToCancellationTokenCallback(out result).CancelAndDispose);
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Returns a cancellation token that gets signaled when the task completes.
+    /// </summary>
+    /// <param name="task">The task to observe.</param>
+    /// <param name="disposeTokenSource">
+    /// A delegate that can be used to destroy the source of the returned token if no longer needed.
+    /// It returns <see langword="true"/> if token was not canceled by the task; otherwise, <see langword="false"/>.
+    /// </param>
+    /// <returns>The token that represents completion state of the task.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="task"/> is <see langword="null"/>.</exception>
+    public static CancellationToken AsCancellationToken(this Task task, out Func<bool> disposeTokenSource)
+    {
+        ArgumentNullException.ThrowIfNull(task);
+
+        CancellationToken result;
+        if (task.IsCompleted)
+        {
+            result = new(canceled: true);
+            disposeTokenSource = Func.Constant(false);
+        }
+        else
+        {
+            var callback = new TaskToCancellationTokenCallback(out result);
+            disposeTokenSource = callback.TryDispose;
+            task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(callback.CancelAndDispose);
+        }
+
+        return result;
+    }
+    
+    /// <summary>
     /// Gets or sets the capacity of the internal pool used to create awaitable tasks returned
     /// from the public methods in this class.
     /// </summary>

@@ -19,12 +19,10 @@ public static partial class Enumerator
     /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
     public static bool Skip<T>(this IEnumerator<T> enumerator, int count)
     {
-        while (count > 0)
+        for (; count > 0; count--)
         {
             if (!enumerator.MoveNext())
                 return false;
-
-            count--;
         }
 
         return true;
@@ -41,12 +39,10 @@ public static partial class Enumerator
     public static bool Skip<TEnumerator, T>(this ref TEnumerator enumerator, int count)
         where TEnumerator : struct, IEnumerator<T>
     {
-        while (count > 0)
+        for (; count > 0; count--)
         {
             if (!enumerator.MoveNext())
                 return false;
-
-            count--;
         }
 
         return true;

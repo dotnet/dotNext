@@ -133,4 +133,49 @@ public sealed class AsyncBridgeTests : Test
         var e = await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task));
         Equal(interruptionReason, e.Reason);
     }
+
+    [Fact]
+    public static void CompletedTaskAsToken()
+    {
+        var token = Task.CompletedTask.AsCancellationToken();
+        True(token.IsCancellationRequested);
+
+        token = Task.CompletedTask.AsCancellationToken(out var diposeSource);
+        True(token.IsCancellationRequested);
+        False(diposeSource());
+    }
+
+    [Fact]
+    public static async Task TaskAsToken()
+    {
+        var source = new TaskCompletionSource();
+        var token = source.Task.AsCancellationToken();
+        False(token.IsCancellationRequested);
+
+        source.SetResult();
+        await token.WaitAsync();
+    }
+
+    [Fact]
+    public static void DisposeTaskTokenBeforeCompletion()
+    {
+        var source = new TaskCompletionSource();
+        var token = source.Task.AsCancellationToken(out var disposeTokenSource);
+        False(token.IsCancellationRequested);
+
+        True(disposeTokenSource());
+        source.SetResult();
+    }
+    
+    [Fact]
+    public static async Task DisposeTaskTokenAfterCompletion()
+    {
+        var source = new TaskCompletionSource();
+        var token = source.Task.AsCancellationToken(out var disposeTokenSource);
+        False(token.IsCancellationRequested);
+        
+        source.SetResult();
+        await token.WaitAsync();
+        False(disposeTokenSource());
+    }
 }
