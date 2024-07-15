@@ -158,4 +158,56 @@ public class TaskCompletionPipeTests : Test
         pipe.Add(Task.FromResult(42));
         False(await enumerator.MoveNextAsync());
     }
+
+    [Fact]
+    public static async Task CompletedTaskGroupToCollection()
+    {
+        await foreach (var t in TaskCompletionPipe.Create([Task.CompletedTask, Task.CompletedTask]))
+        {
+            True(t.IsCompleted);
+        }
+    }
+
+    [Fact]
+    public static async Task TaskGroupToCollection()
+    {
+        var source1 = new TaskCompletionSource<int>();
+        var source2 = new TaskCompletionSource<int>();
+        await using var consumer = TaskCompletionPipe.GetConsumer([source1.Task, source2.Task]).GetAsyncEnumerator();
+        
+        source1.SetResult(42);
+        True(await consumer.MoveNextAsync());
+        Equal(42, consumer.Current);
+        
+        source2.SetResult(43);
+        True(await consumer.MoveNextAsync());
+        Equal(43, consumer.Current);
+        
+        False(await consumer.MoveNextAsync());
+    }
+
+    [Fact]
+    public static async Task CompletionTask()
+    {
+        var pipe = new TaskCompletionPipe<Task> { IsCompletionTaskSupported = true };
+        True(pipe.IsCompletionTaskSupported);
+        
+        var source1 = new TaskCompletionSource();
+        var source2 = new TaskCompletionSource();
+
+        pipe.Add([source1.Task, source2.Task], complete: true);
+
+        source1.SetResult();
+        source2.SetResult();
+
+        await pipe.Completion.WaitAsync(DefaultTimeout);
+
+        var count = 0;
+        while (pipe.TryRead(out _))
+        {
+            count++;
+        }
+
+        Equal(2, count);
+    }
 }

@@ -1,4 +1,3 @@
-CollectionIsEmpty=Collection is empty
 NotInLock=The current async flow has not entered the lock
 TokenNotCancelable=The token is not cancelable
 UnsupportedLockAcquisition=Lock cannot be acquired for this type of object
