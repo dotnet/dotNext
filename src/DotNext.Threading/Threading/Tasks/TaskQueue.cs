@@ -37,6 +37,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
         {
             Debug.Assert((uint)index < (uint)array.Length);
 
+            // Perf: skip bounds and variance check
             return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(array), index);
         }
     }
