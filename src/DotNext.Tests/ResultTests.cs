@@ -196,4 +196,15 @@ public sealed class ResultTests : Test
         result = new(EnvironmentVariableTarget.Machine);
         Equal(10, result.OrInvoke(static e => 10));
     }
+
+    [Fact]
+    public static void FromErrorFactory()
+    {
+        False(FromError<Exception, Result<int>>(new Exception()).IsSuccessful);
+        False(FromError<EnvironmentVariableTarget, Result<int, EnvironmentVariableTarget>>(EnvironmentVariableTarget.Machine).IsSuccessful);
+    }
+
+    private static TResult FromError<TError, TResult>(TError error)
+        where TResult : struct, IResultMonad<int, TError, TResult>
+        => TResult.FromError(error);
 }
