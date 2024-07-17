@@ -7,14 +7,15 @@ public sealed class AsyncResetEventTests : Test
     [Fact]
     public static async Task ManualResetEvent()
     {
-        using var resetEvent = new AsyncManualResetEvent(false);
+        using IAsyncResetEvent resetEvent = new AsyncManualResetEvent(false);
+        Equal(EventResetMode.ManualReset, resetEvent.ResetMode);
         False(resetEvent.IsSet);
         var t = Task.Run(async () =>
         {
             True(await resetEvent.WaitAsync(DefaultTimeout));
         });
 
-        True(resetEvent.Set());
+        True(resetEvent.Signal());
         await t;
         True(resetEvent.Reset());
         False(resetEvent.IsSet);
@@ -24,7 +25,7 @@ public sealed class AsyncResetEventTests : Test
             True(await resetEvent.WaitAsync(DefaultTimeout));
         });
 
-        True(resetEvent.Set());
+        True(resetEvent.Signal());
         await t;
         True(resetEvent.IsSet);
     }
@@ -32,12 +33,12 @@ public sealed class AsyncResetEventTests : Test
     [Fact]
     public static async Task SetResetForManualEvent()
     {
-        using var mre = new AsyncManualResetEvent(false);
+        using IAsyncResetEvent mre = new AsyncManualResetEvent(false);
         False(await mre.WaitAsync(TimeSpan.Zero));
-        True(mre.Set());
+        True(mre.Signal());
         True(await mre.WaitAsync(TimeSpan.Zero));
         True(await mre.WaitAsync(TimeSpan.Zero));
-        False(mre.Set());
+        False(mre.Signal());
         True(await mre.WaitAsync(TimeSpan.Zero));
         True(mre.Reset());
         False(await mre.WaitAsync(TimeSpan.Zero));
@@ -70,12 +71,13 @@ public sealed class AsyncResetEventTests : Test
     [Fact]
     public static async Task SetResetForAutoEvent()
     {
-        using var are = new AsyncAutoResetEvent(false);
+        using IAsyncResetEvent are = new AsyncAutoResetEvent(false);
+        Equal(EventResetMode.AutoReset, are.ResetMode);
         False(await are.WaitAsync(TimeSpan.Zero));
-        True(are.Set());
+        True(are.Signal());
         True(await are.WaitAsync(TimeSpan.Zero));
         False(await are.WaitAsync(TimeSpan.Zero));
-        True(are.Set());
+        True(are.Signal());
         True(are.Reset());
         False(await are.WaitAsync(TimeSpan.FromMilliseconds(100)));
     }
