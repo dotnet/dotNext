@@ -362,7 +362,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     [MemberNotNull(nameof(value))]
     [MemberNotNull(nameof(ValueOrDefault))]
-    internal void Validate<TFactory>(TFactory exceptionFactory)
+    private void Validate<TFactory>(TFactory exceptionFactory)
         where TFactory : struct, ISupplier<Exception>
     {
         if (!HasValue)
@@ -491,7 +491,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         => ref GetReference<Supplier<Exception>>(exceptionFactory);
 
     [MemberNotNull(nameof(value))]
-    internal void Validate()
+    private void Validate()
     {
         var kind = this.kind;
 
@@ -634,7 +634,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     /// <summary>
     /// Determines whether this container stores
-    /// the same value as other.
+    /// the same value as the specified one.
     /// </summary>
     /// <param name="other">Other container to compare.</param>
     /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
