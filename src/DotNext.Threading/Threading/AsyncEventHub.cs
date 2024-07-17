@@ -579,7 +579,7 @@ public partial class AsyncEventHub : IResettable
     /// </summary>
     /// <param name="eventIndexes">The indexes of the events.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>A task that represents the completion of all of the specified events.</returns>
+    /// <returns>A task that represents the completion of all the specified events.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task WaitAllAsync(ReadOnlySpan<int> eventIndexes, CancellationToken token = default)
         => eventIndexes.IsEmpty ? Task.CompletedTask : WaitAllCoreAsync(eventIndexes, token);
@@ -589,7 +589,7 @@ public partial class AsyncEventHub : IResettable
     /// </summary>
     /// <param name="timeout">The time to wait for the events.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>A task that represents the completion of all of the specified events.</returns>
+    /// <returns>A task that represents the completion of all the specified events.</returns>
     /// <exception cref="TimeoutException">The operation has timed out.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task WaitAllAsync(TimeSpan timeout, CancellationToken token = default)

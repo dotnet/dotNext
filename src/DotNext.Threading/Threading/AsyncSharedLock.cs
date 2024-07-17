@@ -190,7 +190,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     /// <summary>
-    /// Entres the lock asynchronously.
+    /// Enters the lock asynchronously.
     /// </summary>
     /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
     /// <param name="timeout">The interval to wait for the lock.</param>
@@ -209,7 +209,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     /// <summary>
-    /// Entres the lock asynchronously.
+    /// Enters the lock asynchronously.
     /// </summary>
     /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
     /// <param name="token">The token that can be used to abort lock acquisition.</param>
@@ -291,7 +291,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     /// <summary>
-    /// Release the acquired lock.
+    /// Releases the acquired lock.
     /// </summary>
     /// <exception cref="SynchronizationLockException">The caller has not entered the lock.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
