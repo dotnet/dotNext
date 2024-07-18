@@ -69,6 +69,9 @@ public sealed class AsyncEventHubTests : Test
 
         Equal(0, await hub.WaitAnyAsync());
         Equal(0, await hub.WaitAnyAsync([0, 1], DefaultTimeout));
+
+        Equal(2, hub.Pulse([0, 1, 2]));
+        Equal(0, hub.Pulse([0, 1, 2]));
     }
 
     [Fact]
