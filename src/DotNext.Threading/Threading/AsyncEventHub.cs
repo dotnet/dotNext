@@ -627,7 +627,7 @@ public partial class AsyncEventHub : IResettable
     /// Waits for all events.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>A task that represents the completion of all of the specified events.</returns>
+    /// <returns>A task that represents the completion of all the specified events.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task WaitAllAsync(CancellationToken token = default)
     {
