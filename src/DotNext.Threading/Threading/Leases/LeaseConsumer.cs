@@ -83,7 +83,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// Gets the lease version.
     /// </summary>
     /// <remarks>The returned value can be used as a fencing token.</remarks>
-    public LeaseIdentity LeaseId => identity;
+    public ref readonly LeaseIdentity LeaseId => ref identity;
 
     private ValueTask CancelAndStopTimerAsync()
     {
