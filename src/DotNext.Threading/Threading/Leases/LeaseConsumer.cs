@@ -78,6 +78,12 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
     /// Gets lease expiration timeout.
     /// </summary>
     public ref readonly Timeout Expiration => ref timeout;
+    
+    /// <summary>
+    /// Gets the lease version.
+    /// </summary>
+    /// <remarks>The returned value can be used as a fencing token.</remarks>
+    public LeaseIdentity LeaseId => identity;
 
     private ValueTask CancelAndStopTimerAsync()
     {
@@ -181,7 +187,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
         var leaseToken = Token;
         var operationToken = token;
         var cts = operationToken.LinkTo(leaseToken);
-        
+
         var task = Fork(worker, operationToken);
         try
         {
@@ -216,10 +222,10 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
         {
             cts?.Dispose();
         }
-    }
 
-    private static Task<TResult> Fork<TResult>(Func<CancellationToken, Task<TResult>> function, CancellationToken token)
-        => Task.Run(() => function(token), token);
+        static Task<TResult> Fork(Func<CancellationToken, Task<TResult>> function, CancellationToken token)
+            => Task.Run(() => function(token), token);
+    }
 
     /// <summary>
     /// Performs a call to <see cref="LeaseProvider{TMetadata}.TryAcquireAsync(CancellationToken)"/> across the application boundaries.
