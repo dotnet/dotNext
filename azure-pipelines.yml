@@ -125,6 +125,9 @@ stages:
           - download: current
             displayName: Download packages
             artifact: packages
+          - download: current
+            displayName: Download signing file list
+            artifact: config
           - pwsh: |
               .\sign code azure-key-vault `
               "**/*.nupkg" `
