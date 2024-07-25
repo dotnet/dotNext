@@ -7,7 +7,7 @@ using Tasks;
 using Tasks.Pooling;
 
 /// <summary>
-/// Represents a synchronization primitive that is signaled when its count becomes non zero.
+/// Represents a synchronization primitive that is signaled when its count becomes non-zero.
 /// </summary>
 /// <remarks>
 /// This class behaves in opposite to <see cref="AsyncCountdownEvent"/>.

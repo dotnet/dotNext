@@ -90,7 +90,8 @@ public sealed class LeaseTests : Test
         True(consumer.Token.IsCancellationRequested);
         True(consumer.Expiration.IsExpired);
 
-        True((await consumer.TryAcquireAsync()));
+        True(await consumer.TryAcquireAsync());
+        Equal(1UL, consumer.LeaseId.Version);
         False(consumer.Token.IsCancellationRequested);
         False(consumer.Expiration.IsExpired);
 
