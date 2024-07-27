@@ -27,14 +27,14 @@ public partial class Epoch
     /// <see langword="true"/> to capture all deferred actions across all threads;
     /// <see langword="false"/> to capture actions that were deferred by the current thread at some point in the past.
     /// </param>
-    /// <param name="action">An action that can be called at any point in time to invoke deferred actions.</param>
+    /// <param name="bin">An action that can be called at any point in time to invoke deferred actions.</param>
     /// <returns>A scope that represents the current epoch.</returns>
-    public Scope Enter(bool drainGlobalCache, out DeferredAction action)
+    public Scope Enter(bool drainGlobalCache, out RecycleBin bin)
     {
         var scope = new Scope(ref state);
         state.AssertCounters(scope.Handle);
 
-        Reclaim(scope.Handle, drainGlobalCache, out action);
+        Reclaim(scope.Handle, drainGlobalCache, out bin);
         return scope;
     }
 
@@ -104,7 +104,7 @@ public partial class Epoch
         return scope;
     }
     
-    private void Reclaim(uint protectedEntryHandle, bool drainGlobalCache, out DeferredAction action)
+    private void Reclaim(uint protectedEntryHandle, bool drainGlobalCache, out RecycleBin action)
     {
         if (state.TryBumpEpoch(protectedEntryHandle) is not { IsEmpty: false } garbage)
         {
@@ -169,10 +169,10 @@ public partial class Epoch
     /// </remarks>
     /// <exception cref="InvalidOperationException">Not all threads relying on the current instance finished their work.</exception>
     /// <exception cref="AggregateException">One or more deferred actions throw an exception.</exception>
-    public void UnsafeReclaim()
+    public void UnsafeClear()
     {
         var exceptions = new ExceptionAggregator();
-        state.UnsafeReclaim(ref exceptions);
+        state.UnsafeDrain(ref exceptions);
         exceptions.ThrowIfNeeded();
     }
 
@@ -184,32 +184,32 @@ public partial class Epoch
     /// the epoch scope.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct DeferredAction : IThreadPoolWorkItem
+    public readonly struct RecycleBin : IThreadPoolWorkItem
     {
-        // null, or Disposable, or Disposable[]
-        private readonly object callback;
+        // null, or Discardable, or Discardable[]
+        private readonly object discardable;
         private readonly int count;
 
-        internal DeferredAction(Disposable? callback)
+        internal RecycleBin(Discardable? discardable)
         {
-            if (callback is null)
+            if (discardable is null)
             {
-                this.callback = Sentinel.Instance;
+                this.discardable = Sentinel.Instance;
                 count = 0;
             }
             else
             {
-                this.callback = callback;
+                this.discardable = discardable;
                 count = 1;
             }
         }
 
-        internal DeferredAction(DetachingEnumerable callbacks)
+        internal RecycleBin(DetachingEnumerable discardables)
         {
-            var array = new Disposable[callbacks.MaxCount];
+            var array = new Discardable[discardables.MaxCount];
 
             var index = 0;
-            foreach (var node in callbacks)
+            foreach (var node in discardables)
             {
                 // Perf: skip list.Add to avoid capacity checks
                 array[index++] = node;
@@ -218,25 +218,25 @@ public partial class Epoch
             switch (index)
             {
                 case 0:
-                    callback = Sentinel.Instance;
+                    discardable = Sentinel.Instance;
                     break;
                 case 1:
-                    callback = array[0];
+                    discardable = array[0];
                     count = 1;
                     break;
                 default:
                     count = index;
-                    callback = array;
+                    discardable = array;
                     break;
             }
         }
 
         [UnscopedRef]
-        private ReadOnlySpan<Disposable> Span => count switch
+        private ReadOnlySpan<Discardable> Span => count switch
         {
-            0 => ReadOnlySpan<Disposable>.Empty,
-            1 => new(in Intrinsics.InToRef<object, Disposable>(in callback)),
-            _ => new(Unsafe.As<Disposable[]>(callback), 0, count),
+            0 => ReadOnlySpan<Discardable>.Empty,
+            1 => new(in Intrinsics.InToRef<object, Discardable>(in discardable)),
+            _ => new(Unsafe.As<Discardable[]>(discardable), 0, count),
         };
 
         /// <summary>
@@ -248,7 +248,7 @@ public partial class Epoch
         /// Invokes all deferred actions.
         /// </summary>
         /// <param name="throwOnFirstException"><see langword="true" /> if exceptions should immediately propagate; otherwise, <see langword="false" />.</param>
-        public void Invoke(bool throwOnFirstException = false)
+        public void Clear(bool throwOnFirstException = false)
         {
             scoped var span = Span;
             switch (span)
@@ -265,18 +265,18 @@ public partial class Epoch
         }
 
         /// <inheritdoc cref="IThreadPoolWorkItem.Execute()"/>
-        void IThreadPoolWorkItem.Execute() => Invoke(throwOnFirstException: false);
+        void IThreadPoolWorkItem.Execute() => Clear(throwOnFirstException: false);
 
-        private static void Drain(ReadOnlySpan<Disposable> callbacks, bool throwOnFirstException)
+        private static void Drain(ReadOnlySpan<Discardable> objects, bool throwOnFirstException)
         {
             var exceptions = new ExceptionAggregator();
             if (throwOnFirstException)
             {
                 try
                 {
-                    foreach (var bucket in callbacks)
+                    foreach (var node in objects)
                     {
-                        bucket.Drain();
+                        node.Drain();
                     }
                 }
                 catch (Exception e)
@@ -286,9 +286,9 @@ public partial class Epoch
             }
             else
             {
-                foreach (var bucket in callbacks)
+                foreach (var node in objects)
                 {
-                    bucket.Drain(ref exceptions);
+                    node.Drain(ref exceptions);
                 }
             }
 
@@ -298,7 +298,7 @@ public partial class Epoch
         /// <summary>
         /// Queues invocation of deferred actions to the thread pool.
         /// </summary>
-        public void Start()
+        public void QueueCleanup()
         {
             scoped var span = Span;
 
@@ -321,7 +321,7 @@ public partial class Epoch
         /// Invokes deferred actions as parallel task.
         /// </summary>
         /// <returns>The task representing execution of deferred actions.</returns>
-        public Task InvokeAsync()
+        public Task ClearAsync()
         {
             scoped var span = Span;
             Task task;
@@ -337,14 +337,14 @@ public partial class Epoch
                 default:
                     workItem = this;
                     start_task:
-                    task = Task.Factory.StartNew(Invoke, workItem, CancellationToken.None, TaskCreationOptions.DenyChildAttach,
+                    task = Task.Factory.StartNew(Execute, workItem, CancellationToken.None, TaskCreationOptions.DenyChildAttach,
                         TaskScheduler.Default);
                     break;
             }
 
             return task;
 
-            static void Invoke(object? callback)
+            static void Execute(object? callback)
             {
                 Debug.Assert(callback is IThreadPoolWorkItem);
 
@@ -372,7 +372,7 @@ public partial class Epoch
         }
 
         /// <summary>
-        /// Queues user action to be called at some point in future when the resource protected by the epoch is no longer
+        /// Registers user action to be called at some point in future when the resource protected by the epoch is no longer
         /// available to any consumer.
         /// </summary>
         /// <remarks>
@@ -388,7 +388,7 @@ public partial class Epoch
         }
 
         /// <summary>
-        /// Queues user action to be called at some point in future when the resource protected by the epoch is no longer
+        /// Registers user action to be called at some point in future when the resource protected by the epoch is no longer
         /// available to any consumer.
         /// </summary>
         /// <remarks>
@@ -405,7 +405,7 @@ public partial class Epoch
         }
 
         /// <summary>
-        /// Queues user action to be called at some point in future when the resource protected by the epoch is no longer
+        /// Registers user action to be called at some point in future when the resource protected by the epoch is no longer
         /// available to any consumer.
         /// </summary>
         /// <param name="workItem">The callback to enqueue.</param>
@@ -415,29 +415,29 @@ public partial class Epoch
             => state.Defer(new WorkItem<TWorkItem>(workItem));
 
         /// <summary>
-        /// Queues an object to be disposed at some point in future when the resource protected by the epoch is no longer
+        /// Registers an object to be disposed at some point in future when the resource protected by the epoch is no longer
         /// available to any consumer.
         /// </summary>
         /// <param name="disposable">An object to be disposed.</param>
         /// <exception cref="ArgumentNullException"><paramref name="disposable"/> is <see langword="null"/>.</exception>
-        public void Defer(IDisposable disposable)
+        public void RegisterForDispose(IDisposable disposable)
         {
             ArgumentNullException.ThrowIfNull(disposable);
 
             state.Defer(new Cleanup(disposable));
         }
-        
+
         /// <summary>
-        /// Queues an object to be disposed at some point in future when the resource protected by the epoch is no longer
+        /// Registers an object to be disposed at some point in future when the resource protected by the epoch is no longer
         /// available to any consumer.
         /// </summary>
-        /// <param name="disposable">An object to be disposed.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="disposable"/> is <see langword="null"/>.</exception>
-        public void Defer(Disposable disposable)
+        /// <param name="discardable">An object to be disposed.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="discardable"/> is <see langword="null"/>.</exception>
+        public void RegisterForDiscard(Discardable discardable)
         {
-            ArgumentNullException.ThrowIfNull(disposable);
+            ArgumentNullException.ThrowIfNull(discardable);
 
-            state.Defer(disposable);
+            state.Defer(discardable);
         }
 
         /// <summary>

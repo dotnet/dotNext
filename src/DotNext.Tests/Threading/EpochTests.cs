@@ -25,11 +25,11 @@ public sealed class EpochTests : Test
         epoch.Enter().Dispose();
         Equal(0, state.Value);
 
-        epoch.Enter(drainGlobalCache: true, out Epoch.DeferredAction action).Dispose();
+        epoch.Enter(drainGlobalCache: true, out Epoch.RecycleBin action).Dispose();
         False(action.IsEmpty);
         Equal(0, state.Value);
 
-        action.Invoke(throwOnFirstException);
+        action.Clear(throwOnFirstException);
         Equal(42, state.Value);
     }
 
@@ -42,7 +42,7 @@ public sealed class EpochTests : Test
         epoch.Enter(drainGlobalCache: false, out Epoch.Scope region);
         try
         {
-            region.Defer(state);
+            region.RegisterForDispose(state);
         }
         finally
         {
@@ -58,13 +58,13 @@ public sealed class EpochTests : Test
     [Fact]
     public static void Reclamation2()
     {
-        var state = new NativeDisposableObject();
+        var state = new DiscardableObject();
         var epoch = new Epoch();
 
         epoch.Enter(drainGlobalCache: false, out Epoch.Scope region);
         try
         {
-            region.Defer(state);
+            region.RegisterForDiscard(state);
         }
         finally
         {
@@ -90,8 +90,8 @@ public sealed class EpochTests : Test
 
         epoch.Enter().Dispose();
 
-        epoch.Enter(drainGlobalCache: true, out Epoch.DeferredAction action).Dispose(); // causes reclamation
-        action.Start();
+        epoch.Enter(drainGlobalCache: true, out Epoch.RecycleBin action).Dispose(); // causes reclamation
+        action.QueueCleanup();
         True(state.WaitOne(DefaultTimeout));
     }
 
@@ -114,8 +114,8 @@ public sealed class EpochTests : Test
 
             epoch.Enter().Dispose();
 
-            epoch.Enter(drainGlobalCache: false, out Epoch.DeferredAction action).Dispose(); // causes reclamation
-            return action.InvokeAsync();
+            epoch.Enter(drainGlobalCache: false, out Epoch.RecycleBin action).Dispose(); // causes reclamation
+            return action.ClearAsync();
         }
     }
 
@@ -148,7 +148,7 @@ public sealed class EpochTests : Test
             t.Join();
         }
 
-        epoch.UnsafeReclaim();
+        epoch.UnsafeClear();
 
         static Thread[] GetThreads(ThreadStart action, int count)
         {
@@ -257,10 +257,10 @@ public sealed class EpochTests : Test
         public new bool IsDisposed => base.IsDisposed;
     }
     
-    private sealed class NativeDisposableObject : Epoch.Disposable
+    private sealed class DiscardableObject : Epoch.Discardable
     {
         internal bool IsDisposed { get; private set; }
 
-        protected override void Reclaim() => IsDisposed = true;
+        protected override void Discard() => IsDisposed = true;
     }
 }

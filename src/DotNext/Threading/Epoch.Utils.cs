@@ -14,35 +14,35 @@ public partial class Epoch
     /// <summary>
     /// Represents an object which lifetime is controlled by <see cref="Epoch"/> internal Garbage Collector.
     /// </summary>
-    public abstract class Disposable : IThreadPoolWorkItem
+    public abstract class Discardable : IThreadPoolWorkItem
     {
-        internal Disposable? Next;
+        internal Discardable? Next;
 
         /// <summary>
         /// Automatically called by <see cref="Epoch"/> infrastructure to clean up resources associated with this object.
         /// </summary>
-        protected abstract void Reclaim();
+        protected abstract void Discard();
 
         internal void Drain()
         {
-            for (Disposable? current = this, next; current is not null; current = next)
+            for (Discardable? current = this, next; current is not null; current = next)
             {
                 next = current.Next;
                 current.Next = null; // help GC
-                current.Reclaim();
+                current.Discard();
             }
         }
 
         internal void Drain(ref ExceptionAggregator exceptions)
         {
-            for (Disposable? current = this, next; current is not null; current = next)
+            for (Discardable? current = this, next; current is not null; current = next)
             {
                 next = current.Next;
                 current.Next = null; // help GC
 
                 try
                 {
-                    current.Reclaim();
+                    current.Discard();
                 }
                 catch (Exception e)
                 {
@@ -73,25 +73,25 @@ public partial class Epoch
         }
     }
     
-    private sealed class ActionNode(Action callback) : Disposable
+    private sealed class ActionNode(Action callback) : Discardable
     {
-        protected override void Reclaim() => callback();
+        protected override void Discard() => callback();
     }
 
-    private sealed class ActionNode<T>(T arg, Action<T> callback) : Disposable
+    private sealed class ActionNode<T>(T arg, Action<T> callback) : Discardable
     {
-        protected override void Reclaim() => callback(arg);
+        protected override void Discard() => callback(arg);
     }
 
-    private sealed class WorkItem<TWorkItem>(TWorkItem item) : Disposable
+    private sealed class WorkItem<TWorkItem>(TWorkItem item) : Discardable
         where TWorkItem : struct, IThreadPoolWorkItem
     {
-        protected override void Reclaim() => item.Execute();
+        protected override void Discard() => item.Execute();
     }
 
-    private sealed class Cleanup(IDisposable disposable) : Disposable
+    private sealed class Cleanup(IDisposable disposable) : Discardable
     {
-        protected override void Reclaim() => disposable.Dispose();
+        protected override void Discard() => disposable.Dispose();
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -105,12 +105,12 @@ public partial class Epoch
         internal readonly uint Previous = previous, Next = next;
         
         // size of the array must be a power of 2 to optimize modulo operation
-        private readonly Disposable?[] callbacks = new Disposable?[RecommendedSize];
+        private readonly Discardable?[] callbacks = new Discardable?[RecommendedSize];
         internal ulong Counter;
         
         private static uint RecommendedSize => BitOperations.RoundUpToPowerOf2((uint)Environment.ProcessorCount + 1U);
 
-        private readonly ref Disposable? this[int index]
+        private readonly ref Discardable? this[int index]
         {
             get
             {
@@ -121,7 +121,7 @@ public partial class Epoch
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly ref Disposable? BucketForCurrentThread
+        private readonly ref Discardable? BucketForCurrentThread
         {
             get
             {
@@ -134,12 +134,12 @@ public partial class Epoch
             }
         }
 
-        internal readonly void Defer(Disposable node)
+        internal readonly void Defer(Discardable node)
             => Defer(ref BucketForCurrentThread, node);
 
-        private static void Defer(ref Disposable? bucket, Disposable node)
+        private static void Defer(ref Discardable? bucket, Discardable node)
         {
-            Disposable? current, tmp = bucket;
+            Discardable? current, tmp = bucket;
             do
             {
                 current = tmp;
@@ -147,7 +147,7 @@ public partial class Epoch
             } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref bucket, node, current), current));
         }
 
-        internal readonly Disposable? DetachLocal() => Interlocked.Exchange(ref BucketForCurrentThread, null);
+        internal readonly Discardable? DetachLocal() => Interlocked.Exchange(ref BucketForCurrentThread, null);
 
         internal readonly DetachingEnumerable DetachGlobal() => new(callbacks);
 
@@ -165,14 +165,14 @@ public partial class Epoch
                     _ => uint.MaxValue,
                 };
 
-                var hasDeferredActions = callbacks.Any(Func.IsNotNull<Disposable?>());
+                var hasDeferredActions = callbacks.Any(Func.IsNotNull<Discardable?>());
                 return $"Epoch={epoch}, Threads={Counter}, DeferredActions={hasDeferredActions}";
             }
         }
     }
 
     [StructLayout(LayoutKind.Auto)]
-    internal readonly ref struct DetachingEnumerable(Disposable?[] callbacks)
+    internal readonly ref struct DetachingEnumerable(Discardable?[] callbacks)
     {
         public DetachingEnumerator GetEnumerator() => new(callbacks);
 
@@ -180,11 +180,11 @@ public partial class Epoch
     }
 
     [StructLayout(LayoutKind.Auto)]
-    internal ref struct DetachingEnumerator(Disposable?[] callbacks)
+    internal ref struct DetachingEnumerator(Discardable?[] callbacks)
     {
-        private Span<Disposable?>.Enumerator enumerator = callbacks.AsSpan().GetEnumerator();
+        private Span<Discardable?>.Enumerator enumerator = callbacks.AsSpan().GetEnumerator();
 
-        public Disposable Current
+        public Discardable Current
         {
             readonly get;
             private set;
@@ -239,7 +239,7 @@ public partial class Epoch
         [UnscopedRef] internal readonly ReadOnlySpan<Entry> Entries => entries;
 
         [MethodImpl(MethodImplOptions.NoInlining)] // compiler-level barrier to avoid 'globalEpoch' cached reads
-        internal readonly void Defer(Disposable node) => entries[globalEpoch].Defer(node);
+        internal readonly void Defer(Discardable node) => entries[globalEpoch].Defer(node);
 
         internal uint Enter()
         {
@@ -285,7 +285,7 @@ public partial class Epoch
                 : default;
         }
 
-        internal readonly void UnsafeReclaim(ref ExceptionAggregator exceptions)
+        internal readonly void UnsafeDrain(ref ExceptionAggregator exceptions)
         {
             foreach (ref readonly var state in entries)
             {
@@ -313,7 +313,7 @@ public partial class Epoch
 
         internal bool IsEmpty => Unsafe.IsNullRef(in reference);
 
-        internal Disposable? ReclaimLocal() => reference.DetachLocal();
+        internal Discardable? ReclaimLocal() => reference.DetachLocal();
 
         internal DetachingEnumerable ReclaimGlobal() => reference.DetachGlobal();
     }
