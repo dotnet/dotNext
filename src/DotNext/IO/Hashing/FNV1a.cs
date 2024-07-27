@@ -21,7 +21,7 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
 {
     private State state = new(salted);
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="NonCryptographicHashAlgorithm.Reset()"/>
     public sealed override void Reset() => state = new(salted);
 
     /// <inheritdoc/>
@@ -141,8 +141,9 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
     /// <returns>The computed FNV-1a hash.</returns>
     public static THash Hash(THash data)
     {
-        State.Append(ref data, data);
-        return data;
+        var hash = TParameters.Offset;
+        State.Append(ref hash, data);
+        return hash;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -231,7 +232,7 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
                 Append(element);
         }
 
-        internal unsafe void Append<T>(ReadOnlySpan<T> data)
+        internal void Append<T>(ReadOnlySpan<T> data)
             where T : unmanaged
         {
             for (int maxSize = int.MaxValue / sizeof(T), size; !data.IsEmpty; data = data.Slice(size))
