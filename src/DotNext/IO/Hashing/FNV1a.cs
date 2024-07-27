@@ -147,7 +147,7 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private unsafe struct State
+    private struct State
     {
         private int bufferSize;
         private THash buffer, hash;
@@ -178,7 +178,7 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
             Span.AsReadOnlyBytes(in hash).CopyTo(output);
         }
 
-        private Span<byte> RemainingBuffer
+        private unsafe Span<byte> RemainingBuffer
         {
             get
             {
@@ -193,7 +193,7 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
             bufferSize += data.Length;
         }
 
-        internal void Append(ref byte data, nuint length)
+        internal unsafe void Append(ref byte data, nuint length)
         {
             var remaining = RemainingBuffer;
             if (remaining.Length < sizeof(THash) && (uint)remaining.Length <= length)
@@ -232,7 +232,7 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
                 Append(element);
         }
 
-        internal void Append<T>(ReadOnlySpan<T> data)
+        internal unsafe void Append<T>(ReadOnlySpan<T> data)
             where T : unmanaged
         {
             for (int maxSize = int.MaxValue / sizeof(T), size; !data.IsEmpty; data = data.Slice(size))
