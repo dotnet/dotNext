@@ -1,100 +1,164 @@
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using Runtime.CompilerServices;
+using Runtime;
+using Runtime.ExceptionServices;
 
 /// <summary>
 /// Implements epoch-based reclamation.
 /// </summary>
+/// <seealso href="https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-579.pdf">Practical lock-freedom</seealso>
 public partial class Epoch
 {
-    private State epochs;
-    private uint globalEpoch;
-
-    /// <summary>
-    /// Initializes a new instance of EBR manager.
-    /// </summary>
-    public Epoch()
-    {
-        epochs[0] = new(2, 1);
-        epochs[1] = new(0, 2);
-        epochs[2] = new(1, 0);
-    }
+    private State state = new();
 
     /// <summary>
     /// Enters the current epoch, but doesn't execute any deferred actions.
     /// </summary>
     /// <remarks>
-    /// This method is reentrant.
+    /// This method is reentrant and never throws an exception.
     /// </remarks>
+    /// <param name="drainGlobalCache">
+    /// <see langword="true"/> to capture all deferred actions across all threads;
+    /// <see langword="false"/> to capture actions that were deferred by the current thread at some point in the past.
+    /// </param>
     /// <param name="action">An action that can be called at any point in time to invoke deferred actions.</param>
     /// <returns>A scope that represents the current epoch.</returns>
-    public Guard Enter(out ReclamationAction action)
+    public Scope Enter(bool drainGlobalCache, out DeferredAction action)
     {
-        var result = new Guard(this, out var currentEpoch);
-        result.AssertCounters();
-        action = new(TryCollect(in result.epochEntry, currentEpoch));
-        return result;
+        var scope = new Scope(ref state);
+        state.AssertCounters(scope.Handle);
+
+        Reclaim(scope.Handle, drainGlobalCache, out action);
+        return scope;
     }
 
     /// <summary>
-    /// Enters the current epoch and invokes reclamation actions if needed.
+    /// Enters the current epoch, and optionally executes a deferred actions.
     /// </summary>
     /// <remarks>
-    /// This method is reentrant.
+    /// This method is reentrant. In case of exceptions in one or more deferred actions the method closes the scope correctly.
     /// </remarks>
-    /// <param name="asyncReclamation">
-    /// <see langword="true"/> to schedule reclamation actions to the thread pool;
-    /// <see langword="false"/> to execute reclamation actions on this thread;
-    /// <see langword="null"/> to suspend invocation of deferred actions.
+    /// <param name="drainGlobalCache">
+    /// <see langword="null"/> to avoid reclamation;
+    /// <see langword="true"/> to capture all deferred actions across all threads;
+    /// <see langword="false"/> to capture actions that were deferred by the current thread at some point in the past.
     /// </param>
     /// <returns>A scope that represents the current epoch.</returns>
-    public Guard Enter(bool? asyncReclamation = false)
+    /// <exception cref="AggregateException">One or more deferred actions thrown an exception.</exception>
+    public Scope Enter(bool? drainGlobalCache = false)
     {
-        var result = new Guard(this, out var currentEpoch);
-        result.AssertCounters();
-        if (asyncReclamation is null || TryCollect(in result.epochEntry, currentEpoch) is not { } callbacks)
+        var scope = new Scope(ref state);
+        state.AssertCounters(scope.Handle);
+
+        if (drainGlobalCache.HasValue && Reclaim(scope.Handle, drainGlobalCache.GetValueOrDefault()) is { IsEmpty: false } exceptions)
         {
-            // nothing to do
-        }
-        else if (asyncReclamation.GetValueOrDefault())
-        {
-            ThreadPool.UnsafeQueueUserWorkItem(callbacks, preferLocal: false);
-        }
-        else if (callbacks.InvokeAndCleanupReliably() is { IsEmpty: false } exceptions)
-        {
-            result.Dispose();
+            scope.Dispose();
             exceptions.ThrowIfNeeded();
         }
 
-        return result;
+        return scope;
     }
 
-    private CallbackNode? TryCollect(in Entry currentEpochState, uint currentEpochIndex)
+    /// <summary>
+    /// Enters the current epoch, and optionally executes a deferred actions.
+    /// </summary>
+    /// <remarks>
+    /// This method is reentrant. In case of exceptions in one or more deferred actions the aggregated exception is propagated
+    /// to the caller. In this case, the caller is responsible to close the scope correctly.
+    /// </remarks>
+    /// <param name="drainGlobalCache">
+    /// <see langword="true"/> to capture all deferred actions across all threads;
+    /// <see langword="false"/> to capture actions that were deferred by the current thread at some point in the past.
+    /// </param>
+    /// <param name="scope">The protection scope. It is initialized in case of exceptions raised by the deferred actions invoked by the method.</param>
+    /// <exception cref="AggregateException">One or more deferred actions thrown an exception.</exception>
+    public void Enter(bool drainGlobalCache, out Scope scope)
     {
-        var nextEpochIndex = currentEpochState.Next;
-        ref var prevEpochState = ref epochs[currentEpochState.Previous];
-        ref var nextEpochState = ref epochs[nextEpochIndex];
+        scope = new(ref state);
+        state.AssertCounters(scope.Handle);
 
-        return prevEpochState.Counter is 0U
-               && nextEpochState.Counter is 0U
-               && Interlocked.CompareExchange(ref globalEpoch, nextEpochIndex, currentEpochIndex) == currentEpochIndex
-            ? prevEpochState.Detach()
-            : null;
+        UnsafeReclaim(scope.Handle, drainGlobalCache);
     }
 
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    private void Defer(CallbackNode node)
+    /// <summary>
+    /// Enters the current epoch, and optionally executes a deferred actions.
+    /// </summary>
+    /// <remarks>
+    /// This method is reentrant. In case of exceptions in one or more deferred actions the aggregated exception is propagated
+    /// to the caller. There is no way for the caller to close the scope correctly.
+    /// </remarks>
+    /// <param name="drainGlobalCache">
+    /// <see langword="true"/> to capture all deferred actions across all threads;
+    /// <see langword="false"/> to capture actions that were deferred by the current thread at some point in the past.
+    /// </param>
+    /// <exception cref="AggregateException">One or more deferred actions thrown an exception.</exception>
+    public Scope UnsafeEnter(bool drainGlobalCache = false)
     {
-        epochs[globalEpoch].Push(node);
+        Enter(drainGlobalCache, out Scope scope);
+        return scope;
+    }
+    
+    private void Reclaim(uint protectedEntryHandle, bool drainGlobalCache, out DeferredAction action)
+    {
+        if (state.TryBumpEpoch(protectedEntryHandle) is not { IsEmpty: false } garbage)
+        {
+            action = default;
+        }
+        else if (drainGlobalCache)
+        {
+            action = new(garbage.ReclaimGlobal());
+        }
+        else
+        {
+            action = new(garbage.ReclaimLocal());
+        }
     }
 
-    [MethodImpl(MethodImplOptions.NoInlining)] // acts as compiler-level barrier to avoid caching of 'globalEpoch' field
-    private ref Entry GetCurrentEpoch(out uint currentEpoch)
-        => ref epochs[currentEpoch = globalEpoch];
+    private ExceptionAggregator Reclaim(uint protectedEntryHandle, bool drainGlobalCache)
+    {
+        var exceptions = new ExceptionAggregator();
+        if (state.TryBumpEpoch(protectedEntryHandle) is { IsEmpty: false } garbage)
+        {
+            if (drainGlobalCache)
+            {
+                foreach (var bucket in garbage.ReclaimGlobal())
+                {
+                    bucket.InvokeAndCleanup(ref exceptions);
+                }
+            }
+            else if (garbage.ReclaimLocal() is { } bucket)
+            {
+                bucket.InvokeAndCleanup(ref exceptions);
+            }
+        }
+
+        return exceptions;
+    }
+
+    private void UnsafeReclaim(uint protectedEntryHandle, bool drainGlobalCache)
+    {
+        if (state.TryBumpEpoch(protectedEntryHandle) is not { IsEmpty: false } garbage)
+        {
+            // do nothing
+        }
+        else if (drainGlobalCache)
+        {
+            foreach (var bucket in garbage.ReclaimGlobal())
+            {
+                bucket.InvokeAndCleanup();
+            }
+        }
+        else if (garbage.ReclaimLocal() is { } bucket)
+        {
+            bucket.InvokeAndCleanup();
+        }
+    }
 
     /// <summary>
     /// Invokes all deferred actions across all epochs.
@@ -103,71 +167,82 @@ public partial class Epoch
     /// This method is not thread-safe and cannot be called concurrently with other threads entered a protected region
     /// with <see cref="Enter(bool?)"/>. The caller must ensure that all threads finished their work prior to this method.
     /// </remarks>
-    /// <param name="asyncReclamation">
-    /// <see langword="true"/> to schedule reclamation actions to the thread pool;
-    /// <see langword="false"/> to execute reclamation actions on this thread.
-    /// </param>
     /// <exception cref="InvalidOperationException">Not all threads relying on the current instance finished their work.</exception>
-    public void UnsafeReclaim(bool asyncReclamation = false)
+    /// <exception cref="AggregateException">One or more deferred actions throw an exception.</exception>
+    public void UnsafeReclaim()
     {
-        foreach (ref var state in epochs)
-        {
-            if (state.Counter > 0UL)
-            {
-                throw new InvalidOperationException();
-            }
-
-            if (state.Detach() is not { } callbacks)
-            {
-                // nothing to do
-            }
-            else if (asyncReclamation)
-            {
-                ThreadPool.UnsafeQueueUserWorkItem(callbacks, preferLocal: false);
-            }
-            else
-            {
-                callbacks.InvokeAndCleanupReliablyAndThrowIfNeeded();
-            }
-        }
+        var exceptions = new ExceptionAggregator();
+        state.UnsafeReclaim(ref exceptions);
+        exceptions.ThrowIfNeeded();
     }
 
     /// <summary>
-    /// Represents reclamation action.
+    /// Encapsulates actions deferred previously by <see cref="Scope.Defer(System.Action)"/> method and its overloads.
     /// </summary>
+    /// <remarks>
+    /// The action can be called at any point in time. The call does not necessarily have to be protected by
+    /// the epoch scope.
+    /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ReclamationAction : IFunctional<Action>
+    public readonly struct DeferredAction : IThreadPoolWorkItem
     {
-        private readonly CallbackNode? callbacks;
+        // null, or DeferredCallback, or DeferredCallback[]
+        private readonly object callback;
+        private readonly int count;
 
-        internal ReclamationAction(CallbackNode? callbacks) => this.callbacks = callbacks;
+        internal DeferredAction(DeferredActionNode? callback)
+        {
+            if (callback is null)
+            {
+                this.callback = Sentinel.Instance;
+                count = 0;
+            }
+            else
+            {
+                this.callback = callback;
+                count = 1;
+            }
+        }
+
+        internal DeferredAction(DetachingEnumerable callbacks)
+        {
+            var array = new DeferredActionNode[callbacks.MaxCount];
+
+            var index = 0;
+            foreach (var node in callbacks)
+            {
+                // Perf: skip list.Add to avoid capacity checks
+                array[index++] = node;
+            }
+
+            switch (index)
+            {
+                case 0:
+                    callback = Sentinel.Instance;
+                    break;
+                case 1:
+                    callback = array[0];
+                    count = 1;
+                    break;
+                default:
+                    count = index;
+                    callback = array;
+                    break;
+            }
+        }
+
+        [UnscopedRef]
+        private ReadOnlySpan<DeferredActionNode> Span => count switch
+        {
+            0 => ReadOnlySpan<DeferredActionNode>.Empty,
+            1 => new(in Intrinsics.InToRef<object, DeferredActionNode>(in callback)),
+            _ => new(Unsafe.As<DeferredActionNode[]>(callback), 0, count),
+        };
 
         /// <summary>
         /// Gets a value indicating that the action is empty.
         /// </summary>
-        public bool IsEmpty => callbacks is null;
-
-        /// <summary>
-        /// Converts this action to delegate instance.
-        /// </summary>
-        /// <param name="throwOnFirstException"><see langword="true" /> if exceptions should immediately propagate; otherwise, <see langword="false" />.</param>
-        /// <returns>A delegate that represents reclamation action.</returns>
-        public Action ToDelegate(bool throwOnFirstException = false)
-        {
-            return callbacks is null
-                ? NoOp
-                : throwOnFirstException
-                    ? callbacks.InvokeAndCleanup
-                    : callbacks.InvokeAndCleanupReliablyAndThrowIfNeeded;
-
-            static void NoOp()
-            {
-                // nothing to do
-            }
-        }
-
-        /// <inheritdoc cref="IFunctional{TDelegate}.ToDelegate()"/>
-        Action IFunctional<Action>.ToDelegate() => ToDelegate();
+        public bool IsEmpty => Span.IsEmpty;
 
         /// <summary>
         /// Invokes all deferred actions.
@@ -175,37 +250,105 @@ public partial class Epoch
         /// <param name="throwOnFirstException"><see langword="true" /> if exceptions should immediately propagate; otherwise, <see langword="false" />.</param>
         public void Invoke(bool throwOnFirstException = false)
         {
-            if (callbacks is null)
+            scoped var span = Span;
+            switch (span)
             {
-                // nothing to do
+                case []:
+                    break;
+                case [var callback]:
+                    callback.InvokeAndCleanup(throwOnFirstException);
+                    break;
+                default:
+                    InvokeAndCleanup(span, throwOnFirstException);
+                    break;
             }
-            else if (throwOnFirstException)
+        }
+
+        /// <inheritdoc cref="IThreadPoolWorkItem.Execute()"/>
+        void IThreadPoolWorkItem.Execute() => Invoke(throwOnFirstException: false);
+
+        private static void InvokeAndCleanup(ReadOnlySpan<DeferredActionNode> callbacks, bool throwOnFirstException)
+        {
+            var exceptions = new ExceptionAggregator();
+            if (throwOnFirstException)
             {
-                callbacks.InvokeAndCleanup();
+                try
+                {
+                    foreach (var bucket in callbacks)
+                    {
+                        bucket.InvokeAndCleanup();
+                    }
+                }
+                catch (Exception e)
+                {
+                    exceptions.Add(e);
+                }
             }
             else
             {
-                callbacks.InvokeAndCleanupReliablyAndThrowIfNeeded();
+                foreach (var bucket in callbacks)
+                {
+                    bucket.InvokeAndCleanup(ref exceptions);
+                }
             }
+
+            exceptions.ThrowIfNeeded();
         }
 
         /// <summary>
         /// Queues invocation of deferred actions to the thread pool.
         /// </summary>
-        /// <param name="throwOnFirstException"><see langword="true" /> if exceptions should immediately propagate; otherwise, <see langword="false" />.</param>
-        public void Start(bool throwOnFirstException = false)
+        public void Start()
         {
-            if (callbacks is null)
+            scoped var span = Span;
+
+            switch (span)
             {
-                // nothing to do
+                case []:
+                    break;
+                case [var callback]:
+                    IThreadPoolWorkItem workItem = callback;
+                    goto queue_user_work_item;
+                default:
+                    workItem = this;
+                    queue_user_work_item:
+                    ThreadPool.UnsafeQueueUserWorkItem(workItem, preferLocal: false);
+                    break;
             }
-            else if (throwOnFirstException)
+        }
+
+        /// <summary>
+        /// Invokes deferred actions as parallel task.
+        /// </summary>
+        /// <returns>The task representing execution of deferred actions.</returns>
+        public Task InvokeAsync()
+        {
+            scoped var span = Span;
+            Task task;
+
+            switch (span)
             {
-                ThreadPool.UnsafeQueueUserWorkItem(callbacks, preferLocal: false);
+                case []:
+                    task = Task.CompletedTask;
+                    break;
+                case [var callback]:
+                    IThreadPoolWorkItem workItem = callback;
+                    goto start_task;
+                default:
+                    workItem = this;
+                    start_task:
+                    task = Task.Factory.StartNew(Invoke, workItem, CancellationToken.None, TaskCreationOptions.DenyChildAttach,
+                        TaskScheduler.Default);
+                    break;
             }
-            else
+
+            return task;
+
+            static void Invoke(object? callback)
             {
-                ThreadPool.UnsafeQueueUserWorkItem(static callbacks => callbacks.InvokeAndCleanup(), callbacks, preferLocal: false);
+                Debug.Assert(callback is IThreadPoolWorkItem);
+
+                Unsafe.As<IThreadPoolWorkItem>(callback).Execute();
             }
         }
     }
@@ -215,31 +358,17 @@ public partial class Epoch
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
     [DebuggerDisplay($"{{{nameof(DebugView)}}}")]
-    public readonly ref struct Guard
+    public readonly ref struct Scope
     {
-        private readonly Epoch epoch;
-        internal readonly ref Entry epochEntry;
+        internal readonly uint Handle;
 
-        internal Guard(Epoch instance, out uint currentEpoch)
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly ref State state;
+
+        internal Scope(ref State state)
         {
-            epoch = instance;
-            epochEntry = ref instance.GetCurrentEpoch(out currentEpoch);
-
-            Interlocked.Increment(ref epochEntry.Counter);
-        }
-
-        [Conditional("DEBUG")]
-        internal void AssertCounters()
-        {
-            Debug.Assert(epochEntry.Counter > 0U);
-
-            var prevEpochIndex = epochEntry.Previous;
-            var prevEpochThreads = epoch.epochs[prevEpochIndex].Counter;
-
-            var nextEpochIndex = epochEntry.Next;
-            var nextEpochThreads = epoch.epochs[nextEpochIndex].Counter;
-
-            Debug.Assert(prevEpochThreads is 0U || nextEpochThreads is 0U, $"Epoch #{prevEpochIndex}={prevEpochThreads}, Epoch#{nextEpochIndex}={nextEpochThreads}");
+            this.state = ref state;
+            Handle = state.Enter();
         }
 
         /// <summary>
@@ -255,7 +384,7 @@ public partial class Epoch
         {
             ArgumentNullException.ThrowIfNull(callback);
 
-            epoch.Defer(new ActionNode(callback));
+            state.Defer(new ActionNode(callback));
         }
 
         /// <summary>
@@ -272,7 +401,7 @@ public partial class Epoch
         {
             ArgumentNullException.ThrowIfNull(callback);
 
-            epoch.Defer(new ActionNode<T>(arg, callback));
+            state.Defer(new ActionNode<T>(arg, callback));
         }
 
         /// <summary>
@@ -283,7 +412,7 @@ public partial class Epoch
         /// <typeparam name="TWorkItem">The type of the callback.</typeparam>
         public void Defer<TWorkItem>(TWorkItem workItem)
             where TWorkItem : struct, IThreadPoolWorkItem
-            => epoch.Defer(new WorkItemNode<TWorkItem>(workItem));
+            => state.Defer(new WorkItem<TWorkItem>(workItem));
 
         /// <summary>
         /// Queues an object to be disposed at some point in future when the resource protected by the epoch is no longer
@@ -295,7 +424,7 @@ public partial class Epoch
         {
             ArgumentNullException.ThrowIfNull(disposable);
 
-            epoch.Defer(new CleanupNode(disposable));
+            state.Defer(new Cleanup(disposable));
         }
 
         /// <summary>
@@ -304,9 +433,22 @@ public partial class Epoch
         /// <remarks>
         /// This method is not idempotent and should not be called twice.
         /// </remarks>
-        public void Dispose() => Interlocked.Decrement(ref epochEntry.Counter);
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public void Dispose()
+        {
+            ref var stateCopy = ref state;
+            if (Unsafe.IsNullRef(in stateCopy) is false)
+                state.Exit(Handle);
+        }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private string DebugView => epoch is null ? "Empty" : epochEntry.DebugView;
+        private string DebugView
+        {
+            get
+            {
+                ref var stateCopy = ref state;
+                return Unsafe.IsNullRef(in stateCopy) ? "Empty" : stateCopy.GetDebugView(Handle);
+            }
+        }
     }
 }

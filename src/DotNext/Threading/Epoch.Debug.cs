@@ -10,15 +10,6 @@ public partial class Epoch
     private struct DebugView(Epoch epoch)
     {
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public IEnumerable<string> Epochs
-        {
-            get
-            {
-                foreach (var entry in epoch.epochs)
-                {
-                    yield return entry.DebugView;
-                }
-            }
-        }
+        public ReadOnlySpan<Entry> Epochs => epoch.state.Entries;
     }
 }

@@ -19,13 +19,13 @@ public sealed class EpochTests : Test
 
         Equal(0, state.Value);
 
+        epoch.Enter(drainGlobalCache: null).Dispose();
+        Equal(0, state.Value);
+
         epoch.Enter().Dispose();
         Equal(0, state.Value);
 
-        epoch.Enter(asyncReclamation: null).Dispose();
-        Equal(0, state.Value);
-
-        epoch.Enter(out var action).Dispose();
+        epoch.Enter(drainGlobalCache: true, out Epoch.DeferredAction action).Dispose();
         False(action.IsEmpty);
         Equal(0, state.Value);
 
@@ -33,58 +33,30 @@ public sealed class EpochTests : Test
         Equal(42, state.Value);
     }
 
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public static void ReclamationActionAsDelegate(bool throwOnFirstException)
-    {
-        var state = new StrongBox<int>();
-        var epoch = new Epoch();
-
-        using (var region = epoch.Enter())
-        {
-            region.Defer(new StrongBoxWrapper<int>(state, 42));
-        }
-
-        Equal(0, state.Value);
-
-        epoch.Enter().Dispose();
-        Equal(0, state.Value);
-
-        epoch.Enter(asyncReclamation: null).Dispose();
-        Equal(0, state.Value);
-
-        epoch.Enter(out var action).Dispose();
-        False(action.IsEmpty);
-        Equal(0, state.Value);
-
-        action.ToDelegate(throwOnFirstException).Invoke();
-        Equal(42, state.Value);
-    }
-
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public static void Reclamation(bool throwOnFirstException)
+    [Fact]
+    public static void Reclamation()
     {
         var state = new DisposableObject();
         var epoch = new Epoch();
 
-        using (var region = epoch.Enter())
+        epoch.Enter(drainGlobalCache: false, out Epoch.Scope region);
+        try
         {
             region.Defer(state);
+        }
+        finally
+        {
+            region.Dispose();
         }
 
         epoch.Enter().Dispose();
 
-        epoch.Enter(throwOnFirstException).Dispose(); // causes reclamation
+        epoch.Enter().Dispose(); // causes reclamation
         True(state.IsDisposed);
     }
 
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public static void AsyncReclamation(bool throwOnFirstException)
+    [Fact]
+    public static void AsyncReclamation()
     {
         using var state = new ManualResetEvent(initialState: false);
         var epoch = new Epoch();
@@ -96,9 +68,40 @@ public sealed class EpochTests : Test
 
         epoch.Enter().Dispose();
 
-        epoch.Enter(out var action).Dispose(); // causes reclamation
-        action.Start(throwOnFirstException);
+        epoch.Enter(drainGlobalCache: true, out Epoch.DeferredAction action).Dispose(); // causes reclamation
+        action.Start();
         True(state.WaitOne(DefaultTimeout));
+    }
+
+    [Fact]
+    public static async Task AsyncReclamation2()
+    {
+        var state = new TaskCompletionSource();
+
+        await ReclaimAsync(state).WaitAsync(DefaultTimeout);
+        await state.Task.WaitAsync(DefaultTimeout);
+
+        static Task ReclaimAsync(TaskCompletionSource source)
+        {
+            var epoch = new Epoch();
+
+            using (var region = epoch.Enter())
+            {
+                region.Defer(new TaskCompletionSourceWrapper(source));
+            }
+
+            epoch.Enter().Dispose();
+
+            epoch.Enter(drainGlobalCache: false, out Epoch.DeferredAction action).Dispose(); // causes reclamation
+            return action.InvokeAsync();
+        }
+    }
+
+    [Fact]
+    public static void EmptyScope()
+    {
+        var scope = default(Epoch.Scope);
+        scope.Dispose();
     }
 
     [Theory]
@@ -168,7 +171,7 @@ public sealed class EpochTests : Test
 
         public void Push(T value)
         {
-            using var scope = epoch.Enter();
+            using var scope = epoch.UnsafeEnter();
             Node newNode = new(value), current;
 
             do
@@ -179,7 +182,7 @@ public sealed class EpochTests : Test
 
         public bool TryPop(out T value)
         {
-            using var scope = epoch.Enter();
+            using var scope = epoch.UnsafeEnter();
             Node currentNode, newNode;
             do
             {
@@ -202,7 +205,7 @@ public sealed class EpochTests : Test
 
         public bool TryPeek(out T value)
         {
-            using var scope = epoch.Enter();
+            using var scope = epoch.UnsafeEnter();
             if (head is { } top)
             {
                 False(top.IsDead);
@@ -222,9 +225,9 @@ public sealed class EpochTests : Test
         }
     }
     
-    private struct StrongBoxWrapper<T>(StrongBox<T> box, T newValue) : IThreadPoolWorkItem
+    private readonly struct TaskCompletionSourceWrapper(TaskCompletionSource source) : IThreadPoolWorkItem
     {
-        void IThreadPoolWorkItem.Execute() => box.Value = newValue;
+        void IThreadPoolWorkItem.Execute() => source.SetResult();
     }
     
     private sealed class DisposableObject : Disposable
