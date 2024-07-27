@@ -176,7 +176,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     }
 
     /// <inheritdoc />
-    protected override void Cleanup() => result = default;
+    protected override void CleanUp() => result = default;
 
     /// <summary>
     /// Called automatically when timeout detected.

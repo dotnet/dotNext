@@ -74,7 +74,7 @@ public abstract partial class ManualResetCompletionSource
     /// <summary>
     /// Resets internal state of this source.
     /// </summary>
-    protected virtual void Cleanup()
+    protected virtual void CleanUp()
     {
     }
 
@@ -103,7 +103,7 @@ public abstract partial class ManualResetCompletionSource
         ExitLock();
 
         stateCopy.Dispose();
-        Cleanup();
+        CleanUp();
         return token;
     }
 
@@ -123,7 +123,7 @@ public abstract partial class ManualResetCompletionSource
             ExitLock();
 
             stateCopy.Dispose();
-            Cleanup();
+            CleanUp();
         }
         else
         {

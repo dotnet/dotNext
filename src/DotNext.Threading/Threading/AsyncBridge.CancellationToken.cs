@@ -63,7 +63,7 @@ public static partial class AsyncBridge
         {
             if (Volatile.Read(ref initialized) && TrySetResult(token))
             {
-                Cleanup();
+                CleanUp();
             }
         }
 
@@ -72,7 +72,7 @@ public static partial class AsyncBridge
             bool result;
             if (result = TrySetException(new PendingTaskInterruptedException { Reason = reason }))
             {
-                Cleanup();
+                CleanUp();
             }
 
             return result;
@@ -86,7 +86,7 @@ public static partial class AsyncBridge
             }
         }
 
-        private protected virtual void Cleanup() => Unregister(Registrations);
+        private protected virtual void CleanUp() => Unregister(Registrations);
         
         private protected abstract ReadOnlySpan<CancellationTokenRegistration> Registrations { get; }
 
@@ -167,10 +167,10 @@ public static partial class AsyncBridge
 
         private protected override ReadOnlySpan<CancellationTokenRegistration> Registrations => new(registrations);
 
-        private protected override void Cleanup()
+        private protected override void CleanUp()
         {
             ArrayPool<CancellationTokenRegistration>.Shared.Return(registrations, clearArray: true);
-            base.Cleanup();
+            base.CleanUp();
         }
     }
 

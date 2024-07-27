@@ -413,11 +413,11 @@ public sealed class MatchBuilder : ExpressionBuilder<BlockExpression>
         return assignment is null ? Expression.Block(instructions) : Expression.Block(List.Singleton(value), instructions);
     }
 
-    private protected override void Cleanup()
+    private protected override void CleanUp()
     {
         patterns.Clear();
         defaultCase = null;
-        base.Cleanup();
+        base.CleanUp();
     }
 
     private delegate ConditionalExpression PatternMatch(LabelTarget endOfMatch);

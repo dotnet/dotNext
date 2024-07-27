@@ -25,12 +25,12 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
         protected override void AfterConsumed() => consumedCallback?.Invoke(this);
 
-        protected override void Cleanup()
+        protected override void CleanUp()
         {
             if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
                 Value = default;
 
-            base.Cleanup();
+            base.CleanUp();
         }
 
         internal bool TryExchange(ref T value, out bool resumable)

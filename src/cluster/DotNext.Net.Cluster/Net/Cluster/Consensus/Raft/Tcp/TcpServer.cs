@@ -226,7 +226,7 @@ internal sealed class TcpServer : Server, ITcpTransport
         return result;
     }
 
-    private void Cleanup()
+    private void CleanUp()
     {
         var tokenSource = Interlocked.Exchange(ref transmissionState, null);
         try
@@ -244,7 +244,7 @@ internal sealed class TcpServer : Server, ITcpTransport
     {
         if (disposing)
         {
-            Cleanup();
+            CleanUp();
             if (!SpinWait.SpinUntil(noPendingConnectionsEvent.Task.GetIsCompletedGetter(), GracefulShutdownTimeout))
                 logger.TcpGracefulShutdownFailed(GracefulShutdownTimeout);
         }
@@ -254,7 +254,7 @@ internal sealed class TcpServer : Server, ITcpTransport
 
     protected override async ValueTask DisposeAsyncCore()
     {
-        Cleanup();
+        CleanUp();
         try
         {
             await noPendingConnectionsEvent.Task.WaitAsync(TimeSpan.FromMilliseconds(GracefulShutdownTimeout)).ConfigureAwait(false);
