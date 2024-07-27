@@ -54,6 +54,28 @@ public sealed class EpochTests : Test
         epoch.Enter().Dispose(); // causes reclamation
         True(state.IsDisposed);
     }
+    
+    [Fact]
+    public static void Reclamation2()
+    {
+        var state = new NativeDisposableObject();
+        var epoch = new Epoch();
+
+        epoch.Enter(drainGlobalCache: false, out Epoch.Scope region);
+        try
+        {
+            region.Defer(state);
+        }
+        finally
+        {
+            region.Dispose();
+        }
+
+        epoch.Enter().Dispose();
+
+        epoch.Enter().Dispose(); // causes reclamation
+        True(state.IsDisposed);
+    }
 
     [Fact]
     public static void AsyncReclamation()
@@ -233,5 +255,12 @@ public sealed class EpochTests : Test
     private sealed class DisposableObject : Disposable
     {
         public new bool IsDisposed => base.IsDisposed;
+    }
+    
+    private sealed class NativeDisposableObject : Epoch.Disposable
+    {
+        internal bool IsDisposed { get; private set; }
+
+        protected override void Reclaim() => IsDisposed = true;
     }
 }

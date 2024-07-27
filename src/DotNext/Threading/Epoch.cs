@@ -129,12 +129,12 @@ public partial class Epoch
             {
                 foreach (var bucket in garbage.ReclaimGlobal())
                 {
-                    bucket.InvokeAndCleanup(ref exceptions);
+                    bucket.Drain(ref exceptions);
                 }
             }
             else if (garbage.ReclaimLocal() is { } bucket)
             {
-                bucket.InvokeAndCleanup(ref exceptions);
+                bucket.Drain(ref exceptions);
             }
         }
 
@@ -151,12 +151,12 @@ public partial class Epoch
         {
             foreach (var bucket in garbage.ReclaimGlobal())
             {
-                bucket.InvokeAndCleanup();
+                bucket.Drain();
             }
         }
         else if (garbage.ReclaimLocal() is { } bucket)
         {
-            bucket.InvokeAndCleanup();
+            bucket.Drain();
         }
     }
 
@@ -186,11 +186,11 @@ public partial class Epoch
     [StructLayout(LayoutKind.Auto)]
     public readonly struct DeferredAction : IThreadPoolWorkItem
     {
-        // null, or DeferredCallback, or DeferredCallback[]
+        // null, or Disposable, or Disposable[]
         private readonly object callback;
         private readonly int count;
 
-        internal DeferredAction(DeferredActionNode? callback)
+        internal DeferredAction(Disposable? callback)
         {
             if (callback is null)
             {
@@ -206,7 +206,7 @@ public partial class Epoch
 
         internal DeferredAction(DetachingEnumerable callbacks)
         {
-            var array = new DeferredActionNode[callbacks.MaxCount];
+            var array = new Disposable[callbacks.MaxCount];
 
             var index = 0;
             foreach (var node in callbacks)
@@ -232,11 +232,11 @@ public partial class Epoch
         }
 
         [UnscopedRef]
-        private ReadOnlySpan<DeferredActionNode> Span => count switch
+        private ReadOnlySpan<Disposable> Span => count switch
         {
-            0 => ReadOnlySpan<DeferredActionNode>.Empty,
-            1 => new(in Intrinsics.InToRef<object, DeferredActionNode>(in callback)),
-            _ => new(Unsafe.As<DeferredActionNode[]>(callback), 0, count),
+            0 => ReadOnlySpan<Disposable>.Empty,
+            1 => new(in Intrinsics.InToRef<object, Disposable>(in callback)),
+            _ => new(Unsafe.As<Disposable[]>(callback), 0, count),
         };
 
         /// <summary>
@@ -256,10 +256,10 @@ public partial class Epoch
                 case []:
                     break;
                 case [var callback]:
-                    callback.InvokeAndCleanup(throwOnFirstException);
+                    callback.Drain(throwOnFirstException);
                     break;
                 default:
-                    InvokeAndCleanup(span, throwOnFirstException);
+                    Drain(span, throwOnFirstException);
                     break;
             }
         }
@@ -267,7 +267,7 @@ public partial class Epoch
         /// <inheritdoc cref="IThreadPoolWorkItem.Execute()"/>
         void IThreadPoolWorkItem.Execute() => Invoke(throwOnFirstException: false);
 
-        private static void InvokeAndCleanup(ReadOnlySpan<DeferredActionNode> callbacks, bool throwOnFirstException)
+        private static void Drain(ReadOnlySpan<Disposable> callbacks, bool throwOnFirstException)
         {
             var exceptions = new ExceptionAggregator();
             if (throwOnFirstException)
@@ -276,7 +276,7 @@ public partial class Epoch
                 {
                     foreach (var bucket in callbacks)
                     {
-                        bucket.InvokeAndCleanup();
+                        bucket.Drain();
                     }
                 }
                 catch (Exception e)
@@ -288,7 +288,7 @@ public partial class Epoch
             {
                 foreach (var bucket in callbacks)
                 {
-                    bucket.InvokeAndCleanup(ref exceptions);
+                    bucket.Drain(ref exceptions);
                 }
             }
 
@@ -425,6 +425,19 @@ public partial class Epoch
             ArgumentNullException.ThrowIfNull(disposable);
 
             state.Defer(new Cleanup(disposable));
+        }
+        
+        /// <summary>
+        /// Queues an object to be disposed at some point in future when the resource protected by the epoch is no longer
+        /// available to any consumer.
+        /// </summary>
+        /// <param name="disposable">An object to be disposed.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="disposable"/> is <see langword="null"/>.</exception>
+        public void Defer(Disposable disposable)
+        {
+            ArgumentNullException.ThrowIfNull(disposable);
+
+            state.Defer(disposable);
         }
 
         /// <summary>
