@@ -165,7 +165,7 @@ public readonly struct BufferedLogEntry : IRaftLogEntry, IDisposable
         var buffer = options.RentBuffer();
         try
         {
-            if (entry.Length.TryGetValue(out var length))
+            if (entry.Length is { } length)
                 output.SetLength(length);
 
             await entry.WriteToAsync(output, buffer.Memory, token).ConfigureAwait(false);
@@ -197,7 +197,7 @@ public readonly struct BufferedLogEntry : IRaftLogEntry, IDisposable
         where TEntry : notnull, IRaftLogEntry
     {
         ValueTask<BufferedLogEntry> result;
-        if (!entry.Length.TryGetValue(out var length))
+        if (entry.Length is not { } length)
             result = CopyToMemoryOrFileAsync(entry, options, token);
         else if (length is 0L)
             result = new(new BufferedLogEntry(entry.Term, entry.Timestamp, entry.CommandId, entry.IsSnapshot));

@@ -133,10 +133,10 @@ public sealed class UsingExpression : CustomExpression
     /// <returns>Updated expression.</returns>
     public UsingExpression Update(Expression body)
     {
-        var resource = assignment is null ? Resource : assignment.Right;
-        var result = this.configureAwait.TryGetValue(out var configureAwait) ?
-            new UsingExpression(resource, configureAwait) :
-            new UsingExpression(resource);
+        var resource = assignment?.Right ?? Resource;
+        var result = this.configureAwait is { } configureAwait
+            ? new UsingExpression(resource, configureAwait)
+            : new UsingExpression(resource);
         result.Body = body;
         return result;
     }
@@ -149,7 +149,7 @@ public sealed class UsingExpression : CustomExpression
     public override Expression Reduce()
     {
         Expression disposeCall = Call(Resource, disposeMethod);
-        if (this.configureAwait.TryGetValue(out var configureAwait))
+        if (this.configureAwait is { } configureAwait)
         {
             disposeCall = disposeCall.Await(configureAwait);
         }

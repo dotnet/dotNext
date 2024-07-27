@@ -207,7 +207,7 @@ public sealed class ForEachExpression : CustomExpression, ILoopLabels
         Expression? disposeCall;
         MethodInfo? disposeMethod;
 
-        if (this.configureAwait.TryGetValue(out var configureAwait))
+        if (this.configureAwait is { } configureAwait)
         {
             moveNextCall = moveNextCall.Await(configureAwait);
             disposeMethod = enumeratorVar.Type.GetDisposeAsyncMethod();
