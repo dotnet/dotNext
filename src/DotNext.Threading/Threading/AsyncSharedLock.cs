@@ -44,10 +44,10 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
         internal void AcquireWeakLock() => Interlocked.Decrement(ref remainingLocks);
 
-        internal void ExitLock()
+        internal void ExitLock(bool downgrade)
         {
             remainingLocks = remainingLocks < 0L
-                ? ConcurrencyLevel
+                ? ConcurrencyLevel - Unsafe.BitCast<bool, byte>(downgrade)
                 : remainingLocks + 1L;
         }
 
@@ -56,8 +56,6 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         internal readonly bool IsStrongLockAllowed => remainingLocks == ConcurrencyLevel;
 
         internal void AcquireStrongLock() => remainingLocks = ExclusiveMode;
-
-        internal void Downgrade() => remainingLocks = ConcurrencyLevel - 1L;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -283,8 +281,11 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             if (state.IsStrongLockAllowed) // nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
-            state.Downgrade();
+            state.ExitLock(downgrade: true);
             suspendedCallers = DrainWaitQueue();
+
+            if (IsDisposing && IsReadyToDispose)
+                Dispose(true);
         }
 
         suspendedCallers?.Unwind();
@@ -305,7 +306,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             if (state.IsStrongLockAllowed) // nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
-            state.ExitLock();
+            state.ExitLock(downgrade: false);
             suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
