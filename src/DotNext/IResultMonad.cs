@@ -18,7 +18,7 @@ public interface IResultMonad<T, out TError> : IOptionMonad<T>
     /// </summary>
     /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
     /// <returns>The value, if present, otherwise returned from delegate.</returns>
-    T OrInvoke(Func<TError, T> defaultFunc);
+    T OrInvoke(Func<TError, T> defaultFunc) => HasValue ? ValueOrDefault! : defaultFunc(Error!);
 }
 
 /// <summary>
@@ -44,5 +44,5 @@ public interface IResultMonad<T, TError, TSelf> : IResultMonad<T, TError>, IOpti
     /// <param name="result">The result to be converted.</param>
     /// <returns>The converted result.</returns>
     public static virtual implicit operator Optional<T>(in TSelf result)
-        => new(result.ValueOrDefault);
+        => result.HasValue ? result.ValueOrDefault : Optional<T>.None;
 }

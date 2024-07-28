@@ -28,21 +28,25 @@ public interface IOptionMonad<T> : ISupplier<object?>
     /// </summary>
     /// <param name="defaultValue">The value to be returned if there is no value present.</param>
     /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
-    T? Or(T? defaultValue);
+    T? Or(T? defaultValue) => HasValue ? ValueOrDefault : defaultValue;
 
     /// <summary>
     /// Returns the value if present; otherwise invoke delegate.
     /// </summary>
     /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
     /// <returns>The value, if present, otherwise returned from delegate.</returns>
-    T OrInvoke(Func<T> defaultFunc);
+    T OrInvoke(Func<T> defaultFunc) => HasValue ? ValueOrDefault! : defaultFunc();
 
     /// <summary>
     /// Attempts to extract value from container if it is present.
     /// </summary>
     /// <param name="value">Extracted value.</param>
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-    bool TryGet(out T? value);
+    bool TryGet(out T? value)
+    {
+        value = ValueOrDefault;
+        return HasValue;
+    }
 }
 
 /// <summary>
