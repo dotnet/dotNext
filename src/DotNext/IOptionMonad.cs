@@ -10,7 +10,7 @@ public interface IOptionMonad<T> : ISupplier<object?>
     /// Gets the value stored in this container.
     /// </summary>
     /// <returns>The value stored in this container; or <see langword="null"/> if the value is unavailable.</returns>
-    object? ISupplier<object?>.Invoke() => TryGet(out T? result) ? result : null;
+    object? ISupplier<object?>.Invoke() => TryGet(out var result) ? result : null;
 
     /// <summary>
     /// Indicates that this monad contains a value.
@@ -90,7 +90,7 @@ public interface IOptionMonad<T, TSelf> : IOptionMonad<T>
     /// <param name="defaultValue">The value to be returned if there is no value present.</param>
     /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
     public static virtual T? operator |(in TSelf container, T? defaultValue)
-        => container.Or(defaultValue);
+        => container.HasValue ? container.ValueOrDefault : defaultValue;
 
     /// <summary>
     /// Returns non-empty container.
