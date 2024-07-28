@@ -5,7 +5,7 @@ namespace DotNext;
 /// </summary>
 /// <typeparam name="T">The type of the result.</typeparam>
 /// <typeparam name="TError">The type that represents an error.</typeparam>
-public interface IResultMonad<T, TError> : IOptionMonad<T>
+public interface IResultMonad<T, out TError> : IOptionMonad<T>
     where TError : notnull
 {
     /// <summary>
