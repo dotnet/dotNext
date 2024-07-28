@@ -48,7 +48,7 @@ public static class TaskCompletionPipe
     /// <param name="tasks">A collection of tasks.</param>
     /// <typeparam name="T">The type of tasks.</typeparam>
     /// <returns>A collection over tasks to be available as they complete.</returns>
-    public static IAsyncEnumerable<T> WhenEach<T>(ReadOnlySpan<T> tasks)
+    public static IAsyncEnumerable<T> WhenEach<T>(ReadOnlySpan<T> tasks) // TODO: Remove in .NET 9/10 in favor of Task.WhenEach
         where T : Task
     {
         IAsyncEnumerable<T> result;
