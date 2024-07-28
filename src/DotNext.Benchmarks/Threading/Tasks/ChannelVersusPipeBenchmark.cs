@@ -50,7 +50,7 @@ public class ChannelVersusPipeBenchmark
         Task<int> consumer = Task.Run(async () =>
         {
             var sum = 0;
-            await foreach (var item in pipe.GetConsumer())
+            await foreach (var item in pipe.Consume())
                 sum += item;
 
             return sum;

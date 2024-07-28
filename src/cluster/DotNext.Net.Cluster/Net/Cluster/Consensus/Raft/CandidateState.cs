@@ -35,7 +35,7 @@ internal sealed class CandidateState<TMember> : RaftState<TMember>
         votingCancellation.CancelAfter(timeout);
 
         // finish voting
-        await EndVoting(voters.GetConsumer(), votingCancellation.Token).ConfigureAwait(false);
+        await EndVoting(voters.Consume(), votingCancellation.Token).ConfigureAwait(false);
 
         static TaskCompletionPipe<Task<(TMember, long, bool?)>> StartVoting(IReadOnlyCollection<TMember> members, long currentTerm, long lastIndex, long lastTerm, CancellationToken token)
         {
