@@ -190,7 +190,7 @@ public static partial class Number
         if (TryGetFromTable(cachedPrimes, lowerBound, out T result))
             return result;
 
-        //outside of predefined table
+        //outside predefined table
         for (result = lowerBound | T.One; result < T.MaxValue; result += T.One + T.One)
         {
             if (IsPrime(result))
