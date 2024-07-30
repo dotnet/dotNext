@@ -134,7 +134,7 @@ public partial struct UserDataStorage
             }
             else
             {
-                tables = new BackingStorageEntry[3];
+                tables = new BackingStorageEntry[UserDataSlot.SlotTypesCount];
                 tables.AsSpan().Initialize();
             }
         }
