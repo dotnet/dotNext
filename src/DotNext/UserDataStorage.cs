@@ -121,13 +121,16 @@ public readonly ref partial struct UserDataStorage
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private BackingStorage? GetStorage()
-        => source is not null && (source is BackingStorage storage || GetStorage(source).TryGetValue(source, out storage!)) ? storage : null;
+        => source is not null &&
+           (source is BackingStorage storage || (Volatile.Read(in GetStorage(source))?.TryGetValue(source, out storage!) ?? false))
+            ? storage
+            : null;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private BackingStorage GetOrCreateStorage()
     {
         if (source is not BackingStorage storage)
-            storage = GetStorage(source).GetOrCreateValue(source);
+            storage = GetOrCreateStorage(source).GetOrCreateValue(source);
 
         return storage;
     }
@@ -382,7 +385,7 @@ public readonly ref partial struct UserDataStorage
             if (obj is BackingStorage destination)
                 source.CopyTo(destination);
             else
-                GetStorage(obj).AddOrUpdate(obj, source.Copy());
+                GetOrCreateStorage(obj).AddOrUpdate(obj, source.Copy());
         }
     }
 
