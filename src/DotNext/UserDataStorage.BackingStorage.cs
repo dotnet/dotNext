@@ -282,7 +282,7 @@ public partial struct UserDataStorage
         Partitions = new ConditionalWeakTable<object, BackingStorage>?[size];
     }
     
-    private static ref ConditionalWeakTable<object, BackingStorage>? GetStorage(object source)
+    private static ref ConditionalWeakTable<object, BackingStorage>? GetPartition(object source)
     {
         Debug.Assert(BitOperations.IsPow2(Partitions.Length));
 
@@ -292,9 +292,9 @@ public partial struct UserDataStorage
         return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(Partitions), bucketIndex);
     }
 
-    private static ConditionalWeakTable<object, BackingStorage> GetOrCreateStorage(object source)
+    private static ConditionalWeakTable<object, BackingStorage> GetOrCreatePartition(object source)
     {
-        ref var partition = ref GetStorage(source);
+        ref var partition = ref GetPartition(source);
         ConditionalWeakTable<object, BackingStorage> newStorage;
         return Volatile.Read(ref partition) ?? Interlocked.CompareExchange(ref partition, newStorage = [], null) ?? newStorage;
     }

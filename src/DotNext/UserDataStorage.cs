@@ -122,7 +122,7 @@ public readonly ref partial struct UserDataStorage
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private BackingStorage? GetStorage()
         => source is not null &&
-           (source is BackingStorage storage || (Volatile.Read(in GetStorage(source))?.TryGetValue(source, out storage!) ?? false))
+           (source is BackingStorage storage || (Volatile.Read(in GetPartition(source))?.TryGetValue(source, out storage!) ?? false))
             ? storage
             : null;
 
@@ -130,7 +130,7 @@ public readonly ref partial struct UserDataStorage
     private BackingStorage GetOrCreateStorage()
     {
         if (source is not BackingStorage storage)
-            storage = GetOrCreateStorage(source).GetOrCreateValue(source);
+            storage = GetOrCreatePartition(source).GetOrCreateValue(source);
 
         return storage;
     }
@@ -380,12 +380,17 @@ public readonly ref partial struct UserDataStorage
                 break;
         }
 
-        if (GetStorage() is { } source)
+        if (GetStorage() is not { } source)
         {
-            if (obj is BackingStorage destination)
-                source.CopyTo(destination);
-            else
-                GetOrCreateStorage(obj).AddOrUpdate(obj, source.Copy());
+            Volatile.Read(in GetPartition(obj))?.Remove(obj);
+        }
+        else if (obj is BackingStorage destination)
+        {
+            source.CopyTo(destination);
+        }
+        else
+        {
+            GetOrCreatePartition(obj).AddOrUpdate(obj, source.Copy());
         }
     }
 
