@@ -21,7 +21,7 @@ public sealed class ResultTests : Test
         var r = default(Result<int, EnvironmentVariableTarget>);
         Equal(default(EnvironmentVariableTarget), r.Error);
         True(r.IsSuccessful);
-        Equal(0, r.Value);
+        Equal(0, r.ValueRef);
         Equal(default, r);
         True(r.TryGet(out _));
     }
