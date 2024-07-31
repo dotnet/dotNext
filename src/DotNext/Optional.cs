@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace DotNext;
 
+using Runtime.CompilerServices;
 using Intrinsics = Runtime.Intrinsics;
 
 /// <summary>
@@ -564,6 +565,9 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [CLSCompliant(false)]
     public unsafe Optional<TResult> Convert<TResult>(delegate*<T, Optional<TResult>> mapper)
         => ConvertOptional<TResult, Supplier<T, Optional<TResult>>>(mapper);
+
+    /// <inheritdoc cref="IFunctional{TDelegate}.ToDelegate()"/>
+    Func<object?> IFunctional<Func<object?>>.ToDelegate() => Func.Constant<object?>(kind is NotEmptyValue ? value : null);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<T> If<TPredicate>(TPredicate condition)

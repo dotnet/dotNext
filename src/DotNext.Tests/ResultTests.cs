@@ -1,5 +1,7 @@
 ﻿namespace DotNext;
 
+using Runtime.CompilerServices;
+
 public sealed class ResultTests : Test
 {
     [Fact]
@@ -202,6 +204,22 @@ public sealed class ResultTests : Test
     {
         False(FromError<Exception, Result<int>>(new Exception()).IsSuccessful);
         False(FromError<EnvironmentVariableTarget, Result<int, EnvironmentVariableTarget>>(EnvironmentVariableTarget.Machine).IsSuccessful);
+    }
+
+    [Fact]
+    public static void ResultToDelegate()
+    {
+        IFunctional<Func<object>> functional = Result.FromException<int>(new Exception());
+        Null(functional.ToDelegate().Invoke());
+
+        functional = new Result<int>(42);
+        Equal(42, functional.ToDelegate().Invoke());
+
+        functional = new Result<int, EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine);
+        Null(functional.ToDelegate().Invoke());
+
+        functional = new Result<int, EnvironmentVariableTarget>();
+        NotNull(functional.ToDelegate().Invoke());
     }
 
     private static TResult FromError<TError, TResult>(TError error)
