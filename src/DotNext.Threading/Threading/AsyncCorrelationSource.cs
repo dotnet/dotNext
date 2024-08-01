@@ -2,6 +2,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
 
+using Numerics;
 using Tasks;
 
 /// <summary>
@@ -24,6 +25,7 @@ using Tasks;
 public partial class AsyncCorrelationSource<TKey, TValue>
     where TKey : notnull
 {
+    private readonly ulong fastModMultiplier;
     private readonly Bucket?[] buckets;
     private readonly IEqualityComparer<TKey>? comparer; // if null then use Default comparer
 
@@ -37,6 +39,8 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
+        concurrencyLevel = PrimeNumber.GetPrime(concurrencyLevel);
+        fastModMultiplier = IntPtr.Size is sizeof(ulong) ? PrimeNumber.GetFastModMultiplier((uint)concurrencyLevel) : default;
         buckets = new Bucket[concurrencyLevel];
         this.comparer = comparer;
     }
