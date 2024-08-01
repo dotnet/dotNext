@@ -84,7 +84,7 @@ internal partial class LeaderState<TMember>
         private static ulong GetFastModMultiplier(ulong divisor)
             => ulong.MaxValue / divisor + 1UL;
 
-        // Daniel Lemire's fastmod algorithm
+        // Daniel Lemire's fastmod algorithm: https://lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/
         private static uint FastMod(uint value, uint divisor, ulong multiplier)
         {
             Debug.Assert(divisor <= int.MaxValue);
