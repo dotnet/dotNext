@@ -6,6 +6,8 @@ internal static class UserDataSlot
 {
     private static volatile int typeIndex = -1;
 
+    internal static int SlotTypesCount => typeIndex + 1;
+
     internal static int Allocate() => Interlocked.Increment(ref typeIndex);
 
     internal static string ToString(int typeIndex, int valueIndex)

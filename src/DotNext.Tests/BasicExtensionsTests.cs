@@ -70,6 +70,19 @@ public sealed class BasicExtensionsTests : Test
     }
 
     [Fact]
+    public static void RegressionIssue248()
+    {
+        var slot = new UserDataSlot<long>();
+        var str1 = new string('a', 3);
+        var str2 = new string('b', 3);
+        NotSame(str1, str2);
+        str2.GetUserData().Set(slot, 42L);
+        str1.GetUserData().CopyTo(str2);
+
+        False(str2.GetUserData().TryGet(slot, out _));
+    }
+
+    [Fact]
     public static void UserDataStorageGetOrSet()
     {
         static string ToStr(int value) => value.ToString();

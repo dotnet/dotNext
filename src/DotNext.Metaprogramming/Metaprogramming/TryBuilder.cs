@@ -204,11 +204,11 @@ public sealed class TryBuilder : ExpressionBuilder<TryExpression>
 
     private protected override TryExpression Build() => Expression.MakeTry(Type, tryBlock, finallyBlock, faultBlock, handlers);
 
-    private protected override void Cleanup()
+    private protected override void CleanUp()
     {
         handlers.Clear();
         faultBlock = finallyBlock = null;
-        base.Cleanup();
+        base.CleanUp();
     }
 
     private sealed class CatchStatement : Statement, ILexicalScope<TryBuilder, Action<ParameterExpression>>, ILexicalScope<TryBuilder, Action>

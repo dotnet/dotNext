@@ -101,7 +101,7 @@ stages:
               packDirectory: $(Build.ArtifactStagingDirectory)/packages
               verbosityPack: Minimal
               packagesToPack: src/DotNext/DotNext.csproj;src/DotNext.IO/DotNext.IO.csproj;src/DotNext.Metaprogramming/DotNext.Metaprogramming.csproj;src/DotNext.Reflection/DotNext.Reflection.csproj;src/DotNext.Threading/DotNext.Threading.csproj;src/DotNext.Unsafe/DotNext.Unsafe.csproj;src/DotNext.MaintenanceServices/DotNext.MaintenanceServices.csproj;src/cluster/DotNext.Net.Cluster/DotNext.Net.Cluster.csproj;src/cluster/DotNext.AspNetCore.Cluster/DotNext.AspNetCore.Cluster.csproj
-          - publish: build
+          - publish: config
             displayName: Publish signing config
             artifact: config
           - publish: $(Build.ArtifactStagingDirectory)/packages
@@ -121,23 +121,26 @@ stages:
             inputs:
               command: custom
               custom: tool
-              arguments: install --tool-path . SignClient
+              arguments: install --tool-path . sign --version 0.9.0-beta.23127.3
           - download: current
             displayName: Download packages
             artifact: packages
           - download: current
-            displayName: Download code sign config
+            displayName: Download signing file list
             artifact: config
           - pwsh: |
-              .\SignClient "Sign" `
-              --baseDirectory "$(Pipeline.Workspace)\packages" `
-              --input "**/*.nupkg" `
-              --config "$(Pipeline.Workspace)\config\signclient.json" `
-              --user "$(SignClientUser)" `
-              --secret '$(SignClientSecret)' `
-              --name ".NEXT" `
-              --description ".NEXT" `
-              --descriptionUrl "https://github.com/dotnet/dotNext"
+              .\sign code azure-key-vault `
+              "**/*.nupkg" `
+              --base-directory "$(Pipeline.Workspace)\packages" `
+              --file-list "$(Pipeline.Workspace)\config\filelist.txt" `
+              --publisher-name ".NEXT Contributors" `
+              --description ".NEXT Family of Libraries" `
+              --description-url "https://github.com/dotnet/dotNext" `
+              --azure-key-vault-tenant-id "$(SignTenantId)" `
+              --azure-key-vault-client-id "$(SignClientId)" `
+              --azure-key-vault-client-secret '$(SignClientSecret)' `
+              --azure-key-vault-certificate "$(SignKeyVaultCertificate)" `
+              --azure-key-vault-url "$(SignKeyVaultUrl)"
             displayName: Sign packages
           - publish: $(Pipeline.Workspace)/packages
             displayName: Publish Signed Packages

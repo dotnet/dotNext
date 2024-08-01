@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace DotNext;
 
+using Runtime.CompilerServices;
 using Intrinsics = Runtime.Intrinsics;
 
 /// <summary>
@@ -362,7 +363,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     [MemberNotNull(nameof(value))]
     [MemberNotNull(nameof(ValueOrDefault))]
-    internal void Validate<TFactory>(TFactory exceptionFactory)
+    private void Validate<TFactory>(TFactory exceptionFactory)
         where TFactory : struct, ISupplier<Exception>
     {
         if (!HasValue)
@@ -491,7 +492,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         => ref GetReference<Supplier<Exception>>(exceptionFactory);
 
     [MemberNotNull(nameof(value))]
-    internal void Validate()
+    private void Validate()
     {
         var kind = this.kind;
 
@@ -565,6 +566,9 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     public unsafe Optional<TResult> Convert<TResult>(delegate*<T, Optional<TResult>> mapper)
         => ConvertOptional<TResult, Supplier<T, Optional<TResult>>>(mapper);
 
+    /// <inheritdoc cref="IFunctional{TDelegate}.ToDelegate()"/>
+    Func<object?> IFunctional<Func<object?>>.ToDelegate() => Func.Constant<object?>(kind is NotEmptyValue ? value : null);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<T> If<TPredicate>(TPredicate condition)
         where TPredicate : struct, ISupplier<T, bool>
@@ -634,7 +638,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     /// <summary>
     /// Determines whether this container stores
-    /// the same value as other.
+    /// the same value as the specified one.
     /// </summary>
     /// <param name="other">Other container to compare.</param>
     /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>

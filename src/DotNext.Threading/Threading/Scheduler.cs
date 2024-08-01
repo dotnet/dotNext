@@ -8,7 +8,7 @@ namespace DotNext.Threading;
 public static partial class Scheduler
 {
     /// <summary>
-    /// Schedules the specific action to be execute once after the specified delay.
+    /// Schedules the specific action to be executed once after the specified delay.
     /// </summary>
     /// <typeparam name="TArgs">The type of arguments to be passed to the callback.</typeparam>
     /// <param name="callback">The callback to be executed after the specified delay.</param>
@@ -31,7 +31,7 @@ public static partial class Scheduler
     }
 
     /// <summary>
-    /// Schedules the specific action to be execute once after the specified delay.
+    /// Schedules the specific action to be executed once after the specified delay.
     /// </summary>
     /// <typeparam name="TArgs">The type of arguments to be passed to the callback.</typeparam>
     /// <typeparam name="TResult">The type of the result to returned from the callback.</typeparam>

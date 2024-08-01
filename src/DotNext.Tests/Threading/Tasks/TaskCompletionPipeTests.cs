@@ -65,7 +65,7 @@ public class TaskCompletionPipeTests : Test
     {
         var pipe = new TaskCompletionPipe<Task<int>>();
         pipe.Add(Task.FromResult(1));
-        var consumer = pipe.GetConsumer().GetAsyncEnumerator();
+        var consumer = pipe.Consume().GetAsyncEnumerator();
         True(await consumer.MoveNextAsync());
 
         var t = consumer.MoveNextAsync().AsTask();
@@ -128,7 +128,7 @@ public class TaskCompletionPipeTests : Test
         pipe.Add(Task.Run(Func.Constant(44)));
         pipe.Complete();
 
-        var array = await pipe.GetConsumer().ToArrayAsync(initialCapacity: 3);
+        var array = await pipe.Consume().ToArrayAsync(initialCapacity: 3);
         Contains(42, array);
         Contains(43, array);
         Contains(44, array);
@@ -162,7 +162,7 @@ public class TaskCompletionPipeTests : Test
     [Fact]
     public static async Task CompletedTaskGroupToCollection()
     {
-        await foreach (var t in TaskCompletionPipe.Create([Task.CompletedTask, Task.CompletedTask]))
+        await foreach (var t in TaskCompletionPipe.WhenEach([Task.CompletedTask, Task.CompletedTask]))
         {
             True(t.IsCompleted);
         }
@@ -173,7 +173,7 @@ public class TaskCompletionPipeTests : Test
     {
         var source1 = new TaskCompletionSource<int>();
         var source2 = new TaskCompletionSource<int>();
-        await using var consumer = TaskCompletionPipe.GetConsumer([source1.Task, source2.Task]).GetAsyncEnumerator();
+        await using var consumer = TaskCompletionPipe.Consume([source1.Task, source2.Task]).GetAsyncEnumerator();
         
         source1.SetResult(42);
         True(await consumer.MoveNextAsync());

@@ -44,10 +44,10 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
         internal void AcquireWeakLock() => Interlocked.Decrement(ref remainingLocks);
 
-        internal void ExitLock()
+        internal void ExitLock(bool downgrade)
         {
             remainingLocks = remainingLocks < 0L
-                ? ConcurrencyLevel
+                ? ConcurrencyLevel - Unsafe.BitCast<bool, byte>(downgrade)
                 : remainingLocks + 1L;
         }
 
@@ -56,8 +56,6 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         internal readonly bool IsStrongLockAllowed => remainingLocks == ConcurrencyLevel;
 
         internal void AcquireStrongLock() => remainingLocks = ExclusiveMode;
-
-        internal void Downgrade() => remainingLocks = ConcurrencyLevel - 1L;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -190,7 +188,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     /// <summary>
-    /// Entres the lock asynchronously.
+    /// Enters the lock asynchronously.
     /// </summary>
     /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
     /// <param name="timeout">The interval to wait for the lock.</param>
@@ -209,7 +207,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     /// <summary>
-    /// Entres the lock asynchronously.
+    /// Enters the lock asynchronously.
     /// </summary>
     /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
     /// <param name="token">The token that can be used to abort lock acquisition.</param>
@@ -283,15 +281,18 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             if (state.IsStrongLockAllowed) // nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
-            state.Downgrade();
+            state.ExitLock(downgrade: true);
             suspendedCallers = DrainWaitQueue();
+
+            if (IsDisposing && IsReadyToDispose)
+                Dispose(true);
         }
 
         suspendedCallers?.Unwind();
     }
 
     /// <summary>
-    /// Release the acquired lock.
+    /// Releases the acquired lock.
     /// </summary>
     /// <exception cref="SynchronizationLockException">The caller has not entered the lock.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
@@ -305,7 +306,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             if (state.IsStrongLockAllowed) // nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
-            state.ExitLock();
+            state.ExitLock(downgrade: false);
             suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)

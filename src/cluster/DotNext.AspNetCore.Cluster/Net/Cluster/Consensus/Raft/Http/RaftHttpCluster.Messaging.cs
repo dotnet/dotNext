@@ -148,9 +148,9 @@ internal partial class RaftHttpCluster : IOutputChannel
         IInputChannel? handler = handlers.FirstOrDefault(message.IsSignalSupported);
         if (handler is null)
             return;
-        IBufferedMessage buffered = message.Length.TryGetValue(out var length) && length < FileMessage.MinSize ?
-            new InMemoryMessage(message.Name, message.Type, Convert.ToInt32(length)) :
-            new FileMessage(message.Name, message.Type);
+        IBufferedMessage buffered = message.Length is { } length and < FileMessage.MinSize
+            ? new InMemoryMessage(message.Name, message.Type, Convert.ToInt32(length))
+            : new FileMessage(message.Name, message.Type);
         await buffered.LoadFromAsync(message, token).ConfigureAwait(false);
         buffered.PrepareForReuse();
         response.OnCompleted(ReceiveSignal);

@@ -108,7 +108,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
 
         queueLoopTask = CommandLoop();
 
-        if (shufflePeriod.TryGetValue(out var period))
+        if (shufflePeriod is { } period)
             shuffleTask = ShuffleLoopAsync(period);
     }
 

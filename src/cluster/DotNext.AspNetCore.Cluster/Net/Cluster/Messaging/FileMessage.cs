@@ -23,7 +23,7 @@ internal sealed class FileMessage(string name, ContentType type) : FileStream(Pa
 
     ValueTask IBufferedMessage.LoadFromAsync(IDataTransferObject source, CancellationToken token)
     {
-        if (source.Length.TryGetValue(out var length))
+        if (source.Length is { } length)
             SetLength(length);
 
         return source.WriteToAsync(this, BufferSize, token);

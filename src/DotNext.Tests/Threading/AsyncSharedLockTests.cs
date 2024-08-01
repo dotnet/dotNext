@@ -145,12 +145,13 @@ public sealed class AsyncSharedLockTests : Test
     {
         using var @lock = new AsyncSharedLock(3);
         True(@lock.TryAcquire(false));
+        True(@lock.TryAcquire(false));
         var task = @lock.DisposeAsync();
         False(task.IsCompleted);
         await ThrowsAsync<ObjectDisposedException>(@lock.AcquireAsync(true, CancellationToken.None).AsTask);
         @lock.Downgrade();
         False(task.IsCompleted);
-        @lock.Release();
+        @lock.Downgrade();
         await task;
     }
 

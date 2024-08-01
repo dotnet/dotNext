@@ -16,7 +16,7 @@ public sealed class AsyncEventHubTests : Test
         Equal(3, hub.Count);
 
         True(hub.Pulse(0));
-        True(hub.WaitOneAsync(0).IsCompletedSuccessfully);
+        True(hub.WaitOneAsync(0, DefaultTimeout).IsCompletedSuccessfully);
         False(hub.WaitOneAsync(1).IsCompleted);
     }
 
@@ -30,8 +30,8 @@ public sealed class AsyncEventHubTests : Test
         hub.Pulse(indexes, flags);
         True(flags[0]);
 
-        Equal(0, await hub.WaitAnyAsync());
-        Equal(0, await hub.WaitAnyAsync(new int[] { 0, 1 }));
+        Equal(0, await hub.WaitAnyAsync(DefaultTimeout));
+        Equal(0, await hub.WaitAnyAsync([0, 1]));
     }
 
     [Fact]
@@ -45,7 +45,33 @@ public sealed class AsyncEventHubTests : Test
         True(flags[0]);
 
         Equal(0, await hub.WaitAnyAsync());
-        Equal(0, await hub.WaitAnyAsync(new int[] { 0, 1 }));
+        Equal(0, await hub.WaitAnyAsync([0, 1], DefaultTimeout));
+    }
+    
+    [Fact]
+    public static async Task WaitAny3()
+    {
+        var hub = new AsyncEventHub(3);
+
+        int[] indexes = { 0 };
+        Equal(1, hub.ResetAndPulse(indexes));
+
+        Equal(0, await hub.WaitAnyAsync());
+        Equal(0, await hub.WaitAnyAsync([0, 1], DefaultTimeout));
+    }
+
+    [Fact]
+    public static async Task WaitAny4()
+    {
+        var hub = new AsyncEventHub(3);
+
+        True(hub.ResetAndPulse(0));
+
+        Equal(0, await hub.WaitAnyAsync());
+        Equal(0, await hub.WaitAnyAsync([0, 1], DefaultTimeout));
+
+        Equal(2, hub.Pulse([0, 1, 2]));
+        Equal(0, hub.Pulse([0, 1, 2]));
     }
 
     [Fact]
@@ -55,7 +81,7 @@ public sealed class AsyncEventHubTests : Test
 
         Equal(3, hub.PulseAll());
 
-        await hub.WaitAllAsync(new int[] { 0, 1 });
+        await hub.WaitAllAsync([0, 1], DefaultTimeout);
         await hub.WaitAllAsync();
     }
 
@@ -70,8 +96,8 @@ public sealed class AsyncEventHubTests : Test
         True(flags[1]);
         True(flags[2]);
 
-        await hub.WaitAllAsync(new int[] { 0, 1 });
-        await hub.WaitAllAsync();
+        await hub.WaitAllAsync([0, 1]);
+        await hub.WaitAllAsync(DefaultTimeout);
     }
 
     [Fact]
@@ -87,5 +113,17 @@ public sealed class AsyncEventHubTests : Test
         True(hub.Pulse(1));
         hub.CaptureState(state);
         Equal(1, state.IndexOf(true));
+    }
+
+    [Fact]
+    public static async Task CancelPendingTasks()
+    {
+        var hub = new AsyncEventHub(3);
+        var task1 = hub.WaitOneAsync(0);
+        var task2 = hub.WaitOneAsync(1);
+
+        hub.CancelSuspendedCallers(new(canceled: true));
+        await ThrowsAsync<TaskCanceledException>(Func.Constant(task1));
+        await ThrowsAsync<TaskCanceledException>(Func.Constant(task2));
     }
 }

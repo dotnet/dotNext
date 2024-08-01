@@ -1,5 +1,7 @@
 ﻿namespace DotNext;
 
+using Runtime.CompilerServices;
+
 public sealed class ResultTests : Test
 {
     [Fact]
@@ -19,7 +21,7 @@ public sealed class ResultTests : Test
         var r = default(Result<int, EnvironmentVariableTarget>);
         Equal(default(EnvironmentVariableTarget), r.Error);
         True(r.IsSuccessful);
-        Equal(0, r.Value);
+        Equal(0, r.ValueRef);
         Equal(default, r);
         True(r.TryGet(out _));
     }
@@ -196,4 +198,31 @@ public sealed class ResultTests : Test
         result = new(EnvironmentVariableTarget.Machine);
         Equal(10, result.OrInvoke(static e => 10));
     }
+
+    [Fact]
+    public static void FromErrorFactory()
+    {
+        False(FromError<Exception, Result<int>>(new Exception()).IsSuccessful);
+        False(FromError<EnvironmentVariableTarget, Result<int, EnvironmentVariableTarget>>(EnvironmentVariableTarget.Machine).IsSuccessful);
+    }
+
+    [Fact]
+    public static void ResultToDelegate()
+    {
+        IFunctional<Func<object>> functional = Result.FromException<int>(new Exception());
+        Null(functional.ToDelegate().Invoke());
+
+        functional = new Result<int>(42);
+        Equal(42, functional.ToDelegate().Invoke());
+
+        functional = new Result<int, EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine);
+        Null(functional.ToDelegate().Invoke());
+
+        functional = new Result<int, EnvironmentVariableTarget>();
+        NotNull(functional.ToDelegate().Invoke());
+    }
+
+    private static TResult FromError<TError, TResult>(TError error)
+        where TResult : struct, IResultMonad<int, TError, TResult>
+        => TResult.FromError(error);
 }
