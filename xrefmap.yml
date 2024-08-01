@@ -46351,6 +46351,218 @@ references:
   fullName.vb: DotNext.Threading.Channels.PersistentChannel(Of TInput, TOutput).Throughput
   nameWithType: PersistentChannel<TInput, TOutput>.Throughput
   nameWithType.vb: PersistentChannel(Of TInput, TOutput).Throughput
+- uid: DotNext.Threading.Epoch
+  name: Epoch
+  href: api/DotNext.Threading.Epoch.html
+  commentId: T:DotNext.Threading.Epoch
+  fullName: DotNext.Threading.Epoch
+  nameWithType: Epoch
+- uid: DotNext.Threading.Epoch.Discardable
+  name: Epoch.Discardable
+  href: api/DotNext.Threading.Epoch.Discardable.html
+  commentId: T:DotNext.Threading.Epoch.Discardable
+  fullName: DotNext.Threading.Epoch.Discardable
+  nameWithType: Epoch.Discardable
+- uid: DotNext.Threading.Epoch.Discardable.Discard
+  name: Discard()
+  href: api/DotNext.Threading.Epoch.Discardable.html#DotNext_Threading_Epoch_Discardable_Discard
+  commentId: M:DotNext.Threading.Epoch.Discardable.Discard
+  fullName: DotNext.Threading.Epoch.Discardable.Discard()
+  nameWithType: Epoch.Discardable.Discard()
+- uid: DotNext.Threading.Epoch.Discardable.Discard*
+  name: Discard
+  href: api/DotNext.Threading.Epoch.Discardable.html#DotNext_Threading_Epoch_Discardable_Discard_
+  commentId: Overload:DotNext.Threading.Epoch.Discardable.Discard
+  isSpec: "True"
+  fullName: DotNext.Threading.Epoch.Discardable.Discard
+  nameWithType: Epoch.Discardable.Discard
+- uid: DotNext.Threading.Epoch.Enter(System.Boolean,DotNext.Threading.Epoch.RecycleBin@)
+  name: Enter(bool, out RecycleBin)
+  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_Enter_System_Boolean_DotNext_Threading_Epoch_RecycleBin__
+  commentId: M:DotNext.Threading.Epoch.Enter(System.Boolean,DotNext.Threading.Epoch.RecycleBin@)
+  name.vb: Enter(Boolean, RecycleBin)
+  fullName: DotNext.Threading.Epoch.Enter(bool, out DotNext.Threading.Epoch.RecycleBin)
+  fullName.vb: DotNext.Threading.Epoch.Enter(Boolean, DotNext.Threading.Epoch.RecycleBin)
+  nameWithType: Epoch.Enter(bool, out Epoch.RecycleBin)
+  nameWithType.vb: Epoch.Enter(Boolean, Epoch.RecycleBin)
+- uid: DotNext.Threading.Epoch.Enter(System.Boolean,DotNext.Threading.Epoch.Scope@)
+  name: Enter(bool, out Scope)
+  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_Enter_System_Boolean_DotNext_Threading_Epoch_Scope__
+  commentId: M:DotNext.Threading.Epoch.Enter(System.Boolean,DotNext.Threading.Epoch.Scope@)
+  name.vb: Enter(Boolean, Scope)
+  fullName: DotNext.Threading.Epoch.Enter(bool, out DotNext.Threading.Epoch.Scope)
+  fullName.vb: DotNext.Threading.Epoch.Enter(Boolean, DotNext.Threading.Epoch.Scope)
+  nameWithType: Epoch.Enter(bool, out Epoch.Scope)
+  nameWithType.vb: Epoch.Enter(Boolean, Epoch.Scope)
+- uid: DotNext.Threading.Epoch.Enter(System.Nullable{System.Boolean})
+  name: Enter(bool?)
+  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_Enter_System_Nullable_System_Boolean__
+  commentId: M:DotNext.Threading.Epoch.Enter(System.Nullable{System.Boolean})
+  name.vb: Enter(Boolean?)
+  fullName: DotNext.Threading.Epoch.Enter(bool?)
+  fullName.vb: DotNext.Threading.Epoch.Enter(Boolean?)
+  nameWithType: Epoch.Enter(bool?)
+  nameWithType.vb: Epoch.Enter(Boolean?)
+- uid: DotNext.Threading.Epoch.Enter*
+  name: Enter
+  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_Enter_
+  commentId: Overload:DotNext.Threading.Epoch.Enter
+  isSpec: "True"
+  fullName: DotNext.Threading.Epoch.Enter
+  nameWithType: Epoch.Enter
+- uid: DotNext.Threading.Epoch.RecycleBin
+  name: Epoch.RecycleBin
+  href: api/DotNext.Threading.Epoch.RecycleBin.html
+  commentId: T:DotNext.Threading.Epoch.RecycleBin
+  fullName: DotNext.Threading.Epoch.RecycleBin
+  nameWithType: Epoch.RecycleBin
+- uid: DotNext.Threading.Epoch.RecycleBin.Clear(System.Boolean)
+  name: Clear(bool)
+  href: api/DotNext.Threading.Epoch.RecycleBin.html#DotNext_Threading_Epoch_RecycleBin_Clear_System_Boolean_
+  commentId: M:DotNext.Threading.Epoch.RecycleBin.Clear(System.Boolean)
+  name.vb: Clear(Boolean)
+  fullName: DotNext.Threading.Epoch.RecycleBin.Clear(bool)
+  fullName.vb: DotNext.Threading.Epoch.RecycleBin.Clear(Boolean)
+  nameWithType: Epoch.RecycleBin.Clear(bool)
+  nameWithType.vb: Epoch.RecycleBin.Clear(Boolean)
+- uid: DotNext.Threading.Epoch.RecycleBin.Clear*
+  name: Clear
+  href: api/DotNext.Threading.Epoch.RecycleBin.html#DotNext_Threading_Epoch_RecycleBin_Clear_
+  commentId: Overload:DotNext.Threading.Epoch.RecycleBin.Clear
+  isSpec: "True"
+  fullName: DotNext.Threading.Epoch.RecycleBin.Clear
+  nameWithType: Epoch.RecycleBin.Clear
+- uid: DotNext.Threading.Epoch.RecycleBin.ClearAsync
+  name: ClearAsync()
+  href: api/DotNext.Threading.Epoch.RecycleBin.html#DotNext_Threading_Epoch_RecycleBin_ClearAsync
+  commentId: M:DotNext.Threading.Epoch.RecycleBin.ClearAsync
+  fullName: DotNext.Threading.Epoch.RecycleBin.ClearAsync()
+  nameWithType: Epoch.RecycleBin.ClearAsync()
+- uid: DotNext.Threading.Epoch.RecycleBin.ClearAsync*
+  name: ClearAsync
+  href: api/DotNext.Threading.Epoch.RecycleBin.html#DotNext_Threading_Epoch_RecycleBin_ClearAsync_
+  commentId: Overload:DotNext.Threading.Epoch.RecycleBin.ClearAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.Epoch.RecycleBin.ClearAsync
+  nameWithType: Epoch.RecycleBin.ClearAsync
+- uid: DotNext.Threading.Epoch.RecycleBin.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.Threading.Epoch.RecycleBin.html#DotNext_Threading_Epoch_RecycleBin_IsEmpty
+  commentId: P:DotNext.Threading.Epoch.RecycleBin.IsEmpty
+  fullName: DotNext.Threading.Epoch.RecycleBin.IsEmpty
+  nameWithType: Epoch.RecycleBin.IsEmpty
+- uid: DotNext.Threading.Epoch.RecycleBin.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.Threading.Epoch.RecycleBin.html#DotNext_Threading_Epoch_RecycleBin_IsEmpty_
+  commentId: Overload:DotNext.Threading.Epoch.RecycleBin.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.Threading.Epoch.RecycleBin.IsEmpty
+  nameWithType: Epoch.RecycleBin.IsEmpty
+- uid: DotNext.Threading.Epoch.RecycleBin.QueueCleanup
+  name: QueueCleanup()
+  href: api/DotNext.Threading.Epoch.RecycleBin.html#DotNext_Threading_Epoch_RecycleBin_QueueCleanup
+  commentId: M:DotNext.Threading.Epoch.RecycleBin.QueueCleanup
+  fullName: DotNext.Threading.Epoch.RecycleBin.QueueCleanup()
+  nameWithType: Epoch.RecycleBin.QueueCleanup()
+- uid: DotNext.Threading.Epoch.RecycleBin.QueueCleanup*
+  name: QueueCleanup
+  href: api/DotNext.Threading.Epoch.RecycleBin.html#DotNext_Threading_Epoch_RecycleBin_QueueCleanup_
+  commentId: Overload:DotNext.Threading.Epoch.RecycleBin.QueueCleanup
+  isSpec: "True"
+  fullName: DotNext.Threading.Epoch.RecycleBin.QueueCleanup
+  nameWithType: Epoch.RecycleBin.QueueCleanup
+- uid: DotNext.Threading.Epoch.Scope
+  name: Epoch.Scope
+  href: api/DotNext.Threading.Epoch.Scope.html
+  commentId: T:DotNext.Threading.Epoch.Scope
+  fullName: DotNext.Threading.Epoch.Scope
+  nameWithType: Epoch.Scope
+- uid: DotNext.Threading.Epoch.Scope.Defer(System.Action)
+  name: Defer(Action)
+  href: api/DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_Defer_System_Action_
+  commentId: M:DotNext.Threading.Epoch.Scope.Defer(System.Action)
+  fullName: DotNext.Threading.Epoch.Scope.Defer(System.Action)
+  nameWithType: Epoch.Scope.Defer(Action)
+- uid: DotNext.Threading.Epoch.Scope.Defer*
+  name: Defer
+  href: api/DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_Defer_
+  commentId: Overload:DotNext.Threading.Epoch.Scope.Defer
+  isSpec: "True"
+  fullName: DotNext.Threading.Epoch.Scope.Defer
+  nameWithType: Epoch.Scope.Defer
+- uid: DotNext.Threading.Epoch.Scope.Defer``1(``0)
+  name: Defer<TWorkItem>(TWorkItem)
+  href: api/DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_Defer__1___0_
+  commentId: M:DotNext.Threading.Epoch.Scope.Defer``1(``0)
+  name.vb: Defer(Of TWorkItem)(TWorkItem)
+  fullName: DotNext.Threading.Epoch.Scope.Defer<TWorkItem>(TWorkItem)
+  fullName.vb: DotNext.Threading.Epoch.Scope.Defer(Of TWorkItem)(TWorkItem)
+  nameWithType: Epoch.Scope.Defer<TWorkItem>(TWorkItem)
+  nameWithType.vb: Epoch.Scope.Defer(Of TWorkItem)(TWorkItem)
+- uid: DotNext.Threading.Epoch.Scope.Defer``1(``0,System.Action{``0})
+  name: Defer<T>(T, Action<T>)
+  href: api/DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_Defer__1___0_System_Action___0__
+  commentId: M:DotNext.Threading.Epoch.Scope.Defer``1(``0,System.Action{``0})
+  name.vb: Defer(Of T)(T, Action(Of T))
+  fullName: DotNext.Threading.Epoch.Scope.Defer<T>(T, System.Action<T>)
+  fullName.vb: DotNext.Threading.Epoch.Scope.Defer(Of T)(T, System.Action(Of T))
+  nameWithType: Epoch.Scope.Defer<T>(T, Action<T>)
+  nameWithType.vb: Epoch.Scope.Defer(Of T)(T, Action(Of T))
+- uid: DotNext.Threading.Epoch.Scope.RegisterForDiscard(DotNext.Threading.Epoch.Discardable)
+  name: RegisterForDiscard(Discardable)
+  href: api/DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_RegisterForDiscard_DotNext_Threading_Epoch_Discardable_
+  commentId: M:DotNext.Threading.Epoch.Scope.RegisterForDiscard(DotNext.Threading.Epoch.Discardable)
+  fullName: DotNext.Threading.Epoch.Scope.RegisterForDiscard(DotNext.Threading.Epoch.Discardable)
+  nameWithType: Epoch.Scope.RegisterForDiscard(Epoch.Discardable)
+- uid: DotNext.Threading.Epoch.Scope.RegisterForDiscard*
+  name: RegisterForDiscard
+  href: api/DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_RegisterForDiscard_
+  commentId: Overload:DotNext.Threading.Epoch.Scope.RegisterForDiscard
+  isSpec: "True"
+  fullName: DotNext.Threading.Epoch.Scope.RegisterForDiscard
+  nameWithType: Epoch.Scope.RegisterForDiscard
+- uid: DotNext.Threading.Epoch.Scope.RegisterForDispose(System.IDisposable)
+  name: RegisterForDispose(IDisposable)
+  href: api/DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_RegisterForDispose_System_IDisposable_
+  commentId: M:DotNext.Threading.Epoch.Scope.RegisterForDispose(System.IDisposable)
+  fullName: DotNext.Threading.Epoch.Scope.RegisterForDispose(System.IDisposable)
+  nameWithType: Epoch.Scope.RegisterForDispose(IDisposable)
+- uid: DotNext.Threading.Epoch.Scope.RegisterForDispose*
+  name: RegisterForDispose
+  href: api/DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_RegisterForDispose_
+  commentId: Overload:DotNext.Threading.Epoch.Scope.RegisterForDispose
+  isSpec: "True"
+  fullName: DotNext.Threading.Epoch.Scope.RegisterForDispose
+  nameWithType: Epoch.Scope.RegisterForDispose
+- uid: DotNext.Threading.Epoch.UnsafeClear
+  name: UnsafeClear()
+  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_UnsafeClear
+  commentId: M:DotNext.Threading.Epoch.UnsafeClear
+  fullName: DotNext.Threading.Epoch.UnsafeClear()
+  nameWithType: Epoch.UnsafeClear()
+- uid: DotNext.Threading.Epoch.UnsafeClear*
+  name: UnsafeClear
+  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_UnsafeClear_
+  commentId: Overload:DotNext.Threading.Epoch.UnsafeClear
+  isSpec: "True"
+  fullName: DotNext.Threading.Epoch.UnsafeClear
+  nameWithType: Epoch.UnsafeClear
+- uid: DotNext.Threading.Epoch.UnsafeEnter(System.Boolean)
+  name: UnsafeEnter(bool)
+  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_UnsafeEnter_System_Boolean_
+  commentId: M:DotNext.Threading.Epoch.UnsafeEnter(System.Boolean)
+  name.vb: UnsafeEnter(Boolean)
+  fullName: DotNext.Threading.Epoch.UnsafeEnter(bool)
+  fullName.vb: DotNext.Threading.Epoch.UnsafeEnter(Boolean)
+  nameWithType: Epoch.UnsafeEnter(bool)
+  nameWithType.vb: Epoch.UnsafeEnter(Boolean)
+- uid: DotNext.Threading.Epoch.UnsafeEnter*
+  name: UnsafeEnter
+  href: api/DotNext.Threading.Epoch.html#DotNext_Threading_Epoch_UnsafeEnter_
+  commentId: Overload:DotNext.Threading.Epoch.UnsafeEnter
+  isSpec: "True"
+  fullName: DotNext.Threading.Epoch.UnsafeEnter
+  nameWithType: Epoch.UnsafeEnter
 - uid: DotNext.Threading.ExchangeTerminatedException
   name: ExchangeTerminatedException
   href: api/DotNext.Threading.ExchangeTerminatedException.html
@@ -46666,6 +46878,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.Leases.LeaseConsumer.Expiration
   nameWithType: LeaseConsumer.Expiration
+- uid: DotNext.Threading.Leases.LeaseConsumer.LeaseId
+  name: LeaseId
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_LeaseId
+  commentId: P:DotNext.Threading.Leases.LeaseConsumer.LeaseId
+  fullName: DotNext.Threading.Leases.LeaseConsumer.LeaseId
+  nameWithType: LeaseConsumer.LeaseId
+- uid: DotNext.Threading.Leases.LeaseConsumer.LeaseId*
+  name: LeaseId
+  href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_LeaseId_
+  commentId: Overload:DotNext.Threading.Leases.LeaseConsumer.LeaseId
+  isSpec: "True"
+  fullName: DotNext.Threading.Leases.LeaseConsumer.LeaseId
+  nameWithType: LeaseConsumer.LeaseId
 - uid: DotNext.Threading.Leases.LeaseConsumer.ReleaseAsync(System.Threading.CancellationToken)
   name: ReleaseAsync(CancellationToken)
   href: api/DotNext.Threading.Leases.LeaseConsumer.html#DotNext_Threading_Leases_LeaseConsumer_ReleaseAsync_System_Threading_CancellationToken_
@@ -48708,19 +48933,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.Tasks.ManualResetCompletionSource.AfterConsumed
   nameWithType: ManualResetCompletionSource.AfterConsumed
-- uid: DotNext.Threading.Tasks.ManualResetCompletionSource.Cleanup
-  name: Cleanup()
-  href: api/DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_Cleanup
-  commentId: M:DotNext.Threading.Tasks.ManualResetCompletionSource.Cleanup
-  fullName: DotNext.Threading.Tasks.ManualResetCompletionSource.Cleanup()
-  nameWithType: ManualResetCompletionSource.Cleanup()
-- uid: DotNext.Threading.Tasks.ManualResetCompletionSource.Cleanup*
-  name: Cleanup
-  href: api/DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_Cleanup_
-  commentId: Overload:DotNext.Threading.Tasks.ManualResetCompletionSource.Cleanup
+- uid: DotNext.Threading.Tasks.ManualResetCompletionSource.CleanUp
+  name: CleanUp()
+  href: api/DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_CleanUp
+  commentId: M:DotNext.Threading.Tasks.ManualResetCompletionSource.CleanUp
+  fullName: DotNext.Threading.Tasks.ManualResetCompletionSource.CleanUp()
+  nameWithType: ManualResetCompletionSource.CleanUp()
+- uid: DotNext.Threading.Tasks.ManualResetCompletionSource.CleanUp*
+  name: CleanUp
+  href: api/DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_CleanUp_
+  commentId: Overload:DotNext.Threading.Tasks.ManualResetCompletionSource.CleanUp
   isSpec: "True"
-  fullName: DotNext.Threading.Tasks.ManualResetCompletionSource.Cleanup
-  nameWithType: ManualResetCompletionSource.Cleanup
+  fullName: DotNext.Threading.Tasks.ManualResetCompletionSource.CleanUp
+  nameWithType: ManualResetCompletionSource.CleanUp
 - uid: DotNext.Threading.Tasks.ManualResetCompletionSource.CompletionData
   name: CompletionData
   href: api/DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_CompletionData
@@ -49037,6 +49262,31 @@ references:
   commentId: T:DotNext.Threading.Tasks.TaskCompletionPipe
   fullName: DotNext.Threading.Tasks.TaskCompletionPipe
   nameWithType: TaskCompletionPipe
+- uid: DotNext.Threading.Tasks.TaskCompletionPipe.Consume*
+  name: Consume
+  href: api/DotNext.Threading.Tasks.TaskCompletionPipe.html#DotNext_Threading_Tasks_TaskCompletionPipe_Consume_
+  commentId: Overload:DotNext.Threading.Tasks.TaskCompletionPipe.Consume
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.TaskCompletionPipe.Consume
+  nameWithType: TaskCompletionPipe.Consume
+- uid: DotNext.Threading.Tasks.TaskCompletionPipe.Consume``1(DotNext.Threading.Tasks.TaskCompletionPipe{System.Threading.Tasks.Task{``0}})
+  name: Consume<T>(TaskCompletionPipe<Task<T>>)
+  href: api/DotNext.Threading.Tasks.TaskCompletionPipe.html#DotNext_Threading_Tasks_TaskCompletionPipe_Consume__1_DotNext_Threading_Tasks_TaskCompletionPipe_System_Threading_Tasks_Task___0___
+  commentId: M:DotNext.Threading.Tasks.TaskCompletionPipe.Consume``1(DotNext.Threading.Tasks.TaskCompletionPipe{System.Threading.Tasks.Task{``0}})
+  name.vb: Consume(Of T)(TaskCompletionPipe(Of Task(Of T)))
+  fullName: DotNext.Threading.Tasks.TaskCompletionPipe.Consume<T>(DotNext.Threading.Tasks.TaskCompletionPipe<System.Threading.Tasks.Task<T>>)
+  fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe.Consume(Of T)(DotNext.Threading.Tasks.TaskCompletionPipe(Of System.Threading.Tasks.Task(Of T)))
+  nameWithType: TaskCompletionPipe.Consume<T>(TaskCompletionPipe<Task<T>>)
+  nameWithType.vb: TaskCompletionPipe.Consume(Of T)(TaskCompletionPipe(Of Task(Of T)))
+- uid: DotNext.Threading.Tasks.TaskCompletionPipe.Consume``1(System.ReadOnlySpan{System.Threading.Tasks.Task{``0}})
+  name: Consume<T>(ReadOnlySpan<Task<T>>)
+  href: api/DotNext.Threading.Tasks.TaskCompletionPipe.html#DotNext_Threading_Tasks_TaskCompletionPipe_Consume__1_System_ReadOnlySpan_System_Threading_Tasks_Task___0___
+  commentId: M:DotNext.Threading.Tasks.TaskCompletionPipe.Consume``1(System.ReadOnlySpan{System.Threading.Tasks.Task{``0}})
+  name.vb: Consume(Of T)(ReadOnlySpan(Of Task(Of T)))
+  fullName: DotNext.Threading.Tasks.TaskCompletionPipe.Consume<T>(System.ReadOnlySpan<System.Threading.Tasks.Task<T>>)
+  fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe.Consume(Of T)(System.ReadOnlySpan(Of System.Threading.Tasks.Task(Of T)))
+  nameWithType: TaskCompletionPipe.Consume<T>(ReadOnlySpan<Task<T>>)
+  nameWithType.vb: TaskCompletionPipe.Consume(Of T)(ReadOnlySpan(Of Task(Of T)))
 - uid: DotNext.Threading.Tasks.TaskCompletionPipe.Consumer`1
   name: TaskCompletionPipe.Consumer<T>
   href: api/DotNext.Threading.Tasks.TaskCompletionPipe.Consumer-1.html
@@ -49063,47 +49313,22 @@ references:
   fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe.Consumer(Of T).GetAsyncEnumerator
   nameWithType: TaskCompletionPipe.Consumer<T>.GetAsyncEnumerator
   nameWithType.vb: TaskCompletionPipe.Consumer(Of T).GetAsyncEnumerator
-- uid: DotNext.Threading.Tasks.TaskCompletionPipe.Create*
-  name: Create
-  href: api/DotNext.Threading.Tasks.TaskCompletionPipe.html#DotNext_Threading_Tasks_TaskCompletionPipe_Create_
-  commentId: Overload:DotNext.Threading.Tasks.TaskCompletionPipe.Create
+- uid: DotNext.Threading.Tasks.TaskCompletionPipe.WhenEach*
+  name: WhenEach
+  href: api/DotNext.Threading.Tasks.TaskCompletionPipe.html#DotNext_Threading_Tasks_TaskCompletionPipe_WhenEach_
+  commentId: Overload:DotNext.Threading.Tasks.TaskCompletionPipe.WhenEach
   isSpec: "True"
-  fullName: DotNext.Threading.Tasks.TaskCompletionPipe.Create
-  nameWithType: TaskCompletionPipe.Create
-- uid: DotNext.Threading.Tasks.TaskCompletionPipe.Create``1(System.ReadOnlySpan{``0})
-  name: Create<T>(ReadOnlySpan<T>)
-  href: api/DotNext.Threading.Tasks.TaskCompletionPipe.html#DotNext_Threading_Tasks_TaskCompletionPipe_Create__1_System_ReadOnlySpan___0__
-  commentId: M:DotNext.Threading.Tasks.TaskCompletionPipe.Create``1(System.ReadOnlySpan{``0})
-  name.vb: Create(Of T)(ReadOnlySpan(Of T))
-  fullName: DotNext.Threading.Tasks.TaskCompletionPipe.Create<T>(System.ReadOnlySpan<T>)
-  fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe.Create(Of T)(System.ReadOnlySpan(Of T))
-  nameWithType: TaskCompletionPipe.Create<T>(ReadOnlySpan<T>)
-  nameWithType.vb: TaskCompletionPipe.Create(Of T)(ReadOnlySpan(Of T))
-- uid: DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer*
-  name: GetConsumer
-  href: api/DotNext.Threading.Tasks.TaskCompletionPipe.html#DotNext_Threading_Tasks_TaskCompletionPipe_GetConsumer_
-  commentId: Overload:DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer
-  isSpec: "True"
-  fullName: DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer
-  nameWithType: TaskCompletionPipe.GetConsumer
-- uid: DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer``1(DotNext.Threading.Tasks.TaskCompletionPipe{System.Threading.Tasks.Task{``0}})
-  name: GetConsumer<T>(TaskCompletionPipe<Task<T>>)
-  href: api/DotNext.Threading.Tasks.TaskCompletionPipe.html#DotNext_Threading_Tasks_TaskCompletionPipe_GetConsumer__1_DotNext_Threading_Tasks_TaskCompletionPipe_System_Threading_Tasks_Task___0___
-  commentId: M:DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer``1(DotNext.Threading.Tasks.TaskCompletionPipe{System.Threading.Tasks.Task{``0}})
-  name.vb: GetConsumer(Of T)(TaskCompletionPipe(Of Task(Of T)))
-  fullName: DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer<T>(DotNext.Threading.Tasks.TaskCompletionPipe<System.Threading.Tasks.Task<T>>)
-  fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer(Of T)(DotNext.Threading.Tasks.TaskCompletionPipe(Of System.Threading.Tasks.Task(Of T)))
-  nameWithType: TaskCompletionPipe.GetConsumer<T>(TaskCompletionPipe<Task<T>>)
-  nameWithType.vb: TaskCompletionPipe.GetConsumer(Of T)(TaskCompletionPipe(Of Task(Of T)))
-- uid: DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer``1(System.ReadOnlySpan{System.Threading.Tasks.Task{``0}})
-  name: GetConsumer<T>(ReadOnlySpan<Task<T>>)
-  href: api/DotNext.Threading.Tasks.TaskCompletionPipe.html#DotNext_Threading_Tasks_TaskCompletionPipe_GetConsumer__1_System_ReadOnlySpan_System_Threading_Tasks_Task___0___
-  commentId: M:DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer``1(System.ReadOnlySpan{System.Threading.Tasks.Task{``0}})
-  name.vb: GetConsumer(Of T)(ReadOnlySpan(Of Task(Of T)))
-  fullName: DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer<T>(System.ReadOnlySpan<System.Threading.Tasks.Task<T>>)
-  fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe.GetConsumer(Of T)(System.ReadOnlySpan(Of System.Threading.Tasks.Task(Of T)))
-  nameWithType: TaskCompletionPipe.GetConsumer<T>(ReadOnlySpan<Task<T>>)
-  nameWithType.vb: TaskCompletionPipe.GetConsumer(Of T)(ReadOnlySpan(Of Task(Of T)))
+  fullName: DotNext.Threading.Tasks.TaskCompletionPipe.WhenEach
+  nameWithType: TaskCompletionPipe.WhenEach
+- uid: DotNext.Threading.Tasks.TaskCompletionPipe.WhenEach``1(System.ReadOnlySpan{``0})
+  name: WhenEach<T>(ReadOnlySpan<T>)
+  href: api/DotNext.Threading.Tasks.TaskCompletionPipe.html#DotNext_Threading_Tasks_TaskCompletionPipe_WhenEach__1_System_ReadOnlySpan___0__
+  commentId: M:DotNext.Threading.Tasks.TaskCompletionPipe.WhenEach``1(System.ReadOnlySpan{``0})
+  name.vb: WhenEach(Of T)(ReadOnlySpan(Of T))
+  fullName: DotNext.Threading.Tasks.TaskCompletionPipe.WhenEach<T>(System.ReadOnlySpan<T>)
+  fullName.vb: DotNext.Threading.Tasks.TaskCompletionPipe.WhenEach(Of T)(System.ReadOnlySpan(Of T))
+  nameWithType: TaskCompletionPipe.WhenEach<T>(ReadOnlySpan<T>)
+  nameWithType.vb: TaskCompletionPipe.WhenEach(Of T)(ReadOnlySpan(Of T))
 - uid: DotNext.Threading.Tasks.TaskCompletionPipe`1
   name: TaskCompletionPipe<T>
   href: api/DotNext.Threading.Tasks.TaskCompletionPipe-1.html
@@ -49528,19 +49753,19 @@ references:
   fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource.New
   nameWithType: ValueTaskCompletionSource.ValueTaskCompletionSource
   nameWithType.vb: ValueTaskCompletionSource.New
-- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource.Cleanup
-  name: Cleanup()
-  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_Cleanup
-  commentId: M:DotNext.Threading.Tasks.ValueTaskCompletionSource.Cleanup
-  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource.Cleanup()
-  nameWithType: ValueTaskCompletionSource.Cleanup()
-- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource.Cleanup*
-  name: Cleanup
-  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_Cleanup_
-  commentId: Overload:DotNext.Threading.Tasks.ValueTaskCompletionSource.Cleanup
+- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource.CleanUp
+  name: CleanUp()
+  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_CleanUp
+  commentId: M:DotNext.Threading.Tasks.ValueTaskCompletionSource.CleanUp
+  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource.CleanUp()
+  nameWithType: ValueTaskCompletionSource.CleanUp()
+- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource.CleanUp*
+  name: CleanUp
+  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_CleanUp_
+  commentId: Overload:DotNext.Threading.Tasks.ValueTaskCompletionSource.CleanUp
   isSpec: "True"
-  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource.Cleanup
-  nameWithType: ValueTaskCompletionSource.Cleanup
+  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource.CleanUp
+  nameWithType: ValueTaskCompletionSource.CleanUp
 - uid: DotNext.Threading.Tasks.ValueTaskCompletionSource.CreateLinkedTaskCompletionSource(System.Object,System.TimeSpan,System.Threading.CancellationToken)
   name: CreateLinkedTaskCompletionSource(object?, TimeSpan, CancellationToken)
   href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_CreateLinkedTaskCompletionSource_System_Object_System_TimeSpan_System_Threading_CancellationToken_
@@ -49732,23 +49957,23 @@ references:
   fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource(Of T).New
   nameWithType: ValueTaskCompletionSource<T>.ValueTaskCompletionSource
   nameWithType.vb: ValueTaskCompletionSource(Of T).New
-- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1.Cleanup
-  name: Cleanup()
-  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_1_Cleanup
-  commentId: M:DotNext.Threading.Tasks.ValueTaskCompletionSource`1.Cleanup
-  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource<T>.Cleanup()
-  fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource(Of T).Cleanup()
-  nameWithType: ValueTaskCompletionSource<T>.Cleanup()
-  nameWithType.vb: ValueTaskCompletionSource(Of T).Cleanup()
-- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1.Cleanup*
-  name: Cleanup
-  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_1_Cleanup_
-  commentId: Overload:DotNext.Threading.Tasks.ValueTaskCompletionSource`1.Cleanup
+- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1.CleanUp
+  name: CleanUp()
+  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_1_CleanUp
+  commentId: M:DotNext.Threading.Tasks.ValueTaskCompletionSource`1.CleanUp
+  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource<T>.CleanUp()
+  fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource(Of T).CleanUp()
+  nameWithType: ValueTaskCompletionSource<T>.CleanUp()
+  nameWithType.vb: ValueTaskCompletionSource(Of T).CleanUp()
+- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1.CleanUp*
+  name: CleanUp
+  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_1_CleanUp_
+  commentId: Overload:DotNext.Threading.Tasks.ValueTaskCompletionSource`1.CleanUp
   isSpec: "True"
-  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource<T>.Cleanup
-  fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource(Of T).Cleanup
-  nameWithType: ValueTaskCompletionSource<T>.Cleanup
-  nameWithType.vb: ValueTaskCompletionSource(Of T).Cleanup
+  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource<T>.CleanUp
+  fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource(Of T).CleanUp
+  nameWithType: ValueTaskCompletionSource<T>.CleanUp
+  nameWithType.vb: ValueTaskCompletionSource(Of T).CleanUp
 - uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1.CreateLinkedTaskCompletionSource(System.Object,System.TimeSpan,System.Threading.CancellationToken)
   name: CreateLinkedTaskCompletionSource(object?, TimeSpan, CancellationToken)
   href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_1_CreateLinkedTaskCompletionSource_System_Object_System_TimeSpan_System_Threading_CancellationToken_

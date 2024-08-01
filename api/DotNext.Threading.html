@@ -91,7 +91,7 @@ when each event has unique identifier.</p>
       <section><p>Represents a synchronization primitive that is signaled when its count reaches zero.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.AsyncCounter.html">AsyncCounter</a></h4>
-      <section><p>Represents a synchronization primitive that is signaled when its count becomes non zero.</p>
+      <section><p>Represents a synchronization primitive that is signaled when its count becomes non-zero.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.AsyncEventHub.html">AsyncEventHub</a></h4>
       <section><p>Represents a collection of asynchronous events.</p>
@@ -124,6 +124,12 @@ concurrent flows.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.Atomic.html">Atomic</a></h4>
       <section><p>Exposes atomic operations for thread-safe scenarios.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Threading.Epoch.html">Epoch</a></h4>
+      <section><p>Implements epoch-based reclamation.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Threading.Epoch.Discardable.html">Epoch.Discardable</a></h4>
+      <section><p>Represents an object which lifetime is controlled by <a class="xref" href="DotNext.Threading.Epoch.html">Epoch</a> internal Garbage Collector.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.ExchangeTerminatedException.html">ExchangeTerminatedException</a></h4>
       <section><p>Indicates that the exchange has been terminated by the one of
@@ -182,6 +188,12 @@ Structs
 </section>
       <h4><a class="xref" href="DotNext.Threading.Atomic-1.html">Atomic&lt;T&gt;</a></h4>
       <section><p>Provides atomic access to non-primitive data type.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Threading.Epoch.RecycleBin.html">Epoch.RecycleBin</a></h4>
+      <section><p>Encapsulates actions deferred previously by <a class="xref" href="DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_Defer_System_Action_">Defer(Action)</a> method and its overloads.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Threading.Epoch.Scope.html">Epoch.Scope</a></h4>
+      <section><p>Represents a scope of the region of code protected by the epoch.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></h4>
       <section><p>Unified representation of monitor lock, semaphore lock, read lock, write lock or upgradeable read lock.</p>

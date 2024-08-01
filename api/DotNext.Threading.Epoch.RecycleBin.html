@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct TaskCompletionPipe.Consumer&lt;T&gt; | .NEXT </title>
+    <title>Struct Epoch.RecycleBin | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct TaskCompletionPipe.Consumer&lt;T&gt; | .NEXT ">
+    <meta name="title" content="Struct Epoch.RecycleBin | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,17 +65,17 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Threading.Tasks.TaskCompletionPipe.Consumer`1">
+            <article class="content wrap" id="_content" data-uid="DotNext.Threading.Epoch.RecycleBin">
 
 
 
-  <h1 id="DotNext_Threading_Tasks_TaskCompletionPipe_Consumer_1" data-uid="DotNext.Threading.Tasks.TaskCompletionPipe.Consumer`1" class="text-break">Struct TaskCompletionPipe.Consumer&lt;T&gt;</h1>
-  <div class="markdown level0 summary"><p>Represents asynchronous consumer for the pipe.</p>
+  <h1 id="DotNext_Threading_Epoch_RecycleBin" data-uid="DotNext.Threading.Epoch.RecycleBin" class="text-break">Struct Epoch.RecycleBin</h1>
+  <div class="markdown level0 summary"><p>Encapsulates actions deferred previously by <a class="xref" href="DotNext.Threading.Epoch.Scope.html#DotNext_Threading_Epoch_Scope_Defer_System_Action_">Defer(Action)</a> method and its overloads.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1">IAsyncEnumerable</a>&lt;T&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.ithreadpoolworkitem">IThreadPoolWorkItem</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -98,25 +98,46 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a>.<a class="xref" href="DotNext.Threading.Tasks.html">Tasks</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
-  <h5 id="DotNext_Threading_Tasks_TaskCompletionPipe_Consumer_1_syntax">Syntax</h5>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Threading_Epoch_RecycleBin_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct TaskCompletionPipe.Consumer&lt;T&gt; : IAsyncEnumerable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct Epoch.RecycleBin : IThreadPoolWorkItem</code></pre>
   </div>
-  <h5 class="typeParameters">Type Parameters</h5>
+  <h5 id="DotNext_Threading_Epoch_RecycleBin_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>The action can be called at any point in time. The call does not necessarily have to be protected by
+the epoch scope.</p>
+</div>
+  <h3 id="properties">Properties
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Epoch_RecycleBin_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.Threading.Epoch.RecycleBin.IsEmpty%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Epoch.cs/#L245">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Epoch_RecycleBin_IsEmpty_" data-uid="DotNext.Threading.Epoch.RecycleBin.IsEmpty*"></a>
+  <h4 id="DotNext_Threading_Epoch_RecycleBin_IsEmpty" data-uid="DotNext.Threading.Epoch.RecycleBin.IsEmpty">IsEmpty</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating that the action is empty.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsEmpty { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
     <thead>
       <tr>
-        <th>Name</th>
+        <th>Type</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the result produced by the pipe.</p>
-</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -124,19 +145,19 @@
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_TaskCompletionPipe_Consumer_1_GetAsyncEnumerator_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.TaskCompletionPipe.Consumer%601.GetAsyncEnumerator(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Epoch_RecycleBin_Clear_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Epoch.RecycleBin.Clear(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/TaskCompletionPipe.Consumer.cs/#L100">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Epoch.cs/#L251">View Source</a>
   </span>
-  <a id="DotNext_Threading_Tasks_TaskCompletionPipe_Consumer_1_GetAsyncEnumerator_" data-uid="DotNext.Threading.Tasks.TaskCompletionPipe.Consumer`1.GetAsyncEnumerator*"></a>
-  <h4 id="DotNext_Threading_Tasks_TaskCompletionPipe_Consumer_1_GetAsyncEnumerator_System_Threading_CancellationToken_" data-uid="DotNext.Threading.Tasks.TaskCompletionPipe.Consumer`1.GetAsyncEnumerator(System.Threading.CancellationToken)">GetAsyncEnumerator(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Gets asynchronous enumerator over completed tasks.</p>
+  <a id="DotNext_Threading_Epoch_RecycleBin_Clear_" data-uid="DotNext.Threading.Epoch.RecycleBin.Clear*"></a>
+  <h4 id="DotNext_Threading_Epoch_RecycleBin_Clear_System_Boolean_" data-uid="DotNext.Threading.Epoch.RecycleBin.Clear(System.Boolean)">Clear(bool)</h4>
+  <div class="markdown level1 summary"><p>Invokes all deferred actions.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IAsyncEnumerator&lt;T&gt; GetAsyncEnumerator(CancellationToken token = default)</code></pre>
+    <pre><code class="lang-csharp hljs">public void Clear(bool throwOnFirstException = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -149,13 +170,29 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">throwOnFirstException</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if exceptions should immediately propagate; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Epoch_RecycleBin_ClearAsync.md&amp;value=---%0Auid%3A%20DotNext.Threading.Epoch.RecycleBin.ClearAsync%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Epoch.cs/#L324">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Epoch_RecycleBin_ClearAsync_" data-uid="DotNext.Threading.Epoch.RecycleBin.ClearAsync*"></a>
+  <h4 id="DotNext_Threading_Epoch_RecycleBin_ClearAsync" data-uid="DotNext.Threading.Epoch.RecycleBin.ClearAsync">ClearAsync()</h4>
+  <div class="markdown level1 summary"><p>Invokes deferred actions as parallel task.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task ClearAsync()</code></pre>
+  </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
     <thead>
@@ -166,15 +203,31 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerator-1">IAsyncEnumerator</a>&lt;T&gt;</td>
-        <td><p>The asynchronous enumerator over completed tasks.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><p>The task representing execution of deferred actions.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Epoch_RecycleBin_QueueCleanup.md&amp;value=---%0Auid%3A%20DotNext.Threading.Epoch.RecycleBin.QueueCleanup%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Epoch.cs/#L301">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Epoch_RecycleBin_QueueCleanup_" data-uid="DotNext.Threading.Epoch.RecycleBin.QueueCleanup*"></a>
+  <h4 id="DotNext_Threading_Epoch_RecycleBin_QueueCleanup" data-uid="DotNext.Threading.Epoch.RecycleBin.QueueCleanup">QueueCleanup()</h4>
+  <div class="markdown level1 summary"><p>Queues invocation of deferred actions to the thread pool.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void QueueCleanup()</code></pre>
+  </div>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1">IAsyncEnumerable&lt;T&gt;</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.ithreadpoolworkitem">IThreadPoolWorkItem</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
@@ -189,30 +242,6 @@
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_CopyAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Int32_DotNext_Buffers_MemoryAllocator___0__System_Threading_CancellationToken_">AsyncEnumerable.CopyAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_ElementAtAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Int32_System_Threading_CancellationToken_">AsyncEnumerable.ElementAtAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, int, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_FirstOrNoneAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Predicate___0__System_Threading_CancellationToken_">AsyncEnumerable.FirstOrNoneAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, Predicate&lt;T&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_FirstOrNoneAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Threading_CancellationToken_">AsyncEnumerable.FirstOrNoneAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_ForEachAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Action___0__System_Threading_CancellationToken_">AsyncEnumerable.ForEachAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, Action&lt;T&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_ForEachAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">AsyncEnumerable.ForEachAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, Func&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_LastOrNoneAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Threading_CancellationToken_">AsyncEnumerable.LastOrNoneAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.AsyncEnumerable.html#DotNext_Collections_Generic_AsyncEnumerable_ToArrayAsync__1_System_Collections_Generic_IAsyncEnumerable___0__System_Int32_DotNext_Buffers_MemoryAllocator___0__System_Threading_CancellationToken_">AsyncEnumerable.ToArrayAsync&lt;T&gt;(IAsyncEnumerable&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?, CancellationToken)</a>
-  </div>
 
 </article>
           </div>
@@ -222,10 +251,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_TaskCompletionPipe_Consumer_1.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.TaskCompletionPipe.Consumer%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Epoch_RecycleBin.md&amp;value=---%0Auid%3A%20DotNext.Threading.Epoch.RecycleBin%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/TaskCompletionPipe.Consumer.cs/#L87" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Epoch.cs/#L186" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
