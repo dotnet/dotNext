@@ -11,13 +11,11 @@ internal static class LibrarySettings
             const int defaultValue = 511;
             const int minimumValue = 14;
 
-            if (AppContext.GetData(configurationParameterName) is int result)
-                goto exit;
+            if (AppContext.GetData(configurationParameterName) is not int result)
+            {
+                int.TryParse(Environment.GetEnvironmentVariable(environmentVariableName), out result);
+            }
 
-            if (int.TryParse(Environment.GetEnvironmentVariable(environmentVariableName), out result))
-                goto exit;
-
-            exit:
             return result > minimumValue ? result : defaultValue;
         }
     }

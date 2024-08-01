@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using DotNext.Collections.Generic;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks;
@@ -17,7 +16,7 @@ public static class TaskCompletionPipe
     /// <typeparam name="T">The type of the elements in the consuming collection.</typeparam>
     /// <param name="pipe">The task completion pipe with typed tasks.</param>
     /// <returns>The asynchronous consuming collection.</returns>
-    public static Consumer<T> GetConsumer<T>(this TaskCompletionPipe<Task<T>> pipe)
+    public static Consumer<T> Consume<T>(this TaskCompletionPipe<Task<T>> pipe)
         => new(pipe);
 
     /// <summary>
@@ -26,7 +25,7 @@ public static class TaskCompletionPipe
     /// <param name="tasks">A collection of tasks.</param>
     /// <typeparam name="T">The result type of tasks.</typeparam>
     /// <returns>A collection over task results to be available as they complete.</returns>
-    public static Consumer<T> GetConsumer<T>(this ReadOnlySpan<Task<T>> tasks)
+    public static Consumer<T> Consume<T>(this ReadOnlySpan<Task<T>> tasks)
     {
         Consumer<T> result;
         if (tasks.IsEmpty)
@@ -49,7 +48,7 @@ public static class TaskCompletionPipe
     /// <param name="tasks">A collection of tasks.</param>
     /// <typeparam name="T">The type of tasks.</typeparam>
     /// <returns>A collection over tasks to be available as they complete.</returns>
-    public static IAsyncEnumerable<T> Create<T>(ReadOnlySpan<T> tasks)
+    public static IAsyncEnumerable<T> WhenEach<T>(ReadOnlySpan<T> tasks) // TODO: Remove in .NET 9/10 in favor of Task.WhenEach
         where T : Task
     {
         IAsyncEnumerable<T> result;

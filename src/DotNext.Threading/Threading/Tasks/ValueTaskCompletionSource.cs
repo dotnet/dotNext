@@ -43,7 +43,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         => SetResult(OnCanceled(token));
 
     /// <inheritdoc />
-    protected override void Cleanup() => result = null;
+    protected override void CleanUp() => result = null;
 
     /// <summary>
     /// Called automatically when timeout detected.

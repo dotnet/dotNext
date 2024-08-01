@@ -30,7 +30,7 @@ public class DictionarySerializationBenchmark
     }
 
     [GlobalCleanup]
-    public void Cleanup()
+    public void CleanUp()
     {
         data.Clear();
     }

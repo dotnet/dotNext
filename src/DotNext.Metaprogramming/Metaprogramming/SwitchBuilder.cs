@@ -98,11 +98,11 @@ public sealed class SwitchBuilder : ExpressionBuilder<SwitchExpression>
 
     private protected override SwitchExpression Build() => Expression.Switch(Type, switchValue, defaultExpression, null, cases);
 
-    private protected override void Cleanup()
+    private protected override void CleanUp()
     {
         cases.Clear();
         defaultExpression = null;
-        base.Cleanup();
+        base.CleanUp();
     }
 
     private sealed class CaseStatement : Statement, ILexicalScope<SwitchBuilder, Action>

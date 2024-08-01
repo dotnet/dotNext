@@ -134,7 +134,7 @@ public partial struct UserDataStorage
             }
             else
             {
-                tables = new BackingStorageEntry[3];
+                tables = new BackingStorageEntry[UserDataSlot.SlotTypesCount];
                 tables.AsSpan().Initialize();
             }
         }
@@ -281,16 +281,20 @@ public partial struct UserDataStorage
         size = Math.Max(BitOperations.RoundUpToPowerOf2(size), 8U);
         Partitions = new ConditionalWeakTable<object, BackingStorage>?[size];
     }
-
-    private static ConditionalWeakTable<object, BackingStorage> GetStorage(object source)
+    
+    private static ref ConditionalWeakTable<object, BackingStorage>? GetPartition(object source)
     {
         Debug.Assert(BitOperations.IsPow2(Partitions.Length));
 
         var bucketIndex = RuntimeHelpers.GetHashCode(source) & (Partitions.Length - 1);
         Debug.Assert((uint)bucketIndex < (uint)Partitions.Length);
 
-        ref var partition = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(Partitions), bucketIndex);
+        return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(Partitions), bucketIndex);
+    }
 
+    private static ConditionalWeakTable<object, BackingStorage> GetOrCreatePartition(object source)
+    {
+        ref var partition = ref GetPartition(source);
         ConditionalWeakTable<object, BackingStorage> newStorage;
         return Volatile.Read(ref partition) ?? Interlocked.CompareExchange(ref partition, newStorage = [], null) ?? newStorage;
     }

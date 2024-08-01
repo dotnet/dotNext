@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 
 namespace DotNext;
 
+using Runtime.CompilerServices;
 using Intrinsics = Runtime.Intrinsics;
 
 /// <summary>
@@ -287,6 +288,9 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     [CLSCompliant(false)]
     public unsafe T OrInvoke(delegate*<Exception, T> defaultFunc)
         => OrInvokeWithException<Supplier<Exception, T>>(defaultFunc);
+
+    /// <inheritdoc cref="IFunctional{TDelegate}.ToDelegate()"/>
+    Func<object?> IFunctional<Func<object?>>.ToDelegate() => Func.Constant<object?>(exception is null ? value : null);
 
     /// <summary>
     /// Gets exception associated with this result.
@@ -583,6 +587,9 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     [CLSCompliant(false)]
     public unsafe T OrInvoke(delegate*<TError, T> defaultFunc)
         => OrInvokeWithError<Supplier<TError, T>>(defaultFunc);
+
+    /// <inheritdoc cref="IFunctional{TDelegate}.ToDelegate()"/>
+    Func<object?> IFunctional<Func<object?>>.ToDelegate() => Func.Constant<object?>(IsSuccessful ? value : null);
 
     private T OrThrow<TExceptionFactory>(TExceptionFactory factory)
         where TExceptionFactory : struct, ISupplier<TError, Exception>

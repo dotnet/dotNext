@@ -136,7 +136,7 @@ internal sealed class GenericServer : Server
     public override async ValueTask StartAsync(CancellationToken token)
         => listenerTask = Listen(await factory.BindAsync(Address, token).ConfigureAwait(false));
 
-    private void Cleanup()
+    private void CleanUp()
     {
         using var tokenSource = Interlocked.Exchange(ref transmissionState, null);
         tokenSource?.Cancel(false);
@@ -146,7 +146,7 @@ internal sealed class GenericServer : Server
     {
         if (disposing)
         {
-            Cleanup();
+            CleanUp();
         }
 
         base.Dispose(disposing);
@@ -154,7 +154,7 @@ internal sealed class GenericServer : Server
 
     protected override ValueTask DisposeAsyncCore()
     {
-        Cleanup();
+        CleanUp();
         return new(listenerTask ?? Task.CompletedTask);
     }
 

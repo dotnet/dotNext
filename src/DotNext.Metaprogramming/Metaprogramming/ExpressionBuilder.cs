@@ -58,7 +58,7 @@ public abstract class ExpressionBuilder<TExpression> : ISupplier<TExpression>
     /// <inheritdoc />
     TExpression ISupplier<TExpression>.Invoke() => Build();
 
-    private protected virtual void Cleanup() => currentScope = null;
+    private protected virtual void CleanUp() => currentScope = null;
 
     /// <summary>
     /// Finalizes construction of the expression
@@ -70,6 +70,6 @@ public abstract class ExpressionBuilder<TExpression> : ISupplier<TExpression>
         if (currentScope is null)
             throw new InvalidOperationException();
         currentScope.AddStatement(Build());
-        Cleanup();
+        CleanUp();
     }
 }

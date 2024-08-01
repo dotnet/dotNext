@@ -425,7 +425,7 @@ public static partial class Atomic
     }
 
     /// <summary>
-    /// Determines that the write to the location in the memory of
+    /// Determines that write to the location in the memory of
     /// type <typeparamref name="T"/> is atomic.
     /// </summary>
     /// <typeparam name="T">The type of the value to be written.</typeparam>

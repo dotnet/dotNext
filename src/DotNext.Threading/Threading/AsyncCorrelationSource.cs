@@ -49,7 +49,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     /// </remarks>
     /// <param name="eventId">The unique identifier of the event.</param>
     /// <param name="value">The value to be passed to the listener.</param>
-    /// <returns><see langword="true"/> if the is an active listener of this event; <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/> if there is an active listener of this event; <see langword="false"/>.</returns>
     public bool Pulse(TKey eventId, in Result<TValue> value)
         => Pulse(eventId, in value, out _);
 
@@ -62,7 +62,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     /// <param name="eventId">The unique identifier of the event.</param>
     /// <param name="value">The value to be passed to the listener.</param>
     /// <param name="userData">Custom data associated with an event.</param>
-    /// <returns><see langword="true"/> if the is an active listener of this event; <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/> if there is an active listener of this event; <see langword="false"/>.</returns>
     public bool Pulse(TKey eventId, in Result<TValue> value, out object? userData)
     {
         bool result;

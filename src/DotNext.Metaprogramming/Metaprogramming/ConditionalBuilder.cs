@@ -64,10 +64,10 @@ public sealed class ConditionalBuilder : ExpressionBuilder<ConditionalExpression
     private protected override ConditionalExpression Build()
         => Expression.Condition(test, ifTrue ?? Expression.Empty(), ifFalse ?? Expression.Empty(), Type);
 
-    private protected override void Cleanup()
+    private protected override void CleanUp()
     {
         ifTrue = ifFalse = null;
-        base.Cleanup();
+        base.CleanUp();
     }
 
     private sealed class BranchStatement : Statement, ILexicalScope<ConditionalBuilder, Action>

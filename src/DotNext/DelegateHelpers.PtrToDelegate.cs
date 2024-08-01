@@ -32,7 +32,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="RefAction{T, TArgs}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="TRef">The type of the object to be passed by reference into the action.</typeparam>
     /// <typeparam name="TArgs">The type of the arguments to be passed into the action.</typeparam>
     /// <param name="ptr">The function pointer.</param>
@@ -76,7 +76,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="RefAction{T, TArgs}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="TRef">The type of the object to be passed by reference into the action.</typeparam>
     /// <typeparam name="TArgs">The type of the arguments to be passed into the action.</typeparam>
     /// <typeparam name="TResult">The type of the result.</typeparam>
@@ -118,7 +118,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="Action"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <param name="ptr">The function pointer.</param>
     /// <param name="obj">The object to be passed as first argument implicitly.</param>
     /// <returns>The delegate instance.</returns>
@@ -158,7 +158,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="Action{T}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <param name="ptr">The function pointer.</param>
     /// <param name="obj">The object to be passed as first argument implicitly.</param>
@@ -199,7 +199,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="Func{TResult}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="TResult">The type of the result.</typeparam>
     /// <param name="ptr">The function pointer.</param>
     /// <param name="obj">The object to be passed as first argument implicitly.</param>
@@ -241,7 +241,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="Action{T1, T2}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
     /// <param name="ptr">The function pointer.</param>
@@ -295,7 +295,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="Func{T, TResult}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="TArg">The type of the first argument.</typeparam>
     /// <typeparam name="TResult">The type of the result.</typeparam>
     /// <param name="ptr">The function pointer.</param>
@@ -339,7 +339,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="Action{T1, T2, T3}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
     /// <typeparam name="T3">The type of the third argument.</typeparam>
@@ -384,7 +384,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="Func{T1, T2, TResult}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
     /// <typeparam name="TResult">The type of the result.</typeparam>
@@ -430,7 +430,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="Action{T1, T2, T3, T4}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
     /// <typeparam name="T3">The type of the third argument.</typeparam>
@@ -477,7 +477,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="Func{T1, T2, T3, TResult}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
     /// <typeparam name="T3">The type of the third argument.</typeparam>
@@ -525,7 +525,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="Action{T1, T2, T3, T4, T5}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
     /// <typeparam name="T3">The type of the third argument.</typeparam>
@@ -574,7 +574,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="Func{T1, T2, T3, T4, TResult}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
     /// <typeparam name="T3">The type of the third argument.</typeparam>
@@ -624,7 +624,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="Action{T1, T2, T3, T4, T5, T6}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
     /// <typeparam name="T3">The type of the third argument.</typeparam>
@@ -675,7 +675,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="Func{T1, T2, T3, T4, T5, TResult}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
     /// <typeparam name="T3">The type of the third argument.</typeparam>
@@ -727,7 +727,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="Func{T1, T2, T3, T4, T5, T6, TResult}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="T1">The type of the first argument.</typeparam>
     /// <typeparam name="T2">The type of the second argument.</typeparam>
     /// <typeparam name="T3">The type of the third argument.</typeparam>
@@ -775,7 +775,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="ReadOnlySpanAction{T, TArg}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="TItem">The type of the objects in the read-only span.</typeparam>
     /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
     /// <param name="ptr">The function pointer.</param>
@@ -818,7 +818,7 @@ public static partial class DelegateHelpers
     /// <summary>
     /// Converts static method represented by the pointer to the closed delegate of type <see cref="SpanAction{T, TArg}"/>.
     /// </summary>
-    /// <typeparam name="T">The type of the implicitly capture object.</typeparam>
+    /// <typeparam name="T">The type of the implicit capture object.</typeparam>
     /// <typeparam name="TItem">The type of the objects in the read-only span.</typeparam>
     /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
     /// <param name="ptr">The function pointer.</param>
