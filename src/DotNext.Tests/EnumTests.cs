@@ -136,7 +136,7 @@ public sealed class EnumTests : Test
     }
 
     [Fact]
-    public static void ConvertionToPrimitive()
+    public static void ConversionToPrimitive()
     {
         ToPrimitive(ByteEnum.Zero, ByteEnum.One, ByteEnum.Two);
         ToPrimitive(SByteEnum.Zero, SByteEnum.One, SByteEnum.Two);
