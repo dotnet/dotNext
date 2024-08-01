@@ -60,7 +60,7 @@ Release Date: 08-01-2024
 * Minor performance improvements
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.3.0">DotNext.Threading 5.3.0</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/5.11.0">DotNext.Threading 5.11.0</a>
 * Fixed `AsyncSharedLock.Downgrade` behavior, so it can be used to release a weak lock
 * Updated dependencies
 
