@@ -58,8 +58,4 @@
   <ItemGroup>
     <SourceRoot Include="$(MSBuildProjectDirectory)\..\..\" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Runtime\Caching\" />
-  </ItemGroup>
 </Project>
