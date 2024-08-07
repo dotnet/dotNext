@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -6,7 +5,7 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Runtime.Caching;
 
-using Runtime.CompilerServices;
+using CompilerServices;
 
 public partial class RandomAccessCache<TKey, TValue>
 {
@@ -19,8 +18,10 @@ public partial class RandomAccessCache<TKey, TValue>
     private async Task DoEvictionAsync()
     {
         var cancellationTask = Task.Delay(InfiniteTimeSpan, lifetimeToken);
-        for (KeyValuePair dequeued; !cancellationTask.IsCompleted; EvictOrInsert(dequeued))
+        while (!cancellationTask.IsCompleted)
         {
+            KeyValuePair dequeued;
+            
             // inlined to remove allocation of async state machine on every call
             for (dequeued = Volatile.Read(in promotionHead); !dequeued.TryConsumePromotion();)
             {
@@ -28,7 +29,6 @@ public partial class RandomAccessCache<TKey, TValue>
                 {
                     var tmp = Interlocked.CompareExchange(ref promotionHead, newHead, dequeued);
                     dequeued = ReferenceEquals(tmp, dequeued) ? newHead : tmp;
-                    lifetimeToken.ThrowIfCancellationRequested();
                 }
                 else
                 {
@@ -37,14 +37,20 @@ public partial class RandomAccessCache<TKey, TValue>
                         return;
                 }
             }
+
+            switch (dequeued)
+            {
+                case FakeKeyValuePair:
+                    break;
+                default:
+                    EvictOrInsert(dequeued);
+                    break;
+            }
         }
     }
 
     private void EvictOrInsert(KeyValuePair dequeued)
     {
-        if (dequeued is FakeKeyValuePair)
-            return;
-        
         if (currentSize == maxCacheSize)
             Evict();
 
@@ -64,12 +70,12 @@ public partial class RandomAccessCache<TKey, TValue>
         {
             if (!sieveHand.Evict(out var removed))
             {
-                sieveHand = sieveHand.MoveToPrevious(evictionTail);
+                sieveHand = sieveHand.MoveBackward() ?? evictionTail;
             }
             else
             {
                 var removedPair = sieveHand;
-                sieveHand = sieveHand.Detach(ref evictionHead, ref evictionTail);
+                sieveHand = sieveHand.DetachAndMoveBackward(ref evictionHead, ref evictionTail) ?? evictionTail;
                 currentSize--;
                 if (!removed && removedPair.ReleaseCounter() is false)
                 {
@@ -90,8 +96,8 @@ public partial class RandomAccessCache<TKey, TValue>
         private (KeyValuePair? Previous, KeyValuePair? Next) sieveLinks;
         private volatile int cacheState;
 
-        internal KeyValuePair? MoveToPrevious(KeyValuePair? tail)
-            => sieveLinks.Previous ?? tail;
+        internal KeyValuePair? MoveBackward()
+            => sieveLinks.Previous;
 
         internal void Prepend([NotNull] ref KeyValuePair? head, [NotNull] ref KeyValuePair? tail)
         {
@@ -101,13 +107,11 @@ public partial class RandomAccessCache<TKey, TValue>
             }
             else
             {
-                sieveLinks.Next = head;
-                head.sieveLinks.Previous = this;
-                head = this;
+                head = (sieveLinks.Next = head).sieveLinks.Previous = this;
             }
         }
 
-        internal KeyValuePair? Detach(ref KeyValuePair? head, ref KeyValuePair? tail)
+        internal KeyValuePair? DetachAndMoveBackward(ref KeyValuePair? head, ref KeyValuePair? tail)
         {
             var (previous, next) = sieveLinks;
 
@@ -149,9 +153,25 @@ public partial class RandomAccessCache<TKey, TValue>
         internal bool Visit()
             => Interlocked.CompareExchange(ref cacheState, VisitedState, NotVisitedState) >= NotVisitedState;
 
-        internal bool TryMarkAsEvicted()
+        internal bool MarkAsEvicted()
             => Interlocked.Exchange(ref cacheState, EvictedState) >= NotVisitedState;
 
         internal bool IsDead => cacheState < NotVisitedState;
+        
+        [ExcludeFromCodeCoverage]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal int LinkedNodesCount
+        {
+            get
+            {
+                var count = 0;
+                for (var current = this; current is not null; current = current.sieveLinks.Next)
+                {
+                    count++;
+                }
+
+                return count;
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -21,6 +22,7 @@ public partial class RandomAccessCache<TKey, TValue>
             : Unsafe.As<KeyValuePairNonAtomicAccess>(pair).Value;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void SetValue(KeyValuePair pair, TValue value)
     {
         Debug.Assert(pair is not FakeKeyValuePair);
@@ -40,7 +42,7 @@ public partial class RandomAccessCache<TKey, TValue>
     {
         Debug.Assert(pair is not FakeKeyValuePair);
 
-        if (RuntimeHelpers.IsReferenceOrContainsReferences<TValue>())
+        if (!RuntimeHelpers.IsReferenceOrContainsReferences<TValue>())
         {
             // do nothing
         }
@@ -75,165 +77,28 @@ public partial class RandomAccessCache<TKey, TValue>
         return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
     }
 
-    // the caller is responsible to clean up value stored in the pair
-    private KeyValuePair? TryRemove(IEqualityComparer<TKey>? keyComparer, Bucket bucket, TKey key, int hashCode)
-    {
-        var result = default(KeyValuePair?);
-
-        // remove all dead nodes from the bucket
-        if (keyComparer is null)
-        {
-            for (KeyValuePair? current = bucket.First, previous = null;
-                 current is not null;
-                 previous = current, current = current.NextInBucket)
-            {
-                if (result is null && hashCode == current.KeyHashCode &&
-                    (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, current.Key) : current.Key.Equals(key)))
-                {
-                    Remove(bucket, previous, current);
-                    result = current.TryMarkAsEvicted() ? current : null;
-                }
-
-                if (current.IsDead)
-                {
-                    Remove(bucket, previous, current);
-                }
-            }
-        }
-        else
-        {
-            for (KeyValuePair? current = bucket.First, previous = null;
-                 current is not null;
-                 previous = current, current = current.NextInBucket)
-            {
-                if (result is null && hashCode == current.KeyHashCode && keyComparer.Equals(key, current.Key))
-                {
-                    Remove(bucket, previous, current);
-                    result = current.TryMarkAsEvicted() ? current : null;
-                }
-
-                if (current.IsDead)
-                {
-                    Remove(bucket, previous, current);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private static void Remove(Bucket bucket, KeyValuePair? previous, KeyValuePair current)
-    {
-        ref var location = ref previous is null ? ref bucket.First : ref previous.NextInBucket;
-        Volatile.Write(ref location, current.NextInBucket);
-    }
-
-    private CacheEntryHandle Modify(IEqualityComparer<TKey>? keyComparer, Bucket bucket, TKey key, int hashCode)
-    {
-        KeyValuePair? previous = null, valueHolder = null;
-        if (keyComparer is null)
-        {
-            for (var current = bucket.First; current is not null; previous = current, current = current.NextInBucket)
-            {
-                if (valueHolder is null && hashCode == current.KeyHashCode &&
-                    (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, current.Key) : current.Key.Equals(key)) &&
-                    current.Visit() && current.TryAcquireCounter())
-                {
-                    valueHolder = current;
-                }
-
-                if (current.IsDead)
-                {
-                    Remove(bucket, previous, current);
-                }
-            }
-        }
-        else
-        {
-            for (var current = bucket.First; current is not null; previous = current, current = current.NextInBucket)
-            {
-                if (valueHolder is null && hashCode == current.KeyHashCode && keyComparer.Equals(key, current.Key) && current.Visit() &&
-                    current.TryAcquireCounter())
-                {
-                    valueHolder = current;
-                }
-
-                if (current.IsDead)
-                {
-                    Remove(bucket, previous, current);
-                }
-            }
-        }
-
-        return valueHolder is null
-            ? new(this, bucket, previous, key, hashCode)
-            : new(this, valueHolder);
-    }
-
-    private KeyValuePair? TryGet(IEqualityComparer<TKey>? keyComparer, Bucket bucket, TKey key, int hashCode)
-    {
-        var result = default(KeyValuePair?);
-
-        // remove all dead nodes from the bucket
-        if (keyComparer is null)
-        {
-            for (KeyValuePair? current = bucket.First, previous = null;
-                 current is not null;
-                 previous = current, current = current.NextInBucket)
-            {
-                if (result is null && hashCode == current.KeyHashCode &&
-                    (typeof(TKey).IsValueType ? EqualityComparer<TKey>.Default.Equals(key, current.Key) : current.Key.Equals(key)) &&
-                    current.Visit() && current.TryAcquireCounter())
-                {
-                    result = current;
-                }
-
-                if (current.IsDead)
-                {
-                    Remove(bucket, previous, current);
-                }
-            }
-        }
-        else
-        {
-            for (KeyValuePair? current = bucket.First, previous = null;
-                 current is not null;
-                 previous = current, current = current.NextInBucket)
-            {
-                if (result is null && hashCode == current.KeyHashCode && keyComparer.Equals(key, current.Key) && current.Visit() &&
-                    current.TryAcquireCounter())
-                {
-                    result = current;
-                }
-
-                if (current.IsDead)
-                {
-                    Remove(bucket, previous, current);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    internal partial class KeyValuePair(TKey key, int hashCode) : TaskCompletionSource(TaskCreationOptions.None)
+    internal partial class KeyValuePair(TKey key, int hashCode) : TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously)
     {
         internal readonly int KeyHashCode = hashCode;
         internal readonly TKey Key = key;
         internal volatile KeyValuePair? NextInBucket; // volatile, used by the dictionary subsystem only
-        private int lifetimeCounter = 1;
+        
+        // Reference counting is used to establish lifetime of the stored value (not KeyValuePair instance).
+        // Initial value 1 means that the pair is referenced by the eviction queue. There
+        // are two competing threads that may decrement the counter to zero: removal thread (see TryRemove)
+        // and eviction thread. To synchronize the decision, 'cacheState' is used. The thread that evicts the pair
+        // successfully (transition from 0 => -1) is able to decrement the counter to zero.
+        private volatile int lifetimeCounter = 1;
 
         internal bool TryAcquireCounter()
         {
-            int currentValue, newValue, tmp = Volatile.Read(in lifetimeCounter);
+            int currentValue, tmp = lifetimeCounter;
             do
             {
                 currentValue = tmp;
                 if (currentValue is 0)
                     break;
-
-                newValue = currentValue + 1;
-            } while ((tmp = Interlocked.CompareExchange(ref lifetimeCounter, newValue, currentValue)) != currentValue);
+            } while ((tmp = Interlocked.CompareExchange(ref lifetimeCounter, currentValue + 1, currentValue)) != currentValue);
 
             return currentValue > 0U;
         }
@@ -249,7 +114,7 @@ public partial class RandomAccessCache<TKey, TValue>
             : base(key, hashCode)
             => Value = value;
 
-        public override string ToString() => $"Key = {Key} Value = {Value}";
+        public override string ToString() => $"Key = {Key} Value = {Value}, Consumed = {Task.IsCompleted}";
     }
 
     // non-atomic access utilizes copy-on-write semantics
@@ -279,9 +144,162 @@ public partial class RandomAccessCache<TKey, TValue>
 
         public override string ToString() => $"Key = {Key} Value = {Value}";
     }
-    
+
     internal sealed class Bucket : AsyncExclusiveLock
     {
         internal volatile KeyValuePair? First; // volatile
+
+        private void Remove(KeyValuePair? previous, KeyValuePair current)
+        {
+            ref var location = ref previous is null ? ref First : ref previous.NextInBucket;
+            Volatile.Write(ref location, current.NextInBucket);
+        }
+
+        internal KeyValuePair? TryRemove(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
+        {
+            var result = default(KeyValuePair?);
+
+            // remove all dead nodes from the bucket
+            if (keyComparer is null)
+            {
+                for (KeyValuePair? current = First, previous = null;
+                     current is not null;
+                     previous = current, current = current.NextInBucket)
+                {
+                    if (result is null && hashCode == current.KeyHashCode
+                                       && EqualityComparer<TKey>.Default.Equals(key, current.Key)
+                                       && current.MarkAsEvicted())
+                    {
+                        result = current;
+                    }
+
+                    if (current.IsDead)
+                    {
+                        Remove(previous, current);
+                    }
+                }
+            }
+            else
+            {
+                for (KeyValuePair? current = First, previous = null;
+                     current is not null;
+                     previous = current, current = current.NextInBucket)
+                {
+                    if (result is null && hashCode == current.KeyHashCode
+                                       && keyComparer.Equals(key, current.Key)
+                                       && current.MarkAsEvicted())
+                    {
+                        result = current;
+                    }
+
+                    if (current.IsDead)
+                    {
+                        Remove(previous, current);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        internal KeyValuePair? TryGet(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
+        {
+            var result = default(KeyValuePair?);
+
+            // remove all dead nodes from the bucket
+            if (keyComparer is null)
+            {
+                for (KeyValuePair? current = First, previous = null;
+                     current is not null;
+                     previous = current, current = current.NextInBucket)
+                {
+                    if (result is null && hashCode == current.KeyHashCode
+                                       && EqualityComparer<TKey>.Default.Equals(key, current.Key)
+                                       && current.Visit()
+                                       && current.TryAcquireCounter())
+                    {
+                        result = current;
+                    }
+
+                    if (current.IsDead)
+                    {
+                        Remove(previous, current);
+                    }
+                }
+            }
+            else
+            {
+                for (KeyValuePair? current = First, previous = null;
+                     current is not null;
+                     previous = current, current = current.NextInBucket)
+                {
+                    if (result is null && hashCode == current.KeyHashCode
+                                       && keyComparer.Equals(key, current.Key)
+                                       && current.Visit()
+                                       && current.TryAcquireCounter())
+                    {
+                        result = current;
+                    }
+
+                    if (current.IsDead)
+                    {
+                        Remove(previous, current);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        internal bool Modify(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode,
+            [NotNullWhen(true)] out KeyValuePair? previousOrValueHolder)
+        {
+            KeyValuePair? previous = null, valueHolder = null;
+            if (keyComparer is null)
+            {
+                for (var current = First; current is not null; previous = current, current = current.NextInBucket)
+                {
+                    if (valueHolder is null && hashCode == current.KeyHashCode
+                                            && EqualityComparer<TKey>.Default.Equals(key, current.Key)
+                                            && current.Visit()
+                                            && current.TryAcquireCounter())
+                    {
+                        valueHolder = current;
+                    }
+
+                    if (current.IsDead)
+                    {
+                        Remove(previous, current);
+                    }
+                }
+            }
+            else
+            {
+                for (var current = First; current is not null; previous = current, current = current.NextInBucket)
+                {
+                    if (valueHolder is null && hashCode == current.KeyHashCode
+                                            && keyComparer.Equals(key, current.Key)
+                                            && current.Visit()
+                                            && current.TryAcquireCounter())
+                    {
+                        valueHolder = current;
+                    }
+
+                    if (current.IsDead)
+                    {
+                        Remove(previous, current);
+                    }
+                }
+            }
+
+            if (valueHolder is null)
+            {
+                previousOrValueHolder = previous;
+                return false;
+            }
+
+            previousOrValueHolder = valueHolder;
+            return true;
+        }
     }
 }

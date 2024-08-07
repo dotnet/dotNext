@@ -31,5 +31,6 @@ public partial class RandomAccessCache<TKey, TValue>
     // It is used as a stub for the first element in the notification queue to keep task completion source
     private sealed class FakeKeyValuePair() : KeyValuePair(default!, 0)
     {
+        public override string ToString() => "Fake KV Pair";
     }
 }

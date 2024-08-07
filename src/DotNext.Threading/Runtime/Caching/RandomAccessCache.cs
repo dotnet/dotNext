@@ -1,21 +1,36 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DotNext.Threading;
 
 namespace DotNext.Runtime.Caching;
 
 using Numerics;
+using Threading;
 
+/// <summary>
+/// Represents concurrent cache optimized for random access.
+/// </summary>
+/// <remarks>
+/// The cache evicts older records on overflow.
+/// </remarks>
+/// <typeparam name="TKey">The type of the keys.</typeparam>
+/// <typeparam name="TValue">The type of the values.</typeparam>
 public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposable
     where TKey : notnull
     where TValue : notnull
 {
-    private readonly IEqualityComparer<TKey>? keyComparer;
     private readonly CancellationToken lifetimeToken;
     private readonly Task evictionTask;
+    private readonly IEqualityComparer<TKey>? keyComparer;
 
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive.")]
     private volatile CancellationTokenSource? lifetimeSource;
 
+    /// <summary>
+    /// Initializes a new cache.
+    /// </summary>
+    /// <param name="cacheSize">Maximum cache size.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="cacheSize"/> is less than or equal to zero.</exception>
     public RandomAccessCache(int cacheSize)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(cacheSize);
@@ -26,8 +41,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             ? PrimeNumber.GetFastModMultiplier((uint)dictionarySize)
             : default;
 
-        buckets = new Bucket[dictionarySize];
-        Span.Initialize<Bucket>(buckets);
+        Span.Initialize<Bucket>(buckets = new Bucket[dictionarySize]);
 
         lifetimeSource = new();
         lifetimeToken = lifetimeSource.Token;
@@ -35,63 +49,121 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         evictionTask = DoEvictionAsync();
     }
 
-    [DisallowNull] public Action<TKey, TValue>? OnEviction { get; init; }
+    /// <summary>
+    /// Gets or sets a callback that can be used to clean up the evicted value.
+    /// </summary>
+    public Action<TKey, TValue>? OnEviction { get; init; }
 
-    public async ValueTask<CacheEntryHandle> ModifyAsync(TKey key, CancellationToken token = default)
+    /// <summary>
+    /// Gets or sets key comparer.
+    /// </summary>
+    public IEqualityComparer<TKey>? KeyComparer
     {
-        var keyComparerCopy = keyComparer;
-        var hashCode = keyComparerCopy?.GetHashCode(key) ?? key.GetHashCode();
+        get => keyComparer;
+        init => keyComparer = ReferenceEquals(value, EqualityComparer<TKey>.Default) ? null : value;
+    }
+
+    /// <summary>
+    /// Opens a session that can be used to modify the value associated with the key.
+    /// </summary>
+    /// <remarks>
+    /// The cache guarantees that the value cannot be evicted concurrently with the returned session. However,
+    /// the value can be evicted immediately after. The caller must dispose session.
+    /// </remarks>
+    /// <param name="key">The key of the cache record.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The session that can be used to read or modify the cache record.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    public async ValueTask<ReadOrWriteSession> ChangeAsync(TKey key, CancellationToken token = default)
+    {
+        var keyComparerCopy = KeyComparer;
+        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
         var bucket = GetBucket(hashCode);
 
         var cts = token.LinkTo(lifetimeToken);
+        var lockTaken = false;
         try
         {
             await bucket.AcquireAsync(token).ConfigureAwait(false);
-            return Modify(keyComparerCopy, bucket, key, hashCode);
+            lockTaken = true;
+
+            if (bucket.Modify(keyComparerCopy, key, hashCode, out var previousOrValueHolder))
+                return new(this, previousOrValueHolder);
+
+            lockTaken = false;
+            return new(this, bucket, previousOrValueHolder, key, hashCode);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
         {
-            throw new OperationCanceledException(cts.CancellationOrigin);
+            throw cts.CancellationOrigin == lifetimeToken
+                ? new ObjectDisposedException(GetType().Name)
+                : new OperationCanceledException(cts.CancellationOrigin);
         }
         finally
         {
             cts?.Dispose();
+            if (lockTaken)
+                bucket.Release();
         }
     }
 
-    public bool TryGet(TKey key, out ReadOnlyCacheEntryHandle scope)
+    /// <summary>
+    /// Tries to read the cached record.
+    /// </summary>
+    /// <remarks>
+    /// The cache guarantees that the value cannot be evicted concurrently with the session. However,
+    /// the value can be evicted immediately after. The caller must dispose session.
+    /// </remarks>
+    /// <param name="key">The key of the cache record.</param>
+    /// <param name="session">A session that can be used to read the cached record.</param>
+    /// <returns><see langword="true"/> if the record is available for reading and the session is active; otherwise, <see langword="false"/>.</returns>
+    public bool TryGet(TKey key, out ReadSession session)
     {
-        var keyComparerCopy = keyComparer;
-        var hashCode = keyComparerCopy?.GetHashCode(key) ?? key.GetHashCode();
-        var bucket = GetBucket(hashCode);
+        var keyComparerCopy = KeyComparer;
+        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
-        if (TryGet(keyComparerCopy, bucket, key, hashCode) is { } valueHolder)
+        if (GetBucket(hashCode).TryGet(keyComparerCopy, key, hashCode) is { } valueHolder)
         {
-            scope = new(OnEviction, valueHolder);
+            session = new(OnEviction, valueHolder);
             return true;
         }
 
-        scope = default;
+        session = default;
         return false;
     }
 
-    public async ValueTask<ReadOnlyCacheEntryHandle?> TryRemoveAsync(TKey key, CancellationToken token = default)
+    /// <summary>
+    /// Tries to invalidate cache record associated with the provided key.
+    /// </summary>
+    /// <param name="key">The key of the cache record.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>
+    /// The session that can be used to read the removed cache record;
+    /// or <see langword="null"/> if there is no record associated with <paramref name="key"/>.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    public async ValueTask<ReadSession?> TryRemoveAsync(TKey key, CancellationToken token = default)
     {
-        var keyComparerCopy = keyComparer;
-        var hashCode = keyComparerCopy?.GetHashCode(key) ?? key.GetHashCode();
+        var keyComparerCopy = KeyComparer;
+        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
         var bucket = GetBucket(hashCode);
 
         var cts = token.LinkTo(lifetimeToken);
         try
         {
             await bucket.AcquireAsync(token).ConfigureAwait(false);
-            return TryRemove(keyComparerCopy, bucket, key, hashCode) is { } removedPair && removedPair.TryAcquireCounter()
-                ? new ReadOnlyCacheEntryHandle(OnEviction, removedPair)
+            return bucket.TryRemove(keyComparerCopy, key, hashCode) is { } removedPair
+                ? new ReadSession(OnEviction, removedPair)
                 : null;
         }
         catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
         {
-            throw new OperationCanceledException(cts.CancellationOrigin);
+            throw cts.CancellationOrigin == lifetimeToken
+                ? new ObjectDisposedException(GetType().Name)
+                : new OperationCanceledException(cts.CancellationOrigin);
         }
         finally
         {
@@ -99,6 +171,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         }
     }
 
+    /// <inheritdoc cref="IAsyncDisposable.DisposeAsync()"/>
     public new ValueTask DisposeAsync() => base.DisposeAsync();
 
     /// <inheritdoc/>
@@ -132,12 +205,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     }
 
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ReadOnlyCacheEntryHandle : IDisposable
+    public readonly struct ReadSession : IDisposable
     {
         private readonly Action<TKey, TValue>? eviction;
         private readonly KeyValuePair valueHolder;
 
-        internal ReadOnlyCacheEntryHandle(Action<TKey, TValue>? eviction, KeyValuePair valueHolder)
+        internal ReadSession(Action<TKey, TValue>? eviction, KeyValuePair valueHolder)
         {
             this.eviction = eviction;
             this.valueHolder = valueHolder;
@@ -156,7 +229,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     }
 
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct CacheEntryHandle : IDisposable
+    public readonly struct ReadOrWriteSession : IDisposable
     {
         private readonly RandomAccessCache<TKey, TValue> cache;
         private readonly Bucket? bucket; // null if value exists
@@ -164,7 +237,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         private readonly TKey key;
         private readonly int hashCode;
 
-        internal CacheEntryHandle(RandomAccessCache<TKey, TValue> cache, Bucket bucket, KeyValuePair? previous, TKey key, int hashCode)
+        internal ReadOrWriteSession(RandomAccessCache<TKey, TValue> cache, Bucket bucket, KeyValuePair? previous, TKey key, int hashCode)
         {
             this.cache = cache;
             this.bucket = bucket;
@@ -173,7 +246,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             valueHolderOrPrevious = previous;
         }
 
-        internal CacheEntryHandle(RandomAccessCache<TKey, TValue> cache, KeyValuePair valueHolder)
+        internal ReadOrWriteSession(RandomAccessCache<TKey, TValue> cache, KeyValuePair valueHolder)
         {
             this.cache = cache;
             valueHolderOrPrevious = valueHolder;
