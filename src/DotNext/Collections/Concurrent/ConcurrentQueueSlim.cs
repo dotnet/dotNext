@@ -12,7 +12,7 @@ namespace DotNext.Collections.Concurrent;
 /// </summary>
 /// <remarks>
 /// The queue doesn't implement <see cref="ICollection{T}"/> interface. It's designed for
-/// pure producer-consumer scenario. However, this version has its own drabacks: every call of <see cref="Enqueue"/>
+/// pure producer-consumer scenario. However, this version has its own drawbacks: every call of <see cref="Enqueue"/>
 /// allocates a small object on the heap.
 /// </remarks>
 /// <typeparam name="T">The type of the elements contained in the queue.</typeparam>
