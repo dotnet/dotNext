@@ -59,8 +59,8 @@ public partial class RandomAccessCache<TKey, TValue>
     private static KeyValuePair CreatePair(TKey key, TValue value, int hashCode)
     {
         return Atomic.IsAtomic<TValue>()
-            ? new KeyValuePairAtomicAccess(key, value, hashCode)
-            : new KeyValuePairNonAtomicAccess(key, value, hashCode);
+            ? new KeyValuePairAtomicAccess(key, hashCode) { Value = value }
+            : new KeyValuePairNonAtomicAccess(key, hashCode) { Value = value };
     }
 
     private readonly Bucket[] buckets;
@@ -124,38 +124,30 @@ public partial class RandomAccessCache<TKey, TValue>
         }
     }
 
-    private sealed class KeyValuePairAtomicAccess : KeyValuePair
+    private sealed class KeyValuePairAtomicAccess(TKey key, int hashCode) : KeyValuePair(key, hashCode)
     {
-        internal TValue Value;
-
-        internal KeyValuePairAtomicAccess(TKey key, TValue value, int hashCode)
-            : base(key, hashCode)
-            => Value = value;
+        internal required TValue Value;
 
         public override string ToString() => ToString(Value);
     }
 
     // non-atomic access utilizes copy-on-write semantics
-    private sealed class KeyValuePairNonAtomicAccess : KeyValuePair
+    private sealed class KeyValuePairNonAtomicAccess(TKey key, int hashCode) : KeyValuePair(key, hashCode)
     {
-        private sealed class ValueHolder
+        private sealed class ValueHolder(TValue value)
         {
-            internal readonly TValue Value;
-
-            internal ValueHolder(TValue value) => Value = value;
+            internal readonly TValue Value = value;
         }
 
         private static readonly ValueHolder DefaultHolder = new(default!);
+        
         private ValueHolder holder;
 
-        internal KeyValuePairNonAtomicAccess(TKey key, TValue value, int hashCode)
-            : base(key, hashCode)
-            => holder = new(value);
-
-        internal TValue Value
+        internal required TValue Value
         {
             get => holder.Value;
-            set => holder = new(value);
+
+            [MemberNotNull(nameof(holder))] set => holder = new(value);
         }
 
         internal void ClearValue() => holder = DefaultHolder;
