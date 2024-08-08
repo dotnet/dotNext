@@ -23,7 +23,7 @@ public partial class RandomAccessCache<TKey, TValue>
             KeyValuePair dequeued;
             
             // inlined to remove allocation of async state machine on every call
-            for (dequeued = Volatile.Read(in promotionHead); !dequeued.TryConsumePromotion();)
+            for (dequeued = promotionHead; !dequeued.TryConsumePromotion();)
             {
                 if (dequeued.NextPromotion is { } newHead)
                 {

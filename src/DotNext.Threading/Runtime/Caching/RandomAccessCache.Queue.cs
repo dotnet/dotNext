@@ -2,11 +2,11 @@ namespace DotNext.Runtime.Caching;
 
 public partial class RandomAccessCache<TKey, TValue>
 {
-    private KeyValuePair promotionHead, promotionTail;
+    private volatile KeyValuePair promotionHead, promotionTail;
 
     private void Promote(KeyValuePair newPair)
     {
-        KeyValuePair? currentTail, tmp = Volatile.Read(in promotionTail);
+        KeyValuePair? currentTail, tmp = promotionTail;
         do
         {
             currentTail = tmp;

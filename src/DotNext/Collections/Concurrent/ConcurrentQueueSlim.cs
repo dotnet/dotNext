@@ -18,7 +18,7 @@ namespace DotNext.Collections.Concurrent;
 /// <typeparam name="T">The type of the elements contained in the queue.</typeparam>
 public class ConcurrentQueueSlim<T>
 {
-    private Node? head, tail;
+    private volatile Node? head, tail;
 
     /// <summary>
     /// Adds an object to the end of this queue.
@@ -60,7 +60,7 @@ public class ConcurrentQueueSlim<T>
     /// </returns>
     public bool TryDequeue([MaybeNullWhen(false)] out T result)
     {
-        if (Volatile.Read(in head) is { } currentHead)
+        if (head is { } currentHead)
             return TryDequeueWithContention(currentHead, out result);
 
         result = default;
