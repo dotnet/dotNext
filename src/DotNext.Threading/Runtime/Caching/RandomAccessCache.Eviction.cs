@@ -160,17 +160,19 @@ public partial class RandomAccessCache<TKey, TValue>
         
         [ExcludeFromCodeCoverage]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal int LinkedNodesCount
+        internal (int Alive, int Dead) EvictionNodesCount
         {
             get
             {
-                var count = 0;
+                var alive = 0;
+                var dead = 0;
                 for (var current = this; current is not null; current = current.sieveLinks.Next)
                 {
-                    count++;
+                    ref var counterRef = ref current.IsDead ? ref dead : ref alive;
+                    counterRef++;
                 }
 
-                return count;
+                return (alive, dead);
             }
         }
     }

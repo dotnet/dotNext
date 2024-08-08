@@ -104,6 +104,24 @@ public partial class RandomAccessCache<TKey, TValue>
         }
 
         internal bool ReleaseCounter() => Interlocked.Decrement(ref lifetimeCounter) > 0;
+        
+        [ExcludeFromCodeCoverage]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal (int Alive, int Dead) BucketNodesCount
+        {
+            get
+            {
+                var alive = 0;
+                var dead = 0;
+                for (var current = this; current is not null; current = current.NextInBucket)
+                {
+                    ref var counterRef = ref current.IsDead ? ref dead : ref alive;
+                    counterRef++;
+                }
+
+                return (alive, dead);
+            }
+        }
     }
 
     private sealed class KeyValuePairAtomicAccess : KeyValuePair
@@ -114,7 +132,7 @@ public partial class RandomAccessCache<TKey, TValue>
             : base(key, hashCode)
             => Value = value;
 
-        public override string ToString() => $"Key = {Key} Value = {Value}, Consumed = {Task.IsCompleted}";
+        public override string ToString() => ToString(Value);
     }
 
     // non-atomic access utilizes copy-on-write semantics
@@ -142,12 +160,16 @@ public partial class RandomAccessCache<TKey, TValue>
 
         internal void ClearValue() => holder = DefaultHolder;
 
-        public override string ToString() => $"Key = {Key} Value = {Value}";
+        public override string ToString() => ToString(Value);
     }
 
+    [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}")]
     internal sealed class Bucket : AsyncExclusiveLock
     {
         internal volatile KeyValuePair? First; // volatile
+
+        [ExcludeFromCodeCoverage]
+        private (int Alive, int Dead) Count => First?.BucketNodesCount ?? default;
 
         private void Remove(KeyValuePair? previous, KeyValuePair current)
         {
