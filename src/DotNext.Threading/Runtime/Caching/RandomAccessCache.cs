@@ -89,11 +89,11 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             await bucket.AcquireAsync(token).ConfigureAwait(false);
             lockTaken = true;
 
-            if (bucket.Modify(keyComparerCopy, key, hashCode, out var previousOrValueHolder))
-                return new(this, previousOrValueHolder);
+            if (bucket.Modify(keyComparerCopy, key, hashCode) is { } valueHolder)
+                return new(this, valueHolder);
 
             lockTaken = false;
-            return new(this, bucket, previousOrValueHolder, key, hashCode);
+            return new(this, bucket, key, hashCode);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
         {
@@ -232,33 +232,31 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     public readonly struct ReadOrWriteSession : IDisposable
     {
         private readonly RandomAccessCache<TKey, TValue> cache;
-        private readonly Bucket? bucket; // null if value exists
-        private readonly KeyValuePair? valueHolderOrPrevious;
+        private readonly object bucketOrValueHolder; // Bucket or KeyValuePair
         private readonly TKey key;
         private readonly int hashCode;
 
-        internal ReadOrWriteSession(RandomAccessCache<TKey, TValue> cache, Bucket bucket, KeyValuePair? previous, TKey key, int hashCode)
+        internal ReadOrWriteSession(RandomAccessCache<TKey, TValue> cache, Bucket bucket, TKey key, int hashCode)
         {
             this.cache = cache;
-            this.bucket = bucket;
+            bucketOrValueHolder = bucket;
             this.key = key;
             this.hashCode = hashCode;
-            valueHolderOrPrevious = previous;
         }
 
         internal ReadOrWriteSession(RandomAccessCache<TKey, TValue> cache, KeyValuePair valueHolder)
         {
             this.cache = cache;
-            valueHolderOrPrevious = valueHolder;
+            bucketOrValueHolder = valueHolder;
             key = valueHolder.Key;
             hashCode = valueHolder.KeyHashCode;
         }
 
         public bool TryGetValue([MaybeNullWhen(false)] out TValue result)
         {
-            if (bucket is null && valueHolderOrPrevious is not null)
+            if (bucketOrValueHolder is KeyValuePair valueHolder)
             {
-                result = GetValue(valueHolderOrPrevious);
+                result = GetValue(valueHolder);
                 return true;
             }
 
@@ -268,34 +266,33 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 
         public void SetValue(TValue value)
         {
-            if (bucket is not null)
+            switch (bucketOrValueHolder)
             {
-                // promote a new value
-                var newPair = CreatePair(key!, value, hashCode);
-                cache.Promote(newPair);
-                ref var location = ref valueHolderOrPrevious is null ? ref bucket.First : ref valueHolderOrPrevious.NextInBucket;
-                Volatile.Write(ref location, newPair);
-            }
-            else if (valueHolderOrPrevious is not null)
-            {
-                RandomAccessCache<TKey, TValue>.SetValue(valueHolderOrPrevious, value);
-            }
-            else
-            {
-                throw new InvalidOperationException();
+                case Bucket bucket:
+                    // promote a new value
+                    var newPair = CreatePair(key!, value, hashCode);
+                    cache.Promote(newPair);
+                    bucket.Add(newPair);
+                    break;
+                case KeyValuePair existingPair:
+                    RandomAccessCache<TKey, TValue>.SetValue(existingPair, value);
+                    break;
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
         void IDisposable.Dispose()
         {
-            if (bucket is not null)
+            switch (bucketOrValueHolder)
             {
-                bucket.Release();
-            }
-            else if (valueHolderOrPrevious?.ReleaseCounter() is false)
-            {
-                cache.OnEviction?.Invoke(key, GetValue(valueHolderOrPrevious));
-                ClearValue(valueHolderOrPrevious);
+                case Bucket bucket:
+                    bucket.Release();
+                    break;
+                case KeyValuePair pair when pair.ReleaseCounter() is false:
+                    cache.OnEviction?.Invoke(key, GetValue(pair));
+                    ClearValue(pair);
+                    break;
             }
         }
     }

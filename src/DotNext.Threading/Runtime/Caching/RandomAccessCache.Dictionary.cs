@@ -166,14 +166,20 @@ public partial class RandomAccessCache<TKey, TValue>
     [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}")]
     internal sealed class Bucket : AsyncExclusiveLock
     {
-        internal volatile KeyValuePair? First; // volatile
+        private volatile KeyValuePair? first; // volatile
 
         [ExcludeFromCodeCoverage]
-        private (int Alive, int Dead) Count => First?.BucketNodesCount ?? default;
+        private (int Alive, int Dead) Count => first?.BucketNodesCount ?? default;
+
+        internal void Add(KeyValuePair pair)
+        {
+            pair.NextInBucket = first;
+            first = pair;
+        }
 
         private void Remove(KeyValuePair? previous, KeyValuePair current)
         {
-            ref var location = ref previous is null ? ref First : ref previous.NextInBucket;
+            ref var location = ref previous is null ? ref first : ref previous.NextInBucket;
             Volatile.Write(ref location, current.NextInBucket);
         }
 
@@ -184,7 +190,7 @@ public partial class RandomAccessCache<TKey, TValue>
             // remove all dead nodes from the bucket
             if (keyComparer is null)
             {
-                for (KeyValuePair? current = First, previous = null;
+                for (KeyValuePair? current = first, previous = null;
                      current is not null;
                      previous = current, current = current.NextInBucket)
                 {
@@ -203,7 +209,7 @@ public partial class RandomAccessCache<TKey, TValue>
             }
             else
             {
-                for (KeyValuePair? current = First, previous = null;
+                for (KeyValuePair? current = first, previous = null;
                      current is not null;
                      previous = current, current = current.NextInBucket)
                 {
@@ -231,7 +237,7 @@ public partial class RandomAccessCache<TKey, TValue>
             // remove all dead nodes from the bucket
             if (keyComparer is null)
             {
-                for (KeyValuePair? current = First, previous = null;
+                for (KeyValuePair? current = first, previous = null;
                      current is not null;
                      previous = current, current = current.NextInBucket)
                 {
@@ -251,7 +257,7 @@ public partial class RandomAccessCache<TKey, TValue>
             }
             else
             {
-                for (KeyValuePair? current = First, previous = null;
+                for (KeyValuePair? current = first, previous = null;
                      current is not null;
                      previous = current, current = current.NextInBucket)
                 {
@@ -273,13 +279,12 @@ public partial class RandomAccessCache<TKey, TValue>
             return result;
         }
 
-        internal bool Modify(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode,
-            [NotNullWhen(true)] out KeyValuePair? previousOrValueHolder)
+        internal KeyValuePair? Modify(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
         {
-            KeyValuePair? previous = null, valueHolder = null;
+            KeyValuePair? valueHolder = null;
             if (keyComparer is null)
             {
-                for (var current = First; current is not null; previous = current, current = current.NextInBucket)
+                for (KeyValuePair? current = first, previous = null; current is not null; previous = current, current = current.NextInBucket)
                 {
                     if (valueHolder is null && hashCode == current.KeyHashCode
                                             && EqualityComparer<TKey>.Default.Equals(key, current.Key)
@@ -297,7 +302,7 @@ public partial class RandomAccessCache<TKey, TValue>
             }
             else
             {
-                for (var current = First; current is not null; previous = current, current = current.NextInBucket)
+                for (KeyValuePair? current = first, previous = null; current is not null; previous = current, current = current.NextInBucket)
                 {
                     if (valueHolder is null && hashCode == current.KeyHashCode
                                             && keyComparer.Equals(key, current.Key)
@@ -314,14 +319,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 }
             }
 
-            if (valueHolder is null)
-            {
-                previousOrValueHolder = previous;
-                return false;
-            }
-
-            previousOrValueHolder = valueHolder;
-            return true;
+            return valueHolder;
         }
     }
 }
