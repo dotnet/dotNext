@@ -81,8 +81,24 @@ public partial class RandomAccessCache<TKey, TValue>
                 {
                     OnEviction?.Invoke(removedPair.Key, GetValue(removedPair));
                     ClearValue(removedPair);
+                    TryCleanUpBucket(GetBucket(removedPair.KeyHashCode));
                     break;
                 }
+            }
+        }
+    }
+
+    private void TryCleanUpBucket(Bucket bucket)
+    {
+        if (bucket.TryAcquire())
+        {
+            try
+            {
+                bucket.CleanUp(keyComparer);
+            }
+            finally
+            {
+                bucket.Release();
             }
         }
     }

@@ -321,5 +321,34 @@ public partial class RandomAccessCache<TKey, TValue>
 
             return valueHolder;
         }
+
+        internal void CleanUp(IEqualityComparer<TKey>? keyComparer)
+        {
+            // remove all dead nodes from the bucket
+            if (keyComparer is null)
+            {
+                for (KeyValuePair? current = first, previous = null;
+                     current is not null;
+                     previous = current, current = current.NextInBucket)
+                {
+                    if (current.IsDead)
+                    {
+                        Remove(previous, current);
+                    }
+                }
+            }
+            else
+            {
+                for (KeyValuePair? current = first, previous = null;
+                     current is not null;
+                     previous = current, current = current.NextInBucket)
+                {
+                    if (current.IsDead)
+                    {
+                        Remove(previous, current);
+                    }
+                }
+            }
+        }
     }
 }
