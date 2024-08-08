@@ -91,7 +91,7 @@ sealed class BenchmarkState
     private Task ReadOrAddAsync(string fileName, RandomAccessCache<string, MemoryOwner<byte>> cache)
     {
         Task task;
-        if (cache.TryGet(fileName, out var handle))
+        if (cache.TryRead(fileName, out var handle))
         {
             using (handle)
             {

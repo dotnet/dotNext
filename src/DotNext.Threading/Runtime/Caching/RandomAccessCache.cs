@@ -119,7 +119,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <param name="key">The key of the cache record.</param>
     /// <param name="session">A session that can be used to read the cached record.</param>
     /// <returns><see langword="true"/> if the record is available for reading and the session is active; otherwise, <see langword="false"/>.</returns>
-    public bool TryGet(TKey key, out ReadSession session)
+    public bool TryRead(TKey key, out ReadSession session)
     {
         var keyComparerCopy = KeyComparer;
         var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
