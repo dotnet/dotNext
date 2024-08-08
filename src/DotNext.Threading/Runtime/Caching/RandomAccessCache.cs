@@ -298,7 +298,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             {
                 case Bucket bucket:
                     // promote a new value
-                    var newPair = CreatePair(key!, value, hashCode);
+                    var newPair = CreatePair(key, value, hashCode);
                     cache.Promote(newPair);
                     bucket.Add(newPair);
                     break;
