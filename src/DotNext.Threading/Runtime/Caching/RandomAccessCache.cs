@@ -204,6 +204,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         }
     }
 
+    /// <summary>
+    /// Represents a session that can be used to read the cache record value.
+    /// </summary>
+    /// <remarks>
+    /// While session alive, the record cannot be evicted.
+    /// </remarks>
     [StructLayout(LayoutKind.Auto)]
     public readonly struct ReadSession : IDisposable
     {
@@ -216,8 +222,14 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             this.valueHolder = valueHolder;
         }
 
+        /// <summary>
+        /// Gets the value of the cache record.
+        /// </summary>
         public TValue Value => GetValue(valueHolder);
 
+        /// <summary>
+        /// Closes the session.
+        /// </summary>
         void IDisposable.Dispose()
         {
             if (valueHolder?.ReleaseCounter() is false)
@@ -228,6 +240,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         }
     }
 
+    /// <summary>
+    /// Represents a session that can be used to read, modify or promote the cache record value.
+    /// </summary>
+    /// <remarks>
+    /// While session alive, the record cannot be evicted.
+    /// </remarks>
     [StructLayout(LayoutKind.Auto)]
     public readonly struct ReadOrWriteSession : IDisposable
     {
@@ -252,6 +270,11 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             hashCode = valueHolder.KeyHashCode;
         }
 
+        /// <summary>
+        /// Tries to get the value of the cache record.
+        /// </summary>
+        /// <param name="result">The value of the cache record.</param>
+        /// <returns><see langword="true"/> if value exists; otherwise, <see langword="false"/>.</returns>
         public bool TryGetValue([MaybeNullWhen(false)] out TValue result)
         {
             if (bucketOrValueHolder is KeyValuePair valueHolder)
@@ -264,6 +287,11 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             return false;
         }
 
+        /// <summary>
+        /// Promotes or modifies the cache record value.
+        /// </summary>
+        /// <param name="value">The value to promote or replace the existing value.</param>
+        /// <exception cref="InvalidOperationException">The session is invalid.</exception>
         public void SetValue(TValue value)
         {
             switch (bucketOrValueHolder)
@@ -282,6 +310,9 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             }
         }
 
+        /// <summary>
+        /// Closes the session.
+        /// </summary>
         void IDisposable.Dispose()
         {
             switch (bucketOrValueHolder)
