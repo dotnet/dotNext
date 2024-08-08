@@ -5,7 +5,7 @@ using DotNext.Buffers;
 using DotNext.Diagnostics;
 using DotNext.Runtime.Caching;
 
-// Usage: program <number-of-entries> <cache-size> <duration-in-seconds> <parallel-requests> <mode:cache|nocache>
+// Usage: program <number-of-entries> <cache-size> <duration-in-seconds> <parallel-requests>
 
 switch (args)
 {
