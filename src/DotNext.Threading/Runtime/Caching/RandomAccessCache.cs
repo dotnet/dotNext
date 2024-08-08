@@ -291,16 +291,13 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         /// Promotes or modifies the cache record value.
         /// </summary>
         /// <param name="value">The value to promote or replace the existing value.</param>
-        /// <exception cref="InvalidOperationException">The session is invalid.</exception>
+        /// <exception cref="InvalidOperationException">The session is invalid; the value promotes more than once.</exception>
         public void SetValue(TValue value)
         {
             switch (bucketOrValueHolder)
             {
-                case Bucket bucket:
-                    // promote a new value
-                    var newPair = CreatePair(key, value, hashCode);
+                case Bucket bucket when bucket.TryAdd(cache.keyComparer, key, hashCode, value) is { } newPair:
                     cache.Promote(newPair);
-                    bucket.Add(newPair);
                     break;
                 case KeyValuePair existingPair:
                     RandomAccessCache<TKey, TValue>.SetValue(existingPair, value);

@@ -77,4 +77,18 @@ public sealed class RandomAccessCacheTests : Test
             Equal("10", session.Value);
         }
     }
+    
+    [Fact]
+    public static async Task AddTwice()
+    {
+        await using var cache = new RandomAccessCache<long, string>(15);
+
+        using (var session = await cache.ChangeAsync(10L))
+        {
+            False(session.TryGetValue(out _));
+            session.SetValue("10");
+
+            Throws<InvalidOperationException>(() => session.SetValue("20"));
+        }
+    }
 }

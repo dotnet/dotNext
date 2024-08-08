@@ -171,10 +171,20 @@ public partial class RandomAccessCache<TKey, TValue>
         [ExcludeFromCodeCoverage]
         private (int Alive, int Dead) Count => first?.BucketNodesCount ?? default;
 
-        internal void Add(KeyValuePair pair)
+        internal KeyValuePair? TryAdd(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode, TValue value)
         {
-            pair.NextInBucket = first;
-            first = pair;
+            var firstCopy = first;
+            if (firstCopy is not null && firstCopy.KeyHashCode == hashCode
+                                      && (keyComparer?.Equals(key, firstCopy.Key)
+                                          ?? EqualityComparer<TKey>.Default.Equals(key, firstCopy.Key)))
+            {
+                return null;
+            }
+
+            var newPair = CreatePair(key, value, hashCode);
+            newPair.NextInBucket = firstCopy;
+            first = newPair;
+            return newPair;
         }
 
         private void Remove(KeyValuePair? previous, KeyValuePair current)
