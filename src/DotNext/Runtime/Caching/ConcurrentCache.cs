@@ -16,6 +16,7 @@ namespace DotNext.Runtime.Caching;
 /// </remarks>
 /// <typeparam name="TKey">The type of the keys.</typeparam>
 /// <typeparam name="TValue">The type of the cache items.</typeparam>
+[Obsolete("Use RandomAccessCache from DotNext.Threading library instead.")]
 public partial class ConcurrentCache<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
     where TKey : notnull
 {
