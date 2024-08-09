@@ -85,17 +85,17 @@ sealed class BenchmarkState
         }
     }
 
-    internal Task ReadOrAddAsync(IReadOnlyList<string> files, RandomAccessCache<string, MemoryOwner<byte>> cache)
+    private Task ReadOrAddAsync(IReadOnlyList<string> files, RandomAccessCache<string, MemoryOwner<byte>> cache)
         => ReadOrAddAsync(Random.Shared.Peek(files).Value, cache);
     
     private Task ReadOrAddAsync(string fileName, RandomAccessCache<string, MemoryOwner<byte>> cache)
     {
         Task task;
-        if (cache.TryRead(fileName, out var handle))
+        if (cache.TryRead(fileName, out var session))
         {
-            using (handle)
+            using (session)
             {
-                Crc32.HashToUInt32(handle.Value.Span);
+                Crc32.HashToUInt32(session.Value.Span);
             }
             
             task = Task.CompletedTask;
@@ -110,8 +110,8 @@ sealed class BenchmarkState
 
     private async Task AddAsync(string fileName, RandomAccessCache<string, MemoryOwner<byte>> cache)
     {
-        using var handle = await cache.ChangeAsync(fileName).ConfigureAwait(false);
-        if (handle.TryGetValue(out var buffer))
+        using var session = await cache.ChangeAsync(fileName).ConfigureAwait(false);
+        if (session.TryGetValue(out var buffer))
         {
             Crc32.HashToUInt32(buffer.Span);
         }
@@ -120,7 +120,7 @@ sealed class BenchmarkState
             using var fileHandle = File.OpenHandle(fileName, options: FileOptions.Asynchronous | FileOptions.SequentialScan);
             buffer = Memory.AllocateExactly<byte>(CacheFileSize);
             await RandomAccess.ReadAsync(fileHandle, buffer.Memory, fileOffset: 0L).ConfigureAwait(false);
-            handle.SetValue(buffer);
+            session.SetValue(buffer);
         }
     }
 }
