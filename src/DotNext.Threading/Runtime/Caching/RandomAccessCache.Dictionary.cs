@@ -353,5 +353,38 @@ public partial class RandomAccessCache<TKey, TValue>
                 }
             }
         }
+        
+        internal void Invalidate(IEqualityComparer<TKey>? keyComparer, Action<KeyValuePair> cleanup)
+        {
+            // remove all dead nodes from the bucket
+            if (keyComparer is null)
+            {
+                for (KeyValuePair? current = first, previous = null;
+                     current is not null;
+                     previous = current, current = current.NextInBucket)
+                {
+                    Remove(previous, current);
+                    
+                    if (current.MarkAsEvicted() && current.ReleaseCounter() is false)
+                    {
+                        cleanup.Invoke(current);
+                    }
+                }
+            }
+            else
+            {
+                for (KeyValuePair? current = first, previous = null;
+                     current is not null;
+                     previous = current, current = current.NextInBucket)
+                {
+                    Remove(previous, current);
+                    
+                    if (current.MarkAsEvicted() && current.ReleaseCounter() is false)
+                    {
+                        cleanup.Invoke(current);
+                    }
+                }
+            }
+        }
     }
 }

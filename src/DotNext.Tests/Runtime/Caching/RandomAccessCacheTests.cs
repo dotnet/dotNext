@@ -122,7 +122,22 @@ public sealed class RandomAccessCacheTests : Test
             Equal("10", session.Value);
         }
     }
-    
+
+    [Fact]
+    public static async Task AddInvalidate()
+    {
+        await using var cache = new RandomAccessCache<long, string>(15);
+
+        using (var session = await cache.ChangeAsync(10L))
+        {
+            False(session.TryGetValue(out _));
+            session.SetValue("10");
+        }
+
+        False(await cache.InvalidateAsync(11L));
+        True(await cache.InvalidateAsync(10L));
+    }
+
     [Fact]
     public static async Task AddTwice()
     {
@@ -135,5 +150,46 @@ public sealed class RandomAccessCacheTests : Test
 
             Throws<InvalidOperationException>(() => session.SetValue("20"));
         }
+    }
+
+    [Fact]
+    public static async Task DisposedCacheAccess()
+    {
+        var cache = new RandomAccessCache<long, string>(18);
+        await cache.DisposeAsync();
+
+        await ThrowsAsync<ObjectDisposedException>(cache.ChangeAsync(0L).AsTask);
+        await ThrowsAsync<ObjectDisposedException>(cache.TryRemoveAsync(0L).AsTask);
+        await ThrowsAsync<ObjectDisposedException>(cache.InvalidateAsync().AsTask);
+        await ThrowsAsync<ObjectDisposedException>(cache.InvalidateAsync(10L).AsTask);
+    }
+
+    [Fact]
+    public static async Task DisposedCacheAccess2()
+    {
+        using var cts = new CancellationTokenSource();
+        var cache = new RandomAccessCache<long, string>(18);
+        await cache.DisposeAsync();
+
+        await ThrowsAsync<ObjectDisposedException>(cache.ChangeAsync(0L, cts.Token).AsTask);
+        await ThrowsAsync<ObjectDisposedException>(cache.TryRemoveAsync(0L, cts.Token).AsTask);
+        await ThrowsAsync<ObjectDisposedException>(cache.InvalidateAsync(cts.Token).AsTask);
+        await ThrowsAsync<ObjectDisposedException>(cache.InvalidateAsync(10L, cts.Token).AsTask);
+    }
+
+    [Fact]
+    public static async Task Invalidation()
+    {
+        await using var cache = new RandomAccessCache<long, string>(15);
+
+        for (long i = 0; i < 20; i++)
+        {
+            using var handle = await cache.ChangeAsync(i);
+            False(handle.TryGetValue(out _));
+
+            handle.SetValue(i.ToString());
+        }
+
+        await cache.InvalidateAsync();
     }
 }

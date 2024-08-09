@@ -51,6 +51,8 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         evictionTask = DoEvictionAsync();
     }
 
+    private string ObjectName => GetType().Name;
+
     /// <summary>
     /// Gets or sets a callback that can be used to clean up the evicted value.
     /// </summary>
@@ -100,8 +102,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
         {
             throw cts.CancellationOrigin == lifetimeToken
-                ? new ObjectDisposedException(GetType().Name)
+                ? new ObjectDisposedException(ObjectName)
                 : new OperationCanceledException(cts.CancellationOrigin);
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
+        {
+            throw new ObjectDisposedException(ObjectName);
         }
         finally
         {
@@ -139,7 +145,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <summary>
     /// Tries to invalidate cache record associated with the provided key.
     /// </summary>
-    /// <param name="key">The key of the cache record.</param>
+    /// <param name="key">The key of the cache record to be removed.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>
     /// The session that can be used to read the removed cache record;
@@ -154,9 +160,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         var bucket = GetBucket(hashCode);
 
         var cts = token.LinkTo(lifetimeToken);
+        var lockTaken = false;
         try
         {
             await bucket.AcquireAsync(token).ConfigureAwait(false);
+            lockTaken = true;
+
             return bucket.TryRemove(keyComparerCopy, key, hashCode) is { } removedPair
                 ? new ReadSession(OnEviction, removedPair)
                 : null;
@@ -167,9 +176,127 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 ? new ObjectDisposedException(GetType().Name)
                 : new OperationCanceledException(cts.CancellationOrigin);
         }
+        catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
+        {
+            throw new ObjectDisposedException(ObjectName);
+        }
         finally
         {
-            bucket.Release();
+            if (lockTaken)
+                bucket.Release();
+        }
+    }
+
+    /// <summary>
+    /// Invalidates the cache record associated with the specified key.
+    /// </summary>
+    /// <param name="key">The key of the cache record to be removed.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if the cache record associated with <paramref name="key"/> is removed successfully; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    public async ValueTask<bool> InvalidateAsync(TKey key, CancellationToken token = default)
+    {
+        var keyComparerCopy = KeyComparer;
+        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
+        var bucket = GetBucket(hashCode);
+
+        var cts = token.LinkTo(lifetimeToken);
+        var lockTaken = false;
+        KeyValuePair? removedPair;
+        try
+        {
+            await bucket.AcquireAsync(token).ConfigureAwait(false);
+            lockTaken = true;
+            removedPair = bucket.TryRemove(keyComparerCopy, key, hashCode);
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
+        {
+            throw cts.CancellationOrigin == lifetimeToken
+                ? new ObjectDisposedException(GetType().Name)
+                : new OperationCanceledException(cts.CancellationOrigin);
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
+        {
+            throw new ObjectDisposedException(ObjectName);
+        }
+        finally
+        {
+            if (lockTaken)
+                bucket.Release();
+        }
+
+        if (removedPair is null)
+        {
+            return false;
+        }
+
+        if (removedPair.ReleaseCounter() is false)
+        {
+            OnEviction?.Invoke(key, GetValue(removedPair));
+            ClearValue(removedPair);
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Invalidates the entire cache.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
+    public async ValueTask InvalidateAsync(CancellationToken token = default)
+    {
+        var cleanup = CreateCleanupAction(OnEviction);
+        var cts = token.LinkTo(lifetimeToken);
+
+        try
+        {
+            foreach (var bucket in buckets)
+            {
+                var lockTaken = false;
+                try
+                {
+                    await bucket.AcquireAsync(token).ConfigureAwait(false);
+                    lockTaken = true;
+
+                    bucket.Invalidate(keyComparer, cleanup);
+                }
+                catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
+                {
+                    throw cts.CancellationOrigin == lifetimeToken
+                        ? new ObjectDisposedException(GetType().Name)
+                        : new OperationCanceledException(cts.CancellationOrigin);
+                }
+                catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
+                {
+                    throw new ObjectDisposedException(ObjectName);
+                }
+                finally
+                {
+                    if (lockTaken)
+                        bucket.Release();
+                }
+            }
+        }
+        finally
+        {
+            cts?.Dispose();
+        }
+
+        static Action<KeyValuePair> CreateCleanupAction(Action<TKey, TValue>? eviction)
+        {
+            return eviction is not null
+                ? pair => CleanUp(eviction, pair)
+                : ClearValue;
+        }
+
+        static void CleanUp(Action<TKey, TValue> eviction, KeyValuePair removedPair)
+        {
+            eviction(removedPair.Key, GetValue(removedPair));
+            ClearValue(removedPair);
         }
     }
 
