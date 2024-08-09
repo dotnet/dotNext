@@ -1,4 +1,8 @@
+using System.Runtime.CompilerServices;
+
 namespace DotNext.Runtime.Caching;
+
+using CompilerServices;
 
 public sealed class RandomAccessCacheTests : Test
 {
@@ -47,7 +51,7 @@ public sealed class RandomAccessCacheTests : Test
                 using var writeSession = await cache.ChangeAsync(key);
                 if (writeSession.TryGetValue(out var value))
                 {
-                    Equal(key.ToString(), readSession.Value);
+                    Equal(key.ToString(), value);
                 }
                 else
                 {
@@ -57,6 +61,47 @@ public sealed class RandomAccessCacheTests : Test
         }
 
         await evictedItem.Task;
+    }
+    
+    [Fact]
+    public static async Task StressTest()
+    {
+        await using var cache = new RandomAccessCache<long, string>(15);
+
+        const long accessCount = 1500;
+
+        var task1 = RequestLoop(cache);
+        var task2 = RequestLoop(cache);
+
+        await Task.WhenAll(task1, task2);
+
+        [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
+        static async Task RequestLoop(RandomAccessCache<long, string> cache)
+        {
+            for (long i = 0; i < accessCount; i++)
+            {
+                var key = Random.Shared.NextInt64(accessCount);
+                if (cache.TryRead(key, out var readSession))
+                {
+                    using (readSession)
+                    {
+                        Equal(key.ToString(), readSession.Value);
+                    }
+                }
+                else
+                {
+                    using var writeSession = await cache.ChangeAsync(key);
+                    if (writeSession.TryGetValue(out var value))
+                    {
+                        Equal(key.ToString(), value);
+                    }
+                    else
+                    {
+                        writeSession.SetValue(key.ToString());
+                    }
+                }
+            }
+        }
     }
 
     [Fact]
