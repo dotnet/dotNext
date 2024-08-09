@@ -21,30 +21,22 @@ public partial class RandomAccessCache<TKey, TValue>
     {
         while (!IsDisposingOrDisposed)
         {
-            KeyValuePair dequeued;
-
-            // inlined to remove allocation of async state machine on every call
-            for (dequeued = promotionHead; !dequeued.TryConsumePromotion();)
+            if (queueHead.NextInQueue is KeyValuePair newHead)
             {
-                if (dequeued.NextInQueue is { } newHead)
-                {
-                    var tmp = Interlocked.CompareExchange(ref promotionHead, newHead, dequeued);
-                    dequeued = ReferenceEquals(tmp, dequeued) ? newHead : tmp;
-                }
-                else if (!await completionSource.WaitAsync(dequeued.Task).ConfigureAwait(false))
-                {
-                    return;
-                }
+                queueHead.NextInQueue = Sentinel.Instance;
+                queueHead = newHead;
+            }
+            else if (await completionSource.WaitAsync(queueHead.Task).ConfigureAwait(false))
+            {
+                continue;
+            }
+            else
+            {
+                break;
             }
 
-            switch (dequeued)
-            {
-                case FakeKeyValuePair:
-                    break;
-                default:
-                    EvictOrInsert(dequeued);
-                    break;
-            }
+            Debug.Assert(queueHead is not FakeKeyValuePair);
+            EvictOrInsert(queueHead);
         }
     }
 

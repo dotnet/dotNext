@@ -45,7 +45,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 
         lifetimeSource = new();
         lifetimeToken = lifetimeSource.Token;
-        promotionHead = promotionTail = new FakeKeyValuePair();
+        queueHead = queueTail = new FakeKeyValuePair();
 
         completionSource = new();
         evictionTask = DoEvictionAsync();

@@ -5,29 +5,27 @@ namespace DotNext.Runtime.Caching;
 
 public partial class RandomAccessCache<TKey, TValue>
 {
-    private volatile KeyValuePair promotionHead, promotionTail;
+    // Queue has multiple producers and a single consumer. Consumer doesn't require special lock-free approach to dequeue.
+    private KeyValuePair queueTail, queueHead;
 
     private void Promote(KeyValuePair newPair)
     {
-        KeyValuePair? currentTail, tmp = promotionTail;
+        KeyValuePair currentTail;
         do
         {
-            currentTail = tmp;
-            tmp = Interlocked.CompareExchange(ref currentTail.NextInQueue, newPair, null);
-        } while (tmp is not null);
+            currentTail = queueTail;
+        } while (Interlocked.CompareExchange(ref currentTail.NextInQueue, newPair, null) is not null);
 
         // attempt to install a new tail. Do not retry if failed, competing thread installed more recent version of it
-        Interlocked.CompareExchange(ref promotionTail, newPair, currentTail);
+        Interlocked.CompareExchange(ref queueTail, newPair, currentTail);
 
         currentTail.TrySetResult();
     }
 
     partial class KeyValuePair
     {
-        internal KeyValuePair? NextInQueue;
-        private volatile uint promoted;
-
-        internal bool TryConsumePromotion() => Interlocked.Exchange(ref promoted, 1U) is 0U;
+        // null, or KeyValuePair, or Sentinel.Instance
+        internal object? NextInQueue;
         
         [ExcludeFromCodeCoverage]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -36,7 +34,7 @@ public partial class RandomAccessCache<TKey, TValue>
             get
             {
                 var count = 0;
-                for (var current = this; current is not null; current = current.NextInQueue)
+                for (var current = this; current is not null; current = current.NextInQueue as KeyValuePair)
                 {
                     count++;
                 }

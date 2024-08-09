@@ -12,7 +12,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
     [ExcludeFromCodeCoverage]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private int QueueSize => promotionHead?.QueueLength ?? 0;
+    private int QueueSize => queueHead?.QueueLength ?? 0;
 
     internal partial class KeyValuePair
     {
