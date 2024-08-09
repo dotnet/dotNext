@@ -3,12 +3,16 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Runtime.Caching;
 
-[DebuggerDisplay($"EvictionListSize = {{{nameof(EvictionListSize)}}}")]
+[DebuggerDisplay($"EvictionListSize = {{{nameof(EvictionListSize)}}}, QueueSize = {{{nameof(QueueSize)}}}")]
 public partial class RandomAccessCache<TKey, TValue>
 {
     [ExcludeFromCodeCoverage]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private (int Dead, int Alive) EvictionListSize => evictionHead?.EvictionNodesCount ?? default;
+
+    [ExcludeFromCodeCoverage]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private int QueueSize => promotionHead?.QueueLength ?? 0;
 
     internal partial class KeyValuePair
     {

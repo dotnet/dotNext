@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext.Runtime.Caching;
 
 public partial class RandomAccessCache<TKey, TValue>
@@ -10,7 +13,7 @@ public partial class RandomAccessCache<TKey, TValue>
         do
         {
             currentTail = tmp;
-            tmp = Interlocked.CompareExchange(ref currentTail.NextPromotion, newPair, null);
+            tmp = Interlocked.CompareExchange(ref currentTail.NextInQueue, newPair, null);
         } while (tmp is not null);
 
         // attempt to install a new tail. Do not retry if failed, competing thread installed more recent version of it
@@ -21,10 +24,26 @@ public partial class RandomAccessCache<TKey, TValue>
 
     partial class KeyValuePair
     {
-        internal KeyValuePair? NextPromotion;
+        internal KeyValuePair? NextInQueue;
         private volatile uint promoted;
 
         internal bool TryConsumePromotion() => Interlocked.Exchange(ref promoted, 1U) is 0U;
+        
+        [ExcludeFromCodeCoverage]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal int QueueLength
+        {
+            get
+            {
+                var count = 0;
+                for (var current = this; current is not null; current = current.NextInQueue)
+                {
+                    count++;
+                }
+
+                return count;
+            }
+        }
     }
 
     // Never call GetValue on this class, it has no storage for TValue.

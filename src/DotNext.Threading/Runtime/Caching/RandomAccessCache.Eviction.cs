@@ -26,7 +26,7 @@ public partial class RandomAccessCache<TKey, TValue>
             // inlined to remove allocation of async state machine on every call
             for (dequeued = promotionHead; !dequeued.TryConsumePromotion();)
             {
-                if (dequeued.NextPromotion is { } newHead)
+                if (dequeued.NextInQueue is { } newHead)
                 {
                     var tmp = Interlocked.CompareExchange(ref promotionHead, newHead, dequeued);
                     dequeued = ReferenceEquals(tmp, dequeued) ? newHead : tmp;

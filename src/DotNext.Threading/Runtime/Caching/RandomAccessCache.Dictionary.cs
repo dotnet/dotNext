@@ -14,6 +14,7 @@ public partial class RandomAccessCache<TKey, TValue>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static TValue GetValue(KeyValuePair pair)
     {
+        Debug.Assert(pair is not null);
         Debug.Assert(pair is not FakeKeyValuePair);
         Debug.Assert(Atomic.IsAtomic<TValue>() ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
 
