@@ -46,6 +46,8 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         lifetimeSource = new();
         lifetimeToken = lifetimeSource.Token;
         promotionHead = promotionTail = new FakeKeyValuePair();
+
+        completionSource = new();
         evictionTask = DoEvictionAsync();
     }
 
@@ -186,15 +188,19 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     {
         try
         {
-            if (disposing && Interlocked.Exchange(ref lifetimeSource, null) is { } cts)
+            if (disposing)
             {
-                try
+                completionSource.Dispose();
+                if (Interlocked.Exchange(ref lifetimeSource, null) is { } cts)
                 {
-                    cts.Cancel(throwOnFirstException: false);
-                }
-                finally
-                {
-                    cts.Dispose();
+                    try
+                    {
+                        cts.Cancel(throwOnFirstException: false);
+                    }
+                    finally
+                    {
+                        cts.Dispose();
+                    }
                 }
             }
         }

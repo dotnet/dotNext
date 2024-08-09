@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using static System.Threading.Timeout;
+using System.Threading.Tasks.Sources;
 
 namespace DotNext.Runtime.Caching;
 
@@ -9,6 +9,8 @@ using CompilerServices;
 
 public partial class RandomAccessCache<TKey, TValue>
 {
+    private readonly CancelableValueTaskCompletionSource completionSource;
+    
     // SIEVE core
     private readonly int maxCacheSize;
     private int currentSize;
@@ -17,11 +19,10 @@ public partial class RandomAccessCache<TKey, TValue>
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task DoEvictionAsync()
     {
-        var cancellationTask = Task.Delay(InfiniteTimeSpan, lifetimeToken);
-        while (!cancellationTask.IsCompleted)
+        while (!IsDisposingOrDisposed)
         {
             KeyValuePair dequeued;
-            
+
             // inlined to remove allocation of async state machine on every call
             for (dequeued = promotionHead; !dequeued.TryConsumePromotion();)
             {
@@ -30,11 +31,9 @@ public partial class RandomAccessCache<TKey, TValue>
                     var tmp = Interlocked.CompareExchange(ref promotionHead, newHead, dequeued);
                     dequeued = ReferenceEquals(tmp, dequeued) ? newHead : tmp;
                 }
-                else
+                else if (!await completionSource.WaitAsync(dequeued.Task).ConfigureAwait(false))
                 {
-                    var resultTask = await Task.WhenAny(dequeued.Task, cancellationTask).ConfigureAwait(false);
-                    if (ReferenceEquals(resultTask, cancellationTask))
-                        return;
+                    return;
                 }
             }
 
@@ -192,4 +191,97 @@ public partial class RandomAccessCache<TKey, TValue>
             }
         }
     }
+
+    private sealed class CancelableValueTaskCompletionSource : Disposable, IValueTaskSource<bool>
+    {
+        private readonly Action completion;
+        private object? continuationState;
+        private volatile Action<object?>? continuation;
+        private short version;
+
+        internal CancelableValueTaskCompletionSource()
+        {
+            completion = OnCompleted;
+            version = short.MinValue;
+        }
+
+        private void MoveTo(Action<object?> stub)
+        {
+            Debug.Assert(ValueTaskSourceHelpers.IsStub(stub));
+
+            // null, non-stub => stub
+            Action<object?>? current, tmp = continuation;
+
+            do
+            {
+                current = tmp;
+                if (current is not null && ValueTaskSourceHelpers.IsStub(current))
+                    return;
+            } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref continuation, stub, current), current));
+
+            current?.Invoke(continuationState);
+        }
+
+        private void OnCompleted() => MoveTo(ValueTaskSourceHelpers.CompletedStub);
+
+        bool IValueTaskSource<bool>.GetResult(short token)
+        {
+            Debug.Assert(token == version);
+
+            continuationState = null;
+            if (IsDisposingOrDisposed)
+                return false;
+
+            version++;
+            continuationState = null;
+            Interlocked.Exchange(ref continuation, null);
+
+            return true;
+        }
+
+        ValueTaskSourceStatus IValueTaskSource<bool>.GetStatus(short token)
+        {
+            return continuation is { } c && ValueTaskSourceHelpers.IsStub(c) || IsDisposingOrDisposed
+                ? ValueTaskSourceStatus.Succeeded
+                : ValueTaskSourceStatus.Pending;
+        }
+
+        void IValueTaskSource<bool>.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
+        {
+            continuationState = state;
+            if (Interlocked.CompareExchange(ref this.continuation, continuation, null) is not null)
+            {
+                continuation.Invoke(state);
+            }
+        }
+
+        internal ValueTask<bool> WaitAsync(Task task)
+        {
+            task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(completion);
+            return new(this, version);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                MoveTo(ValueTaskSourceHelpers.CanceledStub);
+            }
+
+            base.Dispose(disposing);
+        }
+    }
+}
+
+file static class ValueTaskSourceHelpers
+{
+    internal static readonly Action<object?> CompletedStub = Stub;
+    internal static readonly Action<object?> CanceledStub = Stub;
+    
+    private static void Stub(object? state)
+    {
+    }
+    
+    internal static bool IsStub(Action<object?> continuation)
+        => continuation.Method == CompletedStub.Method;
 }
