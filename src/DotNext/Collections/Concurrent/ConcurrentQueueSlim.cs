@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -18,7 +17,7 @@ namespace DotNext.Collections.Concurrent;
 /// <typeparam name="T">The type of the elements contained in the queue.</typeparam>
 public class ConcurrentQueueSlim<T>
 {
-    private volatile Node? head, tail;
+    private Node? head, tail;
 
     /// <summary>
     /// Adds an object to the end of this queue.
@@ -39,12 +38,10 @@ public class ConcurrentQueueSlim<T>
     
     private void EnqueueWithContention(Node currentTail, Node newNode)
     {
-        var tmp = currentTail;
-        do
+        while (Interlocked.CompareExchange(ref currentTail.NextOrSentinel, newNode, null) is not null)
         {
-            currentTail = tmp;
-            tmp = Interlocked.CompareExchange(ref currentTail.Next, newNode, null);
-        } while (tmp is not null);
+            currentTail = tail!;
+        }
 
         // attempt to install a new tail. Do not retry if failed, competing thread installed more recent version of it
         Interlocked.CompareExchange(ref tail, newNode, currentTail);
@@ -60,7 +57,7 @@ public class ConcurrentQueueSlim<T>
     /// </returns>
     public bool TryDequeue([MaybeNullWhen(false)] out T result)
     {
-        if (head is { } currentHead)
+        if (Volatile.Read(in head) is { } currentHead)
             return TryDequeueWithContention(currentHead, out result);
 
         result = default;
@@ -69,18 +66,17 @@ public class ConcurrentQueueSlim<T>
 
     private bool TryDequeueWithContention(Node currentHead, [MaybeNullWhen(false)] out T value)
     {
-        for (Node? newHead, tmp; !currentHead.TryRead(out value); currentHead = ReferenceEquals(tmp, currentHead) ? newHead : tmp)
+        for (; !currentHead.TryRead(out value); currentHead = head!)
         {
-            newHead = currentHead.Next;
-
-            if (newHead is null)
+            switch (currentHead.NextOrSentinel)
             {
-                value = default;
-                return false;
+                case null:
+                    value = default;
+                    return false;
+                case Node newHead when ReferenceEquals(Interlocked.CompareExchange(ref head, newHead, currentHead), currentHead):
+                    currentHead.NextOrSentinel = Sentinel.Instance;
+                    break;
             }
-
-            tmp = Interlocked.CompareExchange(ref head, newHead, currentHead);
-            Debug.Assert(tmp is not null);
         }
 
         return true;
@@ -155,7 +151,10 @@ public class ConcurrentQueueSlim<T>
 
     private sealed class Node(T value)
     {
-        internal Node? Next;
+        // null or Node or Sentinel.Instance
+        // Sentinel means that the node is dropped and should not be considered. This helps to avoid references from Gen2 nodes
+        // to newly added nodes
+        internal object? NextOrSentinel;
         private volatile uint visited;
 
         internal bool TryRead([MaybeNullWhen(false)] out T result)
