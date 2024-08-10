@@ -94,7 +94,7 @@ public partial class RandomAccessCache<TKey, TValue>
         }
     }
     
-    partial class KeyValuePair
+    internal partial class KeyValuePair
     {
         private const int EvictedState = -1;
         private const int NotVisitedState = 0;

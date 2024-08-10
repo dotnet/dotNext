@@ -22,7 +22,7 @@ public partial class RandomAccessCache<TKey, TValue>
         currentTail.TrySetResult();
     }
 
-    partial class KeyValuePair
+    internal partial class KeyValuePair
     {
         // null, or KeyValuePair, or Sentinel.Instance
         internal object? NextInQueue;
