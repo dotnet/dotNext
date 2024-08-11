@@ -78,7 +78,7 @@ public partial class RandomAccessCache<TKey, TValue>
         return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
     }
 
-    internal partial class KeyValuePair(TKey key, int hashCode) : TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously)
+    internal partial class KeyValuePair(TKey key, int hashCode)
     {
         internal readonly int KeyHashCode = hashCode;
         internal readonly TKey Key = key;

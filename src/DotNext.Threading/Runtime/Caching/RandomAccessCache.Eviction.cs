@@ -26,7 +26,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 queueHead.NextInQueue = Sentinel.Instance;
                 queueHead = newHead;
             }
-            else if (await completionSource.WaitAsync(queueHead.Task).ConfigureAwait(false))
+            else if (await completionSource.WaitAsync(queueHead).ConfigureAwait(false))
             {
                 continue;
             }
@@ -184,18 +184,11 @@ public partial class RandomAccessCache<TKey, TValue>
         }
     }
 
-    private sealed class CancelableValueTaskCompletionSource : Disposable, IValueTaskSource<bool>
+    private sealed class CancelableValueTaskCompletionSource : Disposable, IValueTaskSource<bool>, IThreadPoolWorkItem
     {
-        private readonly Action completion;
         private object? continuationState;
         private volatile Action<object?>? continuation;
-        private short version;
-
-        internal CancelableValueTaskCompletionSource()
-        {
-            completion = OnCompleted;
-            version = short.MinValue;
-        }
+        private short version = short.MinValue;
 
         private void MoveTo(Action<object?> stub)
         {
@@ -214,7 +207,7 @@ public partial class RandomAccessCache<TKey, TValue>
             current?.Invoke(continuationState);
         }
 
-        private void OnCompleted() => MoveTo(ValueTaskSourceHelpers.CompletedStub);
+        void IThreadPoolWorkItem.Execute() => MoveTo(ValueTaskSourceHelpers.CompletedStub);
 
         bool IValueTaskSource<bool>.GetResult(short token)
         {
@@ -224,11 +217,15 @@ public partial class RandomAccessCache<TKey, TValue>
             if (IsDisposingOrDisposed)
                 return false;
 
+            Reset();
+            return true;
+        }
+
+        private void Reset()
+        {
             version++;
             continuationState = null;
             Interlocked.Exchange(ref continuation, null);
-
-            return true;
         }
 
         ValueTaskSourceStatus IValueTaskSource<bool>.GetStatus(short token)
@@ -247,9 +244,11 @@ public partial class RandomAccessCache<TKey, TValue>
             }
         }
 
-        internal ValueTask<bool> WaitAsync(Task task)
+        internal ValueTask<bool> WaitAsync(KeyValuePair pair)
         {
-            task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(completion);
+            if (!pair.TryAttachNotificationHandler(this))
+                continuation = ValueTaskSourceHelpers.CompletedStub;
+
             return new(this, version);
         }
 
