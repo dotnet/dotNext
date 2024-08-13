@@ -1,0 +1,905 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class RandomAccessCache&lt;TKey, TValue&gt; | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class RandomAccessCache&lt;TKey, TValue&gt; | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2">
+
+
+
+  <h1 id="DotNext_Runtime_Caching_RandomAccessCache_2" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2" class="text-break">Class RandomAccessCache&lt;TKey, TValue&gt;</h1>
+  <div class="markdown level0 summary"><p>Represents concurrent cache optimized for random access.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
+    <div class="level2"><span class="xref">RandomAccessCache&lt;TKey, TValue&gt;</span></div>
+  </div>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposing">Disposable.IsDisposing</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposedTask">Disposable.DisposedTask</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_GetDisposedTask__1">Disposable.GetDisposedTask&lt;T&gt;()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException__1_System_Threading_Tasks_TaskCompletionSource___0__">Disposable.TrySetDisposedException&lt;T&gt;(TaskCompletionSource&lt;T&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException_System_Threading_Tasks_TaskCompletionSource_">Disposable.TrySetDisposedException(TaskCompletionSource)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TryBeginDispose">Disposable.TryBeginDispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(IEnumerable&lt;IAsyncDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_ReadOnlySpan_System_IDisposable__">Disposable.Dispose(ReadOnlySpan&lt;IDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_IAsyncDisposable___">Disposable.DisposeAsync(params IAsyncDisposable[])</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Runtime.html">Runtime</a>.<a class="xref" href="DotNext.Runtime.Caching.html">Caching</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_2_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class RandomAccessCache&lt;TKey, TValue&gt; : Disposable, IDisposable, IAsyncDisposable where TKey : notnull where TValue : notnull</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TKey</span></td>
+        <td><p>The type of the keys.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>The type of the values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_2_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>The cache evicts older records on overflow.</p>
+</div>
+  <h3 id="constructors">Constructors
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.%23ctor(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L34">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2__ctor_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.#ctor*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2__ctor_System_Int32_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.#ctor(System.Int32)">RandomAccessCache(int)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new cache.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RandomAccessCache(int cacheSize)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">cacheSize</span></td>
+        <td><p>Maximum cache size.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">cacheSize</code> is less than or equal to zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_Eviction.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.Eviction%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L59">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_Eviction_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Eviction*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_Eviction" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Eviction">Eviction</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a callback that can be used to clean up the evicted value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Action&lt;TKey, TValue&gt;? Eviction { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-2">Action</a>&lt;TKey, TValue&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_KeyComparer.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.KeyComparer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L64">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_KeyComparer_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.KeyComparer*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_KeyComparer" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.KeyComparer">KeyComparer</h4>
+  <div class="markdown level1 summary"><p>Gets or sets key comparer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEqualityComparer&lt;TKey&gt;? KeyComparer { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iequalitycomparer-1">IEqualityComparer</a>&lt;TKey&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ChangeAsync__0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ChangeAsync(%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L82">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ChangeAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ChangeAsync*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ChangeAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ChangeAsync(`0,System.Threading.CancellationToken)">ChangeAsync(TKey, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Opens a session that can be used to modify the value associated with the key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;RandomAccessCache&lt;TKey, TValue&gt;.ReadOrWriteSession&gt; ChangeAsync(TKey key, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache record.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html">RandomAccessCache</a>&lt;TKey, TValue&gt;.<a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.ReadOrWriteSession.html">ReadOrWriteSession</a>&gt;</td>
+        <td><p>The session that can be used to read or modify the cache record.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_2_ChangeAsync__0_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The cache guarantees that the value cannot be evicted concurrently with the returned session. However,
+the value can be evicted immediately after. The caller must dispose session.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The cache is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L314">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_Dispose_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Dispose*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_Dispose_System_Boolean_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Dispose(System.Boolean)">Dispose(bool)</h4>
+  <div class="markdown level1 summary"><p>Releases managed and unmanaged resources associated with this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">disposing</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if called from <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Dispose()</a>; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if called from finalizer <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Finalize">~Disposable()</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.DisposeAsync%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L304">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsync*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsync" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsync">DisposeAsync()</h4>
+  <div class="markdown level1 summary"><p>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask DisposeAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>A task that represents the asynchronous dispose operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsyncCore.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.DisposeAsyncCore%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L307">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsyncCore_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsyncCore*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsyncCore" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsyncCore">DisposeAsyncCore()</h4>
+  <div class="markdown level1 summary"><p>Releases managed resources associated with this object asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override ValueTask DisposeAsyncCore()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>The task representing asynchronous execution of this method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsyncCore">Disposable.DisposeAsyncCore()</a></div>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsyncCore_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method makes sense only if derived class implements <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a> interface.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.InvalidateAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L250">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync(System.Threading.CancellationToken)">InvalidateAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Invalidates the entire cache.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask InvalidateAsync(CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The cache is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync__0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.InvalidateAsync(%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L198">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync(`0,System.Threading.CancellationToken)">InvalidateAsync(TKey, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Invalidates the cache record associated with the specified key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; InvalidateAsync(TKey key, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache record to be removed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the cache record associated with <code class="paramref">key</code> is removed successfully; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The cache is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_TryRead__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.TryRead(%600%2CDotNext.Runtime.Caching.RandomAccessCache%7B%600%2C%601%7D.ReadSession%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L130">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRead_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRead*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRead__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRead(`0,DotNext.Runtime.Caching.RandomAccessCache{`0,`1}.ReadSession@)">TryRead(TKey, out ReadSession)</h4>
+  <div class="markdown level1 summary"><p>Tries to read the cached record.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryRead(TKey key, out RandomAccessCache&lt;TKey, TValue&gt;.ReadSession session)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache record.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html">RandomAccessCache</a>&lt;TKey, TValue&gt;.<a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.ReadSession.html">ReadSession</a></td>
+        <td><span class="parametername">session</span></td>
+        <td><p>A session that can be used to read the cached record.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the record is available for reading and the session is active; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRead__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The cache guarantees that the value cannot be evicted concurrently with the session. However,
+the value can be evicted immediately after. The caller must dispose session.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_TryRemoveAsync__0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.TryRemoveAsync(%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L155">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRemoveAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRemoveAsync*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRemoveAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRemoveAsync(`0,System.Threading.CancellationToken)">TryRemoveAsync(TKey, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Tries to invalidate cache record associated with the provided key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;RandomAccessCache&lt;TKey, TValue&gt;.ReadSession?&gt; TryRemoveAsync(TKey key, CancellationToken token = default)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache record to be removed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html">RandomAccessCache</a>&lt;TKey, TValue&gt;.<a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.ReadSession.html">ReadSession</a>?&gt;</td>
+        <td><p>The session that can be used to read the removed cache record;
+or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> if there is no record associated with <code class="paramref">key</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The cache is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Boolean_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, bool, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Boolean_System_TimeSpan_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, bool, TimeSpan, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.Queue.cs/#L8" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

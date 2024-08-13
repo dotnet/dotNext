@@ -37282,6 +37282,267 @@ references:
   fullName.vb: DotNext.Runtime.Caching.ConcurrentCache(Of TKey, TValue).TryUpdate
   nameWithType: ConcurrentCache<TKey, TValue>.TryUpdate
   nameWithType.vb: ConcurrentCache(Of TKey, TValue).TryUpdate
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2
+  name: RandomAccessCache<TKey, TValue>
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html
+  commentId: T:DotNext.Runtime.Caching.RandomAccessCache`2
+  name.vb: RandomAccessCache(Of TKey, TValue)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue)
+  nameWithType: RandomAccessCache<TKey, TValue>
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.#ctor(System.Int32)
+  name: RandomAccessCache(int)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2__ctor_System_Int32_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.#ctor(System.Int32)
+  name.vb: New(Integer)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.RandomAccessCache(int)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).New(Integer)
+  nameWithType: RandomAccessCache<TKey, TValue>.RandomAccessCache(int)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).New(Integer)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.#ctor*
+  name: RandomAccessCache
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2__ctor_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.RandomAccessCache
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).New
+  nameWithType: RandomAccessCache<TKey, TValue>.RandomAccessCache
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).New
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ChangeAsync(`0,System.Threading.CancellationToken)
+  name: ChangeAsync(TKey, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_ChangeAsync__0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.ChangeAsync(`0,System.Threading.CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ChangeAsync(TKey, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ChangeAsync(TKey, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TKey, TValue>.ChangeAsync(TKey, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ChangeAsync(TKey, CancellationToken)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ChangeAsync*
+  name: ChangeAsync
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_ChangeAsync_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.ChangeAsync
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ChangeAsync
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ChangeAsync
+  nameWithType: RandomAccessCache<TKey, TValue>.ChangeAsync
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ChangeAsync
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Dispose_System_Boolean_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.Dispose(bool)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).Dispose(Boolean)
+  nameWithType: RandomAccessCache<TKey, TValue>.Dispose(bool)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).Dispose(Boolean)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.Dispose*
+  name: Dispose
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Dispose_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.Dispose
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.Dispose
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).Dispose
+  nameWithType: RandomAccessCache<TKey, TValue>.Dispose
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).Dispose
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsync
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsync
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.DisposeAsync()
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).DisposeAsync()
+  nameWithType: RandomAccessCache<TKey, TValue>.DisposeAsync()
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).DisposeAsync()
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsync_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsync
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.DisposeAsync
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).DisposeAsync
+  nameWithType: RandomAccessCache<TKey, TValue>.DisposeAsync
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).DisposeAsync
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsyncCore
+  name: DisposeAsyncCore()
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsyncCore
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsyncCore
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.DisposeAsyncCore()
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).DisposeAsyncCore()
+  nameWithType: RandomAccessCache<TKey, TValue>.DisposeAsyncCore()
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).DisposeAsyncCore()
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsyncCore*
+  name: DisposeAsyncCore
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsyncCore_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsyncCore
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.DisposeAsyncCore
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).DisposeAsyncCore
+  nameWithType: RandomAccessCache<TKey, TValue>.DisposeAsyncCore
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).DisposeAsyncCore
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.Eviction
+  name: Eviction
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Eviction
+  commentId: P:DotNext.Runtime.Caching.RandomAccessCache`2.Eviction
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.Eviction
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).Eviction
+  nameWithType: RandomAccessCache<TKey, TValue>.Eviction
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).Eviction
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.Eviction*
+  name: Eviction
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Eviction_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.Eviction
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.Eviction
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).Eviction
+  nameWithType: RandomAccessCache<TKey, TValue>.Eviction
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).Eviction
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync(System.Threading.CancellationToken)
+  name: InvalidateAsync(CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.InvalidateAsync(System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).InvalidateAsync(System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TKey, TValue>.InvalidateAsync(CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).InvalidateAsync(CancellationToken)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync(`0,System.Threading.CancellationToken)
+  name: InvalidateAsync(TKey, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync__0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync(`0,System.Threading.CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.InvalidateAsync(TKey, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).InvalidateAsync(TKey, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TKey, TValue>.InvalidateAsync(TKey, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).InvalidateAsync(TKey, CancellationToken)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync*
+  name: InvalidateAsync
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.InvalidateAsync
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).InvalidateAsync
+  nameWithType: RandomAccessCache<TKey, TValue>.InvalidateAsync
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).InvalidateAsync
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.KeyComparer
+  name: KeyComparer
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_KeyComparer
+  commentId: P:DotNext.Runtime.Caching.RandomAccessCache`2.KeyComparer
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.KeyComparer
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).KeyComparer
+  nameWithType: RandomAccessCache<TKey, TValue>.KeyComparer
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).KeyComparer
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.KeyComparer*
+  name: KeyComparer
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_KeyComparer_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.KeyComparer
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.KeyComparer
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).KeyComparer
+  nameWithType: RandomAccessCache<TKey, TValue>.KeyComparer
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).KeyComparer
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession
+  name: RandomAccessCache<TKey, TValue>.ReadOrWriteSession
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadOrWriteSession.html
+  commentId: T:DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession
+  name.vb: RandomAccessCache(Of TKey, TValue).ReadOrWriteSession
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadOrWriteSession
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadOrWriteSession
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadOrWriteSession
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadOrWriteSession
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.SetValue(`1)
+  name: SetValue(TValue)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadOrWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_SetValue__1_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.SetValue(`1)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadOrWriteSession.SetValue(TValue)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.SetValue(TValue)
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadOrWriteSession.SetValue(TValue)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.SetValue(TValue)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.SetValue*
+  name: SetValue
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadOrWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_SetValue_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.SetValue
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadOrWriteSession.SetValue
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.SetValue
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadOrWriteSession.SetValue
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.SetValue
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.TryGetValue(`1@)
+  name: TryGetValue(out TValue)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadOrWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_TryGetValue__1__
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.TryGetValue(`1@)
+  name.vb: TryGetValue(TValue)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadOrWriteSession.TryGetValue(out TValue)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.TryGetValue(TValue)
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadOrWriteSession.TryGetValue(out TValue)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.TryGetValue(TValue)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.TryGetValue*
+  name: TryGetValue
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadOrWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_TryGetValue_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.TryGetValue
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadOrWriteSession.TryGetValue
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.TryGetValue
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadOrWriteSession.TryGetValue
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.TryGetValue
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession
+  name: RandomAccessCache<TKey, TValue>.ReadSession
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadSession.html
+  commentId: T:DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession
+  name.vb: RandomAccessCache(Of TKey, TValue).ReadSession
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadSession
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadSession
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadSession
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadSession
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession.Value
+  name: Value
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadSession_Value
+  commentId: P:DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession.Value
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadSession.Value
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadSession.Value
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadSession.Value
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadSession.Value
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession.Value*
+  name: Value
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadSession_Value_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession.Value
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadSession.Value
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadSession.Value
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadSession.Value
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadSession.Value
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.TryRead(`0,DotNext.Runtime.Caching.RandomAccessCache{`0,`1}.ReadSession@)
+  name: TryRead(TKey, out ReadSession)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_TryRead__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.TryRead(`0,DotNext.Runtime.Caching.RandomAccessCache{`0,`1}.ReadSession@)
+  name.vb: TryRead(TKey, ReadSession)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.TryRead(TKey, out DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadSession)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).TryRead(TKey, DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadSession)
+  nameWithType: RandomAccessCache<TKey, TValue>.TryRead(TKey, out RandomAccessCache<TKey, TValue>.ReadSession)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).TryRead(TKey, RandomAccessCache(Of TKey, TValue).ReadSession)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.TryRead*
+  name: TryRead
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_TryRead_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.TryRead
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.TryRead
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).TryRead
+  nameWithType: RandomAccessCache<TKey, TValue>.TryRead
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).TryRead
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.TryRemoveAsync(`0,System.Threading.CancellationToken)
+  name: TryRemoveAsync(TKey, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_TryRemoveAsync__0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.TryRemoveAsync(`0,System.Threading.CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.TryRemoveAsync(TKey, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).TryRemoveAsync(TKey, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TKey, TValue>.TryRemoveAsync(TKey, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).TryRemoveAsync(TKey, CancellationToken)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.TryRemoveAsync*
+  name: TryRemoveAsync
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_TryRemoveAsync_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.TryRemoveAsync
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.TryRemoveAsync
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).TryRemoveAsync
+  nameWithType: RandomAccessCache<TKey, TValue>.TryRemoveAsync
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).TryRemoveAsync
 - uid: DotNext.Runtime.CompilerServices
   name: DotNext.Runtime.CompilerServices
   href: api/DotNext.Runtime.CompilerServices.html
@@ -40077,6 +40338,167 @@ references:
   fullName.vb: DotNext.Runtime.Intrinsics.TypeOf(Of T)()
   nameWithType: Intrinsics.TypeOf<T>()
   nameWithType.vb: Intrinsics.TypeOf(Of T)()
+- uid: DotNext.Runtime.ReadOnlyValueReference`1
+  name: ReadOnlyValueReference<T>
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html
+  commentId: T:DotNext.Runtime.ReadOnlyValueReference`1
+  name.vb: ReadOnlyValueReference(Of T)
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T)
+  nameWithType: ReadOnlyValueReference<T>
+  nameWithType.vb: ReadOnlyValueReference(Of T)
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.#ctor(System.Object,`0@)
+  name: ReadOnlyValueReference(object, ref readonly T)
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1__ctor_System_Object__0__
+  commentId: M:DotNext.Runtime.ReadOnlyValueReference`1.#ctor(System.Object,`0@)
+  name.vb: New(Object, T)
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.ReadOnlyValueReference(object, ref readonly T)
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).New(Object, T)
+  nameWithType: ReadOnlyValueReference<T>.ReadOnlyValueReference(object, ref readonly T)
+  nameWithType.vb: ReadOnlyValueReference(Of T).New(Object, T)
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.#ctor*
+  name: ReadOnlyValueReference
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1__ctor_
+  commentId: Overload:DotNext.Runtime.ReadOnlyValueReference`1.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.ReadOnlyValueReference
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).New
+  nameWithType: ReadOnlyValueReference<T>.ReadOnlyValueReference
+  nameWithType.vb: ReadOnlyValueReference(Of T).New
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.Equals(DotNext.Runtime.ReadOnlyValueReference{`0})
+  name: Equals(ReadOnlyValueReference<T>)
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_Equals_DotNext_Runtime_ReadOnlyValueReference__0__
+  commentId: M:DotNext.Runtime.ReadOnlyValueReference`1.Equals(DotNext.Runtime.ReadOnlyValueReference{`0})
+  name.vb: Equals(ReadOnlyValueReference(Of T))
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.Equals(DotNext.Runtime.ReadOnlyValueReference<T>)
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).Equals(DotNext.Runtime.ReadOnlyValueReference(Of T))
+  nameWithType: ReadOnlyValueReference<T>.Equals(ReadOnlyValueReference<T>)
+  nameWithType.vb: ReadOnlyValueReference(Of T).Equals(ReadOnlyValueReference(Of T))
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.Equals(System.Object)
+  name: Equals(object?)
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_Equals_System_Object_
+  commentId: M:DotNext.Runtime.ReadOnlyValueReference`1.Equals(System.Object)
+  name.vb: Equals(Object)
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.Equals(object?)
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).Equals(Object)
+  nameWithType: ReadOnlyValueReference<T>.Equals(object?)
+  nameWithType.vb: ReadOnlyValueReference(Of T).Equals(Object)
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.Equals*
+  name: Equals
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_Equals_
+  commentId: Overload:DotNext.Runtime.ReadOnlyValueReference`1.Equals
+  isSpec: "True"
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.Equals
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).Equals
+  nameWithType: ReadOnlyValueReference<T>.Equals
+  nameWithType.vb: ReadOnlyValueReference(Of T).Equals
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.GetHashCode
+  name: GetHashCode()
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_GetHashCode
+  commentId: M:DotNext.Runtime.ReadOnlyValueReference`1.GetHashCode
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.GetHashCode()
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).GetHashCode()
+  nameWithType: ReadOnlyValueReference<T>.GetHashCode()
+  nameWithType.vb: ReadOnlyValueReference(Of T).GetHashCode()
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.GetHashCode*
+  name: GetHashCode
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_GetHashCode_
+  commentId: Overload:DotNext.Runtime.ReadOnlyValueReference`1.GetHashCode
+  isSpec: "True"
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.GetHashCode
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).GetHashCode
+  nameWithType: ReadOnlyValueReference<T>.GetHashCode
+  nameWithType.vb: ReadOnlyValueReference(Of T).GetHashCode
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_IsEmpty
+  commentId: P:DotNext.Runtime.ReadOnlyValueReference`1.IsEmpty
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.IsEmpty
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).IsEmpty
+  nameWithType: ReadOnlyValueReference<T>.IsEmpty
+  nameWithType.vb: ReadOnlyValueReference(Of T).IsEmpty
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_IsEmpty_
+  commentId: Overload:DotNext.Runtime.ReadOnlyValueReference`1.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.IsEmpty
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).IsEmpty
+  nameWithType: ReadOnlyValueReference<T>.IsEmpty
+  nameWithType.vb: ReadOnlyValueReference(Of T).IsEmpty
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.ToString
+  name: ToString()
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_ToString
+  commentId: M:DotNext.Runtime.ReadOnlyValueReference`1.ToString
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.ToString()
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).ToString()
+  nameWithType: ReadOnlyValueReference<T>.ToString()
+  nameWithType.vb: ReadOnlyValueReference(Of T).ToString()
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.ToString*
+  name: ToString
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_ToString_
+  commentId: Overload:DotNext.Runtime.ReadOnlyValueReference`1.ToString
+  isSpec: "True"
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.ToString
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).ToString
+  nameWithType: ReadOnlyValueReference<T>.ToString
+  nameWithType.vb: ReadOnlyValueReference(Of T).ToString
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.Value
+  name: Value
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_Value
+  commentId: P:DotNext.Runtime.ReadOnlyValueReference`1.Value
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.Value
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).Value
+  nameWithType: ReadOnlyValueReference<T>.Value
+  nameWithType.vb: ReadOnlyValueReference(Of T).Value
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.Value*
+  name: Value
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_Value_
+  commentId: Overload:DotNext.Runtime.ReadOnlyValueReference`1.Value
+  isSpec: "True"
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.Value
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).Value
+  nameWithType: ReadOnlyValueReference<T>.Value
+  nameWithType.vb: ReadOnlyValueReference(Of T).Value
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.op_Equality(DotNext.Runtime.ReadOnlyValueReference{`0},DotNext.Runtime.ReadOnlyValueReference{`0})
+  name: operator ==(ReadOnlyValueReference<T>, ReadOnlyValueReference<T>)
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_op_Equality_DotNext_Runtime_ReadOnlyValueReference__0__DotNext_Runtime_ReadOnlyValueReference__0__
+  commentId: M:DotNext.Runtime.ReadOnlyValueReference`1.op_Equality(DotNext.Runtime.ReadOnlyValueReference{`0},DotNext.Runtime.ReadOnlyValueReference{`0})
+  name.vb: =(ReadOnlyValueReference(Of T), ReadOnlyValueReference(Of T))
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.operator ==(DotNext.Runtime.ReadOnlyValueReference<T>, DotNext.Runtime.ReadOnlyValueReference<T>)
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).=(DotNext.Runtime.ReadOnlyValueReference(Of T), DotNext.Runtime.ReadOnlyValueReference(Of T))
+  nameWithType: ReadOnlyValueReference<T>.operator ==(ReadOnlyValueReference<T>, ReadOnlyValueReference<T>)
+  nameWithType.vb: ReadOnlyValueReference(Of T).=(ReadOnlyValueReference(Of T), ReadOnlyValueReference(Of T))
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.op_Equality*
+  name: operator ==
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_op_Equality_
+  commentId: Overload:DotNext.Runtime.ReadOnlyValueReference`1.op_Equality
+  isSpec: "True"
+  name.vb: =
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.operator ==
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).=
+  nameWithType: ReadOnlyValueReference<T>.operator ==
+  nameWithType.vb: ReadOnlyValueReference(Of T).=
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.op_Inequality(DotNext.Runtime.ReadOnlyValueReference{`0},DotNext.Runtime.ReadOnlyValueReference{`0})
+  name: operator !=(ReadOnlyValueReference<T>, ReadOnlyValueReference<T>)
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_op_Inequality_DotNext_Runtime_ReadOnlyValueReference__0__DotNext_Runtime_ReadOnlyValueReference__0__
+  commentId: M:DotNext.Runtime.ReadOnlyValueReference`1.op_Inequality(DotNext.Runtime.ReadOnlyValueReference{`0},DotNext.Runtime.ReadOnlyValueReference{`0})
+  name.vb: <>(ReadOnlyValueReference(Of T), ReadOnlyValueReference(Of T))
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.operator !=(DotNext.Runtime.ReadOnlyValueReference<T>, DotNext.Runtime.ReadOnlyValueReference<T>)
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).<>(DotNext.Runtime.ReadOnlyValueReference(Of T), DotNext.Runtime.ReadOnlyValueReference(Of T))
+  nameWithType: ReadOnlyValueReference<T>.operator !=(ReadOnlyValueReference<T>, ReadOnlyValueReference<T>)
+  nameWithType.vb: ReadOnlyValueReference(Of T).<>(ReadOnlyValueReference(Of T), ReadOnlyValueReference(Of T))
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.op_Inequality*
+  name: operator !=
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_op_Inequality_
+  commentId: Overload:DotNext.Runtime.ReadOnlyValueReference`1.op_Inequality
+  isSpec: "True"
+  name.vb: <>
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.operator !=
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).<>
+  nameWithType: ReadOnlyValueReference<T>.operator !=
+  nameWithType.vb: ReadOnlyValueReference(Of T).<>
 - uid: DotNext.Runtime.Serialization
   name: DotNext.Runtime.Serialization
   href: api/DotNext.Runtime.Serialization.html
@@ -40385,6 +40807,195 @@ references:
   fullName.vb: DotNext.Runtime.SoftReference(Of T).CType
   nameWithType: SoftReference<T>.explicit operator
   nameWithType.vb: SoftReference(Of T).CType
+- uid: DotNext.Runtime.ValueReference`1
+  name: ValueReference<T>
+  href: api/DotNext.Runtime.ValueReference-1.html
+  commentId: T:DotNext.Runtime.ValueReference`1
+  name.vb: ValueReference(Of T)
+  fullName: DotNext.Runtime.ValueReference<T>
+  fullName.vb: DotNext.Runtime.ValueReference(Of T)
+  nameWithType: ValueReference<T>
+  nameWithType.vb: ValueReference(Of T)
+- uid: DotNext.Runtime.ValueReference`1.#ctor(System.Object,`0@)
+  name: ValueReference(object, ref T)
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1__ctor_System_Object__0__
+  commentId: M:DotNext.Runtime.ValueReference`1.#ctor(System.Object,`0@)
+  name.vb: New(Object, T)
+  fullName: DotNext.Runtime.ValueReference<T>.ValueReference(object, ref T)
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).New(Object, T)
+  nameWithType: ValueReference<T>.ValueReference(object, ref T)
+  nameWithType.vb: ValueReference(Of T).New(Object, T)
+- uid: DotNext.Runtime.ValueReference`1.#ctor(`0[],System.Int32)
+  name: ValueReference(T[], int)
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1__ctor__0___System_Int32_
+  commentId: M:DotNext.Runtime.ValueReference`1.#ctor(`0[],System.Int32)
+  name.vb: New(T(), Integer)
+  fullName: DotNext.Runtime.ValueReference<T>.ValueReference(T[], int)
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).New(T(), Integer)
+  nameWithType: ValueReference<T>.ValueReference(T[], int)
+  nameWithType.vb: ValueReference(Of T).New(T(), Integer)
+- uid: DotNext.Runtime.ValueReference`1.#ctor*
+  name: ValueReference
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1__ctor_
+  commentId: Overload:DotNext.Runtime.ValueReference`1.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Runtime.ValueReference<T>.ValueReference
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).New
+  nameWithType: ValueReference<T>.ValueReference
+  nameWithType.vb: ValueReference(Of T).New
+- uid: DotNext.Runtime.ValueReference`1.Equals(DotNext.Runtime.ValueReference{`0})
+  name: Equals(ValueReference<T>)
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_Equals_DotNext_Runtime_ValueReference__0__
+  commentId: M:DotNext.Runtime.ValueReference`1.Equals(DotNext.Runtime.ValueReference{`0})
+  name.vb: Equals(ValueReference(Of T))
+  fullName: DotNext.Runtime.ValueReference<T>.Equals(DotNext.Runtime.ValueReference<T>)
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).Equals(DotNext.Runtime.ValueReference(Of T))
+  nameWithType: ValueReference<T>.Equals(ValueReference<T>)
+  nameWithType.vb: ValueReference(Of T).Equals(ValueReference(Of T))
+- uid: DotNext.Runtime.ValueReference`1.Equals(System.Object)
+  name: Equals(object?)
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_Equals_System_Object_
+  commentId: M:DotNext.Runtime.ValueReference`1.Equals(System.Object)
+  name.vb: Equals(Object)
+  fullName: DotNext.Runtime.ValueReference<T>.Equals(object?)
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).Equals(Object)
+  nameWithType: ValueReference<T>.Equals(object?)
+  nameWithType.vb: ValueReference(Of T).Equals(Object)
+- uid: DotNext.Runtime.ValueReference`1.Equals*
+  name: Equals
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_Equals_
+  commentId: Overload:DotNext.Runtime.ValueReference`1.Equals
+  isSpec: "True"
+  fullName: DotNext.Runtime.ValueReference<T>.Equals
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).Equals
+  nameWithType: ValueReference<T>.Equals
+  nameWithType.vb: ValueReference(Of T).Equals
+- uid: DotNext.Runtime.ValueReference`1.GetHashCode
+  name: GetHashCode()
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_GetHashCode
+  commentId: M:DotNext.Runtime.ValueReference`1.GetHashCode
+  fullName: DotNext.Runtime.ValueReference<T>.GetHashCode()
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).GetHashCode()
+  nameWithType: ValueReference<T>.GetHashCode()
+  nameWithType.vb: ValueReference(Of T).GetHashCode()
+- uid: DotNext.Runtime.ValueReference`1.GetHashCode*
+  name: GetHashCode
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_GetHashCode_
+  commentId: Overload:DotNext.Runtime.ValueReference`1.GetHashCode
+  isSpec: "True"
+  fullName: DotNext.Runtime.ValueReference<T>.GetHashCode
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).GetHashCode
+  nameWithType: ValueReference<T>.GetHashCode
+  nameWithType.vb: ValueReference(Of T).GetHashCode
+- uid: DotNext.Runtime.ValueReference`1.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_IsEmpty
+  commentId: P:DotNext.Runtime.ValueReference`1.IsEmpty
+  fullName: DotNext.Runtime.ValueReference<T>.IsEmpty
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).IsEmpty
+  nameWithType: ValueReference<T>.IsEmpty
+  nameWithType.vb: ValueReference(Of T).IsEmpty
+- uid: DotNext.Runtime.ValueReference`1.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_IsEmpty_
+  commentId: Overload:DotNext.Runtime.ValueReference`1.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.Runtime.ValueReference<T>.IsEmpty
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).IsEmpty
+  nameWithType: ValueReference<T>.IsEmpty
+  nameWithType.vb: ValueReference(Of T).IsEmpty
+- uid: DotNext.Runtime.ValueReference`1.ToString
+  name: ToString()
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_ToString
+  commentId: M:DotNext.Runtime.ValueReference`1.ToString
+  fullName: DotNext.Runtime.ValueReference<T>.ToString()
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).ToString()
+  nameWithType: ValueReference<T>.ToString()
+  nameWithType.vb: ValueReference(Of T).ToString()
+- uid: DotNext.Runtime.ValueReference`1.ToString*
+  name: ToString
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_ToString_
+  commentId: Overload:DotNext.Runtime.ValueReference`1.ToString
+  isSpec: "True"
+  fullName: DotNext.Runtime.ValueReference<T>.ToString
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).ToString
+  nameWithType: ValueReference<T>.ToString
+  nameWithType.vb: ValueReference(Of T).ToString
+- uid: DotNext.Runtime.ValueReference`1.Value
+  name: Value
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_Value
+  commentId: P:DotNext.Runtime.ValueReference`1.Value
+  fullName: DotNext.Runtime.ValueReference<T>.Value
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).Value
+  nameWithType: ValueReference<T>.Value
+  nameWithType.vb: ValueReference(Of T).Value
+- uid: DotNext.Runtime.ValueReference`1.Value*
+  name: Value
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_Value_
+  commentId: Overload:DotNext.Runtime.ValueReference`1.Value
+  isSpec: "True"
+  fullName: DotNext.Runtime.ValueReference<T>.Value
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).Value
+  nameWithType: ValueReference<T>.Value
+  nameWithType.vb: ValueReference(Of T).Value
+- uid: DotNext.Runtime.ValueReference`1.op_Equality(DotNext.Runtime.ValueReference{`0},DotNext.Runtime.ValueReference{`0})
+  name: operator ==(ValueReference<T>, ValueReference<T>)
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_op_Equality_DotNext_Runtime_ValueReference__0__DotNext_Runtime_ValueReference__0__
+  commentId: M:DotNext.Runtime.ValueReference`1.op_Equality(DotNext.Runtime.ValueReference{`0},DotNext.Runtime.ValueReference{`0})
+  name.vb: =(ValueReference(Of T), ValueReference(Of T))
+  fullName: DotNext.Runtime.ValueReference<T>.operator ==(DotNext.Runtime.ValueReference<T>, DotNext.Runtime.ValueReference<T>)
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).=(DotNext.Runtime.ValueReference(Of T), DotNext.Runtime.ValueReference(Of T))
+  nameWithType: ValueReference<T>.operator ==(ValueReference<T>, ValueReference<T>)
+  nameWithType.vb: ValueReference(Of T).=(ValueReference(Of T), ValueReference(Of T))
+- uid: DotNext.Runtime.ValueReference`1.op_Equality*
+  name: operator ==
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_op_Equality_
+  commentId: Overload:DotNext.Runtime.ValueReference`1.op_Equality
+  isSpec: "True"
+  name.vb: =
+  fullName: DotNext.Runtime.ValueReference<T>.operator ==
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).=
+  nameWithType: ValueReference<T>.operator ==
+  nameWithType.vb: ValueReference(Of T).=
+- uid: DotNext.Runtime.ValueReference`1.op_Implicit(DotNext.Runtime.ValueReference{`0})~DotNext.Runtime.ReadOnlyValueReference{`0}
+  name: implicit operator ReadOnlyValueReference<T>(ValueReference<T>)
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_op_Implicit_DotNext_Runtime_ValueReference__0___DotNext_Runtime_ReadOnlyValueReference__0_
+  commentId: M:DotNext.Runtime.ValueReference`1.op_Implicit(DotNext.Runtime.ValueReference{`0})~DotNext.Runtime.ReadOnlyValueReference{`0}
+  name.vb: CType(ValueReference(Of T))
+  fullName: DotNext.Runtime.ValueReference<T>.implicit operator DotNext.Runtime.ReadOnlyValueReference<T>(DotNext.Runtime.ValueReference<T>)
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).CType(DotNext.Runtime.ValueReference(Of T))
+  nameWithType: ValueReference<T>.implicit operator ReadOnlyValueReference<T>(ValueReference<T>)
+  nameWithType.vb: ValueReference(Of T).CType(ValueReference(Of T))
+- uid: DotNext.Runtime.ValueReference`1.op_Implicit*
+  name: implicit operator
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_op_Implicit_
+  commentId: Overload:DotNext.Runtime.ValueReference`1.op_Implicit
+  isSpec: "True"
+  name.vb: CType
+  fullName: DotNext.Runtime.ValueReference<T>.implicit operator
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).CType
+  nameWithType: ValueReference<T>.implicit operator
+  nameWithType.vb: ValueReference(Of T).CType
+- uid: DotNext.Runtime.ValueReference`1.op_Inequality(DotNext.Runtime.ValueReference{`0},DotNext.Runtime.ValueReference{`0})
+  name: operator !=(ValueReference<T>, ValueReference<T>)
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_op_Inequality_DotNext_Runtime_ValueReference__0__DotNext_Runtime_ValueReference__0__
+  commentId: M:DotNext.Runtime.ValueReference`1.op_Inequality(DotNext.Runtime.ValueReference{`0},DotNext.Runtime.ValueReference{`0})
+  name.vb: <>(ValueReference(Of T), ValueReference(Of T))
+  fullName: DotNext.Runtime.ValueReference<T>.operator !=(DotNext.Runtime.ValueReference<T>, DotNext.Runtime.ValueReference<T>)
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).<>(DotNext.Runtime.ValueReference(Of T), DotNext.Runtime.ValueReference(Of T))
+  nameWithType: ValueReference<T>.operator !=(ValueReference<T>, ValueReference<T>)
+  nameWithType.vb: ValueReference(Of T).<>(ValueReference(Of T), ValueReference(Of T))
+- uid: DotNext.Runtime.ValueReference`1.op_Inequality*
+  name: operator !=
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_op_Inequality_
+  commentId: Overload:DotNext.Runtime.ValueReference`1.op_Inequality
+  isSpec: "True"
+  name.vb: <>
+  fullName: DotNext.Runtime.ValueReference<T>.operator !=
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).<>
+  nameWithType: ValueReference<T>.operator !=
+  nameWithType.vb: ValueReference(Of T).<>
 - uid: DotNext.Security.Principal
   name: DotNext.Security.Principal
   href: api/DotNext.Security.Principal.html

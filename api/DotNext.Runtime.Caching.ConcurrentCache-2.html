@@ -113,7 +113,8 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Runtime_Caching_ConcurrentCache_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class ConcurrentCache&lt;TKey, TValue&gt; : IReadOnlyDictionary&lt;TKey, TValue&gt;, IReadOnlyCollection&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;, IEnumerable&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;, IEnumerable where TKey : notnull</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use RandomAccessCache from DotNext.Threading library instead.&quot;)]
+public class ConcurrentCache&lt;TKey, TValue&gt; : IReadOnlyDictionary&lt;TKey, TValue&gt;, IReadOnlyCollection&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;, IEnumerable&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;, IEnumerable where TKey : notnull</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -150,7 +151,7 @@ are delayed and distributed across concurrent threads. Thus, the deque is weakly
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2__ctor_System_Int32_DotNext_Runtime_Caching_CacheEvictionPolicy_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.%23ctor(System.Int32%2CDotNext.Runtime.Caching.CacheEvictionPolicy%2CSystem.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L73">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L74">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_ConcurrentCache_2__ctor_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.#ctor*"></a>
   <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2__ctor_System_Int32_DotNext_Runtime_Caching_CacheEvictionPolicy_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.#ctor(System.Int32,DotNext.Runtime.Caching.CacheEvictionPolicy,System.Collections.Generic.IEqualityComparer{`0})">ConcurrentCache(int, CacheEvictionPolicy, IEqualityComparer&lt;TKey&gt;?)</h4>
@@ -213,7 +214,7 @@ or <code class="paramref">evictionPolicy</code> is invalid.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2__ctor_System_Int32_System_Int32_DotNext_Runtime_Caching_CacheEvictionPolicy_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.%23ctor(System.Int32%2CSystem.Int32%2CDotNext.Runtime.Caching.CacheEvictionPolicy%2CSystem.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L37">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L38">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_ConcurrentCache_2__ctor_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.#ctor*"></a>
   <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2__ctor_System_Int32_System_Int32_DotNext_Runtime_Caching_CacheEvictionPolicy_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.#ctor(System.Int32,System.Int32,DotNext.Runtime.Caching.CacheEvictionPolicy,System.Collections.Generic.IEqualityComparer{`0})">ConcurrentCache(int, int, CacheEvictionPolicy, IEqualityComparer&lt;TKey&gt;?)</h4>
@@ -285,7 +286,7 @@ or <code class="paramref">evictionPolicy</code> is invalid.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_Capacity.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.Capacity%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L172">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L173">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_ConcurrentCache_2_Capacity_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.Capacity*"></a>
   <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_Capacity" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.Capacity">Capacity</h4>
@@ -316,7 +317,7 @@ or <code class="paramref">evictionPolicy</code> is invalid.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_Count.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.Count%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L167">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L168">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_ConcurrentCache_2_Count_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.Count*"></a>
   <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_Count" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.Count">Count</h4>
@@ -545,7 +546,7 @@ or the value before modification.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_Clear.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.Clear%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L93">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L94">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_ConcurrentCache_2_Clear_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.Clear*"></a>
   <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_Clear" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.Clear">Clear()</h4>
@@ -564,7 +565,7 @@ or the value before modification.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.GetEnumerator%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L178">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L179">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_ConcurrentCache_2_GetEnumerator_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.GetEnumerator*"></a>
   <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_GetEnumerator" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.GetEnumerator">GetEnumerator()</h4>
@@ -660,7 +661,7 @@ or existing value.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_ConcurrentCache_2_TakeSnapshot_System_Span_System_Collections_Generic_KeyValuePair__0__1___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.ConcurrentCache%602.TakeSnapshot(System.Span%7BSystem.Collections.Generic.KeyValuePair%7B%600%2C%601%7D%7D%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L205">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/Caching/ConcurrentCache.cs/#L206">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_ConcurrentCache_2_TakeSnapshot_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.TakeSnapshot*"></a>
   <h4 id="DotNext_Runtime_Caching_ConcurrentCache_2_TakeSnapshot_System_Span_System_Collections_Generic_KeyValuePair__0__1___System_Boolean_" data-uid="DotNext.Runtime.Caching.ConcurrentCache`2.TakeSnapshot(System.Span{System.Collections.Generic.KeyValuePair{`0,`1}},System.Boolean)">TakeSnapshot(Span&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;, bool)</h4>

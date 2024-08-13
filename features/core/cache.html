@@ -68,29 +68,45 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="concurrent-cache">Concurrent Cache</h1>
 
-<p><a class="xref" href="../../api/DotNext.Runtime.Caching.ConcurrentCache-2.html">ConcurrentCache&lt;TKey,TValue&gt;</a> is a thread-safe cache that provides API similar to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.concurrentdictionary-2">ConcurrentDictionary&lt;TKey,TValue&gt;</a>. It supports <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU)">LRU</a> and <a href="https://en.wikipedia.org/wiki/Cache_replacement_policies#Least-frequently_used_(LFU)">LFU</a> eviction policies. The cache is limited only by size in contrast to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.caching.memorycache">System.Runtime.Caching.MemoryCache</a> or <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.caching.memory.memorycache">Microsoft.Extensions.Caching.Memory.MemoryCache</a>.</p>
+<p><a class="xref" href="../../api/DotNext.Runtime.Caching.RandomAccessCache-2.html">RandomAccessCache&lt;TKey,TValue&gt;</a> is a thread-safe and async-friendly cache based on <a href="https://cachemon.github.io/SIEVE-website/">SIEVE</a> eviction algorithm. It's more efficient than LRU/LFU and doesn't require a lock for read-only operations. In case of cache hit, the performance of reading cache record is very fast and scalable.</p>
 <div class="NOTE">
 <h5>Note</h5>
-<p>Time-based eviction policy is not supported.</p>
+<p>The only support eviction policy is capacity-based eviction. Time-based eviction policy is not supported.</p>
 </div>
-<p>The following example demonstrates how to create the cache:</p>
+<p>All methods of the cache are asynchronous except <code>TryRead</code> that is designed to be extremely fast in case of cache hit. <code>ChangeAsync</code> is designed to be asynchronous because in case of cache miss the application needs to load the resource asynchronously. In the same time, multiple callers of cache trying to cache the same resource. This is a waste of resources because at least one caller is already in the process of resource loading. For other callers, it's better to wait. The following example demonstrates this pattern:</p>
 <pre><code class="lang-csharp">using DotNext.Runtime.Caching;
 
-var cache = new ConcurrentCache&lt;int, string&gt;(100, CacheEvictionPolicy.LRU)
-{
-    Eviction = static (int key, string value) =&gt; Console.WriteLine($&quot;Evicted entry: key = {key}, value = {value}&quot;),
-};
+var cache = new RandomAccessCache&lt;string, byte[]&gt;(100);
 
-cache.TryAdd(42, &quot;Hello, world!&quot;);
-cache.TryGetValue(42, out string result);
-</code></pre>
-<p><code>ConcurrentCache&lt;TKey, TValue&gt;.Count</code> property has O(1) time complexity. The cache supports asynchronous invocation that allows to remove cleanup activites from cache consumption thread. This feature is disabled by default. Set <code>ExecuteEvictionAsynchronously</code> property to <strong>true</strong> to enable asynchronous eviction:</p>
-<pre><code class="lang-csharp">var cache = new ConcurrentCache&lt;int, string&gt;(100, CacheEvictionPolicy.LRU)
+async ValueTask&lt;byte[]&gt; ReadFile(string fileName)
 {
-    Eviction = static (int key, string value) =&gt; Console.WriteLine($&quot;Evicted entry: key = {key}, value = {value}&quot;),
-    ExecuteEvictionAsynchronously = true,
-};
+    if (cache.TryRead(fileName, out var readSession))
+    {
+        // cache hit, the method can be completed synchronously
+        using (readSession)
+        {
+            return readSession.Value;
+        }
+    }
+    else
+    {
+        // Cache miss, load the file from file system.
+        // Other callers reached this branch are suspended
+        using var writeSession = await cache.ChangeAsync(fileName);
+        
+        // Resumed caller can see the value loaded by another concurrent flow, no need to load resource again
+        if (!writeSession.TryGetValue(out byte[] value))
+        {
+            // load resource asynchronously
+            value = await LoadFileFromDiskAsync(fileName);
+            writeSession.SetValue(value);
+        }
+        
+        return value;
+    }
+}
 </code></pre>
+<p>Until the session disposed, the cache record cannot be evicted. The concept of session is needed because the eviction process runs concurrently with the callers accessing the cache. In the same time, the cache evicts the record as soon as possible. Under the hood, the record chosen for eviction passes two phases: mark and sweep. The record marked for eviction can be in use by concurrent thread. In that case, eviction algorithm cannot sweep it. Instead, sweep phase is delayed while there is at least one reader of this value. The reader is an active session. When the last session closes, sweep phase executes immediately and the control passes to the custom eviction callback.</p>
 
 </article>
           </div>
