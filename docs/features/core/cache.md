@@ -1,28 +1,43 @@
 Concurrent Cache
 ====
-[ConcurrentCache&lt;TKey,TValue&gt;](xref:DotNext.Runtime.Caching.ConcurrentCache`2) is a thread-safe cache that provides API similar to [ConcurrentDictionary&lt;TKey,TValue&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.concurrentdictionary-2). It supports [LRU](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU)) and [LFU](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least-frequently_used_(LFU)) eviction policies. The cache is limited only by size in contrast to [System.Runtime.Caching.MemoryCache](https://docs.microsoft.com/en-us/dotnet/api/system.runtime.caching.memorycache) or [Microsoft.Extensions.Caching.Memory.MemoryCache](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.caching.memory.memorycache).
+[RandomAccessCache&lt;TKey,TValue&gt;](xref:DotNext.Runtime.Caching.RandomAccessCache`2) is a thread-safe and async-friendly cache based on [SIEVE](https://cachemon.github.io/SIEVE-website/) eviction algorithm. It's more efficient than LRU/LFU and doesn't require a lock for read-only operations. In case of cache hit, the performance of reading cache record is very fast and scalable.
 
 > [!NOTE]
-> Time-based eviction policy is not supported.
+> The only support eviction policy is capacity-based eviction. Time-based eviction policy is not supported.
 
-The following example demonstrates how to create the cache:
+All methods of the cache are asynchronous except `TryRead` that is designed to be extremely fast in case of cache hit. `ChangeAsync` is designed to be asynchronous because in case of cache miss the application needs to load the resource asynchronously. In the same time, multiple callers of cache trying to cache the same resource. This is a waste of resources because at least one caller is already in the process of resource loading. For other callers, it's better to wait. The following example demonstrates this pattern:
 ```csharp
 using DotNext.Runtime.Caching;
 
-var cache = new ConcurrentCache<int, string>(100, CacheEvictionPolicy.LRU)
-{
-    Eviction = static (int key, string value) => Console.WriteLine($"Evicted entry: key = {key}, value = {value}"),
-};
+var cache = new RandomAccessCache<string, byte[]>(100);
 
-cache.TryAdd(42, "Hello, world!");
-cache.TryGetValue(42, out string result);
+async ValueTask<byte[]> ReadFile(string fileName)
+{
+    if (cache.TryRead(fileName, out var readSession))
+    {
+        // cache hit, the method can be completed synchronously
+        using (readSession)
+        {
+            return readSession.Value;
+        }
+    }
+    else
+    {
+        // Cache miss, load the file from file system.
+        // Other callers reached this branch are suspended
+        using var writeSession = await cache.ChangeAsync(fileName);
+        
+        // Resumed caller can see the value loaded by another concurrent flow, no need to load resource again
+        if (!writeSession.TryGetValue(out byte[] value))
+        {
+            // load resource asynchronously
+            value = await LoadFileFromDiskAsync(fileName);
+            writeSession.SetValue(value);
+        }
+        
+        return value;
+    }
+}
 ```
 
-`ConcurrentCache<TKey, TValue>.Count` property has O(1) time complexity. The cache supports asynchronous invocation that allows to remove cleanup activites from cache consumption thread. This feature is disabled by default. Set `ExecuteEvictionAsynchronously` property to **true** to enable asynchronous eviction:
-```csharp
-var cache = new ConcurrentCache<int, string>(100, CacheEvictionPolicy.LRU)
-{
-    Eviction = static (int key, string value) => Console.WriteLine($"Evicted entry: key = {key}, value = {value}"),
-    ExecuteEvictionAsynchronously = true,
-};
-```
+Until the session disposed, the cache record cannot be evicted. The concept of session is needed because the eviction process runs concurrently with the callers accessing the cache. In the same time, the cache evicts the record as soon as possible. Under the hood, the record chosen for eviction passes two phases: mark and sweep. The record marked for eviction can be in use by concurrent thread. In that case, eviction algorithm cannot sweep it. Instead, sweep phase is delayed while there is at least one reader of this value. The reader is an active session. When the last session closes, sweep phase executes immediately and the control passes to the custom eviction callback.
