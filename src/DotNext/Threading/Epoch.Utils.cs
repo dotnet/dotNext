@@ -254,22 +254,6 @@ public partial class Epoch
         [ExcludeFromCodeCoverage]
         internal readonly string GetDebugView(uint epoch) => entries[epoch].DebugView;
 
-        [Conditional("DEBUG")]
-        internal readonly void AssertCounters(uint epoch)
-        {
-            ref readonly var entry = ref entries[epoch];
-            Debug.Assert(entry.Counter > 0U);
-
-            var prevEpochIndex = entry.Previous;
-            var prevEpochThreads = entries[prevEpochIndex].Counter;
-
-            var nextEpochIndex = entry.Next;
-            var nextEpochThreads = entries[nextEpochIndex].Counter;
-
-            Debug.Assert(prevEpochThreads is 0U || nextEpochThreads is 0U,
-                $"Epoch #{prevEpochIndex}={prevEpochThreads}, Epoch#{nextEpochIndex}={nextEpochThreads}");
-        }
-
         [UnscopedRef]
         internal SafeToReclaimEpoch TryBumpEpoch(uint currentEpoch)
         {
