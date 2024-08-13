@@ -1,6 +1,14 @@
 Release Notes
 ====
 
+# 08-13-2024
+<a href="https://www.nuget.org/packages/dotnext/5.12.0">DotNext 5.12.0</a>
+* Added `DotNext.Runtime.ValueReference<T>` data type that allows to obtain async-friendly managed pointer to the field
+* Deprecation of `ConcurrentCache<TKey, TValue>` in favor of `RandomAccessCache<TKey, TValue>`
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.12.0">DotNext.Threading 5.12.0</a>
+* Introduced async-friendly `RandomAccessCache<TKey, TValue>` as a replacement for deprecated `ConcurrentCache<TKey, TValue>`. It uses [SIEVE](https://cachemon.github.io/SIEVE-website/) eviction algorithm.
+
 # 08-01-2024
 <a href="https://www.nuget.org/packages/dotnext/5.11.0">DotNext 5.11.0</a>
 * Added `DotNext.Threading.Epoch` for epoch-based reclamation
