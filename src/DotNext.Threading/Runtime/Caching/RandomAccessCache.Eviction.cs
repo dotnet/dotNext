@@ -70,7 +70,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 currentSize--;
                 if (!removed && removedPair.ReleaseCounter() is false)
                 {
-                    OnEviction?.Invoke(removedPair.Key, GetValue(removedPair));
+                    Eviction?.Invoke(removedPair.Key, GetValue(removedPair));
                     ClearValue(removedPair);
                     TryCleanUpBucket(GetBucket(removedPair.KeyHashCode));
                     break;

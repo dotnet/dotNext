@@ -12,7 +12,7 @@ public sealed class RandomAccessCacheTests : Test
         var evictedItem = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         await using var cache = new RandomAccessCache<long, string>(15)
         {
-            OnEviction = (_, value) => evictedItem.TrySetResult(value),
+            Eviction = (_, value) => evictedItem.TrySetResult(value),
         };
 
         for (long i = 0; i < 150; i++)
@@ -32,7 +32,7 @@ public sealed class RandomAccessCacheTests : Test
         var evictedItem = new TaskCompletionSource<string>(TaskCreationOptions.RunContinuationsAsynchronously);
         await using var cache = new RandomAccessCache<long, string>(15)
         {
-            OnEviction = (_, value) => evictedItem.TrySetResult(value),
+            Eviction = (_, value) => evictedItem.TrySetResult(value),
         };
 
         const long accessCount = 150;
