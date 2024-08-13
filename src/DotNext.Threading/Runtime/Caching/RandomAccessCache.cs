@@ -56,7 +56,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <summary>
     /// Gets or sets a callback that can be used to clean up the evicted value.
     /// </summary>
-    public Action<TKey, TValue>? OnEviction { get; init; }
+    public Action<TKey, TValue>? Eviction { get; init; }
 
     /// <summary>
     /// Gets or sets key comparer.
@@ -134,7 +134,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 
         if (GetBucket(hashCode).TryGet(keyComparerCopy, key, hashCode) is { } valueHolder)
         {
-            session = new(OnEviction, valueHolder);
+            session = new(Eviction, valueHolder);
             return true;
         }
 
@@ -167,7 +167,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             lockTaken = true;
 
             return bucket.TryRemove(keyComparerCopy, key, hashCode) is { } removedPair
-                ? new ReadSession(OnEviction, removedPair)
+                ? new ReadSession(Eviction, removedPair)
                 : null;
         }
         catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
@@ -234,7 +234,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 
         if (removedPair.ReleaseCounter() is false)
         {
-            OnEviction?.Invoke(key, GetValue(removedPair));
+            Eviction?.Invoke(key, GetValue(removedPair));
             ClearValue(removedPair);
         }
 
@@ -249,7 +249,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
     public async ValueTask InvalidateAsync(CancellationToken token = default)
     {
-        var cleanup = CreateCleanupAction(OnEviction);
+        var cleanup = CreateCleanupAction(Eviction);
         var cts = token.LinkTo(lifetimeToken);
 
         try
@@ -451,7 +451,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                     bucket.Release();
                     break;
                 case KeyValuePair pair when pair.ReleaseCounter() is false:
-                    cache.OnEviction?.Invoke(key, GetValue(pair));
+                    cache.Eviction?.Invoke(key, GetValue(pair));
                     ClearValue(pair);
                     break;
             }

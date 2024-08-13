@@ -6,8 +6,23 @@ Release Notes
 * Added `DotNext.Runtime.ValueReference<T>` data type that allows to obtain async-friendly managed pointer to the field
 * Deprecation of `ConcurrentCache<TKey, TValue>` in favor of `RandomAccessCache<TKey, TValue>`
 
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.12.0">DotNext.Metaprogramming 5.12.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.12.0">DotNext.Unsafe 5.12.0</a>
+* Updated dependencies
+
 <a href="https://www.nuget.org/packages/dotnext.threading/5.12.0">DotNext.Threading 5.12.0</a>
 * Introduced async-friendly `RandomAccessCache<TKey, TValue>` as a replacement for deprecated `ConcurrentCache<TKey, TValue>`. It uses [SIEVE](https://cachemon.github.io/SIEVE-website/) eviction algorithm.
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.12.0">DotNext.IO 5.12.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.12.0">DotNext.Net.Cluster 5.12.0</a>
+* Fixed cancellation of `PersistentState` async methods
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.12.0">DotNext.AspNetCore.Cluster 5.12.0</a>
+* Fixed cancellation of `PersistentState` async methods
 
 # 08-01-2024
 <a href="https://www.nuget.org/packages/dotnext/5.11.0">DotNext 5.11.0</a>

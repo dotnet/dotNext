@@ -51,7 +51,7 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     /// <inheritdoc/>
     public override int GetHashCode() => RuntimeHelpers.GetHashCode(owner) ^ offset.GetHashCode();
 
-    /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
+    /// <inheritdoc cref="IEquatable{T}.Equals(T)"/>
     public bool Equals(ValueReference<T> reference)
         => reference.SameObject(owner) && offset == reference.offset;
 
@@ -118,7 +118,7 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
     /// <inheritdoc/>
     public override int GetHashCode() => RuntimeHelpers.GetHashCode(owner) ^ offset.GetHashCode();
 
-    /// <inheritdoc cref="IEquatable{T}.Equals(T?)"/>
+    /// <inheritdoc cref="IEquatable{T}.Equals(T)"/>
     public bool Equals(ReadOnlyValueReference<T> reference)
         => reference.SameObject(owner) && offset == reference.offset;
 

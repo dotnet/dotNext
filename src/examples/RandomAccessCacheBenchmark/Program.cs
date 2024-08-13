@@ -25,7 +25,7 @@ static async Task RunBenchmark(int numberOfEntries, int cacheSize, TimeSpan dura
 {
     // setup files to be accessed by using cache
     var files = MakeRandomFiles(numberOfEntries);
-    var cache = new RandomAccessCache<string, MemoryOwner<byte>>(cacheSize) { OnEviction = Evict };
+    var cache = new RandomAccessCache<string, MemoryOwner<byte>>(cacheSize) { Eviction = Evict };
     var state = new BenchmarkState();
     var timeTracker = Task.Delay(duration);
 
