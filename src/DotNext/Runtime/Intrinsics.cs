@@ -34,7 +34,11 @@ public static class Intrinsics
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static ref TTo InToRef<TFrom, TTo>(ref readonly TFrom source)
+    internal static ref TTo InToRef<TFrom, TTo>(scoped ref readonly TFrom source)
+        => ref Unsafe.As<TFrom, TTo>(ref Unsafe.AsRef(in source));
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static ref readonly TTo ChangeType<TFrom, TTo>(ref readonly TFrom source)
     {
         PushInRef(in source);
         return ref ReturnRef<TTo>();

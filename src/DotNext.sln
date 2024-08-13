@@ -40,6 +40,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNext.MaintenanceServices
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLineAMI", "examples\CommandLineAMI\CommandLineAMI.csproj", "{39583DDE-E579-44AD-B7AF-5BB77D979E55}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomAccessCacheBenchmark", "examples\RandomAccessCacheBenchmark\RandomAccessCacheBenchmark.csproj", "{73185946-8EFD-4153-8AC4-05AFD8BAC2E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Bench|Any CPU = Bench|Any CPU
@@ -125,6 +127,12 @@ Global
 		{39583DDE-E579-44AD-B7AF-5BB77D979E55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39583DDE-E579-44AD-B7AF-5BB77D979E55}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39583DDE-E579-44AD-B7AF-5BB77D979E55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73185946-8EFD-4153-8AC4-05AFD8BAC2E4}.Bench|Any CPU.ActiveCfg = Debug|Any CPU
+		{73185946-8EFD-4153-8AC4-05AFD8BAC2E4}.Bench|Any CPU.Build.0 = Debug|Any CPU
+		{73185946-8EFD-4153-8AC4-05AFD8BAC2E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73185946-8EFD-4153-8AC4-05AFD8BAC2E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73185946-8EFD-4153-8AC4-05AFD8BAC2E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73185946-8EFD-4153-8AC4-05AFD8BAC2E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -137,6 +145,7 @@ Global
 		{EF588447-3DB4-4719-A9FB-210C21035C65} = {F8DCA620-40E7-411E-8970-85DC808B6BAF}
 		{1A2FAA85-95B5-4377-B430-622DC5000C89} = {F8DCA620-40E7-411E-8970-85DC808B6BAF}
 		{39583DDE-E579-44AD-B7AF-5BB77D979E55} = {F8DCA620-40E7-411E-8970-85DC808B6BAF}
+		{73185946-8EFD-4153-8AC4-05AFD8BAC2E4} = {F8DCA620-40E7-411E-8970-85DC808B6BAF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1CE24157-AFE0-4CDF-B063-2876343F0A66}

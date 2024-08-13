@@ -32,7 +32,6 @@ public partial class Epoch
     public Scope Enter(bool drainGlobalCache, out RecycleBin bin)
     {
         var scope = new Scope(ref state);
-        state.AssertCounters(scope.Handle);
 
         Reclaim(scope.Handle, drainGlobalCache, out bin);
         return scope;
@@ -54,7 +53,6 @@ public partial class Epoch
     public Scope Enter(bool? drainGlobalCache = false)
     {
         var scope = new Scope(ref state);
-        state.AssertCounters(scope.Handle);
 
         if (drainGlobalCache.HasValue && Reclaim(scope.Handle, drainGlobalCache.GetValueOrDefault()) is { IsEmpty: false } exceptions)
         {
@@ -81,7 +79,6 @@ public partial class Epoch
     public void Enter(bool drainGlobalCache, out Scope scope)
     {
         scope = new(ref state);
-        state.AssertCounters(scope.Handle);
 
         UnsafeReclaim(scope.Handle, drainGlobalCache);
     }

@@ -44,35 +44,29 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-01-2024
+Release Date: 08-14-2024
 
-<a href="https://www.nuget.org/packages/dotnext/5.11.0">DotNext 5.11.0</a>
-* Added `DotNext.Threading.Epoch` for epoch-based reclamation
-* Fixed one-shot FNV1a hashing method
-* Fixed [248](https://github.com/dotnet/dotNext/issues/248)
-* Minor performance improvements
+<a href="https://www.nuget.org/packages/dotnext/5.12.0">DotNext 5.12.0</a>
+* Added `DotNext.Runtime.ValueReference<T>` data type that allows to obtain async-friendly managed pointer to the field
+* Deprecation of `ConcurrentCache<TKey, TValue>` in favor of `RandomAccessCache<TKey, TValue>`
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.11.0">DotNext.Metaprogramming 5.11.0</a>
-* Minor performance improvements
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.12.0">DotNext.Metaprogramming 5.12.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/5.11.0">DotNext.Unsafe 5.11.0</a>
-* Minor performance improvements
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.12.0">DotNext.Unsafe 5.12.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.11.0">DotNext.Threading 5.11.0</a>
-* Fixed `AsyncSharedLock.Downgrade` behavior, so it can be used to release a weak lock
+<a href="https://www.nuget.org/packages/dotnext.threading/5.12.0">DotNext.Threading 5.12.0</a>
+* Introduced async-friendly `RandomAccessCache<TKey, TValue>` as a replacement for deprecated `ConcurrentCache<TKey, TValue>`. It uses [SIEVE](https://cachemon.github.io/SIEVE-website/) eviction algorithm.
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.12.0">DotNext.IO 5.12.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.11.0">DotNext.IO 5.11.0</a>
-* Minor performance improvements
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.12.0">DotNext.Net.Cluster 5.12.0</a>
+* Fixed cancellation of `PersistentState` async methods
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.11.0">DotNext.Net.Cluster 5.11.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.11.0">DotNext.AspNetCore.Cluster 5.11.0</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.12.0">DotNext.AspNetCore.Cluster 5.12.0</a>
+* Fixed cancellation of `PersistentState` async methods
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

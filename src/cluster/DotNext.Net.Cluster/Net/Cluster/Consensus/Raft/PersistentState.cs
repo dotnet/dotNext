@@ -524,7 +524,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             await UnsafeAppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
 
             // flush updated state. Update index here to guarantee safe reads of recently added log entries
-            await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
+            await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
         }
         finally
         {
@@ -574,7 +574,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         await partition.FlushAsync(token).ConfigureAwait(false);
 
         state.LastIndex = startIndex;
-        await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
+        await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
 
         WriteRateMeter.Add(1L, measurementTags);
     }
@@ -668,7 +668,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             await UnsafeAppendAsync(entry, startIndex, out var partition, token).ConfigureAwait(false);
             await partition.FlushAsync(token).ConfigureAwait(false);
             state.LastIndex = startIndex;
-            await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
+            await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
         }
         finally
         {
@@ -798,7 +798,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
             await UnsafeAppendAsync(entries, startIndex, false, token).ConfigureAwait(false);
 
             // flush updated state. Update index here to guarantee safe reads of recently added log entries
-            await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
+            await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
         }
         finally
         {
@@ -833,7 +833,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
             count = state.LastIndex - startIndex + 1L;
             state.LastIndex = startIndex - 1L;
-            await state.FlushAsync(in NodeState.IndexesRange).ConfigureAwait(false);
+            await state.FlushAsync(in NodeState.IndexesRange, token).ConfigureAwait(false);
 
             if (reuseSpace)
                 InvalidatePartitions(startIndex);
@@ -973,7 +973,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         try
         {
             result = state.IncrementTerm(member);
-            await state.FlushAsync(in NodeState.TermAndLastVoteRange).ConfigureAwait(false);
+            await state.FlushAsync(in NodeState.TermAndLastVoteRange, token).ConfigureAwait(false);
         }
         finally
         {
@@ -990,7 +990,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         try
         {
             state.UpdateTerm(term, resetLastVote);
-            await state.FlushAsync(in NodeState.TermAndLastVoteFlagRange).ConfigureAwait(false);
+            await state.FlushAsync(in NodeState.TermAndLastVoteFlagRange, token).ConfigureAwait(false);
         }
         finally
         {
@@ -1005,7 +1005,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         try
         {
             state.UpdateVotedFor(id);
-            await state.FlushAsync(in NodeState.LastVoteRange).ConfigureAwait(false);
+            await state.FlushAsync(in NodeState.LastVoteRange, token).ConfigureAwait(false);
         }
         finally
         {

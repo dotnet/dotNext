@@ -5,6 +5,7 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading;
 
+using Numerics;
 using Tasks;
 
 public partial class AsyncCorrelationSource<TKey, TValue>
@@ -156,9 +157,13 @@ public partial class AsyncCorrelationSource<TKey, TValue>
 
     private ref Bucket? GetBucket(TKey eventId)
     {
-        var bucketIndex = unchecked((uint)(comparer?.GetHashCode(eventId) ?? EqualityComparer<TKey>.Default.GetHashCode(eventId))) % buckets.LongLength;
-        Debug.Assert((uint)bucketIndex < (uint)buckets.LongLength);
+        var hashCode = (uint)(comparer?.GetHashCode(eventId) ?? EqualityComparer<TKey>.Default.GetHashCode(eventId));
+        var bucketIndex = (int)(IntPtr.Size is sizeof(ulong)
+            ? PrimeNumber.FastMod(hashCode, (uint)buckets.Length, fastModMultiplier)
+            : hashCode % (uint)buckets.Length);
+        
+        Debug.Assert((uint)bucketIndex < (uint)buckets.Length);
 
-        return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), (nint)bucketIndex);
+        return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), bucketIndex);
     }
 }
