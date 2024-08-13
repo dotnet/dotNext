@@ -1,5 +1,6 @@
 namespace DotNext.Runtime.Caching;
 
+[Obsolete]
 public sealed class ConcurrentCacheTests : Test
 {
     [Fact]

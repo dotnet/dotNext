@@ -70,34 +70,56 @@ internal partial class LeaderState<TMember>
             1674319, 2009191, 2411033, 2893249, 3471899, 4166287, 4999559, 5999471, 7199369];
 
         private ContextEntry?[] entries;
+        private ulong fastModMultiplier;
 
         public Context(int sizeHint)
         {
             Debug.Assert(sizeHint > 0);
 
-            entries = new ContextEntry?[GetPrime(sizeHint, Primes)];
+            var size = GetPrime(sizeHint, Primes);
+            fastModMultiplier = UIntPtr.Size is sizeof(ulong) ? GetFastModMultiplier((uint)size) : default;
+            entries = new ContextEntry?[size];
         }
 
-        private static int Grow(int size)
+        private static ulong GetFastModMultiplier(ulong divisor)
+            => ulong.MaxValue / divisor + 1UL;
+
+        // Daniel Lemire's fastmod algorithm: https://lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/
+        private static uint FastMod(uint value, uint divisor, ulong multiplier)
+        {
+            Debug.Assert(divisor <= int.MaxValue);
+
+            var result = (uint)(((((multiplier * value) >> 32) + 1UL) * divisor) >> 32);
+            Debug.Assert(result == value % divisor);
+
+            return result;
+        }
+
+        private static int Grow(int size, out ulong multiplier)
         {
             // This is the maximum prime smaller than Array.MaxLength
-            const int maxPrimeLength = 0x7FEFFFFD;
+            const int maxPrimeLength = 0x7FFFFFC3;
 
             int newSize;
-            return size is maxPrimeLength
+            newSize = size is maxPrimeLength
                 ? throw new InsufficientMemoryException()
                 : (uint)(newSize = size << 1) > maxPrimeLength && maxPrimeLength > size
-                ? maxPrimeLength
-                : GetPrime(newSize, Primes);
+                    ? maxPrimeLength
+                    : GetPrime(newSize, Primes);
+
+            multiplier = IntPtr.Size is sizeof(ulong) ? GetFastModMultiplier((uint)newSize) : default;
+            return newSize;
         }
 
         public Context() => entries = [];
 
-        private static int GetIndex(int hashCode, int boundary)
-            => (hashCode & int.MaxValue) % boundary;
+        private readonly int GetIndex(int hashCode)
+            => (int)(IntPtr.Size is sizeof(ulong)
+                ? FastMod((uint)hashCode, (uint)entries.Length, fastModMultiplier)
+                : (uint)hashCode % (uint)entries.Length);
 
         private readonly int GetIndex(TMember member, out int hashCode)
-            => GetIndex(hashCode = RuntimeHelpers.GetHashCode(member), entries.Length);
+            => GetIndex(hashCode = RuntimeHelpers.GetHashCode(member));
 
         private readonly ref ContextEntry? GetEntry(TMember member, out int hashCode)
             => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), GetIndex(member, out hashCode));
@@ -105,7 +127,7 @@ internal partial class LeaderState<TMember>
         private void ResizeAndRemoveDeadEntries(CancellationToken token)
         {
             var oldEntries = entries;
-            entries = new ContextEntry?[Grow(oldEntries.Length)];
+            entries = new ContextEntry?[Grow(oldEntries.Length, out fastModMultiplier)];
 
             // copy elements from old array to a new one
             for (var i = 0; i < oldEntries.Length; i++, token.ThrowIfCancellationRequested())
@@ -138,7 +160,7 @@ internal partial class LeaderState<TMember>
             Debug.Assert(entry.Next is null);
 
             const int maxCollisions = 3;
-            ref var location = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), GetIndex(entry.HashCode, entries.Length));
+            ref var location = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), GetIndex(entry.HashCode));
 
             int collisions;
             for (collisions = 0; location is not null; collisions++)
