@@ -94,6 +94,16 @@ public sealed class ValueReferenceTests : Test
         Null(reference.ToString());
     }
 
+    [Fact]
+    public static void AnonymousValue()
+    {
+        var reference = new ValueReference<int>(42);
+        Equal(42, reference.Value);
+
+        ReadOnlyValueReference<int> roRef = reference;
+        Equal(42, roRef.Value);
+    }
+
     private record class MyClass : IResettable
     {
         internal int Field;

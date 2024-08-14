@@ -28,6 +28,20 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     {
     }
 
+    private ValueReference(StrongBox<T> box)
+        : this(box, ref box.Value!)
+    {
+    }
+
+    /// <summary>
+    /// Creates a reference to the anonymous value.
+    /// </summary>
+    /// <param name="value">The anonymous value.</param>
+    public ValueReference(T value)
+        : this(new StrongBox<T> { Value = value })
+    {
+    }
+
     /// <summary>
     /// Gets a value indicating that is reference is empty.
     /// </summary>
