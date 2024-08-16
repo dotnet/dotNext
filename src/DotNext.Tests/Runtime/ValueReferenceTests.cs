@@ -104,8 +104,41 @@ public sealed class ValueReferenceTests : Test
         Equal(42, roRef.Value);
     }
 
+    [Fact]
+    public static void StaticObjectAccess()
+    {
+        var reference = new ValueReference<string>(ref MyClass.StaticObject)
+        {
+            Value = "Hello, world",
+        };
+
+        GC.Collect(3, GCCollectionMode.Forced, true, true);
+        GC.WaitForPendingFinalizers();
+        
+        True(reference == new ValueReference<string>(ref MyClass.StaticObject));
+        Same(MyClass.StaticObject, reference.Value);
+    }
+    
+    [Fact]
+    public static void StaticValueTypeAccess()
+    {
+        var reference = new ReadOnlyValueReference<int>(in MyClass.StaticValueType);
+        MyClass.StaticValueType = 42;
+
+        GC.Collect(3, GCCollectionMode.Forced, true, true);
+        GC.WaitForPendingFinalizers();
+        
+        True(reference == new ReadOnlyValueReference<int>(in MyClass.StaticValueType));
+        Equal(MyClass.StaticValueType, reference.Value);
+    }
+
     private record class MyClass : IResettable
     {
+        internal static string StaticObject;
+        
+        [FixedAddressValueType]
+        internal static int StaticValueType;
+        
         internal int Field;
         internal string AnotherField;
 

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -12,6 +13,7 @@ namespace DotNext.Runtime;
 /// <param name="fieldRef">The reference to the field.</param>
 /// <typeparam name="T">The type of the field.</typeparam>
 [StructLayout(LayoutKind.Auto)]
+[EditorBrowsable(EditorBrowsableState.Advanced)]
 public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     IEquatable<ValueReference<T>>,
     IEqualityOperators<ValueReference<T>, ValueReference<T>, bool>
@@ -39,6 +41,24 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     /// <param name="value">The anonymous value.</param>
     public ValueReference(T value)
         : this(new StrongBox<T> { Value = value })
+    {
+    }
+
+    /// <summary>
+    /// Creates a reference to a static field.
+    /// </summary>
+    /// <remarks>
+    /// If <typeparamref name="T"/> is a value type then your static field MUST be marked
+    /// with <see cref="FixedAddressValueTypeAttribute"/>. Otherwise, the behavior is unpredictable.
+    /// Correctness of this constructor is based on the fact that static fields are stored
+    /// as elements of <see cref="object"/> array allocated by the runtime in the Pinned Object Heap.
+    /// It means that the address of the field cannot be changed by GC.
+    /// </remarks>
+    /// <param name="staticFieldRef">A reference to the static field.</param>
+    /// <seealso href="https://devblogs.microsoft.com/dotnet/internals-of-the-poh/">Internals of the POH</seealso>
+    [CLSCompliant(false)]
+    public ValueReference(ref T staticFieldRef)
+        : this(Sentinel.Instance, ref staticFieldRef)
     {
     }
 
@@ -103,11 +123,29 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
 /// <param name="fieldRef">The reference to the field.</param>
 /// <typeparam name="T">The type of the field.</typeparam>
 [StructLayout(LayoutKind.Auto)]
+[EditorBrowsable(EditorBrowsableState.Advanced)]
 public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fieldRef) :
     IEquatable<ReadOnlyValueReference<T>>,
     IEqualityOperators<ReadOnlyValueReference<T>, ReadOnlyValueReference<T>, bool>
 {
     private readonly nint offset = RawData.GetOffset(owner, in fieldRef);
+    
+    /// <summary>
+    /// Creates a reference to a static field.
+    /// </summary>
+    /// <remarks>
+    /// If <typeparamref name="T"/> is a value type then your static field MUST be marked
+    /// with <see cref="FixedAddressValueTypeAttribute"/>. Otherwise, the behavior is unpredictable.
+    /// Correctness of this constructor is based on the fact that static fields are stored
+    /// as elements of <see cref="object"/> array allocated by the runtime in the Pinned Object Heap.
+    /// It means that the address of the field cannot be changed by GC.
+    /// </remarks>
+    /// <param name="staticFieldRef">A reference to the static field.</param>
+    /// <seealso href="https://devblogs.microsoft.com/dotnet/internals-of-the-poh/">Internals of the POH</seealso>
+    public ReadOnlyValueReference(ref readonly T staticFieldRef)
+        : this(Sentinel.Instance, in staticFieldRef)
+    {
+    }
     
     /// <summary>
     /// Gets a value indicating that is reference is empty.

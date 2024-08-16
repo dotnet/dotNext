@@ -1,12 +1,7 @@
 namespace DotNext;
 
-using Patterns;
-
-internal sealed class Sentinel : ISingleton<Sentinel>
+internal static class Sentinel
 {
-    public static Sentinel Instance { get; } = new();
-
-    private Sentinel()
-    {
-    }
+    // instance has fixed address in memory which is critical to ValueReference implementation
+    internal static readonly object Instance = GC.AllocateUninitializedArray<byte>(length: 0, pinned: true);
 }
