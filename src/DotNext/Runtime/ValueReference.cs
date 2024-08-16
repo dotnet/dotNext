@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -117,7 +118,7 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
 }
 
 /// <summary>
-/// Represents a mutable reference to the field.
+/// Represents an immutable reference to the field.
 /// </summary>
 /// <param name="owner">An object that owns the field.</param>
 /// <param name="fieldRef">The reference to the field.</param>
@@ -196,14 +197,32 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
 [SuppressMessage("Performance", "CA1812", Justification = "Used for reinterpret cast")]
 file sealed class RawData
 {
+    // TODO: Replace with public counterpart in future
+    private static readonly Func<object, nuint>? GetRawObjectDataSize;
+
+    [DynamicDependency(DynamicallyAccessedMemberTypes.NonPublicMethods, typeof(RuntimeHelpers))]
+    static RawData()
+    {
+        const BindingFlags flags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Static;
+        GetRawObjectDataSize = typeof(RuntimeHelpers)
+            .GetMethod(nameof(GetRawObjectDataSize), flags, [typeof(object)])
+            ?.CreateDelegate<Func<object, nuint>>();
+    }
+    
     private byte data;
 
     private RawData() => throw new NotImplementedException();
 
-    internal static nint GetOffset<T>(object owner, ref readonly T field)
+    internal static nint GetOffset<T>(object owner, ref readonly T field, [CallerArgumentExpression(nameof(field))] string? paramName = null)
     {
         ref var rawData = ref Unsafe.As<RawData>(owner).data;
-        return Unsafe.ByteOffset(in rawData, in Intrinsics.ChangeType<T, byte>(in field));
+        var offset = Unsafe.ByteOffset(in rawData, in Intrinsics.ChangeType<T, byte>(in field));
+
+        // Ensure that the reference is an interior pointer to the field inside the object
+        if (GetRawObjectDataSize is not null && owner != Sentinel.Instance && (nuint)offset > GetRawObjectDataSize(owner))
+            throw new ArgumentOutOfRangeException(paramName);
+
+        return offset;
     }
 
     internal static ref T GetObjectData<T>(object owner, nint offset)

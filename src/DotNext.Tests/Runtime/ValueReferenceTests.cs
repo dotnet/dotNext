@@ -132,6 +132,19 @@ public sealed class ValueReferenceTests : Test
         Equal(MyClass.StaticValueType, reference.Value);
     }
 
+    [Fact]
+    public static void IncorrectReference()
+    {
+        Throws<ArgumentOutOfRangeException>(static () => new ValueReference<int>(new string('a', 3), ref MyClass.StaticValueType));
+        Throws<ArgumentOutOfRangeException>(static () => new ReadOnlyValueReference<int>(new string('a', 3), ref MyClass.StaticValueType));
+    }
+
+    [Fact]
+    public static void ReferenceSize()
+    {
+        Equal(Unsafe.SizeOf<ValueReference<float>>(), nint.Size + nint.Size);
+    }
+
     private record class MyClass : IResettable
     {
         internal static string StaticObject;
