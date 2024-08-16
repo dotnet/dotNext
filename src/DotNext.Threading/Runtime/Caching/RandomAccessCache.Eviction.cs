@@ -225,7 +225,7 @@ public partial class RandomAccessCache<TKey, TValue>
         {
             version++;
             continuationState = null;
-            Interlocked.Exchange(ref continuation, null);
+            continuation = null;
         }
 
         ValueTaskSourceStatus IValueTaskSource<bool>.GetStatus(short token)
