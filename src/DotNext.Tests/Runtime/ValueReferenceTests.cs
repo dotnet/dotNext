@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime;
 
@@ -135,8 +136,9 @@ public sealed class ValueReferenceTests : Test
     [Fact]
     public static void IncorrectReference()
     {
-        Throws<ArgumentOutOfRangeException>(static () => new ValueReference<int>(new string('a', 3), ref MyClass.StaticValueType));
-        Throws<ArgumentOutOfRangeException>(static () => new ReadOnlyValueReference<int>(new string('a', 3), ref MyClass.StaticValueType));
+        byte[] empty = [];
+        Throws<ArgumentOutOfRangeException>(() => new ValueReference<byte>(empty, ref MemoryMarshal.GetArrayDataReference(empty)));
+        Throws<ArgumentOutOfRangeException>(() => new ReadOnlyValueReference<byte>(empty, ref MemoryMarshal.GetArrayDataReference(empty)));
     }
 
     [Fact]

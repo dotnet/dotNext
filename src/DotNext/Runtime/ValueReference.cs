@@ -219,7 +219,7 @@ file sealed class RawData
         var offset = Unsafe.ByteOffset(in rawData, in Intrinsics.ChangeType<T, byte>(in field));
 
         // Ensure that the reference is an interior pointer to the field inside the object
-        if (GetRawObjectDataSize is not null && owner != Sentinel.Instance && (nuint)offset > GetRawObjectDataSize(owner))
+        if (GetRawObjectDataSize is not null && owner != Sentinel.Instance && (nuint)(offset + Unsafe.SizeOf<T>()) > GetRawObjectDataSize(owner))
             throw new ArgumentOutOfRangeException(paramName);
 
         return offset;
