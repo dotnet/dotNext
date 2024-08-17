@@ -157,6 +157,16 @@ public sealed class ValueReferenceTests : Test
         Equal(boxedInt.Value, reference.Value);
     }
 
+    [Fact]
+    public static void ArrayCovariance()
+    {
+        string[] array = ["a", "b"];
+        Throws<ArrayTypeMismatchException>(() => new ValueReference<object>(array, 0));
+
+        var roRef = new ReadOnlyValueReference<object>(array, 1);
+        Equal("b", roRef.Value);
+    }
+
     private record class MyClass : IResettable
     {
         internal static string StaticObject;

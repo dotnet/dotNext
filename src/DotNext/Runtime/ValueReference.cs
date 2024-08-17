@@ -26,6 +26,9 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     /// </summary>
     /// <param name="array">The array.</param>
     /// <param name="index">The index of the array element.</param>
+    /// <exception cref="ArrayTypeMismatchException">
+    /// <typeparamref name="T"/> is a reference type, and <paramref name="array" /> is not an array of type <typeparamref name="T"/>.
+    /// </exception>
     public ValueReference(T[] array, int index)
         : this(array, ref array[index])
     {
@@ -130,6 +133,16 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
     IEqualityOperators<ReadOnlyValueReference<T>, ReadOnlyValueReference<T>, bool>
 {
     private readonly nint offset = RawData.GetOffset(owner, in fieldRef);
+    
+    /// <summary>
+    /// Creates a reference to an array element.
+    /// </summary>
+    /// <param name="array">The array.</param>
+    /// <param name="index">The index of the array element.</param>
+    public ReadOnlyValueReference(T[] array, int index)
+        : this(array, in array[index])
+    {
+    }
     
     /// <summary>
     /// Creates a reference to a static field.
