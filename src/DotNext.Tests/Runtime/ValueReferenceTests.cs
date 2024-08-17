@@ -147,6 +147,16 @@ public sealed class ValueReferenceTests : Test
         Equal(Unsafe.SizeOf<ValueReference<float>>(), nint.Size + nint.Size);
     }
 
+    [Fact]
+    public static void BoxedValueInterop()
+    {
+        var boxedInt = BoxedValue<int>.Box(42);
+        ValueReference<int> reference = boxedInt;
+
+        boxedInt.Value = 56;
+        Equal(boxedInt.Value, reference.Value);
+    }
+
     private record class MyClass : IResettable
     {
         internal static string StaticObject;

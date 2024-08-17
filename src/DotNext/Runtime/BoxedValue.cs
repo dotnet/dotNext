@@ -101,6 +101,14 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     [return: NotNullIfNotNull(nameof(value))]
     public static explicit operator BoxedValue<T>?(in T? value) => TryBox(in value);
 
+    /// <summary>
+    /// Obtains a reference to the boxed value.
+    /// </summary>
+    /// <param name="boxedValue">Boxed value.</param>
+    /// <returns>Mutable reference to the boxed value.</returns>
+    public static implicit operator ValueReference<T>(BoxedValue<T> boxedValue)
+        => new(boxedValue, ref boxedValue.Value);
+
     /// <inheritdoc />
     public abstract override bool Equals([NotNullWhen(true)] object? obj);  // abstract to avoid inlining by AOT/JIT
 
