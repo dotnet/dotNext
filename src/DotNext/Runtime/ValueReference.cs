@@ -224,7 +224,7 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
 }
 
 [SuppressMessage("Performance", "CA1812", Justification = "Used for reinterpret cast")]
-file sealed class RawData
+file abstract class RawData
 {
     // TODO: Replace with public counterpart in future
     private static readonly Func<object, nuint>? GetRawObjectDataSize;
