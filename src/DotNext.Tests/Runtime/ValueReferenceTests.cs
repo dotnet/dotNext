@@ -85,14 +85,20 @@ public sealed class ValueReferenceTests : Test
         var reference = default(ValueReference<float>);
         True(reference.IsEmpty);
         Null(reference.ToString());
+
+        Span<float> span = reference;
+        True(span.IsEmpty);
     }
-    
+
     [Fact]
     public static void ImmutableEmptyRef()
     {
         var reference = default(ReadOnlyValueReference<float>);
         True(reference.IsEmpty);
         Null(reference.ToString());
+        
+        ReadOnlySpan<float> span = reference;
+        True(span.IsEmpty);
     }
 
     [Fact]
@@ -165,6 +171,26 @@ public sealed class ValueReferenceTests : Test
 
         var roRef = new ReadOnlyValueReference<object>(array, 1);
         Equal("b", roRef.Value);
+    }
+
+    [Fact]
+    public static void SpanInterop()
+    {
+        var reference = new ValueReference<int>(42);
+        Span<int> span = reference;
+        Equal(1, span.Length);
+
+        True(Unsafe.AreSame(in reference.Value, in span[0]));
+    }
+    
+    [Fact]
+    public static void ReadOnlySpanInterop()
+    {
+        ReadOnlyValueReference<int> reference = new ValueReference<int>(42);
+        ReadOnlySpan<int> span = reference;
+        Equal(1, span.Length);
+
+        True(Unsafe.AreSame(in reference.Value, in span[0]));
     }
 
     private record class MyClass : IResettable

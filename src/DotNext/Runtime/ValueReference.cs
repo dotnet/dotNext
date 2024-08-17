@@ -118,6 +118,14 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     /// <returns>The immutable field reference.</returns>
     public static implicit operator ReadOnlyValueReference<T>(ValueReference<T> reference)
         => Unsafe.BitCast<ValueReference<T>, ReadOnlyValueReference<T>>(reference);
+
+    /// <summary>
+    /// Gets a span over the referenced value.
+    /// </summary>
+    /// <param name="reference">The value reference.</param>
+    /// <returns>The span that contains <see cref="Value"/>; or empty span if <paramref name="reference"/> is empty.</returns>
+    public static implicit operator Span<T>(ValueReference<T> reference)
+        => reference.IsEmpty ? new() : new(ref reference.Value);
 }
 
 /// <summary>
@@ -205,6 +213,14 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
     /// <returns><see langword="true"/> if both references are not equal; otherwise, <see langword="false"/>.</returns>
     public static bool operator !=(ReadOnlyValueReference<T> x, ReadOnlyValueReference<T> y)
         => x.Equals(y) is false;
+    
+    /// <summary>
+    /// Gets a span over the referenced value.
+    /// </summary>
+    /// <param name="reference">The value reference.</param>
+    /// <returns>The span that contains <see cref="Value"/>; or empty span if <paramref name="reference"/> is empty.</returns>
+    public static implicit operator ReadOnlySpan<T>(ReadOnlyValueReference<T> reference)
+        => reference.IsEmpty ? new() : new(in reference.Value);
 }
 
 [SuppressMessage("Performance", "CA1812", Justification = "Used for reinterpret cast")]
