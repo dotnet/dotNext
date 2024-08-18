@@ -9,8 +9,8 @@ Soft Reference
 As a result, softly referenced object can be reclaimed during Background or Full-Blocking GC to collect objects in Generation 2.
 
 The actual lifetime of the soft reference can be tuned in more advanced way using [SoftReferenceOptions](xref:DotNext.Runtime.SoftReferenceOptions) class:
-* It is possible how many collections of objects in Gen2 can survive sofly referenced object
-* Explicitly define memory pressure: if allocated memory in Gen2 exceedes the limit then the object will be available for GC
+* It is possible how many collections of objects in Gen2 can survive softly referenced object
+* Explicitly define memory pressure: if allocated memory in Gen2 exceeds the limit then the object will be available for GC
 
 The following example demonstrates how to create a soft reference to the object:
 ```csharp
