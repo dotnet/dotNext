@@ -1,5 +1,7 @@
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -12,6 +14,7 @@ namespace DotNext.Runtime;
 /// <param name="fieldRef">The reference to the field.</param>
 /// <typeparam name="T">The type of the field.</typeparam>
 [StructLayout(LayoutKind.Auto)]
+[EditorBrowsable(EditorBrowsableState.Advanced)]
 public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     IEquatable<ValueReference<T>>,
     IEqualityOperators<ValueReference<T>, ValueReference<T>, bool>
@@ -23,8 +26,43 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     /// </summary>
     /// <param name="array">The array.</param>
     /// <param name="index">The index of the array element.</param>
+    /// <exception cref="ArrayTypeMismatchException">
+    /// <typeparamref name="T"/> is a reference type, and <paramref name="array" /> is not an array of type <typeparamref name="T"/>.
+    /// </exception>
     public ValueReference(T[] array, int index)
         : this(array, ref array[index])
+    {
+    }
+
+    private ValueReference(StrongBox<T> box)
+        : this(box, ref box.Value!)
+    {
+    }
+
+    /// <summary>
+    /// Creates a reference to the anonymous value.
+    /// </summary>
+    /// <param name="value">The anonymous value.</param>
+    public ValueReference(T value)
+        : this(new StrongBox<T> { Value = value })
+    {
+    }
+
+    /// <summary>
+    /// Creates a reference to a static field.
+    /// </summary>
+    /// <remarks>
+    /// If <typeparamref name="T"/> is a value type then your static field MUST be marked
+    /// with <see cref="FixedAddressValueTypeAttribute"/>. Otherwise, the behavior is unpredictable.
+    /// Correctness of this constructor is based on the fact that static fields are stored
+    /// as elements of <see cref="object"/> array allocated by the runtime in the Pinned Object Heap.
+    /// It means that the address of the field cannot be changed by GC.
+    /// </remarks>
+    /// <param name="staticFieldRef">A reference to the static field.</param>
+    /// <seealso href="https://devblogs.microsoft.com/dotnet/internals-of-the-poh/">Internals of the POH</seealso>
+    [CLSCompliant(false)]
+    public ValueReference(ref T staticFieldRef)
+        : this(Sentinel.Instance, ref staticFieldRef)
     {
     }
 
@@ -80,20 +118,56 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     /// <returns>The immutable field reference.</returns>
     public static implicit operator ReadOnlyValueReference<T>(ValueReference<T> reference)
         => Unsafe.BitCast<ValueReference<T>, ReadOnlyValueReference<T>>(reference);
+
+    /// <summary>
+    /// Gets a span over the referenced value.
+    /// </summary>
+    /// <param name="reference">The value reference.</param>
+    /// <returns>The span that contains <see cref="Value"/>; or empty span if <paramref name="reference"/> is empty.</returns>
+    public static implicit operator Span<T>(ValueReference<T> reference)
+        => reference.IsEmpty ? new() : new(ref reference.Value);
 }
 
 /// <summary>
-/// Represents a mutable reference to the field.
+/// Represents an immutable reference to the field.
 /// </summary>
 /// <param name="owner">An object that owns the field.</param>
 /// <param name="fieldRef">The reference to the field.</param>
 /// <typeparam name="T">The type of the field.</typeparam>
 [StructLayout(LayoutKind.Auto)]
+[EditorBrowsable(EditorBrowsableState.Advanced)]
 public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fieldRef) :
     IEquatable<ReadOnlyValueReference<T>>,
     IEqualityOperators<ReadOnlyValueReference<T>, ReadOnlyValueReference<T>, bool>
 {
     private readonly nint offset = RawData.GetOffset(owner, in fieldRef);
+    
+    /// <summary>
+    /// Creates a reference to an array element.
+    /// </summary>
+    /// <param name="array">The array.</param>
+    /// <param name="index">The index of the array element.</param>
+    public ReadOnlyValueReference(T[] array, int index)
+        : this(array, in array[index])
+    {
+    }
+    
+    /// <summary>
+    /// Creates a reference to a static field.
+    /// </summary>
+    /// <remarks>
+    /// If <typeparamref name="T"/> is a value type then your static field MUST be marked
+    /// with <see cref="FixedAddressValueTypeAttribute"/>. Otherwise, the behavior is unpredictable.
+    /// Correctness of this constructor is based on the fact that static fields are stored
+    /// as elements of <see cref="object"/> array allocated by the runtime in the Pinned Object Heap.
+    /// It means that the address of the field cannot be changed by GC.
+    /// </remarks>
+    /// <param name="staticFieldRef">A reference to the static field.</param>
+    /// <seealso href="https://devblogs.microsoft.com/dotnet/internals-of-the-poh/">Internals of the POH</seealso>
+    public ReadOnlyValueReference(ref readonly T staticFieldRef)
+        : this(Sentinel.Instance, in staticFieldRef)
+    {
+    }
     
     /// <summary>
     /// Gets a value indicating that is reference is empty.
@@ -139,19 +213,45 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
     /// <returns><see langword="true"/> if both references are not equal; otherwise, <see langword="false"/>.</returns>
     public static bool operator !=(ReadOnlyValueReference<T> x, ReadOnlyValueReference<T> y)
         => x.Equals(y) is false;
+    
+    /// <summary>
+    /// Gets a span over the referenced value.
+    /// </summary>
+    /// <param name="reference">The value reference.</param>
+    /// <returns>The span that contains <see cref="Value"/>; or empty span if <paramref name="reference"/> is empty.</returns>
+    public static implicit operator ReadOnlySpan<T>(ReadOnlyValueReference<T> reference)
+        => reference.IsEmpty ? new() : new(in reference.Value);
 }
 
 [SuppressMessage("Performance", "CA1812", Justification = "Used for reinterpret cast")]
-file sealed class RawData
+file abstract class RawData
 {
+    // TODO: Replace with public counterpart in future
+    private static readonly Func<object, nuint>? GetRawObjectDataSize;
+
+    [DynamicDependency(DynamicallyAccessedMemberTypes.NonPublicMethods, typeof(RuntimeHelpers))]
+    static RawData()
+    {
+        const BindingFlags flags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Static;
+        GetRawObjectDataSize = typeof(RuntimeHelpers)
+            .GetMethod(nameof(GetRawObjectDataSize), flags, [typeof(object)])
+            ?.CreateDelegate<Func<object, nuint>>();
+    }
+    
     private byte data;
 
     private RawData() => throw new NotImplementedException();
 
-    internal static nint GetOffset<T>(object owner, ref readonly T field)
+    internal static nint GetOffset<T>(object owner, ref readonly T field, [CallerArgumentExpression(nameof(field))] string? paramName = null)
     {
         ref var rawData = ref Unsafe.As<RawData>(owner).data;
-        return Unsafe.ByteOffset(in rawData, in Intrinsics.ChangeType<T, byte>(in field));
+        var offset = Unsafe.ByteOffset(in rawData, in Intrinsics.ChangeType<T, byte>(in field));
+
+        // Ensure that the reference is an interior pointer to the field inside the object
+        if (GetRawObjectDataSize is not null && owner != Sentinel.Instance && (nuint)(offset + Unsafe.SizeOf<T>()) > GetRawObjectDataSize(owner))
+            throw new ArgumentOutOfRangeException(paramName);
+
+        return offset;
     }
 
     internal static ref T GetObjectData<T>(object owner, nint offset)
