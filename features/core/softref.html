@@ -77,8 +77,8 @@
 <p>As a result, softly referenced object can be reclaimed during Background or Full-Blocking GC to collect objects in Generation 2.</p>
 <p>The actual lifetime of the soft reference can be tuned in more advanced way using <a class="xref" href="../../api/DotNext.Runtime.SoftReferenceOptions.html">SoftReferenceOptions</a> class:</p>
 <ul>
-<li>It is possible how many collections of objects in Gen2 can survive sofly referenced object</li>
-<li>Explicitly define memory pressure: if allocated memory in Gen2 exceedes the limit then the object will be available for GC</li>
+<li>It is possible how many collections of objects in Gen2 can survive softly referenced object</li>
+<li>Explicitly define memory pressure: if allocated memory in Gen2 exceeds the limit then the object will be available for GC</li>
 </ul>
 <p>The following example demonstrates how to create a soft reference to the object:</p>
 <pre><code class="lang-csharp">using System.Text;

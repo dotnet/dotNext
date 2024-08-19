@@ -119,7 +119,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ValueReference_1__ctor_System_Object__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ValueReference%601.%23ctor(System.Object%2C%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L14">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L16">View Source</a>
   </span>
   <a id="DotNext_Runtime_ValueReference_1__ctor_" data-uid="DotNext.Runtime.ValueReference`1.#ctor*"></a>
   <h4 id="DotNext_Runtime_ValueReference_1__ctor_System_Object__0__" data-uid="DotNext.Runtime.ValueReference`1.#ctor(System.Object,`0@)">ValueReference(object, ref T)</h4>
@@ -156,10 +156,90 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ValueReference_1__ctor__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ValueReference%601.%23ctor(%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L46">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_ValueReference_1__ctor_" data-uid="DotNext.Runtime.ValueReference`1.#ctor*"></a>
+  <h4 id="DotNext_Runtime_ValueReference_1__ctor__0_" data-uid="DotNext.Runtime.ValueReference`1.#ctor(`0)">ValueReference(T)</h4>
+  <div class="markdown level1 summary"><p>Creates a reference to the anonymous value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueReference(T value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The anonymous value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ValueReference_1__ctor__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ValueReference%601.%23ctor(%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L63">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_ValueReference_1__ctor_" data-uid="DotNext.Runtime.ValueReference`1.#ctor*"></a>
+  <h4 id="DotNext_Runtime_ValueReference_1__ctor__0__" data-uid="DotNext.Runtime.ValueReference`1.#ctor(`0@)">ValueReference(ref T)</h4>
+  <div class="markdown level1 summary"><p>Creates a reference to a static field.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public ValueReference(ref T staticFieldRef)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">staticFieldRef</span></td>
+        <td><p>A reference to the static field.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_ValueReference_1__ctor__0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If <code class="typeparamref">T</code> is a value type then your static field MUST be marked
+with <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.compilerservices.fixedaddressvaluetypeattribute">FixedAddressValueTypeAttribute</a>. Otherwise, the behavior is unpredictable.
+Correctness of this constructor is based on the fact that static fields are stored
+as elements of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a> array allocated by the runtime in the Pinned Object Heap.
+It means that the address of the field cannot be changed by GC.</p>
+</div>
+  <h5 id="DotNext_Runtime_ValueReference_1__ctor__0___seealso">See Also</h5>
+  <div class="seealso">
+      <div><span><a href="https://devblogs.microsoft.com/dotnet/internals-of-the-poh/">Internals of the POH</a></span></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ValueReference_1__ctor__0___System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ValueReference%601.%23ctor(%600%5B%5D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L26">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L32">View Source</a>
   </span>
   <a id="DotNext_Runtime_ValueReference_1__ctor_" data-uid="DotNext.Runtime.ValueReference`1.#ctor*"></a>
   <h4 id="DotNext_Runtime_ValueReference_1__ctor__0___System_Int32_" data-uid="DotNext.Runtime.ValueReference`1.#ctor(`0[],System.Int32)">ValueReference(T[], int)</h4>
@@ -194,6 +274,22 @@
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.arraytypemismatchexception">ArrayTypeMismatchException</a></td>
+        <td><p><code class="typeparamref">T</code> is a reference type, and <code class="paramref">array</code> is not an array of type <code class="typeparamref">T</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="properties">Properties
 </h3>
   <span class="small pull-right mobile-hide">
@@ -201,7 +297,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ValueReference_1_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ValueReference%601.IsEmpty%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L34">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L72">View Source</a>
   </span>
   <a id="DotNext_Runtime_ValueReference_1_IsEmpty_" data-uid="DotNext.Runtime.ValueReference`1.IsEmpty*"></a>
   <h4 id="DotNext_Runtime_ValueReference_1_IsEmpty" data-uid="DotNext.Runtime.ValueReference`1.IsEmpty">IsEmpty</h4>
@@ -232,7 +328,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ValueReference_1_Value.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ValueReference%601.Value%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L39">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L77">View Source</a>
   </span>
   <a id="DotNext_Runtime_ValueReference_1_Value_" data-uid="DotNext.Runtime.ValueReference`1.Value*"></a>
   <h4 id="DotNext_Runtime_ValueReference_1_Value" data-uid="DotNext.Runtime.ValueReference`1.Value">Value</h4>
@@ -265,7 +361,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ValueReference_1_Equals_DotNext_Runtime_ValueReference__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ValueReference%601.Equals(DotNext.Runtime.ValueReference%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L55">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L93">View Source</a>
   </span>
   <a id="DotNext_Runtime_ValueReference_1_Equals_" data-uid="DotNext.Runtime.ValueReference`1.Equals*"></a>
   <h4 id="DotNext_Runtime_ValueReference_1_Equals_DotNext_Runtime_ValueReference__0__" data-uid="DotNext.Runtime.ValueReference`1.Equals(DotNext.Runtime.ValueReference{`0})">Equals(ValueReference&lt;T&gt;)</h4>
@@ -314,7 +410,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ValueReference_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ValueReference%601.Equals(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L48">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L86">View Source</a>
   </span>
   <a id="DotNext_Runtime_ValueReference_1_Equals_" data-uid="DotNext.Runtime.ValueReference`1.Equals*"></a>
   <h4 id="DotNext_Runtime_ValueReference_1_Equals_System_Object_" data-uid="DotNext.Runtime.ValueReference`1.Equals(System.Object)">Equals(object?)</h4>
@@ -365,7 +461,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ValueReference_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ValueReference%601.GetHashCode%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L52">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L90">View Source</a>
   </span>
   <a id="DotNext_Runtime_ValueReference_1_GetHashCode_" data-uid="DotNext.Runtime.ValueReference`1.GetHashCode*"></a>
   <h4 id="DotNext_Runtime_ValueReference_1_GetHashCode" data-uid="DotNext.Runtime.ValueReference`1.GetHashCode">GetHashCode()</h4>
@@ -399,7 +495,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ValueReference_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ValueReference%601.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L44">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L82">View Source</a>
   </span>
   <a id="DotNext_Runtime_ValueReference_1_ToString_" data-uid="DotNext.Runtime.ValueReference`1.ToString*"></a>
   <h4 id="DotNext_Runtime_ValueReference_1_ToString" data-uid="DotNext.Runtime.ValueReference`1.ToString">ToString()</h4>
@@ -435,7 +531,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ValueReference_1_op_Equality_DotNext_Runtime_ValueReference__0__DotNext_Runtime_ValueReference__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ValueReference%601.op_Equality(DotNext.Runtime.ValueReference%7B%600%7D%2CDotNext.Runtime.ValueReference%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L64">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L102">View Source</a>
   </span>
   <a id="DotNext_Runtime_ValueReference_1_op_Equality_" data-uid="DotNext.Runtime.ValueReference`1.op_Equality*"></a>
   <h4 id="DotNext_Runtime_ValueReference_1_op_Equality_DotNext_Runtime_ValueReference__0__DotNext_Runtime_ValueReference__0__" data-uid="DotNext.Runtime.ValueReference`1.op_Equality(DotNext.Runtime.ValueReference{`0},DotNext.Runtime.ValueReference{`0})">operator ==(ValueReference&lt;T&gt;, ValueReference&lt;T&gt;)</h4>
@@ -491,7 +587,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ValueReference_1_op_Implicit_DotNext_Runtime_ValueReference__0___DotNext_Runtime_ReadOnlyValueReference__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ValueReference%601.op_Implicit(DotNext.Runtime.ValueReference%7B%600%7D)~DotNext.Runtime.ReadOnlyValueReference%7B%600%7D%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L81">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L119">View Source</a>
   </span>
   <a id="DotNext_Runtime_ValueReference_1_op_Implicit_" data-uid="DotNext.Runtime.ValueReference`1.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_ValueReference_1_op_Implicit_DotNext_Runtime_ValueReference__0___DotNext_Runtime_ReadOnlyValueReference__0_" data-uid="DotNext.Runtime.ValueReference`1.op_Implicit(DotNext.Runtime.ValueReference{`0})~DotNext.Runtime.ReadOnlyValueReference{`0}">implicit operator ReadOnlyValueReference&lt;T&gt;(ValueReference&lt;T&gt;)</h4>
@@ -538,10 +634,60 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ValueReference_1_op_Implicit_DotNext_Runtime_ValueReference__0___System_Span__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ValueReference%601.op_Implicit(DotNext.Runtime.ValueReference%7B%600%7D)~System.Span%7B%600%7D%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L127">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_ValueReference_1_op_Implicit_" data-uid="DotNext.Runtime.ValueReference`1.op_Implicit*"></a>
+  <h4 id="DotNext_Runtime_ValueReference_1_op_Implicit_DotNext_Runtime_ValueReference__0___System_Span__0_" data-uid="DotNext.Runtime.ValueReference`1.op_Implicit(DotNext.Runtime.ValueReference{`0})~System.Span{`0}">implicit operator Span&lt;T&gt;(ValueReference&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Gets a span over the referenced value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator Span&lt;T&gt;(ValueReference&lt;T&gt; reference)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.ValueReference-1.html">ValueReference</a>&lt;T&gt;</td>
+        <td><span class="parametername">reference</span></td>
+        <td><p>The value reference.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
+        <td><p>The span that contains <a class="xref" href="DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_Value">Value</a>; or empty span if <code class="paramref">reference</code> is empty.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ValueReference_1_op_Inequality_DotNext_Runtime_ValueReference__0__DotNext_Runtime_ValueReference__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ValueReference%601.op_Inequality(DotNext.Runtime.ValueReference%7B%600%7D%2CDotNext.Runtime.ValueReference%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L73">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L111">View Source</a>
   </span>
   <a id="DotNext_Runtime_ValueReference_1_op_Inequality_" data-uid="DotNext.Runtime.ValueReference`1.op_Inequality*"></a>
   <h4 id="DotNext_Runtime_ValueReference_1_op_Inequality_DotNext_Runtime_ValueReference__0__DotNext_Runtime_ValueReference__0__" data-uid="DotNext.Runtime.ValueReference`1.op_Inequality(DotNext.Runtime.ValueReference{`0},DotNext.Runtime.ValueReference{`0})">operator !=(ValueReference&lt;T&gt;, ValueReference&lt;T&gt;)</h4>
@@ -624,7 +770,7 @@
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ValueReference_1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ValueReference%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L14" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ValueReference.cs/#L16" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

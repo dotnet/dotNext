@@ -36939,6 +36939,15 @@ references:
   fullName.vb: DotNext.Runtime.BoxedValue(Of T).CType
   nameWithType: BoxedValue<T>.explicit operator
   nameWithType.vb: BoxedValue(Of T).CType
+- uid: DotNext.Runtime.BoxedValue`1.op_Implicit(DotNext.Runtime.BoxedValue{`0})~DotNext.Runtime.ValueReference{`0}
+  name: implicit operator ValueReference<T>(BoxedValue<T>)
+  href: api/DotNext.Runtime.BoxedValue-1.html#DotNext_Runtime_BoxedValue_1_op_Implicit_DotNext_Runtime_BoxedValue__0___DotNext_Runtime_ValueReference__0_
+  commentId: M:DotNext.Runtime.BoxedValue`1.op_Implicit(DotNext.Runtime.BoxedValue{`0})~DotNext.Runtime.ValueReference{`0}
+  name.vb: CType(BoxedValue(Of T))
+  fullName: DotNext.Runtime.BoxedValue<T>.implicit operator DotNext.Runtime.ValueReference<T>(DotNext.Runtime.BoxedValue<T>)
+  fullName.vb: DotNext.Runtime.BoxedValue(Of T).CType(DotNext.Runtime.BoxedValue(Of T))
+  nameWithType: BoxedValue<T>.implicit operator ValueReference<T>(BoxedValue<T>)
+  nameWithType.vb: BoxedValue(Of T).CType(BoxedValue(Of T))
 - uid: DotNext.Runtime.BoxedValue`1.op_Implicit(DotNext.Runtime.BoxedValue{`0})~System.ValueType
   name: implicit operator ValueType?(BoxedValue<T>?)
   href: api/DotNext.Runtime.BoxedValue-1.html#DotNext_Runtime_BoxedValue_1_op_Implicit_DotNext_Runtime_BoxedValue__0___System_ValueType
@@ -40356,6 +40365,24 @@ references:
   fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).New(Object, T)
   nameWithType: ReadOnlyValueReference<T>.ReadOnlyValueReference(object, ref readonly T)
   nameWithType.vb: ReadOnlyValueReference(Of T).New(Object, T)
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.#ctor(`0@)
+  name: ReadOnlyValueReference(ref readonly T)
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1__ctor__0__
+  commentId: M:DotNext.Runtime.ReadOnlyValueReference`1.#ctor(`0@)
+  name.vb: New(T)
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.ReadOnlyValueReference(ref readonly T)
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).New(T)
+  nameWithType: ReadOnlyValueReference<T>.ReadOnlyValueReference(ref readonly T)
+  nameWithType.vb: ReadOnlyValueReference(Of T).New(T)
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.#ctor(`0[],System.Int32)
+  name: ReadOnlyValueReference(T[], int)
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1__ctor__0___System_Int32_
+  commentId: M:DotNext.Runtime.ReadOnlyValueReference`1.#ctor(`0[],System.Int32)
+  name.vb: New(T(), Integer)
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.ReadOnlyValueReference(T[], int)
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).New(T(), Integer)
+  nameWithType: ReadOnlyValueReference<T>.ReadOnlyValueReference(T[], int)
+  nameWithType.vb: ReadOnlyValueReference(Of T).New(T(), Integer)
 - uid: DotNext.Runtime.ReadOnlyValueReference`1.#ctor*
   name: ReadOnlyValueReference
   href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1__ctor_
@@ -40480,6 +40507,25 @@ references:
   fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).=
   nameWithType: ReadOnlyValueReference<T>.operator ==
   nameWithType.vb: ReadOnlyValueReference(Of T).=
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.op_Implicit(DotNext.Runtime.ReadOnlyValueReference{`0})~System.ReadOnlySpan{`0}
+  name: implicit operator ReadOnlySpan<T>(ReadOnlyValueReference<T>)
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_op_Implicit_DotNext_Runtime_ReadOnlyValueReference__0___System_ReadOnlySpan__0_
+  commentId: M:DotNext.Runtime.ReadOnlyValueReference`1.op_Implicit(DotNext.Runtime.ReadOnlyValueReference{`0})~System.ReadOnlySpan{`0}
+  name.vb: CType(ReadOnlyValueReference(Of T))
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.implicit operator System.ReadOnlySpan<T>(DotNext.Runtime.ReadOnlyValueReference<T>)
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).CType(DotNext.Runtime.ReadOnlyValueReference(Of T))
+  nameWithType: ReadOnlyValueReference<T>.implicit operator ReadOnlySpan<T>(ReadOnlyValueReference<T>)
+  nameWithType.vb: ReadOnlyValueReference(Of T).CType(ReadOnlyValueReference(Of T))
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.op_Implicit*
+  name: implicit operator
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_op_Implicit_
+  commentId: Overload:DotNext.Runtime.ReadOnlyValueReference`1.op_Implicit
+  isSpec: "True"
+  name.vb: CType
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.implicit operator
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).CType
+  nameWithType: ReadOnlyValueReference<T>.implicit operator
+  nameWithType.vb: ReadOnlyValueReference(Of T).CType
 - uid: DotNext.Runtime.ReadOnlyValueReference`1.op_Inequality(DotNext.Runtime.ReadOnlyValueReference{`0},DotNext.Runtime.ReadOnlyValueReference{`0})
   name: operator !=(ReadOnlyValueReference<T>, ReadOnlyValueReference<T>)
   href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_op_Inequality_DotNext_Runtime_ReadOnlyValueReference__0__DotNext_Runtime_ReadOnlyValueReference__0__
@@ -40825,6 +40871,24 @@ references:
   fullName.vb: DotNext.Runtime.ValueReference(Of T).New(Object, T)
   nameWithType: ValueReference<T>.ValueReference(object, ref T)
   nameWithType.vb: ValueReference(Of T).New(Object, T)
+- uid: DotNext.Runtime.ValueReference`1.#ctor(`0)
+  name: ValueReference(T)
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1__ctor__0_
+  commentId: M:DotNext.Runtime.ValueReference`1.#ctor(`0)
+  name.vb: New(T)
+  fullName: DotNext.Runtime.ValueReference<T>.ValueReference(T)
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).New(T)
+  nameWithType: ValueReference<T>.ValueReference(T)
+  nameWithType.vb: ValueReference(Of T).New(T)
+- uid: DotNext.Runtime.ValueReference`1.#ctor(`0@)
+  name: ValueReference(ref T)
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1__ctor__0__
+  commentId: M:DotNext.Runtime.ValueReference`1.#ctor(`0@)
+  name.vb: New(T)
+  fullName: DotNext.Runtime.ValueReference<T>.ValueReference(ref T)
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).New(T)
+  nameWithType: ValueReference<T>.ValueReference(ref T)
+  nameWithType.vb: ValueReference(Of T).New(T)
 - uid: DotNext.Runtime.ValueReference`1.#ctor(`0[],System.Int32)
   name: ValueReference(T[], int)
   href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1__ctor__0___System_Int32_
@@ -40966,6 +41030,15 @@ references:
   fullName: DotNext.Runtime.ValueReference<T>.implicit operator DotNext.Runtime.ReadOnlyValueReference<T>(DotNext.Runtime.ValueReference<T>)
   fullName.vb: DotNext.Runtime.ValueReference(Of T).CType(DotNext.Runtime.ValueReference(Of T))
   nameWithType: ValueReference<T>.implicit operator ReadOnlyValueReference<T>(ValueReference<T>)
+  nameWithType.vb: ValueReference(Of T).CType(ValueReference(Of T))
+- uid: DotNext.Runtime.ValueReference`1.op_Implicit(DotNext.Runtime.ValueReference{`0})~System.Span{`0}
+  name: implicit operator Span<T>(ValueReference<T>)
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_op_Implicit_DotNext_Runtime_ValueReference__0___System_Span__0_
+  commentId: M:DotNext.Runtime.ValueReference`1.op_Implicit(DotNext.Runtime.ValueReference{`0})~System.Span{`0}
+  name.vb: CType(ValueReference(Of T))
+  fullName: DotNext.Runtime.ValueReference<T>.implicit operator System.Span<T>(DotNext.Runtime.ValueReference<T>)
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).CType(DotNext.Runtime.ValueReference(Of T))
+  nameWithType: ValueReference<T>.implicit operator Span<T>(ValueReference<T>)
   nameWithType.vb: ValueReference(Of T).CType(ValueReference(Of T))
 - uid: DotNext.Runtime.ValueReference`1.op_Implicit*
   name: implicit operator

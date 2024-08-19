@@ -5,17 +5,17 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Namespace DotNext.Runtime | .NEXT </title>
+    <title>Value References | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Namespace DotNext.Runtime | .NEXT ">
+    <meta name="title" content="Value References | .NEXT ">
     <meta name="generator" content="docfx ">
   
-    <link rel="shortcut icon" href="../fav.ico">
-    <link rel="stylesheet" href="../styles/docfx.vendor.css">
-    <link rel="stylesheet" href="../styles/docfx.css">
-    <link rel="stylesheet" href="../styles/main.css">
-    <meta property="docfx:navrel" content="../toc.html">
-    <meta property="docfx:tocrel" content="toc.html">
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
   
   
   
@@ -33,8 +33,8 @@
                 <span class="icon-bar"></span>
               </button>
 
-              <a class="navbar-brand" href="../index.html">
-                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
               </a>
             </div>
             <div class="collapse navbar-collapse" id="navbar">
@@ -65,53 +65,34 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Runtime">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="value-references">Value References</h1>
 
-  <h1 id="DotNext_Runtime" data-uid="DotNext.Runtime" class="text-break">Namespace DotNext.Runtime</h1>
-  <div class="markdown level0 summary"></div>
-  <div class="markdown level0 conceptual"></div>
-  <div class="markdown level0 remarks"></div>
-    <h3 id="classes">
-Classes
-</h3>
-      <h4><a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T&gt;</a></h4>
-      <section><p>Represents a typed representation of the boxed value type.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Runtime.GCNotification.html">GCNotification</a></h4>
-      <section><p>Provides a way to receive notifications from Garbage Collector asynchronously.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Runtime.Intrinsics.html">Intrinsics</a></h4>
-      <section><p>Represents highly optimized runtime intrinsic methods.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Runtime.SoftReferenceOptions.html">SoftReferenceOptions</a></h4>
-      <section><p>Allows to configure behavior of <a class="xref" href="DotNext.Runtime.SoftReference-1.html">SoftReference&lt;T&gt;</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Runtime.SoftReference-1.html">SoftReference&lt;T&gt;</a></h4>
-      <section><p>Represents a form of weak reference
-which is eligible for garbage collection in Generation 2 only.</p>
-</section>
-    <h3 id="structs">
-Structs
-</h3>
-      <h4><a class="xref" href="DotNext.Runtime.GCLatencyModeScope.html">GCLatencyModeScope</a></h4>
-      <section><p>Represents lexical scope of the specific GC latency mode.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Runtime.GCNotification.Registration.html">GCNotification.Registration</a></h4>
-      <section><p>Represents callback registration.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Runtime.ReadOnlyValueReference-1.html">ReadOnlyValueReference&lt;T&gt;</a></h4>
-      <section><p>Represents an immutable reference to the field.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Runtime.ValueReference-1.html">ValueReference&lt;T&gt;</a></h4>
-      <section><p>Represents a mutable reference to the field.</p>
-</section>
-    <h3 id="enums">
-Enums
-</h3>
-      <h4><a class="xref" href="DotNext.Runtime.SoftReferenceState.html">SoftReferenceState</a></h4>
-      <section><p>Represents state of the referenced object.</p>
-</section>
+<p>Managed pointer (<strong>ref</strong> keyword) and <a href="https://learn.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a> allow to represent access to the referenced value by using interior pointer. However, these data types are restricted by their scope. For instance, if the interior pointer references the field inside the managed object, no need to restrict the scope of that pointer because the object is allocated in the heap.
+<a class="xref" href="../../api/DotNext.Runtime.ValueReference-1.html">ValueReference&lt;T&gt;</a> and <a class="xref" href="../../api/DotNext.Runtime.ReadOnlyValueReference-1.html">ReadOnlyValueReference&lt;T&gt;</a> are alternative representation of the references to the heap-allocated objects without the restrictions described above. You can use these types as a fields of another classes (not limited to <strong>ref struct</strong>).</p>
+<pre><code class="lang-csharp">class MyClass
+{
+    private int field;
+    
+    public ValueReference&lt;int&gt; GetFieldRef() =&gt; new ValueReference&lt;int&gt;(this, ref field);
+}
+</code></pre>
+<p><code>ValueReference&lt;T&gt;</code> can hold a reference to the following locations:</p>
+<ul>
+<li>Instance field</li>
+<li>Array element</li>
+<li>Static field</li>
+</ul>
+<p>If static field is of value type, it must be marked with <a href="https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.fixedaddressvaluetypeattribute">FixedAddressValueType</a> attribute. Otherwise, the behavior is unspecified.</p>
+<pre><code class="lang-csharp">class MyClass
+{
+    [FixedAddressValueType]
+    public static int Field;
+}
 
+ValueReference&lt;int&gt; reference = new ValueReference&lt;int&gt;(ref MyClass.Field);
+reference.Value = 42;
+</code></pre>
 
 </article>
           </div>
@@ -120,6 +101,9 @@ Enums
             <div class="sideaffix">
               <div class="contribution">
                 <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/docs/features/core/valueref.md/#L1" class="contribution-link">Edit this page</a>
+                  </li>
                 </ul>
               </div>
               <div class="toggle-mode">
@@ -170,11 +154,11 @@ Enums
             </div>
           </div>
         </div>
-        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+        <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
       </footer>    </div>
 
-    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
-    <script type="text/javascript" src="../styles/docfx.js"></script>
-    <script type="text/javascript" src="../styles/main.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
   </body>
 </html>
