@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime;
 
@@ -84,18 +85,121 @@ public sealed class ValueReferenceTests : Test
         var reference = default(ValueReference<float>);
         True(reference.IsEmpty);
         Null(reference.ToString());
+
+        Span<float> span = reference;
+        True(span.IsEmpty);
     }
-    
+
     [Fact]
     public static void ImmutableEmptyRef()
     {
         var reference = default(ReadOnlyValueReference<float>);
         True(reference.IsEmpty);
         Null(reference.ToString());
+        
+        ReadOnlySpan<float> span = reference;
+        True(span.IsEmpty);
+    }
+
+    [Fact]
+    public static void AnonymousValue()
+    {
+        var reference = new ValueReference<int>(42);
+        Equal(42, reference.Value);
+
+        ReadOnlyValueReference<int> roRef = reference;
+        Equal(42, roRef.Value);
+    }
+
+    [Fact]
+    public static void StaticObjectAccess()
+    {
+        var reference = new ValueReference<string>(ref MyClass.StaticObject)
+        {
+            Value = "Hello, world",
+        };
+
+        GC.Collect(3, GCCollectionMode.Forced, true, true);
+        GC.WaitForPendingFinalizers();
+        
+        True(reference == new ValueReference<string>(ref MyClass.StaticObject));
+        Same(MyClass.StaticObject, reference.Value);
+    }
+    
+    [Fact]
+    public static void StaticValueTypeAccess()
+    {
+        var reference = new ReadOnlyValueReference<int>(in MyClass.StaticValueType);
+        MyClass.StaticValueType = 42;
+
+        GC.Collect(3, GCCollectionMode.Forced, true, true);
+        GC.WaitForPendingFinalizers();
+        
+        True(reference == new ReadOnlyValueReference<int>(in MyClass.StaticValueType));
+        Equal(MyClass.StaticValueType, reference.Value);
+    }
+
+    [Fact]
+    public static void IncorrectReference()
+    {
+        byte[] empty = [];
+        Throws<ArgumentOutOfRangeException>(() => new ValueReference<byte>(empty, ref MemoryMarshal.GetArrayDataReference(empty)));
+        Throws<ArgumentOutOfRangeException>(() => new ReadOnlyValueReference<byte>(empty, ref MemoryMarshal.GetArrayDataReference(empty)));
+    }
+
+    [Fact]
+    public static void ReferenceSize()
+    {
+        Equal(Unsafe.SizeOf<ValueReference<float>>(), nint.Size + nint.Size);
+    }
+
+    [Fact]
+    public static void BoxedValueInterop()
+    {
+        var boxedInt = BoxedValue<int>.Box(42);
+        ValueReference<int> reference = boxedInt;
+
+        boxedInt.Value = 56;
+        Equal(boxedInt.Value, reference.Value);
+    }
+
+    [Fact]
+    public static void ArrayCovariance()
+    {
+        string[] array = ["a", "b"];
+        Throws<ArrayTypeMismatchException>(() => new ValueReference<object>(array, 0));
+
+        var roRef = new ReadOnlyValueReference<object>(array, 1);
+        Equal("b", roRef.Value);
+    }
+
+    [Fact]
+    public static void SpanInterop()
+    {
+        var reference = new ValueReference<int>(42);
+        Span<int> span = reference;
+        Equal(1, span.Length);
+
+        True(Unsafe.AreSame(in reference.Value, in span[0]));
+    }
+    
+    [Fact]
+    public static void ReadOnlySpanInterop()
+    {
+        ReadOnlyValueReference<int> reference = new ValueReference<int>(42);
+        ReadOnlySpan<int> span = reference;
+        Equal(1, span.Length);
+
+        True(Unsafe.AreSame(in reference.Value, in span[0]));
     }
 
     private record class MyClass : IResettable
     {
+        internal static string StaticObject;
+        
+        [FixedAddressValueType]
+        internal static int StaticValueType;
+        
         internal int Field;
         internal string AnotherField;
 

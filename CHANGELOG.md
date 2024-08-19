@@ -1,6 +1,13 @@
 Release Notes
 ====
 
+# 08-19-2024
+<a href="https://www.nuget.org/packages/dotnext/5.12.1">DotNext 5.12.1</a>
+* Added support of static field references to `DotNext.Runtime.ValueReference<T>` data type
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.12.1">DotNext.Threading 5.12.1</a>
+* Smallish performance improvements of `RandomAccessCache<TKey, TValue>` class
+
 # 08-13-2024
 <a href="https://www.nuget.org/packages/dotnext/5.12.0">DotNext 5.12.0</a>
 * Added `DotNext.Runtime.ValueReference<T>` data type that allows to obtain async-friendly managed pointer to the field
