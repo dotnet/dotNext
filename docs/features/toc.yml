@@ -34,7 +34,7 @@
     - name: GC Notifications
       href : core/gcnotif.md
     - name: Value References
-      href: cire/valueref.md
+      href: core/valueref.md
 - name: I/O Enhancements
   href: io/index.md
   items:
