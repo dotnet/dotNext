@@ -360,4 +360,13 @@ public static partial class Collection
     /// <exception cref="ArgumentNullException"><paramref name="enumerable"/> is <see langword="null"/>.</exception>
     public static IAsyncEnumerable<T> ToAsyncEnumerable<T>(this IEnumerable<T> enumerable)
         => new AsyncEnumerable.Proxy<T>(enumerable ?? throw new ArgumentNullException(nameof(enumerable)));
+
+    /// <summary>
+    /// Converts ad-hoc enumerator to the generic enumerator.
+    /// </summary>
+    /// <param name="enumerator">Ad-hoc enumerator.</param>
+    /// <returns>The enumerator over values of type <typeparamref name="T"/>.</returns>
+    internal static IEnumerator<T> ToClassicEnumerator<TEnumerator, T>(this TEnumerator enumerator)
+        where TEnumerator : struct, IEnumerator<TEnumerator, T>
+        => TEnumerator.ToEnumerator(enumerator);
 }

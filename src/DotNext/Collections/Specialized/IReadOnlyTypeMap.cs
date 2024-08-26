@@ -28,7 +28,7 @@ public interface IReadOnlyTypeMap<TValue>
 /// <summary>
 /// Represents read-only view of a set of typed values.
 /// </summary>
-public interface IReadOnlyTypeMap
+public interface IReadOnlyTypeMap : IEnumerable<object>
 {
     /// <summary>
     /// Determines whether the set has the value of type <typeparamref name="T"/>.

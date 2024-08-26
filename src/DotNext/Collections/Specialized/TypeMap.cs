@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -235,7 +236,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
 /// Represents fast implementation of <see cref="ITypeMap"/>
 /// which is not thread safe.
 /// </summary>
-public class TypeMap : ITypeMap
+public partial class TypeMap : ITypeMap
 {
     private object?[] entries;
 
@@ -257,6 +258,16 @@ public class TypeMap : ITypeMap
     public TypeMap()
         => entries = new object?[ITypeMap.RecommendedCapacity];
 
+    private ref object? this[int index]
+    {
+        get
+        {
+            Debug.Assert((uint)index < (uint)entries.Length);
+
+            return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+        }
+    }
+
     /// <inheritdoc cref="ITypeMap.Add{T}(T)"/>
     public void Add<T>([DisallowNull] T value)
     {
@@ -267,7 +278,7 @@ public class TypeMap : ITypeMap
     private bool TryAdd(int index, object value)
     {
         EnsureCapacity(index);
-        ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+        ref var holder = ref this[index];
         if (holder is not null)
             return false;
 
@@ -282,7 +293,7 @@ public class TypeMap : ITypeMap
     private void Set(int index, object value)
     {
         EnsureCapacity(index);
-        Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index) = value;
+        this[index] = value;
     }
 
     /// <inheritdoc cref="ITypeMap.Set{T}(T, out T)"/>
@@ -292,7 +303,7 @@ public class TypeMap : ITypeMap
     private bool Set<T>(int index, T newValue, [NotNullWhen(true)] out T? oldValue)
     {
         EnsureCapacity(index);
-        ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+        ref var holder = ref this[index];
 
         bool result;
         oldValue = (result = holder is T)
@@ -309,10 +320,8 @@ public class TypeMap : ITypeMap
     /// <inheritdoc cref="IReadOnlyTypeMap.Contains{T}"/>
     public bool Contains<T>()
     {
-        return Contains(entries, ITypeMap.GetIndex<T>());
-
-        static bool Contains(object?[] entries, int index)
-            => (uint)index < (uint)entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index) is T;
+        var index = ITypeMap.GetIndex<T>();
+        return (uint)index < (uint)entries.Length && this[index] is T;
     }
 
     private bool Remove(int index)
@@ -345,6 +354,8 @@ public class TypeMap : ITypeMap
             if (holder is T)
             {
                 value = (T)holder;
+                Debug.Assert(value is not null);
+                
                 holder = null;
                 return true;
             }
@@ -362,10 +373,12 @@ public class TypeMap : ITypeMap
     {
         if ((uint)index < (uint)entries.Length)
         {
-            var holder = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+            var holder = this[index];
             if (holder is T)
             {
                 value = (T)holder;
+                Debug.Assert(value is not null);
+                
                 return true;
             }
         }
@@ -399,7 +412,7 @@ public class TypeMap : ITypeMap
         where T : struct
     {
         EnsureCapacity(index);
-        ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+        ref var holder = ref this[index];
         if (holder is T)
         {
             exists = true;

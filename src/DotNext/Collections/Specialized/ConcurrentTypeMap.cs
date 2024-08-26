@@ -73,7 +73,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
     private readonly object syncRoot;
 
-    // Assuming that the map will not contain hunders or thousands for entries.
+    // Assuming that the map will not contain hundreds or thousands for entries.
     // If so, we can keep the lock for each entry instead of buckets as in ConcurrentDictionaryMap.
     // As a result, we don't need the concurrency level. Also, we can modify different entries concurrently
     // and perform resizing in parallel with read/write of individual entry
@@ -401,9 +401,9 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 /// <summary>
 /// Represents thread-safe implementation of <see cref="ITypeMap"/> interface.
 /// </summary>
-public class ConcurrentTypeMap : ITypeMap
+public partial class ConcurrentTypeMap : ITypeMap
 {
-    private sealed class Entry
+    internal sealed class Entry
     {
         internal volatile object? Value;
 
@@ -465,11 +465,11 @@ public class ConcurrentTypeMap : ITypeMap
                 return;
 
             // do resize
-            var firstUnitialized = entries.Length;
+            var firstUninitialized = entries.Length;
             Array.Resize(ref entries, ITypeMap.RecommendedCapacity);
 
             // initializes the rest of the array
-            entries.AsSpan(firstUnitialized).Initialize();
+            entries.AsSpan(firstUninitialized).Initialize();
 
             // commit resized storage
             this.entries = entries; // write barrier is provided by monitor lock
