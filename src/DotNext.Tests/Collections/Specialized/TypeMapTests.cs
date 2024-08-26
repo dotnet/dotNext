@@ -2,13 +2,13 @@ namespace DotNext.Collections.Specialized;
 
 public sealed class TypeMapTests : Test
 {
-    public static IEnumerable<object[]> GetMaps()
+    public static TheoryData<ITypeMap<int>> GetMaps() => new()
     {
-        yield return [new TypeMap<int>()];
-        yield return [new TypeMap<int>(1)];
-        yield return [new ConcurrentTypeMap<int>()];
-        yield return [new ConcurrentTypeMap<int>(1)];
-    }
+        new TypeMap<int>(),
+        new TypeMap<int>(1),
+        new ConcurrentTypeMap<int>(),
+        new ConcurrentTypeMap<int>(1),
+    };
 
     [Theory]
     [MemberData(nameof(GetMaps))]
@@ -186,13 +186,13 @@ public sealed class TypeMapTests : Test
         Equal(42, enumerator.Current);
     }
 
-    public static IEnumerable<object[]> GetSets()
+    public static TheoryData<ITypeMap> GetSets() => new()
     {
-        yield return [new TypeMap()];
-        yield return [new TypeMap(1)];
-        yield return [new ConcurrentTypeMap()];
-        yield return [new ConcurrentTypeMap(1)];
-    }
+        new TypeMap(),
+        new TypeMap(1),
+        new ConcurrentTypeMap(),
+        new ConcurrentTypeMap(1),
+    };
 
     [Theory]
     [MemberData(nameof(GetSets))]

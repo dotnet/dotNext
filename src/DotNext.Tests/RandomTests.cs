@@ -4,7 +4,7 @@ namespace DotNext;
 
 public sealed class RandomTests : Test
 {
-    private sealed class DummyRNG : RandomNumberGenerator
+    public sealed class DummyRNG : RandomNumberGenerator
     {
         private readonly byte[] number;
 
@@ -22,14 +22,14 @@ public sealed class RandomTests : Test
         Equal(42 >> 1, rng.Next()); // because Next applies >> 1 for every randomly generated 32-bit unsigned integer
     }
 
-    public static IEnumerable<object[]> RandomDoubleTestData()
+    public static TheoryData<DummyRNG> RandomDoubleTestData() => new()
     {
-        yield return new[] { new DummyRNG(0) };
-        yield return new[] { new DummyRNG(int.MaxValue) };
-        yield return new[] { new DummyRNG(int.MinValue) };
-        yield return new[] { new DummyRNG(-1) };
-        yield return new[] { new DummyRNG(1) };
-    }
+        new DummyRNG(0),
+        new DummyRNG(int.MaxValue),
+        new DummyRNG(int.MinValue),
+        new DummyRNG(-1),
+        new DummyRNG(1),
+    };
 
     [Theory]
     [MemberData(nameof(RandomDoubleTestData))]

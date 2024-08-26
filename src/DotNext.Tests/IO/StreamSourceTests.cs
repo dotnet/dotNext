@@ -10,12 +10,12 @@ public sealed class StreamSourceTests : Test
 {
     private static readonly byte[] data = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120];
 
-    public static IEnumerable<object[]> TestBuffers()
+    public static TheoryData<ReadOnlySequence<byte>> TestBuffers() => new()
     {
-        yield return new object[] { new ReadOnlySequence<byte>(data) };
-        yield return new object[] { ToReadOnlySequence<byte>(data, 2) };
-        yield return new object[] { ToReadOnlySequence<byte>(data, 3) };
-    }
+        new ReadOnlySequence<byte>(data),
+        ToReadOnlySequence<byte>(data, 2),
+        ToReadOnlySequence<byte>(data, 3),
+    };
 
     [Theory]
     [MemberData(nameof(TestBuffers))]

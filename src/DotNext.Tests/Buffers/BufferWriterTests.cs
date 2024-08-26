@@ -53,13 +53,13 @@ public sealed class BufferWriterTests : Test
         await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF32, lengthEnc);
     }
 
-    public static IEnumerable<object[]> CharWriters()
+    public static TheoryData<IBufferWriter<char>> CharWriters() => new()
     {
-        yield return new object[] { new PoolingBufferWriter<char>(MemoryPool<char>.Shared.ToAllocator()) };
-        yield return new object[] { new PoolingArrayBufferWriter<char>() };
-        yield return new object[] { new SparseBufferWriter<char>() };
-        yield return new object[] { new SparseBufferWriter<char>(32) };
-    }
+        new PoolingBufferWriter<char>(MemoryPool<char>.Shared.ToAllocator()),
+        new PoolingArrayBufferWriter<char>(),
+        new SparseBufferWriter<char>(),
+        new SparseBufferWriter<char>(32),
+    };
 
     [Theory]
     [MemberData(nameof(CharWriters))]
@@ -183,11 +183,11 @@ public sealed class BufferWriterTests : Test
         Equal("56", writer.ToString());
     }
 
-    public static IEnumerable<object[]> ContiguousBuffers()
+    public static TheoryData<BufferWriter<byte>> ContiguousBuffers() => new()
     {
-        yield return new object[] { new PoolingBufferWriter<byte>() };
-        yield return new object[] { new PoolingArrayBufferWriter<byte>() };
-    }
+        new PoolingBufferWriter<byte>(),
+        new PoolingArrayBufferWriter<byte>(),
+    };
 
     [Theory]
     [MemberData(nameof(ContiguousBuffers))]

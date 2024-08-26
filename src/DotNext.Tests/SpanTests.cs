@@ -86,15 +86,12 @@ public sealed class SpanTests : Test
         Equal(2, span[1]);
     }
 
-    private static string ToHexSlow(byte[] data, bool lowercased)
-        => string.Join(string.Empty, Array.ConvertAll(data, i => i.ToString(lowercased ? "x2" : "X2", null)));
-
-    public static IEnumerable<object[]> TestAllocators()
+    public static TheoryData<MemoryAllocator<char>> TestAllocators() => new()
     {
-        yield return new object[] { null };
-        yield return new object[] { Memory.GetArrayAllocator<char>() };
-        yield return new object[] { ArrayPool<char>.Shared.ToAllocator() };
-    }
+        null,
+        Memory.GetArrayAllocator<char>(),
+        ArrayPool<char>.Shared.ToAllocator(),
+    };
 
     [Theory]
     [MemberData(nameof(TestAllocators))]
