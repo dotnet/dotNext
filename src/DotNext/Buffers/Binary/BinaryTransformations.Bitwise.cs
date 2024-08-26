@@ -83,9 +83,7 @@ public static partial class BinaryTransformations
         {
             for (; length >= Vector<byte>.Count; length -= Vector<byte>.Count)
             {
-                Unsafe.WriteUnaligned(
-                    ref x,
-                    TTransformation.Transform(Unsafe.ReadUnaligned<Vector<byte>>(ref x)));
+                TTransformation.Transform(Vector.LoadUnsafe(ref x)).StoreUnsafe(ref x);
 
                 x = ref Unsafe.Add(ref x, Vector<byte>.Count);
             }
@@ -128,9 +126,7 @@ public static partial class BinaryTransformations
         {
             for (; length >= Vector<byte>.Count; length -= Vector<byte>.Count)
             {
-                Unsafe.WriteUnaligned(
-                    ref y,
-                    TTransformation.Transform(Unsafe.ReadUnaligned<Vector<byte>>(ref x), Unsafe.ReadUnaligned<Vector<byte>>(ref y)));
+                TTransformation.Transform(Vector.LoadUnsafe(ref x), Vector.LoadUnsafe(ref y)).StoreUnsafe(ref y);
 
                 x = ref Unsafe.Add(ref x, Vector<byte>.Count);
                 y = ref Unsafe.Add(ref y, Vector<byte>.Count);
