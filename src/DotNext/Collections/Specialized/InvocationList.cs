@@ -5,6 +5,8 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Collections.Specialized;
 
+using Generic;
+
 /// <summary>
 /// Represents immutable list of delegates.
 /// </summary>
@@ -22,7 +24,7 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
     /// Represents enumerator over the list of delegates.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public struct Enumerator
+    public struct Enumerator : IEnumerator<Enumerator, TDelegate>
     {
         private object? list;
         private int index;
@@ -37,11 +39,7 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
         /// <summary>
         /// Gets the current delegate.
         /// </summary>
-        public TDelegate Current
-        {
-            get;
-            private set;
-        }
+        public TDelegate Current { get; private set; }
 
         /// <summary>
         /// Moves to the next delegate in the list.
@@ -49,26 +47,27 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
         /// <returns><see langword="false"/> if the enumerator reaches the end of the list; otherwise, <see langword="true"/>.</returns>
         public bool MoveNext()
         {
-            if (list is null)
-                goto fail;
-
-            if (list is TDelegate)
+            switch (list)
             {
-                Current = Unsafe.As<TDelegate>(list);
-                list = null;
-                goto success;
+                case null:
+                    goto fail;
+                case TDelegate:
+                    Current = Unsafe.As<TDelegate>(list);
+                    list = null;
+                    goto success;
+                default:
+                    var array = Unsafe.As<TDelegate[]>(list);
+                    index += 1;
+                    if ((uint)index >= (uint)array.Length)
+                        goto fail;
+
+                    Current = array[index];
+                    break;
             }
 
-            var array = Unsafe.As<TDelegate[]>(list);
-            index += 1;
-            if ((uint)index >= (uint)array.Length)
-                goto fail;
-
-            Current = array[index];
-
-        success:
+            success:
             return true;
-        fail:
+            fail:
             return false;
         }
     }
@@ -197,18 +196,13 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
     /// <returns>The enumerator over delegates.</returns>
     public Enumerator GetEnumerator() => new(list);
 
-    private IEnumerator<TDelegate> GetEnumeratorCore() => list switch
-    {
-        null => Enumerable.Empty<TDelegate>().GetEnumerator(),
-        TDelegate d => new SingletonList<TDelegate>.Enumerator(d),
-        _ => Unsafe.As<IEnumerable<TDelegate>>(list).GetEnumerator(),
-    };
+    /// <inheritdoc />
+    IEnumerator<TDelegate> IEnumerable<TDelegate>.GetEnumerator()
+        => GetEnumerator().ToClassicEnumerator<Enumerator, TDelegate>();
 
     /// <inheritdoc />
-    IEnumerator<TDelegate> IEnumerable<TDelegate>.GetEnumerator() => GetEnumeratorCore();
-
-    /// <inheritdoc />
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumeratorCore();
+    IEnumerator IEnumerable.GetEnumerator()
+        => GetEnumerator().ToClassicEnumerator<Enumerator, TDelegate>();
 
     /// <summary>
     /// Gets a span over list of delegates.

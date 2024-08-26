@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Specialized;
 
+using Generic;
+
 /// <summary>
 /// Represents a list with one element.
 /// </summary>
@@ -16,7 +18,7 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySe
     /// Represents an enumerator over the collection containing a single element.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public struct Enumerator : IEnumerator<T>
+    public struct Enumerator : IEnumerator<Enumerator, T>
     {
         private const byte NotRequestedState = 1;
         private const byte RequestedState = 2;
@@ -32,13 +34,7 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySe
         /// <summary>
         /// Gets the current element.
         /// </summary>
-        public readonly T Current { get; }
-
-        /// <inheritdoc />
-        readonly object? IEnumerator.Current => Current;
-
-        /// <inheritdoc />
-        void IDisposable.Dispose() => this = default;
+        public T Current { get; }
 
         /// <summary>
         /// Advances the position of the enumerator to the next element.
@@ -142,10 +138,12 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySe
     public readonly Enumerator GetEnumerator() => new(Item);
 
     /// <inheritdoc />
-    readonly IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
+    readonly IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        => GetEnumerator().ToClassicEnumerator<Enumerator, T>();
 
     /// <inheritdoc />
-    readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    readonly IEnumerator IEnumerable.GetEnumerator()
+        => GetEnumerator().ToClassicEnumerator<Enumerator, T>();
 
     /// <summary>
     /// Converts a value to the read-only list.

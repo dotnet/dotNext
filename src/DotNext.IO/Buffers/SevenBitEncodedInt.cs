@@ -68,7 +68,7 @@ internal struct SevenBitEncodedInt
     }
 
     [StructLayout(LayoutKind.Auto)]
-    internal struct Reader() : IBufferReader, ISupplier<int>
+    internal struct Reader : IBufferReader, ISupplier<int>
     {
         private SevenBitEncodedInt value;
         private bool completed;

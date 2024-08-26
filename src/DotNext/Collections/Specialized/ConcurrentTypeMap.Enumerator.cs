@@ -106,7 +106,7 @@ public partial class ConcurrentTypeMap
         }
 
         /// <inheritdoc cref="IEnumerator.Current"/>
-        public object Current => current ?? throw new InvalidOperationException();
+        public readonly object Current => current ?? throw new InvalidOperationException();
         
         /// <inheritdoc cref="IEnumerator{TSelf, T}.Reset()"/>
         void IEnumerator<Enumerator, object>.Reset() => index = 0;

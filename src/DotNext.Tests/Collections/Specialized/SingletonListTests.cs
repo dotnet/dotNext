@@ -35,7 +35,6 @@ public sealed class SingletonListTests : Test
     [Fact]
     public static void EmptyEnumerator()
     {
-        using var enumerator = new SingletonList<int>.Enumerator();
-        False(enumerator.MoveNext());
+        False(new SingletonList<int>.Enumerator().MoveNext());
     }
 }

@@ -32,7 +32,7 @@ public partial class TypeMap<TValue> : IEnumerable<TValue>
         public readonly ref TValue Current => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).Value!;
 
         /// <inheritdoc cref="IEnumerator.Current"/>
-        TValue IEnumerator<Enumerator, TValue>.Current => Current;
+        readonly TValue IEnumerator<Enumerator, TValue>.Current => Current;
 
         /// <summary>
         /// Advances this enumerator to the next element.

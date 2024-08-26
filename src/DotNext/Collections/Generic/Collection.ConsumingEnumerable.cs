@@ -18,7 +18,7 @@ public static partial class Collection
         /// Represents consumer enumerator.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
-        public struct Enumerator : IEnumerator<T>
+        public struct Enumerator : IEnumerator<Enumerator, T>
         {
             private readonly IProducerConsumerCollection<T>? collection;
 
@@ -35,20 +35,11 @@ public static partial class Collection
             /// </summary>
             public readonly T Current => current!;
 
-            /// <inheritdoc />
-            readonly object? IEnumerator.Current => Current;
-
             /// <summary>
             /// Consumes the item from the underlying collection.
             /// </summary>
             /// <returns><see langword="true"/> if the item has been consumed successfully; <see langword="false"/> if underlying collection is empty.</returns>
             public bool MoveNext() => collection?.TryTake(out current) ?? false;
-
-            /// <inheritdoc />
-            readonly void IEnumerator.Reset() => throw new NotSupportedException();
-
-            /// <inheritdoc />
-            void IDisposable.Dispose() => this = default;
         }
 
         private readonly IProducerConsumerCollection<T>? collection;
@@ -63,10 +54,12 @@ public static partial class Collection
         public Enumerator GetEnumerator() => new(collection);
 
         /// <inheritdoc />
-        IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+            => GetEnumerator().ToClassicEnumerator<Enumerator, T>();
 
         /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+            => GetEnumerator().ToClassicEnumerator<Enumerator, T>();
     }
 
     /// <summary>

@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Concurrent;
 
+using Generic;
+
 /// <summary>
 /// Represents a pool of integer values.
 /// </summary>
@@ -215,16 +217,18 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     public readonly Enumerator GetEnumerator() => new(Volatile.Read(in bitmask), maxValue);
 
     /// <inheritdoc/>
-    readonly IEnumerator<int> IEnumerable<int>.GetEnumerator() => GetEnumerator().AsClassicEnumerator();
+    readonly IEnumerator<int> IEnumerable<int>.GetEnumerator()
+        => GetEnumerator().ToClassicEnumerator<Enumerator, int>();
 
     /// <inheritdoc/>
-    readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator().AsClassicEnumerator();
+    readonly IEnumerator IEnumerable.GetEnumerator()
+        => GetEnumerator().ToClassicEnumerator<Enumerator, int>();
 
     /// <summary>
     /// Represents an enumerator over available indices in the pool.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public struct Enumerator
+    public struct Enumerator : IEnumerator<Enumerator, int>
     {
         private readonly ulong bitmask;
         private readonly int maxValue;
@@ -257,12 +261,6 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
             }
 
             return false;
-        }
-
-        internal IEnumerator<int> AsClassicEnumerator()
-        {
-            while (MoveNext())
-                yield return Current;
         }
     }
 }
