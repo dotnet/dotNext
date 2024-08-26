@@ -80,6 +80,7 @@ public static class BasicExtensions
     /// <param name="obj">The object reference to reinterpret.</param>
     /// <returns>The reinterpreted <paramref name="obj"/> reference.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [return: NotNullIfNotNull(nameof(obj))]
     public static T As<T>(this T obj)
         where T : class?
         => obj;
