@@ -33,7 +33,7 @@
     <!--Misc packages-->
     <PackageVersion Include="BenchmarkDotNet" Version="0.13.12" />
     <PackageVersion Include="FastMember.Signed" Version="1.5.0" />
-    <PackageVersion Include="xunit" Version="2.8.0" />
+    <PackageVersion Include="xunit" Version="2.9.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.0"/>
     <PackageVersion Include="coverlet.collector" Version="6.0.2"/>
   </ItemGroup>
