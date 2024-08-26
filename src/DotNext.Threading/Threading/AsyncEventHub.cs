@@ -1,12 +1,10 @@
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
 using Diagnostics;
-using static Tasks.Conversion;
 
 /// <summary>
 /// Represents a collection of asynchronous events.
@@ -14,7 +12,8 @@ using static Tasks.Conversion;
 [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
 public partial class AsyncEventHub : IResettable
 {
-    private readonly TaskCompletionSource[] sources;
+    private readonly AsyncEvent[] sources;
+    private readonly List<Task<int>> buffer;
 
     /// <summary>
     /// Initializes a new collection of asynchronous events.
@@ -25,23 +24,19 @@ public partial class AsyncEventHub : IResettable
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
 
-        sources = new TaskCompletionSource[count];
+        sources = new AsyncEvent[count];
 
         for (var i = 0; i < sources.Length; i++)
-            sources[i] = new(i, TaskCreationOptions.RunContinuationsAsynchronously);
+            sources[i] = new(i);
+
+        buffer = new(count);
     }
 
-    private static int GetIndex(Task task)
+    private static void ResetIfNeeded(ref AsyncEvent source)
     {
-        Debug.Assert(task.AsyncState is int);
-
-        return (int)task.AsyncState;
-    }
-
-    private static void ResetIfNeeded(ref TaskCompletionSource source)
-    {
-        if (source is { Task: { IsCompleted: true } task })
-            source = new(task.AsyncState, TaskCreationOptions.RunContinuationsAsynchronously);
+        var sourceCopy = source;
+        if (sourceCopy.Task.IsCompleted)
+            source = sourceCopy.Reset();
     }
 
     /// <summary>
@@ -348,22 +343,34 @@ public partial class AsyncEventHub : IResettable
         }
     }
 
-    private Task[] GetTasks(ReadOnlySpan<int> eventIndexes)
+    private List<Task<int>> GetTasks(ReadOnlySpan<int> eventIndexes)
     {
-        var tasks = new Task[eventIndexes.Length];
+        Debug.Assert(eventIndexes is not []);
+        Debug.Assert(buffer is []);
 
-        var taskIndex = 0;
         foreach (var i in eventIndexes)
-            tasks[taskIndex++] = sources[i].Task;
+        {
+            buffer.Add(sources[i].Task);
+        }
 
-        return tasks;
+        return buffer;
     }
 
-    private Task[] GetTasks() => Array.ConvertAll(sources, static src => src.Task);
+    private List<Task<int>> GetTasks()
+    {
+        Debug.Assert(buffer is []);
+
+        foreach (var source in sources)
+        {
+            buffer.Add(source.Task);
+        }
+
+        return buffer;
+    }
 
     private Task<int> WaitAnyCoreAsync(ReadOnlySpan<int> eventIndexes, TimeSpan timeout, CancellationToken token)
     {
-        Task<Task> result;
+        Task<Task<int>> result;
 
         var lockTaken = false;
         var start = new Timestamp();
@@ -376,20 +383,21 @@ public partial class AsyncEventHub : IResettable
         }
         catch (Exception e)
         {
-            result = Task.FromException<Task>(e);
+            result = Task.FromException<Task<int>>(e);
         }
         finally
         {
+            buffer.Clear();
             if (lockTaken)
                 Monitor.Exit(sources);
         }
 
-        return result.WaitAsync(timeout, token).Convert(GetIndex);
+        return result.Unwrap().WaitAsync(timeout, token);
     }
 
     private Task<int> WaitAnyCoreAsync(ReadOnlySpan<int> eventIndexes, CancellationToken token)
     {
-        Task<Task> result;
+        Task<Task<int>> result;
 
         var lockTaken = false;
         try
@@ -399,15 +407,16 @@ public partial class AsyncEventHub : IResettable
         }
         catch (Exception e)
         {
-            result = Task.FromException<Task>(e);
+            result = Task.FromException<Task<int>>(e);
         }
         finally
         {
+            buffer.Clear();
             if (lockTaken)
                 Monitor.Exit(sources);
         }
 
-        return result.WaitAsync(token).Convert(GetIndex);
+        return result.Unwrap().WaitAsync(token);
     }
 
     /// <summary>
@@ -454,7 +463,7 @@ public partial class AsyncEventHub : IResettable
     
     private Task<int> WaitAnyCoreAsync(TimeSpan timeout, CancellationToken token)
     {
-        Task<Task> result;
+        Task<Task<int>> result;
 
         var lockTaken = false;
         var start = new Timestamp();
@@ -467,15 +476,16 @@ public partial class AsyncEventHub : IResettable
         }
         catch (Exception e)
         {
-            result = Task.FromException<Task>(e);
+            result = Task.FromException<Task<int>>(e);
         }
         finally
         {
+            buffer.Clear();
             if (lockTaken)
                 Monitor.Exit(sources);
         }
 
-        return result.WaitAsync(timeout, token).Convert(GetIndex);
+        return result.Unwrap().WaitAsync(timeout, token);
     }
 
     /// <summary>
@@ -486,7 +496,7 @@ public partial class AsyncEventHub : IResettable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task<int> WaitAnyAsync(CancellationToken token = default)
     {
-        Task<Task> result;
+        Task<Task<int>> result;
 
         var lockTaken = false;
         try
@@ -496,15 +506,16 @@ public partial class AsyncEventHub : IResettable
         }
         catch (Exception e)
         {
-            result = Task.FromException<Task>(e);
+            result = Task.FromException<Task<int>>(e);
         }
         finally
         {
+            buffer.Clear();
             if (lockTaken)
                 Monitor.Exit(sources);
         }
 
-        return result.WaitAsync(token).Convert(GetIndex);
+        return result.Unwrap().WaitAsync(token);
     }
 
     private Task WaitAllCoreAsync(ReadOnlySpan<int> eventIndexes, CancellationToken token)
@@ -523,6 +534,7 @@ public partial class AsyncEventHub : IResettable
         }
         finally
         {
+            buffer.Clear();
             if (lockTaken)
                 Monitor.Exit(sources);
         }
@@ -549,6 +561,7 @@ public partial class AsyncEventHub : IResettable
         }
         finally
         {
+            buffer.Clear();
             if (lockTaken)
                 Monitor.Exit(sources);
         }
@@ -613,6 +626,7 @@ public partial class AsyncEventHub : IResettable
         }
         finally
         {
+            buffer.Clear();
             if (lockTaken)
                 Monitor.Exit(sources);
         }
@@ -642,6 +656,7 @@ public partial class AsyncEventHub : IResettable
         }
         finally
         {
+            buffer.Clear();
             if (lockTaken)
                 Monitor.Exit(sources);
         }
@@ -664,5 +679,12 @@ public partial class AsyncEventHub : IResettable
             foreach (var source in sources)
                 source.TrySetCanceled(token);
         }
+    }
+    
+    private sealed class AsyncEvent(int index) : TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously)
+    {
+        public bool TrySetResult() => TrySetResult(index);
+
+        public AsyncEvent Reset() => new(index);
     }
 }

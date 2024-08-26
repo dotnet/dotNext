@@ -25,9 +25,9 @@ public sealed class AsyncEventHubTests : Test
     {
         var hub = new AsyncEventHub(3);
 
-        int[] indexes = { 0 };
-        bool[] flags = { false };
-        hub.Pulse(indexes, flags);
+        int[] indices = [0];
+        bool[] flags = [false];
+        hub.Pulse(indices, flags);
         True(flags[0]);
 
         Equal(0, await hub.WaitAnyAsync(DefaultTimeout));
@@ -39,9 +39,8 @@ public sealed class AsyncEventHubTests : Test
     {
         var hub = new AsyncEventHub(3);
 
-        int[] indexes = { 0 };
-        bool[] flags = { false };
-        hub.ResetAndPulse(indexes, flags);
+        bool[] flags = [false];
+        hub.ResetAndPulse([0], flags);
         True(flags[0]);
 
         Equal(0, await hub.WaitAnyAsync());
@@ -53,8 +52,7 @@ public sealed class AsyncEventHubTests : Test
     {
         var hub = new AsyncEventHub(3);
 
-        int[] indexes = { 0 };
-        Equal(1, hub.ResetAndPulse(indexes));
+        Equal(1, hub.ResetAndPulse([0]));
 
         Equal(0, await hub.WaitAnyAsync());
         Equal(0, await hub.WaitAnyAsync([0, 1], DefaultTimeout));
@@ -90,7 +88,7 @@ public sealed class AsyncEventHubTests : Test
     {
         var hub = new AsyncEventHub(3);
 
-        bool[] flags = { false, false, false };
+        bool[] flags = [false, false, false];
         hub.PulseAll(flags);
         True(flags[0]);
         True(flags[1]);
