@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace DotNext;
 
@@ -497,5 +498,49 @@ public sealed class DelegateHelpersTests : Test
     public static void Identity()
     {
         Equal(42, Func.Identity<int>().Invoke(42));
+    }
+
+    [Fact]
+    public static void ToAsync1()
+    {
+        var func = new Action(static () => { }).ToAsync();
+        True(func.Invoke(new(canceled: false)).IsCompletedSuccessfully);
+        True(func.Invoke(new(canceled: true)).IsCanceled);
+
+        func = new Action(static () => throw new Exception()).ToAsync();
+        True(func.Invoke(new(canceled: false)).IsFaulted);
+    }
+
+    [Fact]
+    public static void ToAsync2()
+    {
+        var func = new Action<int>(static _ => { }).ToAsync();
+        True(func.Invoke(42, new(canceled: false)).IsCompletedSuccessfully);
+        True(func.Invoke(42, new(canceled: true)).IsCanceled);
+
+        func = new Action<int>(static _ => throw new Exception()).ToAsync();
+        True(func.Invoke(42, new(canceled: false)).IsFaulted);
+    }
+
+    [Fact]
+    public static void HideReturnValue1()
+    {
+        var box = new StrongBox<int>();
+        var action = new Func<int>(ChangeValue).HideReturnValue();
+        action.Invoke();
+        Equal(42, box.Value);
+        
+        int ChangeValue() => box.Value = 42;
+    }
+    
+    [Fact]
+    public static void HideReturnValue2()
+    {
+        var box = new StrongBox<int>();
+        var action = new Func<int, int>(ChangeValue).HideReturnValue();
+        action.Invoke(42);
+        Equal(42, box.Value);
+        
+        int ChangeValue(int value) => box.Value = value;
     }
 }
