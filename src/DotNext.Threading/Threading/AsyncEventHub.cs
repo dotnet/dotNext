@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -449,34 +450,32 @@ public partial class AsyncEventHub : IResettable
     /// <exception cref="TimeoutException">The operation has timed out.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task<int> WaitAnyAsync(TimeSpan timeout, CancellationToken token = default)
+        => timeout < TimeSpan.Zero ? WaitAnyAsync(token) : WaitAnyCoreAsync(timeout, token);
+    
+    private Task<int> WaitAnyCoreAsync(TimeSpan timeout, CancellationToken token)
     {
-        return timeout < TimeSpan.Zero ? this.WaitAnyAsync(token) : WaitAnyAsync();
+        Task<Task> result;
 
-        Task<int> WaitAnyAsync()
+        var lockTaken = false;
+        var start = new Timestamp();
+        try
         {
-            Task<Task> result;
-
-            var lockTaken = false;
-            var start = new Timestamp();
-            try
-            {
-                lockTaken = Monitor.TryEnter(sources, timeout);
-                result = lockTaken && (timeout -= start.Elapsed) > TimeSpan.Zero
-                    ? Task.WhenAny(GetTasks())
-                    : throw new TimeoutException();
-            }
-            catch (Exception e)
-            {
-                result = Task.FromException<Task>(e);
-            }
-            finally
-            {
-                if (lockTaken)
-                    Monitor.Exit(sources);
-            }
-
-            return result.WaitAsync(timeout, token).Convert(GetIndex);
+            lockTaken = Monitor.TryEnter(sources, timeout);
+            result = lockTaken && (timeout -= start.Elapsed) > TimeSpan.Zero
+                ? Task.WhenAny(GetTasks())
+                : throw new TimeoutException();
         }
+        catch (Exception e)
+        {
+            result = Task.FromException<Task>(e);
+        }
+        finally
+        {
+            if (lockTaken)
+                Monitor.Exit(sources);
+        }
+
+        return result.WaitAsync(timeout, token).Convert(GetIndex);
     }
 
     /// <summary>
@@ -563,7 +562,7 @@ public partial class AsyncEventHub : IResettable
     /// <param name="eventIndexes">The indexes of the events.</param>
     /// <param name="timeout">The time to wait for the events.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>A task that represents the completion of all of the specified events.</returns>
+    /// <returns>A task that represents the completion of all the specified events.</returns>
     /// <exception cref="TimeoutException">The operation has timed out.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task WaitAllAsync(ReadOnlySpan<int> eventIndexes, TimeSpan timeout, CancellationToken token = default)
@@ -593,34 +592,32 @@ public partial class AsyncEventHub : IResettable
     /// <exception cref="TimeoutException">The operation has timed out.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task WaitAllAsync(TimeSpan timeout, CancellationToken token = default)
+        => timeout < TimeSpan.Zero ? WaitAllAsync(token) : WaitAllCoreAsync(timeout, token);
+    
+    private Task WaitAllCoreAsync(TimeSpan timeout, CancellationToken token)
     {
-        return timeout < TimeSpan.Zero ? this.WaitAllAsync(token) : WaitAllAsync();
+        Task result;
 
-        Task WaitAllAsync()
+        var lockTaken = false;
+        var start = new Timestamp();
+        try
         {
-            Task result;
-
-            var lockTaken = false;
-            var start = new Timestamp();
-            try
-            {
-                lockTaken = Monitor.TryEnter(sources, timeout);
-                result = lockTaken && (timeout -= start.Elapsed) > TimeSpan.Zero
-                    ? Task.WhenAll(GetTasks())
-                    : throw new TimeoutException();
-            }
-            catch (Exception e)
-            {
-                result = Task.FromException(e);
-            }
-            finally
-            {
-                if (lockTaken)
-                    Monitor.Exit(sources);
-            }
-
-            return result.WaitAsync(timeout, token);
+            lockTaken = Monitor.TryEnter(sources, timeout);
+            result = lockTaken && (timeout -= start.Elapsed) > TimeSpan.Zero
+                ? Task.WhenAll(GetTasks())
+                : throw new TimeoutException();
         }
+        catch (Exception e)
+        {
+            result = Task.FromException(e);
+        }
+        finally
+        {
+            if (lockTaken)
+                Monitor.Exit(sources);
+        }
+
+        return result.WaitAsync(timeout, token);
     }
 
     /// <summary>
