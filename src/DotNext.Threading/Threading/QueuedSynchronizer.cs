@@ -156,13 +156,11 @@ public class QueuedSynchronizer : Disposable
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        if (waitQueue.First is null && manager.IsLockAllowed)
-        {
-            manager.AcquireLock();
-            return true;
-        }
+        if (TLockManager.RequiresEmptyQueue && WaitQueueHead is not null || !manager.IsLockAllowed)
+            return false;
 
-        return false;
+        manager.AcquireLock();
+        return true;
     }
 
     private protected ValueTask AcquireAsync<TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, TOptions options)
@@ -528,6 +526,8 @@ public class QueuedSynchronizer : Disposable
         bool IsLockAllowed { get; }
 
         void AcquireLock();
+
+        static virtual bool RequiresEmptyQueue => true;
     }
 
     private protected interface ILockManager<in TNode> : ILockManager
@@ -805,13 +805,11 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        if (WaitQueueHead is null && CanAcquire(context))
-        {
-            AcquireCore(context);
-            return true;
-        }
-
-        return false;
+        if (WaitQueueHead is not null || !CanAcquire(context))
+            return false;
+        
+        AcquireCore(context);
+        return true;
     }
 
     private WaitNode EnqueueNode(TContext context, WaitNodeFlags flags)
