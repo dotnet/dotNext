@@ -518,7 +518,7 @@ public class QueuedSynchronizer : Disposable
 
     private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<Action<DefaultWaitNode>>
     {
-        protected sealed override void AfterConsumed() => AfterConsumed(this);
+        protected override void AfterConsumed() => AfterConsumed(this);
 
         Action<DefaultWaitNode>? IPooledManualResetCompletionSource<Action<DefaultWaitNode>>.OnConsumed { get; set; }
     }
