@@ -327,7 +327,7 @@ public class QueuedSynchronizer : Disposable
         suspendedCallers?.Unwind();
     }
 
-    private protected unsafe LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
+    private protected LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
     {
         Monitor.IsEntered(SyncRoot);
 
