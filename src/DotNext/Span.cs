@@ -867,8 +867,8 @@ public static class Span
             count = Math.Min(maxLength, value.Length);
 
             if (CheckMask(
-                    ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in MemoryMarshal.GetReference(value))),
-                    ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in MemoryMarshal.GetReference(mask))),
+                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(value)),
+                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(mask)),
                     count * sizeof(T)) is false)
             {
                 return false;
@@ -942,8 +942,8 @@ public static class Span
             count = Math.Min(maxLength, value.Length);
 
             if (IsBitwiseAndNonZero(
-                    ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in MemoryMarshal.GetReference(value))),
-                    ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in MemoryMarshal.GetReference(mask))),
+                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(value)),
+                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(mask)),
                     count * sizeof(T)) is false)
             {
                 return false;

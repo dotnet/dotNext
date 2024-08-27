@@ -20,7 +20,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 
         internal readonly bool Value => state;
 
-        internal readonly bool VolatileRead() => Volatile.Read(ref Unsafe.AsRef(in state));
+        internal readonly bool VolatileRead() => Volatile.Read(in state);
 
         public readonly bool IsLockAllowed => !state;
 

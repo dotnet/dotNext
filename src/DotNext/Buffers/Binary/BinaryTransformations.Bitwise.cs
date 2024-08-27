@@ -162,7 +162,7 @@ public static partial class BinaryTransformations
             count = Math.Min(maxLength, x.Length);
 
             Transform<TTransformation>(
-                ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in MemoryMarshal.GetReference(x))),
+                ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)),
                 ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(y)),
                 count * sizeof(T));
         }
