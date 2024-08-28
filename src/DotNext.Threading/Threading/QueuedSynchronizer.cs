@@ -97,6 +97,8 @@ public class QueuedSynchronizer : Disposable
             callerInfo.Value = information;
     }
 
+    private protected object? CaptureCallerInformation() => callerInfo?.Capture();
+
     private IReadOnlyList<object?> GetSuspendedCallersCore()
     {
         List<object?> list;
@@ -146,7 +148,7 @@ public class QueuedSynchronizer : Disposable
 
         var node = pool.Get();
         TLockManager.InitializeNode(node);
-        node.Initialize(this, flags);
+        node.Initialize(CaptureCallerInformation(), flags);
         EnqueueNode(node);
         return node;
     }
@@ -430,7 +432,6 @@ public class QueuedSynchronizer : Disposable
     private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>, IValueTaskFactory<ValueTask>,
         IValueTaskFactory<ValueTask<bool>>
     {
-        private readonly WeakReference<QueuedSynchronizer?> owner = new(target: null, trackResurrection: false);
         private Timestamp createdAt;
         private WaitNodeFlags flags;
 
@@ -439,7 +440,6 @@ public class QueuedSynchronizer : Disposable
 
         protected override void CleanUp()
         {
-            owner.SetTarget(target: null);
             CallerInfo = null;
             base.CleanUp();
         }
@@ -447,13 +447,10 @@ public class QueuedSynchronizer : Disposable
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal bool NeedsRemoval => CompletionData is null;
 
-        internal void Initialize(QueuedSynchronizer owner, WaitNodeFlags flags)
+        internal void Initialize(object? callerInfo, WaitNodeFlags flags)
         {
-            Debug.Assert(owner is not null);
-
             this.flags = flags;
-            this.owner.SetTarget(owner);
-            CallerInfo = owner.callerInfo?.Capture();
+            CallerInfo = callerInfo;
             createdAt = new();
         }
 
@@ -464,12 +461,13 @@ public class QueuedSynchronizer : Disposable
             where T : WaitNode, IPooledManualResetCompletionSource<Action<T>>
         {
             // report lock duration
-            if (node.owner.TryGetTarget(out var owner))
+            if (node.OnConsumed is { } callback)
             {
-                LockDurationMeter.Record(node.createdAt.ElapsedMilliseconds, owner.measurementTags);
-            }
+                if (callback.Target is QueuedSynchronizer synchronizer)
+                    LockDurationMeter.Record(node.createdAt.ElapsedMilliseconds, synchronizer.measurementTags);
 
-            node.OnConsumed?.Invoke(node);
+                callback(node);
+            }
         }
 
         static ValueTask IValueTaskFactory<ValueTask>.SuccessfulTask => ValueTask.CompletedTask;
@@ -801,7 +799,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
         var node = pool.Get();
         node.Context = context;
-        node.Initialize(this, flags);
+        node.Initialize(CaptureCallerInformation(), flags);
         EnqueueNode(node);
         return node;
     }
