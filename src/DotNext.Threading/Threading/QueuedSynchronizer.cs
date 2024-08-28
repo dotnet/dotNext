@@ -140,18 +140,23 @@ public class QueuedSynchronizer : Disposable
         SuspendedCallersMeter.Add(1, measurementTags);
     }
 
-    private protected TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, WaitNodeFlags flags)
+    private TNode EnqueueNode<TNode, TInitializer>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TInitializer initializer)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
-        where TLockManager : struct, ILockManager<TNode>
+        where TInitializer : struct, INodeInitializer<TNode>
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         var node = pool.Get();
-        TLockManager.InitializeNode(node);
-        node.Initialize(CaptureCallerInformation(), flags);
+        initializer.Invoke(node);
+        node.Initialize(CaptureCallerInformation(), initializer.Flags);
         EnqueueNode(node);
         return node;
     }
+
+    private protected TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, WaitNodeFlags flags)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
+        where TLockManager : struct, ILockManager<TNode>
+        => EnqueueNode<TNode, NodeInitializer<TNode, TLockManager>>(ref pool, new(flags));
 
     private protected bool TryAcquire<TLockManager>(ref TLockManager manager)
         where TLockManager : struct, ILockManager
@@ -165,10 +170,11 @@ public class QueuedSynchronizer : Disposable
         return true;
     }
     
-    private T AcquireAsync<T, TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, TOptions options)
+    private T AcquireAsync<T, TNode, TInitializer, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, TInitializer initializer, TOptions options)
         where T : struct, IEquatable<T>
         where TNode : WaitNode, IValueTaskFactory<T>, IPooledManualResetCompletionSource<Action<TNode>>, new()
-        where TLockManager : struct, ILockManager<TNode>
+        where TInitializer : struct, INodeInitializer<TNode>
+        where TLockManager : struct, ILockManager
         where TOptions : struct, IAcquisitionOptions
     {
         T task;
@@ -227,7 +233,7 @@ public class QueuedSynchronizer : Disposable
                         break;
                     }
 
-                    factory = EnqueueNode<TNode, TLockManager>(ref pool, TNode.Flags);
+                    factory = EnqueueNode(ref pool, initializer);
                 }
 
                 interruptedCallers?.Unwind();
@@ -240,20 +246,50 @@ public class QueuedSynchronizer : Disposable
         ObjectDisposedException CreateObjectDisposedException()
             => new(GetType().Name);
     }
-
+    
     private protected ValueTask AcquireAsync<TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
         ref TLockManager manager, TOptions options)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
         where TOptions : struct, IAcquisitionOptions
-        => AcquireAsync<ValueTask, TNode, TLockManager, TOptions>(ref pool, ref manager, options);
+        => AcquireAsync<ValueTask, TNode, NodeInitializer<TNode, TLockManager>, TLockManager, TOptions>(
+            ref pool,
+            ref manager,
+            new(WaitNodeFlags.ThrowOnTimeout),
+            options);
 
     private protected ValueTask<bool> TryAcquireAsync<TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
         ref TLockManager manager, TOptions options)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
         where TOptions : struct, IAcquisitionOptions
-        => AcquireAsync<ValueTask<bool>, TNode, TLockManager, TOptions>(ref pool, ref manager, options);
+        => AcquireAsync<ValueTask<bool>, TNode, NodeInitializer<TNode, TLockManager>, TLockManager, TOptions>(
+            ref pool,
+            ref manager,
+            new(WaitNodeFlags.None),
+            options);
+    
+    private protected ValueTask AcquireAsync<TNode, TArg, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
+        ref TLockManager manager, TArg arg, TOptions options)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
+        where TLockManager : struct, ILockManager<TNode, TArg>
+        where TOptions : struct, IAcquisitionOptions
+        => AcquireAsync<ValueTask, TNode, NodeInitializer<TNode, TArg, TLockManager>, TLockManager, TOptions>(
+            ref pool,
+            ref manager,
+            new(WaitNodeFlags.ThrowOnTimeout, arg),
+            options);
+
+    private protected ValueTask<bool> TryAcquireAsync<TNode, TArg, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
+        ref TLockManager manager, TArg arg, TOptions options)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
+        where TLockManager : struct, ILockManager<TNode, TArg>
+        where TOptions : struct, IAcquisitionOptions
+        => AcquireAsync<ValueTask<bool>, TNode, NodeInitializer<TNode, TArg, TLockManager>, TLockManager, TOptions>(
+            ref pool,
+            ref manager,
+            new(WaitNodeFlags.None, arg),
+            options);
 
     /// <summary>
     /// Cancels all suspended callers.
@@ -415,6 +451,32 @@ public class QueuedSynchronizer : Disposable
         ThrowOnTimeout = 1,
     }
     
+    private interface INodeInitializer<in TNode> : IConsumer<TNode>
+        where TNode : WaitNode
+    {
+        WaitNodeFlags Flags { get; }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct NodeInitializer<TNode, TLockManager>(WaitNodeFlags flags) : INodeInitializer<TNode>
+        where TNode : WaitNode
+        where TLockManager : struct, ILockManager<TNode>
+    {
+        WaitNodeFlags INodeInitializer<TNode>.Flags => flags;
+
+        void IConsumer<TNode>.Invoke(TNode node) => TLockManager.InitializeNode(node);
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct NodeInitializer<TNode, TArg, TLockManager>(WaitNodeFlags flags, TArg arg) : INodeInitializer<TNode>
+        where TNode : WaitNode
+        where TLockManager : struct, ILockManager<TNode, TArg>
+    {
+        WaitNodeFlags INodeInitializer<TNode>.Flags => flags;
+
+        void IConsumer<TNode>.Invoke(TNode node) => TLockManager.InitializeNode(node, arg);
+    }
+
     private interface IValueTaskFactory<out T> : ISupplier<TimeSpan, CancellationToken, T>
         where T : struct, IEquatable<T>
     {
@@ -425,8 +487,6 @@ public class QueuedSynchronizer : Disposable
         static abstract T FromException(Exception e);
 
         static abstract T FromCanceled(CancellationToken token);
-        
-        static abstract WaitNodeFlags Flags { get; }
     }
 
     private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>, IValueTaskFactory<ValueTask>,
@@ -489,10 +549,6 @@ public class QueuedSynchronizer : Disposable
 
         static ValueTask IValueTaskFactory<ValueTask>.FromCanceled(CancellationToken token)
             => ValueTask.FromCanceled(token);
-
-        static WaitNodeFlags IValueTaskFactory<ValueTask>.Flags => WaitNodeFlags.ThrowOnTimeout;
-
-        static WaitNodeFlags IValueTaskFactory<ValueTask<bool>>.Flags => WaitNodeFlags.None;
     }
 
     private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<Action<DefaultWaitNode>>
@@ -517,6 +573,12 @@ public class QueuedSynchronizer : Disposable
         static virtual void InitializeNode(TNode node)
         {
         }
+    }
+    
+    private protected interface ILockManager<in TNode, in TArg> : ILockManager
+        where TNode : WaitNode
+    {
+        static abstract void InitializeNode(TNode node, TArg arg);
     }
 
     /// <summary>
