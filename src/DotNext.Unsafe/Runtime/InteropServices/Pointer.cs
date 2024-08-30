@@ -11,6 +11,7 @@ using Pointer = System.Reflection.Pointer;
 
 namespace DotNext.Runtime.InteropServices;
 
+using Collections.Generic;
 using MemorySource = Buffers.UnmanagedMemory<byte>;
 
 /// <summary>
@@ -32,7 +33,6 @@ public readonly struct Pointer<T> :
     IPinnable,
     ISpanFormattable,
     IComparisonOperators<Pointer<T>, Pointer<T>, bool>,
-    IEqualityOperators<Pointer<T>, Pointer<T>, bool>,
     IAdditionOperators<Pointer<T>, int, Pointer<T>>,
     IAdditionOperators<Pointer<T>, long, Pointer<T>>,
     IAdditionOperators<Pointer<T>, nint, Pointer<T>>,
@@ -51,14 +51,11 @@ public readonly struct Pointer<T> :
     /// Represents enumerator over raw memory.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public unsafe struct Enumerator : IEnumerator<T>
+    public unsafe struct Enumerator : IEnumerator<Enumerator, T>
     {
         private readonly T* ptr;
         private readonly nuint count;
         private nuint index;
-
-        /// <inheritdoc/>
-        readonly object IEnumerator.Current => Current;
 
         internal Enumerator(T* ptr, nuint count)
         {
@@ -95,11 +92,6 @@ public readonly struct Pointer<T> :
         /// Sets the enumerator to its initial position.
         /// </summary>
         public void Reset() => index = nuint.MaxValue;
-
-        /// <summary>
-        /// Releases all resources with this enumerator.
-        /// </summary>
-        public void Dispose() => this = default;
     }
 
     /// <summary>

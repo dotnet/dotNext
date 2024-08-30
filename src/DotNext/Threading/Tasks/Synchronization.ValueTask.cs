@@ -30,19 +30,19 @@ public static partial class Synchronization
     }
 
     /// <summary>
-    /// Creates a task that will complete when all of the passed tasks have completed.
+    /// Creates a task that will complete when all the passed tasks have completed.
     /// </summary>
     /// <remarks>
     /// This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.
     /// </remarks>
     /// <param name="task1">The first task to await.</param>
     /// <param name="task2">The second task to await.</param>
-    /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
+    /// <returns>A task that represents the completion of all the supplied tasks.</returns>
     public static ValueTask WhenAll(ValueTask task1, ValueTask task2)
         => WhenAll((task1, task2));
 
     /// <summary>
-    /// Creates a task that will complete when all of the passed tasks have completed.
+    /// Creates a task that will complete when all the passed tasks have completed.
     /// </summary>
     /// <remarks>
     /// This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.
@@ -78,7 +78,7 @@ public static partial class Synchronization
     }
 
     /// <summary>
-    /// Creates a task that will complete when all of the passed tasks have completed.
+    /// Creates a task that will complete when all the passed tasks have completed.
     /// </summary>
     /// <remarks>
     /// This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.
@@ -86,12 +86,12 @@ public static partial class Synchronization
     /// <param name="task1">The first task to await.</param>
     /// <param name="task2">The second task to await.</param>
     /// <param name="task3">The third task to await.</param>
-    /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
+    /// <returns>A task that represents the completion of all the supplied tasks.</returns>
     public static ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3)
         => WhenAll((task1, task2, task3));
 
     /// <summary>
-    /// Creates a task that will complete when all of the passed tasks have completed.
+    /// Creates a task that will complete when all the passed tasks have completed.
     /// </summary>
     /// <remarks>
     /// This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.
@@ -138,7 +138,7 @@ public static partial class Synchronization
     }
 
     /// <summary>
-    /// Creates a task that will complete when all of the passed tasks have completed.
+    /// Creates a task that will complete when all the passed tasks have completed.
     /// </summary>
     /// <remarks>
     /// This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.
@@ -147,12 +147,12 @@ public static partial class Synchronization
     /// <param name="task2">The second task to await.</param>
     /// <param name="task3">The third task to await.</param>
     /// <param name="task4">The fourth task to await.</param>
-    /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
+    /// <returns>A task that represents the completion of all the supplied tasks.</returns>
     public static ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3, ValueTask task4)
         => WhenAll((task1, task2, task3, task4));
 
     /// <summary>
-    /// Creates a task that will complete when all of the passed tasks have completed.
+    /// Creates a task that will complete when all the passed tasks have completed.
     /// </summary>
     /// <remarks>
     /// This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.
@@ -210,7 +210,7 @@ public static partial class Synchronization
     }
 
     /// <summary>
-    /// Creates a task that will complete when all of the passed tasks have completed.
+    /// Creates a task that will complete when all the passed tasks have completed.
     /// </summary>
     /// <remarks>
     /// This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.
@@ -220,12 +220,12 @@ public static partial class Synchronization
     /// <param name="task3">The third task to await.</param>
     /// <param name="task4">The fourth task to await.</param>
     /// <param name="task5">The fifth task to await.</param>
-    /// <returns>A task that represents the completion of all of the supplied tasks.</returns>
+    /// <returns>A task that represents the completion of all the supplied tasks.</returns>
     public static ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3, ValueTask task4, ValueTask task5)
         => WhenAll((task1, task2, task3, task4, task5));
 
     /// <summary>
-    /// Creates a task that will complete when all of the passed tasks have completed.
+    /// Creates a task that will complete when all the passed tasks have completed.
     /// </summary>
     /// <remarks>
     /// This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.

@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Buffers.Binary;
+using System.Collections;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers.Binary;

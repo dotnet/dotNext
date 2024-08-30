@@ -136,7 +136,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         => SetResult<ValueSupplier<Exception>>(completionData, completionToken, e);
 
     /// <summary>
-    /// Attempts to complete the task sucessfully.
+    /// Attempts to complete the task successfully.
     /// </summary>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -144,7 +144,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         => TrySetResult(null);
 
     /// <summary>
-    /// Attempts to complete the task sucessfully.
+    /// Attempts to complete the task successfully.
     /// </summary>
     /// <param name="completionData">The data to be saved in <see cref="ManualResetCompletionSource.CompletionData"/> property that can be accessed from within <see cref="ManualResetCompletionSource.AfterConsumed"/> method.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
@@ -152,7 +152,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         => SetResult(completionData, completionToken: null, ISupplier<Exception>.NullOrDefault);
 
     /// <summary>
-    /// Attempts to complete the task sucessfully.
+    /// Attempts to complete the task successfully.
     /// </summary>
     /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
@@ -160,7 +160,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         => TrySetResult(null, completionToken);
 
     /// <summary>
-    /// Attempts to complete the task sucessfully.
+    /// Attempts to complete the task successfully.
     /// </summary>
     /// <param name="completionData">The data to be saved in <see cref="ManualResetCompletionSource.CompletionData"/> property that can be accessed from within <see cref="ManualResetCompletionSource.AfterConsumed"/> method.</param>
     /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
@@ -176,7 +176,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// </remarks>
     /// <param name="timeout">The timeout associated with the task.</param>
     /// <param name="token">The cancellation token that can be used to cancel the task.</param>
-    /// <returns>A fresh incompleted task.</returns>
+    /// <returns>A fresh uncompleted task.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is less than zero but not equals to <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</exception>
     /// <exception cref="InvalidOperationException">The source is in invalid state.</exception>
     public ValueTask CreateTask(TimeSpan timeout, CancellationToken token)
@@ -200,24 +200,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
 
     /// <inheritdoc />
     ValueTaskSourceStatus IValueTaskSource.GetStatus(short token)
-    {
-        var resultCopy = result;
-        var snapshot = versionAndStatus.VolatileRead(); // barrier to avoid reordering of result read
-
-        if (token != snapshot.Version)
-            throw new InvalidOperationException(ExceptionMessages.InvalidSourceToken);
-
-        return !snapshot.IsCompleted ? ValueTaskSourceStatus.Pending : resultCopy switch
-        {
-            null => ValueTaskSourceStatus.Succeeded,
-            { SourceException: OperationCanceledException } => ValueTaskSourceStatus.Canceled,
-            _ => ValueTaskSourceStatus.Faulted,
-        };
-    }
-
-    /// <inheritdoc />
-    void IValueTaskSource.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
-        => OnCompleted(continuation, state, token, flags);
+        => GetStatus(token, result?.SourceException);
 
     /// <summary>
     /// Creates a linked <see cref="TaskCompletionSource"/> that can be used cooperatively to

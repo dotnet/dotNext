@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace DotNext.Collections.Specialized;
 
 /// <summary>
-/// Represents specialized dictionary where the each key is represented by generic
+/// Represents specialized dictionary where each key is represented by generic
 /// parameter.
 /// </summary>
 /// <typeparam name="TValue">The type of the value.</typeparam>

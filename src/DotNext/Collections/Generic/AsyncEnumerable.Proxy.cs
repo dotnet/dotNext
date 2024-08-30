@@ -2,18 +2,11 @@ namespace DotNext.Collections.Generic;
 
 public static partial class AsyncEnumerable
 {
-    internal sealed class Proxy<T> : IAsyncEnumerable<T>
+    internal sealed class Proxy<T>(IEnumerable<T> enumerable) : IAsyncEnumerable<T>
     {
-        internal sealed class Enumerator : Disposable, IAsyncEnumerator<T>
+        internal sealed class Enumerator(IEnumerable<T> enumerable, CancellationToken token) : Disposable, IAsyncEnumerator<T>
         {
-            private readonly IEnumerator<T> enumerator;
-            private readonly CancellationToken token;
-
-            internal Enumerator(IEnumerable<T> enumerable, CancellationToken token)
-            {
-                enumerator = enumerable.GetEnumerator();
-                this.token = token;
-            }
+            private readonly IEnumerator<T> enumerator = enumerable.GetEnumerator();
 
             public T Current => enumerator.Current;
 
@@ -32,11 +25,6 @@ public static partial class AsyncEnumerable
 
             public new ValueTask DisposeAsync() => base.DisposeAsync();
         }
-
-        private readonly IEnumerable<T> enumerable;
-
-        internal Proxy(IEnumerable<T> enumerable)
-            => this.enumerable = enumerable;
 
         public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token)
             => new Enumerator(enumerable, token);

@@ -175,24 +175,23 @@ public sealed class AsyncBinaryReaderWriterTests : Test
         public new ValueTask DisposeAsync() => base.DisposeAsync();
     }
 
-    public static IEnumerable<object[]> GetDataForPrimitives()
+    public static TheoryData<IAsyncBinaryReaderWriterSource, Encoding> GetDataForPrimitives() => new()
     {
-        yield return new object[] { new FileSource(128), Encoding.UTF8 };
-        yield return new object[] { new FileSource(1024), Encoding.UTF8 };
-        yield return new object[] { new StreamSource(), Encoding.UTF8 };
-        yield return new object[] { new PipeSource(), Encoding.UTF8 };
-        yield return new object[] { new BufferSource(), Encoding.UTF8 };
-        yield return new object[] { new ReadOnlySequenceSource(), Encoding.UTF8 };
-        yield return new object[] { new DefaultSource(), Encoding.UTF8 };
-
-        yield return new object[] { new FileSource(128), Encoding.Unicode };
-        yield return new object[] { new FileSource(1024), Encoding.Unicode };
-        yield return new object[] { new StreamSource(), Encoding.Unicode };
-        yield return new object[] { new PipeSource(), Encoding.Unicode };
-        yield return new object[] { new BufferSource(), Encoding.Unicode };
-        yield return new object[] { new ReadOnlySequenceSource(), Encoding.Unicode };
-        yield return new object[] { new DefaultSource(), Encoding.Unicode };
-    }
+        { new FileSource(128), Encoding.UTF8 },
+        { new FileSource(1024), Encoding.UTF8 },
+        { new StreamSource(), Encoding.UTF8 },
+        { new PipeSource(), Encoding.UTF8 },
+        { new BufferSource(), Encoding.UTF8 },
+        { new ReadOnlySequenceSource(), Encoding.UTF8 },
+        { new DefaultSource(), Encoding.UTF8 },
+        { new FileSource(128), Encoding.Unicode },
+        { new FileSource(1024), Encoding.Unicode },
+        { new StreamSource(), Encoding.Unicode },
+        { new PipeSource(), Encoding.Unicode },
+        { new BufferSource(), Encoding.Unicode },
+        { new ReadOnlySequenceSource(), Encoding.Unicode },
+        { new DefaultSource(), Encoding.Unicode }
+    };
 
     [Theory]
     [MemberData(nameof(GetDataForPrimitives))]
@@ -274,28 +273,28 @@ public sealed class AsyncBinaryReaderWriterTests : Test
         }
     }
 
-    public static IEnumerable<object[]> GetDataForStringEncoding()
+    public static TheoryData<IAsyncBinaryReaderWriterSource, Encoding, LengthFormat> GetDataForStringEncoding() => new()
     {
-        yield return new object[] { new StreamSource(), Encoding.UTF8, LengthFormat.Compressed };
-        yield return new object[] { new StreamSource(), Encoding.UTF8, LengthFormat.LittleEndian };
-        yield return new object[] { new StreamSource(), Encoding.UTF8, LengthFormat.BigEndian };
-        yield return new object[] { new StreamSource(), Encoding.UTF8, LengthFormat.LittleEndian };
+        { new StreamSource(), Encoding.UTF8, LengthFormat.Compressed },
+        { new StreamSource(), Encoding.UTF8, LengthFormat.LittleEndian },
+        { new StreamSource(), Encoding.UTF8, LengthFormat.BigEndian },
+        { new StreamSource(), Encoding.UTF8, LengthFormat.LittleEndian },
 
-        yield return new object[] { new BufferSource(), Encoding.UTF8, LengthFormat.Compressed };
-        yield return new object[] { new BufferSource(), Encoding.UTF8, LengthFormat.LittleEndian };
-        yield return new object[] { new BufferSource(), Encoding.UTF8, LengthFormat.BigEndian };
-        yield return new object[] { new BufferSource(), Encoding.UTF8, LengthFormat.LittleEndian };
+        { new BufferSource(), Encoding.UTF8, LengthFormat.Compressed },
+        { new BufferSource(), Encoding.UTF8, LengthFormat.LittleEndian },
+        { new BufferSource(), Encoding.UTF8, LengthFormat.BigEndian },
+        { new BufferSource(), Encoding.UTF8, LengthFormat.LittleEndian },
 
-        yield return new object[] { new PipeSource(), Encoding.UTF8, LengthFormat.Compressed };
-        yield return new object[] { new PipeSource(), Encoding.UTF8, LengthFormat.LittleEndian };
-        yield return new object[] { new PipeSource(), Encoding.UTF8, LengthFormat.BigEndian };
-        yield return new object[] { new PipeSource(), Encoding.UTF8, LengthFormat.LittleEndian };
+        { new PipeSource(), Encoding.UTF8, LengthFormat.Compressed },
+        { new PipeSource(), Encoding.UTF8, LengthFormat.LittleEndian },
+        { new PipeSource(), Encoding.UTF8, LengthFormat.BigEndian },
+        { new PipeSource(), Encoding.UTF8, LengthFormat.LittleEndian },
 
-        yield return new object[] { new ReadOnlySequenceSource(), Encoding.UTF8, LengthFormat.Compressed };
-        yield return new object[] { new ReadOnlySequenceSource(), Encoding.UTF8, LengthFormat.LittleEndian };
-        yield return new object[] { new ReadOnlySequenceSource(), Encoding.UTF8, LengthFormat.BigEndian };
-        yield return new object[] { new ReadOnlySequenceSource(), Encoding.UTF8, LengthFormat.LittleEndian };
-    }
+        { new ReadOnlySequenceSource(), Encoding.UTF8, LengthFormat.Compressed },
+        { new ReadOnlySequenceSource(), Encoding.UTF8, LengthFormat.LittleEndian },
+        { new ReadOnlySequenceSource(), Encoding.UTF8, LengthFormat.BigEndian },
+        { new ReadOnlySequenceSource(), Encoding.UTF8, LengthFormat.LittleEndian },
+    };
 
     [Theory]
     [MemberData(nameof(GetDataForStringEncoding))]
@@ -340,13 +339,13 @@ public sealed class AsyncBinaryReaderWriterTests : Test
         }
     }
 
-    public static IEnumerable<object[]> GetSources()
+    public static TheoryData<IAsyncBinaryReaderWriterSource> GetSources() => new()
     {
-        yield return new object[] { new StreamSource() };
-        yield return new object[] { new PipeSource() };
-        yield return new object[] { new BufferSource() };
-        yield return new object[] { new DefaultSource() };
-    }
+        new StreamSource(),
+        new PipeSource(),
+        new BufferSource(),
+        new DefaultSource(),
+    };
 
     [Theory]
     [MemberData(nameof(GetSources))]

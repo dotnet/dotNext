@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+
 namespace DotNext.Collections.Specialized;
 
 public sealed class InvocationListTests : Test
@@ -49,5 +51,19 @@ public sealed class InvocationListTests : Test
             list,
             Same(Predicate.Constant<string>(true)),
             Same<Predicate<string>>(Predicate.Constant<object>(false)));
+    }
+
+    [Fact]
+    public static void Combine()
+    {
+        var box = new StrongBox<int>();
+        var list = new InvocationList<Action>() + Inc + Inc;
+        list.Combine()?.Invoke();
+        Equal(2, box.Value);
+
+        list = default;
+        Null(list.Combine());
+
+        void Inc() => box.Value += 1;
     }
 }

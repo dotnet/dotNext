@@ -88,4 +88,112 @@ public static partial class DelegateHelpers
     public static TDelegate ChangeType<TDelegate>(this Delegate d)
         where TDelegate : Delegate
         => d is TDelegate ? Unsafe.As<TDelegate>(d) : ChangeType<TDelegate, EmptyTargetRewriter>(d, new EmptyTargetRewriter());
+
+    /// <summary>
+    /// Converts action to async delegate.
+    /// </summary>
+    /// <param name="action">Synchronous action.</param>
+    /// <typeparam name="T">The type of the argument to be passed to the action.</typeparam>
+    /// <returns>The asynchronous function that wraps <paramref name="action"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
+    public static Func<T, CancellationToken, ValueTask> ToAsync<T>(this Action<T> action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        return action.Invoke;
+    }
+
+    private static ValueTask Invoke<T>(this Action<T> action, T arg, CancellationToken token)
+    {
+        ValueTask task;
+        if (token.IsCancellationRequested)
+        {
+            task = ValueTask.FromCanceled(token);
+        }
+        else
+        {
+            task = ValueTask.CompletedTask;
+            try
+            {
+                action.Invoke(arg);
+            }
+            catch (Exception e)
+            {
+                task = ValueTask.FromException(e);
+            }
+        }
+
+        return task;
+    }
+    
+    /// <summary>
+    /// Converts action to async delegate.
+    /// </summary>
+    /// <param name="action">Synchronous action.</param>
+    /// <returns>The asynchronous function that wraps <paramref name="action"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
+    public static Func<CancellationToken, ValueTask> ToAsync(this Action action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        return action.Invoke;
+    }
+
+    private static ValueTask Invoke(this Action action, CancellationToken token)
+    {
+        ValueTask task;
+        if (token.IsCancellationRequested)
+        {
+            task = ValueTask.FromCanceled(token);
+        }
+        else
+        {
+            task = ValueTask.CompletedTask;
+            try
+            {
+                action.Invoke();
+            }
+            catch (Exception e)
+            {
+                task = ValueTask.FromException(e);
+            }
+        }
+
+        return task;
+    }
+
+    /// <summary>
+    /// Creates a delegate that hides the return value.
+    /// </summary>
+    /// <param name="func">The function.</param>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <returns>The action that invokes the same method as <paramref name="func"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
+    public static Action HideReturnValue<TResult>(this Func<TResult> func)
+    {
+        ArgumentNullException.ThrowIfNull(func);
+
+        return func.InvokeNoReturn;
+    }
+
+    private static void InvokeNoReturn<TResult>(this Func<TResult> func)
+        => func.Invoke();
+    
+    /// <summary>
+    /// Creates a delegate that hides the return value.
+    /// </summary>
+    /// <param name="func">The function.</param>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <typeparam name="T">The type of the argument to be passed to the action.</typeparam>
+    /// <returns>The action that invokes the same method as <paramref name="func"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
+    public static Action<T> HideReturnValue<T, TResult>(this Func<T, TResult> func)
+    {
+        ArgumentNullException.ThrowIfNull(func);
+
+        return func.InvokeNoReturn;
+    }
+
+    private static void InvokeNoReturn<T, TResult>(this Func<T, TResult> func, T arg)
+        => func.Invoke(arg);
 }

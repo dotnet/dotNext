@@ -45,14 +45,14 @@ public sealed class ClusterMemberIdTests : Test
         False(ClusterMemberId.TryParse(invalidHex.AsSpan(), out _));
     }
 
-    public static IEnumerable<object[]> GetEndPoints()
+    public static TheoryData<EndPoint> GetEndPoints() => new()
     {
-        yield return new object[] { new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3262) };
-        yield return new object[] { new DnsEndPoint("localhost", 3262) };
-        yield return new object[] { new UnixDomainSocketEndPoint("/path") };
-        yield return new object[] { new UriEndPoint(new Uri("https://localhost:3232/path", UriKind.Absolute)) };
-        yield return new object[] { new UriEndPoint(new Uri("http://localhost", UriKind.Absolute)) };
-    }
+        new IPEndPoint(IPAddress.Parse("127.0.0.1"), 3262),
+        new DnsEndPoint("localhost", 3262),
+        new UnixDomainSocketEndPoint("/path"),
+        new UriEndPoint(new Uri("https://localhost:3232/path", UriKind.Absolute)),
+        new UriEndPoint(new Uri("http://localhost", UriKind.Absolute)),
+    };
 
     [Theory]
     [MemberData(nameof(GetEndPoints))]
