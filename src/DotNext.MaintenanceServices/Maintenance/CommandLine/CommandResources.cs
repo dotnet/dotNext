@@ -42,7 +42,7 @@ internal static class CommandResources
     internal static string GCLohModeCommandInvalidModeArg(string? mode)
         => Resources.Get().Format(mode);
 
-    internal static string GCRefreshMemoryLimits => (string)Resources.Get();
+    internal static string GCRefreshMemoryLimit => (string)Resources.Get();
 
     internal static string InteractiveCommandDescription => (string)Resources.Get();
 

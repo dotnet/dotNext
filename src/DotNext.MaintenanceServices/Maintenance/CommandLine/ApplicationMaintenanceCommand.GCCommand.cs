@@ -78,7 +78,7 @@ public partial class ApplicationMaintenanceCommand
 
     private static Command RefreshMemoryLimitsCommand()
     {
-        var command = new ApplicationMaintenanceCommand("refresh-mem-limits", CommandResources.GCRefreshMemoryLimits);
+        var command = new ApplicationMaintenanceCommand("refresh-mem-limit", CommandResources.GCRefreshMemoryLimit);
         command.SetHandler(GC.RefreshMemoryLimit);
         return command;
     }
