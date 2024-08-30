@@ -19,7 +19,7 @@ internal static class AuthorizationMiddleware
         }
         else
         {
-            console.Error.WriteLine(CommandResources.AccessDenined);
+            console.Error.WriteLine(CommandResources.AccessDenied);
             context.ExitCode = ForbiddenExitCode;
             console.Session.IsInteractive = false;
         }

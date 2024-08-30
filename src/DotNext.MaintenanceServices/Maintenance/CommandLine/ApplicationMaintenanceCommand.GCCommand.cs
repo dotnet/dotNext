@@ -76,6 +76,13 @@ public partial class ApplicationMaintenanceCommand
         }
     }
 
+    private static Command RefreshMemoryLimitsCommand()
+    {
+        var command = new ApplicationMaintenanceCommand("refresh-mem-limits", CommandResources.GCRefreshMemoryLimits);
+        command.SetHandler(GC.RefreshMemoryLimit);
+        return command;
+    }
+
     /// <summary>
     /// Creates a command that allows to force Garbage Collection.
     /// </summary>
@@ -85,6 +92,7 @@ public partial class ApplicationMaintenanceCommand
         var command = new ApplicationMaintenanceCommand("gc", CommandResources.GCCommandDescription);
         command.AddCommand(GCCollectCommand());
         command.AddCommand(LohCompactionModeCommand());
+        command.AddCommand(RefreshMemoryLimitsCommand());
         return command;
     }
 }

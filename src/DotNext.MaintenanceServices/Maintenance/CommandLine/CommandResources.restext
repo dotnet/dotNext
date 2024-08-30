@@ -1,6 +1,6 @@
 WelcomeMessage = Welcome to {0} Maintenance Interface! Type -h or --help to get help
 CommandTimeoutOccurred=Command has timed out. Please try again
-AccessDenined=Access denied
+AccessDenied=Access denied
 GCCommandDescription=Provides interaction with GC
 GCCollectCommandDescription=Forces Garbage Collection
 GCCollectCommandGenerationArgDescription=The number of the oldest generation to be garbage collected
@@ -10,6 +10,7 @@ GCCollectCommandCompactingOptionDescription=Enables compaction of small object h
 GCLohModeCommandDescription=Overrides Large Object Heap compaction mode
 GCLohModeCommandModeArgDescription=Large Object Heap compaction mode
 GCLohModeCommandInvalidModeArg=Incorrect Large Object Heap compaction mode {0}
+GCRefreshMemoryLimits=Instructs the Garbage Collector to reconfigure itself by detecting the various memory limits on the system
 InteractiveCommandDescription=Enters interactive mode
 ExitCommandDescription=Leaves interactive mode
 ProbeCommandDescription=Invokes application probe
