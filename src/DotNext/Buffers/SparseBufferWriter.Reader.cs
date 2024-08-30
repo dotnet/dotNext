@@ -6,13 +6,15 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Buffers;
 
+using Collections.Generic;
+
 public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
 {
     /// <summary>
     /// Represents enumerator over memory segments.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public struct Enumerator : IEnumerator<ReadOnlyMemory<T>>
+    public struct Enumerator : IEnumerator<Enumerator, ReadOnlyMemory<T>>
     {
         private MemoryChunk? current;
         private bool initialized;
@@ -23,14 +25,11 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
             initialized = false;
         }
 
-        /// <inheritdoc />
+        /// <inheritdoc cref="IEnumerator{T}.Current"/>
         public readonly ReadOnlyMemory<T> Current
-            => current is null ? ReadOnlyMemory<T>.Empty : current.WrittenMemory;
+            => current?.WrittenMemory ?? ReadOnlyMemory<T>.Empty;
 
-        /// <inheritdoc />
-        readonly object IEnumerator.Current => Current;
-
-        /// <inheritdoc />
+        /// <inheritdoc cref="IEnumerator.MoveNext()"/>
         public bool MoveNext()
         {
             if (initialized)
@@ -40,12 +39,6 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
 
             return current is not null;
         }
-
-        /// <inheritdoc />
-        readonly void IEnumerator.Reset() => throw new NotSupportedException();
-
-        /// <inheritdoc />
-        void IDisposable.Dispose() => this = default;
     }
 
     /// <summary>
@@ -244,8 +237,9 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
 
     /// <inheritdoc />
     IEnumerator<ReadOnlyMemory<T>> IEnumerable<ReadOnlyMemory<T>>.GetEnumerator()
-        => first is null ? Enumerable.Empty<ReadOnlyMemory<T>>().GetEnumerator() : GetEnumerator();
+        => GetEnumerator().ToClassicEnumerator<Enumerator, ReadOnlyMemory<T>>();
 
     /// <inheritdoc />
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+        => GetEnumerator().ToClassicEnumerator<Enumerator, ReadOnlyMemory<T>>();
 }

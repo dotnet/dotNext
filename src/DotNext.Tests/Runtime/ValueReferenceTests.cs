@@ -8,7 +8,7 @@ public sealed class ValueReferenceTests : Test
     [Fact]
     public static void MutableFieldRef()
     {
-        var obj = new MyClass() { AnotherField = string.Empty };
+        var obj = new MyClass { AnotherField = string.Empty };
         var reference = new ValueReference<int>(obj, ref obj.Field);
 
         obj.Field = 20;
@@ -22,7 +22,7 @@ public sealed class ValueReferenceTests : Test
     [Fact]
     public static void ImmutableFieldRef()
     {
-        var obj = new MyClass() { AnotherField = string.Empty };
+        var obj = new MyClass { AnotherField = string.Empty };
         var reference = new ReadOnlyValueReference<int>(obj, in obj.Field);
 
         obj.Field = 20;
@@ -35,7 +35,7 @@ public sealed class ValueReferenceTests : Test
     [Fact]
     public static void MutableToImmutableRef()
     {
-        var obj = new MyClass() { AnotherField = string.Empty };
+        var obj = new MyClass { AnotherField = string.Empty };
         var reference = new ValueReference<int>(obj, ref obj.Field);
         ReadOnlyValueReference<int> roReference = reference;
 
@@ -49,7 +49,7 @@ public sealed class ValueReferenceTests : Test
     [Fact]
     public static void MutableRefEquality()
     {
-        var obj = new MyClass() { AnotherField = string.Empty };
+        var obj = new MyClass { AnotherField = string.Empty };
         var reference1 = new ValueReference<int>(obj, ref obj.Field);
         var reference2 = new ValueReference<int>(obj, ref obj.Field);
 
@@ -59,7 +59,7 @@ public sealed class ValueReferenceTests : Test
     [Fact]
     public static void ImmutableRefEquality()
     {
-        var obj = new MyClass() { AnotherField = string.Empty };
+        var obj = new MyClass { AnotherField = string.Empty };
         var reference1 = new ReadOnlyValueReference<int>(obj, in obj.Field);
         var reference2 = new ReadOnlyValueReference<int>(obj, in obj.Field);
 
@@ -82,23 +82,28 @@ public sealed class ValueReferenceTests : Test
     [Fact]
     public static void MutableEmptyRef()
     {
-        var reference = default(ValueReference<float>);
+        var reference = default(ValueReference<string>);
         True(reference.IsEmpty);
         Null(reference.ToString());
 
-        Span<float> span = reference;
+        Span<string> span = reference;
         True(span.IsEmpty);
+
+        Throws<NullReferenceException>((Func<string>)reference);
+        Throws<NullReferenceException>(((Action<string>)reference).Bind(string.Empty));
     }
 
     [Fact]
     public static void ImmutableEmptyRef()
     {
-        var reference = default(ReadOnlyValueReference<float>);
+        var reference = default(ReadOnlyValueReference<string>);
         True(reference.IsEmpty);
         Null(reference.ToString());
         
-        ReadOnlySpan<float> span = reference;
+        ReadOnlySpan<string> span = reference;
         True(span.IsEmpty);
+        
+        Throws<NullReferenceException>((Func<string>)reference);
     }
 
     [Fact]
@@ -107,9 +112,17 @@ public sealed class ValueReferenceTests : Test
         var reference = new ValueReference<int>(42);
         Equal(42, reference.Value);
 
+        ((Action<int>)reference).Invoke(52);
+        Equal(52, ToFunc<ValueReference<int>, int>(reference).Invoke());
+
         ReadOnlyValueReference<int> roRef = reference;
-        Equal(42, roRef.Value);
+        Equal(52, roRef.Value);
+        Equal(52, ToFunc<ReadOnlyValueReference<int>, int>(reference).Invoke());
     }
+
+    private static Func<T> ToFunc<TSupplier, T>(TSupplier supplier)
+        where TSupplier : ISupplier<T>
+        => supplier.ToDelegate();
 
     [Fact]
     public static void StaticObjectAccess()
@@ -124,6 +137,7 @@ public sealed class ValueReferenceTests : Test
         
         True(reference == new ValueReference<string>(ref MyClass.StaticObject));
         Same(MyClass.StaticObject, reference.Value);
+        Same(MyClass.StaticObject, ToFunc<ValueReference<string>, string>(reference).Invoke());
     }
     
     [Fact]
@@ -192,6 +206,8 @@ public sealed class ValueReferenceTests : Test
 
         True(Unsafe.AreSame(in reference.Value, in span[0]));
     }
+
+    
 
     private record class MyClass : IResettable
     {

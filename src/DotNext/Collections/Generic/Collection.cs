@@ -360,4 +360,23 @@ public static partial class Collection
     /// <exception cref="ArgumentNullException"><paramref name="enumerable"/> is <see langword="null"/>.</exception>
     public static IAsyncEnumerable<T> ToAsyncEnumerable<T>(this IEnumerable<T> enumerable)
         => new AsyncEnumerable.Proxy<T>(enumerable ?? throw new ArgumentNullException(nameof(enumerable)));
+
+    /// <summary>
+    /// Converts ad-hoc enumerator to a generic enumerator.
+    /// </summary>
+    /// <param name="enumerator">Ad-hoc enumerator.</param>
+    /// <returns>The enumerator over values of type <typeparamref name="T"/>.</returns>
+    public static IEnumerator<T> ToClassicEnumerator<TEnumerator, T>(this TEnumerator enumerator)
+        where TEnumerator : struct, IEnumerator<TEnumerator, T>
+        => TEnumerator.ToEnumerator(enumerator);
+    
+    /// <summary>
+    /// Converts ad-hoc enumerator to a generic enumerator.
+    /// </summary>
+    /// <param name="enumerator">Ad-hoc enumerator.</param>
+    /// <param name="token">The token that can be used to cancel the enumeration.</param>
+    /// <returns>The enumerator over values of type <typeparamref name="T"/>.</returns>
+    public static IAsyncEnumerator<T> ToAsyncEnumerator<TEnumerator, T>(this TEnumerator enumerator, CancellationToken token)
+        where TEnumerator : struct, IEnumerator<TEnumerator, T>
+        => TEnumerator.ToEnumerator(enumerator, token);
 }

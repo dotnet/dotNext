@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -847,5 +848,152 @@ public static class Span
         ref T ptr = ref MemoryMarshal.GetReference(source);
         source = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref ptr, 1), source.Length - 1);
         return ref ptr;
+    }
+    
+    /// <summary>
+    /// Determines whether the specified value satisfies the given mask.
+    /// </summary>
+    /// <param name="value">The value to check.</param>
+    /// <param name="mask">The mask.</param>
+    /// <typeparam name="T">The type of the values.</typeparam>
+    /// <returns><see langword="true"/> if <c>value &amp; mask == mask</c>; otherwise, <see langword="false"/>.</returns>
+    public static unsafe bool CheckMask<T>(this ReadOnlySpan<T> value, ReadOnlySpan<T> mask)
+        where T : unmanaged
+    {
+        ArgumentOutOfRangeException.ThrowIfNotEqual(value.Length, mask.Length, nameof(mask));
+
+        for (int maxLength = Array.MaxLength / sizeof(T), count; !value.IsEmpty; value = value.Slice(count), mask = mask.Slice(count))
+        {
+            count = Math.Min(maxLength, value.Length);
+
+            if (CheckMask(
+                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(value)),
+                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(mask)),
+                    count * sizeof(T)) is false)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool CheckMask([In] ref byte data, [In]ref byte mask, int length)
+    {
+        // iterate by Vector
+        if (Vector.IsHardwareAccelerated)
+        {
+            for (; length >= Vector<byte>.Count; length -= Vector<byte>.Count)
+            {
+                var dataVec = Vector.LoadUnsafe(ref data);
+                var maskVec = Vector.LoadUnsafe(ref mask);
+
+                if ((dataVec & maskVec) != maskVec)
+                    return false;
+
+                data = ref Unsafe.Add(ref data, Vector<byte>.Count);
+                mask = ref Unsafe.Add(ref mask, Vector<byte>.Count);
+            }
+        }
+
+        // iterate by nuint.Size
+        for (; length >= UIntPtr.Size; length -= UIntPtr.Size)
+        {
+            var dataVal = Unsafe.ReadUnaligned<nuint>(ref data);
+            var maskVal = Unsafe.ReadUnaligned<nuint>(ref mask);
+
+            if ((dataVal & maskVal) != maskVal)
+                return false;
+
+            data = ref Unsafe.Add(ref data, UIntPtr.Size);
+            mask = ref Unsafe.Add(ref mask, UIntPtr.Size);
+        }
+
+        // iterate by byte
+        for (; length > 0; length -= 1)
+        {
+            var dataVal = data;
+            var maskVal = mask;
+            
+            if ((dataVal & maskVal) != maskVal)
+                return false;
+            
+            data = ref Unsafe.Add(ref data, 1);
+            mask = ref Unsafe.Add(ref mask, 1);
+        }
+
+        return true;
+    }
+    
+    /// <summary>
+    /// Determines whether the specified value and the given mask produces non-zero bitwise AND.
+    /// </summary>
+    /// <param name="value">The value to check.</param>
+    /// <param name="mask">The mask.</param>
+    /// <typeparam name="T">The type of the values.</typeparam>
+    /// <returns><see langword="true"/> if <c>value &amp; mask != 0</c>; otherwise, <see langword="false"/>.</returns>
+    public static unsafe bool IsBitwiseAndNonZero<T>(this ReadOnlySpan<T> value, ReadOnlySpan<T> mask)
+        where T : unmanaged
+    {
+        ArgumentOutOfRangeException.ThrowIfNotEqual(value.Length, mask.Length, nameof(mask));
+
+        for (int maxLength = Array.MaxLength / sizeof(T), count; !value.IsEmpty; value = value.Slice(count), mask = mask.Slice(count))
+        {
+            count = Math.Min(maxLength, value.Length);
+
+            if (IsBitwiseAndNonZero(
+                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(value)),
+                    ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(mask)),
+                    count * sizeof(T)) is false)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
+    private static bool IsBitwiseAndNonZero([In] ref byte data, [In]ref byte mask, int length)
+    {
+        // iterate by Vector
+        if (Vector.IsHardwareAccelerated)
+        {
+            for (; length >= Vector<byte>.Count; length -= Vector<byte>.Count)
+            {
+                var dataVec = Vector.LoadUnsafe(ref data);
+                var maskVec = Vector.LoadUnsafe(ref mask);
+
+                if ((dataVec & maskVec) != Vector<byte>.Zero)
+                    return true;
+
+                data = ref Unsafe.Add(ref data, Vector<byte>.Count);
+                mask = ref Unsafe.Add(ref mask, Vector<byte>.Count);
+            }
+        }
+
+        // iterate by nuint.Size
+        for (; length >= UIntPtr.Size; length -= UIntPtr.Size)
+        {
+            var dataVal = Unsafe.ReadUnaligned<nuint>(ref data);
+            var maskVal = Unsafe.ReadUnaligned<nuint>(ref mask);
+
+            if ((dataVal & maskVal) is not 0)
+                return true;
+
+            data = ref Unsafe.Add(ref data, UIntPtr.Size);
+            mask = ref Unsafe.Add(ref mask, UIntPtr.Size);
+        }
+
+        // iterate by byte
+        for (; length > 0; length -= 1)
+        {
+            if ((data & mask) is not 0)
+                return true;
+            
+            data = ref Unsafe.Add(ref data, 1);
+            mask = ref Unsafe.Add(ref mask, 1);
+        }
+
+        return false;
     }
 }

@@ -142,4 +142,36 @@ public sealed class SequenceBinaryReaderTests : Test
 
         Equal(value, bufferWriter.WrittenSpan.ToString());
     }
+
+    [Fact]
+    public static void EmptyReader()
+    {
+        True(default(SequenceReader).IsEmpty);
+    }
+
+    [Fact]
+    public static void TryRead()
+    {
+        ReadOnlyMemory<byte> expected = new byte[] { 1, 2, 3 };
+        var reader = IAsyncBinaryReader.Create(expected);
+        False(reader.IsEmpty);
+
+        True(reader.TryRead(out var actual));
+        Equal(expected.Span, actual.Span);
+        True(reader.IsEmpty);
+        False(reader.TryRead(out actual));
+    }
+    
+    [Fact]
+    public static void TryRead2()
+    {
+        ReadOnlyMemory<byte> expected = new byte[] { 1, 2, 3 };
+        var reader = IAsyncBinaryReader.Create(expected);
+        False(reader.IsEmpty);
+
+        True(reader.TryRead(4, out var actual));
+        Equal(expected.Span, actual.Span);
+        True(reader.IsEmpty);
+        False(reader.TryRead(4, out actual));
+    }
 }

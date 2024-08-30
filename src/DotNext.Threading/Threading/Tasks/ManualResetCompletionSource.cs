@@ -1,8 +1,9 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using ValueTaskSourceOnCompletedFlags = System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags;
+using System.Threading.Tasks.Sources;
 
 namespace DotNext.Threading.Tasks;
 
@@ -220,8 +221,26 @@ public abstract partial class ManualResetCompletionSource
         throw new InvalidOperationException(errorMessage);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private protected void OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
+    private protected ValueTaskSourceStatus GetStatus(short token, Exception? e)
+    {
+        var snapshot = versionAndStatus.VolatileRead(); // barrier to avoid reordering of result read
+
+        if (token != snapshot.Version)
+            throw new InvalidOperationException(ExceptionMessages.InvalidSourceToken);
+
+        return !snapshot.IsCompleted
+            ? ValueTaskSourceStatus.Pending
+            : e switch
+            {
+                null => ValueTaskSourceStatus.Succeeded,
+                OperationCanceledException => ValueTaskSourceStatus.Canceled,
+                _ => ValueTaskSourceStatus.Faulted,
+            };
+    }
+
+    /// <inheritdoc cref="IValueTaskSource.OnCompleted"/>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public void OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
         => OnCompleted(new(continuation, state, flags), token);
 
     /// <summary>

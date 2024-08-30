@@ -1,19 +1,27 @@
+using System.Collections;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using Diagnostics;
-using static Tasks.Conversion;
+using Collections.Generic;
+using Runtime;
+using Tasks;
+using Tasks.Pooling;
 
 /// <summary>
 /// Represents a collection of asynchronous events.
 /// </summary>
 [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
-public partial class AsyncEventHub : IResettable
+public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 {
-    private readonly TaskCompletionSource[] sources;
+    private static readonly int MaxCount = Unsafe.SizeOf<UInt128>() * 8;
+
+    private readonly EventGroup all;
+    private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
+    private UInt128 state;
 
     /// <summary>
     /// Initializes a new collection of asynchronous events.
@@ -22,84 +30,29 @@ public partial class AsyncEventHub : IResettable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than or equal to zero.</exception>
     public AsyncEventHub(int count)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(count);
+        ArgumentOutOfRangeException.ThrowIfZero(count);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)MaxCount, nameof(count));
 
-        sources = new TaskCompletionSource[count];
-
-        for (var i = 0; i < sources.Length; i++)
-            sources[i] = new(i, TaskCreationOptions.RunContinuationsAsynchronously);
+        Count = count;
+        pool = new(OnCompleted, count);
+        all = new(Count == MaxCount ? UInt128.MaxValue : GetBitMask(count) - UInt128.One);
     }
 
-    private static int GetIndex(Task task)
+    private void OnCompleted(WaitNode node)
     {
-        Debug.Assert(task.AsyncState is int);
+        lock (SyncRoot)
+        {
+            if (node.NeedsRemoval)
+                RemoveNode(node);
 
-        return (int)task.AsyncState;
-    }
-
-    private static void ResetIfNeeded(ref TaskCompletionSource source)
-    {
-        if (source is { Task: { IsCompleted: true } task })
-            source = new(task.AsyncState, TaskCreationOptions.RunContinuationsAsynchronously);
+            pool.Return(node);
+        }
     }
 
     /// <summary>
     /// Gets the number of events.
     /// </summary>
-    public int Count => sources.Length;
-
-    private Task WaitOneCoreAsync(int eventIndex, TimeSpan timeout, CancellationToken token)
-    {
-        Debug.Assert((uint)eventIndex < (uint)sources.Length);
-
-        Task result;
-
-        var lockTaken = false;
-        var start = new Timestamp();
-        try
-        {
-            lockTaken = Monitor.TryEnter(sources, timeout);
-            result = lockTaken && (timeout -= start.Elapsed) > TimeSpan.Zero
-                ? Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(sources), eventIndex).Task
-                : throw new TimeoutException();
-        }
-        catch (Exception e)
-        {
-            result = Task.FromException(e);
-        }
-        finally
-        {
-            if (lockTaken)
-                Monitor.Exit(sources);
-        }
-
-        return result.WaitAsync(timeout, token);
-    }
-
-    private Task WaitOneCoreAsync(int eventIndex, CancellationToken token)
-    {
-        Debug.Assert((uint)eventIndex < (uint)sources.Length);
-
-        Task result;
-
-        var lockTaken = false;
-        try
-        {
-            Monitor.Enter(sources, ref lockTaken);
-            result = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(sources), eventIndex).Task;
-        }
-        catch (Exception e)
-        {
-            result = Task.FromException(e);
-        }
-        finally
-        {
-            if (lockTaken)
-                Monitor.Exit(sources);
-        }
-
-        return result.WaitAsync(token);
-    }
+    public int Count { get; }
 
     /// <summary>
     /// Waits for the event represented by the specified index.
@@ -111,12 +64,14 @@ public partial class AsyncEventHub : IResettable
     /// <exception cref="TimeoutException">The operation has timed out.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="eventIndex"/> is invalid.</exception>
-    public Task WaitOneAsync(int eventIndex, TimeSpan timeout, CancellationToken token = default)
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public ValueTask WaitOneAsync(int eventIndex, TimeSpan timeout, CancellationToken token = default)
     {
-        if ((uint)eventIndex >= (uint)sources.Length)
-            return Task.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
+        if ((uint)eventIndex > (uint)Count)
+            return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
 
-        return timeout < TimeSpan.Zero ? WaitOneCoreAsync(eventIndex, token) : WaitOneCoreAsync(eventIndex, timeout, token);
+        var manager = new WaitAllManager(this, eventIndex);
+        return AcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
     }
 
     /// <summary>
@@ -127,21 +82,45 @@ public partial class AsyncEventHub : IResettable
     /// <returns>The task representing the event.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="eventIndex"/> is invalid.</exception>
-    public Task WaitOneAsync(int eventIndex, CancellationToken token = default)
-        => (uint)eventIndex >= (uint)sources.Length
-            ? Task.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)))
-            : WaitOneCoreAsync(eventIndex, token);
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public ValueTask WaitOneAsync(int eventIndex, CancellationToken token = default)
+    {
+        if ((uint)eventIndex > (uint)Count)
+            return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
+
+        var manager = new WaitAllManager(this, eventIndex);
+        return AcquireSpecialAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+    }
 
     /// <summary>
     /// Turns all events to non-signaled state.
     /// </summary>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
     public void Reset()
     {
-        lock (sources)
+        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
+        
+        lock (SyncRoot)
         {
-            foreach (ref var source in sources.AsSpan())
-                ResetIfNeeded(ref source);
+            state = default;
         }
+    }
+
+    private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
+    {
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
+
+        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
+
+        for (WaitNode? current = Unsafe.As<WaitNode>(WaitQueueHead), next; current is not null; current = next)
+        {
+            next = Unsafe.As<WaitNode>(current.Next);
+
+            if (current.Matches(state) && RemoveAndSignal(current, out var resumable) && resumable)
+                detachedQueue.Add(current);
+        }
+
+        return detachedQueue.First;
     }
 
     /// <summary>
@@ -150,28 +129,23 @@ public partial class AsyncEventHub : IResettable
     /// <param name="eventIndex">The index of the event.</param>
     /// <returns><see langword="true"/> if the event turned into signaled state; <see langword="false"/> if the event is already in signaled state.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="eventIndex"/> is invalid.</exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
     public bool ResetAndPulse(int eventIndex)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)eventIndex, (uint)sources.Length, nameof(eventIndex));
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)eventIndex, (uint)Count, nameof(eventIndex));
+        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
-        var result = false;
-        lock (sources)
+        var newState = GetBitMask(eventIndex);
+        bool result;
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
+        lock (SyncRoot)
         {
-            for (var i = 0; i < sources.Length; i++)
-            {
-                ref var source = ref sources[i];
-
-                if (i == eventIndex)
-                {
-                    result = source.TrySetResult();
-                }
-                else
-                {
-                    ResetIfNeeded(ref source);
-                }
-            }
+            result = (state & newState) == UInt128.Zero;
+            state = newState;
+            suspendedCallers = DrainWaitQueue();
         }
 
+        suspendedCallers?.Unwind();
         return result;
     }
 
@@ -181,491 +155,507 @@ public partial class AsyncEventHub : IResettable
     /// <param name="eventIndex">The index of the event.</param>
     /// <returns><see langword="true"/> if the event turned into signaled state; <see langword="false"/> if the event is already in signaled state.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="eventIndex"/> is invalid.</exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
     public bool Pulse(int eventIndex)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)eventIndex, (uint)sources.Length, nameof(eventIndex));
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)eventIndex, (uint)Count, nameof(eventIndex));
+        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
-        lock (sources)
+        var mask = GetBitMask(eventIndex);
+        bool result;
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
+        lock (SyncRoot)
         {
-            return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(sources), eventIndex).TrySetResult();
+            result = (state & mask) == UInt128.Zero;
+            state |= mask;
+            suspendedCallers = DrainWaitQueue();
         }
+
+        suspendedCallers?.Unwind();
+        return result;
     }
 
     /// <summary>
     /// Turns the specified events into signaled state and reset all other events.
     /// </summary>
-    /// <param name="eventIndexes">A span of event indexes.</param>
-    /// <returns>The number of triggered events.</returns>
-    public int ResetAndPulse(ReadOnlySpan<int> eventIndexes)
+    /// <param name="events">A group of events to be signaled.</param>
+    /// <returns>A group of events set by the method.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// <paramref name="events"/> contains an event index that is larger than or equal to <see cref="Count"/>.
+    /// </exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public EventGroup ResetAndPulse(in EventGroup events)
     {
-        var count = 0;
-
-        lock (sources)
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(events.Mask, all.Mask, nameof(events));
+        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
+        
+        EventGroup result;
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
+        lock (SyncRoot)
         {
-            for (var i = 0; i < sources.Length; i++)
-            {
-                ref var source = ref sources[i];
-
-                if (!eventIndexes.Contains(i))
-                {
-                    ResetIfNeeded(ref source);
-                }
-                else if (source.TrySetResult())
-                {
-                    count += 1;
-                }
-            }
+            result = new(events.Mask & ~state);
+            state = events.Mask;
+            suspendedCallers = DrainWaitQueue();
         }
 
-        return count;
+        suspendedCallers?.Unwind();
+        return result;
     }
 
     /// <summary>
-    /// Turns the specified events into signaled state and reset all other events.
+    /// Turns the specified events into signaled state.
     /// </summary>
-    /// <param name="eventIndexes">A span of event indexes.</param>
-    /// <param name="flags">
-    /// A set of event states. The value of each element will be overwritten by the method as follows:
-    /// <see langword="true"/> if the corresponding event has been moved to the signaled state,
-    /// or <see langword="false"/> if the event is already in signaled state.
-    /// </param>
-    /// <exception cref="ArgumentOutOfRangeException">The length of <paramref name="eventIndexes"/> is not equal to the length of <paramref name="flags"/>.</exception>
-    public void ResetAndPulse(ReadOnlySpan<int> eventIndexes, Span<bool> flags)
+    /// <param name="events">A group of events to be signaled.</param>
+    /// <returns>A group of events set by the method.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// <paramref name="events"/> contains an event index that is larger than or equal to <see cref="Count"/>.
+    /// </exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public EventGroup Pulse(in EventGroup events)
     {
-        ArgumentOutOfRangeException.ThrowIfNotEqual(eventIndexes.Length, flags.Length, nameof(flags));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(events.Mask, all.Mask, nameof(events));
+        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
-        lock (sources)
+        EventGroup result;
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
+        lock (SyncRoot)
         {
-            for (var i = 0; i < sources.Length; i++)
+            result = new(events.Mask & ~state);
+            state |= events.Mask;
+            suspendedCallers = DrainWaitQueue();
+        }
+
+        suspendedCallers?.Unwind();
+        return result;
+    }
+
+    /// <summary>
+    /// Turns all events into the signaled state.
+    /// </summary>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public EventGroup PulseAll()
+        => Pulse(all);
+
+    /// <summary>
+    /// Waits for any of the specified events.
+    /// </summary>
+    /// <param name="events">A group of events to be awaited.</param>
+    /// <param name="timeout">The time to wait for an event.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing the event.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// <paramref name="events"/> contains an event index that is larger than or equal to <see cref="Count"/>.
+    /// </exception>
+    /// <exception cref="TimeoutException">The operation has timed out.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public ValueTask WaitAnyAsync(in EventGroup events, TimeSpan timeout, CancellationToken token = default)
+    {
+        if (events.Mask > all.Mask)
+            return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
+        
+        var manager = new WaitAnyManager(this, events.Mask);
+        return AcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+    }
+
+    /// <summary>
+    /// Waits for any of the specified events.
+    /// </summary>
+    /// <param name="events">A group of events to be awaited.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing the event.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// <paramref name="events"/> contains an event index that is larger than or equal to <see cref="Count"/>.
+    /// </exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public ValueTask WaitAnyAsync(in EventGroup events, CancellationToken token = default)
+    {
+        if (events.Mask > all.Mask)
+            return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
+        
+        var manager = new WaitAnyManager(this, events.Mask);
+        return AcquireSpecialAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+    }
+    
+    /// <summary>
+    /// Waits for any of the specified events.
+    /// </summary>
+    /// <param name="events">A group of events to be awaited.</param>
+    /// <param name="output">A collection of signaled events set by the method when returned successfully.</param>
+    /// <param name="timeout">The time to wait for an event.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing the event.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// <paramref name="events"/> contains an event index that is larger than or equal to <see cref="Count"/>.
+    /// </exception>
+    /// <exception cref="TimeoutException">The operation has timed out.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public ValueTask WaitAnyAsync(in EventGroup events, ICollection<int> output, TimeSpan timeout, CancellationToken token = default)
+    {
+        if (events.Mask > all.Mask)
+            return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
+        
+        var manager = new WaitAnyManager(this, events.Mask) { Events = output };
+        return AcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+    }
+
+    /// <summary>
+    /// Waits for any of the specified events.
+    /// </summary>
+    /// <param name="events">A group of events to be awaited.</param>
+    /// <param name="output">A collection of signaled events set by the method when returned successfully.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing the event.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// <paramref name="events"/> contains an event index that is larger than or equal to <see cref="Count"/>.
+    /// </exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public ValueTask WaitAnyAsync(in EventGroup events, ICollection<int> output, CancellationToken token = default)
+    {
+        if (events.Mask > all.Mask)
+            return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
+        
+        var manager = new WaitAnyManager(this, events.Mask) { Events = output };
+        return AcquireSpecialAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+    }
+
+    /// <summary>
+    /// Waits for any of the specified events.
+    /// </summary>
+    /// <param name="timeout">The time to wait for an event.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The index of the first signaled event.</returns>
+    /// <exception cref="TimeoutException">The operation has timed out.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public ValueTask WaitAnyAsync(TimeSpan timeout, CancellationToken token = default)
+        => WaitAnyAsync(all, timeout, token);
+
+    /// <summary>
+    /// Waits for any of the specified events.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The index of the first signaled event.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public ValueTask WaitAnyAsync(CancellationToken token = default)
+        => WaitAnyAsync(all, token);
+    
+    /// <summary>
+    /// Waits for any of the specified events.
+    /// </summary>
+    /// <param name="output">A collection of signaled events set by the method when returned successfully.</param>
+    /// <param name="timeout">The time to wait for an event.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The index of the first signaled event.</returns>
+    /// <exception cref="TimeoutException">The operation has timed out.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public ValueTask WaitAnyAsync(ICollection<int> output, TimeSpan timeout, CancellationToken token = default)
+        => WaitAnyAsync(all, output, timeout, token);
+
+    /// <summary>
+    /// Waits for any of the specified events.
+    /// </summary>
+    /// <param name="output">A collection of signaled events set by the method when returned successfully.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The index of the first signaled event.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public ValueTask WaitAnyAsync(ICollection<int> output, CancellationToken token = default)
+        => WaitAnyAsync(all, output, token);
+
+    /// <summary>
+    /// Waits for all events.
+    /// </summary>
+    /// <param name="events">A group of events to be awaited.</param>
+    /// <param name="timeout">The time to wait for the events.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the completion of all the specified events.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// <paramref name="events"/> contains an event index that is larger than or equal to <see cref="Count"/>.
+    /// </exception>
+    /// <exception cref="TimeoutException">The operation has timed out.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public ValueTask WaitAllAsync(in EventGroup events, TimeSpan timeout, CancellationToken token = default)
+    {
+        if (events.Mask > all.Mask)
+            return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
+        
+        var manager = new WaitAllManager(this, events.Mask);
+        return AcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+    }
+
+    /// <summary>
+    /// Waits for all events.
+    /// </summary>
+    /// <param name="events">A group of events to be awaited.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the completion of all the specified events.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// <paramref name="events"/> contains an event index that is larger than or equal to <see cref="Count"/>.
+    /// </exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public ValueTask WaitAllAsync(in EventGroup events, CancellationToken token = default)
+    {
+        if (events.Mask > all.Mask)
+            return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
+        
+        var manager = new WaitAllManager(this, events.Mask);
+        return AcquireSpecialAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+    }
+
+    /// <summary>
+    /// Waits for all events.
+    /// </summary>
+    /// <param name="timeout">The time to wait for the events.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the completion of all the specified events.</returns>
+    /// <exception cref="TimeoutException">The operation has timed out.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public ValueTask WaitAllAsync(TimeSpan timeout, CancellationToken token = default)
+        => WaitAllAsync(all, timeout, token);
+
+    /// <summary>
+    /// Waits for all events.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the completion of all the specified events.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+    public ValueTask WaitAllAsync(CancellationToken token = default)
+        => WaitAllAsync(all, token);
+    
+    private static UInt128 GetBitMask(int index) => UInt128.One << index;
+    
+    private static void FillIndices(UInt128 events, ICollection<int> indices)
+    {
+        for (var enumerator = new EventGroup.Enumerator(events); enumerator.MoveNext();)
+        {
+            indices.Add(enumerator.Current);
+        }
+    }
+
+    /// <summary>
+    /// Represents a group of events.
+    /// </summary>
+    /// <remarks>
+    /// It's better to cache a set of necessary event groups rather than create them on the fly
+    /// due to performance reasons.
+    /// </remarks>
+    [StructLayout(LayoutKind.Auto)]
+    public readonly record struct EventGroup : IReadOnlyCollection<int>
+    {
+        internal readonly UInt128 Mask;
+
+        internal EventGroup(UInt128 mask) => Mask = mask;
+
+        /// <summary>
+        /// Initializes a new group of events.
+        /// </summary>
+        /// <param name="indices">Indices of the events.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="indices"/> has at least one negative index.</exception>
+        public EventGroup(ReadOnlySpan<int> indices)
+        {
+            foreach (var index in indices)
             {
-                ref var source = ref sources[i];
-
-                var index = eventIndexes.IndexOf(i);
-
                 if (index < 0)
-                {
-                    ResetIfNeeded(ref source);
-                }
-                else
-                {
-                    Unsafe.Add(ref MemoryMarshal.GetReference(flags), index) = source.TrySetResult();
-                }
+                    throw new ArgumentOutOfRangeException(nameof(indices));
+
+                Mask |= GetBitMask(index);
             }
         }
-    }
 
-    /// <summary>
-    /// Turns the specified events into signaled state.
-    /// </summary>
-    /// <param name="eventIndexes">A span of event indexes.</param>
-    /// <returns>The number of triggered events.</returns>
-    public int Pulse(ReadOnlySpan<int> eventIndexes)
-    {
-        var count = 0;
+        /// <summary>
+        /// Gets a number of events in this group.
+        /// </summary>
+        public int Count => int.CreateTruncating(UInt128.PopCount(Mask));
 
-        if (eventIndexes.IsEmpty)
-            goto exit;
-
-        lock (sources)
+        /// <summary>
+        /// Checks whether the specified event is in this group.
+        /// </summary>
+        /// <param name="index">The index of the event.</param>
+        /// <returns><see langword="true"/> if the event with index <paramref name="index"/> is in this group; otherwise, <see langword="false"/>.</returns>
+        public bool Contains(int index)
         {
-            foreach (var index in eventIndexes)
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+            
+            return (Mask & GetBitMask(index)) != UInt128.Zero;
+        }
+
+        /// <summary>
+        /// Gets an enumerator over indices in this group.
+        /// </summary>
+        /// <returns>An enumerator over indices.</returns>
+        public Enumerator GetEnumerator() => new(Mask);
+
+        /// <inheritdoc cref="GetEnumerator()"/>
+        IEnumerator<int> IEnumerable<int>.GetEnumerator()
+            => GetEnumerator().ToClassicEnumerator<Enumerator, int>();
+        
+        /// <inheritdoc cref="GetEnumerator()"/>
+        IEnumerator IEnumerable.GetEnumerator()
+            => GetEnumerator().ToClassicEnumerator<Enumerator, int>();
+
+        /// <summary>
+        /// Represents an enumerator over indices.
+        /// </summary>
+        [StructLayout(LayoutKind.Auto)]
+        public struct Enumerator : IEnumerator<Enumerator, int>
+        {
+            private UInt128 state;
+
+            internal Enumerator(in UInt128 state) => this.state = state;
+
+            /// <summary>
+            /// Gets the current index.
+            /// </summary>
+            public int Current
             {
-                if (sources[index].TrySetResult())
-                    count += 1;
+                readonly get;
+                private set;
             }
-        }
 
-    exit:
-        return count;
-    }
-
-    /// <summary>
-    /// Turns the specified events into signaled state.
-    /// </summary>
-    /// <param name="eventIndexes">A span of event indexes.</param>
-    /// <param name="flags">
-    /// A set of event states. The value of each element will be overwritten by the method as follows:
-    /// <see langword="true"/> if the corresponding event has been moved to the signaled state,
-    /// or <see langword="false"/> if the event is already in signaled state.
-    /// </param>
-    /// <exception cref="ArgumentOutOfRangeException">The length of <paramref name="eventIndexes"/> is not equal to the length of <paramref name="flags"/>.</exception>
-    public void Pulse(ReadOnlySpan<int> eventIndexes, Span<bool> flags)
-    {
-        ArgumentOutOfRangeException.ThrowIfNotEqual(eventIndexes.Length, flags.Length, nameof(flags));
-
-        if (eventIndexes.IsEmpty)
-            return;
-
-        lock (sources)
-        {
-            foreach (var index in eventIndexes)
+            /// <inheritdoc cref="IEnumerator.MoveNext()"/>
+            public bool MoveNext()
             {
-                flags[index] = sources[index].TrySetResult();
+                if (state == UInt128.Zero)
+                    return false;
+
+                var index = Current = int.CreateTruncating(UInt128.TrailingZeroCount(state));
+                state ^= GetBitMask(index);
+                return true;
             }
         }
     }
 
-    /// <summary>
-    /// Turns all events into the signaled state.
-    /// </summary>
-    /// <returns>The number of triggered events.</returns>
-    public int PulseAll()
+    // TODO: Move to ref struct in .NET 10
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct WaitAllManager : ILockManager, IConsumer<WaitNode>
     {
-        var count = 0;
+        private readonly ReadOnlyValueReference<UInt128> state;
+        private readonly UInt128 mask;
 
-        lock (sources)
+        internal WaitAllManager(AsyncEventHub stateHolder, int eventIndex)
         {
-            foreach (var source in sources)
+            Debug.Assert(stateHolder is not null);
+
+            mask = GetBitMask(eventIndex);
+            state = new(stateHolder, in stateHolder.state);
+        }
+
+        internal WaitAllManager(AsyncEventHub stateHolder, in UInt128 mask)
+        {
+            Debug.Assert(stateHolder is not null);
+
+            this.mask = mask;
+            state = new(stateHolder, in stateHolder.state);
+        }
+
+        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.WaitAll(mask);
+
+        bool ILockManager.IsLockAllowed => (state.Value & mask) == mask;
+
+        void ILockManager.AcquireLock()
+        {
+            // no need to reset events
+        }
+
+        static bool ILockManager.RequiresEmptyQueue => false;
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct WaitAnyManager : ILockManager, IConsumer<WaitNode>
+    {
+        private readonly ReadOnlyValueReference<UInt128> state;
+        private readonly UInt128 mask;
+
+        internal WaitAnyManager(AsyncEventHub stateHolder, in UInt128 mask)
+        {
+            Debug.Assert(stateHolder is not null);
+
+            this.mask = mask;
+            state = new(stateHolder, in stateHolder.state);
+        }
+
+        [DisallowNull]
+        internal ICollection<int>? Events
+        {
+            get;
+            init;
+        }
+
+        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.WaitAny(mask, Events);
+
+        bool ILockManager.IsLockAllowed => (state.Value & mask) != UInt128.Zero;
+
+        void ILockManager.AcquireLock()
+        {
+            if (Events is { } collection)
+                FillIndices(state.Value & mask, collection);
+        }
+
+        static bool ILockManager.RequiresEmptyQueue => false;
+    }
+
+    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<Action<WaitNode>>
+    {
+        private Action<WaitNode>? callback;
+        private UInt128 mask;
+        private bool waitAll;
+        private ICollection<int>? events;
+
+        internal void WaitAll(in UInt128 mask)
+        {
+            waitAll = true;
+            this.mask = mask;
+        }
+
+        internal void WaitAny(in UInt128 mask, ICollection<int>? events)
+        {
+            waitAll = false;
+            this.mask = mask;
+            this.events = events;
+        }
+
+        protected override void AfterConsumed() => callback?.Invoke(this);
+
+        protected override void CleanUp()
+        {
+            events = null;
+            base.CleanUp();
+        }
+
+        internal bool Matches(UInt128 state)
+        {
+            var result = state & mask;
+
+            if (waitAll)
             {
-                if (source.TrySetResult())
-                    count += 1;
+                if (result == mask)
+                    return true;
             }
-        }
-
-        return count;
-    }
-
-    /// <summary>
-    /// Turns all events into the signaled state.
-    /// </summary>
-    /// <param name="flags">
-    /// A set of event states. The value of each element will be overwritten by the method as follows:
-    /// <see langword="true"/> if the corresponding event has been moved to the signaled state,
-    /// or <see langword="false"/> if the event is already in signaled state.
-    /// </param>
-    /// <exception cref="ArgumentOutOfRangeException">The length of <paramref name="flags"/> is less than <see cref="Count"/>.</exception>
-    public void PulseAll(Span<bool> flags)
-    {
-        ArgumentOutOfRangeException.ThrowIfLessThan(flags.Length, sources.Length, nameof(flags));
-
-        lock (sources)
-        {
-            ref var state = ref MemoryMarshal.GetReference(flags);
-
-            for (var i = 0; i < sources.Length; i++)
-                Unsafe.Add(ref state, i) = sources[i].TrySetResult();
-        }
-    }
-
-    private Task[] GetTasks(ReadOnlySpan<int> eventIndexes)
-    {
-        var tasks = new Task[eventIndexes.Length];
-
-        var taskIndex = 0;
-        foreach (var i in eventIndexes)
-            tasks[taskIndex++] = sources[i].Task;
-
-        return tasks;
-    }
-
-    private Task[] GetTasks() => Array.ConvertAll(sources, static src => src.Task);
-
-    private Task<int> WaitAnyCoreAsync(ReadOnlySpan<int> eventIndexes, TimeSpan timeout, CancellationToken token)
-    {
-        Task<Task> result;
-
-        var lockTaken = false;
-        var start = new Timestamp();
-        try
-        {
-            lockTaken = Monitor.TryEnter(sources, timeout);
-            result = lockTaken && (timeout -= start.Elapsed) > TimeSpan.Zero
-                ? Task.WhenAny(GetTasks(eventIndexes))
-                : throw new TimeoutException();
-        }
-        catch (Exception e)
-        {
-            result = Task.FromException<Task>(e);
-        }
-        finally
-        {
-            if (lockTaken)
-                Monitor.Exit(sources);
-        }
-
-        return result.WaitAsync(timeout, token).Convert(GetIndex);
-    }
-
-    private Task<int> WaitAnyCoreAsync(ReadOnlySpan<int> eventIndexes, CancellationToken token)
-    {
-        Task<Task> result;
-
-        var lockTaken = false;
-        try
-        {
-            Monitor.Enter(sources, ref lockTaken);
-            result = Task.WhenAny(GetTasks(eventIndexes));
-        }
-        catch (Exception e)
-        {
-            result = Task.FromException<Task>(e);
-        }
-        finally
-        {
-            if (lockTaken)
-                Monitor.Exit(sources);
-        }
-
-        return result.WaitAsync(token).Convert(GetIndex);
-    }
-
-    /// <summary>
-    /// Waits for any of the specified events.
-    /// </summary>
-    /// <param name="eventIndexes">A set of event indexes to wait for.</param>
-    /// <param name="timeout">The time to wait for an event.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The index of the first signaled event.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="eventIndexes"/> is empty.</exception>
-    /// <exception cref="TimeoutException">The operation has timed out.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public Task<int> WaitAnyAsync(ReadOnlySpan<int> eventIndexes, TimeSpan timeout, CancellationToken token = default)
-    {
-        if (eventIndexes.IsEmpty)
-            return Task.FromException<int>(new ArgumentOutOfRangeException(nameof(eventIndexes)));
-
-        return timeout < TimeSpan.Zero ? WaitAnyCoreAsync(eventIndexes, token) : WaitAnyCoreAsync(eventIndexes, timeout, token);
-    }
-
-    /// <summary>
-    /// Waits for any of the specified events.
-    /// </summary>
-    /// <param name="eventIndexes">A set of event indexes to wait for.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The index of the first signaled event.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="eventIndexes"/> is empty.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public Task<int> WaitAnyAsync(ReadOnlySpan<int> eventIndexes, CancellationToken token = default)
-        => eventIndexes.IsEmpty
-            ? Task.FromException<int>(new ArgumentOutOfRangeException(nameof(eventIndexes)))
-            : WaitAnyCoreAsync(eventIndexes, token);
-
-    /// <summary>
-    /// Waits for any of the specified events.
-    /// </summary>
-    /// <param name="timeout">The time to wait for an event.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The index of the first signaled event.</returns>
-    /// <exception cref="TimeoutException">The operation has timed out.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public Task<int> WaitAnyAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        return timeout < TimeSpan.Zero ? this.WaitAnyAsync(token) : WaitAnyAsync();
-
-        Task<int> WaitAnyAsync()
-        {
-            Task<Task> result;
-
-            var lockTaken = false;
-            var start = new Timestamp();
-            try
+            else if (result != UInt128.Zero)
             {
-                lockTaken = Monitor.TryEnter(sources, timeout);
-                result = lockTaken && (timeout -= start.Elapsed) > TimeSpan.Zero
-                    ? Task.WhenAny(GetTasks())
-                    : throw new TimeoutException();
-            }
-            catch (Exception e)
-            {
-                result = Task.FromException<Task>(e);
-            }
-            finally
-            {
-                if (lockTaken)
-                    Monitor.Exit(sources);
+                if (events is not null)
+                    FillIndices(result, events);
+
+                return true;
             }
 
-            return result.WaitAsync(timeout, token).Convert(GetIndex);
-        }
-    }
-
-    /// <summary>
-    /// Waits for any of the specified events.
-    /// </summary>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The index of the first signaled event.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public Task<int> WaitAnyAsync(CancellationToken token = default)
-    {
-        Task<Task> result;
-
-        var lockTaken = false;
-        try
-        {
-            Monitor.Enter(sources, ref lockTaken);
-            result = Task.WhenAny(GetTasks());
-        }
-        catch (Exception e)
-        {
-            result = Task.FromException<Task>(e);
-        }
-        finally
-        {
-            if (lockTaken)
-                Monitor.Exit(sources);
+            return false;
         }
 
-        return result.WaitAsync(token).Convert(GetIndex);
-    }
-
-    private Task WaitAllCoreAsync(ReadOnlySpan<int> eventIndexes, CancellationToken token)
-    {
-        Task result;
-
-        var lockTaken = false;
-        try
+        Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed
         {
-            Monitor.Enter(sources, ref lockTaken);
-            result = Task.WhenAll(GetTasks(eventIndexes));
-        }
-        catch (Exception e)
-        {
-            result = Task.FromException(e);
-        }
-        finally
-        {
-            if (lockTaken)
-                Monitor.Exit(sources);
-        }
-
-        return result.WaitAsync(token);
-    }
-
-    private Task WaitAllCoreAsync(ReadOnlySpan<int> eventIndexes, TimeSpan timeout, CancellationToken token)
-    {
-        Task result;
-
-        var lockTaken = false;
-        var start = new Timestamp();
-        try
-        {
-            lockTaken = Monitor.TryEnter(sources, timeout);
-            result = lockTaken && (timeout -= start.Elapsed) > TimeSpan.Zero
-                ? Task.WhenAll(GetTasks(eventIndexes))
-                : throw new TimeoutException();
-        }
-        catch (Exception e)
-        {
-            result = Task.FromException(e);
-        }
-        finally
-        {
-            if (lockTaken)
-                Monitor.Exit(sources);
-        }
-
-        return result.WaitAsync(timeout, token);
-    }
-
-    /// <summary>
-    /// Waits for all events.
-    /// </summary>
-    /// <param name="eventIndexes">The indexes of the events.</param>
-    /// <param name="timeout">The time to wait for the events.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>A task that represents the completion of all of the specified events.</returns>
-    /// <exception cref="TimeoutException">The operation has timed out.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public Task WaitAllAsync(ReadOnlySpan<int> eventIndexes, TimeSpan timeout, CancellationToken token = default)
-    {
-        if (eventIndexes.IsEmpty)
-            return Task.CompletedTask;
-
-        return timeout < TimeSpan.Zero ? WaitAllCoreAsync(eventIndexes, token) : WaitAllCoreAsync(eventIndexes, timeout, token);
-    }
-
-    /// <summary>
-    /// Waits for all events.
-    /// </summary>
-    /// <param name="eventIndexes">The indexes of the events.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>A task that represents the completion of all the specified events.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public Task WaitAllAsync(ReadOnlySpan<int> eventIndexes, CancellationToken token = default)
-        => eventIndexes.IsEmpty ? Task.CompletedTask : WaitAllCoreAsync(eventIndexes, token);
-
-    /// <summary>
-    /// Waits for all events.
-    /// </summary>
-    /// <param name="timeout">The time to wait for the events.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>A task that represents the completion of all the specified events.</returns>
-    /// <exception cref="TimeoutException">The operation has timed out.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public Task WaitAllAsync(TimeSpan timeout, CancellationToken token = default)
-    {
-        return timeout < TimeSpan.Zero ? this.WaitAllAsync(token) : WaitAllAsync();
-
-        Task WaitAllAsync()
-        {
-            Task result;
-
-            var lockTaken = false;
-            var start = new Timestamp();
-            try
-            {
-                lockTaken = Monitor.TryEnter(sources, timeout);
-                result = lockTaken && (timeout -= start.Elapsed) > TimeSpan.Zero
-                    ? Task.WhenAll(GetTasks())
-                    : throw new TimeoutException();
-            }
-            catch (Exception e)
-            {
-                result = Task.FromException(e);
-            }
-            finally
-            {
-                if (lockTaken)
-                    Monitor.Exit(sources);
-            }
-
-            return result.WaitAsync(timeout, token);
-        }
-    }
-
-    /// <summary>
-    /// Waits for all events.
-    /// </summary>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>A task that represents the completion of all the specified events.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public Task WaitAllAsync(CancellationToken token = default)
-    {
-        Task result;
-
-        var lockTaken = false;
-        try
-        {
-            Monitor.Enter(sources, ref lockTaken);
-            result = Task.WhenAll(GetTasks());
-        }
-        catch (Exception e)
-        {
-            result = Task.FromException(e);
-        }
-        finally
-        {
-            if (lockTaken)
-                Monitor.Exit(sources);
-        }
-
-        return result.WaitAsync(token);
-    }
-
-    /// <summary>
-    /// Cancels all suspended callers.
-    /// </summary>
-    /// <param name="token">The token in canceled state.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="token"/> is not in canceled state.</exception>
-    public void CancelSuspendedCallers(CancellationToken token)
-    {
-        if (!token.IsCancellationRequested)
-            throw new ArgumentOutOfRangeException(nameof(token));
-
-        lock (sources)
-        {
-            foreach (var source in sources)
-                source.TrySetCanceled(token);
+            get => callback;
+            set => callback = value;
         }
     }
 }

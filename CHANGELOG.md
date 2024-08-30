@@ -1,6 +1,35 @@
 Release Notes
 ====
 
+# 08-30-2024
+<a href="https://www.nuget.org/packages/dotnext/5.13.0">DotNext 5.13.0</a>
+* Improved interoperability of `DotNext.Runtime.ValueReference<T>` and `DotNext.Runtime.ReadOnlyValueReference<T>` with .NEXT ecosystem
+* Fixed [249](https://github.com/dotnet/dotNext/issues/249)
+* Improved codegen quality for ad-hoc enumerator types
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.13.0">DotNext.Metaprogramming 5.13.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.13.0">DotNext.Unsafe 5.13.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.13.0">DotNext.Threading 5.13.0</a>
+* Redesigned `AsyncEventHub` to improve overall performance and reduce memory allocation
+* Improved codegen quality for ad-hoc enumerator types
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.13.0">DotNext.IO 5.13.0</a>
+* Improved codegen quality for ad-hoc enumerator types
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.13.0">DotNext.Net.Cluster 5.13.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.13.0">DotNext.AspNetCore.Cluster 5.13.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/0.4.0">DotNext.MaintenanceServices 0.4.0</a>
+* Added [gc refresh-mem-limit](https://learn.microsoft.com/en-us/dotnet/api/system.gc.refreshmemorylimit) maintenance command
+* Updated dependencies
+
 # 08-19-2024
 <a href="https://www.nuget.org/packages/dotnext/5.12.1">DotNext 5.12.1</a>
 * Added support of static field references to `DotNext.Runtime.ValueReference<T>` data type

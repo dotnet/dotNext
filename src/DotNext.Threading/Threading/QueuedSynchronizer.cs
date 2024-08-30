@@ -63,10 +63,9 @@ public class QueuedSynchronizer : Disposable
     }
 
     private protected bool RemoveAndSignal(LinkedValueTaskCompletionSource<bool> node, out bool resumable)
-    {
-        RemoveNode(node);
-        return node.TrySetResult(Sentinel.Instance, completionToken: null, result: true, out resumable);
-    }
+        => RemoveNode(node)
+            ? node.TrySetResult(Sentinel.Instance, completionToken: null, result: true, out resumable)
+            : resumable = false;
 
     /// <summary>
     /// Enables capturing information about suspended callers in DEBUG configuration.
@@ -96,6 +95,8 @@ public class QueuedSynchronizer : Disposable
         if (callerInfo is not null)
             callerInfo.Value = information;
     }
+
+    private protected object? CaptureCallerInformation() => callerInfo?.Capture();
 
     private IReadOnlyList<object?> GetSuspendedCallersCore()
     {
@@ -138,46 +139,51 @@ public class QueuedSynchronizer : Disposable
         SuspendedCallersMeter.Add(1, measurementTags);
     }
 
-    private protected TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, WaitNodeFlags flags)
+    private TNode EnqueueNode<TNode, TInitializer>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TInitializer initializer)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
-        where TLockManager : struct, ILockManager<TNode>
+        where TInitializer : struct, INodeInitializer<TNode>
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         var node = pool.Get();
-        TLockManager.InitializeNode(node);
-        node.Initialize(this, flags);
+        initializer.Invoke(node);
+        node.Initialize(CaptureCallerInformation(), initializer.Flags);
         EnqueueNode(node);
         return node;
     }
+
+    private protected TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, WaitNodeFlags flags)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
+        where TLockManager : struct, ILockManager<TNode>
+        => EnqueueNode<TNode, StaticInitializer<TNode, TLockManager>>(ref pool, new(flags));
 
     private protected bool TryAcquire<TLockManager>(ref TLockManager manager)
         where TLockManager : struct, ILockManager
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        if (waitQueue.First is null && manager.IsLockAllowed)
-        {
-            manager.AcquireLock();
-            return true;
-        }
+        if (TLockManager.RequiresEmptyQueue && WaitQueueHead is not null || !manager.IsLockAllowed)
+            return false;
 
-        return false;
+        manager.AcquireLock();
+        return true;
     }
-
-    private protected ValueTask AcquireAsync<TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, TOptions options)
-        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
-        where TLockManager : struct, ILockManager<TNode>
+    
+    private T AcquireAsync<T, TNode, TInitializer, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, TInitializer initializer, TOptions options)
+        where T : struct, IEquatable<T>
+        where TNode : WaitNode, IValueTaskFactory<T>, IPooledManualResetCompletionSource<Action<TNode>>, new()
+        where TInitializer : struct, INodeInitializer<TNode>
+        where TLockManager : struct, ILockManager
         where TOptions : struct, IAcquisitionOptions
     {
-        ValueTask task;
+        T task;
 
         switch (options.Timeout.Ticks)
         {
             case Timeout.InfiniteTicks:
                 goto default;
             case < 0L or > Timeout.MaxTimeoutParameterTicks:
-                task = ValueTask.FromException(new ArgumentOutOfRangeException("timeout"));
+                task = TNode.FromException(new ArgumentOutOfRangeException("timeout"));
                 break;
             case 0L: // attempt to acquire synchronously
                 LinkedValueTaskCompletionSource<bool>? interruptedCallers;
@@ -185,7 +191,7 @@ public class QueuedSynchronizer : Disposable
                 {
                     if (IsDisposingOrDisposed)
                     {
-                        task = new(DisposedTask);
+                        task = TNode.FromException(CreateObjectDisposedException());
                         break;
                     }
 
@@ -194,8 +200,8 @@ public class QueuedSynchronizer : Disposable
                         : null;
 
                     task = TryAcquire(ref manager)
-                        ? ValueTask.CompletedTask
-                        : ValueTask.FromException(new TimeoutException());
+                        ? TNode.SuccessfulTask
+                        : TNode.TimedOutTask;
                 }
 
                 interruptedCallers?.Unwind();
@@ -203,16 +209,16 @@ public class QueuedSynchronizer : Disposable
             default:
                 if (options.Token.IsCancellationRequested)
                 {
-                    task = ValueTask.FromCanceled(options.Token);
+                    task = TNode.FromCanceled(options.Token);
                     break;
                 }
 
-                ISupplier<TimeSpan, CancellationToken, ValueTask> factory;
+                ISupplier<TimeSpan, CancellationToken, T> factory;
                 lock (SyncRoot)
                 {
                     if (IsDisposingOrDisposed)
                     {
-                        task = new(DisposedTask);
+                        task = TNode.FromException(CreateObjectDisposedException());
                         break;
                     }
 
@@ -222,11 +228,11 @@ public class QueuedSynchronizer : Disposable
 
                     if (TryAcquire(ref manager))
                     {
-                        task = ValueTask.CompletedTask;
+                        task = TNode.SuccessfulTask;
                         break;
                     }
 
-                    factory = EnqueueNode<TNode, TLockManager>(ref pool, WaitNodeFlags.ThrowOnTimeout);
+                    factory = EnqueueNode(ref pool, initializer);
                 }
 
                 interruptedCallers?.Unwind();
@@ -235,77 +241,43 @@ public class QueuedSynchronizer : Disposable
         }
 
         return task;
-    }
 
-    private protected ValueTask<bool> TryAcquireAsync<TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, TOptions options)
+        ObjectDisposedException CreateObjectDisposedException()
+            => new(GetType().Name);
+    }
+    
+    private protected ValueTask AcquireAsync<TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
+        ref TLockManager manager, TOptions options)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
         where TOptions : struct, IAcquisitionOptions
-    {
-        ValueTask<bool> task;
+        => AcquireAsync<ValueTask, TNode, StaticInitializer<TNode, TLockManager>, TLockManager, TOptions>(
+            ref pool,
+            ref manager,
+            new(WaitNodeFlags.ThrowOnTimeout),
+            options);
 
-        switch (options.Timeout.Ticks)
-        {
-            case Timeout.InfiniteTicks:
-                goto default;
-            case < 0L or > Timeout.MaxTimeoutParameterTicks:
-                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException("timeout"));
-                break;
-            case 0L: // attempt to acquire synchronously
-                LinkedValueTaskCompletionSource<bool>? interruptedCallers;
-                lock (SyncRoot)
-                {
-                    if (IsDisposingOrDisposed)
-                    {
-                        task = new(GetDisposedTask<bool>());
-                        break;
-                    }
-
-                    interruptedCallers = TOptions.InterruptionRequired
-                        ? Interrupt(options.InterruptionReason)
-                        : null;
-
-                    task = new(TryAcquire(ref manager));
-                }
-
-                interruptedCallers?.Unwind();
-                break;
-            default:
-                if (options.Token.IsCancellationRequested)
-                {
-                    task = ValueTask.FromCanceled<bool>(options.Token);
-                    break;
-                }
-
-                ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
-                lock (SyncRoot)
-                {
-                    if (IsDisposingOrDisposed)
-                    {
-                        task = new(GetDisposedTask<bool>());
-                        break;
-                    }
-
-                    interruptedCallers = TOptions.InterruptionRequired
-                        ? Interrupt(options.InterruptionReason)
-                        : null;
-
-                    if (TryAcquire(ref manager))
-                    {
-                        task = new(true);
-                        break;
-                    }
-
-                    factory = EnqueueNode<TNode, TLockManager>(ref pool, WaitNodeFlags.None);
-                }
-
-                interruptedCallers?.Unwind();
-                task = factory.Invoke(options.Timeout, options.Token);
-                break;
-        }
-
-        return task;
-    }
+    private protected ValueTask<bool> TryAcquireAsync<TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
+        ref TLockManager manager, TOptions options)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
+        where TLockManager : struct, ILockManager<TNode>
+        where TOptions : struct, IAcquisitionOptions
+        => AcquireAsync<ValueTask<bool>, TNode, StaticInitializer<TNode, TLockManager>, TLockManager, TOptions>(
+            ref pool,
+            ref manager,
+            new(WaitNodeFlags.None),
+            options);
+    
+    private protected ValueTask AcquireSpecialAsync<TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
+        ref TLockManager manager, TOptions options)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
+        where TLockManager : struct, ILockManager, IConsumer<TNode>
+        where TOptions : struct, IAcquisitionOptions
+        => AcquireAsync<ValueTask, TNode, NodeInitializer<TNode, TLockManager>, TLockManager, TOptions>(
+            ref pool,
+            ref manager,
+            new(WaitNodeFlags.ThrowOnTimeout, ref manager),
+            options);
 
     /// <summary>
     /// Cancels all suspended callers.
@@ -329,7 +301,7 @@ public class QueuedSynchronizer : Disposable
         suspendedCallers?.Unwind();
     }
 
-    private protected unsafe LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
+    private protected LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
     {
         Monitor.IsEntered(SyncRoot);
 
@@ -466,23 +438,60 @@ public class QueuedSynchronizer : Disposable
         None = 0,
         ThrowOnTimeout = 1,
     }
-
-    private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>
+    
+    private interface INodeInitializer<in TNode> : IConsumer<TNode>
+        where TNode : WaitNode
     {
-        private readonly WeakReference<QueuedSynchronizer?> owner = new(target: null, trackResurrection: false);
+        WaitNodeFlags Flags { get; }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct StaticInitializer<TNode, TLockManager>(WaitNodeFlags flags) : INodeInitializer<TNode>
+        where TNode : WaitNode
+        where TLockManager : struct, ILockManager<TNode>
+    {
+        WaitNodeFlags INodeInitializer<TNode>.Flags => flags;
+
+        void IConsumer<TNode>.Invoke(TNode node) => TLockManager.InitializeNode(node);
+    }
+
+    // TODO: Replace with allows ref anti-constraint and ref struct
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct NodeInitializer<TNode, TLockManager>(WaitNodeFlags flags, ref TLockManager manager) : INodeInitializer<TNode>
+        where TNode : WaitNode
+        where TLockManager : struct, ILockManager, IConsumer<TNode>
+    {
+        private readonly unsafe void* managerOnStack = Unsafe.AsPointer(ref manager);
+        
+        WaitNodeFlags INodeInitializer<TNode>.Flags => flags;
+
+        unsafe void IConsumer<TNode>.Invoke(TNode node)
+            => Unsafe.AsRef<TLockManager>(managerOnStack).Invoke(node);
+    }
+
+    private interface IValueTaskFactory<out T> : ISupplier<TimeSpan, CancellationToken, T>
+        where T : struct, IEquatable<T>
+    {
+        static abstract T SuccessfulTask { get; }
+        
+        static abstract T TimedOutTask { get; }
+
+        static abstract T FromException(Exception e);
+
+        static abstract T FromCanceled(CancellationToken token);
+    }
+
+    private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>, IValueTaskFactory<ValueTask>,
+        IValueTaskFactory<ValueTask<bool>>
+    {
         private Timestamp createdAt;
         private WaitNodeFlags flags;
 
         // stores information about suspended caller for debugging purposes
-        internal object? CallerInfo
-        {
-            get;
-            private set;
-        }
+        internal object? CallerInfo { get; private set; }
 
         protected override void CleanUp()
         {
-            owner.SetTarget(target: null);
             CallerInfo = null;
             base.CleanUp();
         }
@@ -490,13 +499,10 @@ public class QueuedSynchronizer : Disposable
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal bool NeedsRemoval => CompletionData is null;
 
-        internal void Initialize(QueuedSynchronizer owner, WaitNodeFlags flags)
+        internal void Initialize(object? callerInfo, WaitNodeFlags flags)
         {
-            Debug.Assert(owner is not null);
-
             this.flags = flags;
-            this.owner.SetTarget(owner);
-            CallerInfo = owner.callerInfo?.Capture();
+            CallerInfo = callerInfo;
             createdAt = new();
         }
 
@@ -507,18 +513,39 @@ public class QueuedSynchronizer : Disposable
             where T : WaitNode, IPooledManualResetCompletionSource<Action<T>>
         {
             // report lock duration
-            if (node.owner.TryGetTarget(out var owner))
+            if (node.OnConsumed is { } callback)
             {
-                LockDurationMeter.Record(node.createdAt.ElapsedMilliseconds, owner.measurementTags);
-            }
+                if (callback.Target is QueuedSynchronizer synchronizer)
+                    LockDurationMeter.Record(node.createdAt.ElapsedMilliseconds, synchronizer.measurementTags);
 
-            node.OnConsumed?.Invoke(node);
+                callback(node);
+            }
         }
+
+        static ValueTask IValueTaskFactory<ValueTask>.SuccessfulTask => ValueTask.CompletedTask;
+
+        static ValueTask<bool> IValueTaskFactory<ValueTask<bool>>.SuccessfulTask => ValueTask.FromResult(true);
+
+        static ValueTask IValueTaskFactory<ValueTask>.TimedOutTask => ValueTask.FromException(new TimeoutException());
+
+        static ValueTask<bool> IValueTaskFactory<ValueTask<bool>>.TimedOutTask => ValueTask.FromResult(false);
+
+        static ValueTask<bool> IValueTaskFactory<ValueTask<bool>>.FromException(Exception e)
+            => ValueTask.FromException<bool>(e);
+
+        static ValueTask IValueTaskFactory<ValueTask>.FromException(Exception e)
+            => ValueTask.FromException(e);
+
+        static ValueTask<bool> IValueTaskFactory<ValueTask<bool>>.FromCanceled(CancellationToken token)
+            => ValueTask.FromCanceled<bool>(token);
+
+        static ValueTask IValueTaskFactory<ValueTask>.FromCanceled(CancellationToken token)
+            => ValueTask.FromCanceled(token);
     }
 
     private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<Action<DefaultWaitNode>>
     {
-        protected sealed override void AfterConsumed() => AfterConsumed(this);
+        protected override void AfterConsumed() => AfterConsumed(this);
 
         Action<DefaultWaitNode>? IPooledManualResetCompletionSource<Action<DefaultWaitNode>>.OnConsumed { get; set; }
     }
@@ -528,6 +555,8 @@ public class QueuedSynchronizer : Disposable
         bool IsLockAllowed { get; }
 
         void AcquireLock();
+
+        static virtual bool RequiresEmptyQueue => true;
     }
 
     private protected interface ILockManager<in TNode> : ILockManager
@@ -805,13 +834,11 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        if (WaitQueueHead is null && CanAcquire(context))
-        {
-            AcquireCore(context);
-            return true;
-        }
-
-        return false;
+        if (WaitQueueHead is not null || !CanAcquire(context))
+            return false;
+        
+        AcquireCore(context);
+        return true;
     }
 
     private WaitNode EnqueueNode(TContext context, WaitNodeFlags flags)
@@ -820,7 +847,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
         var node = pool.Get();
         node.Context = context;
-        node.Initialize(this, flags);
+        node.Initialize(CaptureCallerInformation(), flags);
         EnqueueNode(node);
         return node;
     }

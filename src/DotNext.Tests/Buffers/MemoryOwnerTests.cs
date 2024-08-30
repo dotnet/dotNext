@@ -66,11 +66,11 @@ public sealed class MemoryOwnerTests : Test
         Equal(10, array[2]);
     }
 
-    public static IEnumerable<object[]> GetArrayAllocators()
+    public static TheoryData<MemoryAllocator<int>> GetArrayAllocators() => new()
     {
-        yield return new[] { Memory.GetArrayAllocator<int>() };
-        yield return new[] { Memory.GetPinnedArrayAllocator<int>() };
-    }
+        Memory.GetArrayAllocator<int>(),
+        Memory.GetPinnedArrayAllocator<int>(),
+    };
 
     [Theory]
     [MemberData(nameof(GetArrayAllocators))]

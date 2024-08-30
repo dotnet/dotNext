@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -12,6 +13,7 @@ namespace DotNext.IO;
 
 using Buffers;
 using Buffers.Binary;
+using Collections.Generic;
 using static Pipelines.PipeExtensions;
 using DecodingContext = Text.DecodingContext;
 
@@ -89,7 +91,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <typeparam name="T">The integer type.</typeparam>
     /// <returns>The integer value.</returns>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public unsafe T ReadLittleEndian<T>()
+    public T ReadLittleEndian<T>()
         where T : notnull, IBinaryInteger<T>
     {
         var type = typeof(T);
@@ -111,7 +113,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <typeparam name="T">The integer type.</typeparam>
     /// <returns>The integer value.</returns>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public unsafe T ReadBigEndian<T>()
+    public T ReadBigEndian<T>()
         where T : notnull, IBinaryInteger<T>
     {
         var type = typeof(T);
@@ -215,9 +217,12 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
             chunk = remaining.First.TrimLength(maxLength);
             position = remaining.GetPosition(chunk.Length);
         }
+        else
+        {
+            chunk = default;
+        }
 
-        chunk = default;
-        return false;
+        return !chunk.IsEmpty;
     }
 
     /// <summary>
@@ -379,18 +384,15 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         if (length is 0)
             return parser([], arg);
 
-        unsafe
+        if (length <= Parsing256Reader<IFormatProvider?, TResult>.MaxSize)
         {
-            if (length <= Parsing256Reader<IFormatProvider?, TResult>.MaxSize)
-            {
-                var reader = new Parsing256Reader<TArg, TResult>(arg, parser, length);
-                return Read<TResult, Parsing256Reader<TArg, TResult>>(ref reader);
-            }
-            else
-            {
-                var reader = new ParsingReader<TArg, TResult>(arg, parser, length);
-                return Read<TResult, ParsingReader<TArg, TResult>>(ref reader);
-            }
+            var reader = new Parsing256Reader<TArg, TResult>(arg, parser, length);
+            return Read<TResult, Parsing256Reader<TArg, TResult>>(ref reader);
+        }
+        else
+        {
+            var reader = new ParsingReader<TArg, TResult>(arg, parser, length);
+            return Read<TResult, ParsingReader<TArg, TResult>>(ref reader);
         }
     }
 
@@ -744,8 +746,9 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     }
 
     /// <inheritdoc/>
-    IAsyncEnumerable<ReadOnlyMemory<char>> IAsyncBinaryReader.DecodeAsync(DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer, CancellationToken token)
-        => Decode(context, lengthFormat, buffer).AsAsyncEnumerable(token);
+    IAsyncEnumerable<ReadOnlyMemory<char>> IAsyncBinaryReader.DecodeAsync(DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer,
+        CancellationToken token)
+        => Decode(context, lengthFormat, buffer);
 
     /// <inheritdoc/>
     ValueTask IAsyncBinaryReader.CopyToAsync(Stream destination, long? count, CancellationToken token)
@@ -839,7 +842,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// Represents decoding enumerable.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct DecodingEnumerable
+    public readonly struct DecodingEnumerable : IEnumerable<ReadOnlyMemory<char>>, IAsyncEnumerable<ReadOnlyMemory<char>>
     {
         private readonly ReadOnlySequence<byte> bytes;
         private readonly DecodingContext context;
@@ -859,23 +862,24 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         /// </summary>
         /// <returns>The enumerator over decoded chunks of characters.</returns>
         public Enumerator GetEnumerator() => new(in bytes, in context, buffer);
+        
+        /// <inheritdoc />
+        IEnumerator<ReadOnlyMemory<char>> IEnumerable<ReadOnlyMemory<char>>.GetEnumerator()
+            => GetEnumerator().ToClassicEnumerator<Enumerator, ReadOnlyMemory<char>>();
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-        internal async IAsyncEnumerable<ReadOnlyMemory<char>> AsAsyncEnumerable([EnumeratorCancellation] CancellationToken token)
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
-        {
-            foreach (var chunk in this)
-            {
-                token.ThrowIfCancellationRequested();
-                yield return chunk;
-            }
-        }
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator()
+            => GetEnumerator().ToClassicEnumerator<Enumerator, ReadOnlyMemory<char>>();
+
+        /// <inheritdoc />
+        IAsyncEnumerator<ReadOnlyMemory<char>> IAsyncEnumerable<ReadOnlyMemory<char>>.GetAsyncEnumerator(CancellationToken token)
+            => GetEnumerator().ToAsyncEnumerator<Enumerator, ReadOnlyMemory<char>>(token);
 
         /// <summary>
         /// Represents enumerator over decoded characters.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
-        public struct Enumerator
+        public struct Enumerator : IEnumerator<Enumerator, ReadOnlyMemory<char>>
         {
             private readonly ReadOnlySequence<byte> bytes;
             private readonly Decoder decoder;
@@ -899,7 +903,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
             /// <summary>
             /// Decodes the next chunk of bytes.
             /// </summary>
-            /// <returns><see langword="true"/> if decoding is successfull; <see langword="false"/> if nothing to decode.</returns>
+            /// <returns><see langword="true"/> if decoding is successful; <see langword="false"/> if nothing to decode.</returns>
             public bool MoveNext()
                 => (charsWritten = GetChars(in bytes, ref position, decoder, buffer.Span)) > 0;
         }
@@ -941,7 +945,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
             private readonly ReadOnlySequence<byte> bytes;
             private readonly Decoder decoder;
             private readonly Span<char> buffer;
-            private ref SequencePosition position;
+            private readonly ref SequencePosition position;
             private int charsWritten;
 
             internal Enumerator(scoped in ReadOnlySequence<byte> bytes, ref SequencePosition position, scoped in DecodingContext context, Span<char> buffer)
@@ -960,7 +964,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
             /// <summary>
             /// Decodes the next chunk of bytes.
             /// </summary>
-            /// <returns><see langword="true"/> if decoding is successfull; <see langword="false"/> if nothing to decode.</returns>
+            /// <returns><see langword="true"/> if decoding is successful; <see langword="false"/> if nothing to decode.</returns>
             public bool MoveNext()
                 => (charsWritten = GetChars(in bytes, ref position, decoder, buffer)) > 0;
         }

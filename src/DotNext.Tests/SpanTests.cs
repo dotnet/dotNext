@@ -86,15 +86,12 @@ public sealed class SpanTests : Test
         Equal(2, span[1]);
     }
 
-    private static string ToHexSlow(byte[] data, bool lowercased)
-        => string.Join(string.Empty, Array.ConvertAll(data, i => i.ToString(lowercased ? "x2" : "X2", null)));
-
-    public static IEnumerable<object[]> TestAllocators()
+    public static TheoryData<MemoryAllocator<char>> TestAllocators() => new()
     {
-        yield return new object[] { null };
-        yield return new object[] { Memory.GetArrayAllocator<char>() };
-        yield return new object[] { ArrayPool<char>.Shared.ToAllocator() };
-    }
+        null,
+        Memory.GetArrayAllocator<char>(),
+        ArrayPool<char>.Shared.ToAllocator(),
+    };
 
     [Theory]
     [MemberData(nameof(TestAllocators))]
@@ -549,5 +546,60 @@ public sealed class SpanTests : Test
         Span<int> array = [10, 20, 30];
         Equal(10, array.Advance());
         Equal([20, 30], array.Advance(2));
+    }
+    
+    [Fact]
+    public static void CheckMask()
+    {
+        ReadOnlySpan<byte> value = [1, 1, 0];
+        
+        True(value.CheckMask<byte>([0, 1, 0]));
+        True(value.CheckMask<byte>([1, 1, 0]));
+        False(value.CheckMask<byte>([0, 0, 1]));
+    }
+
+    [Fact]
+    public static void CheckLargeMask()
+    {
+        var value = RandomBytes(1024);
+        var mask = value.AsSpan().ToArray();
+        mask.AsSpan(0, 512).Clear();
+
+        True(new ReadOnlySpan<byte>(value).CheckMask(mask));
+        mask[0] = (byte)~value[0];
+
+        False(new ReadOnlySpan<byte>(value).CheckMask(mask));
+    }
+
+    [Fact]
+    public static void IsBitwiseAndNonZero()
+    {
+        ReadOnlySpan<byte> value = [1, 1, 0];
+
+        True(value.IsBitwiseAndNonZero<byte>([0, 1, 1]));
+        True(value.IsBitwiseAndNonZero<byte>([1, 1, 1]));
+        False(value.IsBitwiseAndNonZero<byte>([0, 0, 1]));
+    }
+    
+    [Fact]
+    public static void IsBitwiseAndNonZeroLargeMask()
+    {
+        var value = RandomBytes(1024);
+        var mask = new byte[value.Length];
+
+        for (var i = 0; i < value.Length; i++)
+        {
+            var b = value[i];
+            if ((b & 1) is 1)
+            {
+                mask[i] = b;
+                break;
+            }
+        }
+
+        True(new ReadOnlySpan<byte>(value).IsBitwiseAndNonZero(mask));
+        
+        Array.Clear(mask);
+        False(new ReadOnlySpan<byte>(value).IsBitwiseAndNonZero(mask));
     }
 }

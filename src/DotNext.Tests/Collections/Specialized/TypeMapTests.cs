@@ -2,13 +2,13 @@ namespace DotNext.Collections.Specialized;
 
 public sealed class TypeMapTests : Test
 {
-    public static IEnumerable<object[]> GetMaps()
+    public static TheoryData<ITypeMap<int>> GetMaps() => new()
     {
-        yield return new object[] { new TypeMap<int>() };
-        yield return new object[] { new TypeMap<int>(1) };
-        yield return new object[] { new ConcurrentTypeMap<int>() };
-        yield return new object[] { new ConcurrentTypeMap<int>(1) };
-    }
+        new TypeMap<int>(),
+        new TypeMap<int>(1),
+        new ConcurrentTypeMap<int>(),
+        new ConcurrentTypeMap<int>(1),
+    };
 
     [Theory]
     [MemberData(nameof(GetMaps))]
@@ -125,21 +125,15 @@ public sealed class TypeMapTests : Test
     [Fact]
     public static void EmptyMapEnumerator()
     {
-        var count = 0;
-        foreach (ref var item in new TypeMap<int>())
-            count++;
-
-        Equal(0, count);
+        Empty(new TypeMap<int>());
+        Empty(new TypeMap());
     }
 
     [Fact]
     public static void EmptyConcurrentMapEnumerator()
     {
-        var count = 0;
-        foreach (var item in new ConcurrentTypeMap<int>())
-            count++;
-
-        Equal(0, count);
+        Empty(new ConcurrentTypeMap<int>());
+        Empty(new ConcurrentTypeMap());
     }
 
     [Fact]
@@ -147,18 +141,24 @@ public sealed class TypeMapTests : Test
     {
         var map = new TypeMap<int>();
         map.Set<double>(42);
-
-        var count = 0;
-        foreach (ref var item in map)
-        {
-            Equal(42, item);
-            item = 52;
-            count++;
-        }
-
-        Equal(1, count);
-        True(map.TryGetValue<double>(out var value));
-        Equal(52, value);
+        Equal(42, Single(map));
+    }
+    
+    [Fact]
+    public static void NotEmptyMapEnumerator2()
+    {
+        var map = new TypeMap();
+        map.Set(42);
+        Equal(42, Single(map));
+        
+        using var enumerator = map.As<IEnumerable<object>>().GetEnumerator();
+        True(enumerator.MoveNext());
+        Equal(42, enumerator.Current);
+        False(enumerator.MoveNext());
+        
+        enumerator.Reset();
+        True(enumerator.MoveNext());
+        Equal(42, enumerator.Current);
     }
 
     [Fact]
@@ -166,24 +166,33 @@ public sealed class TypeMapTests : Test
     {
         var map = new ConcurrentTypeMap<int>();
         map.Set<double>(42);
-
-        var count = 0;
-        foreach (var item in map)
-        {
-            Equal(42, item);
-            count++;
-        }
-
-        Equal(1, count);
+        Equal(42, Single(map));
     }
-
-    public static IEnumerable<object[]> GetSets()
+    
+    [Fact]
+    public static void NotEmptyConcurrentMapEnumerator2()
     {
-        yield return new object[] { new TypeMap() };
-        yield return new object[] { new TypeMap(1) };
-        yield return new object[] { new ConcurrentTypeMap() };
-        yield return new object[] { new ConcurrentTypeMap(1) };
+        var map = new ConcurrentTypeMap();
+        map.Set(42);
+        Equal(42, Single(map));
+
+        using var enumerator = map.As<IEnumerable<object>>().GetEnumerator();
+        True(enumerator.MoveNext());
+        Equal(42, enumerator.Current);
+        False(enumerator.MoveNext());
+        
+        enumerator.Reset();
+        True(enumerator.MoveNext());
+        Equal(42, enumerator.Current);
     }
+
+    public static TheoryData<ITypeMap> GetSets() => new()
+    {
+        new TypeMap(),
+        new TypeMap(1),
+        new ConcurrentTypeMap(),
+        new ConcurrentTypeMap(1),
+    };
 
     [Theory]
     [MemberData(nameof(GetSets))]
@@ -202,17 +211,17 @@ public sealed class TypeMapTests : Test
         set.Clear();
         False(set.Contains<int>());
 
-        set.Set<int>(50);
-        True(set.Remove<int>(out result));
+        set.Set(50);
+        True(set.Remove(out result));
         Equal(50, result);
 
-        False(set.Set<int>(42, out _));
-        True(set.TryGetValue<int>(out result));
+        False(set.Set(42, out _));
+        True(set.TryGetValue(out result));
         Equal(42, result);
 
-        True(set.Set<int>(50, out var tmp));
+        True(set.Set(50, out var tmp));
         Equal(42, tmp);
-        True(set.TryGetValue<int>(out result));
+        True(set.TryGetValue(out result));
         Equal(50, result);
 
         True(set.Remove<int>());

@@ -122,6 +122,27 @@ public sealed class AsyncExclusiveLockTests : Test
         l.Release();
         await suspendedTask;
     }
+    
+    [Fact]
+    public static async Task CaptureCallerInfo2()
+    {
+        using var l = new AsyncExclusiveLock();
+        Empty(l.GetSuspendedCallers());
+
+        l.TrackSuspendedCallers();
+        await l.AcquireAsync();
+        Empty(l.GetSuspendedCallers());
+
+        const string callerInfo = "MyThread";
+        l.SetCallerInformation(callerInfo);
+        var suspendedTask = l.AcquireAsync();
+        False(suspendedTask.IsCompleted);
+        NotEmpty(l.GetSuspendedCallers());
+        Equal(callerInfo, l.GetSuspendedCallers().FirstOrDefault());
+
+        l.Release();
+        await suspendedTask;
+    }
 
     [Fact]
     public static async Task LockStealing()

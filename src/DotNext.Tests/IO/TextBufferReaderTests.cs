@@ -25,23 +25,23 @@ public sealed class TextBufferReaderTests : Test
         LargeData = data.ToArray();
     }
 
-    public static IEnumerable<object[]> SmallDataSet()
+    public static TheoryData<ReadOnlySequence<char>> SmallDataSet() => new()
     {
-        yield return new object[] { new ReadOnlySequence<char>(SmallData) };
-        yield return new object[] { ToReadOnlySequence<char>(SmallData, 3) };
-    }
+        new ReadOnlySequence<char>(SmallData),
+        ToReadOnlySequence<char>(SmallData, 3),
+    };
 
-    public static IEnumerable<object[]> LargeDataSet()
+    public static TheoryData<ReadOnlySequence<char>> LargeDataSet() => new()
     {
-        yield return new object[] { new ReadOnlySequence<char>(LargeData) };
-        yield return new object[] { ToReadOnlySequence<char>(LargeData, 500) };
-    }
+        new ReadOnlySequence<char>(LargeData),
+        ToReadOnlySequence<char>(LargeData, 500),
+    };
 
-    public static IEnumerable<object[]> CharDataSet()
+    public static TheoryData<ReadOnlySequence<char>> CharDataSet() => new()
     {
-        yield return new object[] { new ReadOnlySequence<char>(CharData) };
-        yield return new object[] { ToReadOnlySequence<char>(CharData, 10) };
-    }
+        new ReadOnlySequence<char>(CharData),
+        ToReadOnlySequence<char>(CharData, 10),
+    };
 
     [Theory]
     [MemberData(nameof(SmallDataSet))]

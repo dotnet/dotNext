@@ -29,6 +29,7 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
     [InlineData("[superr] [supout] [prnec] probe startup 00:00:01", "[0]")]
     [InlineData("[superr] [supout] [prnec] probe liveness 00:00:01", "[0]")]
     [InlineData("gc collect 0", "")]
+    [InlineData("gc refresh-mem-limit", "")]
     [InlineData("gc loh-compaction-mode CompactOnce", "")]
     public static async Task DefaultCommandsAsync(string request, string response)
     {

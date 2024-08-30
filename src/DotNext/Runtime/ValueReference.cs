@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime;
 
+using Runtime.CompilerServices;
+
 /// <summary>
 /// Represents a mutable reference to the field.
 /// </summary>
@@ -17,7 +19,9 @@ namespace DotNext.Runtime;
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     IEquatable<ValueReference<T>>,
-    IEqualityOperators<ValueReference<T>, ValueReference<T>, bool>
+    IEqualityOperators<ValueReference<T>, ValueReference<T>, bool>,
+    ISupplier<T>,
+    IConsumer<T>
 {
     private readonly nint offset = RawData.GetOffset(owner, in fieldRef);
 
@@ -76,7 +80,46 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     /// </summary>
     public ref T Value => ref RawData.GetObjectData<T>(owner, offset);
 
+    /// <inheritdoc cref="IConsumer{T}.Invoke(T)"/>
+    void IConsumer<T>.Invoke(T value) => Value = value;
+
+    /// <inheritdoc cref="IFunctional{T}.ToDelegate()"/>
+    Action<T> IFunctional<Action<T>>.ToDelegate() => ToAction();
+
+    /// <inheritdoc cref="ISupplier{T}.Invoke()"/>
+    T ISupplier<T>.Invoke() => Value;
+
+    /// <inheritdoc cref="IFunctional{T}.ToDelegate()"/>
+    Func<T> IFunctional<Func<T>>.ToDelegate() => ToFunc();
+
     private bool SameObject(object? other) => ReferenceEquals(owner, other);
+
+    private Func<T> ToFunc()
+        => Intrinsics.ChangeType<ValueReference<T>, ReadOnlyValueReference<T>>(in this).ToFunc();
+    
+    private Action<T> ToAction()
+    {
+        Action<T> result;
+
+        if (IsEmpty)
+        {
+            result = ThrowNullReferenceException;
+        }
+        else if (ReferenceEquals(owner, Sentinel.Instance))
+        {
+            result = new StaticFieldAccessor<T>(offset).SetValue;
+        }
+        else
+        {
+            IConsumer<T> consumer = this;
+            result = consumer.Invoke;
+        }
+
+        return result;
+        
+        [DoesNotReturn]
+        static void ThrowNullReferenceException(T value) => throw new NullReferenceException();
+    }
 
     /// <inheritdoc/>
     public override string? ToString()
@@ -126,6 +169,22 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     /// <returns>The span that contains <see cref="Value"/>; or empty span if <paramref name="reference"/> is empty.</returns>
     public static implicit operator Span<T>(ValueReference<T> reference)
         => reference.IsEmpty ? new() : new(ref reference.Value);
+
+    /// <summary>
+    /// Returns a setter for the memory location.
+    /// </summary>
+    /// <param name="reference">A reference to a value.</param>
+    /// <returns>A setter for the memory location.</returns>
+    public static explicit operator Action<T>(ValueReference<T> reference)
+        => reference.ToAction();
+
+    /// <summary>
+    /// Returns a getter for the memory location.
+    /// </summary>
+    /// <param name="reference">A reference to a value.</param>
+    /// <returns>A getter for the memory location.</returns>
+    public static explicit operator Func<T>(ValueReference<T> reference)
+        => reference.ToFunc();
 }
 
 /// <summary>
@@ -138,7 +197,8 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fieldRef) :
     IEquatable<ReadOnlyValueReference<T>>,
-    IEqualityOperators<ReadOnlyValueReference<T>, ReadOnlyValueReference<T>, bool>
+    IEqualityOperators<ReadOnlyValueReference<T>, ReadOnlyValueReference<T>, bool>,
+    ISupplier<T>
 {
     private readonly nint offset = RawData.GetOffset(owner, in fieldRef);
     
@@ -178,6 +238,36 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
     /// Gets a reference to the field.
     /// </summary>
     public ref readonly T Value => ref RawData.GetObjectData<T>(owner, offset);
+
+    /// <inheritdoc cref="ISupplier{T}.Invoke()"/>
+    T ISupplier<T>.Invoke() => Value;
+
+    /// <inheritdoc cref="IFunctional{T}.ToDelegate()"/>
+    Func<T> IFunctional<Func<T>>.ToDelegate() => ToFunc();
+
+    internal Func<T> ToFunc()
+    {
+        Func<T> result;
+        if (IsEmpty)
+        {
+            result = ThrowNullReferenceException;
+        }
+        else if (ReferenceEquals(owner, Sentinel.Instance))
+        {
+            result = new StaticFieldAccessor<T>(offset).GetValue;
+        }
+        else
+        {
+            ISupplier<T> supplier = this;
+            result = supplier.Invoke;
+        }
+
+        return result;
+        
+        [DoesNotReturn]
+        static T ThrowNullReferenceException()
+            => throw new NullReferenceException();
+    }
 
     private bool SameObject(object? other) => ReferenceEquals(owner, other);
 
@@ -221,6 +311,14 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
     /// <returns>The span that contains <see cref="Value"/>; or empty span if <paramref name="reference"/> is empty.</returns>
     public static implicit operator ReadOnlySpan<T>(ReadOnlyValueReference<T> reference)
         => reference.IsEmpty ? new() : new(in reference.Value);
+
+    /// <summary>
+    /// Returns a getter for the memory location.
+    /// </summary>
+    /// <param name="reference">A reference to a value.</param>
+    /// <returns>A getter for the memory location.</returns>
+    public static explicit operator Func<T>(ReadOnlyValueReference<T> reference)
+        => reference.ToFunc();
 }
 
 [SuppressMessage("Performance", "CA1812", Justification = "Used for reinterpret cast")]
@@ -259,4 +357,11 @@ file abstract class RawData
         ref var rawData = ref Unsafe.As<RawData>(owner).data;
         return ref Unsafe.As<byte, T>(ref Unsafe.Add(ref rawData, offset));
     }
+}
+
+file sealed class StaticFieldAccessor<T>(nint offset)
+{
+    public T GetValue() => RawData.GetObjectData<T>(Sentinel.Instance, offset);
+
+    public void SetValue(T value) => RawData.GetObjectData<T>(Sentinel.Instance, offset) = value;
 }
