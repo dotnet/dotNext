@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-19-2024
+Release Date: 08-30-2024
 
 <a href="https://www.nuget.org/packages/dotnext/5.13.0">DotNext 5.13.0</a>
 * Improved interoperability of `DotNext.Runtime.ValueReference<T>` and `DotNext.Runtime.ReadOnlyValueReference<T>` with .NEXT ecosystem
@@ -58,6 +58,7 @@ Release Date: 08-19-2024
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.threading/5.13.0">DotNext.Threading 5.13.0</a>
+* Redesigned `AsyncEventHub` to improve overall performance and reduce memory allocation
 * Improved codegen quality for ad-hoc enumerator types
 
 <a href="https://www.nuget.org/packages/dotnext.io/5.13.0">DotNext.IO 5.13.0</a>
