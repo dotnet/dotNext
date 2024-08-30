@@ -44,6 +44,8 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         {
             if (node.NeedsRemoval)
                 RemoveNode(node);
+
+            pool.Return(node);
         }
     }
 
