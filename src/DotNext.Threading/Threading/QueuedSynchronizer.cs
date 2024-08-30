@@ -63,10 +63,9 @@ public class QueuedSynchronizer : Disposable
     }
 
     private protected bool RemoveAndSignal(LinkedValueTaskCompletionSource<bool> node, out bool resumable)
-    {
-        RemoveNode(node);
-        return node.TrySetResult(Sentinel.Instance, completionToken: null, result: true, out resumable);
-    }
+        => RemoveNode(node)
+            ? node.TrySetResult(Sentinel.Instance, completionToken: null, result: true, out resumable)
+            : resumable = false;
 
     /// <summary>
     /// Enables capturing information about suspended callers in DEBUG configuration.
