@@ -156,7 +156,7 @@ public class QueuedSynchronizer : Disposable
     private protected TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, WaitNodeFlags flags)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
-        => EnqueueNode<TNode, NodeInitializer<TNode, TLockManager>>(ref pool, new(flags));
+        => EnqueueNode<TNode, StaticInitializer<TNode, TLockManager>>(ref pool, new(flags));
 
     private protected bool TryAcquire<TLockManager>(ref TLockManager manager)
         where TLockManager : struct, ILockManager
@@ -252,7 +252,7 @@ public class QueuedSynchronizer : Disposable
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
         where TOptions : struct, IAcquisitionOptions
-        => AcquireAsync<ValueTask, TNode, NodeInitializer<TNode, TLockManager>, TLockManager, TOptions>(
+        => AcquireAsync<ValueTask, TNode, StaticInitializer<TNode, TLockManager>, TLockManager, TOptions>(
             ref pool,
             ref manager,
             new(WaitNodeFlags.ThrowOnTimeout),
@@ -263,32 +263,21 @@ public class QueuedSynchronizer : Disposable
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager<TNode>
         where TOptions : struct, IAcquisitionOptions
-        => AcquireAsync<ValueTask<bool>, TNode, NodeInitializer<TNode, TLockManager>, TLockManager, TOptions>(
+        => AcquireAsync<ValueTask<bool>, TNode, StaticInitializer<TNode, TLockManager>, TLockManager, TOptions>(
             ref pool,
             ref manager,
             new(WaitNodeFlags.None),
             options);
     
-    private protected ValueTask AcquireAsync<TNode, TArg, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
-        ref TLockManager manager, TArg arg, TOptions options)
+    private protected ValueTask AcquireSpecialAsync<TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
+        ref TLockManager manager, TOptions options)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
-        where TLockManager : struct, ILockManager<TNode, TArg>
+        where TLockManager : struct, ILockManager, IConsumer<TNode>
         where TOptions : struct, IAcquisitionOptions
-        => AcquireAsync<ValueTask, TNode, NodeInitializer<TNode, TArg, TLockManager>, TLockManager, TOptions>(
+        => AcquireAsync<ValueTask, TNode, NodeInitializer<TNode, TLockManager>, TLockManager, TOptions>(
             ref pool,
             ref manager,
-            new(WaitNodeFlags.ThrowOnTimeout, arg),
-            options);
-
-    private protected ValueTask<bool> TryAcquireAsync<TNode, TArg, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
-        ref TLockManager manager, TArg arg, TOptions options)
-        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
-        where TLockManager : struct, ILockManager<TNode, TArg>
-        where TOptions : struct, IAcquisitionOptions
-        => AcquireAsync<ValueTask<bool>, TNode, NodeInitializer<TNode, TArg, TLockManager>, TLockManager, TOptions>(
-            ref pool,
-            ref manager,
-            new(WaitNodeFlags.None, arg),
+            new(WaitNodeFlags.ThrowOnTimeout, ref manager),
             options);
 
     /// <summary>
@@ -458,7 +447,7 @@ public class QueuedSynchronizer : Disposable
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct NodeInitializer<TNode, TLockManager>(WaitNodeFlags flags) : INodeInitializer<TNode>
+    private readonly struct StaticInitializer<TNode, TLockManager>(WaitNodeFlags flags) : INodeInitializer<TNode>
         where TNode : WaitNode
         where TLockManager : struct, ILockManager<TNode>
     {
@@ -467,14 +456,18 @@ public class QueuedSynchronizer : Disposable
         void IConsumer<TNode>.Invoke(TNode node) => TLockManager.InitializeNode(node);
     }
 
+    // TODO: Replace with allows ref anti-constraint and ref struct
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct NodeInitializer<TNode, TArg, TLockManager>(WaitNodeFlags flags, TArg arg) : INodeInitializer<TNode>
+    private readonly struct NodeInitializer<TNode, TLockManager>(WaitNodeFlags flags, ref TLockManager manager) : INodeInitializer<TNode>
         where TNode : WaitNode
-        where TLockManager : struct, ILockManager<TNode, TArg>
+        where TLockManager : struct, ILockManager, IConsumer<TNode>
     {
+        private readonly unsafe void* managerOnStack = Unsafe.AsPointer(ref manager);
+        
         WaitNodeFlags INodeInitializer<TNode>.Flags => flags;
 
-        void IConsumer<TNode>.Invoke(TNode node) => TLockManager.InitializeNode(node, arg);
+        unsafe void IConsumer<TNode>.Invoke(TNode node)
+            => Unsafe.AsRef<TLockManager>(managerOnStack).Invoke(node);
     }
 
     private interface IValueTaskFactory<out T> : ISupplier<TimeSpan, CancellationToken, T>
@@ -573,12 +566,6 @@ public class QueuedSynchronizer : Disposable
         static virtual void InitializeNode(TNode node)
         {
         }
-    }
-    
-    private protected interface ILockManager<in TNode, in TArg> : ILockManager
-        where TNode : WaitNode
-    {
-        static abstract void InitializeNode(TNode node, TArg arg);
     }
 
     /// <summary>
