@@ -26,6 +26,10 @@ Release Notes
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.13.0">DotNext.AspNetCore.Cluster 5.13.0</a>
 * Updated dependencies
 
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/0.4.0">DotNext.MaintenanceServices 0.4.0</a>
+* Added [gc refresh-mem-limit](https://learn.microsoft.com/en-us/dotnet/api/system.gc.refreshmemorylimit) maintenance command
+* Updated dependencies
+
 # 08-19-2024
 <a href="https://www.nuget.org/packages/dotnext/5.12.1">DotNext 5.12.1</a>
 * Added support of static field references to `DotNext.Runtime.ValueReference<T>` data type

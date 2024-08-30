@@ -70,6 +70,10 @@ Release Date: 08-30-2024
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.13.0">DotNext.AspNetCore.Cluster 5.13.0</a>
 * Updated dependencies
 
+<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/0.4.0">DotNext.MaintenanceServices 0.4.0</a>
+* Added [gc refresh-mem-limit](https://learn.microsoft.com/en-us/dotnet/api/system.gc.refreshmemorylimit) maintenance command
+* Updated dependencies
+
 Changelog for previous versions located [here](./CHANGELOG.md).
 
 # Release & Support Policy
