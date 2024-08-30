@@ -1,7 +1,7 @@
 Event Hub
 ====
-[AsyncEventHub](xref:DotNext.Threading.AsyncEventHub) provides a way to synchronize a group of asynchronous events. Under the hood, it manages a collection of [TaskCompletionSource](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.taskcompletionsource) objects. It is possible to synchronize one or more events in various ways:
-* Wait for single specific event
+[AsyncEventHub](xref:DotNext.Threading.AsyncEventHub) provides a way to synchronize a group of asynchronous events in a various ways:
+* Wait for a single event
 * Wait for any of the specified events (_OR_ gateway)
 * Wait for all events from the specified subset of events (_AND_ gateway)
 
