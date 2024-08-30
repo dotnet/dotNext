@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct ConsumerClosure&lt;TContext, T&gt; | .NEXT </title>
+    <title>Struct ConcurrentTypeMap.Enumerator | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct ConsumerClosure&lt;TContext, T&gt; | .NEXT ">
+    <meta name="title" content="Struct ConcurrentTypeMap.Enumerator | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,19 +65,17 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.ConsumerClosure`2">
+            <article class="content wrap" id="_content" data-uid="DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator">
 
 
 
-  <h1 id="DotNext_ConsumerClosure_2" data-uid="DotNext.ConsumerClosure`2" class="text-break">Struct ConsumerClosure&lt;TContext, T&gt;</h1>
-  <div class="markdown level0 summary"><p>Represents implementation of <a class="xref" href="DotNext.IConsumer-1.html">IConsumer&lt;T&gt;</a> interface
-with the support of closure that is not allocated on the heap.</p>
+  <h1 id="DotNext_Collections_Specialized_ConcurrentTypeMap_Enumerator" data-uid="DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator" class="text-break">Struct ConcurrentTypeMap.Enumerator</h1>
+  <div class="markdown level0 summary"><p>Represents an enumerator over values stored in the map.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="DotNext.IConsumer-1.html">IConsumer</a>&lt;T&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;T&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.Collections.Generic.IEnumerator-2.html">IEnumerator</a>&lt;<a class="xref" href="DotNext.Collections.Specialized.ConcurrentTypeMap.html">ConcurrentTypeMap</a>.<a class="xref" href="DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.html">Enumerator</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -100,116 +98,29 @@ with the support of closure that is not allocated on the heap.</p>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Collections.html">Collections</a>.<a class="xref" href="DotNext.Collections.Specialized.html">Specialized</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
-  <h5 id="DotNext_ConsumerClosure_2_syntax">Syntax</h5>
+  <h5 id="DotNext_Collections_Specialized_ConcurrentTypeMap_Enumerator_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public readonly struct ConsumerClosure&lt;TContext, T&gt; : IConsumer&lt;T&gt;, IFunctional&lt;Action&lt;T&gt;&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public struct ConcurrentTypeMap.Enumerator : IEnumerator&lt;ConcurrentTypeMap.Enumerator, object&gt;</code></pre>
   </div>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TContext</span></td>
-        <td><p>The type describing closure.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the consumer argument.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_ConsumerClosure_2_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>Wraps the function pointer.</p>
-</div>
-  <h3 id="constructors">Constructors
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_ConsumerClosure_2__ctor___0_.md&amp;value=---%0Auid%3A%20DotNext.ConsumerClosure%602.%23ctor(%2C%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L94">View Source</a>
-  </span>
-  <a id="DotNext_ConsumerClosure_2__ctor_" data-uid="DotNext.ConsumerClosure`2.#ctor*"></a>
-  <h4 id="DotNext_ConsumerClosure_2__ctor___0_" data-uid="DotNext.ConsumerClosure`2.#ctor(,`0)">ConsumerClosure(delegate*&lt;in TContext, T, void&gt;, TContext)</h4>
-  <div class="markdown level1 summary"><p>Represents implementation of <a class="xref" href="DotNext.IConsumer-1.html">IConsumer&lt;T&gt;</a> interface
-with the support of closure that is not allocated on the heap.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ConsumerClosure(delegate*&lt;in TContext, T, void&gt; ptr, TContext context)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>delegate*&lt;in TContext, T, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.void">void</a>&gt;</td>
-        <td><span class="parametername">ptr</span></td>
-        <td><p>The function pointer.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">TContext</span></td>
-        <td><span class="parametername">context</span></td>
-        <td><p>The context to be passed to the function pointer.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_ConsumerClosure_2__ctor___0__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Wraps the function pointer.</p>
-</div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">ptr</code> is zero.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="properties">Properties
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_ConsumerClosure_2_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.ConsumerClosure%602.IsEmpty%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_ConcurrentTypeMap_Enumerator_Current.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.Current%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L104">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ConcurrentTypeMap.Enumerator.cs/#L109">View Source</a>
   </span>
-  <a id="DotNext_ConsumerClosure_2_IsEmpty_" data-uid="DotNext.ConsumerClosure`2.IsEmpty*"></a>
-  <h4 id="DotNext_ConsumerClosure_2_IsEmpty" data-uid="DotNext.ConsumerClosure`2.IsEmpty">IsEmpty</h4>
-  <div class="markdown level1 summary"><p>Gets a value indicating that this function pointer is zero.</p>
+  <a id="DotNext_Collections_Specialized_ConcurrentTypeMap_Enumerator_Current_" data-uid="DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.Current*"></a>
+  <h4 id="DotNext_Collections_Specialized_ConcurrentTypeMap_Enumerator_Current" data-uid="DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.Current">Current</h4>
+  <div class="markdown level1 summary"><p>Gets the element in the collection at the current position of the enumerator.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool IsEmpty { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly object Current { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -221,8 +132,43 @@ with the support of closure that is not allocated on the heap.</p>
     </thead>
     <tbody>
       <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><p>The element in the collection at the current position of the enumerator.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_ConcurrentTypeMap_Enumerator_MoveNext.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.MoveNext%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ConcurrentTypeMap.Enumerator.cs/#L96">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Specialized_ConcurrentTypeMap_Enumerator_MoveNext_" data-uid="DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.MoveNext*"></a>
+  <h4 id="DotNext_Collections_Specialized_ConcurrentTypeMap_Enumerator_MoveNext" data-uid="DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.MoveNext">MoveNext()</h4>
+  <div class="markdown level1 summary"><p>Advances the enumerator to the next element of the collection.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool MoveNext()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the enumerator was successfully advanced to the next element; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if the enumerator has passed the end of the collection.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -236,18 +182,15 @@ with the support of closure that is not allocated on the heap.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">ptr</code> is zero.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>The collection was modified after the enumerator was created.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="DotNext.IConsumer-1.html">IConsumer&lt;T&gt;</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+      <a class="xref" href="DotNext.Collections.Generic.IEnumerator-2.html">IEnumerator&lt;TSelf, T&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
@@ -277,10 +220,10 @@ with the support of closure that is not allocated on the heap.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_ConsumerClosure_2.md&amp;value=---%0Auid%3A%20DotNext.ConsumerClosure%602%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_ConcurrentTypeMap_Enumerator.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IConsumer1.cs/#L94" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ConcurrentTypeMap.Enumerator.cs/#L86" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

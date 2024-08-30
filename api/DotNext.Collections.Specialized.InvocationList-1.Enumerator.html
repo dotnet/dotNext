@@ -73,6 +73,10 @@
   <div class="markdown level0 summary"><p>Represents enumerator over the list of delegates.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="DotNext.Collections.Generic.IEnumerator-2.html">IEnumerator</a>&lt;<a class="xref" href="DotNext.Collections.Specialized.InvocationList-1.html">InvocationList</a>&lt;TDelegate&gt;.<a class="xref" href="DotNext.Collections.Specialized.InvocationList-1.Enumerator.html">Enumerator</a>, TDelegate&gt;</div>
+  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -98,7 +102,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Collections_Specialized_InvocationList_1_Enumerator_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct InvocationList&lt;TDelegate&gt;.Enumerator</code></pre>
+    <pre><code class="lang-csharp hljs">public struct InvocationList&lt;TDelegate&gt;.Enumerator : IEnumerator&lt;InvocationList&lt;TDelegate&gt;.Enumerator, TDelegate&gt;</code></pre>
   </div>
   <h3 id="properties">Properties
 </h3>
@@ -107,7 +111,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_InvocationList_1_Enumerator_Current.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.InvocationList%601.Enumerator.Current%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L40">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L42">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_InvocationList_1_Enumerator_Current_" data-uid="DotNext.Collections.Specialized.InvocationList`1.Enumerator.Current*"></a>
   <h4 id="DotNext_Collections_Specialized_InvocationList_1_Enumerator_Current" data-uid="DotNext.Collections.Specialized.InvocationList`1.Enumerator.Current">Current</h4>
@@ -140,7 +144,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_InvocationList_1_Enumerator_MoveNext.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.InvocationList%601.Enumerator.MoveNext%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L50">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L48">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_InvocationList_1_Enumerator_MoveNext_" data-uid="DotNext.Collections.Specialized.InvocationList`1.Enumerator.MoveNext*"></a>
   <h4 id="DotNext_Collections_Specialized_InvocationList_1_Enumerator_MoveNext" data-uid="DotNext.Collections.Specialized.InvocationList`1.Enumerator.MoveNext">MoveNext()</h4>
@@ -167,12 +171,22 @@
       </tr>
     </tbody>
   </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.IEnumerator-2.html">IEnumerator&lt;TSelf, T&gt;</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerator__2___0_System_Threading_CancellationToken_">Collection.ToAsyncEnumerator&lt;TEnumerator, T&gt;(TEnumerator, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToClassicEnumerator__2___0_">Collection.ToClassicEnumerator&lt;TEnumerator, T&gt;(TEnumerator)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
@@ -192,7 +206,7 @@
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_InvocationList_1_Enumerator.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.InvocationList%601.Enumerator%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L24" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/InvocationList.cs/#L26" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

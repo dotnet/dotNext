@@ -5162,6 +5162,323 @@ in expression tree.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_HideReturnValue__1_System_Func___0__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.HideReturnValue%60%601(System.Func%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L172">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_HideReturnValue_" data-uid="DotNext.DelegateHelpers.HideReturnValue*"></a>
+  <h4 id="DotNext_DelegateHelpers_HideReturnValue__1_System_Func___0__" data-uid="DotNext.DelegateHelpers.HideReturnValue``1(System.Func{``0})">HideReturnValue&lt;TResult&gt;(Func&lt;TResult&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a delegate that hides the return value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Action HideReturnValue&lt;TResult&gt;(this Func&lt;TResult&gt; func)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;TResult&gt;</td>
+        <td><span class="parametername">func</span></td>
+        <td><p>The function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action">Action</a></td>
+        <td><p>The action that invokes the same method as <code class="paramref">func</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TResult</span></td>
+        <td><p>The type of the result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">func</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_HideReturnValue__2_System_Func___0___1__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.HideReturnValue%60%602(System.Func%7B%60%600%2C%60%601%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L190">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_HideReturnValue_" data-uid="DotNext.DelegateHelpers.HideReturnValue*"></a>
+  <h4 id="DotNext_DelegateHelpers_HideReturnValue__2_System_Func___0___1__" data-uid="DotNext.DelegateHelpers.HideReturnValue``2(System.Func{``0,``1})">HideReturnValue&lt;T, TResult&gt;(Func&lt;T, TResult&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a delegate that hides the return value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Action&lt;T&gt; HideReturnValue&lt;T, TResult&gt;(this Func&lt;T, TResult&gt; func)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, TResult&gt;</td>
+        <td><span class="parametername">func</span></td>
+        <td><p>The function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;T&gt;</td>
+        <td><p>The action that invokes the same method as <code class="paramref">func</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the argument to be passed to the action.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TResult</span></td>
+        <td><p>The type of the result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">func</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_ToAsync_System_Action_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.ToAsync(System.Action)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L135">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_ToAsync_" data-uid="DotNext.DelegateHelpers.ToAsync*"></a>
+  <h4 id="DotNext_DelegateHelpers_ToAsync_System_Action_" data-uid="DotNext.DelegateHelpers.ToAsync(System.Action)">ToAsync(Action)</h4>
+  <div class="markdown level1 summary"><p>Converts action to async delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Func&lt;CancellationToken, ValueTask&gt; ToAsync(this Action action)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action">Action</a></td>
+        <td><span class="parametername">action</span></td>
+        <td><p>Synchronous action.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;</td>
+        <td><p>The asynchronous function that wraps <code class="paramref">action</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">action</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_ToAsync__1_System_Action___0__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.ToAsync%60%601(System.Action%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L99">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_ToAsync_" data-uid="DotNext.DelegateHelpers.ToAsync*"></a>
+  <h4 id="DotNext_DelegateHelpers_ToAsync__1_System_Action___0__" data-uid="DotNext.DelegateHelpers.ToAsync``1(System.Action{``0})">ToAsync&lt;T&gt;(Action&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Converts action to async delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Func&lt;T, CancellationToken, ValueTask&gt; ToAsync&lt;T&gt;(this Action&lt;T&gt; action)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;T&gt;</td>
+        <td><span class="parametername">action</span></td>
+        <td><p>Synchronous action.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;</td>
+        <td><p>The asynchronous function that wraps <code class="paramref">action</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the argument to be passed to the action.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">action</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_Unbind__1_System_Action_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%601(System.Action)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">

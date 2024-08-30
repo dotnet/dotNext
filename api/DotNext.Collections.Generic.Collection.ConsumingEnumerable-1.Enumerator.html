@@ -75,9 +75,7 @@
   <div class="markdown level0 conceptual"></div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerator-1">IEnumerator</a>&lt;T&gt;</div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerator">IEnumerator</a></div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    <div><a class="xref" href="DotNext.Collections.Generic.IEnumerator-2.html">IEnumerator</a>&lt;<a class="xref" href="DotNext.Collections.Generic.Collection.html">Collection</a>.<a class="xref" href="DotNext.Collections.Generic.Collection.ConsumingEnumerable-1.html">ConsumingEnumerable</a>&lt;T&gt;.<a class="xref" href="DotNext.Collections.Generic.Collection.ConsumingEnumerable-1.Enumerator.html">Enumerator</a>, T&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -104,7 +102,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Collections_Generic_Collection_ConsumingEnumerable_1_Enumerator_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct Collection.ConsumingEnumerable&lt;T&gt;.Enumerator : IEnumerator&lt;T&gt;, IEnumerator, IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public struct Collection.ConsumingEnumerable&lt;T&gt;.Enumerator : IEnumerator&lt;Collection.ConsumingEnumerable&lt;T&gt;.Enumerator, T&gt;</code></pre>
   </div>
   <h3 id="properties">Properties
 </h3>
@@ -146,7 +144,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Collection_ConsumingEnumerable_1_Enumerator_MoveNext.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Collection.ConsumingEnumerable%601.Enumerator.MoveNext%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.ConsumingEnumerable.cs/#L45">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Collection.ConsumingEnumerable.cs/#L42">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Collection_ConsumingEnumerable_1_Enumerator_MoveNext_" data-uid="DotNext.Collections.Generic.Collection.ConsumingEnumerable`1.Enumerator.MoveNext*"></a>
   <h4 id="DotNext_Collections_Generic_Collection_ConsumingEnumerable_1_Enumerator_MoveNext" data-uid="DotNext.Collections.Generic.Collection.ConsumingEnumerable`1.Enumerator.MoveNext">MoveNext()</h4>
@@ -175,13 +173,7 @@
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerator-1">IEnumerator&lt;T&gt;</a>
-  </div>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerator">IEnumerator</a>
-  </div>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
+      <a class="xref" href="DotNext.Collections.Generic.IEnumerator-2.html">IEnumerator&lt;TSelf, T&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
@@ -191,16 +183,16 @@
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerator__2___0_System_Threading_CancellationToken_">Collection.ToAsyncEnumerator&lt;TEnumerator, T&gt;(TEnumerator, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToClassicEnumerator__2___0_">Collection.ToClassicEnumerator&lt;TEnumerator, T&gt;(TEnumerator)</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Limit__1_System_Collections_Generic_IEnumerator___0__System_Int32_System_Boolean_">Enumerator.Limit&lt;T&gt;(IEnumerator&lt;T&gt;, int, bool)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__1_System_Collections_Generic_IEnumerator___0__System_Int32_">Enumerator.Skip&lt;T&gt;(IEnumerator&lt;T&gt;, int)</a>
   </div>
 
 </article>

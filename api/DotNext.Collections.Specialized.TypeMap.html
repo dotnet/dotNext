@@ -83,6 +83,8 @@ which is not thread safe.</p>
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Collections.Specialized.ITypeMap.html">ITypeMap</a></div>
     <div><a class="xref" href="DotNext.Collections.Specialized.IReadOnlyTypeMap.html">IReadOnlyTypeMap</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -112,7 +114,7 @@ which is not thread safe.</p>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Collections_Specialized_TypeMap_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class TypeMap : ITypeMap, IReadOnlyTypeMap</code></pre>
+    <pre><code class="lang-csharp hljs">public class TypeMap : ITypeMap, IReadOnlyTypeMap, IEnumerable&lt;object&gt;, IEnumerable</code></pre>
   </div>
   <h3 id="constructors">Constructors
 </h3>
@@ -121,7 +123,7 @@ which is not thread safe.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_TypeMap__ctor.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.TypeMap.%23ctor%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L257">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L258">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_TypeMap__ctor_" data-uid="DotNext.Collections.Specialized.TypeMap.#ctor*"></a>
   <h4 id="DotNext_Collections_Specialized_TypeMap__ctor" data-uid="DotNext.Collections.Specialized.TypeMap.#ctor">TypeMap()</h4>
@@ -137,7 +139,7 @@ which is not thread safe.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_TypeMap__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.TypeMap.%23ctor(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L247">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L248">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_TypeMap__ctor_" data-uid="DotNext.Collections.Specialized.TypeMap.#ctor*"></a>
   <h4 id="DotNext_Collections_Specialized_TypeMap__ctor_System_Int32_" data-uid="DotNext.Collections.Specialized.TypeMap.#ctor(System.Int32)">TypeMap(int)</h4>
@@ -189,7 +191,7 @@ which is not thread safe.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_TypeMap_Add__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.TypeMap.Add%60%601(%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L261">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L272">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_TypeMap_Add_" data-uid="DotNext.Collections.Specialized.TypeMap.Add*"></a>
   <h4 id="DotNext_Collections_Specialized_TypeMap_Add__1___0_" data-uid="DotNext.Collections.Specialized.TypeMap.Add``1(``0)">Add&lt;T&gt;(T)</h4>
@@ -255,7 +257,7 @@ which is not thread safe.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_TypeMap_Clear.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.TypeMap.Clear%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L307">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L318">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_TypeMap_Clear_" data-uid="DotNext.Collections.Specialized.TypeMap.Clear*"></a>
   <h4 id="DotNext_Collections_Specialized_TypeMap_Clear" data-uid="DotNext.Collections.Specialized.TypeMap.Clear">Clear()</h4>
@@ -271,7 +273,7 @@ which is not thread safe.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_TypeMap_Contains__1.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.TypeMap.Contains%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L310">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L321">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_TypeMap_Contains_" data-uid="DotNext.Collections.Specialized.TypeMap.Contains*"></a>
   <h4 id="DotNext_Collections_Specialized_TypeMap_Contains__1" data-uid="DotNext.Collections.Specialized.TypeMap.Contains``1">Contains&lt;T&gt;()</h4>
@@ -316,10 +318,42 @@ which is not thread safe.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_TypeMap_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.TypeMap.GetEnumerator%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.Enumerator.cs/#L117">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Specialized_TypeMap_GetEnumerator_" data-uid="DotNext.Collections.Specialized.TypeMap.GetEnumerator*"></a>
+  <h4 id="DotNext_Collections_Specialized_TypeMap_GetEnumerator" data-uid="DotNext.Collections.Specialized.TypeMap.GetEnumerator">GetEnumerator()</h4>
+  <div class="markdown level1 summary"><p>Gets an enumerator over values in this map.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TypeMap.Enumerator GetEnumerator()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Collections.Specialized.TypeMap.html">TypeMap</a>.<a class="xref" href="DotNext.Collections.Specialized.TypeMap.Enumerator.html">Enumerator</a></td>
+        <td><p>The enumerator over values in this map.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_TypeMap_GetValueRefOrAddDefault__1_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.TypeMap.GetValueRefOrAddDefault%60%601(System.Boolean%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L394">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L407">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_TypeMap_GetValueRefOrAddDefault_" data-uid="DotNext.Collections.Specialized.TypeMap.GetValueRefOrAddDefault*"></a>
   <h4 id="DotNext_Collections_Specialized_TypeMap_GetValueRefOrAddDefault__1_System_Boolean__" data-uid="DotNext.Collections.Specialized.TypeMap.GetValueRefOrAddDefault``1(System.Boolean@)">GetValueRefOrAddDefault&lt;T&gt;(out bool)</h4>
@@ -385,7 +419,7 @@ which is not thread safe.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_TypeMap_Remove__1.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.TypeMap.Remove%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L336">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L345">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_TypeMap_Remove_" data-uid="DotNext.Collections.Specialized.TypeMap.Remove*"></a>
   <h4 id="DotNext_Collections_Specialized_TypeMap_Remove__1" data-uid="DotNext.Collections.Specialized.TypeMap.Remove``1">Remove&lt;T&gt;()</h4>
@@ -433,7 +467,7 @@ which is not thread safe.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_TypeMap_Remove__1___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.TypeMap.Remove%60%601(%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L358">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L369">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_TypeMap_Remove_" data-uid="DotNext.Collections.Specialized.TypeMap.Remove*"></a>
   <h4 id="DotNext_Collections_Specialized_TypeMap_Remove__1___0__" data-uid="DotNext.Collections.Specialized.TypeMap.Remove``1(``0@)">Remove&lt;T&gt;(out T?)</h4>
@@ -499,7 +533,7 @@ which is not thread safe.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_TypeMap_Set__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.TypeMap.Set%60%601(%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L279">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L290">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_TypeMap_Set_" data-uid="DotNext.Collections.Specialized.TypeMap.Set*"></a>
   <h4 id="DotNext_Collections_Specialized_TypeMap_Set__1___0_" data-uid="DotNext.Collections.Specialized.TypeMap.Set``1(``0)">Set&lt;T&gt;(T)</h4>
@@ -549,7 +583,7 @@ which is not thread safe.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_TypeMap_Set__1___0___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.TypeMap.Set%60%601(%60%600%2C%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L289">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L300">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_TypeMap_Set_" data-uid="DotNext.Collections.Specialized.TypeMap.Set*"></a>
   <h4 id="DotNext_Collections_Specialized_TypeMap_Set__1___0___0__" data-uid="DotNext.Collections.Specialized.TypeMap.Set``1(``0,``0@)">Set&lt;T&gt;(T, out T?)</h4>
@@ -621,7 +655,7 @@ which is not thread safe.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_TypeMap_TryGetValue__1___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.TypeMap.TryGetValue%60%601(%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L378">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L391">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_TypeMap_TryGetValue_" data-uid="DotNext.Collections.Specialized.TypeMap.TryGetValue*"></a>
   <h4 id="DotNext_Collections_Specialized_TypeMap_TryGetValue__1___0__" data-uid="DotNext.Collections.Specialized.TypeMap.TryGetValue``1(``0@)">TryGetValue&lt;T&gt;(out T?)</h4>
@@ -689,6 +723,12 @@ which is not thread safe.</p>
   <div>
       <a class="xref" href="DotNext.Collections.Specialized.IReadOnlyTypeMap.html">IReadOnlyTypeMap</a>
   </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
@@ -747,6 +787,45 @@ which is not thread safe.</p>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Append__1_System_Collections_Generic_IEnumerable___0____0___">Collection.Append&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Copy__1_System_Collections_Generic_IEnumerable___0__System_Int32_DotNext_Buffers_MemoryAllocator___0__">Collection.Copy&lt;T&gt;(IEnumerable&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Collection.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, int, out T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_FirstOrNone__1_System_Collections_Generic_IEnumerable___0__">Collection.FirstOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Collection.ForEachAsync&lt;T&gt;(IEnumerable&lt;T&gt;, Func&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Collection.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_LastOrNone__1_System_Collections_Generic_IEnumerable___0__">Collection.LastOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Prepend__1_System_Collections_Generic_IEnumerable___0____0___">Collection.Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_SequenceHashCode__1_System_Collections_Generic_IEnumerable___0__System_Boolean_">Collection.SequenceHashCode&lt;T&gt;(IEnumerable&lt;T&gt;, bool)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_SkipNulls__1_System_Collections_Generic_IEnumerable___0__">Collection.SkipNulls&lt;T&gt;(IEnumerable&lt;T?&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__">Collection.ToAsyncEnumerable&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Collection.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, string, string)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_">Enumerator.GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</a>
+  </div>
 
 </article>
           </div>
@@ -759,7 +838,7 @@ which is not thread safe.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_TypeMap.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.TypeMap%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.cs/#L238" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/TypeMap.Enumerator.cs/#L79" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -5894,6 +5894,38 @@ references:
   fullName.vb: DotNext.Collections.Generic.Collection.ToAsyncEnumerable(Of T)(System.Collections.Generic.IEnumerable(Of T))
   nameWithType: Collection.ToAsyncEnumerable<T>(IEnumerable<T>)
   nameWithType.vb: Collection.ToAsyncEnumerable(Of T)(IEnumerable(Of T))
+- uid: DotNext.Collections.Generic.Collection.ToAsyncEnumerator*
+  name: ToAsyncEnumerator
+  href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerator_
+  commentId: Overload:DotNext.Collections.Generic.Collection.ToAsyncEnumerator
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.Collection.ToAsyncEnumerator
+  nameWithType: Collection.ToAsyncEnumerator
+- uid: DotNext.Collections.Generic.Collection.ToAsyncEnumerator``2(``0,System.Threading.CancellationToken)
+  name: ToAsyncEnumerator<TEnumerator, T>(TEnumerator, CancellationToken)
+  href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerator__2___0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Collections.Generic.Collection.ToAsyncEnumerator``2(``0,System.Threading.CancellationToken)
+  name.vb: ToAsyncEnumerator(Of TEnumerator, T)(TEnumerator, CancellationToken)
+  fullName: DotNext.Collections.Generic.Collection.ToAsyncEnumerator<TEnumerator, T>(TEnumerator, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Collections.Generic.Collection.ToAsyncEnumerator(Of TEnumerator, T)(TEnumerator, System.Threading.CancellationToken)
+  nameWithType: Collection.ToAsyncEnumerator<TEnumerator, T>(TEnumerator, CancellationToken)
+  nameWithType.vb: Collection.ToAsyncEnumerator(Of TEnumerator, T)(TEnumerator, CancellationToken)
+- uid: DotNext.Collections.Generic.Collection.ToClassicEnumerator*
+  name: ToClassicEnumerator
+  href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToClassicEnumerator_
+  commentId: Overload:DotNext.Collections.Generic.Collection.ToClassicEnumerator
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.Collection.ToClassicEnumerator
+  nameWithType: Collection.ToClassicEnumerator
+- uid: DotNext.Collections.Generic.Collection.ToClassicEnumerator``2(``0)
+  name: ToClassicEnumerator<TEnumerator, T>(TEnumerator)
+  href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToClassicEnumerator__2___0_
+  commentId: M:DotNext.Collections.Generic.Collection.ToClassicEnumerator``2(``0)
+  name.vb: ToClassicEnumerator(Of TEnumerator, T)(TEnumerator)
+  fullName: DotNext.Collections.Generic.Collection.ToClassicEnumerator<TEnumerator, T>(TEnumerator)
+  fullName.vb: DotNext.Collections.Generic.Collection.ToClassicEnumerator(Of TEnumerator, T)(TEnumerator)
+  nameWithType: Collection.ToClassicEnumerator<TEnumerator, T>(TEnumerator)
+  nameWithType.vb: Collection.ToClassicEnumerator(Of TEnumerator, T)(TEnumerator)
 - uid: DotNext.Collections.Generic.Collection.ToString*
   name: ToString
   href: api/DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToString_
@@ -6373,6 +6405,66 @@ references:
   fullName.vb: DotNext.Collections.Generic.Enumerator.ToEnumerator(Of T)(System.ReadOnlyMemory(Of T))
   nameWithType: Enumerator.ToEnumerator<T>(ReadOnlyMemory<T>)
   nameWithType.vb: Enumerator.ToEnumerator(Of T)(ReadOnlyMemory(Of T))
+- uid: DotNext.Collections.Generic.IEnumerator`2
+  name: IEnumerator<TSelf, T>
+  href: api/DotNext.Collections.Generic.IEnumerator-2.html
+  commentId: T:DotNext.Collections.Generic.IEnumerator`2
+  name.vb: IEnumerator(Of TSelf, T)
+  fullName: DotNext.Collections.Generic.IEnumerator<TSelf, T>
+  fullName.vb: DotNext.Collections.Generic.IEnumerator(Of TSelf, T)
+  nameWithType: IEnumerator<TSelf, T>
+  nameWithType.vb: IEnumerator(Of TSelf, T)
+- uid: DotNext.Collections.Generic.IEnumerator`2.Current
+  name: Current
+  href: api/DotNext.Collections.Generic.IEnumerator-2.html#DotNext_Collections_Generic_IEnumerator_2_Current
+  commentId: P:DotNext.Collections.Generic.IEnumerator`2.Current
+  fullName: DotNext.Collections.Generic.IEnumerator<TSelf, T>.Current
+  fullName.vb: DotNext.Collections.Generic.IEnumerator(Of TSelf, T).Current
+  nameWithType: IEnumerator<TSelf, T>.Current
+  nameWithType.vb: IEnumerator(Of TSelf, T).Current
+- uid: DotNext.Collections.Generic.IEnumerator`2.Current*
+  name: Current
+  href: api/DotNext.Collections.Generic.IEnumerator-2.html#DotNext_Collections_Generic_IEnumerator_2_Current_
+  commentId: Overload:DotNext.Collections.Generic.IEnumerator`2.Current
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.IEnumerator<TSelf, T>.Current
+  fullName.vb: DotNext.Collections.Generic.IEnumerator(Of TSelf, T).Current
+  nameWithType: IEnumerator<TSelf, T>.Current
+  nameWithType.vb: IEnumerator(Of TSelf, T).Current
+- uid: DotNext.Collections.Generic.IEnumerator`2.MoveNext
+  name: MoveNext()
+  href: api/DotNext.Collections.Generic.IEnumerator-2.html#DotNext_Collections_Generic_IEnumerator_2_MoveNext
+  commentId: M:DotNext.Collections.Generic.IEnumerator`2.MoveNext
+  fullName: DotNext.Collections.Generic.IEnumerator<TSelf, T>.MoveNext()
+  fullName.vb: DotNext.Collections.Generic.IEnumerator(Of TSelf, T).MoveNext()
+  nameWithType: IEnumerator<TSelf, T>.MoveNext()
+  nameWithType.vb: IEnumerator(Of TSelf, T).MoveNext()
+- uid: DotNext.Collections.Generic.IEnumerator`2.MoveNext*
+  name: MoveNext
+  href: api/DotNext.Collections.Generic.IEnumerator-2.html#DotNext_Collections_Generic_IEnumerator_2_MoveNext_
+  commentId: Overload:DotNext.Collections.Generic.IEnumerator`2.MoveNext
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.IEnumerator<TSelf, T>.MoveNext
+  fullName.vb: DotNext.Collections.Generic.IEnumerator(Of TSelf, T).MoveNext
+  nameWithType: IEnumerator<TSelf, T>.MoveNext
+  nameWithType.vb: IEnumerator(Of TSelf, T).MoveNext
+- uid: DotNext.Collections.Generic.IEnumerator`2.Reset
+  name: Reset()
+  href: api/DotNext.Collections.Generic.IEnumerator-2.html#DotNext_Collections_Generic_IEnumerator_2_Reset
+  commentId: M:DotNext.Collections.Generic.IEnumerator`2.Reset
+  fullName: DotNext.Collections.Generic.IEnumerator<TSelf, T>.Reset()
+  fullName.vb: DotNext.Collections.Generic.IEnumerator(Of TSelf, T).Reset()
+  nameWithType: IEnumerator<TSelf, T>.Reset()
+  nameWithType.vb: IEnumerator(Of TSelf, T).Reset()
+- uid: DotNext.Collections.Generic.IEnumerator`2.Reset*
+  name: Reset
+  href: api/DotNext.Collections.Generic.IEnumerator-2.html#DotNext_Collections_Generic_IEnumerator_2_Reset_
+  commentId: Overload:DotNext.Collections.Generic.IEnumerator`2.Reset
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.IEnumerator<TSelf, T>.Reset
+  fullName.vb: DotNext.Collections.Generic.IEnumerator(Of TSelf, T).Reset
+  nameWithType: IEnumerator<TSelf, T>.Reset
+  nameWithType.vb: IEnumerator(Of TSelf, T).Reset
 - uid: DotNext.Collections.Generic.List
   name: List
   href: api/DotNext.Collections.Generic.List.html
@@ -7493,6 +7585,51 @@ references:
   fullName.vb: DotNext.Collections.Specialized.ConcurrentTypeMap.Contains(Of T)()
   nameWithType: ConcurrentTypeMap.Contains<T>()
   nameWithType.vb: ConcurrentTypeMap.Contains(Of T)()
+- uid: DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator
+  name: ConcurrentTypeMap.Enumerator
+  href: api/DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.html
+  commentId: T:DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator
+  fullName: DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator
+  nameWithType: ConcurrentTypeMap.Enumerator
+- uid: DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.Current
+  name: Current
+  href: api/DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.html#DotNext_Collections_Specialized_ConcurrentTypeMap_Enumerator_Current
+  commentId: P:DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.Current
+  fullName: DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.Current
+  nameWithType: ConcurrentTypeMap.Enumerator.Current
+- uid: DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.Current*
+  name: Current
+  href: api/DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.html#DotNext_Collections_Specialized_ConcurrentTypeMap_Enumerator_Current_
+  commentId: Overload:DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.Current
+  isSpec: "True"
+  fullName: DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.Current
+  nameWithType: ConcurrentTypeMap.Enumerator.Current
+- uid: DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.MoveNext
+  name: MoveNext()
+  href: api/DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.html#DotNext_Collections_Specialized_ConcurrentTypeMap_Enumerator_MoveNext
+  commentId: M:DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.MoveNext
+  fullName: DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.MoveNext()
+  nameWithType: ConcurrentTypeMap.Enumerator.MoveNext()
+- uid: DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.MoveNext*
+  name: MoveNext
+  href: api/DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.html#DotNext_Collections_Specialized_ConcurrentTypeMap_Enumerator_MoveNext_
+  commentId: Overload:DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.MoveNext
+  isSpec: "True"
+  fullName: DotNext.Collections.Specialized.ConcurrentTypeMap.Enumerator.MoveNext
+  nameWithType: ConcurrentTypeMap.Enumerator.MoveNext
+- uid: DotNext.Collections.Specialized.ConcurrentTypeMap.GetEnumerator
+  name: GetEnumerator()
+  href: api/DotNext.Collections.Specialized.ConcurrentTypeMap.html#DotNext_Collections_Specialized_ConcurrentTypeMap_GetEnumerator
+  commentId: M:DotNext.Collections.Specialized.ConcurrentTypeMap.GetEnumerator
+  fullName: DotNext.Collections.Specialized.ConcurrentTypeMap.GetEnumerator()
+  nameWithType: ConcurrentTypeMap.GetEnumerator()
+- uid: DotNext.Collections.Specialized.ConcurrentTypeMap.GetEnumerator*
+  name: GetEnumerator
+  href: api/DotNext.Collections.Specialized.ConcurrentTypeMap.html#DotNext_Collections_Specialized_ConcurrentTypeMap_GetEnumerator_
+  commentId: Overload:DotNext.Collections.Specialized.ConcurrentTypeMap.GetEnumerator
+  isSpec: "True"
+  fullName: DotNext.Collections.Specialized.ConcurrentTypeMap.GetEnumerator
+  nameWithType: ConcurrentTypeMap.GetEnumerator
 - uid: DotNext.Collections.Specialized.ConcurrentTypeMap.GetOrAdd*
   name: GetOrAdd
   href: api/DotNext.Collections.Specialized.ConcurrentTypeMap.html#DotNext_Collections_Specialized_ConcurrentTypeMap_GetOrAdd_
@@ -8604,6 +8741,51 @@ references:
   fullName.vb: DotNext.Collections.Specialized.TypeMap.Contains(Of T)()
   nameWithType: TypeMap.Contains<T>()
   nameWithType.vb: TypeMap.Contains(Of T)()
+- uid: DotNext.Collections.Specialized.TypeMap.Enumerator
+  name: TypeMap.Enumerator
+  href: api/DotNext.Collections.Specialized.TypeMap.Enumerator.html
+  commentId: T:DotNext.Collections.Specialized.TypeMap.Enumerator
+  fullName: DotNext.Collections.Specialized.TypeMap.Enumerator
+  nameWithType: TypeMap.Enumerator
+- uid: DotNext.Collections.Specialized.TypeMap.Enumerator.Current
+  name: Current
+  href: api/DotNext.Collections.Specialized.TypeMap.Enumerator.html#DotNext_Collections_Specialized_TypeMap_Enumerator_Current
+  commentId: P:DotNext.Collections.Specialized.TypeMap.Enumerator.Current
+  fullName: DotNext.Collections.Specialized.TypeMap.Enumerator.Current
+  nameWithType: TypeMap.Enumerator.Current
+- uid: DotNext.Collections.Specialized.TypeMap.Enumerator.Current*
+  name: Current
+  href: api/DotNext.Collections.Specialized.TypeMap.Enumerator.html#DotNext_Collections_Specialized_TypeMap_Enumerator_Current_
+  commentId: Overload:DotNext.Collections.Specialized.TypeMap.Enumerator.Current
+  isSpec: "True"
+  fullName: DotNext.Collections.Specialized.TypeMap.Enumerator.Current
+  nameWithType: TypeMap.Enumerator.Current
+- uid: DotNext.Collections.Specialized.TypeMap.Enumerator.MoveNext
+  name: MoveNext()
+  href: api/DotNext.Collections.Specialized.TypeMap.Enumerator.html#DotNext_Collections_Specialized_TypeMap_Enumerator_MoveNext
+  commentId: M:DotNext.Collections.Specialized.TypeMap.Enumerator.MoveNext
+  fullName: DotNext.Collections.Specialized.TypeMap.Enumerator.MoveNext()
+  nameWithType: TypeMap.Enumerator.MoveNext()
+- uid: DotNext.Collections.Specialized.TypeMap.Enumerator.MoveNext*
+  name: MoveNext
+  href: api/DotNext.Collections.Specialized.TypeMap.Enumerator.html#DotNext_Collections_Specialized_TypeMap_Enumerator_MoveNext_
+  commentId: Overload:DotNext.Collections.Specialized.TypeMap.Enumerator.MoveNext
+  isSpec: "True"
+  fullName: DotNext.Collections.Specialized.TypeMap.Enumerator.MoveNext
+  nameWithType: TypeMap.Enumerator.MoveNext
+- uid: DotNext.Collections.Specialized.TypeMap.GetEnumerator
+  name: GetEnumerator()
+  href: api/DotNext.Collections.Specialized.TypeMap.html#DotNext_Collections_Specialized_TypeMap_GetEnumerator
+  commentId: M:DotNext.Collections.Specialized.TypeMap.GetEnumerator
+  fullName: DotNext.Collections.Specialized.TypeMap.GetEnumerator()
+  nameWithType: TypeMap.GetEnumerator()
+- uid: DotNext.Collections.Specialized.TypeMap.GetEnumerator*
+  name: GetEnumerator
+  href: api/DotNext.Collections.Specialized.TypeMap.html#DotNext_Collections_Specialized_TypeMap_GetEnumerator_
+  commentId: Overload:DotNext.Collections.Specialized.TypeMap.GetEnumerator
+  isSpec: "True"
+  fullName: DotNext.Collections.Specialized.TypeMap.GetEnumerator
+  nameWithType: TypeMap.GetEnumerator
 - uid: DotNext.Collections.Specialized.TypeMap.GetValueRefOrAddDefault*
   name: GetValueRefOrAddDefault
   href: api/DotNext.Collections.Specialized.TypeMap.html#DotNext_Collections_Specialized_TypeMap_GetValueRefOrAddDefault_
@@ -9594,6 +9776,53 @@ references:
   fullName.vb: DotNext.DelegateHelpers.CreateOpenDelegate(Of T, TValue)(System.Linq.Expressions.Expression(Of System.Func(Of T, TValue)))
   nameWithType: DelegateHelpers.CreateOpenDelegate<T, TValue>(Expression<Func<T, TValue>>)
   nameWithType.vb: DelegateHelpers.CreateOpenDelegate(Of T, TValue)(Expression(Of Func(Of T, TValue)))
+- uid: DotNext.DelegateHelpers.HideReturnValue*
+  name: HideReturnValue
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_HideReturnValue_
+  commentId: Overload:DotNext.DelegateHelpers.HideReturnValue
+  isSpec: "True"
+  fullName: DotNext.DelegateHelpers.HideReturnValue
+  nameWithType: DelegateHelpers.HideReturnValue
+- uid: DotNext.DelegateHelpers.HideReturnValue``1(System.Func{``0})
+  name: HideReturnValue<TResult>(Func<TResult>)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_HideReturnValue__1_System_Func___0__
+  commentId: M:DotNext.DelegateHelpers.HideReturnValue``1(System.Func{``0})
+  name.vb: HideReturnValue(Of TResult)(Func(Of TResult))
+  fullName: DotNext.DelegateHelpers.HideReturnValue<TResult>(System.Func<TResult>)
+  fullName.vb: DotNext.DelegateHelpers.HideReturnValue(Of TResult)(System.Func(Of TResult))
+  nameWithType: DelegateHelpers.HideReturnValue<TResult>(Func<TResult>)
+  nameWithType.vb: DelegateHelpers.HideReturnValue(Of TResult)(Func(Of TResult))
+- uid: DotNext.DelegateHelpers.HideReturnValue``2(System.Func{``0,``1})
+  name: HideReturnValue<T, TResult>(Func<T, TResult>)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_HideReturnValue__2_System_Func___0___1__
+  commentId: M:DotNext.DelegateHelpers.HideReturnValue``2(System.Func{``0,``1})
+  name.vb: HideReturnValue(Of T, TResult)(Func(Of T, TResult))
+  fullName: DotNext.DelegateHelpers.HideReturnValue<T, TResult>(System.Func<T, TResult>)
+  fullName.vb: DotNext.DelegateHelpers.HideReturnValue(Of T, TResult)(System.Func(Of T, TResult))
+  nameWithType: DelegateHelpers.HideReturnValue<T, TResult>(Func<T, TResult>)
+  nameWithType.vb: DelegateHelpers.HideReturnValue(Of T, TResult)(Func(Of T, TResult))
+- uid: DotNext.DelegateHelpers.ToAsync(System.Action)
+  name: ToAsync(Action)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_ToAsync_System_Action_
+  commentId: M:DotNext.DelegateHelpers.ToAsync(System.Action)
+  fullName: DotNext.DelegateHelpers.ToAsync(System.Action)
+  nameWithType: DelegateHelpers.ToAsync(Action)
+- uid: DotNext.DelegateHelpers.ToAsync*
+  name: ToAsync
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_ToAsync_
+  commentId: Overload:DotNext.DelegateHelpers.ToAsync
+  isSpec: "True"
+  fullName: DotNext.DelegateHelpers.ToAsync
+  nameWithType: DelegateHelpers.ToAsync
+- uid: DotNext.DelegateHelpers.ToAsync``1(System.Action{``0})
+  name: ToAsync<T>(Action<T>)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_ToAsync__1_System_Action___0__
+  commentId: M:DotNext.DelegateHelpers.ToAsync``1(System.Action{``0})
+  name.vb: ToAsync(Of T)(Action(Of T))
+  fullName: DotNext.DelegateHelpers.ToAsync<T>(System.Action<T>)
+  fullName.vb: DotNext.DelegateHelpers.ToAsync(Of T)(System.Action(Of T))
+  nameWithType: DelegateHelpers.ToAsync<T>(Action<T>)
+  nameWithType.vb: DelegateHelpers.ToAsync(Of T)(Action(Of T))
 - uid: DotNext.DelegateHelpers.Unbind*
   name: Unbind
   href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_Unbind_
@@ -39039,23 +39268,6 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Enumerator.Current
   nameWithType: Pointer<T>.Enumerator.Current
   nameWithType.vb: Pointer(Of T).Enumerator.Current
-- uid: DotNext.Runtime.InteropServices.Pointer`1.Enumerator.Dispose
-  name: Dispose()
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.Enumerator.html#DotNext_Runtime_InteropServices_Pointer_1_Enumerator_Dispose
-  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.Enumerator.Dispose
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Enumerator.Dispose()
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Enumerator.Dispose()
-  nameWithType: Pointer<T>.Enumerator.Dispose()
-  nameWithType.vb: Pointer(Of T).Enumerator.Dispose()
-- uid: DotNext.Runtime.InteropServices.Pointer`1.Enumerator.Dispose*
-  name: Dispose
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.Enumerator.html#DotNext_Runtime_InteropServices_Pointer_1_Enumerator_Dispose_
-  commentId: Overload:DotNext.Runtime.InteropServices.Pointer`1.Enumerator.Dispose
-  isSpec: "True"
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Enumerator.Dispose
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Enumerator.Dispose
-  nameWithType: Pointer<T>.Enumerator.Dispose
-  nameWithType.vb: Pointer(Of T).Enumerator.Dispose
 - uid: DotNext.Runtime.InteropServices.Pointer`1.Enumerator.MoveNext
   name: MoveNext()
   href: api/DotNext.Runtime.InteropServices.Pointer-1.Enumerator.html#DotNext_Runtime_InteropServices_Pointer_1_Enumerator_MoveNext
@@ -40507,6 +40719,25 @@ references:
   fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).=
   nameWithType: ReadOnlyValueReference<T>.operator ==
   nameWithType.vb: ReadOnlyValueReference(Of T).=
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.op_Explicit(DotNext.Runtime.ReadOnlyValueReference{`0})~System.Func{`0}
+  name: explicit operator Func<T>(ReadOnlyValueReference<T>)
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_op_Explicit_DotNext_Runtime_ReadOnlyValueReference__0___System_Func__0_
+  commentId: M:DotNext.Runtime.ReadOnlyValueReference`1.op_Explicit(DotNext.Runtime.ReadOnlyValueReference{`0})~System.Func{`0}
+  name.vb: CType(ReadOnlyValueReference(Of T))
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.explicit operator System.Func<T>(DotNext.Runtime.ReadOnlyValueReference<T>)
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).CType(DotNext.Runtime.ReadOnlyValueReference(Of T))
+  nameWithType: ReadOnlyValueReference<T>.explicit operator Func<T>(ReadOnlyValueReference<T>)
+  nameWithType.vb: ReadOnlyValueReference(Of T).CType(ReadOnlyValueReference(Of T))
+- uid: DotNext.Runtime.ReadOnlyValueReference`1.op_Explicit*
+  name: explicit operator
+  href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_op_Explicit_
+  commentId: Overload:DotNext.Runtime.ReadOnlyValueReference`1.op_Explicit
+  isSpec: "True"
+  name.vb: CType
+  fullName: DotNext.Runtime.ReadOnlyValueReference<T>.explicit operator
+  fullName.vb: DotNext.Runtime.ReadOnlyValueReference(Of T).CType
+  nameWithType: ReadOnlyValueReference<T>.explicit operator
+  nameWithType.vb: ReadOnlyValueReference(Of T).CType
 - uid: DotNext.Runtime.ReadOnlyValueReference`1.op_Implicit(DotNext.Runtime.ReadOnlyValueReference{`0})~System.ReadOnlySpan{`0}
   name: implicit operator ReadOnlySpan<T>(ReadOnlyValueReference<T>)
   href: api/DotNext.Runtime.ReadOnlyValueReference-1.html#DotNext_Runtime_ReadOnlyValueReference_1_op_Implicit_DotNext_Runtime_ReadOnlyValueReference__0___System_ReadOnlySpan__0_
@@ -41022,6 +41253,34 @@ references:
   fullName.vb: DotNext.Runtime.ValueReference(Of T).=
   nameWithType: ValueReference<T>.operator ==
   nameWithType.vb: ValueReference(Of T).=
+- uid: DotNext.Runtime.ValueReference`1.op_Explicit(DotNext.Runtime.ValueReference{`0})~System.Action{`0}
+  name: explicit operator Action<T>(ValueReference<T>)
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_op_Explicit_DotNext_Runtime_ValueReference__0___System_Action__0_
+  commentId: M:DotNext.Runtime.ValueReference`1.op_Explicit(DotNext.Runtime.ValueReference{`0})~System.Action{`0}
+  name.vb: CType(ValueReference(Of T))
+  fullName: DotNext.Runtime.ValueReference<T>.explicit operator System.Action<T>(DotNext.Runtime.ValueReference<T>)
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).CType(DotNext.Runtime.ValueReference(Of T))
+  nameWithType: ValueReference<T>.explicit operator Action<T>(ValueReference<T>)
+  nameWithType.vb: ValueReference(Of T).CType(ValueReference(Of T))
+- uid: DotNext.Runtime.ValueReference`1.op_Explicit(DotNext.Runtime.ValueReference{`0})~System.Func{`0}
+  name: explicit operator Func<T>(ValueReference<T>)
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_op_Explicit_DotNext_Runtime_ValueReference__0___System_Func__0_
+  commentId: M:DotNext.Runtime.ValueReference`1.op_Explicit(DotNext.Runtime.ValueReference{`0})~System.Func{`0}
+  name.vb: CType(ValueReference(Of T))
+  fullName: DotNext.Runtime.ValueReference<T>.explicit operator System.Func<T>(DotNext.Runtime.ValueReference<T>)
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).CType(DotNext.Runtime.ValueReference(Of T))
+  nameWithType: ValueReference<T>.explicit operator Func<T>(ValueReference<T>)
+  nameWithType.vb: ValueReference(Of T).CType(ValueReference(Of T))
+- uid: DotNext.Runtime.ValueReference`1.op_Explicit*
+  name: explicit operator
+  href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_op_Explicit_
+  commentId: Overload:DotNext.Runtime.ValueReference`1.op_Explicit
+  isSpec: "True"
+  name.vb: CType
+  fullName: DotNext.Runtime.ValueReference<T>.explicit operator
+  fullName.vb: DotNext.Runtime.ValueReference(Of T).CType
+  nameWithType: ValueReference<T>.explicit operator
+  nameWithType.vb: ValueReference(Of T).CType
 - uid: DotNext.Runtime.ValueReference`1.op_Implicit(DotNext.Runtime.ValueReference{`0})~DotNext.Runtime.ReadOnlyValueReference{`0}
   name: implicit operator ReadOnlyValueReference<T>(ValueReference<T>)
   href: api/DotNext.Runtime.ValueReference-1.html#DotNext_Runtime_ValueReference_1_op_Implicit_DotNext_Runtime_ValueReference__0___DotNext_Runtime_ReadOnlyValueReference__0_
@@ -41534,6 +41793,22 @@ references:
   fullName.vb: DotNext.Span.BitwiseEquals(Of T)(System.ReadOnlySpan(Of T), System.ReadOnlySpan(Of T))
   nameWithType: Span.BitwiseEquals<T>(ReadOnlySpan<T>, ReadOnlySpan<T>)
   nameWithType.vb: Span.BitwiseEquals(Of T)(ReadOnlySpan(Of T), ReadOnlySpan(Of T))
+- uid: DotNext.Span.CheckMask*
+  name: CheckMask
+  href: api/DotNext.Span.html#DotNext_Span_CheckMask_
+  commentId: Overload:DotNext.Span.CheckMask
+  isSpec: "True"
+  fullName: DotNext.Span.CheckMask
+  nameWithType: Span.CheckMask
+- uid: DotNext.Span.CheckMask``1(System.ReadOnlySpan{``0},System.ReadOnlySpan{``0})
+  name: CheckMask<T>(ReadOnlySpan<T>, ReadOnlySpan<T>)
+  href: api/DotNext.Span.html#DotNext_Span_CheckMask__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__
+  commentId: M:DotNext.Span.CheckMask``1(System.ReadOnlySpan{``0},System.ReadOnlySpan{``0})
+  name.vb: CheckMask(Of T)(ReadOnlySpan(Of T), ReadOnlySpan(Of T))
+  fullName: DotNext.Span.CheckMask<T>(System.ReadOnlySpan<T>, System.ReadOnlySpan<T>)
+  fullName.vb: DotNext.Span.CheckMask(Of T)(System.ReadOnlySpan(Of T), System.ReadOnlySpan(Of T))
+  nameWithType: Span.CheckMask<T>(ReadOnlySpan<T>, ReadOnlySpan<T>)
+  nameWithType.vb: Span.CheckMask(Of T)(ReadOnlySpan(Of T), ReadOnlySpan(Of T))
 - uid: DotNext.Span.Concat(System.ReadOnlySpan{System.String},DotNext.Buffers.MemoryAllocator{System.Char})
   name: Concat(ReadOnlySpan<string?>, MemoryAllocator<char>?)
   href: api/DotNext.Span.html#DotNext_Span_Concat_System_ReadOnlySpan_System_String__DotNext_Buffers_MemoryAllocator_System_Char__
@@ -41707,6 +41982,22 @@ references:
   fullName.vb: DotNext.Span.Initialize(Of T)(System.Span(Of T))
   nameWithType: Span.Initialize<T>(Span<T>)
   nameWithType.vb: Span.Initialize(Of T)(Span(Of T))
+- uid: DotNext.Span.IsBitwiseAndNonZero*
+  name: IsBitwiseAndNonZero
+  href: api/DotNext.Span.html#DotNext_Span_IsBitwiseAndNonZero_
+  commentId: Overload:DotNext.Span.IsBitwiseAndNonZero
+  isSpec: "True"
+  fullName: DotNext.Span.IsBitwiseAndNonZero
+  nameWithType: Span.IsBitwiseAndNonZero
+- uid: DotNext.Span.IsBitwiseAndNonZero``1(System.ReadOnlySpan{``0},System.ReadOnlySpan{``0})
+  name: IsBitwiseAndNonZero<T>(ReadOnlySpan<T>, ReadOnlySpan<T>)
+  href: api/DotNext.Span.html#DotNext_Span_IsBitwiseAndNonZero__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__
+  commentId: M:DotNext.Span.IsBitwiseAndNonZero``1(System.ReadOnlySpan{``0},System.ReadOnlySpan{``0})
+  name.vb: IsBitwiseAndNonZero(Of T)(ReadOnlySpan(Of T), ReadOnlySpan(Of T))
+  fullName: DotNext.Span.IsBitwiseAndNonZero<T>(System.ReadOnlySpan<T>, System.ReadOnlySpan<T>)
+  fullName.vb: DotNext.Span.IsBitwiseAndNonZero(Of T)(System.ReadOnlySpan(Of T), System.ReadOnlySpan(Of T))
+  nameWithType: Span.IsBitwiseAndNonZero<T>(ReadOnlySpan<T>, ReadOnlySpan<T>)
+  nameWithType.vb: Span.IsBitwiseAndNonZero(Of T)(ReadOnlySpan(Of T), ReadOnlySpan(Of T))
 - uid: DotNext.Span.Move*
   name: Move
   href: api/DotNext.Span.html#DotNext_Span_Move_
@@ -43696,28 +43987,12 @@ references:
   fullName.vb: DotNext.Threading.AsyncEventHub.New
   nameWithType: AsyncEventHub.AsyncEventHub
   nameWithType.vb: AsyncEventHub.New
-- uid: DotNext.Threading.AsyncEventHub.CancelSuspendedCallers(System.Threading.CancellationToken)
-  name: CancelSuspendedCallers(CancellationToken)
-  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_CancelSuspendedCallers_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.AsyncEventHub.CancelSuspendedCallers(System.Threading.CancellationToken)
-  fullName: DotNext.Threading.AsyncEventHub.CancelSuspendedCallers(System.Threading.CancellationToken)
-  nameWithType: AsyncEventHub.CancelSuspendedCallers(CancellationToken)
-- uid: DotNext.Threading.AsyncEventHub.CancelSuspendedCallers*
-  name: CancelSuspendedCallers
-  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_CancelSuspendedCallers_
-  commentId: Overload:DotNext.Threading.AsyncEventHub.CancelSuspendedCallers
-  isSpec: "True"
-  fullName: DotNext.Threading.AsyncEventHub.CancelSuspendedCallers
-  nameWithType: AsyncEventHub.CancelSuspendedCallers
-- uid: DotNext.Threading.AsyncEventHub.CaptureState(System.Span{System.Boolean})
-  name: CaptureState(Span<bool>)
-  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_CaptureState_System_Span_System_Boolean__
-  commentId: M:DotNext.Threading.AsyncEventHub.CaptureState(System.Span{System.Boolean})
-  name.vb: CaptureState(Span(Of Boolean))
-  fullName: DotNext.Threading.AsyncEventHub.CaptureState(System.Span<bool>)
-  fullName.vb: DotNext.Threading.AsyncEventHub.CaptureState(System.Span(Of Boolean))
-  nameWithType: AsyncEventHub.CaptureState(Span<bool>)
-  nameWithType.vb: AsyncEventHub.CaptureState(Span(Of Boolean))
+- uid: DotNext.Threading.AsyncEventHub.CaptureState
+  name: CaptureState()
+  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_CaptureState
+  commentId: M:DotNext.Threading.AsyncEventHub.CaptureState
+  fullName: DotNext.Threading.AsyncEventHub.CaptureState()
+  nameWithType: AsyncEventHub.CaptureState()
 - uid: DotNext.Threading.AsyncEventHub.CaptureState*
   name: CaptureState
   href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_CaptureState_
@@ -43738,6 +44013,114 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncEventHub.Count
   nameWithType: AsyncEventHub.Count
+- uid: DotNext.Threading.AsyncEventHub.EventGroup
+  name: AsyncEventHub.EventGroup
+  href: api/DotNext.Threading.AsyncEventHub.EventGroup.html
+  commentId: T:DotNext.Threading.AsyncEventHub.EventGroup
+  fullName: DotNext.Threading.AsyncEventHub.EventGroup
+  nameWithType: AsyncEventHub.EventGroup
+- uid: DotNext.Threading.AsyncEventHub.EventGroup.#ctor(System.ReadOnlySpan{System.Int32})
+  name: EventGroup(ReadOnlySpan<int>)
+  href: api/DotNext.Threading.AsyncEventHub.EventGroup.html#DotNext_Threading_AsyncEventHub_EventGroup__ctor_System_ReadOnlySpan_System_Int32__
+  commentId: M:DotNext.Threading.AsyncEventHub.EventGroup.#ctor(System.ReadOnlySpan{System.Int32})
+  name.vb: New(ReadOnlySpan(Of Integer))
+  fullName: DotNext.Threading.AsyncEventHub.EventGroup.EventGroup(System.ReadOnlySpan<int>)
+  fullName.vb: DotNext.Threading.AsyncEventHub.EventGroup.New(System.ReadOnlySpan(Of Integer))
+  nameWithType: AsyncEventHub.EventGroup.EventGroup(ReadOnlySpan<int>)
+  nameWithType.vb: AsyncEventHub.EventGroup.New(ReadOnlySpan(Of Integer))
+- uid: DotNext.Threading.AsyncEventHub.EventGroup.#ctor*
+  name: EventGroup
+  href: api/DotNext.Threading.AsyncEventHub.EventGroup.html#DotNext_Threading_AsyncEventHub_EventGroup__ctor_
+  commentId: Overload:DotNext.Threading.AsyncEventHub.EventGroup.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Threading.AsyncEventHub.EventGroup.EventGroup
+  fullName.vb: DotNext.Threading.AsyncEventHub.EventGroup.New
+  nameWithType: AsyncEventHub.EventGroup.EventGroup
+  nameWithType.vb: AsyncEventHub.EventGroup.New
+- uid: DotNext.Threading.AsyncEventHub.EventGroup.Contains(System.Int32)
+  name: Contains(int)
+  href: api/DotNext.Threading.AsyncEventHub.EventGroup.html#DotNext_Threading_AsyncEventHub_EventGroup_Contains_System_Int32_
+  commentId: M:DotNext.Threading.AsyncEventHub.EventGroup.Contains(System.Int32)
+  name.vb: Contains(Integer)
+  fullName: DotNext.Threading.AsyncEventHub.EventGroup.Contains(int)
+  fullName.vb: DotNext.Threading.AsyncEventHub.EventGroup.Contains(Integer)
+  nameWithType: AsyncEventHub.EventGroup.Contains(int)
+  nameWithType.vb: AsyncEventHub.EventGroup.Contains(Integer)
+- uid: DotNext.Threading.AsyncEventHub.EventGroup.Contains*
+  name: Contains
+  href: api/DotNext.Threading.AsyncEventHub.EventGroup.html#DotNext_Threading_AsyncEventHub_EventGroup_Contains_
+  commentId: Overload:DotNext.Threading.AsyncEventHub.EventGroup.Contains
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncEventHub.EventGroup.Contains
+  nameWithType: AsyncEventHub.EventGroup.Contains
+- uid: DotNext.Threading.AsyncEventHub.EventGroup.Count
+  name: Count
+  href: api/DotNext.Threading.AsyncEventHub.EventGroup.html#DotNext_Threading_AsyncEventHub_EventGroup_Count
+  commentId: P:DotNext.Threading.AsyncEventHub.EventGroup.Count
+  fullName: DotNext.Threading.AsyncEventHub.EventGroup.Count
+  nameWithType: AsyncEventHub.EventGroup.Count
+- uid: DotNext.Threading.AsyncEventHub.EventGroup.Count*
+  name: Count
+  href: api/DotNext.Threading.AsyncEventHub.EventGroup.html#DotNext_Threading_AsyncEventHub_EventGroup_Count_
+  commentId: Overload:DotNext.Threading.AsyncEventHub.EventGroup.Count
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncEventHub.EventGroup.Count
+  nameWithType: AsyncEventHub.EventGroup.Count
+- uid: DotNext.Threading.AsyncEventHub.EventGroup.Enumerator
+  name: AsyncEventHub.EventGroup.Enumerator
+  href: api/DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.html
+  commentId: T:DotNext.Threading.AsyncEventHub.EventGroup.Enumerator
+  fullName: DotNext.Threading.AsyncEventHub.EventGroup.Enumerator
+  nameWithType: AsyncEventHub.EventGroup.Enumerator
+- uid: DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.Current
+  name: Current
+  href: api/DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.html#DotNext_Threading_AsyncEventHub_EventGroup_Enumerator_Current
+  commentId: P:DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.Current
+  fullName: DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.Current
+  nameWithType: AsyncEventHub.EventGroup.Enumerator.Current
+- uid: DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.Current*
+  name: Current
+  href: api/DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.html#DotNext_Threading_AsyncEventHub_EventGroup_Enumerator_Current_
+  commentId: Overload:DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.Current
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.Current
+  nameWithType: AsyncEventHub.EventGroup.Enumerator.Current
+- uid: DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.MoveNext
+  name: MoveNext()
+  href: api/DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.html#DotNext_Threading_AsyncEventHub_EventGroup_Enumerator_MoveNext
+  commentId: M:DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.MoveNext
+  fullName: DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.MoveNext()
+  nameWithType: AsyncEventHub.EventGroup.Enumerator.MoveNext()
+- uid: DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.MoveNext*
+  name: MoveNext
+  href: api/DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.html#DotNext_Threading_AsyncEventHub_EventGroup_Enumerator_MoveNext_
+  commentId: Overload:DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.MoveNext
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncEventHub.EventGroup.Enumerator.MoveNext
+  nameWithType: AsyncEventHub.EventGroup.Enumerator.MoveNext
+- uid: DotNext.Threading.AsyncEventHub.EventGroup.GetEnumerator
+  name: GetEnumerator()
+  href: api/DotNext.Threading.AsyncEventHub.EventGroup.html#DotNext_Threading_AsyncEventHub_EventGroup_GetEnumerator
+  commentId: M:DotNext.Threading.AsyncEventHub.EventGroup.GetEnumerator
+  fullName: DotNext.Threading.AsyncEventHub.EventGroup.GetEnumerator()
+  nameWithType: AsyncEventHub.EventGroup.GetEnumerator()
+- uid: DotNext.Threading.AsyncEventHub.EventGroup.GetEnumerator*
+  name: GetEnumerator
+  href: api/DotNext.Threading.AsyncEventHub.EventGroup.html#DotNext_Threading_AsyncEventHub_EventGroup_GetEnumerator_
+  commentId: Overload:DotNext.Threading.AsyncEventHub.EventGroup.GetEnumerator
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncEventHub.EventGroup.GetEnumerator
+  nameWithType: AsyncEventHub.EventGroup.GetEnumerator
+- uid: DotNext.Threading.AsyncEventHub.Pulse(DotNext.Threading.AsyncEventHub.EventGroup@)
+  name: Pulse(in EventGroup)
+  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_Pulse_DotNext_Threading_AsyncEventHub_EventGroup__
+  commentId: M:DotNext.Threading.AsyncEventHub.Pulse(DotNext.Threading.AsyncEventHub.EventGroup@)
+  name.vb: Pulse(EventGroup)
+  fullName: DotNext.Threading.AsyncEventHub.Pulse(in DotNext.Threading.AsyncEventHub.EventGroup)
+  fullName.vb: DotNext.Threading.AsyncEventHub.Pulse(DotNext.Threading.AsyncEventHub.EventGroup)
+  nameWithType: AsyncEventHub.Pulse(in AsyncEventHub.EventGroup)
+  nameWithType.vb: AsyncEventHub.Pulse(AsyncEventHub.EventGroup)
 - uid: DotNext.Threading.AsyncEventHub.Pulse(System.Int32)
   name: Pulse(int)
   href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_Pulse_System_Int32_
@@ -43747,24 +44130,6 @@ references:
   fullName.vb: DotNext.Threading.AsyncEventHub.Pulse(Integer)
   nameWithType: AsyncEventHub.Pulse(int)
   nameWithType.vb: AsyncEventHub.Pulse(Integer)
-- uid: DotNext.Threading.AsyncEventHub.Pulse(System.ReadOnlySpan{System.Int32})
-  name: Pulse(ReadOnlySpan<int>)
-  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_Pulse_System_ReadOnlySpan_System_Int32__
-  commentId: M:DotNext.Threading.AsyncEventHub.Pulse(System.ReadOnlySpan{System.Int32})
-  name.vb: Pulse(ReadOnlySpan(Of Integer))
-  fullName: DotNext.Threading.AsyncEventHub.Pulse(System.ReadOnlySpan<int>)
-  fullName.vb: DotNext.Threading.AsyncEventHub.Pulse(System.ReadOnlySpan(Of Integer))
-  nameWithType: AsyncEventHub.Pulse(ReadOnlySpan<int>)
-  nameWithType.vb: AsyncEventHub.Pulse(ReadOnlySpan(Of Integer))
-- uid: DotNext.Threading.AsyncEventHub.Pulse(System.ReadOnlySpan{System.Int32},System.Span{System.Boolean})
-  name: Pulse(ReadOnlySpan<int>, Span<bool>)
-  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_Pulse_System_ReadOnlySpan_System_Int32__System_Span_System_Boolean__
-  commentId: M:DotNext.Threading.AsyncEventHub.Pulse(System.ReadOnlySpan{System.Int32},System.Span{System.Boolean})
-  name.vb: Pulse(ReadOnlySpan(Of Integer), Span(Of Boolean))
-  fullName: DotNext.Threading.AsyncEventHub.Pulse(System.ReadOnlySpan<int>, System.Span<bool>)
-  fullName.vb: DotNext.Threading.AsyncEventHub.Pulse(System.ReadOnlySpan(Of Integer), System.Span(Of Boolean))
-  nameWithType: AsyncEventHub.Pulse(ReadOnlySpan<int>, Span<bool>)
-  nameWithType.vb: AsyncEventHub.Pulse(ReadOnlySpan(Of Integer), Span(Of Boolean))
 - uid: DotNext.Threading.AsyncEventHub.Pulse*
   name: Pulse
   href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_Pulse_
@@ -43778,15 +44143,6 @@ references:
   commentId: M:DotNext.Threading.AsyncEventHub.PulseAll
   fullName: DotNext.Threading.AsyncEventHub.PulseAll()
   nameWithType: AsyncEventHub.PulseAll()
-- uid: DotNext.Threading.AsyncEventHub.PulseAll(System.Span{System.Boolean})
-  name: PulseAll(Span<bool>)
-  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_PulseAll_System_Span_System_Boolean__
-  commentId: M:DotNext.Threading.AsyncEventHub.PulseAll(System.Span{System.Boolean})
-  name.vb: PulseAll(Span(Of Boolean))
-  fullName: DotNext.Threading.AsyncEventHub.PulseAll(System.Span<bool>)
-  fullName.vb: DotNext.Threading.AsyncEventHub.PulseAll(System.Span(Of Boolean))
-  nameWithType: AsyncEventHub.PulseAll(Span<bool>)
-  nameWithType.vb: AsyncEventHub.PulseAll(Span(Of Boolean))
 - uid: DotNext.Threading.AsyncEventHub.PulseAll*
   name: PulseAll
   href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_PulseAll_
@@ -43807,6 +44163,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncEventHub.Reset
   nameWithType: AsyncEventHub.Reset
+- uid: DotNext.Threading.AsyncEventHub.ResetAndPulse(DotNext.Threading.AsyncEventHub.EventGroup@)
+  name: ResetAndPulse(in EventGroup)
+  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_ResetAndPulse_DotNext_Threading_AsyncEventHub_EventGroup__
+  commentId: M:DotNext.Threading.AsyncEventHub.ResetAndPulse(DotNext.Threading.AsyncEventHub.EventGroup@)
+  name.vb: ResetAndPulse(EventGroup)
+  fullName: DotNext.Threading.AsyncEventHub.ResetAndPulse(in DotNext.Threading.AsyncEventHub.EventGroup)
+  fullName.vb: DotNext.Threading.AsyncEventHub.ResetAndPulse(DotNext.Threading.AsyncEventHub.EventGroup)
+  nameWithType: AsyncEventHub.ResetAndPulse(in AsyncEventHub.EventGroup)
+  nameWithType.vb: AsyncEventHub.ResetAndPulse(AsyncEventHub.EventGroup)
 - uid: DotNext.Threading.AsyncEventHub.ResetAndPulse(System.Int32)
   name: ResetAndPulse(int)
   href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_ResetAndPulse_System_Int32_
@@ -43816,24 +44181,6 @@ references:
   fullName.vb: DotNext.Threading.AsyncEventHub.ResetAndPulse(Integer)
   nameWithType: AsyncEventHub.ResetAndPulse(int)
   nameWithType.vb: AsyncEventHub.ResetAndPulse(Integer)
-- uid: DotNext.Threading.AsyncEventHub.ResetAndPulse(System.ReadOnlySpan{System.Int32})
-  name: ResetAndPulse(ReadOnlySpan<int>)
-  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_ResetAndPulse_System_ReadOnlySpan_System_Int32__
-  commentId: M:DotNext.Threading.AsyncEventHub.ResetAndPulse(System.ReadOnlySpan{System.Int32})
-  name.vb: ResetAndPulse(ReadOnlySpan(Of Integer))
-  fullName: DotNext.Threading.AsyncEventHub.ResetAndPulse(System.ReadOnlySpan<int>)
-  fullName.vb: DotNext.Threading.AsyncEventHub.ResetAndPulse(System.ReadOnlySpan(Of Integer))
-  nameWithType: AsyncEventHub.ResetAndPulse(ReadOnlySpan<int>)
-  nameWithType.vb: AsyncEventHub.ResetAndPulse(ReadOnlySpan(Of Integer))
-- uid: DotNext.Threading.AsyncEventHub.ResetAndPulse(System.ReadOnlySpan{System.Int32},System.Span{System.Boolean})
-  name: ResetAndPulse(ReadOnlySpan<int>, Span<bool>)
-  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_ResetAndPulse_System_ReadOnlySpan_System_Int32__System_Span_System_Boolean__
-  commentId: M:DotNext.Threading.AsyncEventHub.ResetAndPulse(System.ReadOnlySpan{System.Int32},System.Span{System.Boolean})
-  name.vb: ResetAndPulse(ReadOnlySpan(Of Integer), Span(Of Boolean))
-  fullName: DotNext.Threading.AsyncEventHub.ResetAndPulse(System.ReadOnlySpan<int>, System.Span<bool>)
-  fullName.vb: DotNext.Threading.AsyncEventHub.ResetAndPulse(System.ReadOnlySpan(Of Integer), System.Span(Of Boolean))
-  nameWithType: AsyncEventHub.ResetAndPulse(ReadOnlySpan<int>, Span<bool>)
-  nameWithType.vb: AsyncEventHub.ResetAndPulse(ReadOnlySpan(Of Integer), Span(Of Boolean))
 - uid: DotNext.Threading.AsyncEventHub.ResetAndPulse*
   name: ResetAndPulse
   href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_ResetAndPulse_
@@ -43841,24 +44188,24 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncEventHub.ResetAndPulse
   nameWithType: AsyncEventHub.ResetAndPulse
-- uid: DotNext.Threading.AsyncEventHub.WaitAllAsync(System.ReadOnlySpan{System.Int32},System.Threading.CancellationToken)
-  name: WaitAllAsync(ReadOnlySpan<int>, CancellationToken)
-  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_WaitAllAsync_System_ReadOnlySpan_System_Int32__System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.AsyncEventHub.WaitAllAsync(System.ReadOnlySpan{System.Int32},System.Threading.CancellationToken)
-  name.vb: WaitAllAsync(ReadOnlySpan(Of Integer), CancellationToken)
-  fullName: DotNext.Threading.AsyncEventHub.WaitAllAsync(System.ReadOnlySpan<int>, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.AsyncEventHub.WaitAllAsync(System.ReadOnlySpan(Of Integer), System.Threading.CancellationToken)
-  nameWithType: AsyncEventHub.WaitAllAsync(ReadOnlySpan<int>, CancellationToken)
-  nameWithType.vb: AsyncEventHub.WaitAllAsync(ReadOnlySpan(Of Integer), CancellationToken)
-- uid: DotNext.Threading.AsyncEventHub.WaitAllAsync(System.ReadOnlySpan{System.Int32},System.TimeSpan,System.Threading.CancellationToken)
-  name: WaitAllAsync(ReadOnlySpan<int>, TimeSpan, CancellationToken)
-  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_WaitAllAsync_System_ReadOnlySpan_System_Int32__System_TimeSpan_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.AsyncEventHub.WaitAllAsync(System.ReadOnlySpan{System.Int32},System.TimeSpan,System.Threading.CancellationToken)
-  name.vb: WaitAllAsync(ReadOnlySpan(Of Integer), TimeSpan, CancellationToken)
-  fullName: DotNext.Threading.AsyncEventHub.WaitAllAsync(System.ReadOnlySpan<int>, System.TimeSpan, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.AsyncEventHub.WaitAllAsync(System.ReadOnlySpan(Of Integer), System.TimeSpan, System.Threading.CancellationToken)
-  nameWithType: AsyncEventHub.WaitAllAsync(ReadOnlySpan<int>, TimeSpan, CancellationToken)
-  nameWithType.vb: AsyncEventHub.WaitAllAsync(ReadOnlySpan(Of Integer), TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncEventHub.WaitAllAsync(DotNext.Threading.AsyncEventHub.EventGroup@,System.Threading.CancellationToken)
+  name: WaitAllAsync(in EventGroup, CancellationToken)
+  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_WaitAllAsync_DotNext_Threading_AsyncEventHub_EventGroup__System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncEventHub.WaitAllAsync(DotNext.Threading.AsyncEventHub.EventGroup@,System.Threading.CancellationToken)
+  name.vb: WaitAllAsync(EventGroup, CancellationToken)
+  fullName: DotNext.Threading.AsyncEventHub.WaitAllAsync(in DotNext.Threading.AsyncEventHub.EventGroup, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncEventHub.WaitAllAsync(DotNext.Threading.AsyncEventHub.EventGroup, System.Threading.CancellationToken)
+  nameWithType: AsyncEventHub.WaitAllAsync(in AsyncEventHub.EventGroup, CancellationToken)
+  nameWithType.vb: AsyncEventHub.WaitAllAsync(AsyncEventHub.EventGroup, CancellationToken)
+- uid: DotNext.Threading.AsyncEventHub.WaitAllAsync(DotNext.Threading.AsyncEventHub.EventGroup@,System.TimeSpan,System.Threading.CancellationToken)
+  name: WaitAllAsync(in EventGroup, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_WaitAllAsync_DotNext_Threading_AsyncEventHub_EventGroup__System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncEventHub.WaitAllAsync(DotNext.Threading.AsyncEventHub.EventGroup@,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: WaitAllAsync(EventGroup, TimeSpan, CancellationToken)
+  fullName: DotNext.Threading.AsyncEventHub.WaitAllAsync(in DotNext.Threading.AsyncEventHub.EventGroup, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncEventHub.WaitAllAsync(DotNext.Threading.AsyncEventHub.EventGroup, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncEventHub.WaitAllAsync(in AsyncEventHub.EventGroup, TimeSpan, CancellationToken)
+  nameWithType.vb: AsyncEventHub.WaitAllAsync(AsyncEventHub.EventGroup, TimeSpan, CancellationToken)
 - uid: DotNext.Threading.AsyncEventHub.WaitAllAsync(System.Threading.CancellationToken)
   name: WaitAllAsync(CancellationToken)
   href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_WaitAllAsync_System_Threading_CancellationToken_
@@ -43878,24 +44225,60 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncEventHub.WaitAllAsync
   nameWithType: AsyncEventHub.WaitAllAsync
-- uid: DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.ReadOnlySpan{System.Int32},System.Threading.CancellationToken)
-  name: WaitAnyAsync(ReadOnlySpan<int>, CancellationToken)
-  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_WaitAnyAsync_System_ReadOnlySpan_System_Int32__System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.ReadOnlySpan{System.Int32},System.Threading.CancellationToken)
-  name.vb: WaitAnyAsync(ReadOnlySpan(Of Integer), CancellationToken)
-  fullName: DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.ReadOnlySpan<int>, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.ReadOnlySpan(Of Integer), System.Threading.CancellationToken)
-  nameWithType: AsyncEventHub.WaitAnyAsync(ReadOnlySpan<int>, CancellationToken)
-  nameWithType.vb: AsyncEventHub.WaitAnyAsync(ReadOnlySpan(Of Integer), CancellationToken)
-- uid: DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.ReadOnlySpan{System.Int32},System.TimeSpan,System.Threading.CancellationToken)
-  name: WaitAnyAsync(ReadOnlySpan<int>, TimeSpan, CancellationToken)
-  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_WaitAnyAsync_System_ReadOnlySpan_System_Int32__System_TimeSpan_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.ReadOnlySpan{System.Int32},System.TimeSpan,System.Threading.CancellationToken)
-  name.vb: WaitAnyAsync(ReadOnlySpan(Of Integer), TimeSpan, CancellationToken)
-  fullName: DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.ReadOnlySpan<int>, System.TimeSpan, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.ReadOnlySpan(Of Integer), System.TimeSpan, System.Threading.CancellationToken)
-  nameWithType: AsyncEventHub.WaitAnyAsync(ReadOnlySpan<int>, TimeSpan, CancellationToken)
-  nameWithType.vb: AsyncEventHub.WaitAnyAsync(ReadOnlySpan(Of Integer), TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncEventHub.WaitAnyAsync(DotNext.Threading.AsyncEventHub.EventGroup@,System.Collections.Generic.ICollection{System.Int32},System.Threading.CancellationToken)
+  name: WaitAnyAsync(in EventGroup, ICollection<int>, CancellationToken)
+  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_WaitAnyAsync_DotNext_Threading_AsyncEventHub_EventGroup__System_Collections_Generic_ICollection_System_Int32__System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncEventHub.WaitAnyAsync(DotNext.Threading.AsyncEventHub.EventGroup@,System.Collections.Generic.ICollection{System.Int32},System.Threading.CancellationToken)
+  name.vb: WaitAnyAsync(EventGroup, ICollection(Of Integer), CancellationToken)
+  fullName: DotNext.Threading.AsyncEventHub.WaitAnyAsync(in DotNext.Threading.AsyncEventHub.EventGroup, System.Collections.Generic.ICollection<int>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncEventHub.WaitAnyAsync(DotNext.Threading.AsyncEventHub.EventGroup, System.Collections.Generic.ICollection(Of Integer), System.Threading.CancellationToken)
+  nameWithType: AsyncEventHub.WaitAnyAsync(in AsyncEventHub.EventGroup, ICollection<int>, CancellationToken)
+  nameWithType.vb: AsyncEventHub.WaitAnyAsync(AsyncEventHub.EventGroup, ICollection(Of Integer), CancellationToken)
+- uid: DotNext.Threading.AsyncEventHub.WaitAnyAsync(DotNext.Threading.AsyncEventHub.EventGroup@,System.Collections.Generic.ICollection{System.Int32},System.TimeSpan,System.Threading.CancellationToken)
+  name: WaitAnyAsync(in EventGroup, ICollection<int>, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_WaitAnyAsync_DotNext_Threading_AsyncEventHub_EventGroup__System_Collections_Generic_ICollection_System_Int32__System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncEventHub.WaitAnyAsync(DotNext.Threading.AsyncEventHub.EventGroup@,System.Collections.Generic.ICollection{System.Int32},System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: WaitAnyAsync(EventGroup, ICollection(Of Integer), TimeSpan, CancellationToken)
+  fullName: DotNext.Threading.AsyncEventHub.WaitAnyAsync(in DotNext.Threading.AsyncEventHub.EventGroup, System.Collections.Generic.ICollection<int>, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncEventHub.WaitAnyAsync(DotNext.Threading.AsyncEventHub.EventGroup, System.Collections.Generic.ICollection(Of Integer), System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncEventHub.WaitAnyAsync(in AsyncEventHub.EventGroup, ICollection<int>, TimeSpan, CancellationToken)
+  nameWithType.vb: AsyncEventHub.WaitAnyAsync(AsyncEventHub.EventGroup, ICollection(Of Integer), TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncEventHub.WaitAnyAsync(DotNext.Threading.AsyncEventHub.EventGroup@,System.Threading.CancellationToken)
+  name: WaitAnyAsync(in EventGroup, CancellationToken)
+  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_WaitAnyAsync_DotNext_Threading_AsyncEventHub_EventGroup__System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncEventHub.WaitAnyAsync(DotNext.Threading.AsyncEventHub.EventGroup@,System.Threading.CancellationToken)
+  name.vb: WaitAnyAsync(EventGroup, CancellationToken)
+  fullName: DotNext.Threading.AsyncEventHub.WaitAnyAsync(in DotNext.Threading.AsyncEventHub.EventGroup, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncEventHub.WaitAnyAsync(DotNext.Threading.AsyncEventHub.EventGroup, System.Threading.CancellationToken)
+  nameWithType: AsyncEventHub.WaitAnyAsync(in AsyncEventHub.EventGroup, CancellationToken)
+  nameWithType.vb: AsyncEventHub.WaitAnyAsync(AsyncEventHub.EventGroup, CancellationToken)
+- uid: DotNext.Threading.AsyncEventHub.WaitAnyAsync(DotNext.Threading.AsyncEventHub.EventGroup@,System.TimeSpan,System.Threading.CancellationToken)
+  name: WaitAnyAsync(in EventGroup, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_WaitAnyAsync_DotNext_Threading_AsyncEventHub_EventGroup__System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncEventHub.WaitAnyAsync(DotNext.Threading.AsyncEventHub.EventGroup@,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: WaitAnyAsync(EventGroup, TimeSpan, CancellationToken)
+  fullName: DotNext.Threading.AsyncEventHub.WaitAnyAsync(in DotNext.Threading.AsyncEventHub.EventGroup, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncEventHub.WaitAnyAsync(DotNext.Threading.AsyncEventHub.EventGroup, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncEventHub.WaitAnyAsync(in AsyncEventHub.EventGroup, TimeSpan, CancellationToken)
+  nameWithType.vb: AsyncEventHub.WaitAnyAsync(AsyncEventHub.EventGroup, TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.Collections.Generic.ICollection{System.Int32},System.Threading.CancellationToken)
+  name: WaitAnyAsync(ICollection<int>, CancellationToken)
+  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_WaitAnyAsync_System_Collections_Generic_ICollection_System_Int32__System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.Collections.Generic.ICollection{System.Int32},System.Threading.CancellationToken)
+  name.vb: WaitAnyAsync(ICollection(Of Integer), CancellationToken)
+  fullName: DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.Collections.Generic.ICollection<int>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.Collections.Generic.ICollection(Of Integer), System.Threading.CancellationToken)
+  nameWithType: AsyncEventHub.WaitAnyAsync(ICollection<int>, CancellationToken)
+  nameWithType.vb: AsyncEventHub.WaitAnyAsync(ICollection(Of Integer), CancellationToken)
+- uid: DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.Collections.Generic.ICollection{System.Int32},System.TimeSpan,System.Threading.CancellationToken)
+  name: WaitAnyAsync(ICollection<int>, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_WaitAnyAsync_System_Collections_Generic_ICollection_System_Int32__System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.Collections.Generic.ICollection{System.Int32},System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: WaitAnyAsync(ICollection(Of Integer), TimeSpan, CancellationToken)
+  fullName: DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.Collections.Generic.ICollection<int>, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.Collections.Generic.ICollection(Of Integer), System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncEventHub.WaitAnyAsync(ICollection<int>, TimeSpan, CancellationToken)
+  nameWithType.vb: AsyncEventHub.WaitAnyAsync(ICollection(Of Integer), TimeSpan, CancellationToken)
 - uid: DotNext.Threading.AsyncEventHub.WaitAnyAsync(System.Threading.CancellationToken)
   name: WaitAnyAsync(CancellationToken)
   href: api/DotNext.Threading.AsyncEventHub.html#DotNext_Threading_AsyncEventHub_WaitAnyAsync_System_Threading_CancellationToken_
