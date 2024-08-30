@@ -67,8 +67,8 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     {
         if ((uint)eventIndex > (uint)Count)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
-        
-        var manager = new WaitAllManager(this, GetBitMask(eventIndex));
+
+        var manager = new WaitAllManager(this, eventIndex);
         return AcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
     }
 
@@ -86,7 +86,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         if ((uint)eventIndex > (uint)Count)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
 
-        var manager = new WaitAllManager(this, GetBitMask(eventIndex));
+        var manager = new WaitAllManager(this, eventIndex);
         return AcquireSpecialAsync(ref pool, ref manager, new CancellationTokenOnly(token));
     }
 
@@ -504,18 +504,19 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         /// <summary>
         /// Represents an enumerator over indices.
         /// </summary>
+        [StructLayout(LayoutKind.Auto)]
         public struct Enumerator : IEnumerator<Enumerator, int>
         {
             private UInt128 state;
 
-            internal Enumerator(UInt128 state) => this.state = state;
+            internal Enumerator(in UInt128 state) => this.state = state;
 
             /// <summary>
             /// Gets the current index.
             /// </summary>
             public int Current
             {
-                get;
+                readonly get;
                 private set;
             }
 
@@ -538,6 +539,14 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     {
         private readonly ReadOnlyValueReference<UInt128> state;
         private readonly UInt128 mask;
+
+        internal WaitAllManager(AsyncEventHub stateHolder, int eventIndex)
+        {
+            Debug.Assert(stateHolder is not null);
+
+            mask = GetBitMask(eventIndex);
+            state = new(stateHolder, in stateHolder.state);
+        }
 
         internal WaitAllManager(AsyncEventHub stateHolder, in UInt128 mask)
         {
