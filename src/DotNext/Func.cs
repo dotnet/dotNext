@@ -94,13 +94,13 @@ public static class Func
 
         // slow path - allocates a new delegate
         return obj is null
-            ? Default!
+            ? Default<T?>!
             : typeof(T).IsValueType
                 ? new BoxedConstant<T>(obj).GetValue
                 : Unsafe.As<T, object>(ref obj).ReinterpretRefType<T>;
-
-        static T? Default() => default;
     }
+    
+    internal static T? Default<T>() => default;
 
     private static T ReinterpretRefType<T>(this object obj)
         => Unsafe.As<object, T>(ref obj);

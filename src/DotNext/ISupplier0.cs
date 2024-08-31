@@ -198,4 +198,6 @@ public readonly record struct DelegatingSupplier<TResult> : ISupplier<TResult>, 
 file sealed class DefaultSupplier<T> : ISupplier<T?>
 {
     T? ISupplier<T?>.Invoke() => default;
+
+    Func<T?> IFunctional<Func<T?>>.ToDelegate() => Func.Default<T?>;
 }
