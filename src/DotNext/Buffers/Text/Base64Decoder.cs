@@ -74,7 +74,7 @@ public partial struct Base64Decoder : IResettable
         {
             Debug.Assert((uint)reservedBufferSize <= sizeof(ulong));
 
-            return MemoryMarshal.CreateReadOnlySpan(in ChangeType<ulong, byte>(in reservedBuffer), reservedBufferSize);
+            return MemoryMarshal.CreateReadOnlySpan(in InToRef<ulong, byte>(in reservedBuffer), reservedBufferSize);
         }
     }
 }

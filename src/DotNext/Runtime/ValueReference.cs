@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime;
 
-using Runtime.CompilerServices;
+using CompilerServices;
 
 /// <summary>
 /// Represents a mutable reference to the field.
@@ -95,7 +95,7 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     private bool SameObject(object? other) => ReferenceEquals(owner, other);
 
     private Func<T> ToFunc()
-        => Intrinsics.ChangeType<ValueReference<T>, ReadOnlyValueReference<T>>(in this).ToFunc();
+        => Intrinsics.InToRef<ValueReference<T>, ReadOnlyValueReference<T>>(in this).ToFunc();
     
     private Action<T> ToAction()
     {
@@ -343,7 +343,7 @@ file abstract class RawData
     internal static nint GetOffset<T>(object owner, ref readonly T field, [CallerArgumentExpression(nameof(field))] string? paramName = null)
     {
         ref var rawData = ref Unsafe.As<RawData>(owner).data;
-        var offset = Unsafe.ByteOffset(in rawData, in Intrinsics.ChangeType<T, byte>(in field));
+        var offset = Unsafe.ByteOffset(in rawData, in Intrinsics.InToRef<T, byte>(in field));
 
         // Ensure that the reference is an interior pointer to the field inside the object
         if (GetRawObjectDataSize is not null && owner != Sentinel.Instance && (nuint)(offset + Unsafe.SizeOf<T>()) > GetRawObjectDataSize(owner))
