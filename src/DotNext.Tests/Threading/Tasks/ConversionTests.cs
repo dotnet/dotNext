@@ -27,7 +27,7 @@ public sealed class ConversionTests : Test
         Equal("Hello", result);
         //check for caching
         result = await Task.CompletedTask.AsDynamic();
-        Equal(Missing.Value, result);
+        Same(Missing.Value, result);
         result = await Task.FromResult("Hello2").AsDynamic();
         Equal("Hello2", result);
         await ThrowsAnyAsync<OperationCanceledException>(async () => await Task.FromCanceled(new CancellationToken(true)).AsDynamic());
@@ -46,5 +46,13 @@ public sealed class ConversionTests : Test
     {
         await Task.FromException(new Exception()).SuspendException();
         await ValueTask.FromException(new Exception()).SuspendException();
+    }
+
+    [Fact]
+    public static async Task SuspendException2()
+    {
+        var t = Task.FromException(new Exception());
+        var result = await t.AsDynamic().ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing | ConfigureAwaitOptions.ContinueOnCapturedContext);
+        Same(result, Missing.Value);
     }
 }
