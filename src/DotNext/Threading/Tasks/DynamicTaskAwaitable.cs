@@ -27,14 +27,13 @@ public readonly struct DynamicTaskAwaitable
     {
         private static CallSite<Func<CallSite, Task, object?>>? getResultCallSite;
 
-        private readonly Task task;
         private readonly ConfiguredTaskAwaitable.ConfiguredTaskAwaiter awaiter;
 
-        internal Awaiter(Task task, bool continueOnCaptureContext)
-        {
-            this.task = task;
-            awaiter = task.ConfigureAwait(continueOnCaptureContext).GetAwaiter();
-        }
+        internal Awaiter(Task task, ConfigureAwaitOptions options)
+            => awaiter = task.ConfigureAwait(options).GetAwaiter();
+
+        [UnsafeAccessor(UnsafeAccessorKind.Field, Name = "m_task")]
+        private static extern ref readonly Task GetTask(ref readonly ConfiguredTaskAwaitable.ConfiguredTaskAwaiter awaiter);
 
         /// <summary>
         /// Gets a value that indicates whether the asynchronous task has completed.
@@ -57,9 +56,11 @@ public readonly struct DynamicTaskAwaitable
 
         [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
         internal object? GetRawResult()
-            => IsTaskWithResult(task.GetType()) ?
-                GetRawResult(task) :
-                Missing.Value;
+        {
+            var task = GetTask(in awaiter);
+
+            return IsTaskWithResult(task.GetType()) ? GetRawResult(task) : Missing.Value;
+        }
 
         [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
         private static object? GetRawResult(Task task)
@@ -75,6 +76,8 @@ public readonly struct DynamicTaskAwaitable
         [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
         public dynamic? GetResult()
         {
+            var task = GetTask(in awaiter);
+            
             if (IsTaskWithResult(task.GetType()))
                 return GetRawResult(task);
 
@@ -84,12 +87,12 @@ public readonly struct DynamicTaskAwaitable
     }
 
     private readonly Task task;
-    private readonly bool continueOnCapturedContext;
+    private readonly ConfigureAwaitOptions options;
 
-    internal DynamicTaskAwaitable(Task task, bool continueOnCapturedContext = true)
+    internal DynamicTaskAwaitable(Task task, ConfigureAwaitOptions options = ConfigureAwaitOptions.ContinueOnCapturedContext)
     {
         this.task = task;
-        this.continueOnCapturedContext = continueOnCapturedContext;
+        this.options = options;
     }
 
     /// <summary>
@@ -97,11 +100,21 @@ public readonly struct DynamicTaskAwaitable
     /// </summary>
     /// <param name="continueOnCapturedContext"><see langword="true"/> to attempt to marshal the continuation back to the original context captured; otherwise, <see langword="false"/>.</param>
     /// <returns>An object used to await this task.</returns>
-    public DynamicTaskAwaitable ConfigureAwait(bool continueOnCapturedContext) => new(task, continueOnCapturedContext);
+    public DynamicTaskAwaitable ConfigureAwait(bool continueOnCapturedContext)
+        => new(task, continueOnCapturedContext
+            ? options | ConfigureAwaitOptions.ContinueOnCapturedContext
+            : options & ~ConfigureAwaitOptions.ContinueOnCapturedContext);
+
+    /// <summary>
+    /// Configures an awaiter used to await this task.
+    /// </summary>
+    /// <param name="options">Options used to configure how awaits on this task are performed.</param>
+    /// <returns>Configured awaitable object.</returns>
+    public DynamicTaskAwaitable ConfigureAwait(ConfigureAwaitOptions options) => new(task, options);
 
     /// <summary>
     /// Gets an awaiter used to await this task.
     /// </summary>
     /// <returns>An awaiter instance.</returns>
-    public Awaiter GetAwaiter() => new(task, continueOnCapturedContext);
+    public Awaiter GetAwaiter() => new(task, options);
 }
