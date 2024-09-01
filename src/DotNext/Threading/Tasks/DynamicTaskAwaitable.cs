@@ -57,16 +57,17 @@ public readonly struct DynamicTaskAwaitable
         [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
         internal object? GetRawResult()
         {
+            awaiter.GetResult();
             var task = GetTask(in awaiter);
 
-            return IsTaskWithResult(task.GetType()) ? GetRawResult(task) : Missing.Value;
-        }
-
-        [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
-        private static object? GetRawResult(Task task)
-        {
-            var callSite = getResultCallSite ??= CallSite<Func<CallSite, Task, object?>>.Create(new TaskResultBinder());
-            return callSite.Target(callSite, task);
+            return IsTaskWithResult(task.GetType()) ? GetDynamicResult(task) : Missing.Value;
+            
+            [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
+            static object? GetDynamicResult(Task task)
+            {
+                var callSite = getResultCallSite ??= CallSite<Func<CallSite, Task, object?>>.Create(new TaskResultBinder());
+                return callSite.Target(callSite, task);
+            }
         }
 
         /// <summary>
@@ -74,16 +75,7 @@ public readonly struct DynamicTaskAwaitable
         /// </summary>
         /// <returns>The result of the completed task; or <see cref="Missing.Value"/> if underlying task is not of type <see cref="Task{TResult}"/>.</returns>
         [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
-        public dynamic? GetResult()
-        {
-            var task = GetTask(in awaiter);
-            
-            if (IsTaskWithResult(task.GetType()))
-                return GetRawResult(task);
-
-            awaiter.GetResult();
-            return Missing.Value;
-        }
+        public dynamic? GetResult() => GetRawResult();
     }
 
     private readonly Task task;
