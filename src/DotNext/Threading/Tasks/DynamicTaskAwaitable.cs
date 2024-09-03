@@ -40,19 +40,12 @@ public readonly struct DynamicTaskAwaitable
         /// </summary>
         public bool IsCompleted => awaiter.IsCompleted;
 
-        /// <summary>
-        /// Sets the action to perform when this object stops waiting for the asynchronous task to complete.
-        /// </summary>
-        /// <param name="continuation">The action to perform when the wait operation completes.</param>
+        /// <inheritdoc cref="INotifyCompletion.OnCompleted"/>
         public void OnCompleted(Action continuation) => awaiter.OnCompleted(continuation);
 
-        /// <inheritdoc />
-        void ICriticalNotifyCompletion.UnsafeOnCompleted(Action continuation)
+        /// <inheritdoc cref="ICriticalNotifyCompletion.UnsafeOnCompleted" />
+        public void UnsafeOnCompleted(Action continuation)
             => awaiter.UnsafeOnCompleted(continuation);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool IsTaskWithResult(Type type)
-            => type != CompletedTaskType && type.IsConstructedGenericType;
 
         [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
         internal object? GetRawResult()
@@ -68,6 +61,9 @@ public readonly struct DynamicTaskAwaitable
                 var callSite = getResultCallSite ??= CallSite<Func<CallSite, Task, object?>>.Create(new TaskResultBinder());
                 return callSite.Target(callSite, task);
             }
+            
+            static bool IsTaskWithResult(Type type)
+                => type != CompletedTaskType && type.IsConstructedGenericType;
         }
 
         /// <summary>
