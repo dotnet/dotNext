@@ -30,7 +30,7 @@ public interface IRaftClusterMember : IClusterMember
     Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
     /// <summary>
-    /// Checks whether the transition to Candidate state makes sence.
+    /// Checks whether the transition to Candidate state makes sense.
     /// </summary>
     /// <remarks>
     /// Called by a server before changing itself to Candidate status.
