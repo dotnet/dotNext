@@ -17,7 +17,7 @@ switch (args)
             int.Parse(parallelRequests)).ConfigureAwait(false);
         break;
     default:
-        Console.WriteLine("Usage: program <number-of-entries> <cache-size> <duration-in-seconds> <parallel-requests> <mode:cache|nocache>");
+        Console.WriteLine("Usage: program <number-of-entries> <cache-size> <duration-in-seconds> <parallel-requests>");
         break;
 }
 
