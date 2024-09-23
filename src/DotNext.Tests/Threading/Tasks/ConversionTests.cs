@@ -55,4 +55,12 @@ public sealed class ConversionTests : Test
         var result = await t.AsDynamic().ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing | ConfigureAwaitOptions.ContinueOnCapturedContext);
         Same(result, Missing.Value);
     }
+    
+    [Fact]
+    public static async Task SuspendExceptionParametrized()
+    {
+        await Task.FromException(new Exception()).SuspendException(42, (_, i) => i is 42);
+        await ValueTask.FromException(new Exception()).SuspendException(42, (_, i) => i is 42);
+        await ThrowsAsync<Exception>(async () => await Task.FromException(new Exception()).SuspendException(43, (_, i) => i is 42));
+    }
 }
