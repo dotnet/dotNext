@@ -163,6 +163,82 @@ public static partial class DelegateHelpers
     }
 
     /// <summary>
+    /// Converts action to async delegate.
+    /// </summary>
+    /// <typeparam name="T1">The type of the first argument to be passed to the action.</typeparam>
+    /// <typeparam name="T2">The type of the second argument to be passed to the action.</typeparam>
+    /// <param name="action">Synchronous action.</param>
+    /// <returns>The asynchronous function that wraps <paramref name="action"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
+    public static Func<T1, T2, CancellationToken, ValueTask> ToAsync<T1, T2>(this Action<T1, T2> action)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        return action.Invoke;
+    }
+
+    private static ValueTask Invoke<T1, T2>(this Action<T1, T2> action, T1 arg1, T2 arg2, CancellationToken token)
+    {
+        ValueTask task;
+        if (token.IsCancellationRequested)
+        {
+            task = ValueTask.FromCanceled(token);
+        }
+        else
+        {
+            task = ValueTask.CompletedTask;
+            try
+            {
+                action.Invoke(arg1, arg2);
+            }
+            catch (Exception e)
+            {
+                task = ValueTask.FromException(e);
+            }
+        }
+
+        return task;
+    }
+    
+    /// <summary>
+    /// Converts function to async delegate.
+    /// </summary>
+    /// <typeparam name="T1">The type of the first argument to be passed to the action.</typeparam>
+    /// <typeparam name="T2">The type of the second argument to be passed to the action.</typeparam>
+    /// <typeparam name="TResult">The type of the return value.</typeparam>
+    /// <param name="func">Synchronous action.</param>
+    /// <returns>The asynchronous function that wraps <paramref name="func"/>.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
+    public static Func<T1, T2, CancellationToken, ValueTask<TResult>> ToAsync<T1, T2, TResult>(this Func<T1, T2, TResult> func)
+    {
+        ArgumentNullException.ThrowIfNull(func);
+
+        return func.Invoke;
+    }
+
+    private static ValueTask<TResult> Invoke<T1, T2, TResult>(this Func<T1, T2, TResult> func, T1 arg1, T2 arg2, CancellationToken token)
+    {
+        ValueTask<TResult> task;
+        if (token.IsCancellationRequested)
+        {
+            task = ValueTask.FromCanceled<TResult>(token);
+        }
+        else
+        {
+            try
+            {
+                task = new(func.Invoke(arg1, arg2));
+            }
+            catch (Exception e)
+            {
+                task = ValueTask.FromException<TResult>(e);
+            }
+        }
+
+        return task;
+    }
+
+    /// <summary>
     /// Creates a delegate that hides the return value.
     /// </summary>
     /// <param name="func">The function.</param>

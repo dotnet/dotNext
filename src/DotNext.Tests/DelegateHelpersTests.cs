@@ -521,6 +521,28 @@ public sealed class DelegateHelpersTests : Test
         func = new Action<int>(static _ => throw new Exception()).ToAsync();
         True(func.Invoke(42, new(canceled: false)).IsFaulted);
     }
+    
+    [Fact]
+    public static void ToAsync3()
+    {
+        var func = new Action<int, int>(static (_, _) => { }).ToAsync();
+        True(func.Invoke(42, 42, new(canceled: false)).IsCompletedSuccessfully);
+        True(func.Invoke(42, 42, new(canceled: true)).IsCanceled);
+
+        func = new Action<int, int>(static (_, _) => throw new Exception()).ToAsync();
+        True(func.Invoke(42, 42, new(canceled: false)).IsFaulted);
+    }
+
+    [Fact]
+    public static async Task ToAsync4()
+    {
+        var func = new Func<int, int, int>(static (x, y) => x + y).ToAsync();
+        Equal(84, await func.Invoke(42, 42, new(canceled: false)));
+        True(func.Invoke(42, 42, new(canceled: true)).IsCanceled);
+
+        func = new Func<int, int, int>(static (_, _) => throw new Exception()).ToAsync();
+        await ThrowsAsync<Exception>(func.Invoke(42, 42, new(canceled: false)).AsTask);
+    }
 
     [Fact]
     public static void HideReturnValue1()
