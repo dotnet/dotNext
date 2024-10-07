@@ -554,6 +554,17 @@ public sealed class DelegateHelpersTests : Test
         func = new Func<int, int>(static _ => throw new Exception()).ToAsync();
         await ThrowsAsync<Exception>(func.Invoke(42, new(canceled: false)).AsTask);
     }
+    
+    [Fact]
+    public static async Task ToAsync6()
+    {
+        var func = Func.Constant(42).ToAsync();
+        Equal(42, await func.Invoke(new(canceled: false)));
+        True(func.Invoke(new(canceled: true)).IsCanceled);
+
+        func = new Func<int>(static () => throw new Exception()).ToAsync();
+        await ThrowsAsync<Exception>(func.Invoke(new(canceled: false)).AsTask);
+    }
 
     [Fact]
     public static void HideReturnValue1()
