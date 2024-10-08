@@ -12,7 +12,7 @@ using Generic;
 /// </summary>
 /// <typeparam name="T">The type of the element in the list.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySet<T>
+public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySet<T>, IAsyncEnumerable<T>
 {
     /// <summary>
     /// Represents an enumerator over the collection containing a single element.
@@ -144,6 +144,10 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySe
     /// <inheritdoc />
     readonly IEnumerator IEnumerable.GetEnumerator()
         => GetEnumerator().ToClassicEnumerator<Enumerator, T>();
+
+    /// <inheritdoc />
+    readonly IAsyncEnumerator<T> IAsyncEnumerable<T>.GetAsyncEnumerator(CancellationToken token)
+        => GetEnumerator().ToAsyncEnumerator<Enumerator, T>(token);
 
     /// <summary>
     /// Converts a value to the read-only list.

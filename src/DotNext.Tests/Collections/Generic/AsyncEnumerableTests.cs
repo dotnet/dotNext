@@ -97,4 +97,11 @@ public sealed class AsyncEnumerableTests : Test
         True(Array.Exists(array, "a".Equals));
         True(Array.Exists(array, "b".Equals));
     }
+
+    [Fact]
+    public static void Singleton()
+    {
+        var enumerable = AsyncEnumerable.Singleton(42);
+        Equal(42, Single(enumerable));
+    }
 }
