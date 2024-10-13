@@ -174,7 +174,8 @@ internal sealed class TcpServer : Server, ITcpTransport
                 ITcpTransport.ConfigureSocket(remoteClient, linger, ttl);
                 ThreadPool.UnsafeQueueUserWorkItem(HandleConnection, remoteClient, preferLocal: false);
             }
-            catch (Exception e) when (e is ObjectDisposedException || (e is OperationCanceledException canceledEx && canceledEx.CancellationToken == lifecycleToken))
+            catch (Exception e) when (e is ObjectDisposedException ||
+                                      (e is OperationCanceledException canceledEx && canceledEx.CancellationToken == lifecycleToken))
             {
                 break;
             }
@@ -199,6 +200,9 @@ internal sealed class TcpServer : Server, ITcpTransport
                 break;
             }
         }
+
+        if (connections is 0)
+            noPendingConnectionsEvent.TrySetResult();
     }
 
     public override ValueTask StartAsync(CancellationToken token)

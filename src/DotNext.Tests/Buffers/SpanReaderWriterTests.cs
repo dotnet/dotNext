@@ -378,4 +378,26 @@ public sealed class SpanReaderTests : Test
         True(writer.TryFormat(CompositeFormat.Parse("{0}, {1}!"), ["Hello", "world"]));
         Equal("Hello, world!", writer.WrittenSpan.ToString());
     }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(16)]
+    [InlineData(128)]
+    [InlineData(124)]
+    public static void WriteStringBuilder(int stringLength)
+    {
+        var str = Random.Shared.NextString("abcdefghijklmnopqrstuvwxyz", stringLength);
+
+        var builder = new StringBuilder();
+        for (var i = 0; i < 3; i++)
+        {
+            builder.Append(str);
+        }
+
+        var chars = new char[builder.Length];
+        var writer = new SpanWriter<char>(chars);
+
+        writer.Write(builder);
+        Equal(builder.ToString(), writer.WrittenSpan);
+    }
 }

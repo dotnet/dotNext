@@ -76,8 +76,8 @@ public static class ByteBuffer
     /// </summary>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The value to be written as a sequence of bytes.</param>
-    /// <param name="isBigEndian"><see langword="true"/> to use unsigned encoding; otherwise, <see langword="false"/>.</param>
-    /// <param name="isUnsigned"><see langword="true"/> to write the bytes in a big-endian byte order; otherwise, <see langword="false"/>.</param>
+    /// <param name="isBigEndian"><see langword="true"/> to write the bytes in a big-endian byte order; otherwise, <see langword="false"/>.</param>
+    /// <param name="isUnsigned"><see langword="true"/> to use unsigned encoding; otherwise, <see langword="false"/>.</param>
     /// <returns>The number of bytes written.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place <paramref name="value"/>.</exception>
     public static int Write(this IBufferWriter<byte> writer, in BigInteger value, bool isBigEndian = false, bool isUnsigned = false)

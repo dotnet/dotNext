@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -38,7 +39,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
         this.length = length;
     }
 
-    internal MemoryOwner(ArrayPool<T> pool, int length, bool exactSize)
+    internal MemoryOwner(ArrayPool<T> pool, int length, [ConstantExpected] bool exactSize)
     {
         Debug.Assert(pool is not null);
 

@@ -91,9 +91,9 @@ public partial class FileWriter : Disposable, IFlushable
     public int MaxBufferSize => buffer.Length;
 
     /// <summary>
-    /// Marks the specified number of bytes in the buffer as consumed.
+    /// Marks the specified number of bytes in the buffer as produced.
     /// </summary>
-    /// <param name="bytes">The number of consumed bytes.</param>
+    /// <param name="bytes">The number of produced bytes.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is larger than the length of <see cref="Buffer"/>.</exception>
     public void Produce(int bytes)
     {
@@ -140,10 +140,10 @@ public partial class FileWriter : Disposable, IFlushable
     /// </remarks>
     public long WritePosition => fileOffset + bufferOffset;
 
-    private ValueTask FlushCoreAsync(CancellationToken token)
+    private ValueTask FlushAsync(CancellationToken token)
         => Submit(RandomAccess.WriteAsync(handle, WrittenBuffer, fileOffset, token), writeCallback);
 
-    private void FlushCore()
+    private void Flush()
     {
         RandomAccess.Write(handle, WrittenBuffer.Span, fileOffset);
         fileOffset += bufferOffset;
@@ -165,7 +165,7 @@ public partial class FileWriter : Disposable, IFlushable
         if (token.IsCancellationRequested)
             return ValueTask.FromCanceled(token);
 
-        return HasBufferedData ? FlushCoreAsync(token) : ValueTask.CompletedTask;
+        return HasBufferedData ? FlushAsync(token) : ValueTask.CompletedTask;
     }
 
     /// <summary>
@@ -191,7 +191,7 @@ public partial class FileWriter : Disposable, IFlushable
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         if (HasBufferedData)
-            FlushCore();
+            Flush();
     }
 
     /// <inheritdoc />

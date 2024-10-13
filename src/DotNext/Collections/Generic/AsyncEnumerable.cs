@@ -219,4 +219,13 @@ public static partial class AsyncEnumerable
 
         return new ThrowingEnumerator<T>(e);
     }
+
+    /// <summary>
+    /// Constructs read-only sequence with a single item in it.
+    /// </summary>
+    /// <param name="item">An item to be placed into list.</param>
+    /// <typeparam name="T">Type of list items.</typeparam>
+    /// <returns>Read-only list containing single item.</returns>
+    public static IAsyncEnumerable<T> Singleton<T>(T item)
+        => new Specialized.SingletonList<T> { Item = item };
 }

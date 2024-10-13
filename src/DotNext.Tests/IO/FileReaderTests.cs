@@ -148,10 +148,12 @@ public sealed class FileReaderTests : Test
     public static async Task ReadSequentially()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
-        using var reader = new FileReader(handle, bufferSize: 32);
+        await using var fs = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.Asynchronous);
+        using var reader = new FileReader(fs, bufferSize: 32);
         var bytes = RandomBytes(1024);
-        await RandomAccess.WriteAsync(handle, bytes, 0L);
+
+        await fs.WriteAsync(bytes);
+        await fs.FlushAsync();
 
         using var ms = new MemoryStream(1024);
         await foreach (var chunk in reader)

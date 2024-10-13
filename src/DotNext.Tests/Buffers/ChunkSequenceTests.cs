@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Text;
 
 namespace DotNext.Buffers;
 
@@ -92,5 +93,23 @@ public sealed class ChunkSequenceTests : Test
         sequence.CopyTo(dest, out writtenCount);
         Equal(10, writtenCount);
         Equal(sequence.Slice(0, 10).ToArray(), dest.ToArray());
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(16)]
+    [InlineData(128)]
+    [InlineData(124)]
+    public static void StringBuilderToSequence(int stringLength)
+    {
+        var str = Random.Shared.NextString("abcdefghijklmnopqrstuvwxyz", stringLength);
+
+        var builder = new StringBuilder();
+        for (var i = 0; i < 3; i++)
+        {
+            builder.Append(str);
+        }
+
+        Equal(builder.ToString(), builder.ToReadOnlySequence().ToString());
     }
 }

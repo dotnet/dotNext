@@ -178,7 +178,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
         }
     }
 
-    private T? TryPeekOrDequeue(out int head, out Task enqueueTask, out bool completed)
+    private T? TryPeekOrDequeue(out int head, out Task enqueueTask)
     {
         T? result;
         lock (array)
@@ -187,7 +187,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
             {
                 result = this[head = this.head];
                 enqueueTask = Task.CompletedTask;
-                if (completed = result is { IsCompleted: true })
+                if (result is { IsCompleted: true })
                 {
                     MoveNext(ref head);
                     ChangeCount(increment: false);
@@ -197,7 +197,6 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
             {
                 head = default;
                 result = null;
-                completed = default;
                 signal ??= new();
                 enqueueTask = signal.Task;
             }
@@ -258,17 +257,17 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public async ValueTask<T> DequeueAsync(CancellationToken token = default)
     {
-        for (var filter = token.CanBeCanceled ? null : Predicate.Constant<Exception>(true);;)
+        for (;;)
         {
-            if (TryPeekOrDequeue(out var expectedHead, out var enqueueTask, out var completed) is not { } task)
+            if (TryPeekOrDequeue(out var expectedHead, out var enqueueTask) is not { } task)
             {
                 await enqueueTask.WaitAsync(token).ConfigureAwait(false);
                 continue;
             }
 
-            if (!completed)
+            if (!task.IsCompleted)
             {
-                await task.WaitAsync(token).SuspendException(filter ??= token.SuspendAllExceptCancellation).ConfigureAwait(false);
+                await task.WaitAsync(token).SuspendException(token, SuspendAllExceptCancellation).ConfigureAwait(false);
 
                 if (!TryDequeue(expectedHead, task))
                     continue;
@@ -286,12 +285,12 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public async ValueTask<T?> TryDequeueAsync(CancellationToken token = default)
     {
-        for (var filter = token.CanBeCanceled ? null : Predicate.Constant<Exception>(true);;)
+        for (;;)
         {
             T? task;
-            if ((task = TryPeekOrDequeue(out var expectedHead, out _, out var completed)) is not null && !completed)
+            if ((task = TryPeekOrDequeue(out var expectedHead, out _)) is not null && !task.IsCompleted)
             {
-                await task.WaitAsync(token).SuspendException(filter ??= token.SuspendAllExceptCancellation).ConfigureAwait(false);
+                await task.WaitAsync(token).SuspendException(token, SuspendAllExceptCancellation).ConfigureAwait(false);
 
                 if (!TryDequeue(expectedHead, task))
                     continue;
@@ -311,12 +310,11 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     /// <returns>The enumerator over completed tasks.</returns>
     public async IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token)
     {
-        for (var filter = token.CanBeCanceled ? null : Predicate.Constant<Exception>(true);
-             TryPeekOrDequeue(out var expectedHead, out _, out var completed) is { } task;)
+        while (TryPeekOrDequeue(out var expectedHead, out _) is { } task)
         {
-            if (!completed)
+            if (!task.IsCompleted)
             {
-                await task.WaitAsync(token).SuspendException(filter ??= token.SuspendAllExceptCancellation).ConfigureAwait(false);
+                await task.WaitAsync(token).SuspendException(token, SuspendAllExceptCancellation).ConfigureAwait(false);
                 if (!TryDequeue(expectedHead, task))
                     continue;
             }
@@ -324,6 +322,9 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
             yield return task;
         }
     }
+
+    private static bool SuspendAllExceptCancellation(Exception e, CancellationToken token)
+        => e is not OperationCanceledException canceledEx || token != canceledEx.CancellationToken;
 
     /// <summary>
     /// Clears the queue.
@@ -343,10 +344,4 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     void IResettable.Reset() => Clear();
 
     private sealed class Signal() : TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-}
-
-file static class CancellationTokenExtensions
-{
-    internal static bool SuspendAllExceptCancellation(this object token, Exception e)
-        => e is not OperationCanceledException canceledEx || !canceledEx.CancellationToken.Equals(token);
 }

@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <IsTrimmable>true</IsTrimmable>
-    <VersionPrefix>5.13.0</VersionPrefix>
+    <VersionPrefix>5.14.0</VersionPrefix>
     <Features>nullablePublicOnly</Features>
     <VersionSuffix></VersionSuffix>
     <Authors>.NET Foundation and Contributors</Authors>

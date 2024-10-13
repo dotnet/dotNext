@@ -10,15 +10,10 @@ using Enumerator = Collections.Generic.Enumerator;
 
 file sealed class ReadOnlySequencePartitioner<T> : OrderablePartitioner<T>
 {
-    private sealed class SegmentProvider : IEnumerable<KeyValuePair<long, T>>
+    private sealed class SegmentProvider(in ReadOnlySequence<T> sequence) : IEnumerable<KeyValuePair<long, T>>
     {
         private long runningIndex;
-        private ReadOnlySequence<T>.Enumerator enumerator;
-
-        internal SegmentProvider(ReadOnlySequence<T> sequence)
-        {
-            enumerator = sequence.GetEnumerator();
-        }
+        private ReadOnlySequence<T>.Enumerator enumerator = sequence.GetEnumerator();
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         private ReadOnlyMemory<T> NextSegment(out long startIndex)
