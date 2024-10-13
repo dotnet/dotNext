@@ -88,7 +88,7 @@
 <pre><code class="lang-csharp">using DotNext.Threading;
 using System.Threading;
 
-var semaphore = new SemaphoreSlim(0, 1);
+var semaphore = new SemaphoreSlim(1, 1);
 var syncLock = Lock.Semaphore(semaphore);
 var asyncLock = AsyncLock.Semaphore(semaphore);
 

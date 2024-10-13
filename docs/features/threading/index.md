@@ -23,7 +23,7 @@ The only one synchronization object can be shared between blocking and non-block
 using DotNext.Threading;
 using System.Threading;
 
-var semaphore = new SemaphoreSlim(0, 1);
+var semaphore = new SemaphoreSlim(1, 1);
 var syncLock = Lock.Semaphore(semaphore);
 var asyncLock = AsyncLock.Semaphore(semaphore);
 
