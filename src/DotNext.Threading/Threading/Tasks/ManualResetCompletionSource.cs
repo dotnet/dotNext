@@ -96,7 +96,7 @@ public abstract partial class ManualResetCompletionSource
     /// It means that calling of this method guarantees that the task
     /// cannot be completed by the previously linked timeout or cancellation token.
     /// </remarks>
-    /// <returns>The version of the incompleted task.</returns>
+    /// <returns>The version of the uncompleted task.</returns>
     public short Reset()
     {
         EnterLock();
@@ -111,7 +111,7 @@ public abstract partial class ManualResetCompletionSource
     /// <summary>
     /// Attempts to reset the state of this source.
     /// </summary>
-    /// <param name="token">The version of the incompleted task.</param>
+    /// <param name="token">The version of the uncompleted task.</param>
     /// <returns><see langword="true"/> if the state was reset successfully; otherwise, <see langword="false"/>.</returns>
     /// <seealso cref="Reset"/>
     public bool TryReset(out short token)
