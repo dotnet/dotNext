@@ -226,7 +226,7 @@ public sealed class AsyncReaderWriterLockTests : Test
     [Fact]
     public static void AcquireReadWriteLockSynchronously()
     {
-        var l = new AsyncReaderWriterLock();
+        using var l = new AsyncReaderWriterLock();
         True(l.TryEnterReadLock(DefaultTimeout));
         True(l.TryEnterReadLock(DefaultTimeout));
         Equal(2L, l.CurrentReadCount);
@@ -247,11 +247,11 @@ public sealed class AsyncReaderWriterLockTests : Test
     [Fact]
     public static void ResumeMultipleReadersSynchronously()
     {
-        var l = new AsyncReaderWriterLock();
+        using var l = new AsyncReaderWriterLock();
         True(l.TryEnterWriteLock());
 
-        var t1 = new Thread(() => True(l.TryEnterReadLock(DefaultTimeout))) { IsBackground = true };
-        var t2 = new Thread(() => True(l.TryEnterReadLock(DefaultTimeout))) { IsBackground = true };
+        var t1 = new Thread(TryEnterReadLock) { IsBackground = true };
+        var t2 = new Thread(TryEnterReadLock) { IsBackground = true };
         t1.Start();
         t2.Start();
         
@@ -260,5 +260,7 @@ public sealed class AsyncReaderWriterLockTests : Test
         True(t2.Join(DefaultTimeout));
         
         Equal(2L, l.CurrentReadCount);
+
+        void TryEnterReadLock() => True(l.TryEnterReadLock(DefaultTimeout));
     }
 }

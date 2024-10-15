@@ -127,4 +127,15 @@ public sealed class AsyncResetEventTests : Test
             Equal(resetEvent.ResetMode is EventResetMode.ManualReset, resetEvent.IsSet);
         }
     }
+
+    [Theory]
+    [MemberData(nameof(GetResetEvents))]
+    public static void AlreadySignaledEvents(IAsyncResetEvent resetEvent)
+    {
+        using (resetEvent)
+        {
+            True(resetEvent.Signal());
+            True(resetEvent.Wait(DefaultTimeout));
+        }
+    }
 }
