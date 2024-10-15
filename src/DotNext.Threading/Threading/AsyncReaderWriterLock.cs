@@ -284,8 +284,12 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     /// <returns><see langword="true"/> if lock is taken successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    public bool TryEnterReadLock() => TryEnter<ReadLockManager>();
-    
+    public bool TryEnterReadLock()
+    {
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        return TryEnter<ReadLockManager>();
+    }
+
     /// <summary>
     /// Tries to obtain reader lock synchronously.
     /// </summary>
@@ -365,8 +369,12 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     /// <returns><see langword="true"/> if lock is taken successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    public bool TryEnterWriteLock() => TryEnter<WriteLockManager>();
-    
+    public bool TryEnterWriteLock()
+    {
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        return TryEnter<WriteLockManager>();
+    }
+
     /// <summary>
     /// Tries to obtain writer lock synchronously.
     /// </summary>
@@ -425,13 +433,15 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     /// <returns><see langword="true"/> if lock is taken successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    public bool TryUpgradeToWriteLock() => TryEnter<UpgradeManager>();
+    public bool TryUpgradeToWriteLock()
+    {
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        return TryEnter<UpgradeManager>();
+    }
 
     private bool TryEnter<TLockManager>()
         where TLockManager : struct, ILockManager<WaitNode>
     {
-        ObjectDisposedException.ThrowIf(IsDisposed, this);
-
         Monitor.Enter(SyncRoot);
         var result = TryAcquire(ref GetLockManager<TLockManager>());
         Monitor.Exit(SyncRoot);

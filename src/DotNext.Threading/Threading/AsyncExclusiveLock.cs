@@ -86,6 +86,11 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     public bool TryAcquire()
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
+        return TryAcquireCore();
+    }
+
+    private bool TryAcquireCore()
+    {
         Monitor.Enter(SyncRoot);
         var result = TryAcquire(ref manager);
         Monitor.Exit(SyncRoot);
@@ -104,7 +109,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     public bool TryAcquire(TimeSpan timeout)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        return timeout == TimeSpan.Zero ? TryAcquire() : TryAcquire(new Timeout(timeout), ref manager);
+        return timeout == TimeSpan.Zero ? TryAcquireCore() : TryAcquire(new Timeout(timeout), ref manager);
     }
 
     /// <summary>
