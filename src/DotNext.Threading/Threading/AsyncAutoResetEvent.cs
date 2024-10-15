@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace DotNext.Threading;
 
@@ -117,6 +118,8 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
                         break;
                     }
                 }
+                
+                Monitor.PulseAll(SyncRoot);
             }
         }
 
@@ -151,4 +154,18 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
         => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+    
+    /// <summary>
+    /// Blocks the current thread until this event is set.
+    /// </summary>
+    /// <param name="timeout">The time to wait for the event.</param>
+    /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
+    [UnsupportedOSPlatform("browser")]
+    public bool Wait(TimeSpan timeout)
+    {
+        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
+        return Wait(new(timeout), ref manager);
+    }
 }

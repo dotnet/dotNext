@@ -195,7 +195,7 @@ public sealed class AsyncExclusiveLockTests : Test
         await using var l = new AsyncExclusiveLock();
         True(await l.TryAcquireAsync(DefaultTimeout));
 
-        var t = new Thread(() => l.TryAcquire(DefaultTimeout)) { IsBackground = true };
+        var t = new Thread(() => True(l.TryAcquire(DefaultTimeout))) { IsBackground = true };
         t.Start();
         l.Release();
         

@@ -188,6 +188,18 @@ public class QueuedSynchronizer : Disposable
         return true;
     }
 
+    [UnsupportedOSPlatform("browser")]
+    private protected bool Wait<TLockManager>(Timeout timeout, ref TLockManager manager)
+        where TLockManager : struct, ILockManager
+    {
+        lock (SyncRoot)
+        {
+            return TryAcquire(ref manager) ||
+                   timeout.TryGetRemainingTime(out var remainingTime)
+                   && Monitor.Wait(SyncRoot, remainingTime);
+        }
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool TryAcquireOrThrow<TLockManager>(ref TLockManager manager)
         where TLockManager : struct, ILockManager

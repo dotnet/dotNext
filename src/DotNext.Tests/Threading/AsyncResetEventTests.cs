@@ -104,4 +104,27 @@ public sealed class AsyncResetEventTests : Test
         ev.Set();
         await consumer;
     }
+
+    public static TheoryData<IAsyncResetEvent> GetResetEvents() => new()
+    {
+        new AsyncAutoResetEvent(false),
+        new AsyncManualResetEvent(false),
+    };
+
+    [Theory]
+    [MemberData(nameof(GetResetEvents))]
+    public static void ManualResetEventSynchronousCompletion(IAsyncResetEvent resetEvent)
+    {
+        using (resetEvent)
+        {
+            False(resetEvent.IsSet);
+
+            var t = new Thread(() => True(resetEvent.Wait(DefaultTimeout))) { IsBackground = true };
+            t.Start();
+            
+            True(resetEvent.Signal());
+            True(t.Join(DefaultTimeout));
+            Equal(resetEvent.ResetMode is EventResetMode.ManualReset, resetEvent.IsSet);
+        }
+    }
 }

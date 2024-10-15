@@ -231,7 +231,7 @@ public sealed class AsyncReaderWriterLockTests : Test
         True(l.TryEnterReadLock(DefaultTimeout));
         Equal(2L, l.CurrentReadCount);
 
-        var t = new Thread(() => l.TryEnterWriteLock(DefaultTimeout)) { IsBackground = true };
+        var t = new Thread(() => True(l.TryEnterWriteLock(DefaultTimeout))) { IsBackground = true };
         t.Start();
         
         l.Release();
@@ -250,8 +250,8 @@ public sealed class AsyncReaderWriterLockTests : Test
         var l = new AsyncReaderWriterLock();
         True(l.TryEnterWriteLock());
 
-        var t1 = new Thread(() => l.TryEnterReadLock(DefaultTimeout)) { IsBackground = true };
-        var t2 = new Thread(() => l.TryEnterReadLock(DefaultTimeout)) { IsBackground = true };
+        var t1 = new Thread(() => True(l.TryEnterReadLock(DefaultTimeout))) { IsBackground = true };
+        var t2 = new Thread(() => True(l.TryEnterReadLock(DefaultTimeout))) { IsBackground = true };
         t1.Start();
         t2.Start();
         
