@@ -184,12 +184,7 @@ public sealed class AsyncExclusiveLockTests : Test
     public static void SynchronousLock()
     {
         using var l = new AsyncExclusiveLock();
-        True(l.TryAcquire(DefaultTimeout, CancellationToken.None));
-
-        using (var cts = new CancellationTokenSource(100))
-        {
-            Throws<OperationCanceledException>(() => l.TryAcquire(DefaultTimeout, cts.Token));
-        }
+        True(l.TryAcquire(DefaultTimeout));
 
         False(l.TryAcquire(TimeSpan.Zero));
     }
@@ -200,12 +195,25 @@ public sealed class AsyncExclusiveLockTests : Test
         await using var l = new AsyncExclusiveLock();
         True(await l.TryAcquireAsync(DefaultTimeout));
 
-        var t = new Thread(() => l.TryAcquire(DefaultTimeout));
+        var t = new Thread(() => l.TryAcquire(DefaultTimeout)) { IsBackground = true };
         t.Start();
         l.Release();
         
         True(t.Join(DefaultTimeout));
         False(l.TryAcquire());
         l.Release();
+    }
+
+    [Fact]
+    public static void DisposedWhenSynchronousLockAcquired()
+    {
+        var l = new AsyncExclusiveLock();
+        True(l.TryAcquire());
+
+        var t = new Thread(() => Throws<ObjectDisposedException>(() => l.TryAcquire(DefaultTimeout))) { IsBackground = true };
+        t.Start();
+        
+        l.Dispose();
+        True(t.Join(DefaultTimeout));
     }
 }

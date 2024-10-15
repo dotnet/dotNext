@@ -325,6 +325,7 @@ public class QueuedSynchronizer : Disposable
         lock (SyncRoot)
         {
             suspendedCallers = DetachWaitQueue()?.SetException(reason, out _);
+            Monitor.PulseAll(SyncRoot);
         }
 
         suspendedCallers?.Unwind();

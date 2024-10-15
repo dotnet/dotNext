@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace DotNext.Threading;
 
@@ -16,7 +17,6 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     private struct LockManager : ILockManager<DefaultWaitNode>
     {
         private bool state;
-        internal ManualResetEventSlim? SyncState;
 
         internal readonly bool Value => state;
 
@@ -27,13 +27,11 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         public void AcquireLock()
         {
             state = true;
-            SyncState?.Reset();
         }
 
         internal void ExitLock()
         {
             state = false;
-            SyncState?.Set();
         }
     }
 
@@ -88,11 +86,6 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     public bool TryAcquire()
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        return TryAcquireCore();
-    }
-
-    private bool TryAcquireCore()
-    {
         Monitor.Enter(SyncRoot);
         var result = TryAcquire(ref manager);
         Monitor.Exit(SyncRoot);
@@ -100,50 +93,41 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         return result;
     }
 
-    private bool TryAcquireCore(Timeout timeout, CancellationToken token = default)
+    [UnsupportedOSPlatform("browser")]
+    private bool TryAcquire(Timeout timeout)
     {
-        if (manager.SyncState is not { } mres)
+        lock (SyncRoot)
         {
-            lock (SyncRoot)
+            while (!TryAcquireOrThrow())
             {
-                // Perf: avoid allocation of MRES if the lock can be acquired synchronously
-                if (TryAcquire(ref manager))
-                    return true;
+                if (timeout.TryGetRemainingTime(out var remainingTime) && Monitor.Wait(SyncRoot, remainingTime))
+                    continue;
 
-                mres = manager.SyncState ??= new();
+                return false;
             }
-            
-            // lock status is already checked, go to the loop
         }
-        else if (TryAcquireCore())
-        {
-            return true;
-        }
-
-        do
-        {
-            if (timeout.TryGetRemainingTime(out var remainingTime) && mres.Wait(remainingTime, token))
-                continue;
-
-            return false;
-        } while (!TryAcquireCore());
 
         return true;
+    }
+
+    private bool TryAcquireOrThrow()
+    {
+        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
+        return TryAcquire(ref manager);
     }
 
     /// <summary>
     /// Tries to acquire the lock synchronously.
     /// </summary>
     /// <param name="timeout">The interval to wait for the lock.</param>
-    /// <param name="token">The token that can be used to abort lock acquisition.</param>
     /// <returns><see langword="true"/> if the lock is acquired;</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public bool TryAcquire(TimeSpan timeout, CancellationToken token = default)
+    [UnsupportedOSPlatform("browser")]
+    public bool TryAcquire(TimeSpan timeout)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        return timeout == TimeSpan.Zero ? TryAcquire() : TryAcquireCore(new(timeout), token);
+        return timeout == TimeSpan.Zero ? TryAcquire() : TryAcquire(new Timeout(timeout));
     }
 
     /// <summary>
@@ -283,21 +267,18 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
             suspendedCaller = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
+            {
                 Dispose(true);
+                Monitor.PulseAll(SyncRoot);
+            }
+            else
+            {
+                Monitor.Pulse(SyncRoot);
+            }
         }
 
         suspendedCaller?.Resume();
     }
 
     private protected sealed override bool IsReadyToDispose => manager is { Value: false } && WaitQueueHead is null;
-
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            manager.SyncState?.Dispose();
-        }
-        
-        base.Dispose(disposing);
-    }
 }
