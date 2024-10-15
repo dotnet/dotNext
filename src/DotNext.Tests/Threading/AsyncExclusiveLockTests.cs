@@ -179,4 +179,33 @@ public sealed class AsyncExclusiveLockTests : Test
         l.Release();
         await task3;
     }
+
+    [Fact]
+    public static void SynchronousLock()
+    {
+        using var l = new AsyncExclusiveLock();
+        True(l.TryAcquire(DefaultTimeout, CancellationToken.None));
+
+        using (var cts = new CancellationTokenSource(100))
+        {
+            Throws<OperationCanceledException>(() => l.TryAcquire(DefaultTimeout, cts.Token));
+        }
+
+        False(l.TryAcquire(TimeSpan.Zero));
+    }
+
+    [Fact]
+    public static async Task MixedLock()
+    {
+        await using var l = new AsyncExclusiveLock();
+        True(await l.TryAcquireAsync(DefaultTimeout));
+
+        var t = new Thread(() => l.TryAcquire(DefaultTimeout));
+        t.Start();
+        l.Release();
+        
+        True(t.Join(DefaultTimeout));
+        False(l.TryAcquire());
+        l.Release();
+    }
 }
