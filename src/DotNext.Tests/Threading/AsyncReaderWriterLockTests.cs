@@ -203,11 +203,10 @@ public sealed class AsyncReaderWriterLockTests : Test
         var l = new AsyncReaderWriterLock();
         True(l.TryEnterReadLock());
 
-        var t = Task.Factory.StartNew(() => Throws<ObjectDisposedException>(() => l.TryEnterWriteLock(DefaultTimeout)),
-            TaskCreationOptions.LongRunning);
+        var t = Task.Factory.StartNew(() => l.TryEnterWriteLock(DefaultTimeout), TaskCreationOptions.LongRunning);
         
         l.Dispose();
-        await t;
+        await ThrowsAsync<ObjectDisposedException>(Func.Constant(t));
     }
     
     [Fact]
@@ -216,11 +215,10 @@ public sealed class AsyncReaderWriterLockTests : Test
         var l = new AsyncReaderWriterLock();
         True(l.TryEnterWriteLock());
 
-        var t = Task.Factory.StartNew(() => Throws<ObjectDisposedException>(() => l.TryEnterReadLock(DefaultTimeout)),
-            TaskCreationOptions.LongRunning);
+        var t = Task.Factory.StartNew(() => l.TryEnterReadLock(DefaultTimeout), TaskCreationOptions.LongRunning);
         
         l.Dispose();
-        await t;
+        await ThrowsAsync<ObjectDisposedException>(Func.Constant(t));
     }
 
     [Fact]
@@ -231,12 +229,12 @@ public sealed class AsyncReaderWriterLockTests : Test
         True(l.TryEnterReadLock(DefaultTimeout));
         Equal(2L, l.CurrentReadCount);
 
-        var t = Task.Factory.StartNew(() => True(l.TryEnterWriteLock(DefaultTimeout)), TaskCreationOptions.LongRunning);
+        var t = Task.Factory.StartNew(() => l.TryEnterWriteLock(DefaultTimeout), TaskCreationOptions.LongRunning);
         
         l.Release();
         l.Release();
 
-        await t;
+        True(await t);
         True(l.IsWriteLockHeld);
         
         l.Release();
@@ -253,10 +251,9 @@ public sealed class AsyncReaderWriterLockTests : Test
         var t2 = Task.Factory.StartNew(TryEnterReadLock, TaskCreationOptions.LongRunning);
         
         l.Release();
-        await Task.WhenAll(t1, t2);
-        
+        Equal(new[] { true, true }, await Task.WhenAll(t1, t2));
         Equal(2L, l.CurrentReadCount);
 
-        void TryEnterReadLock() => True(l.TryEnterReadLock(DefaultTimeout));
+        bool TryEnterReadLock() => l.TryEnterReadLock(DefaultTimeout);
     }
 }

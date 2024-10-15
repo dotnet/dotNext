@@ -119,10 +119,10 @@ public sealed class AsyncResetEventTests : Test
         {
             False(resetEvent.IsSet);
 
-            var t = Task.Factory.StartNew(() => True(resetEvent.Wait(DefaultTimeout)), TaskCreationOptions.LongRunning);
+            var t = Task.Factory.StartNew(() => resetEvent.Wait(DefaultTimeout), TaskCreationOptions.LongRunning);
             
             True(resetEvent.Signal());
-            await t;
+            True(await t);
             Equal(resetEvent.ResetMode is EventResetMode.ManualReset, resetEvent.IsSet);
         }
     }
@@ -142,10 +142,10 @@ public sealed class AsyncResetEventTests : Test
     public static async Task AutoResetOnSyncWait()
     {
         using var are = new AsyncAutoResetEvent(false);
-        var t = Task.Factory.StartNew(() => True(are.Wait(DefaultTimeout)), TaskCreationOptions.LongRunning);
+        var t = Task.Factory.StartNew(() => are.Wait(DefaultTimeout), TaskCreationOptions.LongRunning);
         True(are.Set());
 
-        await t;
+        True(await t);
         False(are.IsSet);
     }
 
@@ -158,12 +158,11 @@ public sealed class AsyncResetEventTests : Test
         
         True(are.Set());
 
-        await Task.WhenAny(t1, t2);
-        True(t1.IsCompleted ^ t2.IsCompleted);
+        True(await Task.WhenAny(t1, t2).Unwrap());
         
         True(are.Set());
-        await Task.WhenAll(t1, t2);
+        Equal(new[] { true, true }, await Task.WhenAll(t1, t2));
 
-        void Wait() => True(are.Wait(DefaultTimeout));
+        bool Wait() => are.Wait(DefaultTimeout);
     }
 }

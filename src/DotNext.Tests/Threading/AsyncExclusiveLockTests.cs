@@ -195,10 +195,10 @@ public sealed class AsyncExclusiveLockTests : Test
         await using var l = new AsyncExclusiveLock();
         True(await l.TryAcquireAsync(DefaultTimeout));
 
-        var t = Task.Factory.StartNew(() => True(l.TryAcquire(DefaultTimeout)), TaskCreationOptions.LongRunning);
+        var t = Task.Factory.StartNew(() => l.TryAcquire(DefaultTimeout), TaskCreationOptions.LongRunning);
         l.Release();
 
-        await t;
+        True(await t);
         False(l.TryAcquire());
         l.Release();
     }
@@ -209,10 +209,9 @@ public sealed class AsyncExclusiveLockTests : Test
         var l = new AsyncExclusiveLock();
         True(l.TryAcquire());
 
-        var t = Task.Factory.StartNew(() => Throws<ObjectDisposedException>(() => l.TryAcquire(DefaultTimeout)),
-            TaskCreationOptions.LongRunning);
+        var t = Task.Factory.StartNew(() => l.TryAcquire(DefaultTimeout), TaskCreationOptions.LongRunning);
 
         l.Dispose();
-        await t;
+        await ThrowsAsync<ObjectDisposedException>(Func.Constant(t));
     }
 }
