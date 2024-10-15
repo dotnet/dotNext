@@ -86,7 +86,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     }
 
     /// <summary>
-    /// Sets the state of the event to signaled, allowing one or more awaiters to proceed.
+    /// Sets the state of the event to signaled, resuming the suspended caller.
     /// </summary>
     /// <returns><see langword="true"/> if the operation succeeds; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
@@ -119,7 +119,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
                     }
                 }
                 
-                Monitor.PulseAll(SyncRoot);
+                Monitor.Pulse(SyncRoot);
             }
         }
 
@@ -154,7 +154,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
         => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
-    
+
     /// <summary>
     /// Blocks the current thread until this event is set.
     /// </summary>
@@ -166,6 +166,30 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public bool Wait(TimeSpan timeout)
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        return Wait(new(timeout), ref manager);
+        return Wait(new Timeout(timeout));
+    }
+
+    [UnsupportedOSPlatform("browser")]
+    private bool Wait(Timeout timeout)
+    {
+        bool result;
+        lock (SyncRoot)
+        {
+            if (TryAcquire(ref manager))
+            {
+                result = true;
+            }
+            else if (timeout.TryGetRemainingTime(out var remainingTime) && Monitor.Wait(SyncRoot, remainingTime))
+            {
+                result = true;
+                manager.Value = false;
+            }
+            else
+            {
+                result = false;
+            }
+        }
+
+        return result;
     }
 }

@@ -167,6 +167,17 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public bool Wait(TimeSpan timeout)
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        return Wait(new(timeout), ref manager);
+        return Wait(new Timeout(timeout));
+    }
+
+    [UnsupportedOSPlatform("browser")]
+    private bool Wait(Timeout timeout)
+    {
+        lock (SyncRoot)
+        {
+            return TryAcquire(ref manager) ||
+                   timeout.TryGetRemainingTime(out var remainingTime)
+                   && Monitor.Wait(SyncRoot, remainingTime);
+        }
     }
 }

@@ -195,25 +195,24 @@ public sealed class AsyncExclusiveLockTests : Test
         await using var l = new AsyncExclusiveLock();
         True(await l.TryAcquireAsync(DefaultTimeout));
 
-        var t = new Thread(() => True(l.TryAcquire(DefaultTimeout))) { IsBackground = true };
-        t.Start();
+        var t = Task.Factory.StartNew(() => True(l.TryAcquire(DefaultTimeout)), TaskCreationOptions.LongRunning);
         l.Release();
-        
-        True(t.Join(DefaultTimeout));
+
+        await t;
         False(l.TryAcquire());
         l.Release();
     }
 
     [Fact]
-    public static void DisposedWhenSynchronousLockAcquired()
+    public static async Task DisposedWhenSynchronousLockAcquired()
     {
         var l = new AsyncExclusiveLock();
         True(l.TryAcquire());
 
-        var t = new Thread(() => Throws<ObjectDisposedException>(() => l.TryAcquire(DefaultTimeout))) { IsBackground = true };
-        t.Start();
-        
+        var t = Task.Factory.StartNew(() => Throws<ObjectDisposedException>(() => l.TryAcquire(DefaultTimeout)),
+            TaskCreationOptions.LongRunning);
+
         l.Dispose();
-        True(t.Join(DefaultTimeout));
+        await t;
     }
 }

@@ -198,46 +198,45 @@ public sealed class AsyncReaderWriterLockTests : Test
     }
     
     [Fact]
-    public static void DisposedWhenSynchronousReadLockAcquired()
+    public static async Task DisposedWhenSynchronousReadLockAcquired()
     {
         var l = new AsyncReaderWriterLock();
         True(l.TryEnterReadLock());
 
-        var t = new Thread(() => Throws<ObjectDisposedException>(() => l.TryEnterWriteLock(DefaultTimeout))) { IsBackground = true };
-        t.Start();
+        var t = Task.Factory.StartNew(() => Throws<ObjectDisposedException>(() => l.TryEnterWriteLock(DefaultTimeout)),
+            TaskCreationOptions.LongRunning);
         
         l.Dispose();
-        True(t.Join(DefaultTimeout));
+        await t;
     }
     
     [Fact]
-    public static void DisposedWhenSynchronousWriteLockAcquired()
+    public static async Task DisposedWhenSynchronousWriteLockAcquired()
     {
         var l = new AsyncReaderWriterLock();
         True(l.TryEnterWriteLock());
 
-        var t = new Thread(() => Throws<ObjectDisposedException>(() => l.TryEnterReadLock(DefaultTimeout))) { IsBackground = true };
-        t.Start();
+        var t = Task.Factory.StartNew(() => Throws<ObjectDisposedException>(() => l.TryEnterReadLock(DefaultTimeout)),
+            TaskCreationOptions.LongRunning);
         
         l.Dispose();
-        True(t.Join(DefaultTimeout));
+        await t;
     }
 
     [Fact]
-    public static void AcquireReadWriteLockSynchronously()
+    public static async Task AcquireReadWriteLockSynchronously()
     {
         using var l = new AsyncReaderWriterLock();
         True(l.TryEnterReadLock(DefaultTimeout));
         True(l.TryEnterReadLock(DefaultTimeout));
         Equal(2L, l.CurrentReadCount);
 
-        var t = new Thread(() => True(l.TryEnterWriteLock(DefaultTimeout))) { IsBackground = true };
-        t.Start();
+        var t = Task.Factory.StartNew(() => True(l.TryEnterWriteLock(DefaultTimeout)), TaskCreationOptions.LongRunning);
         
         l.Release();
         l.Release();
 
-        True(t.Join(DefaultTimeout));
+        await t;
         True(l.IsWriteLockHeld);
         
         l.Release();
@@ -245,19 +244,16 @@ public sealed class AsyncReaderWriterLockTests : Test
     }
 
     [Fact]
-    public static void ResumeMultipleReadersSynchronously()
+    public static async Task ResumeMultipleReadersSynchronously()
     {
         using var l = new AsyncReaderWriterLock();
         True(l.TryEnterWriteLock());
 
-        var t1 = new Thread(TryEnterReadLock) { IsBackground = true };
-        var t2 = new Thread(TryEnterReadLock) { IsBackground = true };
-        t1.Start();
-        t2.Start();
+        var t1 = Task.Factory.StartNew(TryEnterReadLock, TaskCreationOptions.LongRunning);
+        var t2 = Task.Factory.StartNew(TryEnterReadLock, TaskCreationOptions.LongRunning);
         
         l.Release();
-        True(t1.Join(DefaultTimeout));
-        True(t2.Join(DefaultTimeout));
+        await Task.WhenAll(t1, t2);
         
         Equal(2L, l.CurrentReadCount);
 
