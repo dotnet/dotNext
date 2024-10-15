@@ -24,6 +24,7 @@ public sealed class AsyncReaderWriterLockTests : Test
         True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
         True(await rwLock.TryUpgradeToWriteLockAsync(DefaultTimeout));
         False(rwLock.TryEnterWriteLock());
+        False(rwLock.TryUpgradeToWriteLock());
         rwLock.DowngradeFromWriteLock();
         True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
     }
@@ -77,7 +78,7 @@ public sealed class AsyncReaderWriterLockTests : Test
         True(rwLock.Validate(stamp));
         rwLock.Release();
         Equal(stamp, rwLock.TryOptimisticRead());
-        True(rwLock.TryEnterWriteLock());
+        True(rwLock.TryEnterWriteLock(stamp));
         False(rwLock.IsReadLockHeld);
         True(rwLock.IsWriteLockHeld);
         False(rwLock.Validate(stamp));
@@ -194,5 +195,70 @@ public sealed class AsyncReaderWriterLockTests : Test
 
         @lock.Release();
         await task3;
+    }
+    
+    [Fact]
+    public static void DisposedWhenSynchronousReadLockAcquired()
+    {
+        var l = new AsyncReaderWriterLock();
+        True(l.TryEnterReadLock());
+
+        var t = new Thread(() => Throws<ObjectDisposedException>(() => l.TryEnterWriteLock(DefaultTimeout))) { IsBackground = true };
+        t.Start();
+        
+        l.Dispose();
+        True(t.Join(DefaultTimeout));
+    }
+    
+    [Fact]
+    public static void DisposedWhenSynchronousWriteLockAcquired()
+    {
+        var l = new AsyncReaderWriterLock();
+        True(l.TryEnterWriteLock());
+
+        var t = new Thread(() => Throws<ObjectDisposedException>(() => l.TryEnterReadLock(DefaultTimeout))) { IsBackground = true };
+        t.Start();
+        
+        l.Dispose();
+        True(t.Join(DefaultTimeout));
+    }
+
+    [Fact]
+    public static void AcquireReadWriteLockSynchronously()
+    {
+        var l = new AsyncReaderWriterLock();
+        True(l.TryEnterReadLock(DefaultTimeout));
+        True(l.TryEnterReadLock(DefaultTimeout));
+        Equal(2L, l.CurrentReadCount);
+
+        var t = new Thread(() => l.TryEnterWriteLock(DefaultTimeout)) { IsBackground = true };
+        t.Start();
+        
+        l.Release();
+        l.Release();
+
+        True(t.Join(DefaultTimeout));
+        True(l.IsWriteLockHeld);
+        
+        l.Release();
+        False(l.IsWriteLockHeld);
+    }
+
+    [Fact]
+    public static void ResumeMultipleReadersSynchronously()
+    {
+        var l = new AsyncReaderWriterLock();
+        True(l.TryEnterWriteLock());
+
+        var t1 = new Thread(() => l.TryEnterReadLock(DefaultTimeout)) { IsBackground = true };
+        var t2 = new Thread(() => l.TryEnterReadLock(DefaultTimeout)) { IsBackground = true };
+        t1.Start();
+        t2.Start();
+        
+        l.Release();
+        True(t1.Join(DefaultTimeout));
+        True(t2.Join(DefaultTimeout));
+        
+        Equal(2L, l.CurrentReadCount);
     }
 }

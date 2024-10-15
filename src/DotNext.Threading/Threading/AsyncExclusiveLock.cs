@@ -93,41 +93,18 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         return result;
     }
 
-    [UnsupportedOSPlatform("browser")]
-    private bool TryAcquire(Timeout timeout)
-    {
-        lock (SyncRoot)
-        {
-            while (!TryAcquireOrThrow())
-            {
-                if (timeout.TryGetRemainingTime(out var remainingTime) && Monitor.Wait(SyncRoot, remainingTime))
-                    continue;
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private bool TryAcquireOrThrow()
-    {
-        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        return TryAcquire(ref manager);
-    }
-
     /// <summary>
     /// Tries to acquire the lock synchronously.
     /// </summary>
     /// <param name="timeout">The interval to wait for the lock.</param>
-    /// <returns><see langword="true"/> if the lock is acquired;</returns>
+    /// <returns><see langword="true"/> if the lock is acquired in timely manner; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     [UnsupportedOSPlatform("browser")]
     public bool TryAcquire(TimeSpan timeout)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        return timeout == TimeSpan.Zero ? TryAcquire() : TryAcquire(new Timeout(timeout));
+        return timeout == TimeSpan.Zero ? TryAcquire() : TryAcquire(new Timeout(timeout), ref manager);
     }
 
     /// <summary>

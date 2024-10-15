@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace DotNext.Threading;
 
@@ -167,6 +168,32 @@ public class QueuedSynchronizer : Disposable
 
         manager.AcquireLock();
         return true;
+    }
+    
+    [UnsupportedOSPlatform("browser")]
+    private protected bool TryAcquire<TLockManager>(Timeout timeout, ref TLockManager manager)
+        where TLockManager : struct, ILockManager
+    {
+        lock (SyncRoot)
+        {
+            while (!TryAcquireOrThrow(ref manager))
+            {
+                if (timeout.TryGetRemainingTime(out var remainingTime) && Monitor.Wait(SyncRoot, remainingTime))
+                    continue;
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private bool TryAcquireOrThrow<TLockManager>(ref TLockManager manager)
+        where TLockManager : struct, ILockManager
+    {
+        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
+        return TryAcquire(ref manager);
     }
     
     private T AcquireAsync<T, TNode, TInitializer, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, TInitializer initializer, TOptions options)
