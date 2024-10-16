@@ -192,4 +192,31 @@ public sealed class RandomAccessCacheTests : Test
 
         await cache.InvalidateAsync();
     }
+
+    [Fact]
+    public static async Task EvictWhileAdding()
+    {
+        await using var cache = new RandomAccessCache<int, string>(3);
+        using (var scope1 = await cache.ChangeAsync(0))
+        {
+            scope1.SetValue("0");
+
+            using (var scope = await cache.ChangeAsync(1))
+            {
+                scope.SetValue("1");
+            }
+
+            using (var scope = await cache.ChangeAsync(2))
+            {
+                scope.SetValue("2");
+            }
+
+            using (var scope = await cache.ChangeAsync(4))
+            {
+                scope.SetValue("4");
+            }
+        }
+
+        False(cache.TryRead(0, out _));
+    }
 }
