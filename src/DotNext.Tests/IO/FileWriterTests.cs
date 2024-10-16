@@ -112,8 +112,8 @@ public sealed class FileWriterTests : Test
     public static void WriteUsingBufferWriter()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.None);
-        using var writer = new FileWriter(handle, bufferSize: 64);
+        using var fs = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.None);
+        using var writer = new FileWriter(fs, bufferSize: 64);
         False(writer.HasBufferedData);
         Equal(0L, writer.FilePosition);
 
@@ -126,7 +126,7 @@ public sealed class FileWriterTests : Test
         Equal(expected.Length, writer.FilePosition);
 
         var actual = new byte[expected.Length];
-        RandomAccess.Read(handle, actual, 0L);
+        fs.ReadExactly(actual);
 
         Equal(expected, actual);
     }

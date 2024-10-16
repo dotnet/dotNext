@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.IO.Pipelines;
+using System.Numerics;
 using System.Text;
 
 namespace DotNext.IO;
@@ -173,5 +174,17 @@ public sealed class SequenceBinaryReaderTests : Test
         Equal(expected.Span, actual.Span);
         True(reader.IsEmpty);
         False(reader.TryRead(4, out actual));
+    }
+
+    [Fact]
+    public static void ReadWriteBigInteger()
+    {
+        var expected = (BigInteger)100500;
+        var writer = new ArrayBufferWriter<byte>();
+
+        Equal(3, writer.Write(expected));
+
+        var reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
+        Equal(expected, new BigInteger(reader.ReadToEnd().FirstSpan));
     }
 }

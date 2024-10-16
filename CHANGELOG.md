@@ -1,6 +1,38 @@
 Release Notes
 ====
 
+# 10-16-2023
+<a href="https://www.nuget.org/packages/dotnext.threading/5.15.0">DotNext.Threading 5.15.0</a>
+* Added support of synchronous lock acquisition to `AsyncExclusiveLock`, `AsyncReaderWriterLock`, `AsyncManualResetEvent`, `AsyncAutoResetEvent` so the users can easily migrate step-by-step from monitors and other synchronization primitives to async-friendly primitives
+* Fixed random `InvalidOperationException` caused by `RandomAccessCache<TKey, TValue>`
+* Added synchronous methods to `RandomAccessCache<TKey, TValue>` to support [251](https://github.com/dotnet/dotNext/issues/251) feature request
+
+# 10-13-2024
+<a href="https://www.nuget.org/packages/dotnext/5.14.0">DotNext 5.14.0</a>
+* Added helpers to `DelegateHelpers` class to convert delegates with synchronous signature to their asynchronous counterparts
+* Added support of async enumerator to `SingletonList<T>`
+* Fixed exception propagation in `DynamicTaskAwaitable`
+* Added support of [ConfigureAwaitOptions](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.configureawaitoptions) to `DynamicTaskAwaitable`
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.14.0">DotNext.Metaprogramming 5.14.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.14.0">DotNext.Unsafe 5.14.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.14.0">DotNext.Threading 5.14.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.14.0">DotNext.IO 5.14.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.14.0">DotNext.Net.Cluster 5.14.0</a>
+* Fixed graceful shutdown of Raft TCP listener
+* Updated vulnerable dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.14.0">DotNext.AspNetCore.Cluster 5.14.0</a>
+* Updated vulnerable dependencies
+
 # 08-30-2024
 <a href="https://www.nuget.org/packages/dotnext/5.13.0">DotNext 5.13.0</a>
 * Improved interoperability of `DotNext.Runtime.ValueReference<T>` and `DotNext.Runtime.ReadOnlyValueReference<T>` with .NEXT ecosystem

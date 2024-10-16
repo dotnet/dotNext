@@ -46,4 +46,17 @@ public interface IAsyncEvent : IDisposable, IResettable
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask WaitAsync(CancellationToken token = default);
+
+    /// <summary>
+    /// Blocks the current thread until this event is set.
+    /// </summary>
+    /// <param name="timeout">The time to wait for the event.</param>
+    /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
+    bool Wait(TimeSpan timeout)
+    {
+        using var task = WaitAsync(timeout).AsTask();
+        return task.Wait(timeout);
+    }
 }

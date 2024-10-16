@@ -94,15 +94,15 @@ public static class Func
 
         // slow path - allocates a new delegate
         return obj is null
-            ? Default!
+            ? Default<T?>!
             : typeof(T).IsValueType
-            ? new BoxedConstant<T>() { Value = obj }.GetValue
-            : Unsafe.As<T, object>(ref obj).UnboxRefType<T>;
-
-        static T? Default() => default;
+                ? new BoxedConstant<T>(obj).GetValue
+                : Unsafe.As<T, object>(ref obj).ReinterpretRefType<T>;
     }
+    
+    internal static T? Default<T>() => default;
 
-    private static T UnboxRefType<T>(this object obj)
+    private static T ReinterpretRefType<T>(this object obj)
         => Unsafe.As<object, T>(ref obj);
 
     private static Func<bool> Constant(bool value)
@@ -485,10 +485,10 @@ public static class Func
         return result;
     }
 
-    private sealed class BoxedConstant<T> : StrongBox<T>
+    private sealed class BoxedConstant<T>(T value)
     {
-        internal T GetValue() => Value!;
+        internal T GetValue() => value;
 
-        public override string? ToString() => Value?.ToString();
+        public override string? ToString() => value?.ToString();
     }
 }

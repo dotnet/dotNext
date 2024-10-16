@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace DotNext.Threading;
 
@@ -23,9 +24,15 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 
         public readonly bool IsLockAllowed => !state;
 
-        public void AcquireLock() => state = true;
+        public void AcquireLock()
+        {
+            state = true;
+        }
 
-        internal void ExitLock() => state = false;
+        internal void ExitLock()
+        {
+            state = false;
+        }
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
@@ -79,6 +86,11 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     public bool TryAcquire()
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
+        return TryAcquireCore();
+    }
+
+    private bool TryAcquireCore()
+    {
         Monitor.Enter(SyncRoot);
         var result = TryAcquire(ref manager);
         Monitor.Exit(SyncRoot);
@@ -87,12 +99,26 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     /// <summary>
+    /// Tries to acquire the lock synchronously.
+    /// </summary>
+    /// <param name="timeout">The interval to wait for the lock.</param>
+    /// <returns><see langword="true"/> if the lock is acquired in timely manner; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [UnsupportedOSPlatform("browser")]
+    public bool TryAcquire(TimeSpan timeout)
+    {
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        return timeout == TimeSpan.Zero ? TryAcquireCore() : TryAcquire(new Timeout(timeout), ref manager);
+    }
+
+    /// <summary>
     /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.
     /// </summary>
     /// <param name="timeout">The interval to wait for the lock.</param>
     /// <param name="token">The token that can be used to abort lock acquisition.</param>
     /// <returns><see langword="true"/> if the caller entered exclusive mode; otherwise, <see langword="false"/>.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
@@ -105,7 +131,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <param name="timeout">The interval to wait for the lock.</param>
     /// <param name="token">The token that can be used to abort lock acquisition.</param>
     /// <returns>The task representing lock acquisition operation.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
@@ -223,7 +249,14 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
             suspendedCaller = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
+            {
                 Dispose(true);
+                Monitor.PulseAll(SyncRoot);
+            }
+            else
+            {
+                Monitor.Pulse(SyncRoot);
+            }
         }
 
         suspendedCaller?.Resume();

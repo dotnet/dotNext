@@ -83,7 +83,7 @@ public static partial class Synchronization
         try
         {
             task.Wait(token);
-            var awaiter = new DynamicTaskAwaitable.Awaiter(task, false);
+            var awaiter = new DynamicTaskAwaitable.Awaiter(task, ConfigureAwaitOptions.None);
             result = new(awaiter.GetRawResult());
         }
         catch (AggregateException e) when (e.InnerExceptions.Count is 1)
@@ -114,7 +114,7 @@ public static partial class Synchronization
             if (!task.Wait(timeout))
                 throw new TimeoutException();
 
-            var awaiter = new DynamicTaskAwaitable.Awaiter(task, false);
+            var awaiter = new DynamicTaskAwaitable.Awaiter(task, ConfigureAwaitOptions.None);
             result = new(awaiter.GetRawResult());
         }
         catch (AggregateException e) when (e.InnerExceptions.Count is 1)

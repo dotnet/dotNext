@@ -1,4 +1,6 @@
+using System.Numerics;
 using System.Text;
+using DotNext.Buffers.Binary;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Buffers;
@@ -312,5 +314,25 @@ public sealed class BufferWriterSlimTests : Test
         var writer = new BufferWriterSlim<char>();
         writer.Format(CompositeFormat.Parse("{0}, {1}!"), ["Hello", "world"]);
         Equal("Hello, world!", writer.ToString());
+    }
+
+    [Fact]
+    public static void WriteBlittable()
+    {
+        var writer = new BufferWriterSlim<byte>(stackalloc byte[16]);
+        writer.Write<Blittable<int>>(new() { Value = 42 });
+
+        var reader = new SpanReader<byte>(writer.WrittenSpan);
+        Equal(42, reader.Read<Blittable<int>>().Value);
+    }
+
+    [Fact]
+    public static void ReadWriteBigInteger()
+    {
+        var expected = (BigInteger)100500;
+        var writer = new BufferWriterSlim<byte>(stackalloc byte[16]);
+        Equal(3, writer.Write(expected));
+
+        Equal(expected, new BigInteger(writer.WrittenSpan));
     }
 }

@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace DotNext.Buffers;
 
@@ -94,10 +95,9 @@ public static partial class Memory
         if (head is null || tail is null)
             return ReadOnlySequence<char>.Empty;
 
-        if (ReferenceEquals(head, tail))
-            return new(head.Memory);
-
-        return Chunk<char>.CreateSequence(head, tail);
+        return ReferenceEquals(head, tail)
+            ? new(head.Memory)
+            : Chunk<char>.CreateSequence(head, tail);
 
         static void ToReadOnlySequence(ReadOnlySpan<string?> strings, ref Chunk<char>? head, ref Chunk<char>? tail)
         {
@@ -116,6 +116,31 @@ public static partial class Memory
                     Chunk<char>.AddChunk(str.AsMemory(), ref head, ref tail);
             }
         }
+    }
+
+    /// <summary>
+    /// Gets a sequence of characters written to the builder.
+    /// </summary>
+    /// <param name="builder">A string builder.</param>
+    /// <returns>A sequence of characters written to the builder.</returns>
+    public static ReadOnlySequence<char> ToReadOnlySequence(this StringBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        
+        Chunk<char>? head = null, tail = null;
+
+        foreach (var chunk in builder.GetChunks())
+        {
+            if (chunk.IsEmpty is false)
+                Chunk<char>.AddChunk(chunk, ref head, ref tail);
+        }
+
+        if (head is null || tail is null)
+            return ReadOnlySequence<char>.Empty;
+
+        return ReferenceEquals(head, tail)
+            ? new(head.Memory)
+            : Chunk<char>.CreateSequence(head, tail);
     }
 
     /// <summary>

@@ -105,7 +105,7 @@ public sealed class RandomAccessCacheTests : Test
     }
 
     [Fact]
-    public static async Task AddRemove()
+    public static async Task AddRemoveAsync()
     {
         await using var cache = new RandomAccessCache<long, string>(15);
 
@@ -122,9 +122,29 @@ public sealed class RandomAccessCacheTests : Test
             Equal("10", session.Value);
         }
     }
+    
+    [Fact]
+    public static void AddRemove()
+    {
+        using var cache = new RandomAccessCache<long, string>(15);
+
+        using (var writeSession = cache.Change(10L, DefaultTimeout))
+        {
+            False(writeSession.TryGetValue(out _));
+            writeSession.SetValue("10");
+        }
+
+        False(cache.TryRemove(11L, DefaultTimeout, out _));
+        True(cache.TryRemove(10L, DefaultTimeout, out var session));
+
+        using (session)
+        {
+            Equal("10", session.Value);
+        }
+    }
 
     [Fact]
-    public static async Task AddInvalidate()
+    public static async Task AddInvalidateAsync()
     {
         await using var cache = new RandomAccessCache<long, string>(15);
 
@@ -136,6 +156,21 @@ public sealed class RandomAccessCacheTests : Test
 
         False(await cache.InvalidateAsync(11L));
         True(await cache.InvalidateAsync(10L));
+    }
+    
+    [Fact]
+    public static void AddInvalidate()
+    {
+        using var cache = new RandomAccessCache<long, string>(15);
+
+        using (var session = cache.Change(10L, DefaultTimeout))
+        {
+            False(session.TryGetValue(out _));
+            session.SetValue("10");
+        }
+
+        False(cache.Invalidate(11L, DefaultTimeout));
+        True(cache.Invalidate(10L, DefaultTimeout));
     }
 
     [Fact]

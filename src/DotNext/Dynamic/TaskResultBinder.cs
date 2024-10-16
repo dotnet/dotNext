@@ -11,9 +11,6 @@ namespace DotNext.Dynamic;
 [RequiresDynamicCode("DLR is required to resolve underlying task type at runtime")]
 internal sealed class TaskResultBinder : CallSiteBinder
 {
-    private const string ResultPropertyName = nameof(Task<Missing>.Result);
-    private const BindingFlags ResultPropertyFlags = BindingFlags.Public | BindingFlags.Instance;
-
     private static Expression BindProperty(PropertyInfo resultProperty, Expression target, out Expression restrictions)
     {
         Debug.Assert(resultProperty.DeclaringType is not null);
@@ -27,7 +24,10 @@ internal sealed class TaskResultBinder : CallSiteBinder
 
     private static Expression Bind(object targetValue, Expression target, LabelTarget returnLabel)
     {
-        PropertyInfo? property = targetValue.GetType().GetProperty(ResultPropertyName, ResultPropertyFlags);
+        const string resultPropertyName = nameof(Task<Missing>.Result);
+        const BindingFlags resultPropertyFlags = BindingFlags.Public | BindingFlags.Instance;
+        
+        var property = targetValue.GetType().GetProperty(resultPropertyName, resultPropertyFlags);
         Debug.Assert(property is not null);
         target = BindProperty(property, target, out var restrictions);
 

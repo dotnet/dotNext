@@ -118,6 +118,42 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     }
 
     /// <summary>
+    /// Opens a session synchronously that can be used to modify the value associated with the key.
+    /// </summary>
+    /// <remarks>
+    /// The cache guarantees that the value cannot be evicted concurrently with the returned session. However,
+    /// the value can be evicted immediately after. The caller must dispose session.
+    /// </remarks>
+    /// <param name="key">The key of the cache record.</param>
+    /// <param name="timeout">The time to wait for the cache lock.</param>
+    /// <returns>The session that can be used to read or modify the cache record.</returns>
+    /// <exception cref="TimeoutException">The internal lock cannot be acquired in timely manner.</exception>
+    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
+    public ReadOrWriteSession Change(TKey key, TimeSpan timeout)
+    {
+        var keyComparerCopy = KeyComparer;
+        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
+        var bucket = GetBucket(hashCode);
+
+        bool lockTaken;
+        if (!(lockTaken = bucket.TryAcquire(timeout)))
+            throw new TimeoutException();
+        try
+        {
+            if (bucket.Modify(keyComparerCopy, key, hashCode) is { } valueHolder)
+                return new(this, valueHolder);
+
+            lockTaken = false;
+            return new(this, bucket, key, hashCode);
+        }
+        finally
+        {
+            if (lockTaken)
+                bucket.Release();
+        }
+    }
+
+    /// <summary>
     /// Tries to read the cached record.
     /// </summary>
     /// <remarks>
@@ -186,6 +222,37 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 bucket.Release();
         }
     }
+    
+    /// <summary>
+    /// Tries to invalidate cache record associated with the provided key synchronously.
+    /// </summary>
+    /// <param name="key">The key of the cache record to be removed.</param>
+    /// <param name="timeout"></param>
+    /// <param name="session">The session that can be used to read the removed cache record.</param>
+    /// <returns><see langword="true"/> if the record associated with <paramref name="key"/> exists; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="TimeoutException">The internal lock cannot be acquired in timely manner.</exception>
+    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
+    public bool TryRemove(TKey key, TimeSpan timeout, out ReadSession session)
+    {
+        var keyComparerCopy = KeyComparer;
+        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
+        var bucket = GetBucket(hashCode);
+        
+        if (!bucket.TryAcquire(timeout))
+            throw new TimeoutException();
+        try
+        {
+            session = bucket.TryRemove(keyComparerCopy, key, hashCode) is { } removedPair
+                ? new(Eviction, removedPair)
+                : default;
+        }
+        finally
+        {
+            bucket.Release();
+        }
+
+        return session.IsValid;
+    }
 
     /// <summary>
     /// Invalidates the cache record associated with the specified key.
@@ -225,6 +292,38 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         {
             if (lockTaken)
                 bucket.Release();
+        }
+
+        if (removedPair is null)
+        {
+            return false;
+        }
+
+        if (removedPair.ReleaseCounter() is false)
+        {
+            Eviction?.Invoke(key, GetValue(removedPair));
+            ClearValue(removedPair);
+        }
+
+        return true;
+    }
+    
+    public bool Invalidate(TKey key, TimeSpan timeout)
+    {
+        var keyComparerCopy = KeyComparer;
+        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
+        var bucket = GetBucket(hashCode);
+        
+        KeyValuePair? removedPair;
+        if (!bucket.TryAcquire(timeout))
+            throw new TimeoutException();
+        try
+        {
+            removedPair = bucket.TryRemove(keyComparerCopy, key, hashCode);
+        }
+        finally
+        {
+            bucket.Release();
         }
 
         if (removedPair is null)
@@ -355,6 +454,8 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             this.valueHolder = valueHolder;
         }
 
+        internal bool IsValid => valueHolder is not null;
+
         /// <summary>
         /// Gets the value of the cache record.
         /// </summary>
@@ -429,7 +530,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         {
             switch (bucketOrValueHolder)
             {
-                case Bucket bucket when bucket.TryAdd(cache.keyComparer, key, hashCode, value) is { } newPair:
+                case Bucket bucket when bucket.TryAdd(key, hashCode, value) is { } newPair:
                     cache.Promote(newPair);
                     break;
                 case KeyValuePair existingPair:
@@ -448,6 +549,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             switch (bucketOrValueHolder)
             {
                 case Bucket bucket:
+                    bucket.MarkAsReadyToAdd();
                     bucket.Release();
                     break;
                 case KeyValuePair pair when pair.ReleaseCounter() is false:

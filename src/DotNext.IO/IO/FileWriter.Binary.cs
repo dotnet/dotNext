@@ -47,7 +47,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask WriteBufferedAsync<T>(T arg, SpanAction<byte, T> writer, int length, CancellationToken token)
     {
-        await FlushCoreAsync(token).ConfigureAwait(false);
+        await FlushAsync(token).ConfigureAwait(false);
         writer(BufferSpan, arg);
 
         Debug.Assert(bufferOffset is 0);
@@ -143,7 +143,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     public async ValueTask WriteAsync(ReadOnlyMemory<byte> input, LengthFormat lengthFormat, CancellationToken token = default)
     {
         if (FreeCapacity < SevenBitEncodedInt.MaxSize)
-            await FlushCoreAsync(token).ConfigureAwait(false);
+            await FlushAsync(token).ConfigureAwait(false);
 
         WriteLength(input.Length, lengthFormat);
         await WriteAsync(input, token).ConfigureAwait(false);
@@ -165,7 +165,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         if (lengthFormat.HasValue)
         {
             if (FreeCapacity < SevenBitEncodedInt.MaxSize)
-                await FlushCoreAsync(token).ConfigureAwait(false);
+                await FlushAsync(token).ConfigureAwait(false);
 
             result = WriteLength(context.Encoding.GetByteCount(chars.Span), lengthFormat.GetValueOrDefault());
         }
@@ -182,7 +182,7 @@ public partial class FileWriter : IAsyncBinaryWriter
             for (int charsUsed, bytesUsed; !chars.IsEmpty; chars = chars.Slice(charsUsed), result += bytesUsed)
             {
                 if (FreeCapacity < maxByteCount)
-                    await FlushCoreAsync(token).ConfigureAwait(false);
+                    await FlushAsync(token).ConfigureAwait(false);
 
                 Convert(encoder, chars.Span, BufferSpan, maxByteCount, chars.Length, out charsUsed, out bytesUsed);
                 Produce(bytesUsed);
@@ -285,7 +285,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     private async ValueTask<int> FormatSlowAsync<T>(T value, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
         where T : notnull, IUtf8SpanFormattable
     {
-        await FlushCoreAsync(token).ConfigureAwait(false);
+        await FlushAsync(token).ConfigureAwait(false);
         if (!TryFormat(value, lengthFormat, format, provider, out var bytesWritten))
         {
             const int maxBufferSize = int.MaxValue / 2;

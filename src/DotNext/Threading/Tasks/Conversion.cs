@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading.Tasks;
 
-using SuspendedExceptionTaskAwaitable = Runtime.CompilerServices.SuspendedExceptionTaskAwaitable;
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Provides task result conversion methods.
@@ -84,4 +84,32 @@ public static class Conversion
     /// <returns>The awaitable object that suspends exceptions according to the filter.</returns>
     public static SuspendedExceptionTaskAwaitable SuspendException(this ValueTask task, Predicate<Exception>? filter = null)
         => new(task) { Filter = filter };
+
+    /// <summary>
+    /// Suspends the exception that can be raised by the task.
+    /// </summary>
+    /// <param name="task">The task.</param>
+    /// <param name="arg">The argument to be passed to the filter.</param>
+    /// <param name="filter">The filter of the exception to be suspended.</param>
+    /// <returns>The awaitable object that suspends exceptions according to the filter.</returns>
+    public static SuspendedExceptionTaskAwaitable<TArg> SuspendException<TArg>(this Task task, TArg arg, Func<Exception, TArg, bool> filter)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+        
+        return new(task, arg, filter);
+    }
+
+    /// <summary>
+    /// Suspends the exception that can be raised by the task.
+    /// </summary>
+    /// <param name="task">The task.</param>
+    /// <param name="arg">The argument to be passed to the filter.</param>
+    /// <param name="filter">The filter of the exception to be suspended.</param>
+    /// <returns>The awaitable object that suspends exceptions according to the filter.</returns>
+    public static SuspendedExceptionTaskAwaitable<TArg> SuspendException<TArg>(this ValueTask task, TArg arg, Func<Exception, TArg, bool> filter)
+    {
+        ArgumentNullException.ThrowIfNull(filter);
+        
+        return new(task, arg, filter);
+    }
 }

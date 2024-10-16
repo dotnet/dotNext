@@ -104,4 +104,65 @@ public sealed class AsyncResetEventTests : Test
         ev.Set();
         await consumer;
     }
+
+    public static TheoryData<IAsyncResetEvent> GetResetEvents() => new()
+    {
+        new AsyncAutoResetEvent(false),
+        new AsyncManualResetEvent(false),
+    };
+
+    [Theory]
+    [MemberData(nameof(GetResetEvents))]
+    public static async Task ManualResetEventSynchronousCompletion(IAsyncResetEvent resetEvent)
+    {
+        using (resetEvent)
+        {
+            False(resetEvent.IsSet);
+
+            var t = Task.Factory.StartNew(() => resetEvent.Wait(DefaultTimeout), TaskCreationOptions.LongRunning);
+            
+            True(resetEvent.Signal());
+            True(await t);
+            Equal(resetEvent.ResetMode is EventResetMode.ManualReset, resetEvent.IsSet);
+        }
+    }
+
+    [Theory]
+    [MemberData(nameof(GetResetEvents))]
+    public static void AlreadySignaledEvents(IAsyncResetEvent resetEvent)
+    {
+        using (resetEvent)
+        {
+            True(resetEvent.Signal());
+            True(resetEvent.Wait(DefaultTimeout));
+        }
+    }
+    
+    [Fact]
+    public static async Task AutoResetOnSyncWait()
+    {
+        using var are = new AsyncAutoResetEvent(false);
+        var t = Task.Factory.StartNew(() => are.Wait(DefaultTimeout), TaskCreationOptions.LongRunning);
+        True(are.Set());
+
+        True(await t);
+        False(are.IsSet);
+    }
+
+    [Fact]
+    public static async Task ResumeSuspendedCallersSequentially()
+    {
+        using var are = new AsyncAutoResetEvent(false);
+        var t1 = Task.Factory.StartNew(Wait, TaskCreationOptions.LongRunning);
+        var t2 = Task.Factory.StartNew(Wait, TaskCreationOptions.LongRunning);
+        
+        True(are.Set());
+
+        True(await Task.WhenAny(t1, t2).Unwrap());
+        
+        True(are.Set());
+        Equal(new[] { true, true }, await Task.WhenAll(t1, t2));
+
+        bool Wait() => are.Wait(DefaultTimeout);
+    }
 }

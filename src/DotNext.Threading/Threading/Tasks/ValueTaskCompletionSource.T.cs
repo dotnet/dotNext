@@ -220,7 +220,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
         => Activate(timeout, token) is { } version ? new(this, version) : throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
 
-    private protected T GetResult(short token)
+    private T GetResult(short token)
     {
         // ensure that instance field access before returning to the pool to avoid
         // concurrency with Reset()
