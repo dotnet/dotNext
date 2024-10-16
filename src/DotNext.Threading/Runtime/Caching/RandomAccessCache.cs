@@ -429,7 +429,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         {
             switch (bucketOrValueHolder)
             {
-                case Bucket bucket when bucket.TryAdd(cache.keyComparer, key, hashCode, value) is { } newPair:
+                case Bucket bucket when bucket.TryAdd(key, hashCode, value) is { } newPair:
                     cache.Promote(newPair);
                     break;
                 case KeyValuePair existingPair:
@@ -448,6 +448,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             switch (bucketOrValueHolder)
             {
                 case Bucket bucket:
+                    bucket.MarkAsReadyToAdd();
                     bucket.Release();
                     break;
                 case KeyValuePair pair when pair.ReleaseCounter() is false:
