@@ -159,26 +159,31 @@ public partial class RandomAccessCache<TKey, TValue>
     [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}")]
     internal sealed class Bucket : AsyncExclusiveLock
     {
+        private bool newPairAdded;
         private volatile KeyValuePair? first; // volatile
 
         [ExcludeFromCodeCoverage]
         private (int Alive, int Dead) Count => first?.BucketNodesCount ?? default;
 
-        internal KeyValuePair? TryAdd(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode, TValue value)
+        internal KeyValuePair? TryAdd(TKey key, int hashCode, TValue value)
         {
-            var firstCopy = first;
-            if (firstCopy is not null && firstCopy.KeyHashCode == hashCode
-                                      && (keyComparer?.Equals(key, firstCopy.Key)
-                                          ?? EqualityComparer<TKey>.Default.Equals(key, firstCopy.Key)))
+            KeyValuePair? result;
+            if (newPairAdded)
             {
-                return null;
+                result = null;
+            }
+            else
+            {
+                result = CreatePair(key, value, hashCode);
+                result.NextInBucket = first;
+                first = result;
+                newPairAdded = true;
             }
 
-            var newPair = CreatePair(key, value, hashCode);
-            newPair.NextInBucket = firstCopy;
-            first = newPair;
-            return newPair;
+            return result;
         }
+
+        internal void MarkAsReadyToAdd() => newPairAdded = false;
 
         private void Remove(KeyValuePair? previous, KeyValuePair current)
         {

@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 namespace DotNext.Threading;
 
@@ -51,9 +52,10 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             readLocks = 1L;
         }
 
-        internal void ExitLock()
+        internal bool ExitLock()
         {
-            if (writeLock)
+            bool result;
+            if (result = writeLock)
             {
                 writeLock = false;
                 readLocks = 0L;
@@ -62,6 +64,8 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             {
                 readLocks--;
             }
+
+            return result;
         }
 
         internal readonly long ReadLocks => Volatile.Read(in readLocks);
@@ -276,11 +280,33 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public bool Validate(in LockStamp stamp) => stamp.IsValid(in state);
 
     /// <summary>
-    /// Attempts to obtain reader lock synchronously without blocking caller thread.
+    /// Tries to obtain reader lock synchronously without blocking caller thread.
     /// </summary>
-    /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/> if lock is taken successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    public bool TryEnterReadLock() => TryEnter<ReadLockManager>();
+    public bool TryEnterReadLock()
+    {
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        return TryEnter<ReadLockManager>();
+    }
+
+    /// <summary>
+    /// Tries to obtain reader lock synchronously.
+    /// </summary>
+    /// <param name="timeout">The time to wait.</param>
+    /// <returns><see langword="true"/> if reader lock is acquired in timely manner; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [UnsupportedOSPlatform("browser")]
+    public bool TryEnterReadLock(TimeSpan timeout)
+    {
+        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
+        return TryEnter<ReadLockManager>(timeout);
+    }
+
+    private bool TryEnter<TLockManager>(TimeSpan timeout)
+        where TLockManager : struct, ILockManager<WaitNode>
+        => timeout == TimeSpan.Zero ? TryEnter<TLockManager>() : TryAcquire(new Timeout(timeout), ref GetLockManager<TLockManager>());
 
     /// <summary>
     /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
@@ -341,9 +367,27 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <summary>
     /// Attempts to obtain writer lock synchronously without blocking caller thread.
     /// </summary>
-    /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/> if lock is taken successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    public bool TryEnterWriteLock() => TryEnter<WriteLockManager>();
+    public bool TryEnterWriteLock()
+    {
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        return TryEnter<WriteLockManager>();
+    }
+
+    /// <summary>
+    /// Tries to obtain writer lock synchronously.
+    /// </summary>
+    /// <param name="timeout">The time to wait.</param>
+    /// <returns><see langword="true"/> if writer lock is acquired in timely manner; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    [UnsupportedOSPlatform("browser")]
+    public bool TryEnterWriteLock(TimeSpan timeout)
+    {
+        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
+        return TryEnter<WriteLockManager>(timeout);
+    }
 
     /// <summary>
     /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
@@ -387,15 +431,17 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <summary>
     /// Tries to upgrade the read lock to the write lock synchronously without blocking of the caller.
     /// </summary>
-    /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+    /// <returns><see langword="true"/> if lock is taken successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    public bool TryUpgradeToWriteLock() => TryEnter<UpgradeManager>();
+    public bool TryUpgradeToWriteLock()
+    {
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        return TryEnter<UpgradeManager>();
+    }
 
     private bool TryEnter<TLockManager>()
         where TLockManager : struct, ILockManager<WaitNode>
     {
-        ObjectDisposedException.ThrowIf(IsDisposed, this);
-
         Monitor.Enter(SyncRoot);
         var result = TryAcquire(ref GetLockManager<TLockManager>());
         Monitor.Exit(SyncRoot);
@@ -560,11 +606,24 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             if (state.IsWriteLockAllowed)
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
-            state.ExitLock();
+            var writeLockReleased = state.ExitLock();
             suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
+            {
                 Dispose(true);
+                Monitor.PulseAll(SyncRoot);
+            }
+            else if (writeLockReleased)
+            {
+                // assuming that we have multiple readers suspended
+                Monitor.PulseAll(SyncRoot);
+            }
+            else
+            {
+                // assuming that we have only one writer suspended
+                Monitor.Pulse(SyncRoot);
+            }
         }
 
         suspendedCallers?.Unwind();
@@ -591,6 +650,9 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
             state.DowngradeFromWriteLock();
             suspendedCallers = DrainWaitQueue();
+            
+            // resume multiple readers if available
+            Monitor.PulseAll(SyncRoot);
         }
 
         suspendedCallers?.Unwind();
