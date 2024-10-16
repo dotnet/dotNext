@@ -121,14 +121,16 @@ using (await rwlock.AcquireWriteLockAsync(TimeSpan.FromSecond(2)))
 <p>Behavior of <code>UpgradeToWriteLockAsync</code> and <code>DowngradeFromWriteLock</code> methods is the same as in <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.readerwriterlock">ReaderWriterLock</a>. You need to be in the read lock to call the upgrade. After calling of <code>DowngradeFromWriteLock</code> method the current flow keeping the read lock so you need to call <code>Release</code> method to release the lock completely.</p>
 <h2 id="acquisition-order">Acquisition Order</h2>
 <p>This lock does not impose a reader or writer preference ordering for lock access. However, it respects fairness policy. It means that callers contend for entry using an approximately arrival-order policy. When the currently held lock is released either the longest-waiting single writer will be assigned the write lock, or if there is a group of readers waiting longer than all waiting writers, that group will be assigned the read lock.</p>
-<p>A caller that tries to acquire a read lock (non-reentrantly) will enqueued if either the write lock is held, or there is a waiting writer. The caller will not acquire the read lock until after the oldest currently waiting writer has acquired and released the write lock. Of course, if a waiting writer abandons its wait, leaving one or more readers as the longest waiters in the queue with the write lock free, then those readers will be assigned the read lock.</p>
-<p>A caller that tries to acquire a write lock (non-reentrantly) will block unless both the read lock and write lock are free (which implies there are no waiters).</p>
+<p>A caller that tries to acquire a read lock (non-reentrant) will enqueued if either the write lock is held, or there is a waiting writer. The caller will not acquire the read lock until after the oldest currently waiting writer has acquired and released the write lock. Of course, if a waiting writer abandons its wait, leaving one or more readers as the longest waiters in the queue with the write lock free, then those readers will be assigned the read lock.</p>
+<p>A caller that tries to acquire a write lock (non-reentrant) will block unless both the read lock and write lock are free (which implies there are no waiters).</p>
 <h2 id="graceful-shutdown">Graceful Shutdown</h2>
 <p><code>Dispose</code> method is not thread-safe and may cause unpredictable behavior if called on the lock which was acquired previously. This is happening because the method doesn't wait for the lock to be released. Starting with version <em>2.6.0</em> this type of lock implements <a href="https://docs.microsoft.com/en-us/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a> interface and provides a way for graceful shutdown. <code>DisposeAsync</code> behaves in the following way:</p>
 <ul>
 <li>If lock is not acquired then completes synchronously</li>
 <li>If lock is acquired then suspends the caller and wait when it will be released, then dispose the lock</li>
 </ul>
+<h2 id="synchronous-acquisition">Synchronous acquisition</h2>
+<p>The class exposes <code>TryEnterReadLock(TimeSpan)</code> and <code>TryEnterWriteLock(TimeSpan)</code> blocking methods that can be used by synchronous callers. The method allows to perform mixed synchronization for synchronous and asynchronous code at the same time.</p>
 
 </article>
           </div>

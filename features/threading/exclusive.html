@@ -98,6 +98,8 @@ using(await @lock.AcquireLockAsync(CancellationToken.None))
 <li>If lock is not acquired then completes synchronously</li>
 <li>If lock is acquired then suspends the caller and wait when it will be released, then dispose the lock</li>
 </ul>
+<h2 id="synchronous-acquisition">Synchronous acquisition</h2>
+<p>The class exposes <code>TryAcquire(TimeSpan)</code> blocking method that can be used by synchronous callers. The method allows to perform mixed synchronization for synchronous and asynchronous code at the same time.</p>
 
 </article>
           </div>

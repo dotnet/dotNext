@@ -92,6 +92,8 @@ Task.Factory.StartNew(async () =&gt;
 resetEvent.Set();   //allow the tasks to complete their job
 </code></pre>
 <p><code>AsyncAutoResetEvent</code> respects the same fairness policy as well as other asynchronous locks. For <code>AsyncManualResetEvent</code> it is not relevant because all suspended waiters will be released when event occurred.</p>
+<h2 id="synchronous-wait">Synchronous wait</h2>
+<p>The class exposes <code>Wait(TimeSpan)</code> blocking method that can be used by synchronous callers. The method allows to perform mixed synchronization for synchronous and asynchronous code at the same time.</p>
 
 </article>
           </div>

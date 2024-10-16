@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct DynamicTaskAwaitable | .NEXT </title>
+    <title>Struct SuspendedExceptionTaskAwaitable&lt;TArg&gt; | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct DynamicTaskAwaitable | .NEXT ">
+    <meta name="title" content="Struct SuspendedExceptionTaskAwaitable&lt;TArg&gt; | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,12 +65,12 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Threading.Tasks.DynamicTaskAwaitable">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable`1">
 
 
 
-  <h1 id="DotNext_Threading_Tasks_DynamicTaskAwaitable" data-uid="DotNext.Threading.Tasks.DynamicTaskAwaitable" class="text-break">Struct DynamicTaskAwaitable</h1>
-  <div class="markdown level0 summary"><p>Represents dynamically-typed task.</p>
+  <h1 id="DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_1" data-uid="DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable`1" class="text-break">Struct SuspendedExceptionTaskAwaitable&lt;TArg&gt;</h1>
+  <div class="markdown level0 summary"><p>Represents awaitable object that can suspend exception raised by the underlying task.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritedMembers">
@@ -94,34 +94,45 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a>.<a class="xref" href="DotNext.Threading.Tasks.html">Tasks</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Runtime.html">Runtime</a>.<a class="xref" href="DotNext.Runtime.CompilerServices.html">CompilerServices</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
-  <h5 id="DotNext_Threading_Tasks_DynamicTaskAwaitable_syntax">Syntax</h5>
+  <h5 id="DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct DynamicTaskAwaitable</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct SuspendedExceptionTaskAwaitable&lt;TArg&gt;</code></pre>
   </div>
-  <h5 id="DotNext_Threading_Tasks_DynamicTaskAwaitable_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>This type is helpful when actual result type of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task&lt;TResult&gt;</a>
-is not known.
-Note that this type uses dynamic code compilation via DLR infrastructure.</p>
-</div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TArg</span></td>
+        <td><p>The type of the argument to be passed to the exception filter.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="methods">Methods
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_DynamicTaskAwaitable_ConfigureAwait_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.DynamicTaskAwaitable.ConfigureAwait(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_1_ConfigureAwait_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable%601.ConfigureAwait(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/DynamicTaskAwaitable.cs/#L91">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/CompilerServices/SuspendedExceptionTaskAwaitable.cs/#L138">View Source</a>
   </span>
-  <a id="DotNext_Threading_Tasks_DynamicTaskAwaitable_ConfigureAwait_" data-uid="DotNext.Threading.Tasks.DynamicTaskAwaitable.ConfigureAwait*"></a>
-  <h4 id="DotNext_Threading_Tasks_DynamicTaskAwaitable_ConfigureAwait_System_Boolean_" data-uid="DotNext.Threading.Tasks.DynamicTaskAwaitable.ConfigureAwait(System.Boolean)">ConfigureAwait(bool)</h4>
-  <div class="markdown level1 summary"><p>Configures an awaiter used to await this task.</p>
+  <a id="DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_1_ConfigureAwait_" data-uid="DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable`1.ConfigureAwait*"></a>
+  <h4 id="DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_1_ConfigureAwait_System_Boolean_" data-uid="DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable`1.ConfigureAwait(System.Boolean)">ConfigureAwait(bool)</h4>
+  <div class="markdown level1 summary"><p>Configures an awaiter for this value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public DynamicTaskAwaitable ConfigureAwait(bool continueOnCapturedContext)</code></pre>
+    <pre><code class="lang-csharp hljs">public SuspendedExceptionTaskAwaitable&lt;TArg&gt; ConfigureAwait(bool continueOnCapturedContext)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -136,7 +147,8 @@ Note that this type uses dynamic code compilation via DLR infrastructure.</p>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
         <td><span class="parametername">continueOnCapturedContext</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to attempt to marshal the continuation back to the original context captured; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to attempt to marshal the continuation back to the captured context;
+otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </td>
       </tr>
     </tbody>
@@ -151,77 +163,27 @@ Note that this type uses dynamic code compilation via DLR infrastructure.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Tasks.DynamicTaskAwaitable.html">DynamicTaskAwaitable</a></td>
-        <td><p>An object used to await this task.</p>
+        <td><a class="xref" href="DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable-1.html">SuspendedExceptionTaskAwaitable</a>&lt;TArg&gt;</td>
+        <td><p>The configured object.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_DynamicTaskAwaitable_ConfigureAwait_System_Threading_Tasks_ConfigureAwaitOptions_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.DynamicTaskAwaitable.ConfigureAwait(System.Threading.Tasks.ConfigureAwaitOptions)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_1_GetAwaiter.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable%601.GetAwaiter%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/DynamicTaskAwaitable.cs/#L101">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/CompilerServices/SuspendedExceptionTaskAwaitable.cs/#L145">View Source</a>
   </span>
-  <a id="DotNext_Threading_Tasks_DynamicTaskAwaitable_ConfigureAwait_" data-uid="DotNext.Threading.Tasks.DynamicTaskAwaitable.ConfigureAwait*"></a>
-  <h4 id="DotNext_Threading_Tasks_DynamicTaskAwaitable_ConfigureAwait_System_Threading_Tasks_ConfigureAwaitOptions_" data-uid="DotNext.Threading.Tasks.DynamicTaskAwaitable.ConfigureAwait(System.Threading.Tasks.ConfigureAwaitOptions)">ConfigureAwait(ConfigureAwaitOptions)</h4>
-  <div class="markdown level1 summary"><p>Configures an awaiter used to await this task.</p>
+  <a id="DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_1_GetAwaiter_" data-uid="DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable`1.GetAwaiter*"></a>
+  <h4 id="DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_1_GetAwaiter" data-uid="DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable`1.GetAwaiter">GetAwaiter()</h4>
+  <div class="markdown level1 summary"><p>Gets the awaiter for this object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public DynamicTaskAwaitable ConfigureAwait(ConfigureAwaitOptions options)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.configureawaitoptions">ConfigureAwaitOptions</a></td>
-        <td><span class="parametername">options</span></td>
-        <td><p>Options used to configure how awaits on this task are performed.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Threading.Tasks.DynamicTaskAwaitable.html">DynamicTaskAwaitable</a></td>
-        <td><p>Configured awaitable object.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_DynamicTaskAwaitable_GetAwaiter.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.DynamicTaskAwaitable.GetAwaiter%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/DynamicTaskAwaitable.cs/#L107">View Source</a>
-  </span>
-  <a id="DotNext_Threading_Tasks_DynamicTaskAwaitable_GetAwaiter_" data-uid="DotNext.Threading.Tasks.DynamicTaskAwaitable.GetAwaiter*"></a>
-  <h4 id="DotNext_Threading_Tasks_DynamicTaskAwaitable_GetAwaiter" data-uid="DotNext.Threading.Tasks.DynamicTaskAwaitable.GetAwaiter">GetAwaiter()</h4>
-  <div class="markdown level1 summary"><p>Gets an awaiter used to await this task.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public DynamicTaskAwaitable.Awaiter GetAwaiter()</code></pre>
+    <pre><code class="lang-csharp hljs">public SuspendedExceptionTaskAwaitable&lt;TArg&gt;.Awaiter GetAwaiter()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
@@ -233,8 +195,8 @@ Note that this type uses dynamic code compilation via DLR infrastructure.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Tasks.DynamicTaskAwaitable.html">DynamicTaskAwaitable</a>.<a class="xref" href="DotNext.Threading.Tasks.DynamicTaskAwaitable.Awaiter.html">Awaiter</a></td>
-        <td><p>An awaiter instance.</p>
+        <td><a class="xref" href="DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable-1.html">SuspendedExceptionTaskAwaitable</a>&lt;TArg&gt;.<a class="xref" href="DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable-1.Awaiter.html">Awaiter</a></td>
+        <td><p>The awaiter for this object.</p>
 </td>
       </tr>
     </tbody>
@@ -267,10 +229,10 @@ Note that this type uses dynamic code compilation via DLR infrastructure.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_DynamicTaskAwaitable.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.DynamicTaskAwaitable%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_CompilerServices_SuspendedExceptionTaskAwaitable_1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.SuspendedExceptionTaskAwaitable%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/DynamicTaskAwaitable.cs/#L19" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/CompilerServices/SuspendedExceptionTaskAwaitable.cs/#L103" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
