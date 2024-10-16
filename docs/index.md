@@ -54,6 +54,8 @@ The following code describes these alternative implementations of synchronizatio
 | [Barrier](https://docs.microsoft.com/en-us/dotnet/api/system.threading.barrier) | [AsyncBarrier](xref:DotNext.Threading.AsyncBarrier)
 | [CountdownEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.countdownevent) | [AsyncCountdownEvent](xref:DotNext.Threading.AsyncCountdownEvent)
 
+Some of the asynchronous counterparts have synchronous methods for waiting and lock acquisition that can help to convert step-by-step synchronous code to asynchronous.
+
 But this is not all features of this library. Read more [here](features/threading/index.md).
 
 # DotNext.IO

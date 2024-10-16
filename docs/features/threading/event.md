@@ -27,3 +27,6 @@ resetEvent.Set();   //allow the tasks to complete their job
 ```
 
 `AsyncAutoResetEvent` respects the same fairness policy as well as other asynchronous locks. For `AsyncManualResetEvent` it is not relevant because all suspended waiters will be released when event occurred.
+
+## Synchronous wait
+The class exposes `Wait(TimeSpan)` blocking method that can be used by synchronous callers. The method allows to perform mixed synchronization for synchronous and asynchronous code at the same time.
