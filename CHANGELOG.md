@@ -1,6 +1,12 @@
 Release Notes
 ====
 
+# 10-16-2023
+<a href="https://www.nuget.org/packages/dotnext.threading/5.15.0">DotNext.Threading 5.15.0</a>
+* Added support of synchronous lock acquisition to `AsyncExclusiveLock`, `AsyncReaderWriterLock`, `AsyncManualResetEvent`, `AsyncAutoResetEvent` so the users can easily migrate step-by-step from monitors and other synchronization primitives to async-friendly primitives
+* Fixed random `InvalidOperationException` caused by `RandomAccessCache<TKey, TValue>`
+* Added synchronous methods to `RandomAccessCache<TKey, TValue>` to support [251](https://github.com/dotnet/dotNext/issues/251) feature request
+
 # 10-13-2024
 <a href="https://www.nuget.org/packages/dotnext/5.14.0">DotNext 5.14.0</a>
 * Added helpers to `DelegateHelpers` class to convert delegates with synchronous signature to their asynchronous counterparts

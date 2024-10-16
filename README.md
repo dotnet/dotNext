@@ -44,11 +44,12 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 10-13-2024
+Release Date: 10-16-2024
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.14.0">DotNext.Threading 5.15.0</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/5.15.0">DotNext.Threading 5.15.0</a>
 * Added support of synchronous lock acquisition to `AsyncExclusiveLock`, `AsyncReaderWriterLock`, `AsyncManualResetEvent`, `AsyncAutoResetEvent` so the users can easily migrate step-by-step from monitors and other synchronization primitives to async-friendly primitives
 * Fixed random `InvalidOperationException` caused by `RandomAccessCache<TKey, TValue>`
+* Added synchronous methods to `RandomAccessCache<TKey, TValue>` to support [251](https://github.com/dotnet/dotNext/issues/251) feature request
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
