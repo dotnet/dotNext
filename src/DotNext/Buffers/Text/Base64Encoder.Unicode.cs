@@ -68,13 +68,7 @@ public partial struct Base64Encoder
         var writer = new BufferWriterSlim<char>(GetMaxEncodedLength(bytes.Length), allocator);
         EncodeToUtf16Buffered(bytes, ref writer, flush);
 
-        if (!writer.TryDetachBuffer(out var result))
-        {
-            result = writer.WrittenSpan.Copy(allocator);
-            writer.Dispose();
-        }
-
-        return result;
+        return writer.DetachOrCopyBuffer();
     }
 
     /// <summary>

@@ -98,21 +98,12 @@ public partial struct Base64Decoder
             goto bad_data;
 
         var bytes = new BufferWriterSlim<byte>(GetMaxDecodedLength(chars.Length), allocator);
-        if (!DecodeFromUtf16Buffered(chars, ref bytes))
-        {
-            bytes.Dispose();
-            goto bad_data;
-        }
+        if (DecodeFromUtf16Buffered(chars, ref bytes))
+            return bytes.DetachOrCopyBuffer();
 
-        if (!bytes.TryDetachBuffer(out var result))
-        {
-            result = bytes.WrittenSpan.Copy(allocator);
-            bytes.Dispose();
-        }
+        bytes.Dispose();
 
-        return result;
-
-    bad_data:
+        bad_data:
         throw new FormatException(ExceptionMessages.MalformedBase64);
     }
 

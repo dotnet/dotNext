@@ -221,8 +221,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
             writer.WriteLittleEndian(fingerprint);
             Encode(configuration, ref writer);
 
-            if (!writer.TryDetachBuffer(out result))
-                result = writer.WrittenSpan.Copy(allocator);
+            result = writer.DetachOrCopyBuffer();
         }
         finally
         {

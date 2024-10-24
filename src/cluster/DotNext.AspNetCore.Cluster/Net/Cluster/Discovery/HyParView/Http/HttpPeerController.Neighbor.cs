@@ -72,8 +72,7 @@ internal partial class HttpPeerController
             writer.WriteEndPoint(localNode);
             writer.Add(Unsafe.BitCast<bool, byte>(highPriority));
 
-            if (!writer.TryDetachBuffer(out result))
-                result = writer.WrittenSpan.Copy(allocator);
+            result = writer.DetachOrCopyBuffer();
         }
         finally
         {

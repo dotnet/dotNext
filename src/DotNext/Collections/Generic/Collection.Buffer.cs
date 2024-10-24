@@ -52,10 +52,7 @@ public static partial class Collection
             foreach (var item in enumerable)
                 writer.Add(item);
 
-            if (!writer.TryDetachBuffer(out MemoryOwner<T> result))
-                result = writer.WrittenSpan.Copy(allocator);
-
-            return result;
+            return writer.DetachOrCopyBuffer();
         }
 
         static int GetSize(IEnumerable<T> enumerable, int sizeHint)
