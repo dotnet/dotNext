@@ -164,6 +164,31 @@ public sealed class BufferWriterSlimTests : Test
     }
 
     [Fact]
+    public static void DetachOrCopyBuffer()
+    {
+        using var writer = new BufferWriterSlim<int>(stackalloc int[2]);
+        writer.Add(10);
+        writer.Add(20);
+
+        using (var buffer = writer.DetachOrCopyBuffer())
+        {
+            Equal([10, 20], buffer.Span);
+        }
+        
+        True(writer.WrittenCount is 0);
+        
+        // overflow
+        writer.Add(10);
+        writer.Add(20);
+        writer.Add(30);
+        
+        using (var buffer = writer.DetachOrCopyBuffer())
+        {
+            Equal([10, 20, 30], buffer.Span);
+        }
+    }
+
+    [Fact]
     public static void FormatValues()
     {
         var writer = new BufferWriterSlim<char>(stackalloc char[64]);
