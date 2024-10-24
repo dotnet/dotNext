@@ -1,3 +1,5 @@
+using System.Buffers;
+using DotNext.Buffers;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
@@ -8,7 +10,7 @@ namespace DotNext.Threading;
 public static class LinkedTokenSourceFactory
 {
     /// <summary>
-    /// Links two cancellation tokens.
+    /// Links two cancellation tokens together.
     /// </summary>
     /// <param name="first">The first cancellation token. Can be modified by this method.</param>
     /// <param name="second">The second cancellation token.</param>
@@ -29,6 +31,36 @@ public static class LinkedTokenSourceFactory
         {
             result = new Linked2CancellationTokenSource(in first, in second);
             first = result.Token;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Links multiple cancellation tokens together.
+    /// </summary>
+    /// <param name="first">The first cancellation token. Can be modified by this method.</param>
+    /// <param name="tokens">A list of cancellation tokens to link together.</param>
+    /// <returns>The linked token source; or <see langword="null"/> if <paramref name="first"/> or <paramref name="tokens"/> are not cancelable.</returns>
+    public static LinkedCancellationTokenSource? LinkTo(this ref CancellationToken first, ReadOnlySpan<CancellationToken> tokens) // TODO: Add params
+    {
+        LinkedCancellationTokenSource? result;
+        if (tokens.IsEmpty)
+        {
+            result = null;
+        }
+        else
+        {
+            result = new MultipleLinkedCancellationTokenSource(tokens, out var isEmpty, first);
+            if (isEmpty)
+            {
+                result.Dispose();
+                result = null;
+            }
+            else
+            {
+                first = result.Token;
+            }
         }
 
         return result;
@@ -117,10 +149,59 @@ public static class LinkedTokenSourceFactory
         {
             if (disposing)
             {
-                registration1.Dispose();
-                registration2.Dispose();
+                registration1.Unregister();
+                registration2.Unregister();
             }
 
+            base.Dispose(disposing);
+        }
+    }
+    
+    private sealed class MultipleLinkedCancellationTokenSource : LinkedCancellationTokenSource
+    {
+        private MemoryOwner<CancellationTokenRegistration> registrations;
+
+        internal MultipleLinkedCancellationTokenSource(ReadOnlySpan<CancellationToken> tokens, out bool isEmpty, CancellationToken first)
+        {
+            Debug.Assert(!tokens.IsEmpty);
+
+            var writer = new BufferWriterSlim<CancellationTokenRegistration>(tokens.Length);
+            try
+            {
+                foreach (var token in tokens)
+                {
+                    if (token != first && token.CanBeCanceled)
+                    {
+                        writer.Add(token.UnsafeRegister(CancellationCallback, this));
+                    }
+                }
+
+                if (first.CanBeCanceled && writer.WrittenCount > 0)
+                {
+                    writer.Add(first.UnsafeRegister(CancellationCallback, this));
+                }
+
+                registrations = writer.DetachOrCopyBuffer();
+                isEmpty = registrations.IsEmpty;
+            }
+            finally
+            {
+                writer.Dispose();
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                foreach (ref readonly var registration in registrations.Span)
+                {
+                    registration.Unregister();
+                }
+                
+                registrations.Dispose();
+            }
+            
             base.Dispose(disposing);
         }
     }
