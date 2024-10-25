@@ -141,8 +141,8 @@ public static class LinkedTokenSourceFactory
             Debug.Assert(token1.CanBeCanceled);
             Debug.Assert(token2.CanBeCanceled);
 
-            registration1 = token1.UnsafeRegister(CancellationCallback, this);
-            registration2 = token2.UnsafeRegister(CancellationCallback, this);
+            registration1 = Attach(token1);
+            registration2 = Attach(token2);
         }
 
         protected override void Dispose(bool disposing)
@@ -172,13 +172,13 @@ public static class LinkedTokenSourceFactory
                 {
                     if (token != first && token.CanBeCanceled)
                     {
-                        writer.Add(token.UnsafeRegister(CancellationCallback, this));
+                        writer.Add(Attach(token));
                     }
                 }
 
                 if (first.CanBeCanceled && writer.WrittenCount > 0)
                 {
-                    writer.Add(first.UnsafeRegister(CancellationCallback, this));
+                    writer.Add(Attach(first));
                 }
 
                 registrations = writer.DetachOrCopyBuffer();
