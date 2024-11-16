@@ -47,4 +47,16 @@ public sealed class LockTests : Test
         holder.Dispose();
         Equal(3, sem.CurrentCount);
     }
+
+    [Fact]
+    public static async Task InterruptibleLock()
+    {
+        using var cts = new CancellationTokenSource();
+        var obj = new object();
+        
+        Monitor.Enter(obj);
+        var task = Task.Factory.StartNew(() => Lock.TryEnterMonitor(obj, System.Threading.Timeout.InfiniteTimeSpan, cts.Token));
+        await cts.CancelAsync();
+        False(await task);
+    }
 }
