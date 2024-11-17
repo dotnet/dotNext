@@ -102,14 +102,20 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// Tries to acquire the lock synchronously.
     /// </summary>
     /// <param name="timeout">The interval to wait for the lock.</param>
-    /// <returns><see langword="true"/> if the lock is acquired in timely manner; otherwise, <see langword="false"/>.</returns>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if the lock is acquired in timely manner; <see langword="false"/> if canceled or timed out.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     [UnsupportedOSPlatform("browser")]
-    public bool TryAcquire(TimeSpan timeout)
+    public bool TryAcquire(TimeSpan timeout, CancellationToken token = default)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        return timeout == TimeSpan.Zero ? TryAcquireCore() : TryAcquire(new Timeout(timeout), ref manager);
+
+        return timeout == TimeSpan.Zero
+            ? TryAcquireCore()
+            : token.CanBeCanceled
+                ? TryAcquire(new Timeout(timeout), ref manager, token)
+                : TryAcquire(new Timeout(timeout), ref manager);
     }
 
     /// <summary>

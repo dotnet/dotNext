@@ -55,7 +55,7 @@ public sealed class LockTests : Test
         var obj = new object();
         
         Monitor.Enter(obj);
-        var task = Task.Factory.StartNew(() => Lock.TryEnterMonitor(obj, System.Threading.Timeout.InfiniteTimeSpan, cts.Token));
+        var task = Task.Factory.StartNew(() => Lock.TryEnterMonitor(obj, System.Threading.Timeout.InfiniteTimeSpan, cts.Token), TaskCreationOptions.LongRunning);
         await cts.CancelAsync();
         False(await task);
     }

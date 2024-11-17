@@ -214,4 +214,17 @@ public sealed class AsyncExclusiveLockTests : Test
         l.Dispose();
         await ThrowsAsync<ObjectDisposedException>(Func.Constant(t));
     }
+
+    [Fact]
+    public static async Task CancelSynchronousLock()
+    {
+        using var l = new AsyncExclusiveLock();
+        using var cts = new CancellationTokenSource();
+        True(l.TryAcquire());
+        
+        var t = Task.Factory.StartNew(() => l.TryAcquire(DefaultTimeout, cts.Token), TaskCreationOptions.LongRunning);
+        await cts.CancelAsync();
+
+        False(await t);
+    }
 }

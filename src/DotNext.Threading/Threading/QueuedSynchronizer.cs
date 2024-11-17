@@ -188,6 +188,66 @@ public class QueuedSynchronizer : Disposable
         return true;
     }
 
+    [UnsupportedOSPlatform("browser")]
+    private protected bool TryAcquire<TLockManager>(Timeout timeout, ref TLockManager manager, CancellationToken token)
+        where TLockManager : struct, ILockManager
+    {
+        Debug.Assert(token.CanBeCanceled);
+
+        var result = false;
+        var entered = false;
+        var registration = token.UnsafeRegister(Interrupt, Thread.CurrentThread);
+        try
+        {
+            if (entered = timeout.TryGetRemainingTime(out var remainingTime) && Monitor.TryEnter(SyncRoot, remainingTime))
+            {
+                while (!TryAcquireOrThrow(ref manager))
+                {
+                    if (timeout.TryGetRemainingTime(out remainingTime) && Monitor.Wait(SyncRoot, remainingTime))
+                        continue;
+
+                    goto exit;
+                }
+
+                result = true;
+            }
+        }
+        catch (ThreadInterruptedException) when (token.IsCancellationRequested)
+        {
+            // nothing to do
+        }
+        finally
+        {
+            if (entered)
+                Monitor.Exit(SyncRoot);
+
+            registration.Dispose();
+        }
+
+        // make sure that the interruption was not called on this thread concurrently with registration.Dispose()
+        if (token.IsCancellationRequested)
+        {
+            try
+            {
+                Thread.Sleep(0); // reset interrupted state
+            }
+            catch (ThreadInterruptedException)
+            {
+                // suspend exception
+            }
+        }
+
+        exit:
+        return result;
+        
+        static void Interrupt(object? thread)
+        {
+            Debug.Assert(thread is Thread);
+            
+            Unsafe.As<Thread>(thread).Interrupt();
+        }
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private bool TryAcquireOrThrow<TLockManager>(ref TLockManager manager)
         where TLockManager : struct, ILockManager

@@ -294,19 +294,24 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// Tries to obtain reader lock synchronously.
     /// </summary>
     /// <param name="timeout">The time to wait.</param>
-    /// <returns><see langword="true"/> if reader lock is acquired in timely manner; otherwise, <see langword="false"/>.</returns>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if reader lock is acquired in timely manner; <see langword="false"/> if timed out or canceled.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     [UnsupportedOSPlatform("browser")]
-    public bool TryEnterReadLock(TimeSpan timeout)
+    public bool TryEnterReadLock(TimeSpan timeout, CancellationToken token = default)
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        return TryEnter<ReadLockManager>(timeout);
+        return TryEnter<ReadLockManager>(timeout, token);
     }
 
-    private bool TryEnter<TLockManager>(TimeSpan timeout)
+    private bool TryEnter<TLockManager>(TimeSpan timeout, CancellationToken token)
         where TLockManager : struct, ILockManager<WaitNode>
-        => timeout == TimeSpan.Zero ? TryEnter<TLockManager>() : TryAcquire(new Timeout(timeout), ref GetLockManager<TLockManager>());
+        => timeout == TimeSpan.Zero
+            ? TryEnter<TLockManager>()
+            : token.CanBeCanceled
+                ? TryAcquire(new Timeout(timeout), ref GetLockManager<TLockManager>(), token)
+                : TryAcquire(new Timeout(timeout), ref GetLockManager<TLockManager>());
 
     /// <summary>
     /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
@@ -379,14 +384,15 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// Tries to obtain writer lock synchronously.
     /// </summary>
     /// <param name="timeout">The time to wait.</param>
-    /// <returns><see langword="true"/> if writer lock is acquired in timely manner; otherwise, <see langword="false"/>.</returns>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if writer lock is acquired in timely manner; <see langword="false"/> if timed out or canceled.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     [UnsupportedOSPlatform("browser")]
-    public bool TryEnterWriteLock(TimeSpan timeout)
+    public bool TryEnterWriteLock(TimeSpan timeout, CancellationToken token = default)
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        return TryEnter<WriteLockManager>(timeout);
+        return TryEnter<WriteLockManager>(timeout, token);
     }
 
     /// <summary>
