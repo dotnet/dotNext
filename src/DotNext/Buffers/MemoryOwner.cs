@@ -21,14 +21,6 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     private readonly T[]? array;  // not null only if owner is ArrayPool or null
     private int length;
 
-    private MemoryOwner(IMemoryOwner<T> owner, int? length)
-    {
-        Debug.Assert(length.GetValueOrDefault() >= 0);
-
-        this.owner = (this.length = length ?? owner.Memory.Length) > 0 ? owner : null;
-        array = null;
-    }
-
     internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
     {
         Debug.Assert(length > 0);

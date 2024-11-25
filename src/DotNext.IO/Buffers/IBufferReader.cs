@@ -252,7 +252,6 @@ internal unsafe struct ParsingReader<TArg, TResult>(TArg arg, delegate*<ReadOnly
 }
 
 [StructLayout(LayoutKind.Auto)]
-
 internal struct SkippingReader(long length) : IBufferReader
 {
     readonly int IBufferReader.RemainingBytes => int.CreateSaturating(length);
@@ -261,7 +260,7 @@ internal struct SkippingReader(long length) : IBufferReader
         => length -= source.Length;
 }
 
-internal struct BufferReader<TReader>(TReader reader) : IBufferReader, ISupplier<TReader>
+internal struct ProxyReader<TReader>(TReader reader) : IBufferReader, ISupplier<TReader>
     where TReader : struct, IBufferReader
 {
     int IBufferReader.RemainingBytes => reader.RemainingBytes;
@@ -273,5 +272,5 @@ internal struct BufferReader<TReader>(TReader reader) : IBufferReader, ISupplier
 
     readonly TReader ISupplier<TReader>.Invoke() => reader;
 
-    public static implicit operator BufferReader<TReader>(TReader reader) => new(reader);
+    public static implicit operator ProxyReader<TReader>(TReader reader) => new(reader);
 }

@@ -121,7 +121,7 @@ public partial class FileReader : IAsyncBinaryReader
 
     /// <inheritdoc/>
     ValueTask<TReader> IAsyncBinaryReader.ReadAsync<TReader>(TReader reader, CancellationToken token)
-        => ReadAsync<TReader, BufferReader<TReader>>(reader, token);
+        => ReadAsync<TReader, ProxyReader<TReader>>(reader, token);
 
     private ValueTask<int> ReadLengthAsync(LengthFormat lengthFormat, CancellationToken token) => lengthFormat switch
     {
