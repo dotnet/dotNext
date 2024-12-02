@@ -247,6 +247,17 @@ public ref struct SpanWriter<T>
     }
 
     /// <summary>
+    /// Obtains the tail of the remaining buffer and advances to its end.
+    /// </summary>
+    /// <returns>The tail of the remaining buffer.</returns>
+    public Span<T> SlideToEnd()
+    {
+        var result = RemainingSpan;
+        position = length;
+        return result;
+    }
+
+    /// <summary>
     /// Writes a portion of data.
     /// </summary>
     /// <param name="action">The action responsible for writing elements.</param>

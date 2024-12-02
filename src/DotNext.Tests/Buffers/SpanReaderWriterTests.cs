@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace DotNext.Buffers;
@@ -179,6 +180,20 @@ public sealed class SpanReaderTests : Test
         reader.Reset();
         Equal(10, reader.Read());
         Equal(new[] { 20, 30 }, reader.ReadToEnd().ToArray());
+    }
+
+    [Fact]
+    public static void SlideToEnd()
+    {
+        Span<byte> expected = stackalloc byte[3];
+        var writer = new SpanWriter<byte>(expected);
+        writer.Add() = 10;
+
+        var remaining = writer.SlideToEnd();
+        True(expected[1..] == remaining);
+        
+        Random.Shared.NextBytes(remaining);
+        Equal(expected, writer.WrittenSpan);
     }
 
     [Fact]
