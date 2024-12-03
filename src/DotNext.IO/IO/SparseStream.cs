@@ -82,7 +82,7 @@ internal sealed class SparseStream : Stream, IFlushable
     }
 
     /// <inheritdoc />
-    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
+    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
         => ReadAsync(buffer.AsMemory(offset, count), token).AsTask();
 
     /// <inheritdoc />
@@ -95,7 +95,7 @@ internal sealed class SparseStream : Stream, IFlushable
     }
 
     /// <inheritdoc />
-    public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token = default)
+    public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
     {
         ValidateCopyToArguments(destination, bufferSize);
 
@@ -119,15 +119,15 @@ internal sealed class SparseStream : Stream, IFlushable
         set => throw new NotSupportedException();
     }
 
-    /// <inheritdoc />
+    /// <inheritdoc cref="Stream.Flush"/>
     public override void Flush()
     {
         if (streamAvailable)
             enumerator.Current.Flush();
     }
 
-    /// <inheritdoc />
-    public override Task FlushAsync(CancellationToken token = default)
+    /// <inheritdoc cref="Stream.FlushAsync(CancellationToken)"/>
+    public override Task FlushAsync(CancellationToken token)
         => streamAvailable ? enumerator.Current.FlushAsync(token) : Task.CompletedTask;
 
     /// <inheritdoc />
@@ -149,7 +149,7 @@ internal sealed class SparseStream : Stream, IFlushable
     public override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
 
     /// <inheritdoc/>
-    public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token = default) => Task.FromException(new NotSupportedException());
+    public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token) => Task.FromException(new NotSupportedException());
 
     /// <inheritdoc/>
     public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
