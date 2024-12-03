@@ -87,12 +87,35 @@ public static class BufferWriter
     /// <returns>The number of written bytes.</returns>
     public static long Encode(this IBufferWriter<byte> writer, ReadOnlySpan<char> value, in EncodingContext context, LengthFormat? lengthFormat = null)
     {
-        long result = lengthFormat.HasValue
+        var result = lengthFormat.HasValue
             ? writer.WriteLength(context.Encoding.GetByteCount(value), lengthFormat.GetValueOrDefault())
             : 0L;
 
         context.GetEncoder().Convert(value, writer, true, out var bytesWritten, out _);
         result += bytesWritten;
+
+        return result;
+    }
+
+    /// <summary>
+    /// Encodes string using the specified encoding.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The sequence of characters.</param>
+    /// <param name="context">The encoding context.</param>
+    /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
+    /// <returns>The number of written bytes.</returns>
+    public static int Encode(this ref SpanWriter<byte> writer, ReadOnlySpan<char> value, in EncodingContext context, LengthFormat? lengthFormat = null)
+    {
+        var result = lengthFormat.HasValue
+            ? writer.WriteLength(context.Encoding.GetByteCount(value), lengthFormat.GetValueOrDefault())
+            : 0;
+
+        var bytesWritten = context.TryGetEncoder() is { } encoder
+            ? encoder.GetBytes(value, writer.RemainingSpan, flush: true)
+            : context.Encoding.GetBytes(value, writer.RemainingSpan);
+        result += bytesWritten;
+        writer.Advance(bytesWritten);
 
         return result;
     }
@@ -172,7 +195,7 @@ public static class BufferWriter
         };
 
         int bytesWritten;
-        for (int bufferSize = 0, actualLengthSize; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+        for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
         {
             var buffer = writer.GetSpan(bufferSize);
 
@@ -182,7 +205,7 @@ public static class BufferWriter
                 continue;
             }
 
-            actualLengthSize = lengthFormat.HasValue
+            var actualLengthSize = lengthFormat.HasValue
                 ? WriteLength(buffer.Slice(0, expectedLengthSize), bytesWritten, lengthFormat.GetValueOrDefault())
                 : 0;
 

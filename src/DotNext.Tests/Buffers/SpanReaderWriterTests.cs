@@ -1,6 +1,8 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
+using DotNext.IO;
+using DotNext.Text;
 
 namespace DotNext.Buffers;
 
@@ -414,5 +416,23 @@ public sealed class SpanReaderTests : Test
 
         writer.Write(builder);
         Equal(builder.ToString(), writer.WrittenSpan);
+    }
+
+    [InlineData(LengthFormat.BigEndian)]
+    [InlineData(LengthFormat.LittleEndian)]
+    [InlineData(LengthFormat.Compressed)]
+    [Theory]
+    public static void EncodeString(LengthFormat format)
+    {
+        ReadOnlySpan<char> expected = ['a', 'b', 'c'];
+        var bytes = new byte[16];
+
+        var writer = new SpanWriter<byte>(bytes);
+        True(writer.Encode(expected, Encoding.UTF8, format) > 0);
+
+        var reader = IAsyncBinaryReader.Create(bytes.AsMemory(0, writer.WrittenCount));
+
+        using var actual = reader.Decode(Encoding.UTF8, lengthFormat: format);
+        Equal(expected, actual.Span);
     }
 }
