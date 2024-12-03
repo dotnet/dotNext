@@ -425,14 +425,31 @@ public sealed class SpanReaderTests : Test
     public static void EncodeString(LengthFormat format)
     {
         ReadOnlySpan<char> expected = ['a', 'b', 'c'];
-        var bytes = new byte[16];
+        var buffer = new byte[16];
 
-        var writer = new SpanWriter<byte>(bytes);
+        var writer = new SpanWriter<byte>(buffer);
         True(writer.Encode(expected, Encoding.UTF8, format) > 0);
 
-        var reader = IAsyncBinaryReader.Create(bytes.AsMemory(0, writer.WrittenCount));
+        var reader = IAsyncBinaryReader.Create(buffer.AsMemory(0, writer.WrittenCount));
 
         using var actual = reader.Decode(Encoding.UTF8, lengthFormat: format);
+        Equal(expected, actual.Span);
+    }
+
+    [InlineData(LengthFormat.BigEndian)]
+    [InlineData(LengthFormat.LittleEndian)]
+    [InlineData(LengthFormat.Compressed)]
+    [Theory]
+    public static void WriteLengthPrefixedBytes(LengthFormat format)
+    {
+        ReadOnlySpan<byte> expected = [1, 2, 3];
+        var buffer = new byte[expected.Length];
+        
+        var writer = new SpanWriter<byte>(buffer);
+        True(writer.Write(expected, format) > 0);
+        
+        var reader = IAsyncBinaryReader.Create(buffer.AsMemory(0, writer.WrittenCount));
+        using var actual = reader.ReadBlock(format);
         Equal(expected, actual.Span);
     }
 }

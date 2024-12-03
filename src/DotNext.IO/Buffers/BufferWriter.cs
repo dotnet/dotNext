@@ -120,6 +120,21 @@ public static class BufferWriter
         return result;
     }
 
+    /// <summary>
+    /// Writes a sequence of bytes prefixed with the length.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">A sequence of bytes to be written.</param>
+    /// <param name="lengthFormat">A format of the buffer length to be written.</param>
+    /// <returns>A number of bytes written.</returns>
+    public static int Write(this ref SpanWriter<byte> writer, scoped ReadOnlySpan<byte> value, LengthFormat lengthFormat)
+    {
+        var result = writer.WriteLength(value.Length, lengthFormat);
+        result += writer.Write(value);
+        
+        return result;
+    }
+
     private static bool TryFormat<T>(IBufferWriter<byte> writer, T value, Span<char> buffer, in EncodingContext context, LengthFormat? lengthFormat, ReadOnlySpan<char> format, IFormatProvider? provider, out long bytesWritten)
         where T : notnull, ISpanFormattable
     {
