@@ -24,17 +24,6 @@ internal struct SevenBitEncodedInt
 
     internal readonly int Value => (int)value;
 
-    internal readonly int CopyTo(Span<byte> buffer)
-    {
-        var writer = new SpanWriter<byte>(buffer);
-        foreach (var b in this)
-        {
-            writer.Add(b);
-        }
-
-        return writer.WrittenCount;
-    }
-
     public readonly Enumerator GetEnumerator() => new(value);
 
     internal struct Enumerator
