@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -45,11 +47,16 @@ public struct SevenBitEncodedInteger<T>(T value) : ISupplier<T>, IResettable
     public bool Append(byte b)
     {
         if (shift == MaxSizeInBits)
-            throw new InvalidDataException();
+            ThrowInvalidDataException();
 
         value |= (T.CreateTruncating(b) & Ox7FU) << shift;
         shift += 7;
         return (b & 0x80U) is not 0U;
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void ThrowInvalidDataException()
+            => throw new InvalidDataException();
     }
 
     /// <summary>
