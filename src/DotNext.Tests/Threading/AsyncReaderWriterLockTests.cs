@@ -256,4 +256,14 @@ public sealed class AsyncReaderWriterLockTests : Test
 
         bool TryEnterReadLock() => l.TryEnterReadLock(DefaultTimeout);
     }
+    
+    [Fact]
+    public static void ReentrantLock()
+    {
+        using var l = new AsyncReaderWriterLock();
+        True(l.TryEnterReadLock());
+
+        Throws<LockRecursionException>(() => l.TryEnterReadLock(DefaultTimeout));
+        Throws<LockRecursionException>(() => l.TryEnterWriteLock(DefaultTimeout));
+    }
 }

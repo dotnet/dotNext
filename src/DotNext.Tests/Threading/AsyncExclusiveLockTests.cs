@@ -227,4 +227,14 @@ public sealed class AsyncExclusiveLockTests : Test
 
         False(await t);
     }
+
+    [Fact]
+    public static void ReentrantLock()
+    {
+        using var l = new AsyncExclusiveLock();
+        True(l.TryAcquire());
+        False(l.TryAcquire());
+
+        Throws<LockRecursionException>(() => l.TryAcquire(DefaultTimeout));
+    }
 }

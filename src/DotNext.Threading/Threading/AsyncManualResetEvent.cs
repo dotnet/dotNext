@@ -31,7 +31,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
         readonly bool ILockManager.IsLockAllowed => Value;
 
-        readonly void ILockManager.AcquireLock()
+        readonly void ILockManager.AcquireLock(bool synchronously)
         {
             // nothing to do here
         }
@@ -173,11 +173,25 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     [UnsupportedOSPlatform("browser")]
     private bool Wait(Timeout timeout)
     {
-        lock (SyncRoot)
+        bool result;
+        if (timeout.TryGetRemainingTime(out var remainingTime) && Monitor.TryEnter(SyncRoot, remainingTime))
         {
-            return TryAcquire(ref manager) ||
-                   timeout.TryGetRemainingTime(out var remainingTime)
-                   && Monitor.Wait(SyncRoot, remainingTime);
+            try
+            {
+                result = TryAcquire(ref manager, synchronously: true) ||
+                         timeout.TryGetRemainingTime(out remainingTime)
+                         && Monitor.Wait(SyncRoot, remainingTime);
+            }
+            finally
+            {
+                Monitor.Exit(SyncRoot);
+            }
         }
+        else
+        {
+            result = false;
+        }
+
+        return result;
     }
 }

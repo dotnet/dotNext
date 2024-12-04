@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -158,7 +159,7 @@ public class QueuedSynchronizer : Disposable
         where TLockManager : struct, ILockManager<TNode>
         => EnqueueNode<TNode, StaticInitializer<TNode, TLockManager>>(ref pool, new(flags));
 
-    private protected bool TryAcquire<TLockManager>(ref TLockManager manager)
+    private protected bool TryAcquire<TLockManager>(ref TLockManager manager, [ConstantExpected] bool synchronously)
         where TLockManager : struct, ILockManager
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
@@ -166,7 +167,7 @@ public class QueuedSynchronizer : Disposable
         if (TLockManager.RequiresEmptyQueue && WaitQueueHead is not null || !manager.IsLockAllowed)
             return false;
 
-        manager.AcquireLock();
+        manager.AcquireLock(synchronously);
         return true;
     }
     
@@ -174,18 +175,33 @@ public class QueuedSynchronizer : Disposable
     private protected bool TryAcquire<TLockManager>(Timeout timeout, ref TLockManager manager)
         where TLockManager : struct, ILockManager
     {
-        lock (SyncRoot)
+        bool result;
+        if (timeout.TryGetRemainingTime(out var remainingTime) && Monitor.TryEnter(SyncRoot, remainingTime))
         {
-            while (!TryAcquireOrThrow(ref manager))
+            try
             {
-                if (timeout.TryGetRemainingTime(out var remainingTime) && Monitor.Wait(SyncRoot, remainingTime))
-                    continue;
+                if (manager.IsLockHeldByCurrentThread)
+                    throw new LockRecursionException();
 
-                return false;
+                while (!(result = TryAcquireOrThrow(ref manager)))
+                {
+                    if (timeout.TryGetRemainingTime(out remainingTime) && Monitor.Wait(SyncRoot, remainingTime))
+                        continue;
+                    
+                    break;
+                }
+            }
+            finally
+            {
+                Monitor.Exit(SyncRoot);
             }
         }
+        else
+        {
+            result = false;
+        }
 
-        return true;
+        return result;
     }
 
     [UnsupportedOSPlatform("browser")]
@@ -201,15 +217,16 @@ public class QueuedSynchronizer : Disposable
         {
             if (entered = timeout.TryGetRemainingTime(out var remainingTime) && Monitor.TryEnter(SyncRoot, remainingTime))
             {
-                while (!TryAcquireOrThrow(ref manager))
+                if (manager.IsLockHeldByCurrentThread)
+                    throw new LockRecursionException();
+                
+                while (!(result = TryAcquireOrThrow(ref manager)))
                 {
                     if (timeout.TryGetRemainingTime(out remainingTime) && Monitor.Wait(SyncRoot, remainingTime))
                         continue;
 
                     goto exit;
                 }
-
-                result = true;
             }
         }
         catch (ThreadInterruptedException) when (token.IsCancellationRequested)
@@ -253,7 +270,7 @@ public class QueuedSynchronizer : Disposable
         where TLockManager : struct, ILockManager
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        return TryAcquire(ref manager);
+        return TryAcquire(ref manager, synchronously: true);
     }
     
     private T AcquireAsync<T, TNode, TInitializer, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, TInitializer initializer, TOptions options)
@@ -286,7 +303,7 @@ public class QueuedSynchronizer : Disposable
                         ? Interrupt(options.InterruptionReason)
                         : null;
 
-                    task = TryAcquire(ref manager)
+                    task = TryAcquire(ref manager, synchronously: false)
                         ? TNode.SuccessfulTask
                         : TNode.TimedOutTask;
                 }
@@ -313,7 +330,7 @@ public class QueuedSynchronizer : Disposable
                         ? Interrupt(options.InterruptionReason)
                         : null;
 
-                    if (TryAcquire(ref manager))
+                    if (TryAcquire(ref manager, synchronously: false))
                     {
                         task = TNode.SuccessfulTask;
                         break;
@@ -642,7 +659,9 @@ public class QueuedSynchronizer : Disposable
     {
         bool IsLockAllowed { get; }
 
-        void AcquireLock();
+        void AcquireLock(bool synchronously);
+
+        bool IsLockHeldByCurrentThread => false;
 
         static virtual bool RequiresEmptyQueue => true;
     }
