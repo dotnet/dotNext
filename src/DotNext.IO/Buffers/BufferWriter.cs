@@ -7,6 +7,7 @@ namespace DotNext.Buffers;
 
 using EncodingContext = DotNext.Text.EncodingContext;
 using LengthFormat = IO.LengthFormat;
+using SevenBitEncodedInt = Binary.SevenBitEncodedInteger<uint>;
 
 /// <summary>
 /// Represents extension methods for writing typed data into buffer.
@@ -47,32 +48,19 @@ public static class BufferWriter
         {
             LengthFormat.LittleEndian => &ByteBuffer.WriteLittleEndian,
             LengthFormat.BigEndian => &ByteBuffer.WriteBigEndian,
-            LengthFormat.Compressed => &Write7BitEncodedInt,
+            LengthFormat.Compressed => &Write7BitEncodedInteger,
             _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
         };
 
         return writer(ref destination, value);
-    }
-    
-    /// <summary>
-    /// Writes 32-bit integer in a compressed format.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="value">The integer to be written.</param>
-    /// <returns>A number of bytes written to the buffer.</returns>
-    public static int Write7BitEncodedInt(this ref SpanWriter<byte> writer, int value)
-    {
-        foreach (var b in new SevenBitEncodedInt(value))
-        {
-            writer.Add() = b;
-        }
 
-        return writer.WrittenCount;
+        static int Write7BitEncodedInteger(ref SpanWriter<byte> writer, int value)
+            => writer.Write7BitEncodedInteger((uint)value);
     }
 
     internal static int WriteLength(this IBufferWriter<byte> buffer, int length, LengthFormat lengthFormat)
     {
-        var writer = new SpanWriter<byte>(buffer.GetSpan(SevenBitEncodedInt.MaxSize));
+        var writer = new SpanWriter<byte>(buffer.GetSpan(SevenBitEncodedInt.MaxSizeInBytes));
         buffer.Advance(writer.WriteLength(length, lengthFormat));
         return writer.WrittenCount;
     }
@@ -211,7 +199,7 @@ public static class BufferWriter
         {
             null => 0,
             LengthFormat.BigEndian or LengthFormat.LittleEndian => sizeof(int),
-            LengthFormat.Compressed => SevenBitEncodedInt.MaxSize,
+            LengthFormat.Compressed => SevenBitEncodedInt.MaxSizeInBytes,
             _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
         };
 

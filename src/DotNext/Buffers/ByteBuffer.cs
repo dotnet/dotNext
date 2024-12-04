@@ -323,6 +323,44 @@ public static class ByteBuffer
 
         return result;
     }
+    
+    /// <summary>
+    /// Writes 32-bit integer in a compressed format.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The integer to be written.</param>
+    /// <returns>A number of bytes written to the buffer.</returns>
+    public static int Write7BitEncodedInteger<T>(this ref SpanWriter<byte> writer, T value)
+        where T : struct, IBinaryInteger<T>, IUnsignedNumber<T>
+    {
+        var count = 0;
+        foreach (var b in new SevenBitEncodedInteger<T>(value))
+        {
+            writer.Add() = b;
+            count += 1;
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Decodes an integer encoded as 7-bit octets.
+    /// </summary>
+    /// <param name="reader">The buffer reader.</param>
+    /// <typeparam name="T">The integer type.</typeparam>
+    /// <returns>The decoded integer.</returns>
+    public static T Read7BitEncodedInteger<T>(this ref SpanReader<byte> reader)
+        where T : struct, IBinaryInteger<T>, IUnsignedNumber<T>
+    {
+        var decoder = new SevenBitEncodedInteger<T>();
+        byte octet;
+        do
+        {
+            octet = reader.Read();
+        } while (!decoder.Append(octet));
+
+        return decoder.Value;
+    }
 
     /// <summary>
     /// Restores a value from a sequence of bytes.

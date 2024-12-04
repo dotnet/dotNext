@@ -127,7 +127,7 @@ public partial class FileReader : IAsyncBinaryReader
     {
         LengthFormat.LittleEndian => ReadLittleEndianAsync<int>(token),
         LengthFormat.BigEndian => ReadBigEndianAsync<int>(token),
-        LengthFormat.Compressed => ReadAsync<int, SevenBitEncodedInt.Reader>(new(), token),
+        LengthFormat.Compressed => ReadAsync<int, SevenBitEncodedInt32Reader>(new(), token),
         _ => ValueTask.FromException<int>(new ArgumentOutOfRangeException(nameof(lengthFormat))),
     };
 
