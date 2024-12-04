@@ -309,7 +309,13 @@ public ref partial struct BufferWriterSlim<T>
     public MemoryOwner<T> DetachOrCopyBuffer()
     {
         MemoryOwner<T> result;
-        if (NoOverflow)
+
+        if (position is 0)
+        {
+            result = default;
+            goto exit;
+        }
+        else if (NoOverflow)
         {
             result = allocator.AllocateExactly(position);
             initialBuffer.CopyTo(result.Span);
@@ -319,9 +325,11 @@ public ref partial struct BufferWriterSlim<T>
             result = extraBuffer;
             extraBuffer = default;
         }
-        
+
         result.Truncate(position);
         position = 0;
+
+        exit:
         return result;
     }
 
