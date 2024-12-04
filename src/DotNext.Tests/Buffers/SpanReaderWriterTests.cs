@@ -443,7 +443,7 @@ public sealed class SpanReaderTests : Test
     public static void WriteLengthPrefixedBytes(LengthFormat format)
     {
         ReadOnlySpan<byte> expected = [1, 2, 3];
-        var buffer = new byte[expected.Length];
+        var buffer = new byte[expected.Length + 5];
         
         var writer = new SpanWriter<byte>(buffer);
         True(writer.Write(expected, format) > 0);
