@@ -357,7 +357,7 @@ public static class ByteBuffer
         do
         {
             octet = reader.Read();
-        } while (!decoder.Append(octet));
+        } while (decoder.Append(octet));
 
         return decoder.Value;
     }

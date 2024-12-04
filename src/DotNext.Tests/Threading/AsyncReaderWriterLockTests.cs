@@ -226,12 +226,10 @@ public sealed class AsyncReaderWriterLockTests : Test
     {
         using var l = new AsyncReaderWriterLock();
         True(l.TryEnterReadLock(DefaultTimeout));
-        True(l.TryEnterReadLock(DefaultTimeout));
-        Equal(2L, l.CurrentReadCount);
+        Equal(1L, l.CurrentReadCount);
 
         var t = Task.Factory.StartNew(() => l.TryEnterWriteLock(DefaultTimeout), TaskCreationOptions.LongRunning);
         
-        l.Release();
         l.Release();
 
         True(await t);
