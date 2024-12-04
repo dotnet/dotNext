@@ -7,12 +7,12 @@ namespace DotNext.Buffers.Binary;
 internal struct SevenBitEncodedInt32Reader : IBufferReader, ISupplier<int>
 {
     private SevenBitEncodedInteger<uint> decoder;
-    private bool completed;
+    private bool incompleted;
 
-    readonly int IBufferReader.RemainingBytes => Unsafe.BitCast<bool, byte>(!completed);
+    readonly int IBufferReader.RemainingBytes => Unsafe.BitCast<bool, byte>(incompleted);
 
     void IReadOnlySpanConsumer<byte>.Invoke(ReadOnlySpan<byte> source)
-        => completed = decoder.Append(MemoryMarshal.GetReference(source)) is false;
+        => incompleted = decoder.Append(MemoryMarshal.GetReference(source));
 
     readonly int ISupplier<int>.Invoke() => (int)decoder.Value;
 }
