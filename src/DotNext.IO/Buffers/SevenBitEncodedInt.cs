@@ -41,9 +41,9 @@ internal struct SevenBitEncodedInt
             if (completed)
                 return false;
 
-            if (value >= 0x80U)
+            if (value > 0x7Fu)
             {
-                current = (byte)(value | 0x80U);
+                current = (byte)(value | ~0x7Fu);
                 value >>= 7;
             }
             else
