@@ -4,10 +4,10 @@ using System.Runtime.InteropServices;
 namespace DotNext.Buffers.Binary;
 
 [StructLayout(LayoutKind.Auto)]
-internal struct SevenBitEncodedInt32Reader : IBufferReader, ISupplier<int>
+internal struct SevenBitEncodedInt32Reader() : IBufferReader, ISupplier<int>
 {
     private SevenBitEncodedInteger<uint> decoder;
-    private bool incompleted;
+    private bool incompleted = true;
 
     readonly int IBufferReader.RemainingBytes => Unsafe.BitCast<bool, byte>(incompleted);
 
