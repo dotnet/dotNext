@@ -342,6 +342,25 @@ public static class ByteBuffer
 
         return count;
     }
+    
+    /// <summary>
+    /// Writes 32-bit integer in a compressed format.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The integer to be written.</param>
+    /// <returns>A number of bytes written to the buffer.</returns>
+    public static int Write7BitEncodedInteger<T>(this ref BufferWriterSlim<byte> writer, T value)
+        where T : struct, IBinaryInteger<T>, IUnsignedNumber<T>
+    {
+        var count = 0;
+        foreach (var b in new SevenBitEncodedInteger<T>(value))
+        {
+            writer.Add() = b;
+            count += 1;
+        }
+
+        return count;
+    }
 
     /// <summary>
     /// Decodes an integer encoded as 7-bit octets.
