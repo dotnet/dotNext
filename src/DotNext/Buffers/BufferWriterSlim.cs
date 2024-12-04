@@ -313,23 +313,24 @@ public ref partial struct BufferWriterSlim<T>
         if (position is 0)
         {
             result = default;
-            goto exit;
-        }
-        else if (NoOverflow)
-        {
-            result = allocator.AllocateExactly(position);
-            initialBuffer.CopyTo(result.Span);
         }
         else
         {
-            result = extraBuffer;
-            extraBuffer = default;
+            if (NoOverflow)
+            {
+                result = allocator.AllocateExactly(position);
+                initialBuffer.CopyTo(result.Span);
+            }
+            else
+            {
+                result = extraBuffer;
+                extraBuffer = default;
+            }
+
+            result.Truncate(position);
+            position = 0;
         }
 
-        result.Truncate(position);
-        position = 0;
-
-        exit:
         return result;
     }
 
