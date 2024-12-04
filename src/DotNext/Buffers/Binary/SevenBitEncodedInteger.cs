@@ -23,7 +23,7 @@ public struct SevenBitEncodedInteger<T>(T value) : ISupplier<T>, IResettable
     public static int MaxSizeInBytes { get; }
     
     private static readonly int MaxSizeInBits;
-    private static readonly T Ox7FU;
+    private const byte BitMask = 0x7F;
 
     static SevenBitEncodedInteger()
     {
@@ -32,8 +32,7 @@ public struct SevenBitEncodedInteger<T>(T value) : ISupplier<T>, IResettable
         bitCount += Unsafe.BitCast<bool, byte>(remainder is not 0);
         
         MaxSizeInBytes = bitCount;
-        MaxSizeInBits = MaxSizeInBytes * 7;
-        Ox7FU = T.CreateTruncating(0x7FU);
+        MaxSizeInBits = bitCount * 7;
     }
 
     private int shift;
@@ -49,7 +48,7 @@ public struct SevenBitEncodedInteger<T>(T value) : ISupplier<T>, IResettable
         if (shift == MaxSizeInBits)
             ThrowInvalidDataException();
 
-        value |= (T.CreateTruncating(b) & Ox7FU) << shift;
+        value |= (T.CreateTruncating(b) & T.CreateTruncating(BitMask)) << shift;
         shift += 7;
         return (b & 0x80U) is not 0U;
 
@@ -88,7 +87,6 @@ public struct SevenBitEncodedInteger<T>(T value) : ISupplier<T>, IResettable
     [StructLayout(LayoutKind.Auto)]
     public struct Enumerator
     {
-        private static readonly T OnesComplement0x7FU = ~Ox7FU;
         private T value;
         private byte current;
         private bool completed;
@@ -109,9 +107,10 @@ public struct SevenBitEncodedInteger<T>(T value) : ISupplier<T>, IResettable
             if (completed)
                 return false;
 
-            if (value > Ox7FU)
+            var allBitsSet = T.CreateTruncating(BitMask);
+            if (value > allBitsSet)
             {
-                current = byte.CreateTruncating(value | OnesComplement0x7FU);
+                current = byte.CreateTruncating(value | ~allBitsSet);
                 value >>>= 7;
             }
             else
