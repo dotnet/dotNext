@@ -19,7 +19,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
         bool ILockManager.IsLockAllowed => false;
 
-        void ILockManager.AcquireLock()
+        void ILockManager.AcquireLock(bool synchronously)
         {
             // nothing to do here
         }
@@ -304,7 +304,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
 
         bool ILockManager.IsLockAllowed => Condition.Invoke();
 
-        readonly void ILockManager.AcquireLock()
+        readonly void ILockManager.AcquireLock(bool synchronously)
         {
         }
     }

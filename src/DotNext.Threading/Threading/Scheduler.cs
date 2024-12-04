@@ -21,13 +21,11 @@ public static partial class Scheduler
     public static DelayedTask ScheduleAsync<TArgs>(Func<TArgs, CancellationToken, ValueTask> callback, TArgs args, TimeSpan delay, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(callback);
+        Timeout.Validate(delay);
 
-        return delay.Ticks switch
-        {
-            < 0L and not Timeout.InfiniteTicks => throw new ArgumentOutOfRangeException(nameof(delay)),
-            0L => new ImmediateTask<TArgs>(callback, args, token),
-            _ => DelayedTaskStateMachine<TArgs>.Start(callback, args, delay, token),
-        };
+        return delay.Ticks is 0L
+            ? new ImmediateTask<TArgs>(callback, args, token)
+            : DelayedTaskStateMachine<TArgs>.Start(callback, args, delay, token);
     }
 
     /// <summary>
@@ -45,12 +43,10 @@ public static partial class Scheduler
     public static DelayedTask<TResult> ScheduleAsync<TArgs, TResult>(Func<TArgs, CancellationToken, ValueTask<TResult>> callback, TArgs args, TimeSpan delay, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(callback);
+        Timeout.Validate(delay);
 
-        return delay.Ticks switch
-        {
-            < 0L and not Timeout.InfiniteTicks or > Timeout.MaxTimeoutParameterTicks => throw new ArgumentOutOfRangeException(nameof(delay)),
-            0L => new ImmediateTask<TArgs, TResult>(callback, args, token),
-            _ => DelayedTaskStateMachine<TArgs, TResult>.Start(callback, args, delay, token),
-        };
+        return delay.Ticks is 0L
+            ? new ImmediateTask<TArgs, TResult>(callback, args, token)
+            : DelayedTaskStateMachine<TArgs, TResult>.Start(callback, args, delay, token);
     }
 }

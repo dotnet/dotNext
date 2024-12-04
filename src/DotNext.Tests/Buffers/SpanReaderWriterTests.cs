@@ -1,5 +1,8 @@
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
+using DotNext.IO;
+using DotNext.Text;
 
 namespace DotNext.Buffers;
 
@@ -179,6 +182,20 @@ public sealed class SpanReaderTests : Test
         reader.Reset();
         Equal(10, reader.Read());
         Equal(new[] { 20, 30 }, reader.ReadToEnd().ToArray());
+    }
+
+    [Fact]
+    public static void SlideToEnd()
+    {
+        Span<byte> expected = stackalloc byte[3];
+        var writer = new SpanWriter<byte>(expected);
+        writer.Add() = 10;
+
+        var remaining = writer.SlideToEnd();
+        True(expected[1..] == remaining);
+        
+        Random.Shared.NextBytes(remaining);
+        Equal(expected, writer.WrittenSpan);
     }
 
     [Fact]
@@ -399,5 +416,40 @@ public sealed class SpanReaderTests : Test
 
         writer.Write(builder);
         Equal(builder.ToString(), writer.WrittenSpan);
+    }
+
+    [InlineData(LengthFormat.BigEndian)]
+    [InlineData(LengthFormat.LittleEndian)]
+    [InlineData(LengthFormat.Compressed)]
+    [Theory]
+    public static void EncodeString(LengthFormat format)
+    {
+        ReadOnlySpan<char> expected = ['a', 'b', 'c'];
+        var buffer = new byte[16];
+
+        var writer = new SpanWriter<byte>(buffer);
+        True(writer.Encode(expected, Encoding.UTF8, format) > 0);
+
+        var reader = IAsyncBinaryReader.Create(buffer.AsMemory(0, writer.WrittenCount));
+
+        using var actual = reader.Decode(Encoding.UTF8, lengthFormat: format);
+        Equal(expected, actual.Span);
+    }
+
+    [InlineData(LengthFormat.BigEndian)]
+    [InlineData(LengthFormat.LittleEndian)]
+    [InlineData(LengthFormat.Compressed)]
+    [Theory]
+    public static void WriteLengthPrefixedBytes(LengthFormat format)
+    {
+        ReadOnlySpan<byte> expected = [1, 2, 3];
+        var buffer = new byte[expected.Length + 5];
+        
+        var writer = new SpanWriter<byte>(buffer);
+        True(writer.Write(expected, format) > 0);
+        
+        var reader = IAsyncBinaryReader.Create(buffer.AsMemory(0, writer.WrittenCount));
+        using var actual = reader.ReadBlock(format);
+        Equal(expected, actual.Span);
     }
 }

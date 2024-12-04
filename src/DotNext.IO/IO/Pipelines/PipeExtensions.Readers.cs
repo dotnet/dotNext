@@ -154,7 +154,7 @@ public static partial class PipeExtensions
     {
         LengthFormat.LittleEndian => reader.ReadLittleEndianAsync<int>(token),
         LengthFormat.BigEndian => reader.ReadBigEndianAsync<int>(token),
-        LengthFormat.Compressed => ReadAsync<int, SevenBitEncodedInt.Reader>(reader, new(), token),
+        LengthFormat.Compressed => ReadAsync<int, SevenBitEncodedInt32Reader>(reader, new(), token),
         _ => ValueTask.FromException<int>(new ArgumentOutOfRangeException(nameof(lengthFormat))),
     };
 
@@ -177,7 +177,7 @@ public static partial class PipeExtensions
         MemoryOwner<char> result;
         if (length > 0)
         {
-            result = allocator.AllocateAtLeast<char>(context.Encoding.GetMaxCharCount(length));
+            result = allocator.AllocateAtLeast(context.Encoding.GetMaxCharCount(length));
             result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(reader, new(in context, length, result.Memory), token).ConfigureAwait(false));
         }
         else

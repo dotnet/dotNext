@@ -90,7 +90,7 @@ public interface IUnmanagedMemory<T> : IUnmanagedMemory, IMemoryOwner<T>, ISuppl
     /// Resizes a block of memory represented by this instance.
     /// </summary>
     /// <remarks>
-    /// This method is dangerous becase it invalidates all buffers returned by <see cref="System.Buffers.IMemoryOwner{T}.Memory"/> property.
+    /// This method is dangerous because it invalidates all buffers returned by <see cref="System.Buffers.IMemoryOwner{T}.Memory"/> property.
     /// </remarks>
     /// <param name="length">The new number of elements in the unmanaged array.</param>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>

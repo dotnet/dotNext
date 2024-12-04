@@ -120,7 +120,7 @@ public ref struct SpanWriter<T>
     public void Reset() => position = 0;
 
     /// <summary>
-    /// Gets the span over written elements.
+    /// Gets the span overwritten elements.
     /// </summary>
     /// <value>The segment of underlying span containing written elements.</value>
     public readonly Span<T> WrittenSpan => MemoryMarshal.CreateSpan(ref reference, position);
@@ -164,7 +164,7 @@ public ref struct SpanWriter<T>
     /// </summary>
     /// <param name="item">The item to place.</param>
     /// <returns>
-    /// <see langword="true"/> if item has beem placed successfully;
+    /// <see langword="true"/> if item has been placed successfully;
     /// <see langword="false"/> if remaining space in the underlying span is not enough to place the item.
     /// </returns>
     public bool TryAdd(T item)
@@ -243,6 +243,17 @@ public ref struct SpanWriter<T>
 
         var result = MemoryMarshal.CreateSpan(ref Unsafe.Add(ref reference, position), count);
         position = newLength;
+        return result;
+    }
+
+    /// <summary>
+    /// Obtains the tail of the remaining buffer and advances to its end.
+    /// </summary>
+    /// <returns>The tail of the remaining buffer.</returns>
+    public Span<T> SlideToEnd()
+    {
+        var result = RemainingSpan;
+        position = length;
         return result;
     }
 

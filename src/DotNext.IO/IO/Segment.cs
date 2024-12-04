@@ -4,12 +4,8 @@ using System.Runtime.InteropServices;
 namespace DotNext.IO;
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly record struct Segment
+internal readonly record struct Segment(int Length, long Offset)
 {
-    internal int Length { get; init; }
-
-    internal long Offset { get; init; }
-
     private long End => Length + Offset;
 
     public static Segment operator >>(in Segment segment, int length)

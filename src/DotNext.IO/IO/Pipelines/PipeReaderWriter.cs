@@ -27,7 +27,7 @@ internal readonly struct PipeBinaryReader(PipeReader reader) : IAsyncBinaryReade
         => reader.ReadExactlyAsync(output, token);
 
     ValueTask<TReader> IAsyncBinaryReader.ReadAsync<TReader>(TReader parser, CancellationToken token)
-        => PipeExtensions.ReadAsync<TReader, BufferReader<TReader>>(reader, parser, token);
+        => PipeExtensions.ReadAsync<TReader, ProxyReader<TReader>>(reader, parser, token);
 
     ValueTask IAsyncBinaryReader.SkipAsync(long length, CancellationToken token)
         => reader.SkipAsync(length, token);

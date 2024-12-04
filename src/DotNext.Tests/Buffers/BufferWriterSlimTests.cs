@@ -1,9 +1,12 @@
 using System.Numerics;
 using System.Text;
-using DotNext.Buffers.Binary;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Buffers;
+
+using Binary;
+using IO;
+using static DotNext.Text.EncodingExtensions;
 
 public sealed class BufferWriterSlimTests : Test
 {
@@ -161,6 +164,31 @@ public sealed class BufferWriterSlimTests : Test
         Equal(30, owner[2]);
         Equal(3, owner.Length);
         owner.Dispose();
+    }
+
+    [Fact]
+    public static void DetachOrCopyBuffer()
+    {
+        using var writer = new BufferWriterSlim<int>(stackalloc int[2]);
+        writer.Add(10);
+        writer.Add(20);
+
+        using (var buffer = writer.DetachOrCopyBuffer())
+        {
+            Equal([10, 20], buffer.Span);
+        }
+        
+        True(writer.WrittenCount is 0);
+        
+        // overflow
+        writer.Add(10);
+        writer.Add(20);
+        writer.Add(30);
+        
+        using (var buffer = writer.DetachOrCopyBuffer())
+        {
+            Equal([10, 20, 30], buffer.Span);
+        }
     }
 
     [Fact]
@@ -334,5 +362,93 @@ public sealed class BufferWriterSlimTests : Test
         Equal(3, writer.Write(expected));
 
         Equal(expected, new BigInteger(writer.WrittenSpan));
+    }
+    
+    private static void EncodeDecodeZeroAndMaxValue<T>()
+        where T : struct, IBinaryInteger<T>, IUnsignedNumber<T>
+    {
+        Span<byte> buffer = stackalloc byte[SevenBitEncodedInteger<T>.MaxSizeInBytes];
+        var writer = new BufferWriterSlim<byte>(buffer);
+        var reader = new SpanReader<byte>(buffer);
+        
+        Equal(1, writer.Write7BitEncodedInteger(T.Zero));
+        Equal(T.Zero, reader.Read7BitEncodedInteger<T>());
+
+        writer.Clear(reuseBuffer: true);
+        reader.Reset();
+
+        Equal(SevenBitEncodedInteger<T>.MaxSizeInBytes, writer.Write7BitEncodedInteger(T.AllBitsSet));
+        Equal(T.AllBitsSet, reader.Read7BitEncodedInteger<T>());
+    }
+    
+    [Fact]
+    public static void EncodeDecodeUInt32() => EncodeDecodeZeroAndMaxValue<uint>();
+    
+    [Fact]
+    public static void EncodeDecodeUInt64() => EncodeDecodeZeroAndMaxValue<ulong>();
+    
+    [InlineData(LengthFormat.BigEndian)]
+    [InlineData(LengthFormat.LittleEndian)]
+    [InlineData(LengthFormat.Compressed)]
+    [Theory]
+    public static void WriteLengthPrefixedBytes(LengthFormat format)
+    {
+        ReadOnlySpan<byte> expected = [1, 2, 3];
+
+        var writer = new BufferWriterSlim<byte>();
+        True(writer.Write(expected, format) > 0);
+
+        using var buffer = writer.DetachOrCopyBuffer();
+        var reader = IAsyncBinaryReader.Create(buffer.Memory);
+        using var actual = reader.ReadBlock(format);
+        Equal(expected, actual.Span);
+    }
+    
+    [Theory]
+    [InlineData("UTF-8", null)]
+    [InlineData("UTF-8", LengthFormat.LittleEndian)]
+    [InlineData("UTF-8", LengthFormat.BigEndian)]
+    [InlineData("UTF-8", LengthFormat.Compressed)]
+    [InlineData("UTF-16LE", null)]
+    [InlineData("UTF-16LE", LengthFormat.LittleEndian)]
+    [InlineData("UTF-16LE", LengthFormat.BigEndian)]
+    [InlineData("UTF-16LE", LengthFormat.Compressed)]
+    [InlineData("UTF-16BE", null)]
+    [InlineData("UTF-16BE", LengthFormat.LittleEndian)]
+    [InlineData("UTF-16BE", LengthFormat.BigEndian)]
+    [InlineData("UTF-16BE", LengthFormat.Compressed)]
+    [InlineData("UTF-32LE", null)]
+    [InlineData("UTF-32LE", LengthFormat.LittleEndian)]
+    [InlineData("UTF-32LE", LengthFormat.BigEndian)]
+    [InlineData("UTF-32LE", LengthFormat.Compressed)]
+    [InlineData("UTF-32BE", null)]
+    [InlineData("UTF-32BE", LengthFormat.LittleEndian)]
+    [InlineData("UTF-32BE", LengthFormat.BigEndian)]
+    [InlineData("UTF-32BE", LengthFormat.Compressed)]
+    public static void EncodeDecodeString(string encodingName, LengthFormat? format)
+    {
+        var encoding = Encoding.GetEncoding(encodingName);
+        const string expected = "Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!";
+        var writer = new BufferWriterSlim<byte>();
+
+        True(writer.Encode(expected, encoding, format) > 0);
+
+        using var buffer = writer.DetachOrCopyBuffer();
+        MemoryOwner<char> actual;
+        if (format.HasValue)
+        {
+            var reader = IAsyncBinaryReader.Create(buffer.Memory);
+            actual = reader.Decode(encoding, format.GetValueOrDefault());
+            Equal(expected, actual.Span);
+        }
+        else
+        {
+            actual = encoding.GetChars(buffer.Span);
+        }
+
+        using (actual)
+        {
+            Equal(expected, actual.Span);
+        }
     }
 }

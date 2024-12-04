@@ -77,8 +77,7 @@ internal partial class HttpPeerController
             foreach (var peer in peers)
                 writer.WriteEndPoint(peer);
 
-            if (!writer.TryDetachBuffer(out result))
-                result = writer.WrittenSpan.Copy(allocator);
+            result = writer.DetachOrCopyBuffer();
         }
         finally
         {
@@ -169,8 +168,7 @@ internal partial class HttpPeerController
             foreach (var peer in peers)
                 writer.WriteEndPoint(peer);
 
-            if (!writer.TryDetachBuffer(out result))
-                result = writer.WrittenSpan.Copy(allocator);
+            result = writer.DetachOrCopyBuffer();
         }
         finally
         {

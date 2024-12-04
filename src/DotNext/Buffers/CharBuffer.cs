@@ -65,7 +65,7 @@ public static class CharBuffer
         const int maxBufferSize = int.MaxValue / 2;
 
         int bufferSize;
-        for (bufferSize = 0; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+        for (bufferSize = 0; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException(ExceptionMessages.NotEnoughMemory))
         {
             var buffer = writer.GetSpan(bufferSize);
             if (buffer.TryWrite(provider, format, out bufferSize, args))
@@ -203,7 +203,7 @@ public static class CharBuffer
         const int maxBufferSize = int.MaxValue / 2;
 
         int bufferSize;
-        for (bufferSize = 0; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+        for (bufferSize = 0; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException(ExceptionMessages.NotEnoughMemory))
         {
             var buffer = writer.InternalGetSpan(bufferSize);
             if (buffer.TryWrite(provider, format, out bufferSize, args))

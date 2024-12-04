@@ -152,4 +152,17 @@ public sealed class BitVectorTests : Test
         Number.GetBits(value, buffer);
         True(buffer[62]);
     }
+
+    [Fact]
+    public static void SingleBitManipulation()
+    {
+        var value = 0.SetBit(1, true);
+        Equal(2, value);
+        
+        True(value.IsBitSet(1));
+        False(value.IsBitSet(0));
+
+        value = value.SetBit(1, false);
+        False(value.IsBitSet(1));
+    }
 }

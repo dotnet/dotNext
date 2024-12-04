@@ -109,7 +109,7 @@ public static partial class Number
     /// <returns><see langword="true"/> if <paramref name="value"/> is a prime number; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is negative or zero.</exception>
     public static bool IsPrime<T>(T value)
-        where T : struct, IBinaryInteger<T>, ISignedNumber<T>
+        where T : struct, IBinaryNumber<T>, ISignedNumber<T>, IShiftOperators<T, int, T>
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
 
@@ -183,7 +183,7 @@ public static partial class Number
     /// <exception cref="OverflowException">There is no prime number that is greater than <paramref name="lowerBound"/> and less than <see cref="IMinMaxValue{T}.MaxValue"/>.</exception>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static T GetPrime<T>(T lowerBound, ReadOnlySpan<T> cachedPrimes = default)
-        where T : struct, IBinaryInteger<T>, ISignedNumber<T>, IMinMaxValue<T>
+        where T : struct, IBinaryNumber<T>, ISignedNumber<T>, IMinMaxValue<T>, IShiftOperators<T, int, T>
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(lowerBound);
 

@@ -66,8 +66,7 @@ internal partial class HttpPeerController
         {
             writer.WriteEndPoint(localNode);
 
-            if (!writer.TryDetachBuffer(out result))
-                result = writer.WrittenSpan.Copy(allocator);
+            result = writer.DetachOrCopyBuffer();
         }
         finally
         {

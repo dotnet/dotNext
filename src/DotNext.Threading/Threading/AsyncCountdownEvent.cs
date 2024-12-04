@@ -33,7 +33,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         internal bool Decrement(long value = 1L)
             => (Current = Math.Max(0L, Current - value)) is 0L;
 
-        readonly void ILockManager.AcquireLock()
+        readonly void ILockManager.AcquireLock(bool synchronously)
         {
             // nothing to do here
         }

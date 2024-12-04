@@ -23,7 +23,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
         readonly bool ILockManager.IsLockAllowed => Value;
 
-        void ILockManager.AcquireLock() => Value = false;
+        void ILockManager.AcquireLock(bool synchronously) => Value = false;
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
@@ -79,7 +79,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         Monitor.Enter(SyncRoot);
-        var result = TryAcquire(ref manager);
+        var result = TryAcquire(ref manager, synchronously: true);
         Monitor.Exit(SyncRoot);
 
         return result;
@@ -173,20 +173,26 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     private bool Wait(Timeout timeout)
     {
         bool result;
-        lock (SyncRoot)
+        if (result = timeout.TryGetRemainingTime(out var remainingTime) && Monitor.TryEnter(SyncRoot, remainingTime))
         {
-            if (TryAcquire(ref manager))
+            try
             {
-                result = true;
+                if (TryAcquire(ref manager, synchronously: true))
+                {
+                    // nothing to do
+                }
+                else if (timeout.TryGetRemainingTime(out remainingTime) && Monitor.Wait(SyncRoot, remainingTime))
+                {
+                    manager.Value = false;
+                }
+                else
+                {
+                    result = false;
+                }
             }
-            else if (timeout.TryGetRemainingTime(out var remainingTime) && Monitor.Wait(SyncRoot, remainingTime))
+            finally
             {
-                result = true;
-                manager.Value = false;
-            }
-            else
-            {
-                result = false;
+                Monitor.Exit(SyncRoot);
             }
         }
 

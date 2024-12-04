@@ -28,7 +28,7 @@ internal readonly struct AsyncStreamBinaryAccessor(Stream stream, Memory<byte> b
         => stream.ReadAsync<T>(buffer, token);
 
     ValueTask<TReader> IAsyncBinaryReader.ReadAsync<TReader>(TReader reader, CancellationToken token)
-        => StreamExtensions.ReadAsync<TReader, BufferReader<TReader>>(stream, reader, buffer, token);
+        => StreamExtensions.ReadAsync<TReader, ProxyReader<TReader>>(stream, reader, buffer, token);
 
     ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)
         => stream.ReadExactlyAsync(output, token);
