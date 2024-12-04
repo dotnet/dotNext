@@ -52,16 +52,22 @@ public static class BufferWriter
         };
 
         return writer(ref destination, value);
-
-        static int Write7BitEncodedInt(ref SpanWriter<byte> writer, int value)
+    }
+    
+    /// <summary>
+    /// Writes 32-bit integer in a compressed format.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The integer to be written.</param>
+    /// <returns>A number of bytes written to the buffer.</returns>
+    public static int Write7BitEncodedInt(this ref SpanWriter<byte> writer, int value)
+    {
+        foreach (var b in new SevenBitEncodedInt(value))
         {
-            foreach (var b in new SevenBitEncodedInt(value))
-            {
-                writer.Add() = b;
-            }
-
-            return writer.WrittenCount;
+            writer.Add() = b;
         }
+
+        return writer.WrittenCount;
     }
 
     internal static int WriteLength(this IBufferWriter<byte> buffer, int length, LengthFormat lengthFormat)
