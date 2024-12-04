@@ -44,12 +44,34 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 10-16-2024
+Release Date: 12-04-2024
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.15.0">DotNext.Threading 5.15.0</a>
-* Added support of synchronous lock acquisition to `AsyncExclusiveLock`, `AsyncReaderWriterLock`, `AsyncManualResetEvent`, `AsyncAutoResetEvent` so the users can easily migrate step-by-step from monitors and other synchronization primitives to async-friendly primitives
-* Fixed random `InvalidOperationException` caused by `RandomAccessCache<TKey, TValue>`
-* Added synchronous methods to `RandomAccessCache<TKey, TValue>` to support [251](https://github.com/dotnet/dotNext/issues/251) feature request
+<a href="https://www.nuget.org/packages/dotnext/5.16.0">DotNext 5.16.0</a>
+* Added 7-bit encoder and decoder for unsigned integers as a public API. See `DotNext.Buffers.Binary.SevenBitEncodedInteger<T>` type.
+* Added `SlideToEnd` method to `SpanWriter<T>` type
+* Added `IsBitSet` and `SetBit` generic methods to `Number` type
+* Added `DetachOrCopyBuffer` to `BufferWriterSlim<T>` type
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.16.0">DotNext.Metaprogramming 5.16.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.16.0">DotNext.Unsafe 5.16.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.16.0">DotNext.Threading 5.16.0</a>
+* Async locks with synchronous acquisition methods now throw [LockRecursionException](https://learn.microsoft.com/en-us/dotnet/api/system.threading.lockrecursionexception) if the current thread tries to acquire the lock synchronously and recursively.
+* Added support of cancellation token to synchronous acquisition methods of `AsyncExclusiveLock` and `AsyncReaderWriterLock` classes
+* Introduced `LinkTo` method overload that supports multiple cancellation tokens
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.16.0">DotNext.IO 5.16.0</a>
+* Introduced `RandomAccessStream` class that represents [Stream](https://learn.microsoft.com/en-us/dotnet/api/system.io.stream) wrapper over the underlying data storage that supports random access pattern
+* Added extension method for `SpanWriter<byte>` that provides length-prefixed string encoding
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.16.0">DotNext.Net.Cluster 5.16.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.16.0">DotNext.AspNetCore.Cluster 5.16.0</a>
+* Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
