@@ -330,11 +330,11 @@ public static class ByteBuffer
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The integer to be written.</param>
     /// <returns>A number of bytes written to the buffer.</returns>
-    public static int Write7BitEncodedInteger<T>(this ref SpanWriter<byte> writer, T value)
-        where T : struct, IBinaryInteger<T>, IUnsignedNumber<T>
+    public static int WriteLeb128<T>(this ref SpanWriter<byte> writer, T value)
+        where T : struct, IBinaryInteger<T>
     {
         var count = 0;
-        foreach (var b in new ULeb128<T>(value))
+        foreach (var b in new Leb128<T> { Value = value })
         {
             writer.Add() = b;
             count += 1;
@@ -349,11 +349,11 @@ public static class ByteBuffer
     /// <param name="writer">The buffer writer.</param>
     /// <param name="value">The integer to be written.</param>
     /// <returns>A number of bytes written to the buffer.</returns>
-    public static int Write7BitEncodedInteger<T>(this ref BufferWriterSlim<byte> writer, T value)
-        where T : struct, IBinaryInteger<T>, IUnsignedNumber<T>
+    public static int WriteLeb128<T>(this ref BufferWriterSlim<byte> writer, T value)
+        where T : struct, IBinaryInteger<T>
     {
         var count = 0;
-        foreach (var b in new ULeb128<T>(value))
+        foreach (var b in new Leb128<T> { Value = value })
         {
             writer.Add() = b;
             count += 1;
@@ -368,10 +368,10 @@ public static class ByteBuffer
     /// <param name="reader">The buffer reader.</param>
     /// <typeparam name="T">The integer type.</typeparam>
     /// <returns>The decoded integer.</returns>
-    public static T Read7BitEncodedInteger<T>(this ref SpanReader<byte> reader)
-        where T : struct, IBinaryInteger<T>, IUnsignedNumber<T>
+    public static T ReadLeb128<T>(this ref SpanReader<byte> reader)
+        where T : struct, IBinaryInteger<T>
     {
-        var decoder = new ULeb128<T>();
+        var decoder = new Leb128<T>();
         byte octet;
         do
         {

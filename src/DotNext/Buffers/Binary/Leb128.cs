@@ -11,12 +11,11 @@ using Numerics;
 /// <summary>
 /// Represents encoder and decoder for 7-bit encoded integers.
 /// </summary>
-/// <param name="value">The value to decode.</param>
 /// <typeparam name="T">The type of the integer.</typeparam>
 /// <seealso href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoding</seealso>
 [StructLayout(LayoutKind.Auto)]
-public struct ULeb128<T>(T value) : ISupplier<T>, IResettable
-    where T : struct, IBinaryInteger<T>, IUnsignedNumber<T>
+public struct Leb128<T> : ISupplier<T>, IResettable
+    where T : struct, IBinaryInteger<T>
 {
     /// <summary>
     /// Maximum size of encoded <typeparamref name="T"/>, in bytes.
@@ -25,8 +24,9 @@ public struct ULeb128<T>(T value) : ISupplier<T>, IResettable
     
     private static readonly int MaxSizeInBits;
     private const byte BitMask = 0x7F;
+    private const byte CarryBit = BitMask + 1;
 
-    static ULeb128()
+    static Leb128()
     {
         var bitCount = Number.GetMaxByteCount<T>() * 8;
         bitCount = Math.DivRem(bitCount, 7, out var remainder);
@@ -36,7 +36,8 @@ public struct ULeb128<T>(T value) : ISupplier<T>, IResettable
         MaxSizeInBits = bitCount * 7;
     }
 
-    private int shift;
+    private ushort shift;
+    private T value;
 
     /// <summary>
     /// Decodes an octet.
@@ -48,10 +49,18 @@ public struct ULeb128<T>(T value) : ISupplier<T>, IResettable
     {
         if (shift == MaxSizeInBits)
             ThrowInvalidDataException();
-
+        
         value |= (T.CreateTruncating(b) & T.CreateTruncating(BitMask)) << shift;
         shift += 7;
-        return (b & 0x80U) is not 0U;
+
+        var nextOctetExpected = (b & CarryBit) is not 0;
+        const byte signBit = 0x40;
+
+        // return back sign bit for signed integers
+        if (Number.IsSigned<T>() && !nextOctetExpected && shift < MaxSizeInBits && (b & signBit) is not 0)
+            value |= T.AllBitsSet << shift;
+
+        return nextOctetExpected;
 
         [DoesNotReturn]
         [StackTraceHidden]
@@ -62,16 +71,20 @@ public struct ULeb128<T>(T value) : ISupplier<T>, IResettable
     /// <summary>
     /// Resets the decoder.
     /// </summary>
-    public void Reset()
-    {
-        shift = 0;
-        value = default;
-    }
+    public void Reset() => Value = default;
 
     /// <summary>
     /// Gets a value represented by the encoded.
     /// </summary>
-    public readonly T Value => value;
+    public T Value
+    {
+        readonly get => value;
+        set
+        {
+            shift = 0;
+            this.value = value;
+        }
+    }
     
     /// <inheritdoc/>
     readonly T ISupplier<T>.Invoke() => value;
@@ -108,6 +121,40 @@ public struct ULeb128<T>(T value) : ISupplier<T>, IResettable
             if (completed)
                 return false;
 
+            if (Number.IsSigned<T>())
+            {
+                MoveNextSigned();
+            }
+            else
+            {
+                MoveNextUnsigned();
+            }
+
+            return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void MoveNextSigned()
+        {
+            var sevenBits = value & T.CreateTruncating(BitMask);
+            value >>= 7;
+
+            var octet = byte.CreateTruncating(sevenBits);
+            if (value == -T.CreateTruncating((octet >>> 6) & 1))
+            {
+                completed = true;
+            }
+            else
+            {
+                octet = (byte)(octet | CarryBit);
+            }
+
+            current = octet;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void MoveNextUnsigned()
+        {
             var allBitsSet = T.CreateTruncating(BitMask);
             if (value > allBitsSet)
             {
@@ -119,8 +166,6 @@ public struct ULeb128<T>(T value) : ISupplier<T>, IResettable
                 current = byte.CreateTruncating(value);
                 completed = true;
             }
-
-            return true;
         }
     }
 }

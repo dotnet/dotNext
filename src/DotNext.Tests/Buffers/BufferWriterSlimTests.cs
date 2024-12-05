@@ -364,28 +364,31 @@ public sealed class BufferWriterSlimTests : Test
         Equal(expected, new BigInteger(writer.WrittenSpan));
     }
     
-    private static void EncodeDecodeZeroAndMaxValue<T>()
-        where T : struct, IBinaryInteger<T>, IUnsignedNumber<T>
+    private static void EncodeDecode<T>(ReadOnlySpan<T> values)
+        where T : struct, IBinaryInteger<T>
     {
-        Span<byte> buffer = stackalloc byte[ULeb128<T>.MaxSizeInBytes];
+        Span<byte> buffer = stackalloc byte[Leb128<T>.MaxSizeInBytes];
         var writer = new BufferWriterSlim<byte>(buffer);
         var reader = new SpanReader<byte>(buffer);
-        
-        Equal(1, writer.Write7BitEncodedInteger(T.Zero));
-        Equal(T.Zero, reader.Read7BitEncodedInteger<T>());
 
-        writer.Clear(reuseBuffer: true);
-        reader.Reset();
+        foreach (var expected in values)
+        {
+            writer.Clear(reuseBuffer: true);
+            reader.Reset();
 
-        Equal(ULeb128<T>.MaxSizeInBytes, writer.Write7BitEncodedInteger(T.AllBitsSet));
-        Equal(T.AllBitsSet, reader.Read7BitEncodedInteger<T>());
+            True(writer.WriteLeb128(expected) > 0);
+            Equal(expected, reader.ReadLeb128<T>());
+        }
     }
     
     [Fact]
-    public static void EncodeDecodeUInt32() => EncodeDecodeZeroAndMaxValue<uint>();
+    public static void EncodeDecodeInt32() => EncodeDecode([0, int.MaxValue, int.MinValue, 0x80, -1]);
     
     [Fact]
-    public static void EncodeDecodeUInt64() => EncodeDecodeZeroAndMaxValue<ulong>();
+    public static void EncodeDecodeInt64() => EncodeDecode([0L, long.MaxValue, long.MinValue, 0x80L, -1L]);
+
+    [Fact]
+    public static void EncodeDecodeUInt32() => EncodeDecode([uint.MinValue, uint.MaxValue, 0x80U]);
     
     [InlineData(LengthFormat.BigEndian)]
     [InlineData(LengthFormat.LittleEndian)]
