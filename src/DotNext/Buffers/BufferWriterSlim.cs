@@ -303,6 +303,38 @@ public ref partial struct BufferWriterSlim<T>
     }
 
     /// <summary>
+    /// Detaches or copies the underlying buffer with written content from this writer.
+    /// </summary>
+    /// <returns>Detached or copied buffer.</returns>
+    public MemoryOwner<T> DetachOrCopyBuffer()
+    {
+        MemoryOwner<T> result;
+
+        if (position is 0)
+        {
+            result = default;
+        }
+        else
+        {
+            if (NoOverflow)
+            {
+                result = allocator.AllocateExactly(position);
+                initialBuffer.CopyTo(result.Span);
+            }
+            else
+            {
+                result = extraBuffer;
+                extraBuffer = default;
+            }
+
+            result.Truncate(position);
+            position = 0;
+        }
+
+        return result;
+    }
+
+    /// <summary>
     /// Clears the data written to the underlying buffer.
     /// </summary>
     /// <param name="reuseBuffer"><see langword="true"/> to reuse the internal buffer; <see langword="false"/> to destroy the internal buffer.</param>

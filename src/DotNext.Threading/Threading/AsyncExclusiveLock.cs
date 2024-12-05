@@ -16,23 +16,22 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     [StructLayout(LayoutKind.Auto)]
     private struct LockManager : ILockManager<DefaultWaitNode>
     {
-        private bool state;
+        // null - not acquired, Sentinel.Instance - acquired asynchronously, Thread - acquired synchronously
+        private object? state;
 
-        internal readonly bool Value => state;
+        internal readonly bool Value => state is not null;
 
-        internal readonly bool VolatileRead() => Volatile.Read(in state);
+        internal readonly bool VolatileRead() => Volatile.Read(in state) is not null;
 
-        public readonly bool IsLockAllowed => !state;
+        public readonly bool IsLockAllowed => state is null;
 
-        public void AcquireLock()
-        {
-            state = true;
-        }
+        public void AcquireLock(bool synchronously)
+            => state = synchronously ? Thread.CurrentThread : Sentinel.Instance;
 
-        internal void ExitLock()
-        {
-            state = false;
-        }
+        internal void ExitLock() => state = null;
+
+        readonly bool ILockManager.IsLockHeldByCurrentThread
+            => ReferenceEquals(state, Thread.CurrentThread);
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
@@ -92,7 +91,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     private bool TryAcquireCore()
     {
         Monitor.Enter(SyncRoot);
-        var result = TryAcquire(ref manager);
+        var result = TryAcquire(ref manager, synchronously: true);
         Monitor.Exit(SyncRoot);
 
         return result;
@@ -102,14 +101,21 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// Tries to acquire the lock synchronously.
     /// </summary>
     /// <param name="timeout">The interval to wait for the lock.</param>
-    /// <returns><see langword="true"/> if the lock is acquired in timely manner; otherwise, <see langword="false"/>.</returns>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if the lock is acquired in timely manner; <see langword="false"/> if canceled or timed out.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="LockRecursionException">The lock is already acquired by the current thread.</exception>
     [UnsupportedOSPlatform("browser")]
-    public bool TryAcquire(TimeSpan timeout)
+    public bool TryAcquire(TimeSpan timeout, CancellationToken token = default)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        return timeout == TimeSpan.Zero ? TryAcquireCore() : TryAcquire(new Timeout(timeout), ref manager);
+
+        return timeout == TimeSpan.Zero
+            ? TryAcquireCore()
+            : token.CanBeCanceled
+                ? TryAcquire(new Timeout(timeout), ref manager, token)
+                : TryAcquire(new Timeout(timeout), ref manager);
     }
 
     /// <summary>
@@ -222,7 +228,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
             // skip dead node
             if (RemoveAndSignal(current, out var resumable))
             {
-                manager.AcquireLock();
+                manager.AcquireLock(synchronously: false);
                 return resumable ? current : null;
             }
         }

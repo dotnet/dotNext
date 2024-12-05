@@ -66,7 +66,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         readonly bool ILockManager.IsLockAllowed
             => state.IsWeakLockAllowed;
 
-        void ILockManager.AcquireLock()
+        void ILockManager.AcquireLock(bool synchronously)
             => state.AcquireWeakLock();
 
         static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
@@ -81,7 +81,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         readonly bool ILockManager.IsLockAllowed
             => state.IsStrongLockAllowed;
 
-        void ILockManager.AcquireLock()
+        void ILockManager.AcquireLock(bool synchronously)
             => state.AcquireStrongLock();
 
         static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
@@ -154,7 +154,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         Monitor.Enter(SyncRoot);
-        var result = TryAcquire(ref GetLockManager<TManager>());
+        var result = TryAcquire(ref GetLockManager<TManager>(), synchronously: true);
         Monitor.Exit(SyncRoot);
 
         return result;

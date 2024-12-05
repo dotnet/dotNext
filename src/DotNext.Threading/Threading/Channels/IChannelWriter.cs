@@ -4,7 +4,7 @@ namespace DotNext.Threading.Channels;
 
 using IO;
 
-internal interface IChannelWriter<T> : IChannel
+internal interface IChannelWriter<in T> : IChannel
 {
     private const string InputTypeMeterAttribute = "dotnext.persistentchannel.input";
 

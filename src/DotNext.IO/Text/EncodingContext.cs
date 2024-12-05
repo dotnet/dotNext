@@ -44,6 +44,8 @@ public readonly struct EncodingContext(Encoding encoding, bool reuseEncoder) : I
 
     internal Encoder GetEncoder() => encoder ?? Encoding.GetEncoder();
 
+    internal Encoder? TryGetEncoder() => encoder;
+
     /// <summary>
     /// Creates encoding context.
     /// </summary>

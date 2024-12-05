@@ -332,4 +332,72 @@ public struct Lock : IDisposable, IEquatable<Lock>
     /// <returns><see langword="true"/>, if both are not the same; otherwise, <see langword="false"/>.</returns>
     public static bool operator !=(in Lock first, in Lock second)
         => !first.Equals(in second);
+
+    /// <summary>
+    /// Tries to acquire an exclusive lock on the specified object with cancellation support.
+    /// </summary>
+    /// <param name="obj">The object on which to acquire the lock.</param>
+    /// <param name="timeout">Time to wait for the lock.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <param name="throwOnCancellation">
+    /// <see langword="true"/> to throw <see cref="OperationCanceledException"/> if <paramref name="token"/> is canceled during the lock acquisition;
+    /// <see langword="false"/> to return <see langword="false"/>.
+    /// </param>
+    /// <returns><see langword="true"/> if the monitor acquired successfully; <see langword="false"/> if timeout occurred or <paramref name="token"/> canceled.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is invalid.</exception>
+    /// <exception cref="OperationCanceledException"><paramref name="token"/> interrupts lock acquisition and <paramref name="throwOnCancellation"/> is <see langword="true"/>.</exception>
+    public static bool TryEnterMonitor(object obj, TimeSpan timeout, CancellationToken token, [ConstantExpected] bool throwOnCancellation = false)
+    {
+        ArgumentNullException.ThrowIfNull(obj);
+        Timeout.Validate(timeout);
+        
+        var result = false;
+        if (token.CanBeCanceled)
+        {
+            var registration = token.UnsafeRegister(Interrupt, Thread.CurrentThread);
+            try
+            {
+                result = System.Threading.Monitor.TryEnter(obj, timeout);
+            }
+            catch (ThreadInterruptedException e) when (token.IsCancellationRequested)
+            {
+                if (throwOnCancellation)
+                    throw new OperationCanceledException(e.Message, e, token);
+                
+                goto exit;
+            }
+            finally
+            {
+                registration.Dispose();
+            }
+
+            // make sure that the interruption was not called on this thread concurrently with registration.Dispose()
+            if (token.IsCancellationRequested)
+            {
+                try
+                {
+                    Thread.Sleep(0); // reset interrupted state
+                }
+                catch (ThreadInterruptedException)
+                {
+                    // suspend exception
+                }
+            }
+            
+            static void Interrupt(object? thread)
+            {
+                Debug.Assert(thread is Thread);
+            
+                As<Thread>(thread).Interrupt();
+            }
+        }
+        else
+        {
+            result = System.Threading.Monitor.TryEnter(obj, timeout);
+        }
+
+        exit:
+        return result;
+    }
 }

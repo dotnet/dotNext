@@ -136,8 +136,7 @@ public abstract class InMemoryClusterConfigurationStorage<TAddress> : ClusterCon
         {
             Encode(configuration, ref writer);
 
-            if (!writer.TryDetachBuffer(out result))
-                result = writer.WrittenSpan.Copy(allocator);
+            result = writer.DetachOrCopyBuffer();
         }
         finally
         {

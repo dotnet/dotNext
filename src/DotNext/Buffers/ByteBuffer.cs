@@ -42,7 +42,7 @@ public static class ByteBuffer
         for (var destination = writer.GetSpan(); !value.TryWriteLittleEndian(destination, out length); destination = writer.GetSpan(length))
         {
             length = destination.Length;
-            length = length <= MaxBufferSize ? length << 1 : throw new InsufficientMemoryException();
+            length = length <= MaxBufferSize ? length << 1 : throw new InsufficientMemoryException(ExceptionMessages.NotEnoughMemory);
         }
 
         writer.Advance(length);
@@ -64,7 +64,7 @@ public static class ByteBuffer
         for (var destination = writer.GetSpan(); !value.TryWriteBigEndian(destination, out length); destination = writer.GetSpan(length))
         {
             length = destination.Length;
-            length = length <= MaxBufferSize ? length << 1 : throw new InsufficientMemoryException();
+            length = length <= MaxBufferSize ? length << 1 : throw new InsufficientMemoryException(ExceptionMessages.NotEnoughMemory);
         }
 
         writer.Advance(length);
@@ -84,7 +84,7 @@ public static class ByteBuffer
     {
         var buffer = writer.GetSpan(value.GetByteCount(isUnsigned));
         if (!value.TryWriteBytes(buffer, out var bytesWritten, isUnsigned, isBigEndian))
-            throw new InsufficientMemoryException();
+            throw new InsufficientMemoryException(ExceptionMessages.NotEnoughMemory);
 
         writer.Advance(bytesWritten);
         return bytesWritten;
@@ -108,7 +108,7 @@ public static class ByteBuffer
         for (int sizeHint; !value.TryFormat(buffer, out bytesWritten, format, provider); buffer = writer.GetSpan(sizeHint))
         {
             sizeHint = buffer.Length;
-            sizeHint = sizeHint <= MaxBufferSize ? sizeHint << 1 : throw new InsufficientMemoryException();
+            sizeHint = sizeHint <= MaxBufferSize ? sizeHint << 1 : throw new InsufficientMemoryException(ExceptionMessages.NotEnoughMemory);
         }
 
         writer.Advance(bytesWritten);
@@ -143,7 +143,7 @@ public static class ByteBuffer
         for (var destination = writer.InternalGetSpan(sizeHint: 0); !value.TryWriteLittleEndian(destination, out length); destination = writer.InternalGetSpan(length))
         {
             length = destination.Length;
-            length = length <= MaxBufferSize ? length << 1 : throw new InsufficientMemoryException();
+            length = length <= MaxBufferSize ? length << 1 : throw new InsufficientMemoryException(ExceptionMessages.NotEnoughMemory);
         }
 
         writer.Advance(length);
@@ -165,7 +165,7 @@ public static class ByteBuffer
         for (var destination = writer.InternalGetSpan(sizeHint: 0); !value.TryWriteBigEndian(destination, out length); destination = writer.InternalGetSpan(length))
         {
             length = destination.Length;
-            length = length <= MaxBufferSize ? length << 1 : throw new InsufficientMemoryException();
+            length = length <= MaxBufferSize ? length << 1 : throw new InsufficientMemoryException(ExceptionMessages.NotEnoughMemory);
         }
 
         writer.Advance(length);
@@ -185,7 +185,7 @@ public static class ByteBuffer
     {
         var buffer = writer.InternalGetSpan(value.GetByteCount(isUnsigned));
         if (!value.TryWriteBytes(buffer, out var bytesWritten, isUnsigned, isBigEndian))
-            throw new InsufficientMemoryException();
+            throw new InsufficientMemoryException(ExceptionMessages.NotEnoughMemory);
 
         writer.Advance(bytesWritten);
         return bytesWritten;
@@ -209,7 +209,7 @@ public static class ByteBuffer
         for (int sizeHint; !value.TryFormat(buffer, out bytesWritten, format, provider); buffer = writer.InternalGetSpan(sizeHint))
         {
             sizeHint = buffer.Length;
-            sizeHint = sizeHint <= MaxBufferSize ? sizeHint << 1 : throw new InsufficientMemoryException();
+            sizeHint = sizeHint <= MaxBufferSize ? sizeHint << 1 : throw new InsufficientMemoryException(ExceptionMessages.NotEnoughMemory);
         }
 
         writer.Advance(bytesWritten);
@@ -258,7 +258,7 @@ public static class ByteBuffer
         where T : notnull, IBinaryInteger<T>
     {
         if (!value.TryWriteLittleEndian(writer.RemainingSpan, out var bytesWritten))
-            throw new InsufficientMemoryException();
+            throw new InsufficientMemoryException(ExceptionMessages.NotEnoughMemory);
 
         writer.Advance(bytesWritten);
         return bytesWritten;
@@ -276,7 +276,7 @@ public static class ByteBuffer
         where T : notnull, IBinaryInteger<T>
     {
         if (!value.TryWriteBigEndian(writer.RemainingSpan, out var bytesWritten))
-            throw new InsufficientMemoryException();
+            throw new InsufficientMemoryException(ExceptionMessages.NotEnoughMemory);
 
         writer.Advance(bytesWritten);
         return bytesWritten;
@@ -322,6 +322,63 @@ public static class ByteBuffer
             writer.Advance(bytesWritten);
 
         return result;
+    }
+    
+    /// <summary>
+    /// Writes 32-bit integer in a compressed format.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The integer to be written.</param>
+    /// <returns>A number of bytes written to the buffer.</returns>
+    public static int WriteLeb128<T>(this ref SpanWriter<byte> writer, T value)
+        where T : struct, IBinaryInteger<T>
+    {
+        var count = 0;
+        foreach (var b in new Leb128<T> { Value = value })
+        {
+            writer.Add() = b;
+            count += 1;
+        }
+
+        return count;
+    }
+    
+    /// <summary>
+    /// Writes 32-bit integer in a compressed format.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="value">The integer to be written.</param>
+    /// <returns>A number of bytes written to the buffer.</returns>
+    public static int WriteLeb128<T>(this ref BufferWriterSlim<byte> writer, T value)
+        where T : struct, IBinaryInteger<T>
+    {
+        var count = 0;
+        foreach (var b in new Leb128<T> { Value = value })
+        {
+            writer.Add() = b;
+            count += 1;
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Decodes an integer encoded as 7-bit octets.
+    /// </summary>
+    /// <param name="reader">The buffer reader.</param>
+    /// <typeparam name="T">The integer type.</typeparam>
+    /// <returns>The decoded integer.</returns>
+    public static T ReadLeb128<T>(this ref SpanReader<byte> reader)
+        where T : struct, IBinaryInteger<T>
+    {
+        var decoder = new Leb128<T>();
+        byte octet;
+        do
+        {
+            octet = reader.Read();
+        } while (decoder.Append(octet));
+
+        return decoder.Value;
     }
 
     /// <summary>

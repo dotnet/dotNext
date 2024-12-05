@@ -142,7 +142,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public async ValueTask WriteAsync(ReadOnlyMemory<byte> input, LengthFormat lengthFormat, CancellationToken token = default)
     {
-        if (FreeCapacity < SevenBitEncodedInt.MaxSize)
+        if (FreeCapacity < Leb128<uint>.MaxSizeInBytes)
             await FlushAsync(token).ConfigureAwait(false);
 
         WriteLength(input.Length, lengthFormat);
@@ -164,7 +164,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         long result;
         if (lengthFormat.HasValue)
         {
-            if (FreeCapacity < SevenBitEncodedInt.MaxSize)
+            if (FreeCapacity < Leb128<uint>.MaxSizeInBytes)
                 await FlushAsync(token).ConfigureAwait(false);
 
             result = WriteLength(context.Encoding.GetByteCount(chars.Span), lengthFormat.GetValueOrDefault());
@@ -256,7 +256,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         {
             null => 0,
             LengthFormat.BigEndian or LengthFormat.LittleEndian => sizeof(int),
-            LengthFormat.Compressed => SevenBitEncodedInt.MaxSize,
+            LengthFormat.Compressed => Leb128<uint>.MaxSizeInBytes,
             _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
         };
 
@@ -289,7 +289,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         if (!TryFormat(value, lengthFormat, format, provider, out var bytesWritten))
         {
             const int maxBufferSize = int.MaxValue / 2;
-            for (var bufferSize = MaxBufferSize + SevenBitEncodedInt.MaxSize; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+            for (var bufferSize = MaxBufferSize + Leb128<uint>.MaxSizeInBytes; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
             {
                 using var buffer = allocator.AllocateAtLeast(bufferSize);
                 if (value.TryFormat(buffer.Span, out bytesWritten, format, provider))

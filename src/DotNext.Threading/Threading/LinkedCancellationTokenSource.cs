@@ -13,12 +13,14 @@ namespace DotNext.Threading;
 /// </remarks>
 public abstract class LinkedCancellationTokenSource : CancellationTokenSource
 {
-    private protected static readonly Action<object?, CancellationToken> CancellationCallback;
+    private Atomic.Boolean status;
 
-    static LinkedCancellationTokenSource()
+    private protected LinkedCancellationTokenSource() => CancellationOrigin = Token;
+    
+    private protected CancellationTokenRegistration Attach(CancellationToken token)
     {
-        CancellationCallback = OnCanceled;
-
+        return token.UnsafeRegister(OnCanceled, this);
+        
         static void OnCanceled(object? source, CancellationToken token)
         {
             Debug.Assert(source is LinkedCancellationTokenSource);
@@ -26,10 +28,6 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource
             Unsafe.As<LinkedCancellationTokenSource>(source).Cancel(token);
         }
     }
-
-    private Atomic.Boolean status;
-
-    private protected LinkedCancellationTokenSource() => CancellationOrigin = Token;
 
     private void Cancel(CancellationToken token)
     {

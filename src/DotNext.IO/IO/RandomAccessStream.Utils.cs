@@ -3,7 +3,7 @@ using System.Threading.Tasks.Sources;
 
 namespace DotNext.IO;
 
-internal partial class UnbufferedFileStream : IValueTaskSource, IValueTaskSource<int>
+public partial class RandomAccessStream : IValueTaskSource, IValueTaskSource<int>
 {
     private ManualResetValueTaskSourceCore<int> source;
     private int bytesWritten;

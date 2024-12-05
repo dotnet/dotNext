@@ -45,4 +45,37 @@ public sealed class LinkedCancellationTokenSourceTests : Test
             Equal(linked.CancellationOrigin, linked.Token);
         }
     }
+
+    [Fact]
+    public static async Task CancellationWithTimeout()
+    {
+        using var source1 = new CancellationTokenSource();
+        var token = new CancellationToken(canceled: false);
+        using var cts = token.LinkTo(DefaultTimeout, source1.Token);
+        NotNull(cts);
+        source1.Cancel();
+
+        await token.WaitAsync();
+    }
+
+    [Fact]
+    public static async Task ConcurrentCancellation()
+    {
+        using var source1 = new CancellationTokenSource();
+        using var source2 = new CancellationTokenSource();
+        using var source3 = new CancellationTokenSource();
+        var token = source3.Token;
+
+        using var cts = token.LinkTo([source1.Token, source2.Token]);
+        NotNull(cts);
+        var task1 = source1.CancelAsync();
+        var task2 = source2.CancelAsync();
+        var task3 = source3.CancelAsync();
+
+        await token.WaitAsync();
+
+        Contains(cts.CancellationOrigin, new[] { source1.Token, source2.Token, source3.Token });
+        
+        await Task.WhenAll(task1, task2, task3);
+    }
 }

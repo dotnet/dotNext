@@ -72,8 +72,7 @@ internal partial class HttpPeerController
             writer.WriteEndPoint(joinedPeer);
             writer.WriteLittleEndian(timeToLive);
 
-            if (!writer.TryDetachBuffer(out result))
-                result = writer.WrittenSpan.Copy(allocator);
+            result = writer.DetachOrCopyBuffer();
         }
         finally
         {

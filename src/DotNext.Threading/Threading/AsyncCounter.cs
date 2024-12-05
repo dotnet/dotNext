@@ -36,7 +36,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 
         readonly bool ILockManager.IsLockAllowed => Value > 0L;
 
-        void ILockManager.AcquireLock() => Decrement();
+        void ILockManager.AcquireLock(bool synchronously) => Decrement();
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
@@ -203,7 +203,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         Monitor.Enter(SyncRoot);
-        var result = TryAcquire(ref manager);
+        var result = TryAcquire(ref manager, synchronously: true);
         Monitor.Exit(SyncRoot);
 
         return result;

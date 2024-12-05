@@ -227,7 +227,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// Tries to invalidate cache record associated with the provided key synchronously.
     /// </summary>
     /// <param name="key">The key of the cache record to be removed.</param>
-    /// <param name="timeout"></param>
+    /// <param name="timeout">The time to wait for the cache lock.</param>
     /// <param name="session">The session that can be used to read the removed cache record.</param>
     /// <returns><see langword="true"/> if the record associated with <paramref name="key"/> exists; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="TimeoutException">The internal lock cannot be acquired in timely manner.</exception>
@@ -308,6 +308,14 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         return true;
     }
     
+    /// <summary>
+    /// Invalidates the cache record associated with the specified key.
+    /// </summary>
+    /// <param name="key">The key of the cache record to be removed.</param>
+    /// <param name="timeout">The time to wait for the cache lock.</param>
+    /// <returns><see langword="true"/> if the cache record associated with <paramref name="key"/> is removed successfully; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="TimeoutException">The internal lock cannot be acquired in timely manner.</exception>
+    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
     public bool Invalidate(TKey key, TimeSpan timeout)
     {
         var keyComparerCopy = KeyComparer;

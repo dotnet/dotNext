@@ -121,13 +121,13 @@ public partial class FileReader : IAsyncBinaryReader
 
     /// <inheritdoc/>
     ValueTask<TReader> IAsyncBinaryReader.ReadAsync<TReader>(TReader reader, CancellationToken token)
-        => ReadAsync<TReader, BufferReader<TReader>>(reader, token);
+        => ReadAsync<TReader, ProxyReader<TReader>>(reader, token);
 
     private ValueTask<int> ReadLengthAsync(LengthFormat lengthFormat, CancellationToken token) => lengthFormat switch
     {
         LengthFormat.LittleEndian => ReadLittleEndianAsync<int>(token),
         LengthFormat.BigEndian => ReadBigEndianAsync<int>(token),
-        LengthFormat.Compressed => ReadAsync<int, SevenBitEncodedInt.Reader>(new(), token),
+        LengthFormat.Compressed => ReadAsync<int, Leb128Reader<int>>(new(), token),
         _ => ValueTask.FromException<int>(new ArgumentOutOfRangeException(nameof(lengthFormat))),
     };
 

@@ -1,4 +1,7 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
@@ -185,4 +188,21 @@ public readonly struct Timeout
     /// <param name="timeout">Timeout control object.</param>
     /// <returns>The original timeout value.</returns>
     public static implicit operator TimeSpan(in Timeout timeout) => timeout.Value;
+
+    /// <summary>
+    /// Validates the timeout.
+    /// </summary>
+    /// <param name="timeout">The timeout value.</param>
+    /// <param name="parameterName">The name of the timeout parameter passed by the caller.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative and not <see cref="InfiniteTicks"/>; or greater than <see cref="MaxTimeoutParameterTicks"/>.</exception>
+    public static void Validate(TimeSpan timeout, [CallerArgumentExpression(nameof(timeout))] string? parameterName = null)
+    {
+        if (timeout.Ticks is < 0L and not InfiniteTicks or > MaxTimeoutParameterTicks)
+            Throw(parameterName);
+
+        [DoesNotReturn]
+        [StackTraceHidden]
+        static void Throw(string? parameterName)
+            => throw new ArgumentOutOfRangeException(parameterName);
+    }
 }

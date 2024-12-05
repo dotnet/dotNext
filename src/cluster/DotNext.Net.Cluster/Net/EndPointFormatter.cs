@@ -52,8 +52,7 @@ public static class EndPointFormatter
         {
             WriteEndPoint(ref writer, endPoint);
 
-            if (!writer.TryDetachBuffer(out result))
-                result = writer.WrittenSpan.Copy(allocator);
+            result = writer.DetachOrCopyBuffer();
         }
         finally
         {
