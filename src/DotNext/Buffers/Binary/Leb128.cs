@@ -96,6 +96,53 @@ public struct Leb128<T> : ISupplier<T>, IResettable
     public readonly Enumerator GetEnumerator() => new(value);
 
     /// <summary>
+    /// Tries to encode the value by using LEB128 binary format.
+    /// </summary>
+    /// <param name="value">The value to encode.</param>
+    /// <param name="buffer">The output buffer.</param>
+    /// <param name="bytesWritten">The number of bytes written.</param>
+    /// <returns><see langword="true"/> if <paramref name="buffer"/> has enough space to save the encoded value; otherwise, <see langword="false"/>.</returns>
+    public static bool TryGetBytes(T value, Span<byte> buffer, out int bytesWritten)
+    {
+        bytesWritten = 0;
+        var index = 0;
+        foreach (var octet in new Leb128<T> { Value = value })
+        {
+            if ((uint)index >= (uint)buffer.Length)
+                return false;
+
+            buffer[index++] = octet;
+        }
+
+        bytesWritten = index;
+        return true;
+    }
+
+    /// <summary>
+    /// Decodes LEB128-encoded integer.
+    /// </summary>
+    /// <param name="buffer">The input buffer containing LEB128 octets.</param>
+    /// <param name="result">The decoded value.</param>
+    /// <param name="bytesConsumed">The number of bytes consumed from <paramref name="buffer"/>.</param>
+    /// <returns><see langword="true"/> if operation is successful; otherwise, <see langword="false"/>.</returns>
+    public static bool TryParse(ReadOnlySpan<byte> buffer, out T result, out int bytesConsumed)
+    {
+        bytesConsumed = 0;
+        var decoder = new Leb128<T>();
+        var successful = false;
+
+        foreach (var octet in buffer)
+        {
+            bytesConsumed += 1;
+            if (successful = !decoder.Append(octet))
+                break;
+        }
+
+        result = decoder.Value;
+        return successful;
+    }
+
+    /// <summary>
     /// Represents an enumerator that produces 7-bit encoded integer as a sequence of octets.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]

@@ -8,16 +8,13 @@ public sealed class Leb128Tests : Test
         where T : struct, IBinaryInteger<T>
     {
         Span<byte> buffer = stackalloc byte[Leb128<T>.MaxSizeInBytes];
-        var writer = new SpanWriter<byte>(buffer);
-        var reader = new SpanReader<byte>(buffer);
 
         foreach (var expected in values)
         {
-            writer.Reset();
-            reader.Reset();
-
-            True(writer.WriteLeb128(expected) > 0);
-            Equal(expected, reader.ReadLeb128<T>());
+            True(Leb128<T>.TryGetBytes(expected, buffer, out var bytesWritten));
+            True(Leb128<T>.TryParse(buffer, out var actual, out var bytesConsumed));
+            Equal(bytesWritten, bytesConsumed);
+            Equal(expected, actual);
         }
     }
 
@@ -26,6 +23,9 @@ public sealed class Leb128Tests : Test
     
     [Fact]
     public static void EncodeDecodeInt64() => EncodeDecode([0L, long.MaxValue, long.MinValue, 0x80L, -1L]);
+
+    [Fact]
+    public static void EncodeDecodeInt128() => EncodeDecode([0, Int128.MaxValue, Int128.MinValue, 0x80, Int128.NegativeOne]);
 
     [Fact]
     public static void EncodeDecodeUInt32() => EncodeDecode([uint.MinValue, uint.MaxValue, 0x80U]);
