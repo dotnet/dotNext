@@ -45,4 +45,16 @@ public sealed class AsyncCounterTests : Test
 
         Throws<OverflowException>(counter.Increment);
     }
+
+    [Fact]
+    public static void DecrementSynchronously()
+    {
+        using (var counter = new AsyncCounter())
+        {
+            False(counter.TryDecrement());
+            
+            counter.Increment();
+            True(counter.TryDecrement());
+        }
+    }
 }
