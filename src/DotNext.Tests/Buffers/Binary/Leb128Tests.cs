@@ -29,4 +29,11 @@ public sealed class Leb128Tests : Test
 
     [Fact]
     public static void EncodeDecodeUInt32() => EncodeDecode([uint.MinValue, uint.MaxValue, 0x80U]);
+
+    [Fact]
+    public static void EncodeDecodeEmptyBuffer()
+    {
+        False(Leb128<int>.TryGetBytes(42, Span<byte>.Empty, out _));
+        False(Leb128<short>.TryParse(ReadOnlySpan<byte>.Empty, out _, out _));
+    }
 }
