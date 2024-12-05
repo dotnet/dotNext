@@ -136,7 +136,7 @@ public static partial class StreamExtensions
     {
         MemoryOwner<byte> result;
         int length;
-        using (result = allocator.AllocateExactly(SevenBitEncodedInteger<uint>.MaxSizeInBytes))
+        using (result = allocator.AllocateExactly(ULeb128<uint>.MaxSizeInBytes))
         {
             length = await stream.ReadLengthAsync(lengthFormat, result.Memory, token).ConfigureAwait(false);
         }

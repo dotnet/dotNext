@@ -334,7 +334,7 @@ public static class ByteBuffer
         where T : struct, IBinaryInteger<T>, IUnsignedNumber<T>
     {
         var count = 0;
-        foreach (var b in new SevenBitEncodedInteger<T>(value))
+        foreach (var b in new ULeb128<T>(value))
         {
             writer.Add() = b;
             count += 1;
@@ -353,7 +353,7 @@ public static class ByteBuffer
         where T : struct, IBinaryInteger<T>, IUnsignedNumber<T>
     {
         var count = 0;
-        foreach (var b in new SevenBitEncodedInteger<T>(value))
+        foreach (var b in new ULeb128<T>(value))
         {
             writer.Add() = b;
             count += 1;
@@ -371,7 +371,7 @@ public static class ByteBuffer
     public static T Read7BitEncodedInteger<T>(this ref SpanReader<byte> reader)
         where T : struct, IBinaryInteger<T>, IUnsignedNumber<T>
     {
-        var decoder = new SevenBitEncodedInteger<T>();
+        var decoder = new ULeb128<T>();
         byte octet;
         do
         {

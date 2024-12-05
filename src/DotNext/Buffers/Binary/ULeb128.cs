@@ -13,8 +13,9 @@ using Numerics;
 /// </summary>
 /// <param name="value">The value to decode.</param>
 /// <typeparam name="T">The type of the integer.</typeparam>
+/// <seealso href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoding</seealso>
 [StructLayout(LayoutKind.Auto)]
-public struct SevenBitEncodedInteger<T>(T value) : ISupplier<T>, IResettable
+public struct ULeb128<T>(T value) : ISupplier<T>, IResettable
     where T : struct, IBinaryInteger<T>, IUnsignedNumber<T>
 {
     /// <summary>
@@ -25,7 +26,7 @@ public struct SevenBitEncodedInteger<T>(T value) : ISupplier<T>, IResettable
     private static readonly int MaxSizeInBits;
     private const byte BitMask = 0x7F;
 
-    static SevenBitEncodedInteger()
+    static ULeb128()
     {
         var bitCount = Number.GetMaxByteCount<T>() * 8;
         bitCount = Math.DivRem(bitCount, 7, out var remainder);

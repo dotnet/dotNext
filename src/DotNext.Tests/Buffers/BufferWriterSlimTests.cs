@@ -367,7 +367,7 @@ public sealed class BufferWriterSlimTests : Test
     private static void EncodeDecodeZeroAndMaxValue<T>()
         where T : struct, IBinaryInteger<T>, IUnsignedNumber<T>
     {
-        Span<byte> buffer = stackalloc byte[SevenBitEncodedInteger<T>.MaxSizeInBytes];
+        Span<byte> buffer = stackalloc byte[ULeb128<T>.MaxSizeInBytes];
         var writer = new BufferWriterSlim<byte>(buffer);
         var reader = new SpanReader<byte>(buffer);
         
@@ -377,7 +377,7 @@ public sealed class BufferWriterSlimTests : Test
         writer.Clear(reuseBuffer: true);
         reader.Reset();
 
-        Equal(SevenBitEncodedInteger<T>.MaxSizeInBytes, writer.Write7BitEncodedInteger(T.AllBitsSet));
+        Equal(ULeb128<T>.MaxSizeInBytes, writer.Write7BitEncodedInteger(T.AllBitsSet));
         Equal(T.AllBitsSet, reader.Read7BitEncodedInteger<T>());
     }
     

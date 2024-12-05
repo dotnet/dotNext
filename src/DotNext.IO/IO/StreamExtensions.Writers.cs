@@ -191,7 +191,7 @@ public static partial class StreamExtensions
         Memory<byte> bufferForLength;
         if (lengthFormat.HasValue)
         {
-            bufferForLength = buffer.Slice(0, SevenBitEncodedInteger<uint>.MaxSizeInBytes);
+            bufferForLength = buffer.Slice(0, ULeb128<uint>.MaxSizeInBytes);
             buffer = buffer.Slice(bufferForLength.Length);
         }
         else
