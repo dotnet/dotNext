@@ -44,10 +44,10 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 12-04-2024
+Release Date: 12-05-2024
 
 <a href="https://www.nuget.org/packages/dotnext/5.16.0">DotNext 5.16.0</a>
-* Added 7-bit encoder and decoder for unsigned integers as a public API. See `DotNext.Buffers.Binary.SevenBitEncodedInteger<T>` type.
+* Added [LEB128](https://en.wikipedia.org/wiki/LEB128) encoder and decoder as a public API. See `DotNext.Buffers.Binary.Leb128<T>` type for more information
 * Added `SlideToEnd` method to `SpanWriter<T>` type
 * Added `IsBitSet` and `SetBit` generic methods to `Number` type
 * Added `DetachOrCopyBuffer` to `BufferWriterSlim<T>` type

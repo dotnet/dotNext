@@ -68,14 +68,14 @@ public sealed class LinkedCancellationTokenSourceTests : Test
 
         using var cts = token.LinkTo([source1.Token, source2.Token]);
         NotNull(cts);
-        ThreadPool.UnsafeQueueUserWorkItem(Cancel, source1, preferLocal: false);
-        ThreadPool.UnsafeQueueUserWorkItem(Cancel, source2, preferLocal: false);
-        ThreadPool.UnsafeQueueUserWorkItem(Cancel, source3, preferLocal: false);
+        var task1 = source1.CancelAsync();
+        var task2 = source2.CancelAsync();
+        var task3 = source3.CancelAsync();
 
         await token.WaitAsync();
 
         Contains(cts.CancellationOrigin, new[] { source1.Token, source2.Token, source3.Token });
-
-        static void Cancel(CancellationTokenSource cts) => cts.Cancel();
+        
+        await Task.WhenAll(task1, task2, task3);
     }
 }

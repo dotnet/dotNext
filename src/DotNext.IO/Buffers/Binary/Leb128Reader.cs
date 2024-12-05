@@ -1,12 +1,14 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers.Binary;
 
 [StructLayout(LayoutKind.Auto)]
-internal struct SevenBitEncodedInt32Reader() : IBufferReader, ISupplier<int>
+internal struct Leb128Reader<T>() : IBufferReader, ISupplier<T>
+    where T : struct, IBinaryInteger<T>
 {
-    private SevenBitEncodedInteger<uint> decoder;
+    private Leb128<T> decoder;
     private bool incompleted = true;
 
     readonly int IBufferReader.RemainingBytes => Unsafe.BitCast<bool, byte>(incompleted);
@@ -14,5 +16,5 @@ internal struct SevenBitEncodedInt32Reader() : IBufferReader, ISupplier<int>
     void IReadOnlySpanConsumer<byte>.Invoke(ReadOnlySpan<byte> source)
         => incompleted = decoder.Append(MemoryMarshal.GetReference(source));
 
-    readonly int ISupplier<int>.Invoke() => (int)decoder.Value;
+    readonly T ISupplier<T>.Invoke() => decoder.Value;
 }

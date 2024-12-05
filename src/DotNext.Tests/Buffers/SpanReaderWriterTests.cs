@@ -452,4 +452,27 @@ public sealed class SpanReaderTests : Test
         using var actual = reader.ReadBlock(format);
         Equal(expected, actual.Span);
     }
+    
+    private static void EncodeDecodeLeb128<T>(ReadOnlySpan<T> values)
+        where T : struct, IBinaryInteger<T>
+    {
+        Span<byte> buffer = stackalloc byte[Leb128<T>.MaxSizeInBytes];
+        var writer = new SpanWriter<byte>(buffer);
+        var reader = new SpanReader<byte>(buffer);
+
+        foreach (var expected in values)
+        {
+            writer.Reset();
+            reader.Reset();
+
+            True(writer.WriteLeb128(expected) > 0);
+            Equal(expected, reader.ReadLeb128<T>());
+        }
+    }
+    
+    [Fact]
+    public static void EncodeDecodeInt32() => EncodeDecodeLeb128([0, int.MaxValue, int.MinValue, 0x80, -1]);
+    
+    [Fact]
+    public static void EncodeDecodeInt64() => EncodeDecodeLeb128([0L, long.MaxValue, long.MinValue, 0x80L, -1L]);
 }

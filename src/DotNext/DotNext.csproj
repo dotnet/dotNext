@@ -18,7 +18,7 @@
     <PackageProjectUrl>https://dotnet.github.io/dotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dotnet/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>extensions;performance;hashcode;randomstring;valuetype;delegate</PackageTags>
+    <PackageTags>extensions;performance;randomstring;delegate;utf8;leb128;hex</PackageTags>
     <Copyright>Copyright © .NET Foundation and Contributors</Copyright>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>

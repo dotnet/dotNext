@@ -118,7 +118,7 @@ public static partial class StreamExtensions
         return reader(stream, buffer, token);
 
         static ValueTask<int> Read7BitEncodedIntAsync(Stream stream, Memory<byte> buffer, CancellationToken token)
-            => ReadAsync<int, SevenBitEncodedInt32Reader>(stream, new(), buffer, token);
+            => ReadAsync<int, Leb128Reader<int>>(stream, new(), buffer, token);
     }
 
     /// <summary>
@@ -136,7 +136,7 @@ public static partial class StreamExtensions
     {
         MemoryOwner<byte> result;
         int length;
-        using (result = allocator.AllocateExactly(SevenBitEncodedInteger<uint>.MaxSizeInBytes))
+        using (result = allocator.AllocateExactly(Leb128<uint>.MaxSizeInBytes))
         {
             length = await stream.ReadLengthAsync(lengthFormat, result.Memory, token).ConfigureAwait(false);
         }
