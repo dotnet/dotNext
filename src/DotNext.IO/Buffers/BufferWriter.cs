@@ -48,14 +48,11 @@ public static class BufferWriter
         {
             LengthFormat.LittleEndian => &ByteBuffer.WriteLittleEndian,
             LengthFormat.BigEndian => &ByteBuffer.WriteBigEndian,
-            LengthFormat.Compressed => &Write7BitEncodedInteger,
+            LengthFormat.Compressed => &ByteBuffer.WriteLeb128<int>,
             _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
         };
 
         return writer(ref destination, value);
-
-        static int Write7BitEncodedInteger(ref SpanWriter<byte> writer, int value)
-            => writer.WriteLeb128((uint)value);
     }
 
     internal static int WriteLength(this IBufferWriter<byte> buffer, int length, LengthFormat lengthFormat)

@@ -154,7 +154,7 @@ public static partial class PipeExtensions
     {
         LengthFormat.LittleEndian => reader.ReadLittleEndianAsync<int>(token),
         LengthFormat.BigEndian => reader.ReadBigEndianAsync<int>(token),
-        LengthFormat.Compressed => ReadAsync<int, SevenBitEncodedInt32Reader>(reader, new(), token),
+        LengthFormat.Compressed => ReadAsync<int, Leb128Reader<int>>(reader, new(), token),
         _ => ValueTask.FromException<int>(new ArgumentOutOfRangeException(nameof(lengthFormat))),
     };
 
