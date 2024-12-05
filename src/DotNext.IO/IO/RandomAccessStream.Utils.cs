@@ -11,7 +11,7 @@ public partial class RandomAccessStream : IValueTaskSource, IValueTaskSource<int
     private ConfiguredValueTaskAwaitable<int>.ConfiguredValueTaskAwaiter readTask;
     private Action? readCallback, writeCallback;
 
-    internal ValueTask SubmitWrite(ValueTask writeTask, int bytesWritten)
+    private ValueTask SubmitWrite(ValueTask writeTask, int bytesWritten)
     {
         this.bytesWritten = bytesWritten;
         this.writeTask = writeTask.ConfigureAwait(false).GetAwaiter();
@@ -27,7 +27,7 @@ public partial class RandomAccessStream : IValueTaskSource, IValueTaskSource<int
         return new(this, source.Version);
     }
 
-    internal ValueTask<int> SubmitRead(ValueTask<int> readTask)
+    private ValueTask<int> SubmitRead(ValueTask<int> readTask)
     {
         this.readTask = readTask.ConfigureAwait(false).GetAwaiter();
         if (this.readTask.IsCompleted)
@@ -79,9 +79,14 @@ public partial class RandomAccessStream : IValueTaskSource, IValueTaskSource<int
         source.SetResult(bytesRead);
     }
 
-    public ValueTaskSourceStatus GetStatus(short token) => source.GetStatus(token);
+    ValueTaskSourceStatus IValueTaskSource.GetStatus(short token) => source.GetStatus(token);
+    
+    ValueTaskSourceStatus IValueTaskSource<int>.GetStatus(short token) => source.GetStatus(token);
 
-    public void OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
+    void IValueTaskSource.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
+        => source.OnCompleted(continuation, state, token, flags);
+    
+    void IValueTaskSource<int>.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
         => source.OnCompleted(continuation, state, token, flags);
 
     // write operation
