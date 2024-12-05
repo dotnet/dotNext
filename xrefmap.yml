@@ -16464,38 +16464,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.RandomAccessStream.Dispose
   nameWithType: RandomAccessStream.Dispose
-- uid: DotNext.IO.RandomAccessStream.GetStatus(System.Int16)
-  name: GetStatus(short)
-  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_GetStatus_System_Int16_
-  commentId: M:DotNext.IO.RandomAccessStream.GetStatus(System.Int16)
-  name.vb: GetStatus(Short)
-  fullName: DotNext.IO.RandomAccessStream.GetStatus(short)
-  fullName.vb: DotNext.IO.RandomAccessStream.GetStatus(Short)
-  nameWithType: RandomAccessStream.GetStatus(short)
-  nameWithType.vb: RandomAccessStream.GetStatus(Short)
-- uid: DotNext.IO.RandomAccessStream.GetStatus*
-  name: GetStatus
-  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_GetStatus_
-  commentId: Overload:DotNext.IO.RandomAccessStream.GetStatus
-  isSpec: "True"
-  fullName: DotNext.IO.RandomAccessStream.GetStatus
-  nameWithType: RandomAccessStream.GetStatus
-- uid: DotNext.IO.RandomAccessStream.OnCompleted(System.Action{System.Object},System.Object,System.Int16,System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags)
-  name: OnCompleted(Action<object?>, object?, short, ValueTaskSourceOnCompletedFlags)
-  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_OnCompleted_System_Action_System_Object__System_Object_System_Int16_System_Threading_Tasks_Sources_ValueTaskSourceOnCompletedFlags_
-  commentId: M:DotNext.IO.RandomAccessStream.OnCompleted(System.Action{System.Object},System.Object,System.Int16,System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags)
-  name.vb: OnCompleted(Action(Of Object), Object, Short, ValueTaskSourceOnCompletedFlags)
-  fullName: DotNext.IO.RandomAccessStream.OnCompleted(System.Action<object?>, object?, short, System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags)
-  fullName.vb: DotNext.IO.RandomAccessStream.OnCompleted(System.Action(Of Object), Object, Short, System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags)
-  nameWithType: RandomAccessStream.OnCompleted(Action<object?>, object?, short, ValueTaskSourceOnCompletedFlags)
-  nameWithType.vb: RandomAccessStream.OnCompleted(Action(Of Object), Object, Short, ValueTaskSourceOnCompletedFlags)
-- uid: DotNext.IO.RandomAccessStream.OnCompleted*
-  name: OnCompleted
-  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_OnCompleted_
-  commentId: Overload:DotNext.IO.RandomAccessStream.OnCompleted
-  isSpec: "True"
-  fullName: DotNext.IO.RandomAccessStream.OnCompleted
-  nameWithType: RandomAccessStream.OnCompleted
 - uid: DotNext.IO.RandomAccessStream.Position
   name: Position
   href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Position
