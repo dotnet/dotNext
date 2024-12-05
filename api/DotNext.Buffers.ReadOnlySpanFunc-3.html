@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <!--[if IE]><![endif]-->
 <html>
 
@@ -78,7 +78,7 @@ with return value.</p>
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_Buffers_ReadOnlySpanFunc_3_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public delegate TResult ReadOnlySpanFunc&lt;T, TArg, TResult&gt;(ReadOnlySpan&lt;T&gt; span, TArg arg)</code></pre>
+    <pre><code class="lang-csharp hljs">public delegate TResult ReadOnlySpanFunc&lt;T, in TArg, out TResult&gt;(ReadOnlySpan&lt;T&gt; span, TArg arg)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

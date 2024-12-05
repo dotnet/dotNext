@@ -25,7 +25,7 @@ This library is the core of .NEXT which extends .NET standard library with
   * Fast Base64 [encoding](xref:DotNext.Buffers.Text.Base64Encoder)/[decoding](xref:DotNext.Buffers.Text.Base64Decoder) for streaming scenarios
   * [Optional](features/core/optional.md) and [Result](features/core/result.md) monads
   * [Soft Reference](features/core/softref.md) and [async GC notifications](features/core/gcnotif.md)
-  * [LEB128](xref:DotNext.Buffer.Binary.Leb128`1) encoding support
+  * [LEB128](xref:DotNext.Buffers.Binary.Leb128`1) encoding support
 
 # DotNext.Metaprogramming
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/absoluteLatest"><img src="https://img.shields.io/nuget/vpre/dotnext.metaprogramming.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.metaprogramming.svg)<br/>

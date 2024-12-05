@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <!--[if IE]><![endif]-->
 <html>
 
@@ -315,7 +315,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_ByteBuffer_ReadBigEndian__1_DotNext_Buffers_SpanReader_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ByteBuffer.ReadBigEndian%60%601(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/ByteBuffer.cs/#L374">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/ByteBuffer.cs/#L431">View Source</a>
   </span>
   <a id="DotNext_Buffers_ByteBuffer_ReadBigEndian_" data-uid="DotNext.Buffers.ByteBuffer.ReadBigEndian*"></a>
   <h4 id="DotNext_Buffers_ByteBuffer_ReadBigEndian__1_DotNext_Buffers_SpanReader_System_Byte___" data-uid="DotNext.Buffers.ByteBuffer.ReadBigEndian``1(DotNext.Buffers.SpanReader{System.Byte}@)">ReadBigEndian&lt;T&gt;(ref SpanReader&lt;byte&gt;)</h4>
@@ -378,10 +378,76 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_ByteBuffer_ReadLeb128__1_DotNext_Buffers_SpanReader_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ByteBuffer.ReadLeb128%60%601(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/ByteBuffer.cs/#L371">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ByteBuffer_ReadLeb128_" data-uid="DotNext.Buffers.ByteBuffer.ReadLeb128*"></a>
+  <h4 id="DotNext_Buffers_ByteBuffer_ReadLeb128__1_DotNext_Buffers_SpanReader_System_Byte___" data-uid="DotNext.Buffers.ByteBuffer.ReadLeb128``1(DotNext.Buffers.SpanReader{System.Byte}@)">ReadLeb128&lt;T&gt;(ref SpanReader&lt;byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Decodes an integer encoded as 7-bit octets.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static T ReadLeb128&lt;T&gt;(this ref SpanReader&lt;byte&gt; reader) where T : struct, IBinaryInteger&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.SpanReader-1.html">SpanReader</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The buffer reader.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The decoded integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The integer type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_ByteBuffer_ReadLittleEndian__1_DotNext_Buffers_SpanReader_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ByteBuffer.ReadLittleEndian%60%601(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/ByteBuffer.cs/#L364">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/ByteBuffer.cs/#L421">View Source</a>
   </span>
   <a id="DotNext_Buffers_ByteBuffer_ReadLittleEndian_" data-uid="DotNext.Buffers.ByteBuffer.ReadLittleEndian*"></a>
   <h4 id="DotNext_Buffers_ByteBuffer_ReadLittleEndian__1_DotNext_Buffers_SpanReader_System_Byte___" data-uid="DotNext.Buffers.ByteBuffer.ReadLittleEndian``1(DotNext.Buffers.SpanReader{System.Byte}@)">ReadLittleEndian&lt;T&gt;(ref SpanReader&lt;byte&gt;)</h4>
@@ -447,7 +513,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_ByteBuffer_Read__1_DotNext_Buffers_SpanReader_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ByteBuffer.Read%60%601(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/ByteBuffer.cs/#L333">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/ByteBuffer.cs/#L390">View Source</a>
   </span>
   <a id="DotNext_Buffers_ByteBuffer_Read_" data-uid="DotNext.Buffers.ByteBuffer.Read*"></a>
   <h4 id="DotNext_Buffers_ByteBuffer_Read__1_DotNext_Buffers_SpanReader_System_Byte___" data-uid="DotNext.Buffers.ByteBuffer.Read``1(DotNext.Buffers.SpanReader{System.Byte}@)">Read&lt;T&gt;(ref SpanReader&lt;byte&gt;)</h4>
@@ -598,7 +664,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_ByteBuffer_TryRead__1_DotNext_Buffers_SpanReader_System_Byte_____0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ByteBuffer.TryRead%60%601(DotNext.Buffers.SpanReader%7BSystem.Byte%7D%40%2C%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/ByteBuffer.cs/#L347">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/ByteBuffer.cs/#L404">View Source</a>
   </span>
   <a id="DotNext_Buffers_ByteBuffer_TryRead_" data-uid="DotNext.Buffers.ByteBuffer.TryRead*"></a>
   <h4 id="DotNext_Buffers_ByteBuffer_TryRead__1_DotNext_Buffers_SpanReader_System_Byte_____0__" data-uid="DotNext.Buffers.ByteBuffer.TryRead``1(DotNext.Buffers.SpanReader{System.Byte}@,``0@)">TryRead&lt;T&gt;(ref SpanReader&lt;byte&gt;, out T?)</h4>
@@ -1237,6 +1303,148 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.insufficientmemoryexception">InsufficientMemoryException</a></td>
         <td><p><code class="paramref">writer</code> has not enough space to place <code class="paramref">value</code>.</p>
 </td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_ByteBuffer_WriteLeb128__1_DotNext_Buffers_BufferWriterSlim_System_Byte_____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ByteBuffer.WriteLeb128%60%601(DotNext.Buffers.BufferWriterSlim%7BSystem.Byte%7D%40%2C%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/ByteBuffer.cs/#L352">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ByteBuffer_WriteLeb128_" data-uid="DotNext.Buffers.ByteBuffer.WriteLeb128*"></a>
+  <h4 id="DotNext_Buffers_ByteBuffer_WriteLeb128__1_DotNext_Buffers_BufferWriterSlim_System_Byte_____0_" data-uid="DotNext.Buffers.ByteBuffer.WriteLeb128``1(DotNext.Buffers.BufferWriterSlim{System.Byte}@,``0)">WriteLeb128&lt;T&gt;(ref BufferWriterSlim&lt;byte&gt;, T)</h4>
+  <div class="markdown level1 summary"><p>Writes 32-bit integer in a compressed format.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int WriteLeb128&lt;T&gt;(this ref BufferWriterSlim&lt;byte&gt; writer, T value) where T : struct, IBinaryInteger&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.BufferWriterSlim-1.html">BufferWriterSlim</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The buffer writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The integer to be written.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>A number of bytes written to the buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_ByteBuffer_WriteLeb128__1_DotNext_Buffers_SpanWriter_System_Byte_____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.ByteBuffer.WriteLeb128%60%601(DotNext.Buffers.SpanWriter%7BSystem.Byte%7D%40%2C%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/ByteBuffer.cs/#L333">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_ByteBuffer_WriteLeb128_" data-uid="DotNext.Buffers.ByteBuffer.WriteLeb128*"></a>
+  <h4 id="DotNext_Buffers_ByteBuffer_WriteLeb128__1_DotNext_Buffers_SpanWriter_System_Byte_____0_" data-uid="DotNext.Buffers.ByteBuffer.WriteLeb128``1(DotNext.Buffers.SpanWriter{System.Byte}@,``0)">WriteLeb128&lt;T&gt;(ref SpanWriter&lt;byte&gt;, T)</h4>
+  <div class="markdown level1 summary"><p>Writes 32-bit integer in a compressed format.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int WriteLeb128&lt;T&gt;(this ref SpanWriter&lt;byte&gt; writer, T value) where T : struct, IBinaryInteger&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.SpanWriter-1.html">SpanWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The buffer writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The integer to be written.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>A number of bytes written to the buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>

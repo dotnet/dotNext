@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <!--[if IE]><![endif]-->
 <html>
 
@@ -116,7 +116,7 @@ on the stack or heap.</p>
   </table>
   <h5 id="DotNext_Buffers_SpanOwner_1_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This type is aimed to be compatible with memory allocated using <code>stackalloc</code> operator.
-If stack allocation threshold is reached (e.g. <a class="xref" href="DotNext.Buffers.SpanOwner-1.html#DotNext_Buffers_SpanOwner_1_StackallocThreshold">StackallocThreshold</a>) then it's possible to use pooled memory from
+If stack allocation threshold is reached (e.g. <span class="xref">DotNext.Buffers.SpanOwner&lt;T&gt;.StackallocThreshold</span>) then it's possible to use pooled memory from
 arbitrary <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.memorypool-1">MemoryPool&lt;T&gt;</a> or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared">Shared</a>. Custom
 <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1">ArrayPool&lt;T&gt;</a> is not supported because default <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared">Shared</a>
 is optimized for per-CPU core allocation which is perfect when the same

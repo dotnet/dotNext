@@ -494,6 +494,180 @@ references:
   fullName.vb: DotNext.Buffers.Binary.IBinaryFormattable(Of TSelf).TryParse
   nameWithType: IBinaryFormattable<TSelf>.TryParse
   nameWithType.vb: IBinaryFormattable(Of TSelf).TryParse
+- uid: DotNext.Buffers.Binary.Leb128`1
+  name: Leb128<T>
+  href: api/DotNext.Buffers.Binary.Leb128-1.html
+  commentId: T:DotNext.Buffers.Binary.Leb128`1
+  name.vb: Leb128(Of T)
+  fullName: DotNext.Buffers.Binary.Leb128<T>
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T)
+  nameWithType: Leb128<T>
+  nameWithType.vb: Leb128(Of T)
+- uid: DotNext.Buffers.Binary.Leb128`1.Append(System.Byte)
+  name: Append(byte)
+  href: api/DotNext.Buffers.Binary.Leb128-1.html#DotNext_Buffers_Binary_Leb128_1_Append_System_Byte_
+  commentId: M:DotNext.Buffers.Binary.Leb128`1.Append(System.Byte)
+  name.vb: Append(Byte)
+  fullName: DotNext.Buffers.Binary.Leb128<T>.Append(byte)
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).Append(Byte)
+  nameWithType: Leb128<T>.Append(byte)
+  nameWithType.vb: Leb128(Of T).Append(Byte)
+- uid: DotNext.Buffers.Binary.Leb128`1.Append*
+  name: Append
+  href: api/DotNext.Buffers.Binary.Leb128-1.html#DotNext_Buffers_Binary_Leb128_1_Append_
+  commentId: Overload:DotNext.Buffers.Binary.Leb128`1.Append
+  isSpec: "True"
+  fullName: DotNext.Buffers.Binary.Leb128<T>.Append
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).Append
+  nameWithType: Leb128<T>.Append
+  nameWithType.vb: Leb128(Of T).Append
+- uid: DotNext.Buffers.Binary.Leb128`1.Enumerator
+  name: Leb128<T>.Enumerator
+  href: api/DotNext.Buffers.Binary.Leb128-1.Enumerator.html
+  commentId: T:DotNext.Buffers.Binary.Leb128`1.Enumerator
+  name.vb: Leb128(Of T).Enumerator
+  fullName: DotNext.Buffers.Binary.Leb128<T>.Enumerator
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).Enumerator
+  nameWithType: Leb128<T>.Enumerator
+  nameWithType.vb: Leb128(Of T).Enumerator
+- uid: DotNext.Buffers.Binary.Leb128`1.Enumerator.Current
+  name: Current
+  href: api/DotNext.Buffers.Binary.Leb128-1.Enumerator.html#DotNext_Buffers_Binary_Leb128_1_Enumerator_Current
+  commentId: P:DotNext.Buffers.Binary.Leb128`1.Enumerator.Current
+  fullName: DotNext.Buffers.Binary.Leb128<T>.Enumerator.Current
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).Enumerator.Current
+  nameWithType: Leb128<T>.Enumerator.Current
+  nameWithType.vb: Leb128(Of T).Enumerator.Current
+- uid: DotNext.Buffers.Binary.Leb128`1.Enumerator.Current*
+  name: Current
+  href: api/DotNext.Buffers.Binary.Leb128-1.Enumerator.html#DotNext_Buffers_Binary_Leb128_1_Enumerator_Current_
+  commentId: Overload:DotNext.Buffers.Binary.Leb128`1.Enumerator.Current
+  isSpec: "True"
+  fullName: DotNext.Buffers.Binary.Leb128<T>.Enumerator.Current
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).Enumerator.Current
+  nameWithType: Leb128<T>.Enumerator.Current
+  nameWithType.vb: Leb128(Of T).Enumerator.Current
+- uid: DotNext.Buffers.Binary.Leb128`1.Enumerator.MoveNext
+  name: MoveNext()
+  href: api/DotNext.Buffers.Binary.Leb128-1.Enumerator.html#DotNext_Buffers_Binary_Leb128_1_Enumerator_MoveNext
+  commentId: M:DotNext.Buffers.Binary.Leb128`1.Enumerator.MoveNext
+  fullName: DotNext.Buffers.Binary.Leb128<T>.Enumerator.MoveNext()
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).Enumerator.MoveNext()
+  nameWithType: Leb128<T>.Enumerator.MoveNext()
+  nameWithType.vb: Leb128(Of T).Enumerator.MoveNext()
+- uid: DotNext.Buffers.Binary.Leb128`1.Enumerator.MoveNext*
+  name: MoveNext
+  href: api/DotNext.Buffers.Binary.Leb128-1.Enumerator.html#DotNext_Buffers_Binary_Leb128_1_Enumerator_MoveNext_
+  commentId: Overload:DotNext.Buffers.Binary.Leb128`1.Enumerator.MoveNext
+  isSpec: "True"
+  fullName: DotNext.Buffers.Binary.Leb128<T>.Enumerator.MoveNext
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).Enumerator.MoveNext
+  nameWithType: Leb128<T>.Enumerator.MoveNext
+  nameWithType.vb: Leb128(Of T).Enumerator.MoveNext
+- uid: DotNext.Buffers.Binary.Leb128`1.GetEnumerator
+  name: GetEnumerator()
+  href: api/DotNext.Buffers.Binary.Leb128-1.html#DotNext_Buffers_Binary_Leb128_1_GetEnumerator
+  commentId: M:DotNext.Buffers.Binary.Leb128`1.GetEnumerator
+  fullName: DotNext.Buffers.Binary.Leb128<T>.GetEnumerator()
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).GetEnumerator()
+  nameWithType: Leb128<T>.GetEnumerator()
+  nameWithType.vb: Leb128(Of T).GetEnumerator()
+- uid: DotNext.Buffers.Binary.Leb128`1.GetEnumerator*
+  name: GetEnumerator
+  href: api/DotNext.Buffers.Binary.Leb128-1.html#DotNext_Buffers_Binary_Leb128_1_GetEnumerator_
+  commentId: Overload:DotNext.Buffers.Binary.Leb128`1.GetEnumerator
+  isSpec: "True"
+  fullName: DotNext.Buffers.Binary.Leb128<T>.GetEnumerator
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).GetEnumerator
+  nameWithType: Leb128<T>.GetEnumerator
+  nameWithType.vb: Leb128(Of T).GetEnumerator
+- uid: DotNext.Buffers.Binary.Leb128`1.MaxSizeInBytes
+  name: MaxSizeInBytes
+  href: api/DotNext.Buffers.Binary.Leb128-1.html#DotNext_Buffers_Binary_Leb128_1_MaxSizeInBytes
+  commentId: P:DotNext.Buffers.Binary.Leb128`1.MaxSizeInBytes
+  fullName: DotNext.Buffers.Binary.Leb128<T>.MaxSizeInBytes
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).MaxSizeInBytes
+  nameWithType: Leb128<T>.MaxSizeInBytes
+  nameWithType.vb: Leb128(Of T).MaxSizeInBytes
+- uid: DotNext.Buffers.Binary.Leb128`1.MaxSizeInBytes*
+  name: MaxSizeInBytes
+  href: api/DotNext.Buffers.Binary.Leb128-1.html#DotNext_Buffers_Binary_Leb128_1_MaxSizeInBytes_
+  commentId: Overload:DotNext.Buffers.Binary.Leb128`1.MaxSizeInBytes
+  isSpec: "True"
+  fullName: DotNext.Buffers.Binary.Leb128<T>.MaxSizeInBytes
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).MaxSizeInBytes
+  nameWithType: Leb128<T>.MaxSizeInBytes
+  nameWithType.vb: Leb128(Of T).MaxSizeInBytes
+- uid: DotNext.Buffers.Binary.Leb128`1.Reset
+  name: Reset()
+  href: api/DotNext.Buffers.Binary.Leb128-1.html#DotNext_Buffers_Binary_Leb128_1_Reset
+  commentId: M:DotNext.Buffers.Binary.Leb128`1.Reset
+  fullName: DotNext.Buffers.Binary.Leb128<T>.Reset()
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).Reset()
+  nameWithType: Leb128<T>.Reset()
+  nameWithType.vb: Leb128(Of T).Reset()
+- uid: DotNext.Buffers.Binary.Leb128`1.Reset*
+  name: Reset
+  href: api/DotNext.Buffers.Binary.Leb128-1.html#DotNext_Buffers_Binary_Leb128_1_Reset_
+  commentId: Overload:DotNext.Buffers.Binary.Leb128`1.Reset
+  isSpec: "True"
+  fullName: DotNext.Buffers.Binary.Leb128<T>.Reset
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).Reset
+  nameWithType: Leb128<T>.Reset
+  nameWithType.vb: Leb128(Of T).Reset
+- uid: DotNext.Buffers.Binary.Leb128`1.TryGetBytes(`0,System.Span{System.Byte},System.Int32@)
+  name: TryGetBytes(T, Span<byte>, out int)
+  href: api/DotNext.Buffers.Binary.Leb128-1.html#DotNext_Buffers_Binary_Leb128_1_TryGetBytes__0_System_Span_System_Byte__System_Int32__
+  commentId: M:DotNext.Buffers.Binary.Leb128`1.TryGetBytes(`0,System.Span{System.Byte},System.Int32@)
+  name.vb: TryGetBytes(T, Span(Of Byte), Integer)
+  fullName: DotNext.Buffers.Binary.Leb128<T>.TryGetBytes(T, System.Span<byte>, out int)
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).TryGetBytes(T, System.Span(Of Byte), Integer)
+  nameWithType: Leb128<T>.TryGetBytes(T, Span<byte>, out int)
+  nameWithType.vb: Leb128(Of T).TryGetBytes(T, Span(Of Byte), Integer)
+- uid: DotNext.Buffers.Binary.Leb128`1.TryGetBytes*
+  name: TryGetBytes
+  href: api/DotNext.Buffers.Binary.Leb128-1.html#DotNext_Buffers_Binary_Leb128_1_TryGetBytes_
+  commentId: Overload:DotNext.Buffers.Binary.Leb128`1.TryGetBytes
+  isSpec: "True"
+  fullName: DotNext.Buffers.Binary.Leb128<T>.TryGetBytes
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).TryGetBytes
+  nameWithType: Leb128<T>.TryGetBytes
+  nameWithType.vb: Leb128(Of T).TryGetBytes
+- uid: DotNext.Buffers.Binary.Leb128`1.TryParse(System.ReadOnlySpan{System.Byte},`0@,System.Int32@)
+  name: TryParse(ReadOnlySpan<byte>, out T, out int)
+  href: api/DotNext.Buffers.Binary.Leb128-1.html#DotNext_Buffers_Binary_Leb128_1_TryParse_System_ReadOnlySpan_System_Byte___0__System_Int32__
+  commentId: M:DotNext.Buffers.Binary.Leb128`1.TryParse(System.ReadOnlySpan{System.Byte},`0@,System.Int32@)
+  name.vb: TryParse(ReadOnlySpan(Of Byte), T, Integer)
+  fullName: DotNext.Buffers.Binary.Leb128<T>.TryParse(System.ReadOnlySpan<byte>, out T, out int)
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).TryParse(System.ReadOnlySpan(Of Byte), T, Integer)
+  nameWithType: Leb128<T>.TryParse(ReadOnlySpan<byte>, out T, out int)
+  nameWithType.vb: Leb128(Of T).TryParse(ReadOnlySpan(Of Byte), T, Integer)
+- uid: DotNext.Buffers.Binary.Leb128`1.TryParse*
+  name: TryParse
+  href: api/DotNext.Buffers.Binary.Leb128-1.html#DotNext_Buffers_Binary_Leb128_1_TryParse_
+  commentId: Overload:DotNext.Buffers.Binary.Leb128`1.TryParse
+  isSpec: "True"
+  fullName: DotNext.Buffers.Binary.Leb128<T>.TryParse
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).TryParse
+  nameWithType: Leb128<T>.TryParse
+  nameWithType.vb: Leb128(Of T).TryParse
+- uid: DotNext.Buffers.Binary.Leb128`1.Value
+  name: Value
+  href: api/DotNext.Buffers.Binary.Leb128-1.html#DotNext_Buffers_Binary_Leb128_1_Value
+  commentId: P:DotNext.Buffers.Binary.Leb128`1.Value
+  fullName: DotNext.Buffers.Binary.Leb128<T>.Value
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).Value
+  nameWithType: Leb128<T>.Value
+  nameWithType.vb: Leb128(Of T).Value
+- uid: DotNext.Buffers.Binary.Leb128`1.Value*
+  name: Value
+  href: api/DotNext.Buffers.Binary.Leb128-1.html#DotNext_Buffers_Binary_Leb128_1_Value_
+  commentId: Overload:DotNext.Buffers.Binary.Leb128`1.Value
+  isSpec: "True"
+  fullName: DotNext.Buffers.Binary.Leb128<T>.Value
+  fullName.vb: DotNext.Buffers.Binary.Leb128(Of T).Value
+  nameWithType: Leb128<T>.Value
+  nameWithType.vb: Leb128(Of T).Value
 - uid: DotNext.Buffers.BufferConsumer`1
   name: BufferConsumer<T>
   href: api/DotNext.Buffers.BufferConsumer-1.html
@@ -562,6 +736,24 @@ references:
   commentId: T:DotNext.Buffers.BufferWriter
   fullName: DotNext.Buffers.BufferWriter
   nameWithType: BufferWriter
+- uid: DotNext.Buffers.BufferWriter.Encode(DotNext.Buffers.BufferWriterSlim{System.Byte}@,System.ReadOnlySpan{System.Char},DotNext.Text.EncodingContext@,System.Nullable{DotNext.IO.LengthFormat})
+  name: Encode(ref BufferWriterSlim<byte>, scoped ReadOnlySpan<char>, in EncodingContext, LengthFormat?)
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Encode_DotNext_Buffers_BufferWriterSlim_System_Byte___System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Nullable_DotNext_IO_LengthFormat__
+  commentId: M:DotNext.Buffers.BufferWriter.Encode(DotNext.Buffers.BufferWriterSlim{System.Byte}@,System.ReadOnlySpan{System.Char},DotNext.Text.EncodingContext@,System.Nullable{DotNext.IO.LengthFormat})
+  name.vb: Encode(BufferWriterSlim(Of Byte), ReadOnlySpan(Of Char), EncodingContext, LengthFormat?)
+  fullName: DotNext.Buffers.BufferWriter.Encode(ref DotNext.Buffers.BufferWriterSlim<byte>, scoped System.ReadOnlySpan<char>, in DotNext.Text.EncodingContext, DotNext.IO.LengthFormat?)
+  fullName.vb: DotNext.Buffers.BufferWriter.Encode(DotNext.Buffers.BufferWriterSlim(Of Byte), System.ReadOnlySpan(Of Char), DotNext.Text.EncodingContext, DotNext.IO.LengthFormat?)
+  nameWithType: BufferWriter.Encode(ref BufferWriterSlim<byte>, scoped ReadOnlySpan<char>, in EncodingContext, LengthFormat?)
+  nameWithType.vb: BufferWriter.Encode(BufferWriterSlim(Of Byte), ReadOnlySpan(Of Char), EncodingContext, LengthFormat?)
+- uid: DotNext.Buffers.BufferWriter.Encode(DotNext.Buffers.SpanWriter{System.Byte}@,System.ReadOnlySpan{System.Char},DotNext.Text.EncodingContext@,System.Nullable{DotNext.IO.LengthFormat})
+  name: Encode(ref SpanWriter<byte>, scoped ReadOnlySpan<char>, in EncodingContext, LengthFormat?)
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Encode_DotNext_Buffers_SpanWriter_System_Byte___System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Nullable_DotNext_IO_LengthFormat__
+  commentId: M:DotNext.Buffers.BufferWriter.Encode(DotNext.Buffers.SpanWriter{System.Byte}@,System.ReadOnlySpan{System.Char},DotNext.Text.EncodingContext@,System.Nullable{DotNext.IO.LengthFormat})
+  name.vb: Encode(SpanWriter(Of Byte), ReadOnlySpan(Of Char), EncodingContext, LengthFormat?)
+  fullName: DotNext.Buffers.BufferWriter.Encode(ref DotNext.Buffers.SpanWriter<byte>, scoped System.ReadOnlySpan<char>, in DotNext.Text.EncodingContext, DotNext.IO.LengthFormat?)
+  fullName.vb: DotNext.Buffers.BufferWriter.Encode(DotNext.Buffers.SpanWriter(Of Byte), System.ReadOnlySpan(Of Char), DotNext.Text.EncodingContext, DotNext.IO.LengthFormat?)
+  nameWithType: BufferWriter.Encode(ref SpanWriter<byte>, scoped ReadOnlySpan<char>, in EncodingContext, LengthFormat?)
+  nameWithType.vb: BufferWriter.Encode(SpanWriter(Of Byte), ReadOnlySpan(Of Char), EncodingContext, LengthFormat?)
 - uid: DotNext.Buffers.BufferWriter.Encode(System.Buffers.IBufferWriter{System.Byte},System.ReadOnlySpan{System.Char},DotNext.Text.EncodingContext@,System.Nullable{DotNext.IO.LengthFormat})
   name: Encode(IBufferWriter<byte>, ReadOnlySpan<char>, in EncodingContext, LengthFormat?)
   href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Encode_System_Buffers_IBufferWriter_System_Byte__System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Nullable_DotNext_IO_LengthFormat__
@@ -628,6 +820,24 @@ references:
   isSpec: "True"
   fullName: DotNext.Buffers.BufferWriter.Interpolate
   nameWithType: BufferWriter.Interpolate
+- uid: DotNext.Buffers.BufferWriter.Write(DotNext.Buffers.BufferWriterSlim{System.Byte}@,System.ReadOnlySpan{System.Byte},DotNext.IO.LengthFormat)
+  name: Write(ref BufferWriterSlim<byte>, scoped ReadOnlySpan<byte>, LengthFormat)
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write_DotNext_Buffers_BufferWriterSlim_System_Byte___System_ReadOnlySpan_System_Byte__DotNext_IO_LengthFormat_
+  commentId: M:DotNext.Buffers.BufferWriter.Write(DotNext.Buffers.BufferWriterSlim{System.Byte}@,System.ReadOnlySpan{System.Byte},DotNext.IO.LengthFormat)
+  name.vb: Write(BufferWriterSlim(Of Byte), ReadOnlySpan(Of Byte), LengthFormat)
+  fullName: DotNext.Buffers.BufferWriter.Write(ref DotNext.Buffers.BufferWriterSlim<byte>, scoped System.ReadOnlySpan<byte>, DotNext.IO.LengthFormat)
+  fullName.vb: DotNext.Buffers.BufferWriter.Write(DotNext.Buffers.BufferWriterSlim(Of Byte), System.ReadOnlySpan(Of Byte), DotNext.IO.LengthFormat)
+  nameWithType: BufferWriter.Write(ref BufferWriterSlim<byte>, scoped ReadOnlySpan<byte>, LengthFormat)
+  nameWithType.vb: BufferWriter.Write(BufferWriterSlim(Of Byte), ReadOnlySpan(Of Byte), LengthFormat)
+- uid: DotNext.Buffers.BufferWriter.Write(DotNext.Buffers.SpanWriter{System.Byte}@,System.ReadOnlySpan{System.Byte},DotNext.IO.LengthFormat)
+  name: Write(ref SpanWriter<byte>, scoped ReadOnlySpan<byte>, LengthFormat)
+  href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write_DotNext_Buffers_SpanWriter_System_Byte___System_ReadOnlySpan_System_Byte__DotNext_IO_LengthFormat_
+  commentId: M:DotNext.Buffers.BufferWriter.Write(DotNext.Buffers.SpanWriter{System.Byte}@,System.ReadOnlySpan{System.Byte},DotNext.IO.LengthFormat)
+  name.vb: Write(SpanWriter(Of Byte), ReadOnlySpan(Of Byte), LengthFormat)
+  fullName: DotNext.Buffers.BufferWriter.Write(ref DotNext.Buffers.SpanWriter<byte>, scoped System.ReadOnlySpan<byte>, DotNext.IO.LengthFormat)
+  fullName.vb: DotNext.Buffers.BufferWriter.Write(DotNext.Buffers.SpanWriter(Of Byte), System.ReadOnlySpan(Of Byte), DotNext.IO.LengthFormat)
+  nameWithType: BufferWriter.Write(ref SpanWriter<byte>, scoped ReadOnlySpan<byte>, LengthFormat)
+  nameWithType.vb: BufferWriter.Write(SpanWriter(Of Byte), ReadOnlySpan(Of Byte), LengthFormat)
 - uid: DotNext.Buffers.BufferWriter.Write*
   name: Write
   href: api/DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write_
@@ -759,6 +969,23 @@ references:
   fullName.vb: DotNext.Buffers.BufferWriterSlim(Of T).Clear
   nameWithType: BufferWriterSlim<T>.Clear
   nameWithType.vb: BufferWriterSlim(Of T).Clear
+- uid: DotNext.Buffers.BufferWriterSlim`1.DetachOrCopyBuffer
+  name: DetachOrCopyBuffer()
+  href: api/DotNext.Buffers.BufferWriterSlim-1.html#DotNext_Buffers_BufferWriterSlim_1_DetachOrCopyBuffer
+  commentId: M:DotNext.Buffers.BufferWriterSlim`1.DetachOrCopyBuffer
+  fullName: DotNext.Buffers.BufferWriterSlim<T>.DetachOrCopyBuffer()
+  fullName.vb: DotNext.Buffers.BufferWriterSlim(Of T).DetachOrCopyBuffer()
+  nameWithType: BufferWriterSlim<T>.DetachOrCopyBuffer()
+  nameWithType.vb: BufferWriterSlim(Of T).DetachOrCopyBuffer()
+- uid: DotNext.Buffers.BufferWriterSlim`1.DetachOrCopyBuffer*
+  name: DetachOrCopyBuffer
+  href: api/DotNext.Buffers.BufferWriterSlim-1.html#DotNext_Buffers_BufferWriterSlim_1_DetachOrCopyBuffer_
+  commentId: Overload:DotNext.Buffers.BufferWriterSlim`1.DetachOrCopyBuffer
+  isSpec: "True"
+  fullName: DotNext.Buffers.BufferWriterSlim<T>.DetachOrCopyBuffer
+  fullName.vb: DotNext.Buffers.BufferWriterSlim(Of T).DetachOrCopyBuffer
+  nameWithType: BufferWriterSlim<T>.DetachOrCopyBuffer
+  nameWithType.vb: BufferWriterSlim(Of T).DetachOrCopyBuffer
 - uid: DotNext.Buffers.BufferWriterSlim`1.Dispose
   name: Dispose()
   href: api/DotNext.Buffers.BufferWriterSlim-1.html#DotNext_Buffers_BufferWriterSlim_1_Dispose
@@ -1341,6 +1568,22 @@ references:
   fullName.vb: DotNext.Buffers.ByteBuffer.ReadBigEndian(Of T)(DotNext.Buffers.SpanReader(Of Byte))
   nameWithType: ByteBuffer.ReadBigEndian<T>(ref SpanReader<byte>)
   nameWithType.vb: ByteBuffer.ReadBigEndian(Of T)(SpanReader(Of Byte))
+- uid: DotNext.Buffers.ByteBuffer.ReadLeb128*
+  name: ReadLeb128
+  href: api/DotNext.Buffers.ByteBuffer.html#DotNext_Buffers_ByteBuffer_ReadLeb128_
+  commentId: Overload:DotNext.Buffers.ByteBuffer.ReadLeb128
+  isSpec: "True"
+  fullName: DotNext.Buffers.ByteBuffer.ReadLeb128
+  nameWithType: ByteBuffer.ReadLeb128
+- uid: DotNext.Buffers.ByteBuffer.ReadLeb128``1(DotNext.Buffers.SpanReader{System.Byte}@)
+  name: ReadLeb128<T>(ref SpanReader<byte>)
+  href: api/DotNext.Buffers.ByteBuffer.html#DotNext_Buffers_ByteBuffer_ReadLeb128__1_DotNext_Buffers_SpanReader_System_Byte___
+  commentId: M:DotNext.Buffers.ByteBuffer.ReadLeb128``1(DotNext.Buffers.SpanReader{System.Byte}@)
+  name.vb: ReadLeb128(Of T)(SpanReader(Of Byte))
+  fullName: DotNext.Buffers.ByteBuffer.ReadLeb128<T>(ref DotNext.Buffers.SpanReader<byte>)
+  fullName.vb: DotNext.Buffers.ByteBuffer.ReadLeb128(Of T)(DotNext.Buffers.SpanReader(Of Byte))
+  nameWithType: ByteBuffer.ReadLeb128<T>(ref SpanReader<byte>)
+  nameWithType.vb: ByteBuffer.ReadLeb128(Of T)(SpanReader(Of Byte))
 - uid: DotNext.Buffers.ByteBuffer.ReadLittleEndian*
   name: ReadLittleEndian
   href: api/DotNext.Buffers.ByteBuffer.html#DotNext_Buffers_ByteBuffer_ReadLittleEndian_
@@ -1482,6 +1725,31 @@ references:
   fullName.vb: DotNext.Buffers.ByteBuffer.WriteBigEndian(Of T)(System.Buffers.IBufferWriter(Of Byte), T)
   nameWithType: ByteBuffer.WriteBigEndian<T>(IBufferWriter<byte>, T)
   nameWithType.vb: ByteBuffer.WriteBigEndian(Of T)(IBufferWriter(Of Byte), T)
+- uid: DotNext.Buffers.ByteBuffer.WriteLeb128*
+  name: WriteLeb128
+  href: api/DotNext.Buffers.ByteBuffer.html#DotNext_Buffers_ByteBuffer_WriteLeb128_
+  commentId: Overload:DotNext.Buffers.ByteBuffer.WriteLeb128
+  isSpec: "True"
+  fullName: DotNext.Buffers.ByteBuffer.WriteLeb128
+  nameWithType: ByteBuffer.WriteLeb128
+- uid: DotNext.Buffers.ByteBuffer.WriteLeb128``1(DotNext.Buffers.BufferWriterSlim{System.Byte}@,``0)
+  name: WriteLeb128<T>(ref BufferWriterSlim<byte>, T)
+  href: api/DotNext.Buffers.ByteBuffer.html#DotNext_Buffers_ByteBuffer_WriteLeb128__1_DotNext_Buffers_BufferWriterSlim_System_Byte_____0_
+  commentId: M:DotNext.Buffers.ByteBuffer.WriteLeb128``1(DotNext.Buffers.BufferWriterSlim{System.Byte}@,``0)
+  name.vb: WriteLeb128(Of T)(BufferWriterSlim(Of Byte), T)
+  fullName: DotNext.Buffers.ByteBuffer.WriteLeb128<T>(ref DotNext.Buffers.BufferWriterSlim<byte>, T)
+  fullName.vb: DotNext.Buffers.ByteBuffer.WriteLeb128(Of T)(DotNext.Buffers.BufferWriterSlim(Of Byte), T)
+  nameWithType: ByteBuffer.WriteLeb128<T>(ref BufferWriterSlim<byte>, T)
+  nameWithType.vb: ByteBuffer.WriteLeb128(Of T)(BufferWriterSlim(Of Byte), T)
+- uid: DotNext.Buffers.ByteBuffer.WriteLeb128``1(DotNext.Buffers.SpanWriter{System.Byte}@,``0)
+  name: WriteLeb128<T>(ref SpanWriter<byte>, T)
+  href: api/DotNext.Buffers.ByteBuffer.html#DotNext_Buffers_ByteBuffer_WriteLeb128__1_DotNext_Buffers_SpanWriter_System_Byte_____0_
+  commentId: M:DotNext.Buffers.ByteBuffer.WriteLeb128``1(DotNext.Buffers.SpanWriter{System.Byte}@,``0)
+  name.vb: WriteLeb128(Of T)(SpanWriter(Of Byte), T)
+  fullName: DotNext.Buffers.ByteBuffer.WriteLeb128<T>(ref DotNext.Buffers.SpanWriter<byte>, T)
+  fullName.vb: DotNext.Buffers.ByteBuffer.WriteLeb128(Of T)(DotNext.Buffers.SpanWriter(Of Byte), T)
+  nameWithType: ByteBuffer.WriteLeb128<T>(ref SpanWriter<byte>, T)
+  nameWithType.vb: ByteBuffer.WriteLeb128(Of T)(SpanWriter(Of Byte), T)
 - uid: DotNext.Buffers.ByteBuffer.WriteLittleEndian*
   name: WriteLittleEndian
   href: api/DotNext.Buffers.ByteBuffer.html#DotNext_Buffers_ByteBuffer_WriteLittleEndian_
@@ -3790,6 +4058,23 @@ references:
   fullName.vb: DotNext.Buffers.SpanWriter(Of T).Slide
   nameWithType: SpanWriter<T>.Slide
   nameWithType.vb: SpanWriter(Of T).Slide
+- uid: DotNext.Buffers.SpanWriter`1.SlideToEnd
+  name: SlideToEnd()
+  href: api/DotNext.Buffers.SpanWriter-1.html#DotNext_Buffers_SpanWriter_1_SlideToEnd
+  commentId: M:DotNext.Buffers.SpanWriter`1.SlideToEnd
+  fullName: DotNext.Buffers.SpanWriter<T>.SlideToEnd()
+  fullName.vb: DotNext.Buffers.SpanWriter(Of T).SlideToEnd()
+  nameWithType: SpanWriter<T>.SlideToEnd()
+  nameWithType.vb: SpanWriter(Of T).SlideToEnd()
+- uid: DotNext.Buffers.SpanWriter`1.SlideToEnd*
+  name: SlideToEnd
+  href: api/DotNext.Buffers.SpanWriter-1.html#DotNext_Buffers_SpanWriter_1_SlideToEnd_
+  commentId: Overload:DotNext.Buffers.SpanWriter`1.SlideToEnd
+  isSpec: "True"
+  fullName: DotNext.Buffers.SpanWriter<T>.SlideToEnd
+  fullName.vb: DotNext.Buffers.SpanWriter(Of T).SlideToEnd
+  nameWithType: SpanWriter<T>.SlideToEnd
+  nameWithType.vb: SpanWriter(Of T).SlideToEnd
 - uid: DotNext.Buffers.SpanWriter`1.Span
   name: Span
   href: api/DotNext.Buffers.SpanWriter-1.html#DotNext_Buffers_SpanWriter_1_Span
@@ -16157,6 +16442,254 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.Pipelines.ResultExtensions.ThrowIfCancellationRequested
   nameWithType: ResultExtensions.ThrowIfCancellationRequested
+- uid: DotNext.IO.RandomAccessStream
+  name: RandomAccessStream
+  href: api/DotNext.IO.RandomAccessStream.html
+  commentId: T:DotNext.IO.RandomAccessStream
+  fullName: DotNext.IO.RandomAccessStream
+  nameWithType: RandomAccessStream
+- uid: DotNext.IO.RandomAccessStream.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Dispose_System_Boolean_
+  commentId: M:DotNext.IO.RandomAccessStream.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: DotNext.IO.RandomAccessStream.Dispose(bool)
+  fullName.vb: DotNext.IO.RandomAccessStream.Dispose(Boolean)
+  nameWithType: RandomAccessStream.Dispose(bool)
+  nameWithType.vb: RandomAccessStream.Dispose(Boolean)
+- uid: DotNext.IO.RandomAccessStream.Dispose*
+  name: Dispose
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Dispose_
+  commentId: Overload:DotNext.IO.RandomAccessStream.Dispose
+  isSpec: "True"
+  fullName: DotNext.IO.RandomAccessStream.Dispose
+  nameWithType: RandomAccessStream.Dispose
+- uid: DotNext.IO.RandomAccessStream.GetStatus(System.Int16)
+  name: GetStatus(short)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_GetStatus_System_Int16_
+  commentId: M:DotNext.IO.RandomAccessStream.GetStatus(System.Int16)
+  name.vb: GetStatus(Short)
+  fullName: DotNext.IO.RandomAccessStream.GetStatus(short)
+  fullName.vb: DotNext.IO.RandomAccessStream.GetStatus(Short)
+  nameWithType: RandomAccessStream.GetStatus(short)
+  nameWithType.vb: RandomAccessStream.GetStatus(Short)
+- uid: DotNext.IO.RandomAccessStream.GetStatus*
+  name: GetStatus
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_GetStatus_
+  commentId: Overload:DotNext.IO.RandomAccessStream.GetStatus
+  isSpec: "True"
+  fullName: DotNext.IO.RandomAccessStream.GetStatus
+  nameWithType: RandomAccessStream.GetStatus
+- uid: DotNext.IO.RandomAccessStream.OnCompleted(System.Action{System.Object},System.Object,System.Int16,System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags)
+  name: OnCompleted(Action<object?>, object?, short, ValueTaskSourceOnCompletedFlags)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_OnCompleted_System_Action_System_Object__System_Object_System_Int16_System_Threading_Tasks_Sources_ValueTaskSourceOnCompletedFlags_
+  commentId: M:DotNext.IO.RandomAccessStream.OnCompleted(System.Action{System.Object},System.Object,System.Int16,System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags)
+  name.vb: OnCompleted(Action(Of Object), Object, Short, ValueTaskSourceOnCompletedFlags)
+  fullName: DotNext.IO.RandomAccessStream.OnCompleted(System.Action<object?>, object?, short, System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags)
+  fullName.vb: DotNext.IO.RandomAccessStream.OnCompleted(System.Action(Of Object), Object, Short, System.Threading.Tasks.Sources.ValueTaskSourceOnCompletedFlags)
+  nameWithType: RandomAccessStream.OnCompleted(Action<object?>, object?, short, ValueTaskSourceOnCompletedFlags)
+  nameWithType.vb: RandomAccessStream.OnCompleted(Action(Of Object), Object, Short, ValueTaskSourceOnCompletedFlags)
+- uid: DotNext.IO.RandomAccessStream.OnCompleted*
+  name: OnCompleted
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_OnCompleted_
+  commentId: Overload:DotNext.IO.RandomAccessStream.OnCompleted
+  isSpec: "True"
+  fullName: DotNext.IO.RandomAccessStream.OnCompleted
+  nameWithType: RandomAccessStream.OnCompleted
+- uid: DotNext.IO.RandomAccessStream.Position
+  name: Position
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Position
+  commentId: P:DotNext.IO.RandomAccessStream.Position
+  fullName: DotNext.IO.RandomAccessStream.Position
+  nameWithType: RandomAccessStream.Position
+- uid: DotNext.IO.RandomAccessStream.Position*
+  name: Position
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Position_
+  commentId: Overload:DotNext.IO.RandomAccessStream.Position
+  isSpec: "True"
+  fullName: DotNext.IO.RandomAccessStream.Position
+  nameWithType: RandomAccessStream.Position
+- uid: DotNext.IO.RandomAccessStream.Read(System.Byte[],System.Int32,System.Int32)
+  name: Read(byte[], int, int)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Read_System_Byte___System_Int32_System_Int32_
+  commentId: M:DotNext.IO.RandomAccessStream.Read(System.Byte[],System.Int32,System.Int32)
+  name.vb: Read(Byte(), Integer, Integer)
+  fullName: DotNext.IO.RandomAccessStream.Read(byte[], int, int)
+  fullName.vb: DotNext.IO.RandomAccessStream.Read(Byte(), Integer, Integer)
+  nameWithType: RandomAccessStream.Read(byte[], int, int)
+  nameWithType.vb: RandomAccessStream.Read(Byte(), Integer, Integer)
+- uid: DotNext.IO.RandomAccessStream.Read(System.Span{System.Byte})
+  name: Read(Span<byte>)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Read_System_Span_System_Byte__
+  commentId: M:DotNext.IO.RandomAccessStream.Read(System.Span{System.Byte})
+  name.vb: Read(Span(Of Byte))
+  fullName: DotNext.IO.RandomAccessStream.Read(System.Span<byte>)
+  fullName.vb: DotNext.IO.RandomAccessStream.Read(System.Span(Of Byte))
+  nameWithType: RandomAccessStream.Read(Span<byte>)
+  nameWithType.vb: RandomAccessStream.Read(Span(Of Byte))
+- uid: DotNext.IO.RandomAccessStream.Read(System.Span{System.Byte},System.Int64)
+  name: Read(Span<byte>, long)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Read_System_Span_System_Byte__System_Int64_
+  commentId: M:DotNext.IO.RandomAccessStream.Read(System.Span{System.Byte},System.Int64)
+  name.vb: Read(Span(Of Byte), Long)
+  fullName: DotNext.IO.RandomAccessStream.Read(System.Span<byte>, long)
+  fullName.vb: DotNext.IO.RandomAccessStream.Read(System.Span(Of Byte), Long)
+  nameWithType: RandomAccessStream.Read(Span<byte>, long)
+  nameWithType.vb: RandomAccessStream.Read(Span(Of Byte), Long)
+- uid: DotNext.IO.RandomAccessStream.Read*
+  name: Read
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Read_
+  commentId: Overload:DotNext.IO.RandomAccessStream.Read
+  isSpec: "True"
+  fullName: DotNext.IO.RandomAccessStream.Read
+  nameWithType: RandomAccessStream.Read
+- uid: DotNext.IO.RandomAccessStream.ReadAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
+  name: ReadAsync(byte[], int, int, CancellationToken)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.RandomAccessStream.ReadAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
+  name.vb: ReadAsync(Byte(), Integer, Integer, CancellationToken)
+  fullName: DotNext.IO.RandomAccessStream.ReadAsync(byte[], int, int, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.RandomAccessStream.ReadAsync(Byte(), Integer, Integer, System.Threading.CancellationToken)
+  nameWithType: RandomAccessStream.ReadAsync(byte[], int, int, CancellationToken)
+  nameWithType.vb: RandomAccessStream.ReadAsync(Byte(), Integer, Integer, CancellationToken)
+- uid: DotNext.IO.RandomAccessStream.ReadAsync(System.Memory{System.Byte},System.Int64,System.Threading.CancellationToken)
+  name: ReadAsync(Memory<byte>, long, CancellationToken)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_ReadAsync_System_Memory_System_Byte__System_Int64_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.RandomAccessStream.ReadAsync(System.Memory{System.Byte},System.Int64,System.Threading.CancellationToken)
+  name.vb: ReadAsync(Memory(Of Byte), Long, CancellationToken)
+  fullName: DotNext.IO.RandomAccessStream.ReadAsync(System.Memory<byte>, long, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.RandomAccessStream.ReadAsync(System.Memory(Of Byte), Long, System.Threading.CancellationToken)
+  nameWithType: RandomAccessStream.ReadAsync(Memory<byte>, long, CancellationToken)
+  nameWithType.vb: RandomAccessStream.ReadAsync(Memory(Of Byte), Long, CancellationToken)
+- uid: DotNext.IO.RandomAccessStream.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)
+  name: ReadAsync(Memory<byte>, CancellationToken)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.RandomAccessStream.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)
+  name.vb: ReadAsync(Memory(Of Byte), CancellationToken)
+  fullName: DotNext.IO.RandomAccessStream.ReadAsync(System.Memory<byte>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.RandomAccessStream.ReadAsync(System.Memory(Of Byte), System.Threading.CancellationToken)
+  nameWithType: RandomAccessStream.ReadAsync(Memory<byte>, CancellationToken)
+  nameWithType.vb: RandomAccessStream.ReadAsync(Memory(Of Byte), CancellationToken)
+- uid: DotNext.IO.RandomAccessStream.ReadAsync*
+  name: ReadAsync
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_ReadAsync_
+  commentId: Overload:DotNext.IO.RandomAccessStream.ReadAsync
+  isSpec: "True"
+  fullName: DotNext.IO.RandomAccessStream.ReadAsync
+  nameWithType: RandomAccessStream.ReadAsync
+- uid: DotNext.IO.RandomAccessStream.ReadByte
+  name: ReadByte()
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_ReadByte
+  commentId: M:DotNext.IO.RandomAccessStream.ReadByte
+  fullName: DotNext.IO.RandomAccessStream.ReadByte()
+  nameWithType: RandomAccessStream.ReadByte()
+- uid: DotNext.IO.RandomAccessStream.ReadByte*
+  name: ReadByte
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_ReadByte_
+  commentId: Overload:DotNext.IO.RandomAccessStream.ReadByte
+  isSpec: "True"
+  fullName: DotNext.IO.RandomAccessStream.ReadByte
+  nameWithType: RandomAccessStream.ReadByte
+- uid: DotNext.IO.RandomAccessStream.Seek(System.Int64,System.IO.SeekOrigin)
+  name: Seek(long, SeekOrigin)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Seek_System_Int64_System_IO_SeekOrigin_
+  commentId: M:DotNext.IO.RandomAccessStream.Seek(System.Int64,System.IO.SeekOrigin)
+  name.vb: Seek(Long, SeekOrigin)
+  fullName: DotNext.IO.RandomAccessStream.Seek(long, System.IO.SeekOrigin)
+  fullName.vb: DotNext.IO.RandomAccessStream.Seek(Long, System.IO.SeekOrigin)
+  nameWithType: RandomAccessStream.Seek(long, SeekOrigin)
+  nameWithType.vb: RandomAccessStream.Seek(Long, SeekOrigin)
+- uid: DotNext.IO.RandomAccessStream.Seek*
+  name: Seek
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Seek_
+  commentId: Overload:DotNext.IO.RandomAccessStream.Seek
+  isSpec: "True"
+  fullName: DotNext.IO.RandomAccessStream.Seek
+  nameWithType: RandomAccessStream.Seek
+- uid: DotNext.IO.RandomAccessStream.Write(System.Byte[],System.Int32,System.Int32)
+  name: Write(byte[], int, int)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Write_System_Byte___System_Int32_System_Int32_
+  commentId: M:DotNext.IO.RandomAccessStream.Write(System.Byte[],System.Int32,System.Int32)
+  name.vb: Write(Byte(), Integer, Integer)
+  fullName: DotNext.IO.RandomAccessStream.Write(byte[], int, int)
+  fullName.vb: DotNext.IO.RandomAccessStream.Write(Byte(), Integer, Integer)
+  nameWithType: RandomAccessStream.Write(byte[], int, int)
+  nameWithType.vb: RandomAccessStream.Write(Byte(), Integer, Integer)
+- uid: DotNext.IO.RandomAccessStream.Write(System.ReadOnlySpan{System.Byte})
+  name: Write(ReadOnlySpan<byte>)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Write_System_ReadOnlySpan_System_Byte__
+  commentId: M:DotNext.IO.RandomAccessStream.Write(System.ReadOnlySpan{System.Byte})
+  name.vb: Write(ReadOnlySpan(Of Byte))
+  fullName: DotNext.IO.RandomAccessStream.Write(System.ReadOnlySpan<byte>)
+  fullName.vb: DotNext.IO.RandomAccessStream.Write(System.ReadOnlySpan(Of Byte))
+  nameWithType: RandomAccessStream.Write(ReadOnlySpan<byte>)
+  nameWithType.vb: RandomAccessStream.Write(ReadOnlySpan(Of Byte))
+- uid: DotNext.IO.RandomAccessStream.Write(System.ReadOnlySpan{System.Byte},System.Int64)
+  name: Write(ReadOnlySpan<byte>, long)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Write_System_ReadOnlySpan_System_Byte__System_Int64_
+  commentId: M:DotNext.IO.RandomAccessStream.Write(System.ReadOnlySpan{System.Byte},System.Int64)
+  name.vb: Write(ReadOnlySpan(Of Byte), Long)
+  fullName: DotNext.IO.RandomAccessStream.Write(System.ReadOnlySpan<byte>, long)
+  fullName.vb: DotNext.IO.RandomAccessStream.Write(System.ReadOnlySpan(Of Byte), Long)
+  nameWithType: RandomAccessStream.Write(ReadOnlySpan<byte>, long)
+  nameWithType.vb: RandomAccessStream.Write(ReadOnlySpan(Of Byte), Long)
+- uid: DotNext.IO.RandomAccessStream.Write*
+  name: Write
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Write_
+  commentId: Overload:DotNext.IO.RandomAccessStream.Write
+  isSpec: "True"
+  fullName: DotNext.IO.RandomAccessStream.Write
+  nameWithType: RandomAccessStream.Write
+- uid: DotNext.IO.RandomAccessStream.WriteAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
+  name: WriteAsync(byte[], int, int, CancellationToken)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.RandomAccessStream.WriteAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
+  name.vb: WriteAsync(Byte(), Integer, Integer, CancellationToken)
+  fullName: DotNext.IO.RandomAccessStream.WriteAsync(byte[], int, int, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.RandomAccessStream.WriteAsync(Byte(), Integer, Integer, System.Threading.CancellationToken)
+  nameWithType: RandomAccessStream.WriteAsync(byte[], int, int, CancellationToken)
+  nameWithType.vb: RandomAccessStream.WriteAsync(Byte(), Integer, Integer, CancellationToken)
+- uid: DotNext.IO.RandomAccessStream.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Int64,System.Threading.CancellationToken)
+  name: WriteAsync(ReadOnlyMemory<byte>, long, CancellationToken)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Int64_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.RandomAccessStream.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Int64,System.Threading.CancellationToken)
+  name.vb: WriteAsync(ReadOnlyMemory(Of Byte), Long, CancellationToken)
+  fullName: DotNext.IO.RandomAccessStream.WriteAsync(System.ReadOnlyMemory<byte>, long, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.RandomAccessStream.WriteAsync(System.ReadOnlyMemory(Of Byte), Long, System.Threading.CancellationToken)
+  nameWithType: RandomAccessStream.WriteAsync(ReadOnlyMemory<byte>, long, CancellationToken)
+  nameWithType.vb: RandomAccessStream.WriteAsync(ReadOnlyMemory(Of Byte), Long, CancellationToken)
+- uid: DotNext.IO.RandomAccessStream.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)
+  name: WriteAsync(ReadOnlyMemory<byte>, CancellationToken)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.RandomAccessStream.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)
+  name.vb: WriteAsync(ReadOnlyMemory(Of Byte), CancellationToken)
+  fullName: DotNext.IO.RandomAccessStream.WriteAsync(System.ReadOnlyMemory<byte>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.RandomAccessStream.WriteAsync(System.ReadOnlyMemory(Of Byte), System.Threading.CancellationToken)
+  nameWithType: RandomAccessStream.WriteAsync(ReadOnlyMemory<byte>, CancellationToken)
+  nameWithType.vb: RandomAccessStream.WriteAsync(ReadOnlyMemory(Of Byte), CancellationToken)
+- uid: DotNext.IO.RandomAccessStream.WriteAsync*
+  name: WriteAsync
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_WriteAsync_
+  commentId: Overload:DotNext.IO.RandomAccessStream.WriteAsync
+  isSpec: "True"
+  fullName: DotNext.IO.RandomAccessStream.WriteAsync
+  nameWithType: RandomAccessStream.WriteAsync
+- uid: DotNext.IO.RandomAccessStream.WriteByte(System.Byte)
+  name: WriteByte(byte)
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_WriteByte_System_Byte_
+  commentId: M:DotNext.IO.RandomAccessStream.WriteByte(System.Byte)
+  name.vb: WriteByte(Byte)
+  fullName: DotNext.IO.RandomAccessStream.WriteByte(byte)
+  fullName.vb: DotNext.IO.RandomAccessStream.WriteByte(Byte)
+  nameWithType: RandomAccessStream.WriteByte(byte)
+  nameWithType.vb: RandomAccessStream.WriteByte(Byte)
+- uid: DotNext.IO.RandomAccessStream.WriteByte*
+  name: WriteByte
+  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_WriteByte_
+  commentId: Overload:DotNext.IO.RandomAccessStream.WriteByte
+  isSpec: "True"
+  fullName: DotNext.IO.RandomAccessStream.WriteByte
+  nameWithType: RandomAccessStream.WriteByte
 - uid: DotNext.IO.SequenceReader
   name: SequenceReader
   href: api/DotNext.IO.SequenceReader.html
@@ -33975,6 +34508,22 @@ references:
   fullName.vb: DotNext.Numerics.Number.GetMaxByteCount(Of T)()
   nameWithType: Number.GetMaxByteCount<T>()
   nameWithType.vb: Number.GetMaxByteCount(Of T)()
+- uid: DotNext.Numerics.Number.IsBitSet*
+  name: IsBitSet
+  href: api/DotNext.Numerics.Number.html#DotNext_Numerics_Number_IsBitSet_
+  commentId: Overload:DotNext.Numerics.Number.IsBitSet
+  isSpec: "True"
+  fullName: DotNext.Numerics.Number.IsBitSet
+  nameWithType: Number.IsBitSet
+- uid: DotNext.Numerics.Number.IsBitSet``1(``0,System.Int32)
+  name: IsBitSet<T>(T, int)
+  href: api/DotNext.Numerics.Number.html#DotNext_Numerics_Number_IsBitSet__1___0_System_Int32_
+  commentId: M:DotNext.Numerics.Number.IsBitSet``1(``0,System.Int32)
+  name.vb: IsBitSet(Of T)(T, Integer)
+  fullName: DotNext.Numerics.Number.IsBitSet<T>(T, int)
+  fullName.vb: DotNext.Numerics.Number.IsBitSet(Of T)(T, Integer)
+  nameWithType: Number.IsBitSet<T>(T, int)
+  nameWithType.vb: Number.IsBitSet(Of T)(T, Integer)
 - uid: DotNext.Numerics.Number.IsPrime*
   name: IsPrime
   href: api/DotNext.Numerics.Number.html#DotNext_Numerics_Number_IsPrime_
@@ -34059,6 +34608,22 @@ references:
   fullName.vb: DotNext.Numerics.Number.Normalize(Of TInput, TOutput)(TInput, TInput, TInput)
   nameWithType: Number.Normalize<TInput, TOutput>(TInput, TInput, TInput)
   nameWithType.vb: Number.Normalize(Of TInput, TOutput)(TInput, TInput, TInput)
+- uid: DotNext.Numerics.Number.SetBit*
+  name: SetBit
+  href: api/DotNext.Numerics.Number.html#DotNext_Numerics_Number_SetBit_
+  commentId: Overload:DotNext.Numerics.Number.SetBit
+  isSpec: "True"
+  fullName: DotNext.Numerics.Number.SetBit
+  nameWithType: Number.SetBit
+- uid: DotNext.Numerics.Number.SetBit``1(``0,System.Int32,System.Boolean)
+  name: SetBit<T>(T, int, bool)
+  href: api/DotNext.Numerics.Number.html#DotNext_Numerics_Number_SetBit__1___0_System_Int32_System_Boolean_
+  commentId: M:DotNext.Numerics.Number.SetBit``1(``0,System.Int32,System.Boolean)
+  name.vb: SetBit(Of T)(T, Integer, Boolean)
+  fullName: DotNext.Numerics.Number.SetBit<T>(T, int, bool)
+  fullName.vb: DotNext.Numerics.Number.SetBit(Of T)(T, Integer, Boolean)
+  nameWithType: Number.SetBit<T>(T, int, bool)
+  nameWithType.vb: Number.SetBit(Of T)(T, Integer, Boolean)
 - uid: DotNext.Optional
   name: Optional
   href: api/DotNext.Optional.html
@@ -44829,12 +45394,12 @@ references:
   commentId: M:DotNext.Threading.AsyncExclusiveLock.TryAcquire
   fullName: DotNext.Threading.AsyncExclusiveLock.TryAcquire()
   nameWithType: AsyncExclusiveLock.TryAcquire()
-- uid: DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan)
-  name: TryAcquire(TimeSpan)
-  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_TryAcquire_System_TimeSpan_
-  commentId: M:DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan)
-  fullName: DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan)
-  nameWithType: AsyncExclusiveLock.TryAcquire(TimeSpan)
+- uid: DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan,System.Threading.CancellationToken)
+  name: TryAcquire(TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_TryAcquire_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncExclusiveLock.TryAcquire(TimeSpan, CancellationToken)
 - uid: DotNext.Threading.AsyncExclusiveLock.TryAcquire*
   name: TryAcquire
   href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_TryAcquire_
@@ -45570,6 +46135,22 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncReaderWriterLock.CurrentReadCount
   nameWithType: AsyncReaderWriterLock.CurrentReadCount
+- uid: DotNext.Threading.AsyncReaderWriterLock.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_Dispose_System_Boolean_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.Dispose(bool)
+  fullName.vb: DotNext.Threading.AsyncReaderWriterLock.Dispose(Boolean)
+  nameWithType: AsyncReaderWriterLock.Dispose(bool)
+  nameWithType.vb: AsyncReaderWriterLock.Dispose(Boolean)
+- uid: DotNext.Threading.AsyncReaderWriterLock.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_Dispose_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.Dispose
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.Dispose
+  nameWithType: AsyncReaderWriterLock.Dispose
 - uid: DotNext.Threading.AsyncReaderWriterLock.DowngradeFromWriteLock
   name: DowngradeFromWriteLock()
   href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_DowngradeFromWriteLock
@@ -45770,12 +46351,12 @@ references:
   commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock
   fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock()
   nameWithType: AsyncReaderWriterLock.TryEnterReadLock()
-- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock(System.TimeSpan)
-  name: TryEnterReadLock(TimeSpan)
-  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLock_System_TimeSpan_
-  commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock(System.TimeSpan)
-  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock(System.TimeSpan)
-  nameWithType: AsyncReaderWriterLock.TryEnterReadLock(TimeSpan)
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock(System.TimeSpan,System.Threading.CancellationToken)
+  name: TryEnterReadLock(TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLock_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncReaderWriterLock.TryEnterReadLock(TimeSpan, CancellationToken)
 - uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock*
   name: TryEnterReadLock
   href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLock_
@@ -45811,12 +46392,12 @@ references:
   fullName.vb: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(DotNext.Threading.AsyncReaderWriterLock.LockStamp)
   nameWithType: AsyncReaderWriterLock.TryEnterWriteLock(in AsyncReaderWriterLock.LockStamp)
   nameWithType.vb: AsyncReaderWriterLock.TryEnterWriteLock(AsyncReaderWriterLock.LockStamp)
-- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(System.TimeSpan)
-  name: TryEnterWriteLock(TimeSpan)
-  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_System_TimeSpan_
-  commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(System.TimeSpan)
-  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(System.TimeSpan)
-  nameWithType: AsyncReaderWriterLock.TryEnterWriteLock(TimeSpan)
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(System.TimeSpan,System.Threading.CancellationToken)
+  name: TryEnterWriteLock(TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncReaderWriterLock.TryEnterWriteLock(TimeSpan, CancellationToken)
 - uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock*
   name: TryEnterWriteLock
   href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_
@@ -48919,6 +49500,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.LinkedTokenSourceFactory.CausedBy
   nameWithType: LinkedTokenSourceFactory.CausedBy
+- uid: DotNext.Threading.LinkedTokenSourceFactory.LinkTo(System.Threading.CancellationToken@,System.ReadOnlySpan{System.Threading.CancellationToken})
+  name: LinkTo(ref CancellationToken, ReadOnlySpan<CancellationToken>)
+  href: api/DotNext.Threading.LinkedTokenSourceFactory.html#DotNext_Threading_LinkedTokenSourceFactory_LinkTo_System_Threading_CancellationToken__System_ReadOnlySpan_System_Threading_CancellationToken__
+  commentId: M:DotNext.Threading.LinkedTokenSourceFactory.LinkTo(System.Threading.CancellationToken@,System.ReadOnlySpan{System.Threading.CancellationToken})
+  name.vb: LinkTo(CancellationToken, ReadOnlySpan(Of CancellationToken))
+  fullName: DotNext.Threading.LinkedTokenSourceFactory.LinkTo(ref System.Threading.CancellationToken, System.ReadOnlySpan<System.Threading.CancellationToken>)
+  fullName.vb: DotNext.Threading.LinkedTokenSourceFactory.LinkTo(System.Threading.CancellationToken, System.ReadOnlySpan(Of System.Threading.CancellationToken))
+  nameWithType: LinkedTokenSourceFactory.LinkTo(ref CancellationToken, ReadOnlySpan<CancellationToken>)
+  nameWithType.vb: LinkedTokenSourceFactory.LinkTo(CancellationToken, ReadOnlySpan(Of CancellationToken))
 - uid: DotNext.Threading.LinkedTokenSourceFactory.LinkTo(System.Threading.CancellationToken@,System.Threading.CancellationToken)
   name: LinkTo(ref CancellationToken, CancellationToken)
   href: api/DotNext.Threading.LinkedTokenSourceFactory.html#DotNext_Threading_LinkedTokenSourceFactory_LinkTo_System_Threading_CancellationToken__System_Threading_CancellationToken_
@@ -49175,6 +49765,22 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.Lock.TryAcquire
   nameWithType: Lock.TryAcquire
+- uid: DotNext.Threading.Lock.TryEnterMonitor(System.Object,System.TimeSpan,System.Threading.CancellationToken,System.Boolean)
+  name: TryEnterMonitor(object, TimeSpan, CancellationToken, bool)
+  href: api/DotNext.Threading.Lock.html#DotNext_Threading_Lock_TryEnterMonitor_System_Object_System_TimeSpan_System_Threading_CancellationToken_System_Boolean_
+  commentId: M:DotNext.Threading.Lock.TryEnterMonitor(System.Object,System.TimeSpan,System.Threading.CancellationToken,System.Boolean)
+  name.vb: TryEnterMonitor(Object, TimeSpan, CancellationToken, Boolean)
+  fullName: DotNext.Threading.Lock.TryEnterMonitor(object, System.TimeSpan, System.Threading.CancellationToken, bool)
+  fullName.vb: DotNext.Threading.Lock.TryEnterMonitor(Object, System.TimeSpan, System.Threading.CancellationToken, Boolean)
+  nameWithType: Lock.TryEnterMonitor(object, TimeSpan, CancellationToken, bool)
+  nameWithType.vb: Lock.TryEnterMonitor(Object, TimeSpan, CancellationToken, Boolean)
+- uid: DotNext.Threading.Lock.TryEnterMonitor*
+  name: TryEnterMonitor
+  href: api/DotNext.Threading.Lock.html#DotNext_Threading_Lock_TryEnterMonitor_
+  commentId: Overload:DotNext.Threading.Lock.TryEnterMonitor
+  isSpec: "True"
+  fullName: DotNext.Threading.Lock.TryEnterMonitor
+  nameWithType: Lock.TryEnterMonitor
 - uid: DotNext.Threading.Lock.WriteLock(System.Threading.ReaderWriterLockSlim)
   name: WriteLock(ReaderWriterLockSlim)
   href: api/DotNext.Threading.Lock.html#DotNext_Threading_Lock_WriteLock_System_Threading_ReaderWriterLockSlim_
@@ -51754,6 +52360,22 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.Timeout.TryGetRemainingTime
   nameWithType: Timeout.TryGetRemainingTime
+- uid: DotNext.Threading.Timeout.Validate(System.TimeSpan,System.String)
+  name: Validate(TimeSpan, string?)
+  href: api/DotNext.Threading.Timeout.html#DotNext_Threading_Timeout_Validate_System_TimeSpan_System_String_
+  commentId: M:DotNext.Threading.Timeout.Validate(System.TimeSpan,System.String)
+  name.vb: Validate(TimeSpan, String)
+  fullName: DotNext.Threading.Timeout.Validate(System.TimeSpan, string?)
+  fullName.vb: DotNext.Threading.Timeout.Validate(System.TimeSpan, String)
+  nameWithType: Timeout.Validate(TimeSpan, string?)
+  nameWithType.vb: Timeout.Validate(TimeSpan, String)
+- uid: DotNext.Threading.Timeout.Validate*
+  name: Validate
+  href: api/DotNext.Threading.Timeout.html#DotNext_Threading_Timeout_Validate_
+  commentId: Overload:DotNext.Threading.Timeout.Validate
+  isSpec: "True"
+  fullName: DotNext.Threading.Timeout.Validate
+  nameWithType: Timeout.Validate
 - uid: DotNext.Threading.Timeout.Value
   name: Value
   href: api/DotNext.Threading.Timeout.html#DotNext_Threading_Timeout_Value
