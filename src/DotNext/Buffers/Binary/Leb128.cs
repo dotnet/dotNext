@@ -53,7 +53,7 @@ public struct Leb128<T> : ISupplier<T>, IResettable
         value |= (T.CreateTruncating(b) & T.CreateTruncating(BitMask)) << shift;
         shift += 7;
 
-        var nextOctetExpected = (b & CarryBit) is not 0;
+        var nextOctetExpected = Unsafe.BitCast<byte, bool>((byte)(b >> 7));
         const byte signBit = 0x40;
 
         // return back sign bit for signed integers
@@ -202,10 +202,9 @@ public struct Leb128<T> : ISupplier<T>, IResettable
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void MoveNextUnsigned()
         {
-            var allBitsSet = T.CreateTruncating(BitMask);
-            if (value > allBitsSet)
+            if (value > T.CreateTruncating(BitMask))
             {
-                current = byte.CreateTruncating(value | ~allBitsSet);
+                current = (byte)(byte.CreateTruncating(value) | CarryBit);
                 value >>>= 7;
             }
             else
