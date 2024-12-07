@@ -124,7 +124,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TResult FromBits&lt;TResult&gt;(this ReadOnlySpan&lt;bool&gt; bits) where TResult : struct, IBinaryNumber&lt;TResult&gt;, IShiftOperators&lt;TResult, int, TResult&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static TResult FromBits&lt;TResult&gt;(this ReadOnlySpan&lt;bool&gt; bits) where TResult : struct, INumber&lt;TResult&gt;, IBitwiseOperators&lt;TResult, TResult, TResult&gt;, IShiftOperators&lt;TResult, int, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -190,7 +190,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void GetBits&lt;T&gt;(this T value, Span&lt;bool&gt; bits) where T : unmanaged, IBinaryNumber&lt;T&gt;, IShiftOperators&lt;T, int, T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static void GetBits&lt;T&gt;(this T value, Span&lt;bool&gt; bits) where T : unmanaged, INumber&lt;T&gt;, IBitwiseOperators&lt;T, T, T&gt;, IShiftOperators&lt;T, int, T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -311,7 +311,7 @@ when encoded in little-endian or big-endian format.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool IsBitSet&lt;T&gt;(this T number, int position) where T : struct, IBinaryNumber&lt;T&gt;, IShiftOperators&lt;T, int, T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool IsBitSet&lt;T&gt;(this T number, int position) where T : struct, INumber&lt;T&gt;, IBitwiseOperators&lt;T, T, T&gt;, IShiftOperators&lt;T, int, T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -815,7 +815,7 @@ public static double Normalize(this ulong value)</code></pre>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static T SetBit&lt;T&gt;(this T number, int position, bool value) where T : struct, IBinaryNumber&lt;T&gt;, IShiftOperators&lt;T, int, T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static T SetBit&lt;T&gt;(this T number, int position, bool value) where T : struct, INumber&lt;T&gt;, IBitwiseOperators&lt;T, T, T&gt;, IShiftOperators&lt;T, int, T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
