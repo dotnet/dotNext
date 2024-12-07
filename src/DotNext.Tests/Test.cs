@@ -8,6 +8,10 @@ using static Buffers.Memory;
 [ExcludeFromCodeCoverage]
 public abstract class Test : Assert
 {
+    protected const string Alphabet = "abcdefghijklmnopqrstuvwxyz";
+    protected const string AlphabetUpperCase = "ABCDEFGHIJKLMNOPQRSTUVWXY";
+    protected const string Numbers = "0123456789";
+    
     private protected static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(20);
 
     private protected static byte[] RandomBytes(int size)
