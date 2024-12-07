@@ -45,11 +45,29 @@ public sealed class Leb128Tests : Test
     [InlineData(int.MaxValue)]
     [InlineData(0x80)]
     [InlineData(0x40)]
-    public static void CompatibilityWith7BitEncodedInt(int expected)
+    [InlineData(0x7F)]
+    public static void CompatibilityWithBinaryReader(int expected)
     {
         var buffer = new byte[Leb128<int>.MaxSizeInBytes];
         using var reader = new BinaryReader(new ReadOnlyMemory<byte>(buffer).AsStream());
-        True(Leb128<int>.TryGetBytes(expected, buffer, out _));
+        True(Leb128<uint>.TryGetBytes((uint)expected, buffer, out _));
         Equal(expected, reader.Read7BitEncodedInt());
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(100500)]
+    [InlineData(int.MaxValue)]
+    [InlineData(0x80)]
+    [InlineData(0x40)]
+    [InlineData(0x7F)]
+    public static void CompatibilityWithBinaryWriter(int expected)
+    {
+        using var stream = new MemoryStream(Leb128<int>.MaxSizeInBytes);
+        using var writer = new BinaryWriter(stream);
+        writer.Write7BitEncodedInt(expected);
+        
+        True(Leb128<uint>.TryParse(stream.GetBuffer(), out var actual, out _));
+        Equal((uint)expected, actual);
     }
 }
