@@ -11,6 +11,9 @@ using Numerics;
 /// <summary>
 /// Represents encoder and decoder for 7-bit encoded integers.
 /// </summary>
+/// <remarks>
+/// Note that encoding of signed and unsigned integers produce different octets.
+/// </remarks>
 /// <typeparam name="T">The type of the integer.</typeparam>
 /// <seealso href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoding</seealso>
 [StructLayout(LayoutKind.Auto)]
