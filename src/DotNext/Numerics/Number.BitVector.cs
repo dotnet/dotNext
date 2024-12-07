@@ -17,7 +17,7 @@ public static partial class Number
     /// <returns><see langword="true"/> if the bit at <paramref name="position"/> is set; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="position"/> is negative.</exception>
     public static bool IsBitSet<T>(this T number, int position)
-        where T : struct, IBinaryNumber<T>, IShiftOperators<T, int, T>
+        where T : struct, INumber<T>, IBitwiseOperators<T, T, T>, IShiftOperators<T, int, T>
     {
         ArgumentOutOfRangeException.ThrowIfNegative(position);
 
@@ -34,7 +34,7 @@ public static partial class Number
     /// <returns>A modified number.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="position"/> is negative.</exception>
     public static T SetBit<T>(this T number, int position, bool value)
-        where T : struct, IBinaryNumber<T>, IShiftOperators<T, int, T>
+        where T : struct, INumber<T>, IBitwiseOperators<T, T, T>, IShiftOperators<T, int, T>
     {
         ArgumentOutOfRangeException.ThrowIfNegative(position);
 
@@ -51,7 +51,7 @@ public static partial class Number
     /// <param name="bits">A vector of bits.</param>
     /// <returns>A value of type <typeparamref name="TResult"/> restored from the vector of bits.</returns>
     public static TResult FromBits<TResult>(this ReadOnlySpan<bool> bits)
-        where TResult : struct, IBinaryNumber<TResult>, IShiftOperators<TResult, int, TResult>
+        where TResult : struct, INumber<TResult>, IBitwiseOperators<TResult, TResult, TResult>, IShiftOperators<TResult, int, TResult>
     {
         var result = TResult.Zero;
 
@@ -72,7 +72,7 @@ public static partial class Number
     /// <param name="bits">A buffer to be modified.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bits"/> has not enough length.</exception>
     public static unsafe void GetBits<T>(this T value, Span<bool> bits)
-        where T : unmanaged, IBinaryNumber<T>, IShiftOperators<T, int, T>
+        where T : unmanaged, INumber<T>, IBitwiseOperators<T, T, T>, IShiftOperators<T, int, T>
     {
         var sizeInBits = sizeof(T) * 8;
         ArgumentOutOfRangeException.ThrowIfLessThan((uint)bits.Length, (uint)sizeInBits, nameof(bits));
