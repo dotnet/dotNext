@@ -7,7 +7,7 @@ namespace DotNext.Buffers;
 
 using EncodingContext = DotNext.Text.EncodingContext;
 using LengthFormat = IO.LengthFormat;
-using SevenBitEncodedInt = Binary.Leb128<int>;
+using SevenBitEncodedInt = Binary.Leb128<uint>;
 
 /// <summary>
 /// Represents extension methods for writing typed data into buffer.
@@ -44,15 +44,17 @@ public static class BufferWriter
 
     internal static unsafe int WriteLength(this ref SpanWriter<byte> destination, int value, LengthFormat lengthFormat)
     {
-        delegate*<ref SpanWriter<byte>, int, int> writer = lengthFormat switch
+        Debug.Assert(value >= 0);
+        
+        delegate*<ref SpanWriter<byte>, uint, int> writer = lengthFormat switch
         {
             LengthFormat.LittleEndian => &ByteBuffer.WriteLittleEndian,
             LengthFormat.BigEndian => &ByteBuffer.WriteBigEndian,
-            LengthFormat.Compressed => &ByteBuffer.WriteLeb128<int>,
+            LengthFormat.Compressed => &ByteBuffer.WriteLeb128<uint>,
             _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
         };
 
-        return writer(ref destination, value);
+        return writer(ref destination, (uint)value);
     }
 
     internal static int WriteLength(this IBufferWriter<byte> buffer, int length, LengthFormat lengthFormat)
