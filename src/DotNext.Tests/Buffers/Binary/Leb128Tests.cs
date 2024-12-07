@@ -70,4 +70,17 @@ public sealed class Leb128Tests : Test
         True(Leb128<uint>.TryParse(stream.GetBuffer(), out var actual, out _));
         Equal((uint)expected, actual);
     }
+
+    [Fact]
+    public static void DifferenceBetweenSignedAndUnsignedEncoding()
+    {
+        Equal(Leb128<int>.MaxSizeInBytes, Leb128<uint>.MaxSizeInBytes);
+        
+        Span<byte> buffer = stackalloc byte[Leb128<int>.MaxSizeInBytes];
+        True(Leb128<uint>.TryGetBytes(0x7Fu, buffer, out var bytesWritten));
+        Equal(1, bytesWritten);
+        
+        True(Leb128<int>.TryGetBytes(0x7F, buffer, out bytesWritten));
+        Equal(2, bytesWritten);
+    }
 }
