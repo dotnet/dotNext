@@ -11,6 +11,9 @@ using Numerics;
 /// <summary>
 /// Represents encoder and decoder for 7-bit encoded integers.
 /// </summary>
+/// <remarks>
+/// Note that encoding of signed and unsigned integers produce different octets.
+/// </remarks>
 /// <typeparam name="T">The type of the integer.</typeparam>
 /// <seealso href="https://en.wikipedia.org/wiki/LEB128">LEB128 encoding</seealso>
 [StructLayout(LayoutKind.Auto)]
@@ -53,7 +56,7 @@ public struct Leb128<T> : ISupplier<T>, IResettable
         value |= (T.CreateTruncating(b) & T.CreateTruncating(BitMask)) << shift;
         shift += 7;
 
-        var nextOctetExpected = (b & CarryBit) is not 0;
+        var nextOctetExpected = Unsafe.BitCast<byte, bool>((byte)(b >> 7));
         const byte signBit = 0x40;
 
         // return back sign bit for signed integers
@@ -202,10 +205,9 @@ public struct Leb128<T> : ISupplier<T>, IResettable
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void MoveNextUnsigned()
         {
-            var allBitsSet = T.CreateTruncating(BitMask);
-            if (value > allBitsSet)
+            if (value > T.CreateTruncating(BitMask))
             {
-                current = byte.CreateTruncating(value | ~allBitsSet);
+                current = (byte)(byte.CreateTruncating(value) | CarryBit);
                 value >>>= 7;
             }
             else

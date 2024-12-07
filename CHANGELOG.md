@@ -1,32 +1,32 @@
 Release Notes
 ====
 
-# 12-05-2024
-<a href="https://www.nuget.org/packages/dotnext/5.16.0">DotNext 5.16.0</a>
+# 12-07-2024
+<a href="https://www.nuget.org/packages/dotnext/5.16.0">DotNext 5.16.1</a>
 * Added [LEB128](https://en.wikipedia.org/wiki/LEB128) encoder and decoder as a public API. See `DotNext.Buffers.Binary.Leb128<T>` type for more information
 * Added `SlideToEnd` method to `SpanWriter<T>` type
 * Added `IsBitSet` and `SetBit` generic methods to `Number` type
 * Added `DetachOrCopyBuffer` to `BufferWriterSlim<T>` type
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.16.0">DotNext.Metaprogramming 5.16.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.16.1">DotNext.Metaprogramming 5.16.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/5.16.0">DotNext.Unsafe 5.16.0</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.16.1">DotNext.Unsafe 5.16.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.16.0">DotNext.Threading 5.16.0</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/5.16.1">DotNext.Threading 5.16.1</a>
 * Async locks with synchronous acquisition methods now throw [LockRecursionException](https://learn.microsoft.com/en-us/dotnet/api/system.threading.lockrecursionexception) if the current thread tries to acquire the lock synchronously and recursively.
 * Added support of cancellation token to synchronous acquisition methods of `AsyncExclusiveLock` and `AsyncReaderWriterLock` classes
 * Introduced `LinkTo` method overload that supports multiple cancellation tokens
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.16.0">DotNext.IO 5.16.0</a>
+<a href="https://www.nuget.org/packages/dotnext.io/5.16.1">DotNext.IO 5.16.1</a>
 * Introduced `RandomAccessStream` class that represents [Stream](https://learn.microsoft.com/en-us/dotnet/api/system.io.stream) wrapper over the underlying data storage that supports random access pattern
 * Added extension method for `SpanWriter<byte>` that provides length-prefixed string encoding
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.16.0">DotNext.Net.Cluster 5.16.0</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.16.1">DotNext.Net.Cluster 5.16.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.16.0">DotNext.AspNetCore.Cluster 5.16.0</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.16.1">DotNext.AspNetCore.Cluster 5.16.1</a>
 * Updated dependencies
 
 # 10-16-2024

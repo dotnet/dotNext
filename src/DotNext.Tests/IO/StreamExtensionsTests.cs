@@ -101,28 +101,38 @@ public sealed class StreamExtensionsTests : Test
         Equal(10M, (await ms.ReadAsync<Blittable<decimal>>(buffer)).Value);
     }
 
-    [Fact]
-    public static async Task BinaryReaderInterop()
+    [Theory]
+    [InlineData(7)]
+    [InlineData(16)]
+    [InlineData(0x7F)]
+    [InlineData(0x80)]
+    public static async Task BinaryReaderInterop(int length)
     {
+        var expected = Random.Shared.NextString(Alphabet + AlphabetUpperCase + Numbers, length);
         using var ms = new MemoryStream();
-        await ms.EncodeAsync("ABC".AsMemory(), Encoding.UTF8, LengthFormat.Compressed, new byte[16]);
+        await ms.EncodeAsync(expected.AsMemory(), Encoding.UTF8, LengthFormat.Compressed, new byte[16]);
         ms.Position = 0;
         using var reader = new BinaryReader(ms, Encoding.UTF8, true);
-        Equal("ABC", reader.ReadString());
+        Equal(expected, reader.ReadString());
     }
 
-    [Fact]
-    public static async Task BinaryWriterInterop()
+    [Theory]
+    [InlineData(7)]
+    [InlineData(16)]
+    [InlineData(0x7F)]
+    [InlineData(0x80)]
+    public static async Task BinaryWriterInterop(int length)
     {
+        var expected = Random.Shared.NextString(Alphabet + AlphabetUpperCase + Numbers, length);
         using var ms = new MemoryStream();
-        using (var writer = new BinaryWriter(ms, Encoding.UTF8, true))
+        await using (var writer = new BinaryWriter(ms, Encoding.UTF8, true))
         {
-            writer.Write("ABC");
+            writer.Write(expected);
         }
         ms.Position = 0;
 
         using var result = await ms.DecodeAsync(Encoding.UTF8, LengthFormat.Compressed, new byte[16]);
-        Equal("ABC", result.ToString());
+        Equal(expected, result.Span);
     }
 
     [Fact]
