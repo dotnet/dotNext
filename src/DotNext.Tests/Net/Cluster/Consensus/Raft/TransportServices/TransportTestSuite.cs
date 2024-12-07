@@ -64,9 +64,9 @@ public abstract class TransportTestSuite : RaftTest
                 metadata.Add("a", "b");
             else
             {
-                const string AllowedChars = "abcdefghijklmnopqrstuvwxyz1234567890";
+                const string allowedChars = Alphabet + Numbers;
                 for (var i = 0; i < 20; i++)
-                    metadata.Add(string.Concat("key", i.ToString()), Random.Shared.NextString(AllowedChars, 20));
+                    metadata.Add(string.Concat("key", i.ToString()), Random.Shared.NextString(allowedChars, 20));
             }
             Metadata = metadata.ToImmutableDictionary();
         }

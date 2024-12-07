@@ -2,6 +2,8 @@ using System.Numerics;
 
 namespace DotNext.Buffers.Binary;
 
+using static IO.StreamSource;
+
 public sealed class Leb128Tests : Test
 {
     private static void EncodeDecode<T>(ReadOnlySpan<T> values)
@@ -35,5 +37,50 @@ public sealed class Leb128Tests : Test
     {
         False(Leb128<int>.TryGetBytes(42, Span<byte>.Empty, out _));
         False(Leb128<short>.TryParse(ReadOnlySpan<byte>.Empty, out _, out _));
+    }
+    
+    [Theory]
+    [InlineData(0)]
+    [InlineData(100500)]
+    [InlineData(int.MaxValue)]
+    [InlineData(0x80)]
+    [InlineData(0x40)]
+    [InlineData(0x7F)]
+    public static void CompatibilityWithBinaryReader(int expected)
+    {
+        var buffer = new byte[Leb128<int>.MaxSizeInBytes];
+        using var reader = new BinaryReader(new ReadOnlyMemory<byte>(buffer).AsStream());
+        True(Leb128<uint>.TryGetBytes((uint)expected, buffer, out _));
+        Equal(expected, reader.Read7BitEncodedInt());
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(100500)]
+    [InlineData(int.MaxValue)]
+    [InlineData(0x80)]
+    [InlineData(0x40)]
+    [InlineData(0x7F)]
+    public static void CompatibilityWithBinaryWriter(int expected)
+    {
+        using var stream = new MemoryStream(Leb128<int>.MaxSizeInBytes);
+        using var writer = new BinaryWriter(stream);
+        writer.Write7BitEncodedInt(expected);
+        
+        True(Leb128<uint>.TryParse(stream.GetBuffer(), out var actual, out _));
+        Equal((uint)expected, actual);
+    }
+
+    [Fact]
+    public static void DifferenceBetweenSignedAndUnsignedEncoding()
+    {
+        Equal(Leb128<int>.MaxSizeInBytes, Leb128<uint>.MaxSizeInBytes);
+        
+        Span<byte> buffer = stackalloc byte[Leb128<int>.MaxSizeInBytes];
+        True(Leb128<uint>.TryGetBytes(0x7Fu, buffer, out var bytesWritten));
+        Equal(1, bytesWritten);
+        
+        True(Leb128<int>.TryGetBytes(0x7F, buffer, out bytesWritten));
+        Equal(2, bytesWritten);
     }
 }

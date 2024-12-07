@@ -403,7 +403,7 @@ public sealed class SpanReaderTests : Test
     [InlineData(124)]
     public static void WriteStringBuilder(int stringLength)
     {
-        var str = Random.Shared.NextString("abcdefghijklmnopqrstuvwxyz", stringLength);
+        var str = Random.Shared.NextString(Alphabet, stringLength);
 
         var builder = new StringBuilder();
         for (var i = 0; i < 3; i++)

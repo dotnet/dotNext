@@ -271,8 +271,8 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
 
     private int Read7BitEncodedInt32()
     {
-        var parser = new Leb128Reader<int>();
-        return Read<int, Leb128Reader<int>>(ref parser);
+        var parser = new SevenBitEncodedIntReader();
+        return Read<int, SevenBitEncodedIntReader>(ref parser);
     }
 
     private int ReadLength(LengthFormat lengthFormat) => lengthFormat switch
