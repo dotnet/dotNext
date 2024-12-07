@@ -2,6 +2,8 @@ using System.Numerics;
 
 namespace DotNext.Buffers.Binary;
 
+using static IO.StreamSource;
+
 public sealed class Leb128Tests : Test
 {
     private static void EncodeDecode<T>(ReadOnlySpan<T> values)
@@ -35,5 +37,19 @@ public sealed class Leb128Tests : Test
     {
         False(Leb128<int>.TryGetBytes(42, Span<byte>.Empty, out _));
         False(Leb128<short>.TryParse(ReadOnlySpan<byte>.Empty, out _, out _));
+    }
+    
+    [Theory]
+    [InlineData(0)]
+    [InlineData(100500)]
+    [InlineData(int.MaxValue)]
+    [InlineData(0x80)]
+    [InlineData(0x40)]
+    public static void CompatibilityWith7BitEncodedInt(int expected)
+    {
+        var buffer = new byte[Leb128<int>.MaxSizeInBytes];
+        using var reader = new BinaryReader(new ReadOnlyMemory<byte>(buffer).AsStream());
+        True(Leb128<int>.TryGetBytes(expected, buffer, out _));
+        Equal(expected, reader.Read7BitEncodedInt());
     }
 }
