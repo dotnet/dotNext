@@ -118,7 +118,7 @@ public static partial class StreamExtensions
         return reader(stream, buffer, token);
 
         static ValueTask<int> Read7BitEncodedIntAsync(Stream stream, Memory<byte> buffer, CancellationToken token)
-            => ReadAsync<int, Leb128Reader<int>>(stream, new(), buffer, token);
+            => ReadAsync<int, SevenBitEncodedIntReader>(stream, new(), buffer, token);
     }
 
     /// <summary>
