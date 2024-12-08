@@ -83,4 +83,12 @@ public sealed class Leb128Tests : Test
         True(Leb128<int>.TryGetBytes(0x7F, buffer, out bytesWritten));
         Equal(2, bytesWritten);
     }
+    
+    [Fact]
+    public static void MaxSizeInBytes()
+    {
+        Equal(sizeof(uint) + 1, Leb128<uint>.MaxSizeInBytes);
+        Equal(sizeof(ulong) + 2, Leb128<ulong>.MaxSizeInBytes);
+        Equal(16 + 3, Leb128<UInt128>.MaxSizeInBytes);
+    }
 }
