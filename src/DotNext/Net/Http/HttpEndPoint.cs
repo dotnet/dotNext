@@ -10,7 +10,7 @@ using Buffers;
 /// <summary>
 /// Represents HTTP endpoint.
 /// </summary>
-public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatable<HttpEndPoint>, IEqualityOperators<HttpEndPoint?, HttpEndPoint?, bool>, ISpanFormattable
+public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatable<HttpEndPoint>, IEqualityOperators<HttpEndPoint?, HttpEndPoint?, bool>, ISpanFormattable, IParsable<HttpEndPoint>
 {
     private const StringComparison HostNameComparison = StringComparison.OrdinalIgnoreCase;
 
@@ -188,4 +188,12 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
         result = null;
         return false;
     }
+
+    /// <inheritdoc/>
+    static HttpEndPoint IParsable<HttpEndPoint>.Parse(string s, IFormatProvider? provider)
+        => new(new Uri(s));
+
+    /// <inheritdoc/>
+    static bool IParsable<HttpEndPoint>.TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out HttpEndPoint result)
+        => TryParse(s, out result);
 }

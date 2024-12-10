@@ -1,4 +1,5 @@
 using System.Net.Sockets;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace DotNext.Net.Http;
 
@@ -75,5 +76,22 @@ public sealed class HttpEndPointTests : Test
         
         Equal(expected, buffer.Slice(0, charsWritten));
         Equal(expected, formattable.ToString(format: null, formatProvider: null));
+    }
+
+    [Fact]
+    public static void Parse()
+    {
+        const string expected = "http://localhost:3262/";
+        Equal(expected, Parse<HttpEndPoint>(expected).ToString());
+        True(TryParse<HttpEndPoint>(expected, out var ep));
+        Equal(expected, ep.ToString());
+        
+        static T Parse<T>(string input)
+            where T : IParsable<T>
+            => T.Parse(input, provider: null);
+
+        static bool TryParse<T>(string input, out T result)
+            where T : IParsable<T>
+            => T.TryParse(input, provider: null, out result);
     }
 }
