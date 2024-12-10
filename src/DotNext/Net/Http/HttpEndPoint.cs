@@ -10,7 +10,7 @@ using Buffers;
 /// <summary>
 /// Represents HTTP endpoint.
 /// </summary>
-public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatable<HttpEndPoint>, IEqualityOperators<HttpEndPoint?, HttpEndPoint?, bool>, ISpanFormattable, IParsable<HttpEndPoint>
+public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatable<HttpEndPoint>, IEqualityOperators<HttpEndPoint?, HttpEndPoint?, bool>, ISpanFormattable, IParsable<HttpEndPoint>, IUtf8SpanFormattable
 {
     private const StringComparison HostNameComparison = StringComparison.OrdinalIgnoreCase;
 
@@ -168,6 +168,23 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
             ? writer.WrittenCount
             : default;
         
+        return success;
+    }
+    
+    /// <inheritdoc/>
+    bool IUtf8SpanFormattable.TryFormat(Span<byte> destination, out int bytesWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+    {
+        var writer = new SpanWriter<byte>(destination);
+        bool success;
+        bytesWritten = (success = writer.TryEncodeAsUtf8(Scheme)
+                                  && writer.TryWrite("://"u8)
+                                  && writer.TryEncodeAsUtf8(Host)
+                                  && writer.TryAdd((byte)':')
+                                  && writer.TryFormat(Port, format, provider)
+                                  && writer.TryAdd((byte)'/'))
+            ? writer.WrittenCount
+            : default;
+
         return success;
     }
 

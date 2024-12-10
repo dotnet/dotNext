@@ -1,4 +1,5 @@
 using System.Net.Sockets;
+using System.Text;
 using Microsoft.AspNetCore.Components.Forms;
 
 namespace DotNext.Net.Http;
@@ -76,6 +77,19 @@ public sealed class HttpEndPointTests : Test
         
         Equal(expected, buffer.Slice(0, charsWritten));
         Equal(expected, formattable.ToString(format: null, formatProvider: null));
+    }
+    
+    [Fact]
+    public static void FormatAsUtf8()
+    {
+        const string expected = "http://localhost:3262/";
+        var expectedBytes = Encoding.UTF8.GetBytes(expected);
+        
+        Span<byte> buffer = stackalloc byte[64];
+        IUtf8SpanFormattable formattable = new HttpEndPoint(new Uri(expected));
+        True(formattable.TryFormat(buffer, out var charsWritten, ReadOnlySpan<char>.Empty, provider: null));
+        
+        Equal(expectedBytes, buffer.Slice(0, charsWritten));
     }
 
     [Fact]

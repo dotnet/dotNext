@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using System.Text.Unicode;
 
 namespace DotNext.Buffers;
 
@@ -319,6 +320,21 @@ public static class ByteBuffer
     {
         bool result;
         if (result = value.TryFormat(writer.RemainingSpan, out var bytesWritten, format, provider))
+            writer.Advance(bytesWritten);
+
+        return result;
+    }
+    
+    /// <summary>
+    /// Writes the specified sequence of characters as UTF-8 encoded octets.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="input">The input characters to be encoded.</param>
+    /// <returns><see langword="true"/> if <paramref name="input"/> is encoded successfully; otherwise, <see langword="false"/>.</returns>
+    public static bool TryEncodeAsUtf8(this ref SpanWriter<byte> writer, ReadOnlySpan<char> input)
+    {
+        bool result;
+        if (result = Utf8.FromUtf16(input, writer.RemainingSpan, out _, out var bytesWritten, replaceInvalidSequences: false) is OperationStatus.Done)
             writer.Advance(bytesWritten);
 
         return result;
