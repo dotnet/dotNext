@@ -64,4 +64,16 @@ public sealed class HttpEndPointTests : Test
         Equal(Uri.UriSchemeHttps, uri.Scheme, ignoreCase: true);
         Equal(3262, ep.Port);
     }
+
+    [Fact]
+    public static void Format()
+    {
+        const string expected = "http://localhost:3262/";
+        Span<char> buffer = stackalloc char[64];
+        ISpanFormattable formattable = new HttpEndPoint(new Uri(expected));
+        True(formattable.TryFormat(buffer, out var charsWritten, ReadOnlySpan<char>.Empty, provider: null));
+        
+        Equal(expected, buffer.Slice(0, charsWritten));
+        Equal(expected, formattable.ToString(format: null, formatProvider: null));
+    }
 }
