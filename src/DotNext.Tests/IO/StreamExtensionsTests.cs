@@ -351,4 +351,19 @@ public sealed class StreamExtensionsTests : Test
         ms.ReadUtf8(stackalloc byte[8], writer);
         Equal(string.Empty, writer.WrittenSpan.ToString());
     }
+    
+    [Fact]
+    public static async Task ReadBlockAsSequenceAsync()
+    {
+        var bytes = RandomBytes(1024);
+        using var source = new MemoryStream(bytes, false);
+        using var destination = new MemoryStream(1024);
+
+        await foreach (var chunk in source.ReadExactlyAsync(512L, 64))
+        {
+            await destination.WriteAsync(chunk);
+        }
+
+        Equal(new ReadOnlySpan<byte>(bytes, 0, 512), destination.ToArray());
+    }
 }

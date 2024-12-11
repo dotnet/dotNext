@@ -303,6 +303,39 @@ public sealed class PipeExtensionsTests : Test
     }
 
     [Fact]
+    public static async Task ReadBlockExactlyAsync()
+    {
+        var bytes = RandomBytes(128);
+
+        var reader = PipeReader.Create(new(bytes));
+
+        using var destination = new MemoryStream();
+        await foreach (var chunk in reader.ReadExactlyAsync(64L))
+        {
+            await destination.WriteAsync(chunk);
+        }
+
+        Equal(new ReadOnlySpan<byte>(bytes, 0, 64), destination.ToArray());
+    }
+
+    [Fact]
+    public static void ReadEmptyBlockAsync()
+    {
+        var reader = PipeReader.Create(ReadOnlySequence<byte>.Empty);
+
+        Empty(reader.ReadExactlyAsync(0L));
+    }
+
+    [Fact]
+    public static async Task ReadInvalidSizedBlockAsync()
+    {
+        var reader = PipeReader.Create(ReadOnlySequence<byte>.Empty);
+
+        await using var enumerator = reader.ReadExactlyAsync(-1L).GetAsyncEnumerator();
+        await ThrowsAsync<ArgumentOutOfRangeException>(enumerator.MoveNextAsync().AsTask);
+    }
+
+    [Fact]
     public static async Task DecodeNullTerminatedStringAsync()
     {
         var pipe = new Pipe();
