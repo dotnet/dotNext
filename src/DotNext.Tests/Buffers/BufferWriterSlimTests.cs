@@ -403,7 +403,7 @@ public sealed class BufferWriterSlimTests : Test
 
         using var buffer = writer.DetachOrCopyBuffer();
         var reader = IAsyncBinaryReader.Create(buffer.Memory);
-        using var actual = reader.ReadBlock(format);
+        using var actual = reader.ReadBlock(format, allocator: null);
         Equal(expected, actual.Span);
     }
     
