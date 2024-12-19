@@ -80,7 +80,7 @@ public static class UnmanagedMemory
 
         if (length > 0)
         {
-            MemoryManager<T> manager = new UnmanagedMemory<T>((nint)pointer, length);
+            var manager = new UnmanagedMemory<T>((nint)pointer, length);
 
             // GC perf: manager doesn't own the memory represented by the pointer, no need to call Dispose from finalizer
             GC.SuppressFinalize(manager);
@@ -146,6 +146,8 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
 
     public sealed override Span<T> GetSpan()
         => address is not null ? new(address, Length) : [];
+
+    public sealed override Memory<T> Memory => address is not null ? CreateMemory(Length) : Memory<T>.Empty;
 
     public sealed override MemoryHandle Pin(int elementIndex = 0)
     {
