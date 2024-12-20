@@ -16,7 +16,7 @@ public static partial class Synchronization
         {
             try
             {
-                await GetTask(tasks, i).ConfigureAwait(false);
+                await GetTask(in tasks, i).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -26,8 +26,8 @@ public static partial class Synchronization
 
         aggregator.ThrowIfNeeded();
 
-        static ValueTask GetTask(in T tuple, int index)
-            => Unsafe.Add(ref Unsafe.As<T, ValueTask>(ref Unsafe.AsRef(in tuple)), index);
+        static ref readonly ValueTask GetTask(ref readonly T tuple, int index)
+            => ref Unsafe.Add(ref Unsafe.As<T, ValueTask>(ref Unsafe.AsRef(in tuple)), index);
     }
 
     /// <summary>
