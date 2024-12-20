@@ -305,36 +305,15 @@ public static partial class Synchronization
     {
         var awaiter = task.ConfigureAwait(false).GetAwaiter();
 
-        if (!SpinWait(in awaiter))
-            BlockingWait(in awaiter);
+        unsafe
+        {
+            Wait(ref awaiter, &IsCompleted);
+        }
         
         awaiter.GetResult();
 
-        static bool SpinWait(ref readonly ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter)
-        {
-            bool result;
-            for (var spinner = new SpinWait();; spinner.SpinOnce())
-            {
-                if ((result = awaiter.IsCompleted) || spinner.NextSpinWillYield)
-                    break;
-            }
-
-            return result;
-        }
-
-        static void BlockingWait(ref readonly ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter)
-        {
-            awaiter.UnsafeOnCompleted(Thread.CurrentThread.Interrupt);
-            try
-            {
-                // park thread
-                Thread.Sleep(Infinite);
-            }
-            catch (ThreadInterruptedException) when (awaiter.IsCompleted)
-            {
-                // suppress exception
-            }
-        }
+        static bool IsCompleted(ref ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter)
+            => awaiter.IsCompleted;
     }
 
     /// <summary>
@@ -349,24 +328,36 @@ public static partial class Synchronization
     {
         var awaiter = task.ConfigureAwait(false).GetAwaiter();
 
-        if (!SpinWait(in awaiter))
-            BlockingWait(in awaiter);
-        
+        unsafe
+        {
+            Wait(ref awaiter, &IsCompleted);
+        }
+
         return awaiter.GetResult();
 
-        static bool SpinWait(ref readonly ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter awaiter)
+        static bool IsCompleted(ref ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter awaiter)
+            => awaiter.IsCompleted;
+    }
+
+    private static unsafe void Wait<TAwaiter>(ref TAwaiter awaiter, delegate*<ref TAwaiter, bool> isCompleted)
+        where TAwaiter : struct, ICriticalNotifyCompletion
+    {
+        if (!SpinWait(ref awaiter, isCompleted))
+            BlockingWait(ref awaiter, isCompleted);
+        
+        static bool SpinWait(ref TAwaiter awaiter, delegate*<ref TAwaiter, bool> isCompleted)
         {
             bool result;
             for (var spinner = new SpinWait();; spinner.SpinOnce())
             {
-                if ((result = awaiter.IsCompleted) || spinner.NextSpinWillYield)
+                if ((result = isCompleted(ref awaiter)) || spinner.NextSpinWillYield)
                     break;
             }
 
             return result;
         }
 
-        static void BlockingWait(ref readonly ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter awaiter)
+        static void BlockingWait(ref TAwaiter awaiter, delegate*<ref TAwaiter, bool> isCompleted)
         {
             awaiter.UnsafeOnCompleted(Thread.CurrentThread.Interrupt);
             try
@@ -374,7 +365,7 @@ public static partial class Synchronization
                 // park thread
                 Thread.Sleep(Infinite);
             }
-            catch (ThreadInterruptedException) when (awaiter.IsCompleted)
+            catch (ThreadInterruptedException) when (isCompleted(ref awaiter))
             {
                 // suppress exception
             }
