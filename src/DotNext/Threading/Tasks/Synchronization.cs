@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks;
 
@@ -326,62 +325,5 @@ public static partial class Synchronization
         }
 
         return result;
-    }
-
-    /// <summary>
-    /// Waits for the task synchronously.
-    /// </summary>
-    /// <remarks>
-    /// In contrast to <see cref="Task.Wait()"/> this method doesn't use wait handles.
-    /// </remarks>
-    /// <param name="task">The task to wait.</param>
-    public static void Wait(this in ValueTask task)
-    {
-        var awaiter = task.ConfigureAwait(false).GetAwaiter();
-        if (!awaiter.IsCompleted)
-        {
-            awaiter.UnsafeOnCompleted(Thread.CurrentThread.Interrupt);
-
-            try
-            {
-                // park thread
-                Thread.Sleep(Infinite);
-            }
-            catch (ThreadInterruptedException) when (awaiter.IsCompleted)
-            {
-                // suppress exception
-            }
-        }
-
-        awaiter.GetResult();
-    }
-
-    /// <summary>
-    /// Waits for the task synchronously.
-    /// </summary>
-    /// <remarks>
-    /// In contrast to <see cref="Task{TResult}.Wait()"/> this method doesn't use wait handles.
-    /// </remarks>
-    /// <typeparam name="T">The type of the task result.</typeparam>
-    /// <param name="task">The task to wait.</param>
-    public static T Wait<T>(this in ValueTask<T> task)
-    {
-        var awaiter = task.ConfigureAwait(false).GetAwaiter();
-        if (!awaiter.IsCompleted)
-        {
-            awaiter.UnsafeOnCompleted(Thread.CurrentThread.Interrupt);
-
-            try
-            {
-                // park thread
-                Thread.Sleep(Infinite);
-            }
-            catch (ThreadInterruptedException) when (awaiter.IsCompleted)
-            {
-                // suppress exception
-            }
-        }
-
-        return awaiter.GetResult();
     }
 }
