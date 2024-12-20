@@ -304,10 +304,27 @@ public static partial class Synchronization
     public static void Wait(this in ValueTask task)
     {
         var awaiter = task.ConfigureAwait(false).GetAwaiter();
-        if (!awaiter.IsCompleted)
+
+        if (!SpinWait(in awaiter))
+            BlockingWait(in awaiter);
+        
+        awaiter.GetResult();
+
+        static bool SpinWait(ref readonly ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter)
+        {
+            bool result;
+            for (var spinner = new SpinWait();; spinner.SpinOnce())
+            {
+                if ((result = awaiter.IsCompleted) || spinner.NextSpinWillYield)
+                    break;
+            }
+
+            return result;
+        }
+
+        static void BlockingWait(ref readonly ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter)
         {
             awaiter.UnsafeOnCompleted(Thread.CurrentThread.Interrupt);
-
             try
             {
                 // park thread
@@ -318,8 +335,6 @@ public static partial class Synchronization
                 // suppress exception
             }
         }
-
-        awaiter.GetResult();
     }
 
     /// <summary>
@@ -333,10 +348,27 @@ public static partial class Synchronization
     public static T Wait<T>(this in ValueTask<T> task)
     {
         var awaiter = task.ConfigureAwait(false).GetAwaiter();
-        if (!awaiter.IsCompleted)
+
+        if (!SpinWait(in awaiter))
+            BlockingWait(in awaiter);
+        
+        return awaiter.GetResult();
+
+        static bool SpinWait(ref readonly ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter awaiter)
+        {
+            bool result;
+            for (var spinner = new SpinWait();; spinner.SpinOnce())
+            {
+                if ((result = awaiter.IsCompleted) || spinner.NextSpinWillYield)
+                    break;
+            }
+
+            return result;
+        }
+
+        static void BlockingWait(ref readonly ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter awaiter)
         {
             awaiter.UnsafeOnCompleted(Thread.CurrentThread.Interrupt);
-
             try
             {
                 // park thread
@@ -347,7 +379,5 @@ public static partial class Synchronization
                 // suppress exception
             }
         }
-
-        return awaiter.GetResult();
     }
 }
