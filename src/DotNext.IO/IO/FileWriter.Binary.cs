@@ -162,11 +162,12 @@ public partial class FileWriter : IAsyncBinaryWriter
     public async ValueTask<long> EncodeAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token = default)
     {
         long result;
+        
         if (lengthFormat.HasValue)
         {
             if (FreeCapacity < Leb128<uint>.MaxSizeInBytes)
                 await FlushAsync(token).ConfigureAwait(false);
-
+            
             result = WriteLength(context.Encoding.GetByteCount(chars.Span), lengthFormat.GetValueOrDefault());
         }
         else
@@ -286,6 +287,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         where T : notnull, IUtf8SpanFormattable
     {
         await FlushAsync(token).ConfigureAwait(false);
+        
         if (!TryFormat(value, lengthFormat, format, provider, out var bytesWritten))
         {
             const int maxBufferSize = int.MaxValue / 2;
@@ -331,12 +333,14 @@ public partial class FileWriter : IAsyncBinaryWriter
     {
         await WriteAsync(token).ConfigureAwait(false);
 
-        var buffer = this.buffer.Memory;
+        var buffer = EnsureBufferAllocated().Memory;
 
         for (int bytesWritten; (bytesWritten = await input.ReadAsync(buffer, token).ConfigureAwait(false)) > 0; fileOffset += bytesWritten)
         {
             await RandomAccess.WriteAsync(handle, buffer.Slice(0, bytesWritten), fileOffset, token).ConfigureAwait(false);
         }
+        
+        Reset();
     }
 
     /// <summary>
@@ -355,7 +359,7 @@ public partial class FileWriter : IAsyncBinaryWriter
 
         await WriteAsync(token).ConfigureAwait(false);
 
-        var buffer = this.buffer.Memory;
+        var buffer = EnsureBufferAllocated().Memory;
 
         for (int bytesWritten; count > 0L; fileOffset += bytesWritten, count -= bytesWritten)
         {
@@ -365,6 +369,8 @@ public partial class FileWriter : IAsyncBinaryWriter
 
             await RandomAccess.WriteAsync(handle, buffer.Slice(0, bytesWritten), fileOffset, token).ConfigureAwait(false);
         }
+        
+        Reset();
     }
 
     /// <inheritdoc/>

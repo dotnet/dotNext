@@ -45,13 +45,10 @@ public partial class FileReader : Disposable, IResettable
         ArgumentOutOfRangeException.ThrowIfNegative(fileOffset);
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(bufferSize, 16);
 
-        buffer = allocator.AllocateAtLeast(bufferSize);
+        MaxBufferSize = bufferSize;
         this.handle = handle;
         this.fileOffset = fileOffset;
         this.allocator = allocator;
-
-        readCallback = OnRead;
-        readDirectCallback = OnReadDirect;
     }
 
     /// <summary>
@@ -102,10 +99,20 @@ public partial class FileReader : Disposable, IResettable
     /// <summary>
     /// Gets unconsumed part of the buffer.
     /// </summary>
-    public ReadOnlyMemory<byte> Buffer => buffer.Memory.Slice(bufferStart, BufferLength);
+    public ReadOnlyMemory<byte> Buffer => EnsureBufferAllocated().Memory[bufferStart..bufferEnd];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private ReadOnlySpan<byte> BufferSpan => buffer.Span.Slice(bufferStart, BufferLength);
+    private ReadOnlySpan<byte> BufferSpan => EnsureBufferAllocated().Span[bufferStart..bufferEnd];
+
+    private ref readonly MemoryOwner<byte> EnsureBufferAllocated()
+    {
+        ref var result = ref buffer;
+        if (result.IsEmpty)
+            result = allocator.AllocateAtLeast(MaxBufferSize);
+        
+        Debug.Assert(!result.IsEmpty);
+        return ref result;
+    }
 
     /// <summary>
     /// Gets a value indicating that the read buffer is not empty.
@@ -115,34 +122,29 @@ public partial class FileReader : Disposable, IResettable
     /// <summary>
     /// Gets the maximum possible amount of data that can be placed to the buffer.
     /// </summary>
-    public int MaxBufferSize => buffer.Length;
+    public int MaxBufferSize { get; }
 
     /// <summary>
     /// Advances read position.
     /// </summary>
-    /// <param name="bytes">The number of consumed bytes.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is larger than the length of <see cref="Buffer"/>.</exception>
-    public void Consume(int bytes)
+    /// <param name="count">The number of consumed bytes.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is larger than the length of <see cref="Buffer"/>.</exception>
+    public void Consume(int count)
     {
-        var newPosition = bytes + bufferStart;
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)newPosition, (uint)bufferEnd, nameof(bytes));
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        
+        var newPosition = count + bufferStart;
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)newPosition, (uint)bufferEnd, nameof(count));
 
-        if (newPosition == bufferEnd)
-        {
-            Reset();
-        }
-        else
-        {
-            bufferStart = newPosition;
-        }
-
-        fileOffset += bytes;
+        Consume(count, newPosition);
     }
 
-    private void ConsumeUnsafe(int bytes)
-    {
-        var newPosition = bytes + bufferStart;
+    private void ConsumeUnsafe(int count) => Consume(count, count + bufferStart);
 
+    private void Consume(int count, int newPosition)
+    {
+        Debug.Assert(newPosition == count + bufferStart);
+        
         if (newPosition == bufferEnd)
         {
             Reset();
@@ -152,25 +154,27 @@ public partial class FileReader : Disposable, IResettable
             bufferStart = newPosition;
         }
 
-        fileOffset += bytes;
+        fileOffset += count;
     }
 
     /// <summary>
     /// Attempts to consume buffered data.
     /// </summary>
-    /// <param name="bytes">The number of bytes to consume.</param>
+    /// <param name="count">The number of bytes to consume.</param>
     /// <param name="buffer">The slice of internal buffer containing consumed bytes.</param>
     /// <returns><see langword="true"/> if the specified number of bytes is consumed successfully; otherwise, <see langword="false"/>.</returns>
-    public bool TryConsume(int bytes, out ReadOnlyMemory<byte> buffer)
+    public bool TryRead(int count, out ReadOnlyMemory<byte> buffer)
     {
-        var newPosition = bytes + bufferStart;
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        
+        var newPosition = count + bufferStart;
         if ((uint)newPosition > (uint)bufferEnd)
         {
             buffer = default;
             return false;
         }
 
-        buffer = this.buffer.Memory.Slice(bufferStart, bytes);
+        buffer = EnsureBufferAllocated().Memory.Slice(bufferStart, count);
         if (newPosition == bufferEnd)
         {
             Reset();
@@ -180,14 +184,18 @@ public partial class FileReader : Disposable, IResettable
             bufferStart = newPosition;
         }
 
-        fileOffset += bytes;
+        fileOffset += count;
         return true;
     }
 
     /// <summary>
     /// Clears the read buffer.
     /// </summary>
-    public void Reset() => bufferStart = bufferEnd = 0;
+    public void Reset()
+    {
+        bufferStart = bufferEnd = 0;
+        buffer.Dispose();
+    }
 
     /// <summary>
     /// Reads the data from the file to the underlying buffer.
@@ -205,21 +213,25 @@ public partial class FileReader : Disposable, IResettable
         if (IsDisposed)
             return new(GetDisposedTask<bool>());
 
-        var buffer = this.buffer.Memory;
-
+        Memory<byte> buffer;
         switch (bufferStart)
         {
-            case 0 when bufferEnd == buffer.Length:
+            case 0 when bufferEnd == MaxBufferSize:
                 return ValueTask.FromException<bool>(new InternalBufferOverflowException());
             case > 0:
+                buffer = this.buffer.Memory;
+                
                 // compact buffer
-                buffer.Slice(bufferStart, BufferLength).CopyTo(buffer);
+                buffer[bufferStart..bufferEnd].CopyTo(buffer);
                 bufferEnd -= bufferStart;
                 bufferStart = 0;
                 break;
+            default:
+                buffer = EnsureBufferAllocated().Memory;
+                break;
         }
 
-        return SubmitAsBoolean(RandomAccess.ReadAsync(handle, buffer.Slice(bufferEnd), fileOffset + bufferEnd, token), readCallback);
+        return SubmitAsBoolean(RandomAccess.ReadAsync(handle, buffer.Slice(bufferEnd), fileOffset + bufferEnd, token), ReadCallback);
     }
 
     /// <summary>
@@ -235,17 +247,20 @@ public partial class FileReader : Disposable, IResettable
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        var buffer = this.buffer.Span;
-
+        Span<byte> buffer;
         switch (bufferStart)
         {
-            case 0 when bufferEnd == buffer.Length:
+            case 0 when bufferEnd == MaxBufferSize:
                 throw new InternalBufferOverflowException();
             case > 0:
                 // compact buffer
-                buffer.Slice(bufferStart, BufferLength).CopyTo(buffer);
+                buffer = this.buffer.Span;
+                buffer[bufferStart..bufferEnd].CopyTo(buffer);
                 bufferEnd -= bufferStart;
                 bufferStart = 0;
+                break;
+            default:
+                buffer = EnsureBufferAllocated().Span;
                 break;
         }
 
@@ -289,7 +304,7 @@ public partial class FileReader : Disposable, IResettable
     }
 
     private ValueTask<int> ReadDirectAsync(Memory<byte> output, CancellationToken token)
-        => SubmitAsInt32(RandomAccess.ReadAsync(handle, output, fileOffset, token), readDirectCallback);
+        => SubmitAsInt32(RandomAccess.ReadAsync(handle, output, fileOffset, token), ReadDirectCallback);
 
     /// <summary>
     /// Reads the block of the memory.
@@ -331,21 +346,21 @@ public partial class FileReader : Disposable, IResettable
     /// <summary>
     /// Skips the specified number of bytes and advances file read cursor.
     /// </summary>
-    /// <param name="bytes">The number of bytes to skip.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is less than zero.</exception>
-    public void Skip(long bytes)
+    /// <param name="count">The number of bytes to skip.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
+    public void Skip(long count)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        ArgumentOutOfRangeException.ThrowIfNegative(bytes);
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
 
-        if (bytes < BufferLength)
+        if (count < BufferLength)
         {
-            ConsumeUnsafe((int)bytes);
+            ConsumeUnsafe((int)count);
         }
         else
         {
             Reset();
-            fileOffset += bytes;
+            fileOffset += count;
         }
     }
 

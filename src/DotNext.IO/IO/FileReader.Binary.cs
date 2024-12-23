@@ -234,7 +234,7 @@ public partial class FileReader : IAsyncBinaryReader
             return T.Parse([], provider);
 
         // fast path without allocation of temp buffer
-        if (TryConsume(length, out var block))
+        if (TryRead(length, out var block))
         {
             block = TrimLength(block, this.length);
             this.length -= block.Length;
@@ -270,7 +270,7 @@ public partial class FileReader : IAsyncBinaryReader
             return T.Parse(ReadOnlySpan<byte>.Empty, style, provider);
 
         // fast path without allocation of temp buffer
-        if (TryConsume(length, out var block))
+        if (TryRead(length, out var block))
         {
             block = TrimLength(block, this.length);
             this.length -= block.Length;

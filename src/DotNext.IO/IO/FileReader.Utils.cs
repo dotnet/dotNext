@@ -9,10 +9,14 @@ using Intrinsics = Runtime.Intrinsics;
 
 public partial class FileReader : IDynamicInterfaceCastable
 {
-    private readonly Action readCallback, readDirectCallback;
+    private Action? readCallback, readDirectCallback;
     private ManualResetValueTaskSourceCore<int> source;
     private ConfiguredValueTaskAwaitable<int>.ConfiguredValueTaskAwaiter awaiter;
     private int extraCount;
+
+    private Action ReadCallback => readCallback ??= OnRead;
+    
+    private Action ReadDirectCallback => readDirectCallback ??= OnReadDirect;
 
     private int GetAsyncResult(short token)
     {

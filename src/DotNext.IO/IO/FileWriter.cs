@@ -12,7 +12,7 @@ using Buffers;
 /// This class is not thread-safe. However, it's possible to share the same file
 /// handle across multiple writers and use dedicated writer in each thread.
 /// </remarks>
-public partial class FileWriter : Disposable, IFlushable
+public partial class FileWriter : Disposable, IFlushable, IResettable
 {
     /// <summary>
     /// Represents the file handle.
@@ -45,12 +45,10 @@ public partial class FileWriter : Disposable, IFlushable
         ArgumentOutOfRangeException.ThrowIfNegative(fileOffset);
         ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(bufferSize, 16);
 
-        buffer = allocator.AllocateAtLeast(bufferSize);
+        MaxBufferSize = bufferSize;
         this.handle = handle;
         this.fileOffset = fileOffset;
         this.allocator = allocator;
-        writeCallback = OnWrite;
-        writeAndCopyCallback = OnWriteAndCopy;
     }
 
     /// <summary>
@@ -72,7 +70,23 @@ public partial class FileWriter : Disposable, IFlushable
     /// </summary>
     public ReadOnlyMemory<byte> WrittenBuffer => buffer.Memory.Slice(0, bufferOffset);
 
-    private int FreeCapacity => buffer.Length - bufferOffset;
+    private int FreeCapacity => MaxBufferSize - bufferOffset;
+
+    private ref readonly MemoryOwner<byte> EnsureBufferAllocated()
+    {
+        ref var result = ref buffer;
+        if (result.IsEmpty)
+            result = allocator.AllocateAtLeast(MaxBufferSize);
+        
+        Debug.Assert(!result.IsEmpty);
+        return ref result;
+    }
+
+    [Conditional("DEBUG")]
+    private void AssertState()
+    {
+        Debug.Assert(bufferOffset <= buffer.Length, $"Offset = {bufferOffset}, Buffer Size = {buffer.Length}");
+    }
 
     /// <summary>
     /// The remaining part of the internal buffer available for write.
@@ -80,15 +94,15 @@ public partial class FileWriter : Disposable, IFlushable
     /// <remarks>
     /// The size of returned buffer may be less than or equal to <see cref="MaxBufferSize"/>.
     /// </remarks>
-    public Memory<byte> Buffer => buffer.Memory.Slice(bufferOffset);
+    public Memory<byte> Buffer => EnsureBufferAllocated().Memory.Slice(bufferOffset);
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private Span<byte> BufferSpan => buffer.Span.Slice(bufferOffset);
+    private Span<byte> BufferSpan => EnsureBufferAllocated().Span.Slice(bufferOffset);
 
     /// <summary>
     /// Gets the maximum available buffer size.
     /// </summary>
-    public int MaxBufferSize => buffer.Length;
+    public int MaxBufferSize { get; }
 
     /// <summary>
     /// Marks the specified number of bytes in the buffer as produced.
@@ -99,18 +113,33 @@ public partial class FileWriter : Disposable, IFlushable
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)bytes, (uint)FreeCapacity, nameof(bytes));
 
+        if (bytes > 0 && buffer.IsEmpty)
+            buffer = allocator.AllocateAtLeast(MaxBufferSize);
+        
         bufferOffset += bytes;
     }
 
     /// <summary>
     /// Drops all buffered data.
     /// </summary>
-    public void ClearBuffer() => bufferOffset = 0;
+    public void Reset()
+    {
+        bufferOffset = 0;
+        buffer.Dispose();
+    }
 
     /// <summary>
     /// Gets a value indicating that this writer has buffered data.
     /// </summary>
-    public bool HasBufferedData => bufferOffset > 0;
+    public bool HasBufferedData
+    {
+        get
+        {
+            AssertState();
+            
+            return bufferOffset > 0;
+        }
+    }
 
     /// <summary>
     /// Gets or sets the cursor position within the file.
@@ -141,13 +170,13 @@ public partial class FileWriter : Disposable, IFlushable
     public long WritePosition => fileOffset + bufferOffset;
 
     private ValueTask FlushAsync(CancellationToken token)
-        => Submit(RandomAccess.WriteAsync(handle, WrittenBuffer, fileOffset, token), writeCallback);
+        => Submit(RandomAccess.WriteAsync(handle, WrittenBuffer, fileOffset, token), WriteCallback);
 
     private void Flush()
     {
         RandomAccess.Write(handle, WrittenBuffer.Span, fileOffset);
         fileOffset += bufferOffset;
-        bufferOffset = 0;
+        Reset();
     }
 
     /// <summary>
@@ -165,6 +194,7 @@ public partial class FileWriter : Disposable, IFlushable
         if (token.IsCancellationRequested)
             return ValueTask.FromCanceled(token);
 
+        AssertState();
         return HasBufferedData ? FlushAsync(token) : ValueTask.CompletedTask;
     }
 
@@ -176,6 +206,7 @@ public partial class FileWriter : Disposable, IFlushable
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
+        AssertState();
         RandomAccess.FlushToDisk(handle);
     }
 
@@ -199,20 +230,20 @@ public partial class FileWriter : Disposable, IFlushable
 
     private void WriteSlow(ReadOnlySpan<byte> input)
     {
-        if (input.Length >= buffer.Length)
+        if (input.Length >= MaxBufferSize)
         {
             RandomAccess.Write(handle, WrittenBuffer.Span, fileOffset);
             fileOffset += bufferOffset;
 
             RandomAccess.Write(handle, input, fileOffset);
             fileOffset += input.Length;
-            bufferOffset = 0;
+            Reset();
         }
         else
         {
             RandomAccess.Write(handle, WrittenBuffer.Span, fileOffset);
             fileOffset += bufferOffset;
-            input.CopyTo(buffer.Span);
+            input.CopyTo(EnsureBufferAllocated().Span);
             bufferOffset += input.Length;
         }
     }
@@ -227,29 +258,39 @@ public partial class FileWriter : Disposable, IFlushable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token = default)
     {
+        ValueTask task;
+        
         if (IsDisposed)
-            return new(DisposedTask);
-
-        if (input.IsEmpty)
-            goto completed_synchronously;
-
-        var freeCapacity = FreeCapacity;
-        switch (input.Length.CompareTo(freeCapacity))
         {
-            case < 0:
-                input.CopyTo(Buffer);
-                bufferOffset += input.Length;
-                break;
-            case 0:
-                return WriteDirectAsync(input, token);
-            case > 0 when input.Length < MaxBufferSize:
-                return WriteAndCopyAsync(input, token);
-            default:
-                goto case 0;
+            task = new(DisposedTask);
+        }
+        else if (input.IsEmpty)
+        {
+            task = new();
+        }
+        else
+        {
+            AssertState();
+            var freeCapacity = FreeCapacity;
+            switch (input.Length.CompareTo(freeCapacity))
+            {
+                case < 0:
+                    input.CopyTo(Buffer);
+                    bufferOffset += input.Length;
+                    task = new();
+                    break;
+                case 0:
+                    task = WriteDirectAsync(input, token);
+                    break;
+                case > 0 when input.Length < MaxBufferSize:
+                    task = WriteAndCopyAsync(input, token);
+                    break;
+                default:
+                    goto case 0;
+            }
         }
 
-    completed_synchronously:
-        return ValueTask.CompletedTask;
+        return task;
     }
 
     private ValueTask WriteDirectAsync(ReadOnlyMemory<byte> input, CancellationToken token)
@@ -266,7 +307,7 @@ public partial class FileWriter : Disposable, IFlushable
             task = RandomAccess.WriteAsync(handle, input, fileOffset, token);
         }
 
-        return Submit(task, writeCallback);
+        return Submit(task, WriteCallback);
     }
 
     private ValueTask WriteAndCopyAsync(ReadOnlyMemory<byte> input, CancellationToken token)
@@ -274,7 +315,7 @@ public partial class FileWriter : Disposable, IFlushable
         Debug.Assert(HasBufferedData);
 
         secondBuffer = input;
-        return Submit(RandomAccess.WriteAsync(handle, WrittenBuffer, fileOffset, token), writeAndCopyCallback);
+        return Submit(RandomAccess.WriteAsync(handle, WrittenBuffer, fileOffset, token), WriteAndCopyCallback);
     }
 
     /// <summary>
@@ -286,6 +327,7 @@ public partial class FileWriter : Disposable, IFlushable
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
+        AssertState();
         if (input.Length <= FreeCapacity)
         {
             input.CopyTo(BufferSpan);
@@ -302,6 +344,7 @@ public partial class FileWriter : Disposable, IFlushable
     {
         if (disposing)
         {
+            writeCallback = writeAndCopyCallback = null;
             buffer.Dispose();
         }
 
