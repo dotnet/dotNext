@@ -6,7 +6,8 @@ public sealed class FileReaderTests : Test
     public static async Task SimpleReadAsync()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(handle);
         False(reader.HasBufferedData);
         True(reader.Buffer.IsEmpty);
@@ -33,7 +34,8 @@ public sealed class FileReaderTests : Test
     public static async Task ReadBufferTwiceAsync()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(handle, bufferSize: 32);
 
         var expected = RandomBytes(reader.MaxBufferSize * 2);
@@ -60,7 +62,8 @@ public sealed class FileReaderTests : Test
     public static async Task ReadLargeDataAsync()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(handle, bufferSize: 32);
 
         var expected = RandomBytes(reader.MaxBufferSize * 2);
@@ -81,7 +84,8 @@ public sealed class FileReaderTests : Test
     public static void SimpleRead()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(handle);
         False(reader.HasBufferedData);
         True(reader.Buffer.IsEmpty);
@@ -100,7 +104,8 @@ public sealed class FileReaderTests : Test
     public static void ReadBufferTwice()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(handle, bufferSize: 32);
 
         var expected = RandomBytes(reader.MaxBufferSize * 2);
@@ -127,7 +132,8 @@ public sealed class FileReaderTests : Test
     public static void ReadLargeData()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(handle, bufferSize: 32);
 
         var expected = RandomBytes(reader.MaxBufferSize * 2);
@@ -148,7 +154,8 @@ public sealed class FileReaderTests : Test
     public static async Task ReadSequentially()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        await using var fs = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.Asynchronous);
+        await using var fs = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(fs, bufferSize: 32);
         var bytes = RandomBytes(1024);
 

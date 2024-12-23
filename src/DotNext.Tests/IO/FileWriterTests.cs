@@ -11,7 +11,8 @@ public sealed class FileWriterTests : Test
     public static async Task WriteWithoutOverflowAsync()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle, bufferSize: 64);
         False(writer.HasBufferedData);
         Equal(0L, writer.FilePosition);
@@ -34,7 +35,8 @@ public sealed class FileWriterTests : Test
     public static async Task WriteWithOverflowAsync()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle, bufferSize: 64);
 
         var expected = RandomBytes(writer.Buffer.Length + 10);
@@ -52,7 +54,8 @@ public sealed class FileWriterTests : Test
     public static async Task WritDirectAsync()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle, bufferSize: 64);
 
         var expected = RandomBytes(writer.Buffer.Length << 2);
@@ -71,7 +74,7 @@ public sealed class FileWriterTests : Test
     public static void WriteWithoutOverflow()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.None);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle, bufferSize: 64);
         False(writer.HasBufferedData);
         Equal(0L, writer.FilePosition);
@@ -94,7 +97,7 @@ public sealed class FileWriterTests : Test
     public static void WriteWithOverflow()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.None);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle, bufferSize: 64);
 
         var expected = RandomBytes(writer.Buffer.Length + 10);
@@ -112,7 +115,7 @@ public sealed class FileWriterTests : Test
     public static void WriteUsingBufferWriter()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var fs = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.None);
+        using var fs = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
         using var writer = new FileWriter(fs, bufferSize: 64);
         False(writer.HasBufferedData);
         Equal(0L, writer.FilePosition);
@@ -135,7 +138,7 @@ public sealed class FileWriterTests : Test
     public static void WriteUsingBufferWriter2()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.None);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle, bufferSize: 64);
         False(writer.HasBufferedData);
         Equal(0L, writer.FilePosition);
@@ -159,7 +162,8 @@ public sealed class FileWriterTests : Test
     public static async Task FlushWithOffsetAsync()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle, fileOffset: 100L, bufferSize: 64);
         writer.Buffer.Span[0] = 1;
         writer.Buffer.Span[1] = 2;
@@ -176,7 +180,8 @@ public sealed class FileWriterTests : Test
     public static async Task WriteDirect()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle, fileOffset: 0L, bufferSize: 64);
         await writer.WriteAsync(new Blittable<Buffer512> { Value = default });
         False(writer.HasBufferedData);
@@ -187,12 +192,25 @@ public sealed class FileWriterTests : Test
     public static async Task BufferOverflow()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle, fileOffset: 0L, bufferSize: 64);
         await writer.WriteAsync(new byte[2]);
         await writer.WriteAsync(new Blittable<Buffer512> { Value = default });
         False(writer.HasBufferedData);
         Equal(writer.FilePosition, Unsafe.SizeOf<Buffer512>() + 2);
+    }
+
+    [Fact]
+    public static void TryWrite()
+    {
+        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.DeleteOnClose);
+        using var writer = new FileWriter(handle, bufferSize: 64);
+
+        True(writer.TryWrite(new byte[2]));
+        True(writer.HasBufferedData);
+        Equal("\0\0"u8, writer.WrittenBuffer.Span);
     }
 
     [InlineArray(512)]

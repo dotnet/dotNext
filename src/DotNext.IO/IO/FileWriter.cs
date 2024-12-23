@@ -107,16 +107,38 @@ public partial class FileWriter : Disposable, IFlushable, IResettable
     /// <summary>
     /// Marks the specified number of bytes in the buffer as produced.
     /// </summary>
-    /// <param name="bytes">The number of produced bytes.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is larger than the length of <see cref="Buffer"/>.</exception>
-    public void Produce(int bytes)
+    /// <param name="count">The number of produced bytes.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is larger than the length of <see cref="Buffer"/>.</exception>
+    public void Produce(int count)
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)bytes, (uint)FreeCapacity, nameof(bytes));
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)FreeCapacity, nameof(count));
 
-        if (bytes > 0 && buffer.IsEmpty)
+        if (count > 0 && buffer.IsEmpty)
             buffer = allocator.AllocateAtLeast(MaxBufferSize);
         
-        bufferOffset += bytes;
+        bufferOffset += count;
+    }
+
+    /// <summary>
+    /// Tries to write the data to the internal buffer.
+    /// </summary>
+    /// <param name="input">The input data to be copied.</param>
+    /// <returns><see langword="true"/> if the internal buffer has enough space to place the data from <paramref name="input"/>;
+    /// otherwise, <see langword="false"/>.
+    /// </returns>
+    public bool TryWrite(ReadOnlySpan<byte> input)
+    {
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+
+        bool result;
+        if (result = input.Length <= FreeCapacity)
+        {
+            input.CopyTo(BufferSpan);
+            bufferOffset += input.Length;
+        }
+
+        return result;
     }
 
     /// <summary>
