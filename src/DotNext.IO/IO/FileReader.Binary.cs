@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -229,24 +230,32 @@ public partial class FileReader : IAsyncBinaryReader
         where T : notnull, IUtf8SpanParsable<T>
     {
         var length = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
+        T result;
 
         if (length <= 0)
-            return T.Parse([], provider);
-
-        // fast path without allocation of temp buffer
-        if (TryRead(length, out var block))
         {
+            result = T.Parse([], provider);
+        }
+        else if (TryRead(length, out var block))
+        {
+            // fast path without allocation of temp buffer
             block = TrimLength(block, this.length);
             this.length -= block.Length;
-            return block.Length == length
+            result = block.Length == length
                 ? T.Parse(block.Span, provider)
                 : throw new EndOfStreamException();
+            
+            ResetIfNeeded();
+        }
+        else
+        {
+            // slow path with temp buffer
+            using var buffer = allocator.AllocateExactly(length);
+            await ReadAsync<MemoryBlockReader>(new(buffer.Memory), token).ConfigureAwait(false);
+            result = T.Parse(buffer.Span, provider);
         }
 
-        // slow path with temp buffer
-        using var buffer = allocator.AllocateExactly(length);
-        await ReadAsync<MemoryBlockReader>(new(buffer.Memory), token).ConfigureAwait(false);
-        return T.Parse(buffer.Span, provider);
+        return result;
     }
 
     /// <summary>

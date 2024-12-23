@@ -27,7 +27,7 @@ public sealed class FileReaderTests : Test
         True(reader.As<IAsyncBinaryReader>().TryGetRemainingBytesCount(out remainingCount));
         Equal(expected.Length, remainingCount);
 
-        Equal(expected, reader.Buffer.ToArray());
+        Equal(expected, reader.Buffer);
     }
 
     [Fact]
@@ -42,12 +42,12 @@ public sealed class FileReaderTests : Test
         await RandomAccess.WriteAsync(handle, expected, 0L);
 
         True(await reader.ReadAsync());
-        Equal(expected.AsMemory(0, reader.Buffer.Length).ToArray(), reader.Buffer.ToArray());
+        Equal(expected.AsMemory(0, reader.Buffer.Length), reader.Buffer);
 
         reader.Consume(16);
 
         True(await reader.ReadAsync());
-        Equal(expected.AsMemory(16, reader.Buffer.Length).ToArray(), reader.Buffer.ToArray());
+        Equal(expected.AsMemory(16, reader.Buffer.Length), reader.Buffer);
 
         reader.Consume(16);
         True(await reader.ReadAsync());
@@ -70,13 +70,11 @@ public sealed class FileReaderTests : Test
         await RandomAccess.WriteAsync(handle, expected, 0L);
 
         True(await reader.ReadAsync());
-        Equal(expected.AsMemory(0, reader.Buffer.Length).ToArray(), reader.Buffer.ToArray());
+        Equal(expected.AsMemory(0, reader.Buffer.Length), reader.Buffer);
 
         var actual = new byte[expected.Length];
         Equal(actual.Length, await reader.ReadAsync(actual));
-
         Equal(expected, actual);
-
         False(await reader.ReadAsync());
     }
 
@@ -97,7 +95,7 @@ public sealed class FileReaderTests : Test
         True(reader.HasBufferedData);
         False(reader.Buffer.IsEmpty);
 
-        Equal(expected, reader.Buffer.ToArray());
+        Equal(expected, reader.Buffer);
     }
 
     [Fact]
@@ -112,12 +110,12 @@ public sealed class FileReaderTests : Test
         RandomAccess.Write(handle, expected, 0L);
 
         True(reader.Read());
-        Equal(expected.AsMemory(0, reader.Buffer.Length).ToArray(), reader.Buffer.ToArray());
+        Equal(expected.AsMemory(0, reader.Buffer.Length), reader.Buffer);
 
         reader.Consume(16);
 
         True(reader.Read());
-        Equal(expected.AsMemory(16, reader.Buffer.Length).ToArray(), reader.Buffer.ToArray());
+        Equal(expected.AsMemory(16, reader.Buffer.Length), reader.Buffer);
 
         reader.Consume(16);
         True(reader.Read());
@@ -140,7 +138,7 @@ public sealed class FileReaderTests : Test
         RandomAccess.Write(handle, expected, 0L);
 
         True(reader.Read());
-        Equal(expected.AsMemory(0, reader.Buffer.Length).ToArray(), reader.Buffer.ToArray());
+        Equal(expected.AsMemory(0, reader.Buffer.Length), reader.Buffer);
 
         var actual = new byte[expected.Length];
         Equal(actual.Length, reader.Read(actual));

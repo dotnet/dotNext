@@ -9,14 +9,17 @@ using Intrinsics = Runtime.Intrinsics;
 
 public partial class FileReader : IDynamicInterfaceCastable
 {
-    private Action? readCallback, readDirectCallback;
+    private Action? readCallback, readDirectCallback, readAndCopyCallback;
     private ManualResetValueTaskSourceCore<int> source;
     private ConfiguredValueTaskAwaitable<int>.ConfiguredValueTaskAwaiter awaiter;
     private int extraCount;
+    private Memory<byte> destinationBuffer;
 
     private Action ReadCallback => readCallback ??= OnRead;
     
     private Action ReadDirectCallback => readDirectCallback ??= OnReadDirect;
+
+    private Action ReadAndCopyCallback => readAndCopyCallback ??= OnReadAndCopy;
 
     private int GetAsyncResult(short token)
     {
@@ -74,6 +77,33 @@ public partial class FileReader : IDynamicInterfaceCastable
         }
 
         source.SetResult(count);
+    }
+
+    private void OnReadAndCopy()
+    {
+        var awaiter = this.awaiter;
+        this.awaiter = default;
+        
+        var extraCount = this.extraCount;
+        this.extraCount = 0;
+
+        var destinationBuffer = this.destinationBuffer;
+        this.destinationBuffer = default;
+
+        int result;
+        try
+        {
+            result = awaiter.GetResult();
+            bufferEnd += result;
+            result = ReadFromBuffer(destinationBuffer.Span) + extraCount;
+        }
+        catch (Exception e)
+        {
+            source.SetException(e);
+            return;
+        }
+
+        source.SetResult(result);
     }
 
     private ValueTask<int> SubmitAsInt32(ValueTask<int> task, Action callback)

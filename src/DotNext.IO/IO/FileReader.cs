@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO;
@@ -99,10 +100,10 @@ public partial class FileReader : Disposable, IResettable
     /// <summary>
     /// Gets unconsumed part of the buffer.
     /// </summary>
-    public ReadOnlyMemory<byte> Buffer => EnsureBufferAllocated().Memory[bufferStart..bufferEnd];
+    public ReadOnlyMemory<byte> Buffer => buffer.Memory[bufferStart..bufferEnd];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private ReadOnlySpan<byte> BufferSpan => EnsureBufferAllocated().Span[bufferStart..bufferEnd];
+    private ReadOnlySpan<byte> BufferSpan => buffer.Span[bufferStart..bufferEnd];
 
     private ref readonly MemoryOwner<byte> EnsureBufferAllocated()
     {
@@ -156,17 +157,9 @@ public partial class FileReader : Disposable, IResettable
 
         fileOffset += count;
     }
-
-    /// <summary>
-    /// Attempts to consume buffered data.
-    /// </summary>
-    /// <param name="count">The number of bytes to consume.</param>
-    /// <param name="buffer">The slice of internal buffer containing consumed bytes.</param>
-    /// <returns><see langword="true"/> if the specified number of bytes is consumed successfully; otherwise, <see langword="false"/>.</returns>
-    public bool TryRead(int count, out ReadOnlyMemory<byte> buffer)
+    
+    private bool TryRead(int count, out ReadOnlyMemory<byte> buffer)
     {
-        ObjectDisposedException.ThrowIf(IsDisposed, this);
-        
         var newPosition = count + bufferStart;
         if ((uint)newPosition > (uint)bufferEnd)
         {
@@ -174,10 +167,10 @@ public partial class FileReader : Disposable, IResettable
             return false;
         }
 
-        buffer = EnsureBufferAllocated().Memory.Slice(bufferStart, count);
+        buffer = this.buffer.Memory.Slice(bufferStart, count);
         if (newPosition == bufferEnd)
         {
-            Reset();
+            bufferStart = bufferEnd = 0;
         }
         else
         {
@@ -186,6 +179,12 @@ public partial class FileReader : Disposable, IResettable
 
         fileOffset += count;
         return true;
+    }
+
+    private void ResetIfNeeded()
+    {
+        if (bufferStart == bufferEnd)
+            Reset();
     }
 
     /// <summary>
@@ -210,14 +209,18 @@ public partial class FileReader : Disposable, IResettable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> ReadAsync(CancellationToken token = default)
     {
-        if (IsDisposed)
-            return new(GetDisposedTask<bool>());
+        return IsDisposed
+            ? new(GetDisposedTask<bool>())
+            : SubmitAsBoolean(ReadCoreAsync(token), ReadCallback);
+    }
 
+    private ValueTask<int> ReadCoreAsync(CancellationToken token)
+    {
         Memory<byte> buffer;
         switch (bufferStart)
         {
             case 0 when bufferEnd == MaxBufferSize:
-                return ValueTask.FromException<bool>(new InternalBufferOverflowException());
+                return ValueTask.FromException<int>(new InternalBufferOverflowException());
             case > 0:
                 buffer = this.buffer.Memory;
                 
@@ -231,9 +234,9 @@ public partial class FileReader : Disposable, IResettable
                 break;
         }
 
-        return SubmitAsBoolean(RandomAccess.ReadAsync(handle, buffer.Slice(bufferEnd), fileOffset + bufferEnd, token), ReadCallback);
+        return RandomAccess.ReadAsync(handle, buffer.Slice(bufferEnd), fileOffset + bufferEnd, token);
     }
-
+    
     /// <summary>
     /// Reads the data from the file to the underlying buffer.
     /// </summary>
@@ -247,6 +250,11 @@ public partial class FileReader : Disposable, IResettable
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
+        return ReadCore();
+    }
+
+    private bool ReadCore()
+    {
         Span<byte> buffer;
         switch (bufferStart)
         {
@@ -266,6 +274,8 @@ public partial class FileReader : Disposable, IResettable
 
         var count = RandomAccess.Read(handle, buffer.Slice(bufferEnd), fileOffset + bufferEnd);
         bufferEnd += count;
+        
+        ResetIfNeeded();
         return count > 0;
     }
 
@@ -279,28 +289,36 @@ public partial class FileReader : Disposable, IResettable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<int> ReadAsync(Memory<byte> destination, CancellationToken token = default)
     {
+        ValueTask<int> task;
         if (IsDisposed)
         {
-            return new(GetDisposedTask<int>());
+            task = new(GetDisposedTask<int>());
         }
-
-        if (destination.IsEmpty)
+        else if (destination.IsEmpty)
         {
-            return ValueTask.FromResult(0);
+            task = new(result: 0);
         }
-
-        if (!HasBufferedData)
+        else
         {
-            return ReadDirectAsync(destination, token);
+            extraCount = ReadFromBuffer(destination.Span);
+            destination = destination.Slice(extraCount);
+
+            if (destination.Length > MaxBufferSize)
+            {
+                task = ReadDirectAsync(destination, token);
+            }
+            else if (destination.IsEmpty)
+            {
+                task = new(extraCount);
+            }
+            else
+            {
+                destinationBuffer = destination;
+                task = SubmitAsInt32(ReadCoreAsync(token), ReadAndCopyCallback);
+            }
         }
 
-        BufferSpan.CopyTo(destination.Span, out extraCount);
-        ConsumeUnsafe(extraCount);
-        destination = destination.Slice(extraCount);
-
-        return destination.IsEmpty
-            ? ValueTask.FromResult(extraCount)
-            : ReadDirectAsync(destination, token);
+        return task;
     }
 
     private ValueTask<int> ReadDirectAsync(Memory<byte> output, CancellationToken token)
@@ -321,26 +339,30 @@ public partial class FileReader : Disposable, IResettable
         {
             count = 0;
         }
-        else if (!HasBufferedData)
-        {
-            count = RandomAccess.Read(handle, destination, fileOffset);
-            fileOffset += count;
-        }
         else
         {
-            BufferSpan.CopyTo(destination, out count);
-            ConsumeUnsafe(count);
+            count = ReadFromBuffer(destination);
             destination = destination.Slice(count);
-
-            if (!destination.IsEmpty)
+            if (destination.Length > MaxBufferSize)
             {
                 var directBytes = RandomAccess.Read(handle, destination, fileOffset);
                 fileOffset += directBytes;
                 count += directBytes;
             }
+            else if (!destination.IsEmpty && ReadCore())
+            {
+                count += ReadFromBuffer(destination);
+            }
         }
 
         return count;
+    }
+
+    private int ReadFromBuffer(Span<byte> destination)
+    {
+        BufferSpan.CopyTo(destination, out var bytesCopied);
+        ConsumeUnsafe(bytesCopied);
+        return bytesCopied;
     }
 
     /// <summary>
