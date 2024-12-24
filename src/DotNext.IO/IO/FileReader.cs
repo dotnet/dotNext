@@ -15,11 +15,14 @@ using Buffers;
 /// </remarks>
 public partial class FileReader : Disposable, IResettable
 {
+    private const int MinBufferSize = 16;
+    private const int DefaultBufferSize = 4096;
+    
     /// <summary>
     /// Represents the file handle.
     /// </summary>
     protected readonly SafeFileHandle handle;
-    private readonly MemoryAllocator<byte>? allocator;
+    private readonly int maxBufferSize;
     private MemoryOwner<byte> buffer;
     private int bufferStart, bufferEnd;
     private long fileOffset;
@@ -28,42 +31,37 @@ public partial class FileReader : Disposable, IResettable
     /// Initializes a new buffered file reader.
     /// </summary>
     /// <param name="handle">The file handle.</param>
-    /// <param name="fileOffset">The initial offset within the file.</param>
-    /// <param name="bufferSize">The buffer size.</param>
-    /// <param name="allocator">The buffer allocator.</param>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// <paramref name="fileOffset"/> is less than zero;
-    /// or <paramref name="bufferSize"/> is less than 16 bytes.
-    /// </exception>
     /// <exception cref="ArgumentNullException"><paramref name="handle"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// <paramref name="fileOffset"/> is less than zero;
-    /// or <paramref name="bufferSize"/> too small.
-    /// </exception>
-    public FileReader(SafeFileHandle handle, long fileOffset = 0L, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
+    public FileReader(SafeFileHandle handle)
     {
         ArgumentNullException.ThrowIfNull(handle);
         ArgumentOutOfRangeException.ThrowIfNegative(fileOffset);
-        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(bufferSize, 16);
 
-        MaxBufferSize = bufferSize;
+        maxBufferSize = DefaultBufferSize;
         this.handle = handle;
-        this.fileOffset = fileOffset;
-        this.allocator = allocator;
     }
 
     /// <summary>
     /// Initializes a new buffered file reader.
     /// </summary>
     /// <param name="source">Readable file stream.</param>
-    /// <param name="bufferSize">The buffer size.</param>
-    /// <param name="allocator">The buffer allocator.</param>
     /// <exception cref="ArgumentException"><paramref name="source"/> is not readable.</exception>
-    public FileReader(FileStream source, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
-        : this(source.SafeFileHandle, source.Position, bufferSize, allocator)
+    public FileReader(FileStream source)
+        : this(source.SafeFileHandle)
     {
         if (source.CanRead is false)
             throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
+
+        FilePosition = source.Position;
+    }
+
+    /// <summary>
+    /// Gets or sets the buffer allocator.
+    /// </summary>
+    public MemoryAllocator<byte>? Allocator
+    {
+        get;
+        init;
     }
 
     /// <summary>
@@ -109,7 +107,7 @@ public partial class FileReader : Disposable, IResettable
     {
         ref var result = ref buffer;
         if (result.IsEmpty)
-            result = allocator.AllocateAtLeast(MaxBufferSize);
+            result = Allocator.AllocateAtLeast(maxBufferSize);
         
         Debug.Assert(!result.IsEmpty);
         return ref result;
@@ -123,7 +121,12 @@ public partial class FileReader : Disposable, IResettable
     /// <summary>
     /// Gets the maximum possible amount of data that can be placed to the buffer.
     /// </summary>
-    public int MaxBufferSize { get; }
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> too small.</exception>
+    public int MaxBufferSize
+    {
+        get => maxBufferSize;
+        init => maxBufferSize = value >= MinBufferSize ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    }
 
     /// <summary>
     /// Advances read position.
@@ -220,7 +223,7 @@ public partial class FileReader : Disposable, IResettable
         Memory<byte> buffer;
         switch (bufferStart)
         {
-            case 0 when bufferEnd == MaxBufferSize:
+            case 0 when bufferEnd == maxBufferSize:
                 return ValueTask.FromException<int>(new InternalBufferOverflowException());
             case > 0:
                 buffer = this.buffer.Memory;
@@ -259,7 +262,7 @@ public partial class FileReader : Disposable, IResettable
         Span<byte> buffer;
         switch (bufferStart)
         {
-            case 0 when bufferEnd == MaxBufferSize:
+            case 0 when bufferEnd == maxBufferSize:
                 throw new InternalBufferOverflowException();
             case > 0:
                 // compact buffer
@@ -304,7 +307,7 @@ public partial class FileReader : Disposable, IResettable
             extraCount = ReadFromBuffer(destination.Span);
             destination = destination.Slice(extraCount);
 
-            if (destination.Length > MaxBufferSize)
+            if (destination.Length > maxBufferSize)
             {
                 task = ReadDirectAsync(destination, token);
             }
@@ -344,7 +347,7 @@ public partial class FileReader : Disposable, IResettable
         {
             count = ReadFromBuffer(destination);
             destination = destination.Slice(count);
-            if (destination.Length > MaxBufferSize)
+            if (destination.Length > maxBufferSize)
             {
                 var directBytes = RandomAccess.Read(handle, destination, fileOffset);
                 fileOffset += directBytes;

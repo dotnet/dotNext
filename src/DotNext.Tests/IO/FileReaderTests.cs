@@ -36,7 +36,7 @@ public sealed class FileReaderTests : Test
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
-        using var reader = new FileReader(handle, bufferSize: 32);
+        using var reader = new FileReader(handle) { MaxBufferSize = 32 };
 
         var expected = RandomBytes(reader.MaxBufferSize * 2);
         await RandomAccess.WriteAsync(handle, expected, 0L);
@@ -64,7 +64,7 @@ public sealed class FileReaderTests : Test
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
-        using var reader = new FileReader(handle, bufferSize: 32);
+        using var reader = new FileReader(handle) { MaxBufferSize = 32 };
 
         var expected = RandomBytes(reader.MaxBufferSize * 2);
         await RandomAccess.WriteAsync(handle, expected, 0L);
@@ -104,7 +104,7 @@ public sealed class FileReaderTests : Test
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
-        using var reader = new FileReader(handle, bufferSize: 32);
+        using var reader = new FileReader(handle) { MaxBufferSize = 32 };
 
         var expected = RandomBytes(reader.MaxBufferSize * 2);
         RandomAccess.Write(handle, expected, 0L);
@@ -132,7 +132,7 @@ public sealed class FileReaderTests : Test
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
-        using var reader = new FileReader(handle, bufferSize: 32);
+        using var reader = new FileReader(handle) { MaxBufferSize = 32 };
 
         var expected = RandomBytes(reader.MaxBufferSize * 2);
         RandomAccess.Write(handle, expected, 0L);
@@ -154,7 +154,7 @@ public sealed class FileReaderTests : Test
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         await using var fs = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
-        using var reader = new FileReader(fs, bufferSize: 32);
+        using var reader = new FileReader(fs) { MaxBufferSize = 32 };
         var bytes = RandomBytes(1024);
 
         await fs.WriteAsync(bytes);

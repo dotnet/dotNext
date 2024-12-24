@@ -144,8 +144,8 @@ public sealed class AsyncBinaryReaderWriterTests : Test
         {
             var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous | FileOptions.DeleteOnClose);
-            writer = new(handle, bufferSize: bufferSize);
-            reader = new(handle, bufferSize: bufferSize);
+            writer = new(handle) { MaxBufferSize = bufferSize };
+            reader = new(handle) { MaxBufferSize = bufferSize };
         }
 
         public IAsyncBinaryWriter CreateWriter() => writer;

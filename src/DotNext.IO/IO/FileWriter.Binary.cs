@@ -32,7 +32,7 @@ public partial class FileWriter : IAsyncBinaryWriter
                 task = ValueTask.FromException(e);
             }
         }
-        else if (MaxBufferSize >= length)
+        else if (maxBufferSize >= length)
         {
             task = WriteBufferedAsync(arg, writer, length, token);
         }
@@ -56,7 +56,7 @@ public partial class FileWriter : IAsyncBinaryWriter
 
     private async ValueTask WriteDirectAsync<T>(T arg, SpanAction<byte, T> writer, int length, CancellationToken token)
     {
-        using var buffer = allocator.AllocateExactly(length);
+        using var buffer = Allocator.AllocateExactly(length);
         writer(buffer.Span, arg);
         await WriteDirectAsync(buffer.Memory, token).ConfigureAwait(false);
     }
@@ -291,9 +291,9 @@ public partial class FileWriter : IAsyncBinaryWriter
         if (!TryFormat(value, lengthFormat, format, provider, out var bytesWritten))
         {
             const int maxBufferSize = int.MaxValue / 2;
-            for (var bufferSize = MaxBufferSize + Leb128<uint>.MaxSizeInBytes; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
+            for (var bufferSize = maxBufferSize + Leb128<uint>.MaxSizeInBytes; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
             {
-                using var buffer = allocator.AllocateAtLeast(bufferSize);
+                using var buffer = Allocator.AllocateAtLeast(bufferSize);
                 if (value.TryFormat(buffer.Span, out bytesWritten, format, provider))
                 {
                     if (lengthFormat.HasValue)

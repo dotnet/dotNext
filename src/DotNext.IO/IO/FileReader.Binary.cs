@@ -250,7 +250,7 @@ public partial class FileReader : IAsyncBinaryReader
         else
         {
             // slow path with temp buffer
-            using var buffer = allocator.AllocateExactly(length);
+            using var buffer = Allocator.AllocateExactly(length);
             await ReadAsync<MemoryBlockReader>(new(buffer.Memory), token).ConfigureAwait(false);
             result = T.Parse(buffer.Span, provider);
         }
@@ -292,7 +292,7 @@ public partial class FileReader : IAsyncBinaryReader
         }
         else
         {
-            using var buffer = allocator.AllocateExactly(length);
+            using var buffer = Allocator.AllocateExactly(length);
             await ReadAsync<MemoryBlockReader>(new(buffer.Memory), token).ConfigureAwait(false);
             result = T.Parse(buffer.Span, style, provider);
         }

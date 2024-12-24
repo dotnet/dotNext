@@ -14,11 +14,14 @@ using Buffers;
 /// </remarks>
 public partial class FileWriter : Disposable, IFlushable, IResettable
 {
+    private const int MinBufferSize = 16;
+    private const int DefaultBufferSize = 4096;
+    
     /// <summary>
     /// Represents the file handle.
     /// </summary>
     protected readonly SafeFileHandle handle;
-    private readonly MemoryAllocator<byte>? allocator;
+    private readonly int maxBufferSize;
     private MemoryOwner<byte> buffer;
     private int bufferOffset;
     private long fileOffset;
@@ -27,42 +30,36 @@ public partial class FileWriter : Disposable, IFlushable, IResettable
     /// Creates a new writer backed by the file.
     /// </summary>
     /// <param name="handle">The file handle.</param>
-    /// <param name="fileOffset">The initial offset within the file.</param>
-    /// <param name="bufferSize">The buffer size.</param>
-    /// <param name="allocator">The buffer allocator.</param>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// <paramref name="fileOffset"/> is less than zero;
-    /// or <paramref name="bufferSize"/> is less than 16 bytes.
-    /// </exception>
     /// <exception cref="ArgumentNullException"><paramref name="handle"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// <paramref name="fileOffset"/> is less than zero;
-    /// or <paramref name="bufferSize"/> to small.
-    /// </exception>
-    public FileWriter(SafeFileHandle handle, long fileOffset = 0L, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
+    public FileWriter(SafeFileHandle handle)
     {
         ArgumentNullException.ThrowIfNull(handle);
-        ArgumentOutOfRangeException.ThrowIfNegative(fileOffset);
-        ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(bufferSize, 16);
 
-        MaxBufferSize = bufferSize;
+        maxBufferSize = DefaultBufferSize;
         this.handle = handle;
-        this.fileOffset = fileOffset;
-        this.allocator = allocator;
     }
 
     /// <summary>
     /// Creates a new writer backed by the file.
     /// </summary>
     /// <param name="destination">Writable file stream.</param>
-    /// <param name="bufferSize">The buffer size.</param>
-    /// <param name="allocator">The buffer allocator.</param>
     /// <exception cref="ArgumentException"><paramref name="destination"/> is not writable.</exception>
-    public FileWriter(FileStream destination, int bufferSize = 4096, MemoryAllocator<byte>? allocator = null)
-        : this(destination.SafeFileHandle, destination.Position, bufferSize, allocator)
+    public FileWriter(FileStream destination)
+        : this(destination.SafeFileHandle)
     {
         if (!destination.CanWrite)
             throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
+
+        FilePosition = destination.Position;
+    }
+    
+    /// <summary>
+    /// Gets or sets the buffer allocator.
+    /// </summary>
+    public MemoryAllocator<byte>? Allocator
+    {
+        get;
+        init;
     }
 
     /// <summary>
@@ -70,13 +67,13 @@ public partial class FileWriter : Disposable, IFlushable, IResettable
     /// </summary>
     public ReadOnlyMemory<byte> WrittenBuffer => buffer.Memory.Slice(0, bufferOffset);
 
-    private int FreeCapacity => MaxBufferSize - bufferOffset;
+    private int FreeCapacity => maxBufferSize - bufferOffset;
 
     private ref readonly MemoryOwner<byte> EnsureBufferAllocated()
     {
         ref var result = ref buffer;
         if (result.IsEmpty)
-            result = allocator.AllocateAtLeast(MaxBufferSize);
+            result = Allocator.AllocateAtLeast(maxBufferSize);
         
         Debug.Assert(!result.IsEmpty);
         return ref result;
@@ -102,7 +99,12 @@ public partial class FileWriter : Disposable, IFlushable, IResettable
     /// <summary>
     /// Gets the maximum available buffer size.
     /// </summary>
-    public int MaxBufferSize { get; }
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> too small.</exception>
+    public int MaxBufferSize
+    {
+        get => maxBufferSize;
+        init => maxBufferSize = value >= MinBufferSize ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    }
 
     /// <summary>
     /// Marks the specified number of bytes in the buffer as produced.
@@ -115,7 +117,7 @@ public partial class FileWriter : Disposable, IFlushable, IResettable
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)FreeCapacity, nameof(count));
 
         if (count > 0 && buffer.IsEmpty)
-            buffer = allocator.AllocateAtLeast(MaxBufferSize);
+            buffer = Allocator.AllocateAtLeast(maxBufferSize);
         
         bufferOffset += count;
     }
@@ -252,7 +254,7 @@ public partial class FileWriter : Disposable, IFlushable, IResettable
 
     private void WriteSlow(ReadOnlySpan<byte> input)
     {
-        if (input.Length >= MaxBufferSize)
+        if (input.Length >= maxBufferSize)
         {
             RandomAccess.Write(handle, WrittenBuffer.Span, fileOffset);
             fileOffset += bufferOffset;
@@ -304,7 +306,7 @@ public partial class FileWriter : Disposable, IFlushable, IResettable
                 case 0:
                     task = WriteDirectAsync(input, token);
                     break;
-                case > 0 when input.Length < MaxBufferSize:
+                case > 0 when input.Length < maxBufferSize:
                     task = WriteAndCopyAsync(input, token);
                     break;
                 default:
