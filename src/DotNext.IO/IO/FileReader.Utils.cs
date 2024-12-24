@@ -44,6 +44,7 @@ public partial class FileReader : IDynamicInterfaceCastable
             count = awaiter.GetResult();
 
             bufferEnd += count;
+            ResetIfNeeded();
         }
         catch (Exception e)
         {

@@ -392,6 +392,7 @@ public partial class FileReader : Disposable, IResettable
         if (disposing)
         {
             buffer.Dispose();
+            readCallback = readDirectCallback = readAndCopyCallback = null;
         }
 
         fileOffset = 0L;
