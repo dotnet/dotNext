@@ -12,7 +12,7 @@ using Buffers;
 /// This class is not thread-safe. However, it's possible to share the same file
 /// handle across multiple writers and use dedicated writer in each thread.
 /// </remarks>
-public partial class FileWriter : Disposable, IFlushable, IResettable
+public partial class FileWriter : Disposable, IFlushable, IBufferedWriter
 {
     private const int MinBufferSize = 16;
     private const int DefaultBufferSize = 4096;
@@ -53,9 +53,7 @@ public partial class FileWriter : Disposable, IFlushable, IResettable
         FilePosition = destination.Position;
     }
     
-    /// <summary>
-    /// Gets or sets the buffer allocator.
-    /// </summary>
+    /// <inheritdoc cref="IBufferedChannel.Allocator"/>
     public MemoryAllocator<byte>? Allocator
     {
         get;
@@ -96,21 +94,14 @@ public partial class FileWriter : Disposable, IFlushable, IResettable
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private Span<byte> BufferSpan => EnsureBufferAllocated().Span.Slice(bufferOffset);
 
-    /// <summary>
-    /// Gets the maximum available buffer size.
-    /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> too small.</exception>
+    /// <inheritdoc cref="IBufferedChannel.MaxBufferSize"/>
     public int MaxBufferSize
     {
         get => maxBufferSize;
         init => maxBufferSize = value >= MinBufferSize ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
-    /// <summary>
-    /// Marks the specified number of bytes in the buffer as produced.
-    /// </summary>
-    /// <param name="count">The number of produced bytes.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is larger than the length of <see cref="Buffer"/>.</exception>
+    /// <inheritdoc cref="IBufferedWriter.Produce(int)"/>
     public void Produce(int count)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
@@ -169,7 +160,7 @@ public partial class FileWriter : Disposable, IFlushable, IResettable
     /// Gets or sets the cursor position within the file.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">The value is less than zero.</exception>
-    /// <exception cref="InvalidOperationException">There is buffered data present. Call <see cref="ClearBuffer"/> or <see cref="WriteAsync(CancellationToken)"/> before changing the position.</exception>
+    /// <exception cref="InvalidOperationException">There is buffered data present. Call <see cref="Reset()"/> or <see cref="WriteAsync(CancellationToken)"/> before changing the position.</exception>
     public long FilePosition
     {
         get => fileOffset;
@@ -203,13 +194,7 @@ public partial class FileWriter : Disposable, IFlushable, IResettable
         Reset();
     }
 
-    /// <summary>
-    /// Flushes buffered data to the file.
-    /// </summary>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <inheritdoc cref="IBufferedWriter.WriteAsync(CancellationToken)"/>
     public ValueTask WriteAsync(CancellationToken token = default)
     {
         if (IsDisposed)
@@ -272,14 +257,7 @@ public partial class FileWriter : Disposable, IFlushable, IResettable
         }
     }
 
-    /// <summary>
-    /// Writes the data to the file through the buffer.
-    /// </summary>
-    /// <param name="input">The input data to write.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <inheritdoc cref="IBufferedWriter.WriteAsync(ReadOnlyMemory{byte}, CancellationToken)"/>
     public ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token = default)
     {
         ValueTask task;

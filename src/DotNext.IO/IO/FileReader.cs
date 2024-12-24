@@ -13,7 +13,7 @@ using Buffers;
 /// This class is not thread-safe. However, it's possible to share the same file
 /// handle across multiple readers and use dedicated reader in each thread.
 /// </remarks>
-public partial class FileReader : Disposable, IResettable
+public partial class FileReader : Disposable, IBufferedReader
 {
     private const int MinBufferSize = 16;
     private const int DefaultBufferSize = 4096;
@@ -55,9 +55,7 @@ public partial class FileReader : Disposable, IResettable
         FilePosition = source.Position;
     }
 
-    /// <summary>
-    /// Gets or sets the buffer allocator.
-    /// </summary>
+    /// <inheritdoc cref="IBufferedChannel.Allocator"/>
     public MemoryAllocator<byte>? Allocator
     {
         get;
@@ -95,9 +93,7 @@ public partial class FileReader : Disposable, IResettable
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private int BufferLength => bufferEnd - bufferStart;
 
-    /// <summary>
-    /// Gets unconsumed part of the buffer.
-    /// </summary>
+    /// <inheritdoc cref="IBufferedReader.Buffer"/>
     public ReadOnlyMemory<byte> Buffer => buffer.Memory[bufferStart..bufferEnd];
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -118,21 +114,14 @@ public partial class FileReader : Disposable, IResettable
     /// </summary>
     public bool HasBufferedData => bufferStart < bufferEnd;
 
-    /// <summary>
-    /// Gets the maximum possible amount of data that can be placed to the buffer.
-    /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> too small.</exception>
+    /// <inheritdoc cref="IBufferedChannel.MaxBufferSize"/>
     public int MaxBufferSize
     {
         get => maxBufferSize;
         init => maxBufferSize = value >= MinBufferSize ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
-    /// <summary>
-    /// Advances read position.
-    /// </summary>
-    /// <param name="count">The number of consumed bytes.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is larger than the length of <see cref="Buffer"/>.</exception>
+    /// <inheritdoc cref="IBufferedReader.Consume(int)"/>
     public void Consume(int count)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
@@ -200,17 +189,7 @@ public partial class FileReader : Disposable, IResettable
         buffer.Dispose();
     }
 
-    /// <summary>
-    /// Reads the data from the file to the underlying buffer.
-    /// </summary>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>
-    /// <see langword="true"/> if the data has been copied from the file to the internal buffer;
-    /// <see langword="false"/> if no more data to read.
-    /// </returns>
-    /// <exception cref="ObjectDisposedException">The reader has been disposed.</exception>
-    /// <exception cref="InternalBufferOverflowException">Internal buffer has no free space.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <inheritdoc cref="IBufferedReader.ReadAsync(CancellationToken)"/>
     public ValueTask<bool> ReadAsync(CancellationToken token = default)
     {
         return IsDisposed
@@ -283,14 +262,7 @@ public partial class FileReader : Disposable, IResettable
         return count > 0;
     }
 
-    /// <summary>
-    /// Reads the block of the memory.
-    /// </summary>
-    /// <param name="destination">The output buffer.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The number of bytes copied to <paramref name="destination"/>.</returns>
-    /// <exception cref="ObjectDisposedException">The reader has been disposed.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <inheritdoc cref="IBufferedReader.ReadAsync(Memory{byte}, CancellationToken)"/>
     public ValueTask<int> ReadAsync(Memory<byte> destination, CancellationToken token = default)
     {
         ValueTask<int> task;
