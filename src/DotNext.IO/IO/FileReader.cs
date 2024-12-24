@@ -142,6 +142,7 @@ public partial class FileReader : Disposable, IResettable
 
     private void ConsumeUnsafe(int count) => Consume(count, count + bufferStart);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void Consume(int count, int newPosition)
     {
         Debug.Assert(newPosition == count + bufferStart);
