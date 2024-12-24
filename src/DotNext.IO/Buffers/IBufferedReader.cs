@@ -1,5 +1,8 @@
 namespace DotNext.Buffers;
 
+/// <summary>
+/// Represents buffered reader.
+/// </summary>
 public interface IBufferedReader : IBufferedChannel
 {
     /// <summary>

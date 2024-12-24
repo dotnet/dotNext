@@ -75,7 +75,7 @@ public partial class FileReader : Disposable, IBufferedReader
             ArgumentOutOfRangeException.ThrowIfNegative(value);
 
             if (HasBufferedData)
-                throw new InvalidOperationException();
+                throw new InvalidOperationException(ExceptionMessages.ReadBufferNotEmpty);
 
             fileOffset = value;
         }
@@ -199,25 +199,32 @@ public partial class FileReader : Disposable, IBufferedReader
 
     private ValueTask<int> ReadCoreAsync(CancellationToken token)
     {
-        Memory<byte> buffer;
+        return PrepareReadBuffer(out var readBuffer)
+            ? RandomAccess.ReadAsync(handle, readBuffer.Slice(bufferEnd), fileOffset + bufferEnd, token)
+            : ValueTask.FromException<int>(new InternalBufferOverflowException());
+    }
+
+    private bool PrepareReadBuffer(out Memory<byte> readBuffer)
+    {
         switch (bufferStart)
         {
             case 0 when bufferEnd == maxBufferSize:
-                return ValueTask.FromException<int>(new InternalBufferOverflowException());
+                readBuffer = default;
+                return false;
             case > 0:
-                buffer = this.buffer.Memory;
+                readBuffer = buffer.Memory;
                 
                 // compact buffer
-                buffer[bufferStart..bufferEnd].CopyTo(buffer);
+                readBuffer[bufferStart..bufferEnd].CopyTo(readBuffer);
                 bufferEnd -= bufferStart;
                 bufferStart = 0;
                 break;
             default:
-                buffer = EnsureBufferAllocated().Memory;
+                readBuffer = EnsureBufferAllocated().Memory;
                 break;
         }
 
-        return RandomAccess.ReadAsync(handle, buffer.Slice(bufferEnd), fileOffset + bufferEnd, token);
+        return true;
     }
     
     /// <summary>
@@ -238,24 +245,10 @@ public partial class FileReader : Disposable, IBufferedReader
 
     private bool ReadCore()
     {
-        Span<byte> buffer;
-        switch (bufferStart)
-        {
-            case 0 when bufferEnd == maxBufferSize:
-                throw new InternalBufferOverflowException();
-            case > 0:
-                // compact buffer
-                buffer = this.buffer.Span;
-                buffer[bufferStart..bufferEnd].CopyTo(buffer);
-                bufferEnd -= bufferStart;
-                bufferStart = 0;
-                break;
-            default:
-                buffer = EnsureBufferAllocated().Span;
-                break;
-        }
+        if (!PrepareReadBuffer(out var readBuffer))
+            throw new InternalBufferOverflowException();
 
-        var count = RandomAccess.Read(handle, buffer.Slice(bufferEnd), fileOffset + bufferEnd);
+        var count = RandomAccess.Read(handle, readBuffer.Span.Slice(bufferEnd), fileOffset + bufferEnd);
         bufferEnd += count;
         
         ResetIfNeeded();

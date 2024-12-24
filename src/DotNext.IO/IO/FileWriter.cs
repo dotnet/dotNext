@@ -169,7 +169,7 @@ public partial class FileWriter : Disposable, IFlushable, IBufferedWriter
             ArgumentOutOfRangeException.ThrowIfNegative(value);
 
             if (HasBufferedData)
-                throw new InvalidOperationException();
+                throw new InvalidOperationException(ExceptionMessages.WriteBufferNotEmpty);
 
             fileOffset = value;
         }
