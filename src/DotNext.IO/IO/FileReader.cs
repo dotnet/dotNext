@@ -103,7 +103,7 @@ public partial class FileReader : Disposable, IBufferedReader
     {
         ref var result = ref buffer;
         if (result.IsEmpty)
-            result = Allocator.AllocateAtLeast(maxBufferSize);
+            result = Allocator.AllocateExactly(maxBufferSize);
         
         Debug.Assert(!result.IsEmpty);
         return ref result;

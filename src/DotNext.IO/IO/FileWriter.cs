@@ -71,7 +71,7 @@ public partial class FileWriter : Disposable, IFlushable, IBufferedWriter
     {
         ref var result = ref buffer;
         if (result.IsEmpty)
-            result = Allocator.AllocateAtLeast(maxBufferSize);
+            result = Allocator.AllocateExactly(maxBufferSize);
         
         Debug.Assert(!result.IsEmpty);
         return ref result;
@@ -108,7 +108,7 @@ public partial class FileWriter : Disposable, IFlushable, IBufferedWriter
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)FreeCapacity, nameof(count));
 
         if (count > 0 && buffer.IsEmpty)
-            buffer = Allocator.AllocateAtLeast(maxBufferSize);
+            buffer = Allocator.AllocateExactly(maxBufferSize);
         
         bufferOffset += count;
     }
