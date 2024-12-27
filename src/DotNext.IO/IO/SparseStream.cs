@@ -1,6 +1,9 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.IO;
+
+using Buffers;
 
 /// <summary>
 /// Represents multiple streams as a single stream.
@@ -8,32 +11,30 @@ namespace DotNext.IO;
 /// <remarks>
 /// The stream is available for read-only operations.
 /// </remarks>
-internal sealed class SparseStream : Stream, IFlushable
+internal abstract class SparseStream : Stream, IFlushable
 {
-    private readonly IEnumerator<Stream> enumerator;
-    private bool streamAvailable;
+    private int runningIndex;
+    
+    protected abstract ReadOnlySpan<Stream> Streams { get; }
 
-    /// <summary>
-    /// Initializes a new sparse stream.
-    /// </summary>
-    /// <param name="streams">A collection of readable streams.</param>
-    public SparseStream(IEnumerable<Stream> streams)
+    private Stream? Current
     {
-        enumerator = streams.GetEnumerator();
-        streamAvailable = enumerator.MoveNext();
+        get
+        {
+            var streams = Streams;
+
+            return (uint)runningIndex < (uint)streams.Length ? streams[runningIndex] : null;
+        }
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void MoveToNextStream() => streamAvailable = enumerator.MoveNext();
-
     /// <inheritdoc />
-    public override int ReadByte()
+    public sealed override int ReadByte()
     {
         var result = -1;
 
-        for (; streamAvailable; MoveToNextStream())
+        for (; Current is { } current; runningIndex++)
         {
-            result = enumerator.Current.ReadByte();
+            result = current.ReadByte();
 
             if (result >= 0)
                 break;
@@ -43,12 +44,12 @@ internal sealed class SparseStream : Stream, IFlushable
     }
 
     /// <inheritdoc />
-    public override int Read(Span<byte> buffer)
+    public sealed override int Read(Span<byte> buffer)
     {
         int count;
-        for (count = 0; streamAvailable; MoveToNextStream())
+        for (count = 0; Current is { } current; runningIndex++)
         {
-            count = enumerator.Current.Read(buffer);
+            count = current.Read(buffer);
 
             if (count > 0)
                 break;
@@ -58,7 +59,7 @@ internal sealed class SparseStream : Stream, IFlushable
     }
 
     /// <inheritdoc />
-    public override int Read(byte[] buffer, int offset, int count)
+    public sealed override int Read(byte[] buffer, int offset, int count)
     {
         ValidateBufferArguments(buffer, offset, count);
 
@@ -67,12 +68,12 @@ internal sealed class SparseStream : Stream, IFlushable
 
     /// <inheritdoc />
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
+    public sealed override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
     {
         int count;
-        for (count = 0; streamAvailable; MoveToNextStream())
+        for (count = 0; Current is { } current; runningIndex++)
         {
-            count = await enumerator.Current.ReadAsync(buffer, token).ConfigureAwait(false);
+            count = await current.ReadAsync(buffer, token).ConfigureAwait(false);
 
             if (count > 0)
                 break;
@@ -82,95 +83,118 @@ internal sealed class SparseStream : Stream, IFlushable
     }
 
     /// <inheritdoc />
-    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
+    public sealed override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
         => ReadAsync(buffer.AsMemory(offset, count), token).AsTask();
 
+    public sealed override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
+        => TaskToAsyncResult.Begin(ReadAsync(buffer, offset, count), callback, state);
+
+    public sealed override int EndRead(IAsyncResult asyncResult)
+        => TaskToAsyncResult.End<int>(asyncResult);
+
     /// <inheritdoc />
-    public override void CopyTo(Stream destination, int bufferSize)
+    public sealed override void CopyTo(Stream destination, int bufferSize)
     {
         ValidateCopyToArguments(destination, bufferSize);
 
-        for (; streamAvailable; MoveToNextStream())
-            enumerator.Current.CopyTo(destination, bufferSize);
+        for (; Current is { } current; runningIndex++)
+            current.CopyTo(destination, bufferSize);
     }
 
     /// <inheritdoc />
-    public override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
+    public sealed override async Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
     {
         ValidateCopyToArguments(destination, bufferSize);
 
-        for (; streamAvailable; MoveToNextStream())
-            await enumerator.Current.CopyToAsync(destination, bufferSize, token).ConfigureAwait(false);
+        for (; Current is { } current; runningIndex++)
+            await current.CopyToAsync(destination, bufferSize, token).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
-    public override bool CanRead => true;
+    public sealed override bool CanRead => true;
 
     /// <inheritdoc />
-    public override bool CanWrite => false;
+    public sealed override bool CanWrite => false;
 
     /// <inheritdoc />
-    public override bool CanSeek => false;
+    public sealed override bool CanSeek => false;
 
     /// <inheritdoc />
-    public override long Position
+    public sealed override long Position
     {
         get => throw new NotSupportedException();
         set => throw new NotSupportedException();
     }
 
     /// <inheritdoc cref="Stream.Flush"/>
-    public override void Flush()
-    {
-        if (streamAvailable)
-            enumerator.Current.Flush();
-    }
+    public sealed override void Flush() => Current?.Flush();
 
     /// <inheritdoc cref="Stream.FlushAsync(CancellationToken)"/>
-    public override Task FlushAsync(CancellationToken token)
-        => streamAvailable ? enumerator.Current.FlushAsync(token) : Task.CompletedTask;
+    public sealed override Task FlushAsync(CancellationToken token)
+        => Current?.FlushAsync(token) ?? Task.CompletedTask;
 
     /// <inheritdoc />
-    public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+    public sealed override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
 
     /// <inheritdoc />
-    public override long Length => throw new NotSupportedException();
+    public sealed override long Length
+    {
+        get
+        {
+            var length = 0L;
+
+            foreach (var stream in Streams)
+            {
+                length += stream.Length;
+            }
+
+            return length;
+        }
+    }
 
     /// <inheritdoc />
-    public override void SetLength(long value) => throw new NotSupportedException();
+    public sealed override void SetLength(long value) => throw new NotSupportedException();
 
     /// <inheritdoc/>
-    public override void WriteByte(byte value) => throw new NotSupportedException();
+    public sealed override void WriteByte(byte value) => throw new NotSupportedException();
 
     /// <inheritdoc/>
-    public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+    public sealed override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
 
     /// <inheritdoc/>
-    public override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
+    public sealed override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
 
     /// <inheritdoc/>
-    public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token) => Task.FromException(new NotSupportedException());
+    public sealed override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token) => Task.FromException(new NotSupportedException());
 
     /// <inheritdoc/>
-    public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
+    public sealed override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
         => ValueTask.FromException(new NotSupportedException());
 
     /// <inheritdoc/>
-    public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
+    public sealed override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
         => throw new NotSupportedException();
 
     /// <inheritdoc/>
-    public override void EndWrite(IAsyncResult asyncResult) => throw new InvalidOperationException();
+    public sealed override void EndWrite(IAsyncResult asyncResult) => throw new InvalidOperationException();
+}
 
-    /// <inheritdoc />
+internal sealed class SparseStream<T>(T streams) : SparseStream
+    where T : struct, ITuple
+{
+    protected override ReadOnlySpan<Stream> Streams
+        => MemoryMarshal.CreateReadOnlySpan(in Unsafe.As<T, Stream>(ref Unsafe.AsRef(in streams)), streams.Length);
+}
+
+internal sealed class UnboundedSparseStream(ReadOnlySpan<Stream> streams) : SparseStream
+{
+    private MemoryOwner<Stream> streams = streams.Copy();
+
+    protected override ReadOnlySpan<Stream> Streams => streams.Span;
+
     protected override void Dispose(bool disposing)
     {
-        if (disposing)
-        {
-            enumerator.Dispose();
-        }
-
-        streamAvailable = false;
+        streams.Dispose();
         base.Dispose(disposing);
     }
 }

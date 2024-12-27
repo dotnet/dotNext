@@ -3,6 +3,8 @@ using Microsoft.Win32.SafeHandles;
 
 namespace DotNext.IO;
 
+using Collections.Generic;
+
 /// <summary>
 /// Represents high-level read/write methods for the stream.
 /// </summary>
@@ -24,8 +26,41 @@ public static partial class StreamExtensions
     /// <param name="stream">The stream to combine.</param>
     /// <param name="others">A collection of streams.</param>
     /// <returns>An object that represents multiple streams as one logical stream.</returns>
-    public static Stream Combine(this Stream stream, ReadOnlySpan<Stream> others)
-        => others is { Length: > 0 } ? new SparseStream([stream, .. others]) : stream;
+    public static Stream Combine(this Stream stream, ReadOnlySpan<Stream> others) // TODO: Use params in future
+        => others switch
+        {
+            [] => stream,
+            [var s] => new SparseStream<(Stream, Stream)>((stream, s)),
+            [var s1, var s2] => new SparseStream<(Stream, Stream, Stream)>((stream, s1, s2)),
+            [var s1, var s2, var s3] => new SparseStream<(Stream, Stream, Stream, Stream)>((stream, s1, s2, s3)),
+            [var s1, var s2, var s3, var s4] => new SparseStream<(Stream, Stream, Stream, Stream, Stream)>((stream, s1, s2, s3, s4)),
+            [var s1, var s2, var s3, var s4, var s5] => new SparseStream<(Stream, Stream, Stream, Stream, Stream, Stream)>((stream, s1, s2, s3, s4,
+                s5)),
+            _ => new UnboundedSparseStream(others.ToArray()),
+        };
+
+    /// <summary>
+    /// Combines multiple readable streams.
+    /// </summary>
+    /// <param name="streams">A collection of streams.</param>
+    /// <returns>An object that represents multiple streams as one logical stream.</returns>
+    /// <exception cref="ArgumentException"><paramref name="streams"/> is empty.</exception>
+    public static Stream Combine(this ReadOnlySpan<Stream> streams)
+        => streams is [var first, .. var rest]
+            ? Combine(first, rest)
+            : throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(streams));
+
+    /// <summary>
+    /// Combines multiple readable streams.
+    /// </summary>
+    /// <param name="streams">A collection of streams.</param>
+    /// <returns>An object that represents multiple streams as one logical stream.</returns>
+    /// <exception cref="ArgumentException"><paramref name="streams"/> is empty.</exception>
+    public static Stream Combine(this IEnumerable<Stream> streams)
+    {
+        using var buffer = streams.Copy();
+        return Combine(buffer.Span);
+    }
 
     /// <summary>
     /// Creates a stream for the specified file handle.

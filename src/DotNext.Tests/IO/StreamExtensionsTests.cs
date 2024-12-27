@@ -1,14 +1,10 @@
 using System.Buffers;
-using System.Globalization;
 using System.Text;
-using static System.Globalization.CultureInfo;
-using DateTimeStyles = System.Globalization.DateTimeStyles;
 
 namespace DotNext.IO;
 
-using DotNext.Buffers.Binary;
-using Net.Cluster;
-using Text;
+using Buffers.Binary;
+using Collections.Generic;
 
 public sealed class StreamExtensionsTests : Test
 {
@@ -156,7 +152,7 @@ public sealed class StreamExtensionsTests : Test
     {
         await using var ms1 = new MemoryStream([1, 2, 3]);
         await using var ms2 = new MemoryStream([4, 5, 6]);
-        await using var combined = ms1.Combine([ms2]);
+        await using var combined = StreamExtensions.Combine([ms1, ms2]);
 
         var buffer = new byte[6];
         await combined.ReadExactlyAsync(buffer);
@@ -169,7 +165,7 @@ public sealed class StreamExtensionsTests : Test
     {
         using var ms1 = new MemoryStream([1, 2, 3]);
         using var ms2 = new MemoryStream([4, 5, 6]);
-        using var combined = ms1.Combine([ms2]);
+        using var combined = List.Singleton(ms1).Append(ms2).Combine();
         using var result = new MemoryStream();
 
         combined.CopyTo(result, 128);
