@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
@@ -20,11 +22,16 @@ public static class TaskType
 
         static Cache()
         {
-            Ldnull();
-            Ldftn(PropertyGet(Type<Task<T>>(), nameof(Task<T>.Result)));
-            Newobj(Constructor(Type<Func<Task<T>, T>>(), Type<object>(), Type<IntPtr>()));
-            Pop(out Func<Task<T>, T> propertyGetter);
-            ResultGetter = propertyGetter;
+            Ldtoken(PropertyGet(Type<Task<T>>(), nameof(Task<T>.Result)));
+            Pop(out RuntimeMethodHandle getterHandle);
+            
+            Ldtoken<Task<T>>();
+            Pop(out RuntimeTypeHandle taskHandle);
+
+            var getterInfo = MethodBase.GetMethodFromHandle(getterHandle, taskHandle) as MethodInfo;
+            Debug.Assert(getterInfo is not null);
+
+            ResultGetter = getterInfo.CreateDelegate<Func<Task<T>, T>>();
         }
     }
 
@@ -34,11 +41,16 @@ public static class TaskType
     {
         CompletedTaskType = Task.CompletedTask.GetType();
 
-        Ldnull();
-        Ldftn(PropertyGet(Type<Task>(), nameof(Task.IsCompletedSuccessfully)));
-        Newobj(Constructor(Type<Func<Task, bool>>(), Type<object>(), Type<IntPtr>()));
-        Pop(out Func<Task, bool> propertyGetter);
-        IsCompletedSuccessfullyGetter = propertyGetter;
+        Ldtoken(PropertyGet(Type<Task>(), nameof(Task.IsCompletedSuccessfully)));
+        Pop(out RuntimeMethodHandle getterHandle);
+
+        Ldtoken<Task>();
+        Pop(out RuntimeTypeHandle taskHandle);
+
+        var getterInfo = MethodBase.GetMethodFromHandle(getterHandle, taskHandle) as MethodInfo;
+        Debug.Assert(getterInfo is not null);
+
+        IsCompletedSuccessfullyGetter = getterInfo.CreateDelegate<Func<Task, bool>>();
     }
 
     /// <summary>
