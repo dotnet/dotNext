@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Dynamic;
 
-[RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
 [RequiresDynamicCode("DLR is required to resolve underlying task type at runtime")]
 internal sealed class TaskResultBinder : CallSiteBinder
 {
