@@ -12,6 +12,7 @@ namespace DotNext.Text.Json;
 /// converter explicitly as an argument for <see cref="JsonConverterAttribute"/>.
 /// </remarks>
 [RequiresUnreferencedCode("This type instantiates OptionalConverter<T> dynamically. Use OptionalConverter<T> instead.")]
+[RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
 public sealed class OptionalConverterFactory : JsonConverterFactory
 {
     /// <inheritdoc />

@@ -51,7 +51,8 @@ public static class TaskType
     /// <seealso cref="Task{TResult}"/>
     /// <seealso cref="ValueTask"/>
     /// <seealso cref="ValueTask{TResult}"/>
-    [RequiresUnreferencedCode("Runtime generic instantiation may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     public static Type MakeTaskType(this Type taskResult, bool valueTask = false)
     {
         if (taskResult == typeof(void))

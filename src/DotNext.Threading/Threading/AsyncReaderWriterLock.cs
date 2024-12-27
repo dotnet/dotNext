@@ -36,6 +36,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
     // describes internal state of reader/writer lock
     [StructLayout(LayoutKind.Auto)]
+    [SuppressMessage("Usage", "CA1001", Justification = "The disposable field is disposed in the Dispose() method")]
     internal struct State : IDisposable
     {
         private ulong version;  // version of write lock

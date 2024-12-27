@@ -14,7 +14,6 @@ using Net.Http;
 /// Represents configuration methods that allows to embed HyParView membership
 /// protocol into ASP.NET Core application.
 /// </summary>
-[CLSCompliant(false)]
 public static class ConfigurationExtensions
 {
     private static IServiceCollection AddPeerController(this IServiceCollection services)
@@ -33,8 +32,8 @@ public static class ConfigurationExtensions
     /// <param name="services">The collection of services.</param>
     /// <param name="configuration">The configuration of local peer.</param>
     /// <returns>The modified collection of services.</returns>
-    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "All public members preserved")]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(HttpPeerConfiguration))]
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     public static IServiceCollection ConfigureLocalPeer(this IServiceCollection services, IConfiguration configuration)
     {
         Func<IServiceProvider, IOptions<PeerConfiguration>> configCast = ServiceProviderServiceExtensions.GetRequiredService<IOptions<HttpPeerConfiguration>>;
@@ -51,9 +50,11 @@ public static class ConfigurationExtensions
     public static IServiceCollection ConfigureLocalPeer(this IServiceCollection services, Action<HttpPeerConfiguration> configuration)
     {
         Func<IServiceProvider, IOptions<PeerConfiguration>> configCast = ServiceProviderServiceExtensions.GetRequiredService<IOptions<HttpPeerConfiguration>>;
-        return services.Configure<HttpPeerConfiguration>(configuration).AddSingleton(configCast).AddPeerController();
+        return services.Configure(configuration).AddSingleton(configCast).AddPeerController();
     }
 
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     private static void JoinMesh(HostBuilderContext context, IServiceCollection services)
         => services.ConfigureLocalPeer(context.Configuration);
 
@@ -67,6 +68,8 @@ public static class ConfigurationExtensions
     /// </remarks>
     /// <param name="builder">The host builder.</param>
     /// <returns>The modified host builder.</returns>
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     public static IHostBuilder JoinMesh(this IHostBuilder builder)
         => builder.ConfigureServices(JoinMesh);
 
@@ -77,9 +80,13 @@ public static class ConfigurationExtensions
     /// <param name="builder">The application builder.</param>
     /// <seealso cref="JoinMesh(IHostBuilder)"/>
     [CLSCompliant(false)]
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     public static void JoinMesh(this WebApplicationBuilder builder)
         => builder.Host.JoinMesh();
 
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     private static void JoinMesh(this Func<IConfiguration, IHostEnvironment, IConfiguration> peerConfig, HostBuilderContext context, IServiceCollection services)
         => services.ConfigureLocalPeer(peerConfig(context.Configuration, context.HostingEnvironment));
 
@@ -94,6 +101,8 @@ public static class ConfigurationExtensions
     /// <param name="builder">The host builder.</param>
     /// <param name="peerConfig">The delegate that can be used to provide local peer configuration.</param>
     /// <returns>The modified host builder.</returns>
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     public static IHostBuilder JoinMesh(this IHostBuilder builder, Func<IConfiguration, IHostEnvironment, IConfiguration> peerConfig)
         => builder.ConfigureServices(peerConfig.JoinMesh);
 
@@ -105,6 +114,8 @@ public static class ConfigurationExtensions
     /// <param name="peerConfig">The delegate that can be used to provide local peer configuration.</param>
     /// <seealso cref="JoinMesh(IHostBuilder, Func{IConfiguration, IHostEnvironment, IConfiguration})"/>
     [CLSCompliant(false)]
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     public static void JoinMesh(this WebApplicationBuilder builder, Func<IConfiguration, IHostEnvironment, IConfiguration> peerConfig)
         => builder.Host.JoinMesh(peerConfig);
 
@@ -133,9 +144,12 @@ public static class ConfigurationExtensions
     /// <param name="builder">The application builder.</param>
     /// <param name="peerConfig">The delegate that can be used to provide local peer configuration.</param>
     /// <seealso cref="JoinMesh(IHostBuilder, Action{HttpPeerConfiguration, IConfiguration, IHostEnvironment})"/>
+    [CLSCompliant(false)]
     public static void JoinMesh(this WebApplicationBuilder builder, Action<HttpPeerConfiguration, IConfiguration, IHostEnvironment> peerConfig)
         => builder.Host.JoinMesh(peerConfig);
 
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     private static void JoinMesh(this string configSection, HostBuilderContext context, IServiceCollection services)
         => services.ConfigureLocalPeer(context.Configuration.GetSection(configSection));
 
@@ -146,6 +160,8 @@ public static class ConfigurationExtensions
     /// <param name="builder">The host builder.</param>
     /// <param name="configSection">The name of configuration section containing configuration of the local peer.</param>
     /// <returns>The modified host builder.</returns>
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     public static IHostBuilder JoinMesh(this IHostBuilder builder, string configSection)
         => builder.ConfigureServices(configSection.JoinMesh);
 
@@ -155,6 +171,9 @@ public static class ConfigurationExtensions
     /// </summary>
     /// <param name="builder">The application builder.</param>
     /// <param name="configSection">The name of configuration section containing configuration of the local peer.</param>
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
+    [CLSCompliant(false)]
     public static void JoinMesh(this WebApplicationBuilder builder, string configSection)
         => builder.Host.JoinMesh(configSection);
 
@@ -166,6 +185,7 @@ public static class ConfigurationExtensions
     /// </summary>
     /// <param name="builder">The application builder.</param>
     /// <returns>The modified application builder.</returns>
+    [CLSCompliant(false)]
     public static IApplicationBuilder UseHyParViewProtocolHandler(this IApplicationBuilder builder)
     {
         var controller = builder.ApplicationServices.GetRequiredService<HttpPeerController>();

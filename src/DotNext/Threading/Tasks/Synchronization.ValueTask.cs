@@ -320,7 +320,7 @@ public static partial class Synchronization
     /// Waits for the task synchronously.
     /// </summary>
     /// <remarks>
-    /// In contrast to <see cref="Task{TResult}.Wait()"/> this method doesn't use wait handles.
+    /// In contrast to <see cref="Task.Wait()"/> this method doesn't use wait handles.
     /// </remarks>
     /// <typeparam name="T">The type of the task result.</typeparam>
     /// <param name="task">The task to wait.</param>

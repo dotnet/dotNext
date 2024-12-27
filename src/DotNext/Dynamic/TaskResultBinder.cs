@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 namespace DotNext.Dynamic;
 
 [RequiresDynamicCode("DLR is required to resolve underlying task type at runtime")]
+[RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
 internal sealed class TaskResultBinder : CallSiteBinder
 {
     private static Expression BindProperty(PropertyInfo resultProperty, Expression target, out Expression restrictions)
