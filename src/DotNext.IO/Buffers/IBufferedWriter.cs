@@ -30,7 +30,7 @@ public interface IBufferedWriter : IBufferedChannel, IBufferWriter<byte>
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask WriteAsync(CancellationToken token);
+    ValueTask WriteAsync(CancellationToken token = default);
 
     /// <summary>
     /// Writes the data to the underlying storage through the buffer.
@@ -40,7 +40,7 @@ public interface IBufferedWriter : IBufferedChannel, IBufferWriter<byte>
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    async ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token)
+    async ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token = default)
     {
         for (int bytesWritten; !input.IsEmpty; input = input.Slice(bytesWritten))
         {

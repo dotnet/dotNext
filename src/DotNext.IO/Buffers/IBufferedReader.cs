@@ -29,7 +29,7 @@ public interface IBufferedReader : IBufferedChannel
     /// <exception cref="ObjectDisposedException">The reader has been disposed.</exception>
     /// <exception cref="InternalBufferOverflowException">Internal buffer has no free space.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask<bool> ReadAsync(CancellationToken token);
+    ValueTask<bool> ReadAsync(CancellationToken token = default);
 
     /// <summary>
     /// Reads the block of the memory.
@@ -39,7 +39,7 @@ public interface IBufferedReader : IBufferedChannel
     /// <returns>The number of bytes copied to <paramref name="destination"/>.</returns>
     /// <exception cref="ObjectDisposedException">The reader has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    async ValueTask<int> ReadAsync(Memory<byte> destination, CancellationToken token)
+    async ValueTask<int> ReadAsync(Memory<byte> destination, CancellationToken token = default)
     {
         var result = 0;
         for (int bytesRead; result < destination.Length; result += bytesRead, destination = destination.Slice(bytesRead))
