@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -48,8 +47,6 @@ public static partial class ConfigurationExtensions
     /// <param name="services">The collection of services.</param>
     /// <param name="memberConfig">The configuration of local cluster node.</param>
     /// <returns>The modified collection of services.</returns>
-    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
-    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     public static IServiceCollection ConfigureLocalNode(this IServiceCollection services, IConfiguration memberConfig)
     {
         Func<IServiceProvider, IOptions<ClusterMemberConfiguration>> configCast = ServiceProviderServiceExtensions.GetRequiredService<IOptions<HttpClusterMemberConfiguration>>;
@@ -74,8 +71,6 @@ public static partial class ConfigurationExtensions
         return services.Configure(memberConfig).AddSingleton(configCast).AddClusterAsSingleton();
     }
 
-    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
-    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     private static void JoinCluster(HostBuilderContext context, IServiceCollection services)
         => ConfigureLocalNode(services, context.Configuration);
 
@@ -89,8 +84,6 @@ public static partial class ConfigurationExtensions
     /// </remarks>
     /// <param name="builder">The host builder.</param>
     /// <returns>The modified host builder.</returns>
-    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
-    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     public static IHostBuilder JoinCluster(this IHostBuilder builder)
         => builder.ConfigureServices(JoinCluster);
 
@@ -101,13 +94,9 @@ public static partial class ConfigurationExtensions
     /// <param name="builder">The application builder.</param>
     /// <seealso cref="JoinCluster(IHostBuilder)"></seealso>
     [CLSCompliant(false)]
-    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
-    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     public static void JoinCluster(this WebApplicationBuilder builder)
         => builder.Host.JoinCluster();
 
-    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
-    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     private static void JoinCluster(this Func<IConfiguration, IHostEnvironment, IConfiguration> memberConfig, HostBuilderContext context, IServiceCollection services)
         => ConfigureLocalNode(services, memberConfig(context.Configuration, context.HostingEnvironment));
 
@@ -122,8 +111,6 @@ public static partial class ConfigurationExtensions
     /// <param name="builder">The host builder.</param>
     /// <param name="memberConfig">The delegate that allows to resolve location of local member configuration.</param>
     /// <returns>The modified host builder.</returns>
-    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
-    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     public static IHostBuilder JoinCluster(this IHostBuilder builder, Func<IConfiguration, IHostEnvironment, IConfiguration> memberConfig)
         => builder.ConfigureServices(memberConfig.JoinCluster);
 
@@ -135,8 +122,6 @@ public static partial class ConfigurationExtensions
     /// <param name="memberConfig">The delegate that allows to resolve location of local member configuration.</param>
     /// <seealso cref="JoinCluster(IHostBuilder, Func{IConfiguration, IHostEnvironment, IConfiguration})"/>
     [CLSCompliant(false)]
-    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
-    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     public static void JoinCluster(this WebApplicationBuilder builder, Func<IConfiguration, IHostEnvironment, IConfiguration> memberConfig)
         => builder.Host.JoinCluster(memberConfig);
 
@@ -173,8 +158,6 @@ public static partial class ConfigurationExtensions
     public static void JoinCluster(this WebApplicationBuilder builder, Action<HttpClusterMemberConfiguration, IConfiguration, IHostEnvironment> memberConfig)
         => builder.Host.JoinCluster(memberConfig);
 
-    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
-    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     private static void JoinCluster(this string memberConfigSection, HostBuilderContext context, IServiceCollection services)
         => ConfigureLocalNode(services, context.Configuration.GetSection(memberConfigSection));
 
@@ -189,8 +172,6 @@ public static partial class ConfigurationExtensions
     /// <param name="builder">The host builder.</param>
     /// <param name="memberConfigSection">The name of local member configuration section.</param>
     /// <returns>The modified host builder.</returns>
-    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
-    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     public static IHostBuilder JoinCluster(this IHostBuilder builder, string memberConfigSection)
         => builder.ConfigureServices(memberConfigSection.JoinCluster);
 
@@ -202,8 +183,6 @@ public static partial class ConfigurationExtensions
     /// <param name="memberConfigSection">The name of local member configuration section.</param>
     /// <seealso cref="JoinCluster(IHostBuilder, string)"/>
     [CLSCompliant(false)]
-    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
-    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     public static void JoinCluster(this WebApplicationBuilder builder, string memberConfigSection)
         => builder.Host.JoinCluster(memberConfigSection);
 
