@@ -213,6 +213,7 @@ public sealed class StreamExtensionsTests : Test
     public static void CombineManyStreams(byte streamCount)
     {
         using var stream = GetStreams(streamCount).Combine(leaveOpen: false);
+        Equal(streamCount, stream.Length);
         var actual = new byte[streamCount];
         stream.ReadExactly(actual);
         var expected = Set.Range<byte, EnclosedEndpoint<byte>, DisclosedEndpoint<byte>>(0, streamCount);
