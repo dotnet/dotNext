@@ -11,7 +11,7 @@ using Buffers;
 /// <remarks>
 /// The stream is available for read-only operations.
 /// </remarks>
-internal abstract class SparseStream : Stream, IFlushable
+internal abstract class SparseStream(bool leaveOpen) : Stream, IFlushable
 {
     private int runningIndex;
     
@@ -177,16 +177,34 @@ internal abstract class SparseStream : Stream, IFlushable
 
     /// <inheritdoc/>
     public sealed override void EndWrite(IAsyncResult asyncResult) => throw new InvalidOperationException();
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && !leaveOpen)
+        {
+            Disposable.Dispose(Streams);
+        }
+    }
+
+    public override async ValueTask DisposeAsync()
+    {
+        for (var i = 0; i < Streams.Length; i++)
+        {
+            await Streams[i].DisposeAsync().ConfigureAwait(false);
+        }
+
+        GC.SuppressFinalize(this);
+    }
 }
 
-internal sealed class SparseStream<T>(T streams) : SparseStream
+internal sealed class SparseStream<T>(T streams, bool leaveOpen) : SparseStream(leaveOpen)
     where T : struct, ITuple
 {
     protected override ReadOnlySpan<Stream> Streams
         => MemoryMarshal.CreateReadOnlySpan(in Unsafe.As<T, Stream>(ref Unsafe.AsRef(in streams)), streams.Length);
 }
 
-internal sealed class UnboundedSparseStream(ReadOnlySpan<Stream> streams) : SparseStream
+internal sealed class UnboundedSparseStream(ReadOnlySpan<Stream> streams, bool leaveOpen) : SparseStream(leaveOpen)
 {
     private MemoryOwner<Stream> streams = streams.Copy();
 
@@ -194,7 +212,25 @@ internal sealed class UnboundedSparseStream(ReadOnlySpan<Stream> streams) : Spar
 
     protected override void Dispose(bool disposing)
     {
-        streams.Dispose();
-        base.Dispose(disposing);
+        try
+        {
+            base.Dispose(disposing);
+        }
+        finally
+        {
+            streams.Dispose();
+        }
+    }
+
+    public override async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await base.DisposeAsync().ConfigureAwait(false);
+        }
+        finally
+        {
+            streams.Dispose();
+        }
     }
 }
