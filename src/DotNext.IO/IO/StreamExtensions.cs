@@ -3,7 +3,8 @@ using Microsoft.Win32.SafeHandles;
 
 namespace DotNext.IO;
 
-using Collections.Generic;
+using Buffers;
+using static Runtime.Intrinsics;
 
 /// <summary>
 /// Represents high-level read/write methods for the stream.
@@ -58,8 +59,23 @@ public static partial class StreamExtensions
     /// <exception cref="ArgumentException"><paramref name="streams"/> is empty.</exception>
     public static Stream Combine(this IEnumerable<Stream> streams)
     {
-        using var buffer = streams.Copy();
-        return Combine(buffer.Span);
+        // Use buffer to allocate streams on the stack
+        var buffer = new StreamBuffer();
+        var writer = new BufferWriterSlim<Stream>(buffer);
+
+        Stream result;
+        try
+        {
+            writer.AddAll(streams);
+            result = Combine(writer.WrittenSpan);
+        }
+        finally
+        {
+            writer.Dispose();
+            KeepAlive(in buffer);
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -80,5 +96,11 @@ public static partial class StreamExtensions
         return handle is { IsInvalid: false, IsClosed: false }
             ? new UnbufferedFileStream(handle, access)
             : throw new ArgumentException(ExceptionMessages.FileHandleClosed, nameof(handle));
+    }
+    
+    [InlineArray(32)]
+    private struct StreamBuffer
+    {
+        private Stream element0;
     }
 }

@@ -358,7 +358,7 @@ public ref partial struct BufferWriterSlim<T>
     /// </summary>
     /// <param name="collection">A collection of elements.</param>
     /// <exception cref="ArgumentNullException"><paramref name="collection"/> is <see langword="null"/>.</exception>
-    public void Write(IEnumerable<T> collection)
+    public void AddAll(IEnumerable<T> collection)
     {
         ArgumentNullException.ThrowIfNull(collection);
 
