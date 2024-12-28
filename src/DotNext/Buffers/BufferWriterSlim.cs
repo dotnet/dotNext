@@ -362,24 +362,27 @@ public ref partial struct BufferWriterSlim<T>
     {
         ArgumentNullException.ThrowIfNull(collection);
 
+        ReadOnlySpan<T> input;
         switch (collection)
         {
             case List<T> list:
-                Write(CollectionsMarshal.AsSpan(list));
+                input = CollectionsMarshal.AsSpan(list);
                 break;
             case T[] array:
-                Write(new ReadOnlySpan<T>(array));
+                input = array;
                 break;
             case string str:
-                Write(Unsafe.BitCast<ReadOnlyMemory<char>, ReadOnlyMemory<T>>(str.AsMemory()).Span);
+                input = Unsafe.BitCast<ReadOnlyMemory<char>, ReadOnlyMemory<T>>(str.AsMemory()).Span;
                 break;
             case ArraySegment<T> segment:
-                Write(segment.AsSpan());
+                input = segment;
                 break;
             default:
                 WriteSlow(collection);
-                break;
+                return;
         }
+
+        Write(input);
     }
 
     private void WriteSlow(IEnumerable<T> collection)
@@ -388,10 +391,12 @@ public ref partial struct BufferWriterSlim<T>
         if (collection.TryGetNonEnumeratedCount(out var count))
         {
             var buffer = InternalGetSpan(count);
-            for (var i = 0; i < buffer.Length && enumerator.MoveNext(); i++)
+            for (count = 0; count < buffer.Length && enumerator.MoveNext(); count++)
             {
-                buffer[i] = enumerator.Current;
+                buffer[count] = enumerator.Current;
             }
+
+            position += count;
         }
 
         while (enumerator.MoveNext())
