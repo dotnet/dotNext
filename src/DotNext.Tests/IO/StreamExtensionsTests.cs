@@ -200,6 +200,36 @@ public sealed class StreamExtensionsTests : Test
         Equal(-1, combined.ReadByte());
     }
 
+    [Theory]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
+    [InlineData(7)]
+    [InlineData(8)]
+    [InlineData(9)]
+    [InlineData(10)]
+    public static void CombineManyStreams(byte streamCount)
+    {
+        using var stream = GetStreams(streamCount).Combine(leaveOpen: false);
+        var actual = new byte[streamCount];
+        stream.ReadExactly(actual);
+        var expected = Set.Range<byte, EnclosedEndpoint<byte>, DisclosedEndpoint<byte>>(0, streamCount);
+        Equal(expected, actual);
+        
+        static IEnumerable<Stream> GetStreams(byte streamCount)
+        {
+            for (var i = 0; i < streamCount; i++)
+            {
+                var ms = new MemoryStream();
+                ms.WriteByte((byte)i);
+                ms.Seek(0L, SeekOrigin.Begin);
+                yield return ms;
+            }
+        }
+    }
+
     [Fact]
     public static async Task UnsupportedMethodsOfSparseStream()
     {

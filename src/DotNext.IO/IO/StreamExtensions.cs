@@ -31,7 +31,10 @@ public static partial class StreamExtensions
             [var s1, var s2, var s3, var s4] => new SparseStream<(Stream, Stream, Stream, Stream, Stream)>((stream, s1, s2, s3, s4), leaveOpen),
             [var s1, var s2, var s3, var s4, var s5] => new SparseStream<(Stream, Stream, Stream, Stream, Stream, Stream)>((stream, s1, s2, s3, s4,
                 s5), leaveOpen),
-            _ => new UnboundedSparseStream(others, leaveOpen),
+            [var s1, var s2, var s3, var s4, var s5, var s6] => new SparseStream<(Stream, Stream, Stream, Stream, Stream, Stream, Stream)>((stream, s1, s2, s3, s4,
+                s5, s6), leaveOpen),
+            { Length: int.MaxValue } => throw new InsufficientMemoryException(),
+            _ => new UnboundedSparseStream(stream, others, leaveOpen),
         };
 
     /// <summary>

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -207,9 +208,20 @@ internal sealed class SparseStream<T>(T streams, bool leaveOpen) : SparseStream(
         => MemoryMarshal.CreateReadOnlySpan(in Unsafe.As<T, Stream>(ref Unsafe.AsRef(in streams)), streams.Length);
 }
 
-internal sealed class UnboundedSparseStream(ReadOnlySpan<Stream> streams, bool leaveOpen) : SparseStream(leaveOpen)
+internal sealed class UnboundedSparseStream : SparseStream
 {
-    private MemoryOwner<Stream> streams = streams.Copy();
+    private MemoryOwner<Stream> streams;
+
+    internal UnboundedSparseStream(Stream stream, ReadOnlySpan<Stream> streams, bool leaveOpen)
+        : base(leaveOpen)
+    {
+        Debug.Assert(streams.Length < int.MaxValue);
+
+        this.streams = Memory.AllocateExactly<Stream>(streams.Length + 1);
+        var output = this.streams.Span;
+        output[0] = stream;
+        streams.CopyTo(output.Slice(1));
+    }
 
     protected override ReadOnlySpan<Stream> Streams => streams.Span;
 
