@@ -188,9 +188,12 @@ internal abstract class SparseStream(bool leaveOpen) : Stream, IFlushable
 
     public override async ValueTask DisposeAsync()
     {
-        for (var i = 0; i < Streams.Length; i++)
+        if (!leaveOpen)
         {
-            await Streams[i].DisposeAsync().ConfigureAwait(false);
+            for (var i = 0; i < Streams.Length; i++)
+            {
+                await Streams[i].DisposeAsync().ConfigureAwait(false);
+            }
         }
 
         GC.SuppressFinalize(this);
