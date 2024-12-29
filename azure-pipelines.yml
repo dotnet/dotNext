@@ -60,8 +60,8 @@ stages:
             displayName: Run AOT Tests
             inputs:
               workingDirectory: $(AotTestFolder)/bin/aot-tests
-              script:
-                ls |
+              script: |
+                ls -R
                 ./DotNext.AotTests
           - task: DotNetCoreCLI@2
             displayName: Test Debug
