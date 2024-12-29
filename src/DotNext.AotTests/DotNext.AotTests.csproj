@@ -28,4 +28,8 @@
         <PackageReference Include="MSTest.TestFramework" />
         <PackageReference Include="MSTest.Analyzers" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+    </ItemGroup>
 </Project>
