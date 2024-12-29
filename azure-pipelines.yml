@@ -55,12 +55,14 @@ stages:
               command: publish
               publishWebProjects: false
               projects: $(AotTestProject)
-              arguments: --configuration Release --output $(AotTestFolder)/bin/
+              arguments: --configuration Release --output $(AotTestFolder)/bin/aot-tests
           - task: CmdLine@2
             displayName: Run AOT Tests
             inputs:
-              workingDirectory: $(AotTestFolder)/bin/DotNext.AotTests
-              script: ./DotNext.AotTests
+              workingDirectory: $(AotTestFolder)/bin/aot-tests
+              script:
+                ls |
+                ./DotNext.AotTests
           - task: DotNetCoreCLI@2
             displayName: Test Debug
             inputs:
