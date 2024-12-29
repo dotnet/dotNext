@@ -171,7 +171,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization_GetResult_System_Threading_Tasks_Task_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.GetResult(System.Threading.Tasks.Task%2CSystem.TimeSpan)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L108">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L109">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_GetResult_" data-uid="DotNext.Threading.Tasks.Synchronization.GetResult*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_GetResult_System_Threading_Tasks_Task_System_TimeSpan_" data-uid="DotNext.Threading.Tasks.Synchronization.GetResult(System.Threading.Tasks.Task,System.TimeSpan)">GetResult(Task, TimeSpan)</h4>
@@ -466,10 +466,115 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization_Wait_System_Threading_Tasks_ValueTask__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.Wait(System.Threading.Tasks.ValueTask%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L304">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_Synchronization_Wait_" data-uid="DotNext.Threading.Tasks.Synchronization.Wait*"></a>
+  <h4 id="DotNext_Threading_Tasks_Synchronization_Wait_System_Threading_Tasks_ValueTask__" data-uid="DotNext.Threading.Tasks.Synchronization.Wait(System.Threading.Tasks.ValueTask@)">Wait(in ValueTask)</h4>
+  <div class="markdown level1 summary"><p>Waits for the task synchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Wait(this in ValueTask task)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><span class="parametername">task</span></td>
+        <td><p>The task to wait.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_Synchronization_Wait_System_Threading_Tasks_ValueTask___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>In contrast to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task.wait#system-threading-tasks-task-wait">Wait()</a> this method doesn't use wait handles.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization_Wait__1_System_Threading_Tasks_ValueTask___0___.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.Wait%60%601(System.Threading.Tasks.ValueTask%7B%60%600%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L327">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_Synchronization_Wait_" data-uid="DotNext.Threading.Tasks.Synchronization.Wait*"></a>
+  <h4 id="DotNext_Threading_Tasks_Synchronization_Wait__1_System_Threading_Tasks_ValueTask___0___" data-uid="DotNext.Threading.Tasks.Synchronization.Wait``1(System.Threading.Tasks.ValueTask{``0}@)">Wait&lt;T&gt;(in ValueTask&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Waits for the task synchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static T Wait&lt;T&gt;(this in ValueTask&lt;T&gt; task)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;T&gt;</td>
+        <td><span class="parametername">task</span></td>
+        <td><p>The task to wait.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the task result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_Synchronization_Wait__1_System_Threading_Tasks_ValueTask___0____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>In contrast to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task.wait#system-threading-tasks-task-wait">Wait()</a> this method doesn't use wait handles.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll(System.Threading.Tasks.ValueTask%2CSystem.Threading.Tasks.ValueTask)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L41">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L42">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)">WhenAll(ValueTask, ValueTask)</h4>
@@ -528,7 +633,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll(System.Threading.Tasks.ValueTask%2CSystem.Threading.Tasks.ValueTask%2CSystem.Threading.Tasks.ValueTask)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L90">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L91">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)">WhenAll(ValueTask, ValueTask, ValueTask)</h4>
@@ -593,7 +698,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll(System.Threading.Tasks.ValueTask%2CSystem.Threading.Tasks.ValueTask%2CSystem.Threading.Tasks.ValueTask%2CSystem.Threading.Tasks.ValueTask)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L151">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L152">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)">WhenAll(ValueTask, ValueTask, ValueTask, ValueTask)</h4>
@@ -664,7 +769,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll(System.Threading.Tasks.ValueTask%2CSystem.Threading.Tasks.ValueTask%2CSystem.Threading.Tasks.ValueTask%2CSystem.Threading.Tasks.ValueTask%2CSystem.Threading.Tasks.ValueTask)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L224">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L225">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_System_Threading_Tasks_ValueTask_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll(System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask,System.Threading.Tasks.ValueTask)">WhenAll(ValueTask, ValueTask, ValueTask, ValueTask, ValueTask)</h4>
@@ -741,7 +846,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll__2_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll%60%602(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Threading.Tasks.Task%7B%60%601%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L140">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L142">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll__2_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll``2(System.Threading.Tasks.Task{``0},System.Threading.Tasks.Task{``1})">WhenAll&lt;T1, T2&gt;(Task&lt;T1&gt;, Task&lt;T2&gt;)</h4>
@@ -818,7 +923,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll__2_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___1__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll%60%602(System.Threading.Tasks.ValueTask%7B%60%600%7D%2CSystem.Threading.Tasks.ValueTask%7B%60%601%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L55">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L56">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll__2_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___1__" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll``2(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``1})">WhenAll&lt;T1, T2&gt;(ValueTask&lt;T1&gt;, ValueTask&lt;T2&gt;)</h4>
@@ -898,7 +1003,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll__3_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__System_Threading_Tasks_Task___2__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll%60%603(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Threading.Tasks.Task%7B%60%601%7D%2CSystem.Threading.Tasks.Task%7B%60%602%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L175">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L177">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll__3_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__System_Threading_Tasks_Task___2__" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll``3(System.Threading.Tasks.Task{``0},System.Threading.Tasks.Task{``1},System.Threading.Tasks.Task{``2})">WhenAll&lt;T1, T2, T3&gt;(Task&lt;T1&gt;, Task&lt;T2&gt;, Task&lt;T3&gt;)</h4>
@@ -986,7 +1091,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll__3_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___1__System_Threading_Tasks_ValueTask___2__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll%60%603(System.Threading.Tasks.ValueTask%7B%60%600%7D%2CSystem.Threading.Tasks.ValueTask%7B%60%601%7D%2CSystem.Threading.Tasks.ValueTask%7B%60%602%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L106">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L107">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll__3_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___1__System_Threading_Tasks_ValueTask___2__" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll``3(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``1},System.Threading.Tasks.ValueTask{``2})">WhenAll&lt;T1, T2, T3&gt;(ValueTask&lt;T1&gt;, ValueTask&lt;T2&gt;, ValueTask&lt;T3&gt;)</h4>
@@ -1077,7 +1182,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll__4_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__System_Threading_Tasks_Task___2__System_Threading_Tasks_Task___3__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll%60%604(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Threading.Tasks.Task%7B%60%601%7D%2CSystem.Threading.Tasks.Task%7B%60%602%7D%2CSystem.Threading.Tasks.Task%7B%60%603%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L221">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L223">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll__4_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__System_Threading_Tasks_Task___2__System_Threading_Tasks_Task___3__" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll``4(System.Threading.Tasks.Task{``0},System.Threading.Tasks.Task{``1},System.Threading.Tasks.Task{``2},System.Threading.Tasks.Task{``3})">WhenAll&lt;T1, T2, T3, T4&gt;(Task&lt;T1&gt;, Task&lt;T2&gt;, Task&lt;T3&gt;, Task&lt;T4&gt;)</h4>
@@ -1176,7 +1281,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll__4_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___1__System_Threading_Tasks_ValueTask___2__System_Threading_Tasks_ValueTask___3__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll%60%604(System.Threading.Tasks.ValueTask%7B%60%600%7D%2CSystem.Threading.Tasks.ValueTask%7B%60%601%7D%2CSystem.Threading.Tasks.ValueTask%7B%60%602%7D%2CSystem.Threading.Tasks.ValueTask%7B%60%603%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L169">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L170">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll__4_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___1__System_Threading_Tasks_ValueTask___2__System_Threading_Tasks_ValueTask___3__" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll``4(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``1},System.Threading.Tasks.ValueTask{``2},System.Threading.Tasks.ValueTask{``3})">WhenAll&lt;T1, T2, T3, T4&gt;(ValueTask&lt;T1&gt;, ValueTask&lt;T2&gt;, ValueTask&lt;T3&gt;, ValueTask&lt;T4&gt;)</h4>
@@ -1278,7 +1383,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll__5_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__System_Threading_Tasks_Task___2__System_Threading_Tasks_Task___3__System_Threading_Tasks_Task___4__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll%60%605(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Threading.Tasks.Task%7B%60%601%7D%2CSystem.Threading.Tasks.Task%7B%60%602%7D%2CSystem.Threading.Tasks.Task%7B%60%603%7D%2CSystem.Threading.Tasks.Task%7B%60%604%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L278">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.cs/#L280">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll__5_System_Threading_Tasks_Task___0__System_Threading_Tasks_Task___1__System_Threading_Tasks_Task___2__System_Threading_Tasks_Task___3__System_Threading_Tasks_Task___4__" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll``5(System.Threading.Tasks.Task{``0},System.Threading.Tasks.Task{``1},System.Threading.Tasks.Task{``2},System.Threading.Tasks.Task{``3},System.Threading.Tasks.Task{``4})">WhenAll&lt;T1, T2, T3, T4, T5&gt;(Task&lt;T1&gt;, Task&lt;T2&gt;, Task&lt;T3&gt;, Task&lt;T4&gt;, Task&lt;T5&gt;)</h4>
@@ -1388,7 +1493,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization_WhenAll__5_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___1__System_Threading_Tasks_ValueTask___2__System_Threading_Tasks_ValueTask___3__System_Threading_Tasks_ValueTask___4__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization.WhenAll%60%605(System.Threading.Tasks.ValueTask%7B%60%600%7D%2CSystem.Threading.Tasks.ValueTask%7B%60%601%7D%2CSystem.Threading.Tasks.ValueTask%7B%60%602%7D%2CSystem.Threading.Tasks.ValueTask%7B%60%603%7D%2CSystem.Threading.Tasks.ValueTask%7B%60%604%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L244">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L245">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Synchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll*"></a>
   <h4 id="DotNext_Threading_Tasks_Synchronization_WhenAll__5_System_Threading_Tasks_ValueTask___0__System_Threading_Tasks_ValueTask___1__System_Threading_Tasks_ValueTask___2__System_Threading_Tasks_ValueTask___3__System_Threading_Tasks_ValueTask___4__" data-uid="DotNext.Threading.Tasks.Synchronization.WhenAll``5(System.Threading.Tasks.ValueTask{``0},System.Threading.Tasks.ValueTask{``1},System.Threading.Tasks.ValueTask{``2},System.Threading.Tasks.ValueTask{``3},System.Threading.Tasks.ValueTask{``4})">WhenAll&lt;T1, T2, T3, T4, T5&gt;(ValueTask&lt;T1&gt;, ValueTask&lt;T2&gt;, ValueTask&lt;T3&gt;, ValueTask&lt;T4&gt;, ValueTask&lt;T5&gt;)</h4>
@@ -1508,7 +1613,7 @@
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Synchronization.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Synchronization%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L7" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs/#L8" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
