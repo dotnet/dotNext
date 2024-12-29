@@ -24,6 +24,8 @@ public partial class FileReader
         {
         }
 
+        internal int Truncate(int value) => IsInfinite ? value : (int)Math.Min(value, this.value);
+
         internal bool IsInfinite => value < 0L;
 
         public bool Equals(long other) => !IsInfinite && value == other;
@@ -98,8 +100,8 @@ public partial class FileReader
     }
 
     private static ReadOnlyMemory<byte> TrimLength(ReadOnlyMemory<byte> buffer, SegmentLength length)
-        => length.IsInfinite ? buffer : buffer.TrimLength(int.CreateSaturating((long)length));
+        => buffer.TrimLength(length.Truncate(buffer.Length));
 
     private static Memory<byte> TrimLength(Memory<byte> buffer, SegmentLength length)
-        => length.IsInfinite ? buffer : buffer.TrimLength(int.CreateSaturating((long)length));
+        => buffer.TrimLength(length.Truncate(buffer.Length));
 }

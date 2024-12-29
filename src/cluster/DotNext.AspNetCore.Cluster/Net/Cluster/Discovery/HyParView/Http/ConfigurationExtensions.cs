@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -14,7 +13,6 @@ using Net.Http;
 /// Represents configuration methods that allows to embed HyParView membership
 /// protocol into ASP.NET Core application.
 /// </summary>
-[CLSCompliant(false)]
 public static class ConfigurationExtensions
 {
     private static IServiceCollection AddPeerController(this IServiceCollection services)
@@ -33,8 +31,6 @@ public static class ConfigurationExtensions
     /// <param name="services">The collection of services.</param>
     /// <param name="configuration">The configuration of local peer.</param>
     /// <returns>The modified collection of services.</returns>
-    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "All public members preserved")]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(HttpPeerConfiguration))]
     public static IServiceCollection ConfigureLocalPeer(this IServiceCollection services, IConfiguration configuration)
     {
         Func<IServiceProvider, IOptions<PeerConfiguration>> configCast = ServiceProviderServiceExtensions.GetRequiredService<IOptions<HttpPeerConfiguration>>;
@@ -51,9 +47,9 @@ public static class ConfigurationExtensions
     public static IServiceCollection ConfigureLocalPeer(this IServiceCollection services, Action<HttpPeerConfiguration> configuration)
     {
         Func<IServiceProvider, IOptions<PeerConfiguration>> configCast = ServiceProviderServiceExtensions.GetRequiredService<IOptions<HttpPeerConfiguration>>;
-        return services.Configure<HttpPeerConfiguration>(configuration).AddSingleton(configCast).AddPeerController();
+        return services.Configure(configuration).AddSingleton(configCast).AddPeerController();
     }
-
+    
     private static void JoinMesh(HostBuilderContext context, IServiceCollection services)
         => services.ConfigureLocalPeer(context.Configuration);
 
@@ -133,6 +129,7 @@ public static class ConfigurationExtensions
     /// <param name="builder">The application builder.</param>
     /// <param name="peerConfig">The delegate that can be used to provide local peer configuration.</param>
     /// <seealso cref="JoinMesh(IHostBuilder, Action{HttpPeerConfiguration, IConfiguration, IHostEnvironment})"/>
+    [CLSCompliant(false)]
     public static void JoinMesh(this WebApplicationBuilder builder, Action<HttpPeerConfiguration, IConfiguration, IHostEnvironment> peerConfig)
         => builder.Host.JoinMesh(peerConfig);
 
@@ -155,6 +152,7 @@ public static class ConfigurationExtensions
     /// </summary>
     /// <param name="builder">The application builder.</param>
     /// <param name="configSection">The name of configuration section containing configuration of the local peer.</param>
+    [CLSCompliant(false)]
     public static void JoinMesh(this WebApplicationBuilder builder, string configSection)
         => builder.Host.JoinMesh(configSection);
 
@@ -166,6 +164,7 @@ public static class ConfigurationExtensions
     /// </summary>
     /// <param name="builder">The application builder.</param>
     /// <returns>The modified application builder.</returns>
+    [CLSCompliant(false)]
     public static IApplicationBuilder UseHyParViewProtocolHandler(this IApplicationBuilder builder)
     {
         var controller = builder.ApplicationServices.GetRequiredService<HttpPeerController>();

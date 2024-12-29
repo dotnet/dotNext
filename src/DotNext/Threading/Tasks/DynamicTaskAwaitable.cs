@@ -47,7 +47,8 @@ public readonly struct DynamicTaskAwaitable
         public void UnsafeOnCompleted(Action continuation)
             => awaiter.UnsafeOnCompleted(continuation);
 
-        [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
+        [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
+        [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
         internal object? GetRawResult()
         {
             awaiter.GetResult();
@@ -55,7 +56,8 @@ public readonly struct DynamicTaskAwaitable
 
             return IsTaskWithResult(task.GetType()) ? GetDynamicResult(task) : Missing.Value;
             
-            [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
+            [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
+            [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
             static object? GetDynamicResult(Task task)
             {
                 var callSite = getResultCallSite ??= CallSite<Func<CallSite, Task, object?>>.Create(new TaskResultBinder());
@@ -70,7 +72,8 @@ public readonly struct DynamicTaskAwaitable
         /// Gets dynamically typed task result.
         /// </summary>
         /// <returns>The result of the completed task; or <see cref="Missing.Value"/> if underlying task is not of type <see cref="Task{TResult}"/>.</returns>
-        [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
+        [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
+        [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
         public dynamic? GetResult() => GetRawResult();
     }
 

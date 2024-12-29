@@ -26,6 +26,10 @@ internal sealed class Chunk<T> : ReadOnlySequenceSegment<T>
             : last.Next(segment);
     }
 
-    internal static ReadOnlySequence<T> CreateSequence(Chunk<T> head, Chunk<T> tail)
-        => new(head, 0, tail, tail.Memory.Length);
+    internal static ReadOnlySequence<T> CreateSequence(Chunk<T>? head, Chunk<T>? tail)
+        => head is null || tail is null
+            ? new()
+            : ReferenceEquals(head, tail)
+            ? new(head.Memory)
+            : new(head, 0, tail, tail.Memory.Length);
 }

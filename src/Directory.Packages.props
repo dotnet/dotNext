@@ -28,6 +28,12 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="8.0.1" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageVersion Include="MSTest.Engine" Version="1.0.0-alpha.24562.1" />
+    <PackageVersion Include="MSTest.SourceGeneration" Version="1.0.0-alpha.24562.1" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="1.0.2" />
+    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="1.5.0" />
+    <PackageVersion Include="MSTest.TestFramework" Version="3.7.0" />
+    <PackageVersion Include="MSTest.Analyzers" Version="3.7.0" />
   </ItemGroup>
   <ItemGroup>
     <!--Misc packages-->

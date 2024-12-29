@@ -562,6 +562,9 @@ public sealed class SpanTests : Test
     public static void CheckLargeMask()
     {
         var value = RandomBytes(1024);
+        if (value[0] is byte.MaxValue)
+            value[0] = byte.MaxValue - 1;
+        
         var mask = value.AsSpan().ToArray();
         mask.AsSpan(0, 512).Clear();
 

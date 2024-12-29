@@ -2,6 +2,8 @@
 
 namespace DotNext.Buffers;
 
+using static Runtime.Intrinsics;
+
 public sealed class UnmanagedMemoryPoolTests : Test
 {
     [Fact]
@@ -234,5 +236,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
         var memory = UnmanagedMemory.AsMemory(ptr, 3);
         False(memory.IsEmpty);
         Equal([10, 20, 30], memory.Span);
+
+        KeepAlive(in memory);
     }
 }

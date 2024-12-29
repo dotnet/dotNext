@@ -143,9 +143,9 @@ public sealed class AsyncBinaryReaderWriterTests : Test
         public FileSource(int bufferSize)
         {
             var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous);
-            writer = new(handle, bufferSize: bufferSize);
-            reader = new(handle, bufferSize: bufferSize);
+            handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+            writer = new(handle) { MaxBufferSize = bufferSize };
+            reader = new(handle) { MaxBufferSize = bufferSize };
         }
 
         public IAsyncBinaryWriter CreateWriter() => writer;
@@ -156,8 +156,10 @@ public sealed class AsyncBinaryReaderWriterTests : Test
 
         void IFlushable.Flush()
         {
-            using (var task = FlushAsync(CancellationToken.None))
-                task.Wait(DefaultTimeout);
+            using var cts = new CancellationTokenSource();
+            using var task = FlushAsync(cts.Token);
+            cts.CancelAfter(DefaultTimeout);
+            task.Wait();
         }
 
         protected override void Dispose(bool disposing)

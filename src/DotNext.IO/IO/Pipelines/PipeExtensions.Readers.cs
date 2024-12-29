@@ -530,12 +530,11 @@ public static partial class PipeExtensions
     public static async IAsyncEnumerable<ReadOnlyMemory<byte>> ReadAllAsync(this PipeReader reader, [EnumeratorCancellation] CancellationToken token = default)
     {
         ReadResult result;
-        ReadOnlySequence<byte> buffer;
         do
         {
             result = await reader.ReadAsync(token).ConfigureAwait(false);
             result.ThrowIfCancellationRequested(reader, token);
-            buffer = result.Buffer;
+            var buffer = result.Buffer;
             var consumed = buffer.Start;
 
             try
@@ -549,6 +548,58 @@ public static partial class PipeExtensions
             }
         }
         while (!result.IsCompleted);
+    }
+    
+    /// <summary>
+    /// Reads exactly the specified amount of bytes as a sequence of chunks.
+    /// </summary>
+    /// <param name="reader">The pipe reader.</param>
+    /// <param name="length">The numbers of bytes to read.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>A collection of chunks.</returns>
+    /// <exception cref="EndOfStreamException">Reader doesn't have enough data to skip.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is</exception>
+    public static IAsyncEnumerable<ReadOnlyMemory<byte>> ReadExactlyAsync(this PipeReader reader, long length, CancellationToken token = default)
+    {
+        return length switch
+        {
+            < 0L => AsyncEnumerable.Throw<ReadOnlyMemory<byte>>(new ArgumentOutOfRangeException(nameof(length))),
+            0L => AsyncEnumerable.Empty<ReadOnlyMemory<byte>>(),
+            _ => DoReadExactlyAsync(reader, length, token),
+        };
+        
+        static async IAsyncEnumerable<ReadOnlyMemory<byte>> DoReadExactlyAsync(PipeReader reader, long length, [EnumeratorCancellation] CancellationToken token)
+        {
+            ReadResult result;
+            do
+            {
+                result = await reader.ReadAsync(token).ConfigureAwait(false);
+                result.ThrowIfCancellationRequested(reader, token);
+                var buffer = result.Buffer;
+                var consumed = buffer.Start;
+
+                try
+                {
+                    for (ReadOnlyMemory<byte> block;
+                         length > 0L && buffer.TryGet(ref consumed, out block, advance: false) && !block.IsEmpty;
+                         consumed = buffer.GetPosition(block.Length, consumed),
+                         length -= block.Length)
+                    {
+                        block = block.TrimLength(int.CreateSaturating(length));
+                        yield return block;
+                    }
+                }
+                finally
+                {
+                    reader.AdvanceTo(consumed, buffer.End);
+                }
+            }
+            while (!result.IsCompleted);
+        
+            if (length > 0L)
+                throw new EndOfStreamException();
+        }
     }
 
     /// <summary>

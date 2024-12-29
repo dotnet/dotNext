@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using System.Numerics;
 using System.Text;
 using static System.Globalization.CultureInfo;
@@ -18,7 +19,7 @@ public sealed class BufferWriterSlimTests : Test
         Equal(2, builder.Capacity);
         Equal(2, builder.FreeCapacity);
 
-        builder.Write(stackalloc int[] { 10, 20 });
+        builder.Write([10, 20]);
         Equal(2, builder.WrittenCount);
         Equal(2, builder.Capacity);
         Equal(0, builder.FreeCapacity);
@@ -26,7 +27,7 @@ public sealed class BufferWriterSlimTests : Test
         Equal(10, builder[0]);
         Equal(20, builder[1]);
 
-        builder.Write(stackalloc int[] { 30, 40 });
+        builder.Write([30, 40]);
         Equal(4, builder.WrittenCount);
         True(builder.Capacity >= 2);
         Equal(30, builder[2]);
@@ -38,7 +39,7 @@ public sealed class BufferWriterSlimTests : Test
 
         builder.Clear(true);
         Equal(0, builder.WrittenCount);
-        builder.Write(stackalloc int[] { 50, 60, 70, 80 });
+        builder.Write([50, 60, 70, 80]);
         Equal(4, builder.WrittenCount);
         True(builder.Capacity >= 2);
         Equal(50, builder[0]);
@@ -46,9 +47,9 @@ public sealed class BufferWriterSlimTests : Test
         Equal(70, builder[2]);
         Equal(80, builder[3]);
 
-        builder.Clear(false);
+        builder.Clear();
         Equal(0, builder.WrittenCount);
-        builder.Write(stackalloc int[] { 10, 20, 30, 40 });
+        builder.Write([10, 20, 30, 40]);
         Equal(4, builder.WrittenCount);
         True(builder.Capacity >= 2);
         Equal(10, builder[0]);
@@ -403,7 +404,7 @@ public sealed class BufferWriterSlimTests : Test
 
         using var buffer = writer.DetachOrCopyBuffer();
         var reader = IAsyncBinaryReader.Create(buffer.Memory);
-        using var actual = reader.ReadBlock(format);
+        using var actual = reader.ReadBlock(format, allocator: null);
         Equal(expected, actual.Span);
     }
     
@@ -452,6 +453,68 @@ public sealed class BufferWriterSlimTests : Test
         using (actual)
         {
             Equal(expected, actual.Span);
+        }
+    }
+
+    [Fact]
+    public static void AddList()
+    {
+        var writer = new BufferWriterSlim<int>();
+        try
+        {
+            writer.AddAll(new List<int> { 1, 2 });
+            Equal([1, 2], writer.WrittenSpan);
+        }
+        finally
+        {
+            writer.Dispose();
+        }
+    }
+    
+    [Fact]
+    public static void AddArray()
+    {
+        var writer = new BufferWriterSlim<int>();
+        try
+        {
+            writer.AddAll([1, 2]);
+            Equal([1, 2], writer.WrittenSpan);
+        }
+        finally
+        {
+            writer.Dispose();
+        }
+    }
+    
+    [Fact]
+    public static void AddString()
+    {
+        var writer = new BufferWriterSlim<char>();
+        try
+        {
+            const string expected = "ab";
+            writer.AddAll(expected);
+
+            Equal(expected, writer.WrittenSpan);
+        }
+        finally
+        {
+            writer.Dispose();
+        }
+    }
+    
+    [Fact]
+    public static void AddCountableCollection()
+    {
+        var writer = new BufferWriterSlim<int>();
+        try
+        {
+            writer.AddAll(ImmutableList.Create(1, 2));
+            Equal([1, 2], writer.WrittenSpan);
+        }
+        finally
+        {
+            writer.Dispose();
         }
     }
 }

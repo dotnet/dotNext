@@ -603,7 +603,7 @@ public partial class PersistentState
             {
                 bufferTuple = (writer.WrittenBuffer, footer.Memory);
                 await RandomAccess.WriteAsync(Handle, this, writer.FilePosition, token).ConfigureAwait(false);
-                writer.ClearBuffer();
+                writer.Reset();
                 writer.FilePosition += bufferTuple.Item1.Length;
                 bufferTuple = default;
             }

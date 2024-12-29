@@ -3,5 +3,6 @@ StreamNotWritable=Stream is not writable
 StreamNotReadable=Stream is not readable
 DirectoryNotFound=Directory {0} doesn't exist
 WriterInReadMode=The writer is in read-only mode. Dispose active memory manager obtained from writer
-NoConsumerProvided=No actual consumer is provided
 FileHandleClosed=The file handle is closed
+ReadBufferNotEmpty=The internal buffer has unconsumed data to read
+WriteBufferNotEmpty=The internal buffer has data to flush

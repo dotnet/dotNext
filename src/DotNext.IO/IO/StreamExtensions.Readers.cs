@@ -461,6 +461,7 @@ public static partial class StreamExtensions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> or <paramref name="count"/> is negative.</exception>
     /// <exception cref="NotSupportedException"><paramref name="source"/> doesn't support reading.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes.</exception>
     public static async ValueTask CopyToAsync(this Stream source, IBufferWriter<byte> destination, long count, int bufferSize = 0, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(destination);
@@ -482,21 +483,55 @@ public static partial class StreamExtensions
     /// <remarks>
     /// The returned memory block should not be used between iterations.
     /// </remarks>
-    /// <param name="stream">Readable stream.</param>
+    /// <param name="source">Readable stream.</param>
     /// <param name="bufferSize">The buffer size.</param>
     /// <param name="allocator">The allocator of the buffer.</param>
     /// <param name="token">The token that can be used to cancel the enumeration.</param>
     /// <returns>A collection of memory blocks that can be obtained sequentially to read a whole stream.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than 1.</exception>
-    public static async IAsyncEnumerable<ReadOnlyMemory<byte>> ReadAllAsync(this Stream stream, int bufferSize, MemoryAllocator<byte>? allocator = null, [EnumeratorCancellation] CancellationToken token = default)
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="NotSupportedException"><paramref name="source"/> doesn't support reading.</exception>
+    public static async IAsyncEnumerable<ReadOnlyMemory<byte>> ReadAllAsync(this Stream source, int bufferSize, MemoryAllocator<byte>? allocator = null, [EnumeratorCancellation] CancellationToken token = default)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
-        using var bufferOwner = allocator.AllocateAtLeast(bufferSize);
-        var buffer = bufferOwner.Memory;
+        using var buffer = allocator.AllocateAtLeast(bufferSize);
 
-        for (int count; (count = await stream.ReadAsync(buffer, token).ConfigureAwait(false)) > 0;)
-            yield return buffer.Slice(0, count);
+        for (int bytesRead; (bytesRead = await source.ReadAsync(buffer.Memory, token).ConfigureAwait(false)) > 0;)
+            yield return buffer.Memory.Slice(0, bytesRead);
+    }
+
+    /// <summary>
+    /// Reads exactly the specified amount of bytes as a sequence of chunks.
+    /// </summary>
+    /// <remarks>
+    /// The returned memory block should not be used between iterations.
+    /// </remarks>
+    /// <param name="stream">The stream to read from.</param>
+    /// <param name="length">The numbers of bytes to read.</param>
+    /// <param name="bufferSize">The maximum size of chunks to be returned.</param>
+    /// <param name="allocator">The buffer allocator.</param>
+    /// <param name="token">The token that can be used to cancel the enumeration.</param>
+    /// <returns>A collection of memory blocks that can be obtained sequentially to read the requested amount of bytes.</returns>
+    /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes.</exception>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than 1; or <paramref name="length"/> is less than 0.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static async IAsyncEnumerable<ReadOnlyMemory<byte>> ReadExactlyAsync(this Stream stream, long length, int bufferSize,
+        MemoryAllocator<byte>? allocator = null, [EnumeratorCancellation] CancellationToken token = default)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
+
+        using var buffer = allocator.AllocateAtLeast(bufferSize);
+
+        for (int bytesRead; length > 0L; length -= bytesRead)
+        {
+            bytesRead = await stream.ReadAsync(buffer.Memory.TrimLength(int.CreateSaturating(length)), token).ConfigureAwait(false);
+            if (bytesRead <= 0)
+                throw new EndOfStreamException();
+            
+            yield return buffer.Memory.Slice(0, bytesRead);
+        }
     }
 
     /// <summary>

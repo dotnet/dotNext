@@ -1,14 +1,10 @@
 using System.Buffers;
-using System.Globalization;
 using System.Text;
-using static System.Globalization.CultureInfo;
-using DateTimeStyles = System.Globalization.DateTimeStyles;
 
 namespace DotNext.IO;
 
-using DotNext.Buffers.Binary;
-using Net.Cluster;
-using Text;
+using Buffers.Binary;
+using Collections.Generic;
 
 public sealed class StreamExtensionsTests : Test
 {
@@ -156,7 +152,7 @@ public sealed class StreamExtensionsTests : Test
     {
         await using var ms1 = new MemoryStream([1, 2, 3]);
         await using var ms2 = new MemoryStream([4, 5, 6]);
-        await using var combined = ms1.Combine([ms2]);
+        await using var combined = StreamExtensions.Combine([ms1, ms2]);
 
         var buffer = new byte[6];
         await combined.ReadExactlyAsync(buffer);
@@ -169,7 +165,7 @@ public sealed class StreamExtensionsTests : Test
     {
         using var ms1 = new MemoryStream([1, 2, 3]);
         using var ms2 = new MemoryStream([4, 5, 6]);
-        using var combined = ms1.Combine([ms2]);
+        using var combined = List.Singleton(ms1).Append(ms2).Combine();
         using var result = new MemoryStream();
 
         combined.CopyTo(result, 128);
@@ -202,6 +198,37 @@ public sealed class StreamExtensionsTests : Test
         Equal(5, combined.ReadByte());
         Equal(6, combined.ReadByte());
         Equal(-1, combined.ReadByte());
+    }
+
+    [Theory]
+    [InlineData(2)]
+    [InlineData(3)]
+    [InlineData(4)]
+    [InlineData(5)]
+    [InlineData(6)]
+    [InlineData(7)]
+    [InlineData(8)]
+    [InlineData(9)]
+    [InlineData(10)]
+    public static void CombineManyStreams(byte streamCount)
+    {
+        using var stream = GetStreams(streamCount).Combine(leaveOpen: false);
+        Equal(streamCount, stream.Length);
+        var actual = new byte[streamCount];
+        stream.ReadExactly(actual);
+        var expected = Set.Range<byte, EnclosedEndpoint<byte>, DisclosedEndpoint<byte>>(0, streamCount);
+        Equal(expected, actual);
+        
+        static IEnumerable<Stream> GetStreams(byte streamCount)
+        {
+            for (var i = 0; i < streamCount; i++)
+            {
+                var ms = new MemoryStream();
+                ms.WriteByte((byte)i);
+                ms.Seek(0L, SeekOrigin.Begin);
+                yield return ms;
+            }
+        }
     }
 
     [Fact]
@@ -350,5 +377,20 @@ public sealed class StreamExtensionsTests : Test
         var writer = new ArrayBufferWriter<char>();
         ms.ReadUtf8(stackalloc byte[8], writer);
         Equal(string.Empty, writer.WrittenSpan.ToString());
+    }
+    
+    [Fact]
+    public static async Task ReadBlockAsSequenceAsync()
+    {
+        var bytes = RandomBytes(1024);
+        using var source = new MemoryStream(bytes, false);
+        using var destination = new MemoryStream(1024);
+
+        await foreach (var chunk in source.ReadExactlyAsync(512L, 64))
+        {
+            await destination.WriteAsync(chunk);
+        }
+
+        Equal(new ReadOnlySpan<byte>(bytes, 0, 512), destination.ToArray());
     }
 }

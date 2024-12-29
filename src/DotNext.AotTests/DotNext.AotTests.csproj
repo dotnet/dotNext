@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>DotNext</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Version>5.17.0</Version>
+        <IsPackable>false</IsPackable>
+        <Authors>.NET Foundation and Contributors</Authors>
+        <Product>.NEXT Family of Libraries</Product>
+        <Description>AOT compatibility tests for .NEXT Familiy of Libraries</Description>
+        <Copyright>Copyright © .NET Foundation and Contributors</Copyright>
+        <PackageLicenseUrl>https://github.com/dotnet/DotNext/blob/master/LICENSE</PackageLicenseUrl>
+        <PackageProjectUrl>https://github.com/dotnet/DotNext</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/dotnet/DotNext.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <InvariantGlobalization>true</InvariantGlobalization>
+        <PublishAot>true</PublishAot>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\DotNext\DotNext.csproj"/>
+        <PackageReference Include="MSTest.Engine" />
+        <PackageReference Include="MSTest.SourceGeneration" />
+        <PackageReference Include="Microsoft.Testing.Extensions.TrxReport" />
+        <PackageReference Include="Microsoft.Testing.Platform.MSBuild"/>
+        <PackageReference Include="MSTest.TestFramework" />
+        <PackageReference Include="MSTest.Analyzers" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+    </ItemGroup>
+</Project>

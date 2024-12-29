@@ -199,16 +199,15 @@ public static class TextStreamExtensions
     /// <param name="bufferSize">The buffer size.</param>
     /// <param name="allocator">The allocator of the buffer.</param>
     /// <param name="token">The token that can be used to cancel the enumeration.</param>
-    /// <returns>A collection of memort blocks that can be obtained sequentially to read a whole stream.</returns>
+    /// <returns>A collection of memory blocks that can be obtained sequentially to read a whole stream.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> is less than 1.</exception>
     public static async IAsyncEnumerable<ReadOnlyMemory<char>> ReadAllAsync(this TextReader reader, int bufferSize, MemoryAllocator<char>? allocator = null, [EnumeratorCancellation] CancellationToken token = default)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
-        using var bufferOwner = allocator.AllocateAtLeast(bufferSize);
-        var buffer = bufferOwner.Memory;
+        using var buffer = allocator.AllocateAtLeast(bufferSize);
 
-        for (int count; (count = await reader.ReadAsync(buffer, token).ConfigureAwait(false)) > 0;)
-            yield return buffer.Slice(0, count);
+        for (int count; (count = await reader.ReadAsync(buffer.Memory, token).ConfigureAwait(false)) > 0;)
+            yield return buffer.Memory.Slice(0, count);
     }
 }

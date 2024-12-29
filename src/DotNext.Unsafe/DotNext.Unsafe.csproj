@@ -6,8 +6,8 @@
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
-    <IsTrimmable>true</IsTrimmable>
-    <VersionPrefix>5.16.1</VersionPrefix>
+    <IsAotCompatible>true</IsAotCompatible>
+    <VersionPrefix>5.17.0</VersionPrefix>
     <Features>nullablePublicOnly</Features>
     <VersionSuffix></VersionSuffix>
     <Authors>.NET Foundation and Contributors</Authors>

@@ -141,7 +141,10 @@ public abstract partial class RandomAccessStream : Stream, IFlushable
             ? newPosition
             : throw new IOException();
     }
-    
+
+    /// <inheritdoc/>
+    public override bool CanSeek => true;
+
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {

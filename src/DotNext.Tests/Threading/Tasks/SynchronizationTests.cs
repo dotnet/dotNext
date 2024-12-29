@@ -179,4 +179,39 @@ public sealed class SynchronizationTests : Test
         Equal(40, result4.Value);
         Equal(50, result5.Value);
     }
+
+    [Fact]
+    public static void SynchronousWait()
+    {
+        var cts = new TaskCompletionSource();
+        var task = new ValueTask(cts.Task);
+        ThreadPool.UnsafeQueueUserWorkItem(static cts =>
+        {
+            Thread.Sleep(100);
+            cts.SetResult();
+        }, cts, preferLocal: false);
+        task.Wait();
+        
+        // ensure that the current thread in not interrupted
+        Thread.Sleep(0);
+    }
+    
+    [Fact]
+    public static void SynchronousWaitWithResult()
+    {
+        var cts = new TaskCompletionSource<int>();
+        var task = new ValueTask<int>(cts.Task);
+
+        const int expected = 42;
+        ThreadPool.UnsafeQueueUserWorkItem(static cts =>
+        {
+            Thread.Sleep(100);
+            cts.SetResult(expected);
+        }, cts, preferLocal: false);
+        
+        Equal(expected, task.Wait());
+        
+        // ensure that the current thread in not interrupted
+        Thread.Sleep(0);
+    }
 }
