@@ -160,6 +160,12 @@ public sealed class PoolingBufferedStreamTests : Test
         Equal(stream.CanWrite, bufferedStream.CanWrite);
         Equal(stream.CanSeek, bufferedStream.CanSeek);
         Equal(stream.CanTimeout, bufferedStream.CanTimeout);
+
+        Throws<InvalidOperationException>(() => stream.ReadTimeout);
+        Throws<InvalidOperationException>(() => stream.ReadTimeout = 10);
+        
+        Throws<InvalidOperationException>(() => stream.WriteTimeout);
+        Throws<InvalidOperationException>(() => stream.WriteTimeout = 10);
     }
 
     [Fact]
@@ -298,5 +304,41 @@ public sealed class PoolingBufferedStreamTests : Test
         await bufferedStream.CopyToAsync(destination);
 
         Equal(expected, destination.GetBuffer());
+    }
+
+    [Fact]
+    public static void SetLength()
+    {
+        const int bufferSize = 4096;
+        using var stream = new MemoryStream(bufferSize);
+        using var bufferedStream = new PoolingBufferedStream(stream, leaveOpen: false)
+        {
+            MaxBufferSize = bufferSize,
+            Allocator = Memory.GetArrayAllocator<byte>(),
+        };
+
+        var expected = RandomBytes(bufferSize);
+        bufferedStream.Write(expected);
+        
+        bufferedStream.SetLength(bufferSize);
+        Equal(expected, stream.GetBuffer());
+    }
+    
+    [Fact]
+    public static void ResetBuffer()
+    {
+        const int bufferSize = 4096;
+        using var bufferedStream = new PoolingBufferedStream(new MemoryStream(bufferSize), leaveOpen: false)
+        {
+            MaxBufferSize = bufferSize,
+            Allocator = Memory.GetArrayAllocator<byte>(),
+        };
+
+        var expected = RandomBytes(bufferSize);
+        bufferedStream.Write(expected);
+        True(bufferedStream.HasBufferedDataToWrite);
+        
+        bufferedStream.Reset();
+        False(bufferedStream.HasBufferedDataToWrite);
     }
 }

@@ -70,11 +70,11 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     /// <inheritdoc/>
     public override int ReadTimeout
     {
-        get => stream?.ReadTimeout ?? throw new NotSupportedException();
+        get => stream?.ReadTimeout ?? throw new InvalidOperationException();
         set
         {
             if (stream is null)
-                throw new NotSupportedException();
+                throw new InvalidOperationException();
             
             stream.ReadTimeout = value;
         }
@@ -83,11 +83,11 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     /// <inheritdoc/>
     public override int WriteTimeout
     {
-        get => stream?.WriteTimeout ?? throw new NotSupportedException();
+        get => stream?.WriteTimeout ?? throw new InvalidOperationException();
         set
         {
             if (stream is null)
-                throw new NotSupportedException();
+                throw new InvalidOperationException();
             
             stream.WriteTimeout = value;
         }
