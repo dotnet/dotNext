@@ -56,8 +56,4 @@
       <Generator></Generator>
     </EmbeddedResource>
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Threading\Concurrent\" />
-  </ItemGroup>
 </Project>
