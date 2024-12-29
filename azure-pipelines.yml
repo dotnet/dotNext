@@ -2,6 +2,7 @@ variables:
   Solution: src/DotNext.sln
   TestFolder: src/DotNext.Tests
   TestProject: $(TestFolder)/DotNext.Tests.csproj
+  AotTestFolder: src/DotNext.AotTests
   InternetAccess: false
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
@@ -22,6 +23,17 @@ stages:
               projects: '$(Solution)'
               feedsToUse: 'config'
               nugetConfigPath: 'NuGet.config'
+          - task: DotNetCoreCLI@2
+            displayName: Publish AOT Tests
+            inputs:
+              command: publish
+              projects: $(AotTestFolder)
+              arguments: --configuration Release
+          - task: CmdLine@2
+            displayName: Run AOT Tests
+            inputs:
+              workingDirectory: $(AotTestFolder)\bin\Release\net8.0\windows-x64\
+              script: start /b DotNext.AotTests.exe
           - task: DotNetCoreCLI@2
             displayName: Test Debug
             inputs:
