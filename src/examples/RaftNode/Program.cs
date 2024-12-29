@@ -1,10 +1,13 @@
 ﻿using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using DotNext;
 using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http;
 using DotNext.Net.Cluster.Consensus.Raft.Membership;
+using Microsoft.AspNetCore.Connections;
 using RaftNode;
+using static System.Globalization.CultureInfo;
 using SslOptions = DotNext.Net.Security.SslOptions;
 
 switch (args.LongLength)
@@ -21,34 +24,80 @@ switch (args.LongLength)
         break;
 }
 
-static Task UseAspNetCoreHost(int port, string? persistentStorage = null)
+static async Task UseAspNetCoreHost(int port, string? persistentStorage = null)
 {
     var configuration = new Dictionary<string, string?>
-            {
-                {"partitioning", "false"},
-                {"lowerElectionTimeout", "150" },
-                {"upperElectionTimeout", "300" },
-                {"requestTimeout", "00:10:00"},
-                {"publicEndPoint", $"https://localhost:{port}"},
-                {"coldStart", "false"},
-                {"requestJournal:memoryLimit", "5" },
-                {"requestJournal:expiration", "00:01:00" }
-            };
-    if (!string.IsNullOrEmpty(persistentStorage))
-        configuration[SimplePersistentState.LogLocation] = persistentStorage;
-    return new HostBuilder().ConfigureWebHost(webHost =>
     {
-        webHost.UseKestrel(options =>
+        { "partitioning", "false" },
+        { "lowerElectionTimeout", "150" },
+        { "upperElectionTimeout", "300" },
+        { "requestTimeout", "00:10:00" },
+        { "publicEndPoint", $"https://localhost:{port}" },
+        { "coldStart", "false" },
+        { "requestJournal:memoryLimit", "5" },
+        { "requestJournal:expiration", "00:01:00" },
+        { SimplePersistentState.LogLocation, persistentStorage },
+    };
+
+    var builder = WebApplication.CreateSlimBuilder();
+    builder.Configuration.AddInMemoryCollection(configuration);
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        options.ListenLocalhost(port, static listener => listener.UseHttps(LoadCertificate()));
+    });
+
+    builder.Services
+        .UseInMemoryConfigurationStorage(AddClusterMembers)
+        .ConfigureCluster<ClusterConfigurator>()
+        .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
+        .AddOptions()
+        .AddRouting();
+    
+    if (!string.IsNullOrWhiteSpace(persistentStorage))
+    {
+        builder.Services.UsePersistenceEngine<ISupplier<long>, SimplePersistentState>()
+            .AddSingleton<IHostedService, DataModifier>();
+    }
+    
+    ConfigureLogging(builder.Logging);
+    builder.JoinCluster();
+
+    await using var app = builder.Build();
+    
+    const string leaderResource = "/leader";
+    const string valueResource = "/value";
+    app.UseConsensusProtocolHandler()
+        .RedirectToLeader(leaderResource)
+        .UseRouting()
+        .UseEndpoints(static endpoints =>
         {
-            options.ListenLocalhost(port, static listener => listener.UseHttps(LoadCertificate()));
-        })
-        .UseStartup<Startup>();
-    })
-    .ConfigureLogging(ConfigureLogging)
-    .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
-    .JoinCluster()
-    .Build()
-    .RunAsync();
+            endpoints.MapGet(leaderResource, RedirectToLeaderAsync);
+            endpoints.MapGet(valueResource, GetValueAsync);
+        });
+    await app.RunAsync();
+    
+    static Task RedirectToLeaderAsync(HttpContext context)
+    {
+        var cluster = context.RequestServices.GetRequiredService<IRaftCluster>();
+        return context.Response.WriteAsync($"Leader address is {cluster.Leader?.EndPoint}. Current address is {context.Connection.LocalIpAddress}:{context.Connection.LocalPort}", context.RequestAborted);
+    }
+
+    static async Task GetValueAsync(HttpContext context)
+    {
+        var cluster = context.RequestServices.GetRequiredService<IRaftCluster>();
+        var provider = context.RequestServices.GetRequiredService<ISupplier<long>>();
+
+        await cluster.ApplyReadBarrierAsync(context.RequestAborted);
+        await context.Response.WriteAsync(provider.Invoke().ToString(InvariantCulture), context.RequestAborted);
+    }
+    
+    // NOTE: this way of adding members to the cluster is not recommended in production code
+    static void AddClusterMembers(ICollection<UriEndPoint> members)
+    {
+        members.Add(new UriEndPoint(new("https://localhost:3262", UriKind.Absolute)));
+        members.Add(new UriEndPoint(new("https://localhost:3263", UriKind.Absolute)));
+        members.Add(new UriEndPoint(new("https://localhost:3264", UriKind.Absolute)));
+    }
 }
 
 static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string? persistentStorage)
