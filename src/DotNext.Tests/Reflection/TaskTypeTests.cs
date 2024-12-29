@@ -39,6 +39,6 @@ public sealed class TaskTypeTests : Test
     [Fact]
     public static void IsCompletedPropertyGetter()
     {
-        True(TaskType.GetIsCompletedGetter(Task.CompletedTask).Invoke());
+        True(Task.CompletedTask.GetIsCompletedGetter().Invoke());
     }
 }
