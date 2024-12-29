@@ -25,18 +25,6 @@ stages:
               feedsToUse: 'config'
               nugetConfigPath: 'NuGet.config'
           - task: DotNetCoreCLI@2
-            displayName: Publish AOT Tests
-            inputs:
-              command: publish
-              publishWebProjects: false
-              projects: $(AotTestProject)
-              arguments: --configuration Release --output $(AotTestFolder)/bin/aot-tests
-          - task: CmdLine@2
-            displayName: Run AOT Tests
-            inputs:
-              workingDirectory: $(AotTestFolder)/bin/aot-tests
-              script: start /b DotNext.AotTests.exe
-          - task: DotNetCoreCLI@2
             displayName: Test Debug
             inputs:
               command: test
@@ -61,6 +49,18 @@ stages:
               feedsToUse: 'config'
               nugetConfigPath: 'NuGet.config'
               arguments: --configuration Debug
+          - task: DotNetCoreCLI@2
+            displayName: Publish AOT Tests
+            inputs:
+              command: publish
+              publishWebProjects: false
+              projects: $(AotTestProject)
+              arguments: --configuration Release --output $(AotTestFolder)/bin/aot-tests
+          - task: CmdLine@2
+            displayName: Run AOT Tests
+            inputs:
+              workingDirectory: $(AotTestFolder)/bin/aot-tests
+              script: ./DotNext.AotTests
           - task: DotNetCoreCLI@2
             displayName: Test Debug
             inputs:
