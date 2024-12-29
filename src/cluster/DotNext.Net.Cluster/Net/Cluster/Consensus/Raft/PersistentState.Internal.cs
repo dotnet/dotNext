@@ -209,7 +209,7 @@ public partial class PersistentState
         }
     }
 
-    private sealed class VersionedFileReader(SafeFileHandle handle, long fileOffset, int bufferSize, MemoryAllocator<byte> allocator, ulong version) : FileReader(handle, fileOffset, bufferSize, allocator)
+    private sealed class VersionedFileReader(SafeFileHandle handle, ulong version) : FileReader(handle)
     {
         internal void VerifyVersion(ulong expected)
         {
@@ -262,13 +262,13 @@ public partial class PersistentState
             }
 
             this.fileOffset = fileOffset;
-            writer = new(Handle, fileOffset, bufferSize, allocator);
+            writer = new(Handle) { FilePosition = fileOffset, MaxBufferSize = bufferSize, Allocator = allocator };
             readers = new VersionedFileReader[readersCount];
             this.allocator = allocator;
             FileName = fileName;
 
             if (readers.Length is 1)
-                readers[0] = new(Handle, fileOffset, bufferSize, allocator, version);
+                readers[0] = new(Handle, version) { FilePosition = this.fileOffset, MaxBufferSize = bufferSize, Allocator = allocator };
 
             autoFlush = writeMode is WriteMode.AutoFlush;
         }
@@ -322,7 +322,12 @@ public partial class PersistentState
             var version = Volatile.Read(in this.version);
             if (result is null)
             {
-                result = new(Handle, fileOffset, writer.MaxBufferSize, allocator, version);
+                result = new(Handle, version)
+                {
+                    FilePosition = fileOffset,
+                    MaxBufferSize = writer.MaxBufferSize,
+                    Allocator = allocator,
+                };
             }
             else
             {

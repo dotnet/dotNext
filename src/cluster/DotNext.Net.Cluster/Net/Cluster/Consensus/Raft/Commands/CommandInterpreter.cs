@@ -49,9 +49,8 @@ public partial class CommandInterpreter : Disposable
     /// Initializes a new interpreter and discovers methods marked
     /// with <see cref="CommandHandlerAttribute"/> attribute.
     /// </summary>
-    [DynamicDependency(DynamicallyAccessedMemberTypes.PublicConstructors, typeof(CommandHandler<>))]
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(Func<,>))]
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     protected CommandInterpreter()
     {
         // explore command types

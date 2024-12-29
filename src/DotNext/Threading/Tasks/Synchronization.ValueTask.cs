@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks;
 
@@ -15,7 +16,7 @@ public static partial class Synchronization
         {
             try
             {
-                await GetTask(tasks, i).ConfigureAwait(false);
+                await GetTask(in tasks, i).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -25,8 +26,8 @@ public static partial class Synchronization
 
         aggregator.ThrowIfNeeded();
 
-        static ValueTask GetTask(in T tuple, int index)
-            => Unsafe.Add(ref Unsafe.As<T, ValueTask>(ref Unsafe.AsRef(in tuple)), index);
+        static ref readonly ValueTask GetTask(ref readonly T tuple, int index)
+            => ref Unsafe.Add(ref Unsafe.As<T, ValueTask>(ref Unsafe.AsRef(in tuple)), index);
     }
 
     /// <summary>
@@ -291,5 +292,83 @@ public static partial class Synchronization
         }
 
         return result;
+    }
+    
+    /// <summary>
+    /// Waits for the task synchronously.
+    /// </summary>
+    /// <remarks>
+    /// In contrast to <see cref="Task.Wait()"/> this method doesn't use wait handles.
+    /// </remarks>
+    /// <param name="task">The task to wait.</param>
+    public static void Wait(this in ValueTask task)
+    {
+        var awaiter = task.ConfigureAwait(false).GetAwaiter();
+
+        unsafe
+        {
+            Wait(ref awaiter, &IsCompleted);
+        }
+        
+        awaiter.GetResult();
+
+        static bool IsCompleted(ref ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter)
+            => awaiter.IsCompleted;
+    }
+
+    /// <summary>
+    /// Waits for the task synchronously.
+    /// </summary>
+    /// <remarks>
+    /// In contrast to <see cref="Task.Wait()"/> this method doesn't use wait handles.
+    /// </remarks>
+    /// <typeparam name="T">The type of the task result.</typeparam>
+    /// <param name="task">The task to wait.</param>
+    public static T Wait<T>(this in ValueTask<T> task)
+    {
+        var awaiter = task.ConfigureAwait(false).GetAwaiter();
+
+        unsafe
+        {
+            Wait(ref awaiter, &IsCompleted);
+        }
+
+        return awaiter.GetResult();
+
+        static bool IsCompleted(ref ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter awaiter)
+            => awaiter.IsCompleted;
+    }
+
+    private static unsafe void Wait<TAwaiter>(ref TAwaiter awaiter, delegate*<ref TAwaiter, bool> isCompleted)
+        where TAwaiter : struct, ICriticalNotifyCompletion
+    {
+        if (!SpinWait(ref awaiter, isCompleted))
+            BlockingWait(ref awaiter, isCompleted);
+        
+        static bool SpinWait(ref TAwaiter awaiter, delegate*<ref TAwaiter, bool> isCompleted)
+        {
+            bool result;
+            for (var spinner = new SpinWait();; spinner.SpinOnce())
+            {
+                if ((result = isCompleted(ref awaiter)) || spinner.NextSpinWillYield)
+                    break;
+            }
+
+            return result;
+        }
+
+        static void BlockingWait(ref TAwaiter awaiter, delegate*<ref TAwaiter, bool> isCompleted)
+        {
+            awaiter.UnsafeOnCompleted(Thread.CurrentThread.Interrupt);
+            try
+            {
+                // park thread
+                Thread.Sleep(Infinite);
+            }
+            catch (ThreadInterruptedException) when (isCompleted(ref awaiter))
+            {
+                // suppress exception
+            }
+        }
     }
 }

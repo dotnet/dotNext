@@ -34,7 +34,7 @@ public sealed class ListTests : Test
     [Fact]
     public static void ReadOnlyView()
     {
-        var view = new ReadOnlyListView<string, int>(new[] { "1", "2", "3" }, new Converter<string, int>(int.Parse));
+        var view = new ReadOnlyListView<string, int>(["1", "2", "3"], new Converter<string, int>(int.Parse));
         Equal(3, view.Count);
         Equal(1, view[0]);
         Equal(2, view[1]);
@@ -46,7 +46,7 @@ public sealed class ListTests : Test
     [Fact]
     public static void ReadOnlyIndexer()
     {
-        IReadOnlyList<long> array = new[] { 5L, 6L, 20L };
+        IReadOnlyList<long> array = [5L, 6L, 20L];
         Equal(20L, List.Indexer<long>.ReadOnly(array, 2));
         Equal(6L, array.IndexerGetter().Invoke(1));
     }
@@ -54,7 +54,7 @@ public sealed class ListTests : Test
     [Fact]
     public static void Indexer()
     {
-        IList<long> array = new[] { 5L, 6L, 30L };
+        IList<long> array = [5L, 6L, 30L];
         Equal(30L, List.Indexer<long>.Getter(array, 2));
         List.Indexer<long>.Setter(array, 1, 10L);
         Equal(10L, array.IndexerGetter().Invoke(1));
@@ -99,8 +99,8 @@ public sealed class ListTests : Test
     public static void SliceList()
     {
         SliceTest(new List<long> { 10L, 20L, 30L, 40L });
-        SliceTest(new[] { 10L, 20L, 30L, 40L });
-        SliceTest(new ArraySegment<long>(new[] { 10L, 20L, 30L, 40L }, 0, 4));
+        SliceTest([10L, 20L, 30L, 40L]);
+        SliceTest(new ArraySegment<long>([10L, 20L, 30L, 40L], 0, 4));
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public sealed class ListTests : Test
     [Fact]
     public static void ArraySlice()
     {
-        var segment = List.Slice(new int[] { 10, 20, 30 }, 0..2);
+        var segment = List.Slice([10, 20, 30], 0..2);
         True(segment.TryGetSpan(out var span));
         Equal(2, span.Length);
         Equal(10, span[0]);

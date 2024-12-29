@@ -34,6 +34,7 @@ public partial class MessageHandler : IInputChannel
     /// Initializes a new typed message handler and discover all methods suitable for handling messages.
     /// </summary>
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     protected MessageHandler()
     {
         // inspect message types

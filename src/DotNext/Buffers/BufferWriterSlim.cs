@@ -354,6 +354,58 @@ public ref partial struct BufferWriterSlim<T>
     }
 
     /// <summary>
+    /// Writes a collection of elements.
+    /// </summary>
+    /// <param name="collection">A collection of elements.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="collection"/> is <see langword="null"/>.</exception>
+    public void AddAll(IEnumerable<T> collection)
+    {
+        ArgumentNullException.ThrowIfNull(collection);
+
+        ReadOnlySpan<T> input;
+        switch (collection)
+        {
+            case List<T> list:
+                input = CollectionsMarshal.AsSpan(list);
+                break;
+            case T[] array:
+                input = array;
+                break;
+            case string str:
+                input = Unsafe.BitCast<ReadOnlyMemory<char>, ReadOnlyMemory<T>>(str.AsMemory()).Span;
+                break;
+            case ArraySegment<T> segment:
+                input = segment;
+                break;
+            default:
+                WriteSlow(collection);
+                return;
+        }
+
+        Write(input);
+    }
+
+    private void WriteSlow(IEnumerable<T> collection)
+    {
+        using var enumerator = collection.GetEnumerator();
+        if (collection.TryGetNonEnumeratedCount(out var count))
+        {
+            var buffer = InternalGetSpan(count);
+            for (count = 0; count < buffer.Length && enumerator.MoveNext(); count++)
+            {
+                buffer[count] = enumerator.Current;
+            }
+
+            position += count;
+        }
+
+        while (enumerator.MoveNext())
+        {
+            Add(enumerator.Current);
+        }
+    }
+
+    /// <summary>
     /// Releases internal buffer used by this builder.
     /// </summary>
     public void Dispose()

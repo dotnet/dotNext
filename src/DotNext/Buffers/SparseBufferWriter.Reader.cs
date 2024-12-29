@@ -145,12 +145,6 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
         if (count > 0L)
             throw new InvalidOperationException(ExceptionMessages.EndOfBuffer(count));
 
-        if (head is null || tail is null)
-            return ReadOnlySequence<T>.Empty;
-
-        if (ReferenceEquals(head, tail))
-            return new(head.Memory);
-
         return Chunk<T>.CreateSequence(head, tail);
     }
 

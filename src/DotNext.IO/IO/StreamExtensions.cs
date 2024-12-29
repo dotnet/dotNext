@@ -3,6 +3,9 @@ using Microsoft.Win32.SafeHandles;
 
 namespace DotNext.IO;
 
+using Buffers;
+using static Runtime.Intrinsics;
+
 /// <summary>
 /// Represents high-level read/write methods for the stream.
 /// </summary>
@@ -18,14 +21,70 @@ public static partial class StreamExtensions
             throw new ArgumentException(ExceptionMessages.BufferTooSmall, expression);
     }
 
+    private static Stream Combine(Stream stream, ReadOnlySpan<Stream> others, bool leaveOpen)
+        => others switch
+        {
+            [] => stream,
+            [var s] => new SparseStream<(Stream, Stream)>((stream, s), leaveOpen),
+            [var s1, var s2] => new SparseStream<(Stream, Stream, Stream)>((stream, s1, s2), leaveOpen),
+            [var s1, var s2, var s3] => new SparseStream<(Stream, Stream, Stream, Stream)>((stream, s1, s2, s3), leaveOpen),
+            [var s1, var s2, var s3, var s4] => new SparseStream<(Stream, Stream, Stream, Stream, Stream)>((stream, s1, s2, s3, s4), leaveOpen),
+            [var s1, var s2, var s3, var s4, var s5] => new SparseStream<(Stream, Stream, Stream, Stream, Stream, Stream)>((stream, s1, s2, s3, s4,
+                s5), leaveOpen),
+            [var s1, var s2, var s3, var s4, var s5, var s6] => new SparseStream<(Stream, Stream, Stream, Stream, Stream, Stream, Stream)>((stream, s1, s2, s3, s4,
+                s5, s6), leaveOpen),
+            { Length: int.MaxValue } => throw new InsufficientMemoryException(),
+            _ => new UnboundedSparseStream(stream, others, leaveOpen),
+        };
+
     /// <summary>
     /// Combines multiple readable streams.
     /// </summary>
     /// <param name="stream">The stream to combine.</param>
     /// <param name="others">A collection of streams.</param>
     /// <returns>An object that represents multiple streams as one logical stream.</returns>
-    public static Stream Combine(this Stream stream, ReadOnlySpan<Stream> others)
-        => others is { Length: > 0 } ? new SparseStream([stream, .. others]) : stream;
+    public static Stream Combine(this Stream stream, ReadOnlySpan<Stream> others) // TODO: Use params in future
+        => Combine(stream, others, leaveOpen: true);
+
+    /// <summary>
+    /// Combines multiple readable streams.
+    /// </summary>
+    /// <param name="streams">A collection of streams.</param>
+    /// <param name="leaveOpen"><see langword="true"/> to keep the wrapped streams alive when combined stream disposed; otherwise, <see langword="false"/>.</param>
+    /// <returns>An object that represents multiple streams as one logical stream.</returns>
+    /// <exception cref="ArgumentException"><paramref name="streams"/> is empty.</exception>
+    public static Stream Combine(this ReadOnlySpan<Stream> streams, bool leaveOpen = true)
+        => streams is [var first, .. var rest]
+            ? Combine(first, rest, leaveOpen)
+            : throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(streams));
+
+    /// <summary>
+    /// Combines multiple readable streams.
+    /// </summary>
+    /// <param name="streams">A collection of streams.</param>
+    /// <param name="leaveOpen"><see langword="true"/> to keep the wrapped streams alive when combined stream disposed; otherwise, <see langword="false"/>.</param>
+    /// <returns>An object that represents multiple streams as one logical stream.</returns>
+    /// <exception cref="ArgumentException"><paramref name="streams"/> is empty.</exception>
+    public static Stream Combine(this IEnumerable<Stream> streams, bool leaveOpen = true)
+    {
+        // Use buffer to allocate streams on the stack
+        var buffer = new StreamBuffer();
+        var writer = new BufferWriterSlim<Stream>(buffer);
+
+        Stream result;
+        try
+        {
+            writer.AddAll(streams);
+            result = Combine(writer.WrittenSpan, leaveOpen);
+        }
+        finally
+        {
+            writer.Dispose();
+            KeepAlive(in buffer);
+        }
+
+        return result;
+    }
 
     /// <summary>
     /// Creates a stream for the specified file handle.
@@ -45,5 +104,11 @@ public static partial class StreamExtensions
         return handle is { IsInvalid: false, IsClosed: false }
             ? new UnbufferedFileStream(handle, access)
             : throw new ArgumentException(ExceptionMessages.FileHandleClosed, nameof(handle));
+    }
+    
+    [InlineArray(32)]
+    private struct StreamBuffer
+    {
+        private Stream element0;
     }
 }

@@ -5,10 +5,12 @@ using System.Numerics;
 
 namespace DotNext.Net.Http;
 
+using Buffers;
+
 /// <summary>
 /// Represents HTTP endpoint.
 /// </summary>
-public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatable<HttpEndPoint>, IEqualityOperators<HttpEndPoint?, HttpEndPoint?, bool>
+public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatable<HttpEndPoint>, IEqualityOperators<HttpEndPoint?, HttpEndPoint?, bool>, ISpanFormattable, IParsable<HttpEndPoint>, IUtf8SpanFormattable
 {
     private const StringComparison HostNameComparison = StringComparison.OrdinalIgnoreCase;
 
@@ -145,7 +147,46 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
     /// Converts endpoint to its string representation.
     /// </summary>
     /// <returns>The string representation of this end point.</returns>
-    public override string ToString() => $"{Scheme}://{Host}:{Port}/";
+    public override string ToString() => ToString(format: null, formatProvider: null);
+
+    /// <inheritdoc/>
+    public string ToString(string? format, IFormatProvider? formatProvider)
+        => $"{Scheme}://{Host}:{Port.ToString(format, formatProvider)}/";
+
+    /// <inheritdoc/>
+    bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+    {
+        var writer = new SpanWriter<char>(destination);
+
+        bool success;
+        charsWritten = (success = writer.TryWrite(Scheme)
+                                  && writer.TryWrite("://")
+                                  && writer.TryWrite(Host)
+                                  && writer.TryAdd(':')
+                                  && writer.TryFormat(Port, format, provider)
+                                  && writer.TryAdd('/'))
+            ? writer.WrittenCount
+            : default;
+        
+        return success;
+    }
+    
+    /// <inheritdoc/>
+    bool IUtf8SpanFormattable.TryFormat(Span<byte> destination, out int bytesWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+    {
+        var writer = new SpanWriter<byte>(destination);
+        bool success;
+        bytesWritten = (success = writer.TryEncodeAsUtf8(Scheme)
+                                  && writer.TryWrite("://"u8)
+                                  && writer.TryEncodeAsUtf8(Host)
+                                  && writer.TryAdd((byte)':')
+                                  && writer.TryFormat(Port, format, provider)
+                                  && writer.TryAdd((byte)'/'))
+            ? writer.WrittenCount
+            : default;
+
+        return success;
+    }
 
     /// <summary>
     /// Attempts to parse HTTP endpoint.
@@ -164,4 +205,12 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
         result = null;
         return false;
     }
+
+    /// <inheritdoc/>
+    static HttpEndPoint IParsable<HttpEndPoint>.Parse(string s, IFormatProvider? provider)
+        => new(new Uri(s));
+
+    /// <inheritdoc/>
+    static bool IParsable<HttpEndPoint>.TryParse([NotNullWhen(true)] string? s, IFormatProvider? provider, [MaybeNullWhen(false)] out HttpEndPoint result)
+        => TryParse(s, out result);
 }

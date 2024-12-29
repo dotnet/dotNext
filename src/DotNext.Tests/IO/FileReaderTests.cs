@@ -6,7 +6,8 @@ public sealed class FileReaderTests : Test
     public static async Task SimpleReadAsync()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(handle);
         False(reader.HasBufferedData);
         True(reader.Buffer.IsEmpty);
@@ -26,26 +27,27 @@ public sealed class FileReaderTests : Test
         True(reader.As<IAsyncBinaryReader>().TryGetRemainingBytesCount(out remainingCount));
         Equal(expected.Length, remainingCount);
 
-        Equal(expected, reader.Buffer.ToArray());
+        Equal(expected, reader.Buffer);
     }
 
     [Fact]
     public static async Task ReadBufferTwiceAsync()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
-        using var reader = new FileReader(handle, bufferSize: 32);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+        using var reader = new FileReader(handle) { MaxBufferSize = 32 };
 
         var expected = RandomBytes(reader.MaxBufferSize * 2);
         await RandomAccess.WriteAsync(handle, expected, 0L);
 
         True(await reader.ReadAsync());
-        Equal(expected.AsMemory(0, reader.Buffer.Length).ToArray(), reader.Buffer.ToArray());
+        Equal(expected.AsMemory(0, reader.Buffer.Length), reader.Buffer);
 
         reader.Consume(16);
 
         True(await reader.ReadAsync());
-        Equal(expected.AsMemory(16, reader.Buffer.Length).ToArray(), reader.Buffer.ToArray());
+        Equal(expected.AsMemory(16, reader.Buffer.Length), reader.Buffer);
 
         reader.Consume(16);
         True(await reader.ReadAsync());
@@ -60,20 +62,19 @@ public sealed class FileReaderTests : Test
     public static async Task ReadLargeDataAsync()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
-        using var reader = new FileReader(handle, bufferSize: 32);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+        using var reader = new FileReader(handle) { MaxBufferSize = 32 };
 
         var expected = RandomBytes(reader.MaxBufferSize * 2);
         await RandomAccess.WriteAsync(handle, expected, 0L);
 
         True(await reader.ReadAsync());
-        Equal(expected.AsMemory(0, reader.Buffer.Length).ToArray(), reader.Buffer.ToArray());
+        Equal(expected.AsMemory(0, reader.Buffer.Length), reader.Buffer);
 
         var actual = new byte[expected.Length];
         Equal(actual.Length, await reader.ReadAsync(actual));
-
         Equal(expected, actual);
-
         False(await reader.ReadAsync());
     }
 
@@ -81,7 +82,8 @@ public sealed class FileReaderTests : Test
     public static void SimpleRead()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var reader = new FileReader(handle);
         False(reader.HasBufferedData);
         True(reader.Buffer.IsEmpty);
@@ -93,26 +95,27 @@ public sealed class FileReaderTests : Test
         True(reader.HasBufferedData);
         False(reader.Buffer.IsEmpty);
 
-        Equal(expected, reader.Buffer.ToArray());
+        Equal(expected, reader.Buffer);
     }
 
     [Fact]
     public static void ReadBufferTwice()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
-        using var reader = new FileReader(handle, bufferSize: 32);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+        using var reader = new FileReader(handle) { MaxBufferSize = 32 };
 
         var expected = RandomBytes(reader.MaxBufferSize * 2);
         RandomAccess.Write(handle, expected, 0L);
 
         True(reader.Read());
-        Equal(expected.AsMemory(0, reader.Buffer.Length).ToArray(), reader.Buffer.ToArray());
+        Equal(expected.AsMemory(0, reader.Buffer.Length), reader.Buffer);
 
         reader.Consume(16);
 
         True(reader.Read());
-        Equal(expected.AsMemory(16, reader.Buffer.Length).ToArray(), reader.Buffer.ToArray());
+        Equal(expected.AsMemory(16, reader.Buffer.Length), reader.Buffer);
 
         reader.Consume(16);
         True(reader.Read());
@@ -127,14 +130,15 @@ public sealed class FileReaderTests : Test
     public static void ReadLargeData()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.Asynchronous);
-        using var reader = new FileReader(handle, bufferSize: 32);
+        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+        using var reader = new FileReader(handle) { MaxBufferSize = 32 };
 
         var expected = RandomBytes(reader.MaxBufferSize * 2);
         RandomAccess.Write(handle, expected, 0L);
 
         True(reader.Read());
-        Equal(expected.AsMemory(0, reader.Buffer.Length).ToArray(), reader.Buffer.ToArray());
+        Equal(expected.AsMemory(0, reader.Buffer.Length), reader.Buffer);
 
         var actual = new byte[expected.Length];
         Equal(actual.Length, reader.Read(actual));
@@ -148,8 +152,9 @@ public sealed class FileReaderTests : Test
     public static async Task ReadSequentially()
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        await using var fs = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.Asynchronous);
-        using var reader = new FileReader(fs, bufferSize: 32);
+        await using var fs = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096,
+            FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+        using var reader = new FileReader(fs) { MaxBufferSize = 32 };
         var bytes = RandomBytes(1024);
 
         await fs.WriteAsync(bytes);

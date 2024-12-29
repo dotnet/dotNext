@@ -64,6 +64,7 @@ public readonly struct EqualityComparerBuilder<T>
     }
 
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Dynamic code generation may be incompatible with AOT")]
     private static PropertyInfo? GetDefaultEqualityComparer(Type target)
         => typeof(EqualityComparer<>)
                 .MakeGenericType(target)
@@ -71,6 +72,7 @@ public readonly struct EqualityComparerBuilder<T>
 
     private static FieldInfo? HashSaltField => typeof(RandomExtensions).GetField(nameof(RandomExtensions.BitwiseHashSalt), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
 
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodCallExpression EqualsMethodForValueType(MemberExpression first, MemberExpression second)
     {
@@ -97,6 +99,7 @@ public readonly struct EqualityComparerBuilder<T>
         return Expression.Call(Expression.Property(null, defaultProperty), method, first, second);
     }
 
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static Expression HashCodeMethodForValueType(Expression expr, ConstantExpression salted)
     {
@@ -130,6 +133,7 @@ public readonly struct EqualityComparerBuilder<T>
         return expr;
     }
 
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodInfo EqualsMethodForArrayElementType(Type itemType)
     {
@@ -151,6 +155,7 @@ public readonly struct EqualityComparerBuilder<T>
         return new Func<IEnumerable<object>?, IEnumerable<object>?, bool>(Collection.SequenceEqual).Method;
     }
 
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodCallExpression EqualsMethodForArrayElementType(MemberExpression fieldX, MemberExpression fieldY)
     {
@@ -159,6 +164,7 @@ public readonly struct EqualityComparerBuilder<T>
         return Expression.Call(method, fieldX, fieldY);
     }
 
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodInfo HashCodeMethodForArrayElementType(Type itemType)
     {
@@ -174,6 +180,7 @@ public readonly struct EqualityComparerBuilder<T>
             .MakeGenericMethod(itemType);
     }
 
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodCallExpression HashCodeMethodForArrayElementType(Expression expr, ConstantExpression salted)
     {
@@ -192,11 +199,10 @@ public readonly struct EqualityComparerBuilder<T>
         }
     }
 
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private Func<T?, T?, bool> BuildEquals()
     {
-        if (!RuntimeFeature.IsDynamicCodeSupported)
-            throw new PlatformNotSupportedException();
         var x = Expression.Parameter(typeof(T));
         if (x.Type.IsPrimitive)
             return EqualityComparer<T?>.Default.Equals;
@@ -238,11 +244,10 @@ public readonly struct EqualityComparerBuilder<T>
         return Expression.Lambda<Func<T?, T?, bool>>(expr, false, x, y).Compile();
     }
 
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private Func<T, int> BuildGetHashCode()
     {
-        if (!RuntimeFeature.IsDynamicCodeSupported)
-            throw new PlatformNotSupportedException();
         Expression expr;
         var inputParam = Expression.Parameter(typeof(T));
         if (inputParam.Type.IsPrimitive)
@@ -291,6 +296,7 @@ public readonly struct EqualityComparerBuilder<T>
     /// <param name="equals">The implementation of equality check.</param>
     /// <param name="hashCode">The implementation of hash code.</param>
     /// <exception cref="PlatformNotSupportedException">Dynamic code generation is not supported by underlying CLR implementation.</exception>
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     public void Build(out Func<T?, T?, bool> equals, out Func<T, int> hashCode)
     {
@@ -303,6 +309,7 @@ public readonly struct EqualityComparerBuilder<T>
     /// </summary>
     /// <returns>The generated equality comparer.</returns>
     /// <exception cref="PlatformNotSupportedException">Dynamic code generation is not supported by underlying CLR implementation.</exception>
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     public IEqualityComparer<T> Build()
     {

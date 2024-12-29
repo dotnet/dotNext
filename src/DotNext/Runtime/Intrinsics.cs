@@ -387,4 +387,28 @@ public static class Intrinsics
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool AreCompatible<T1, T2>()
         => Unsafe.SizeOf<T1>() == Unsafe.SizeOf<T2>() && AlignOf<T1>() == AlignOf<T2>();
+
+    /// <summary>
+    /// Keeps the reference to the value type alive.
+    /// </summary>
+    /// <param name="location">A location of the object.</param>
+    /// <typeparam name="T">The value type.</typeparam>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void KeepAlive<T>(ref readonly T location)
+        where T : struct
+    {
+        if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+            KeepAlive(in InToRef<T, byte>(in location));
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    [StackTraceHidden]
+    private static void KeepAlive(ref readonly byte location)
+    {
+        // We cannot inline this check to avoid compiler optimization to eliminate null check.
+        // This check can be eliminated because typically the location points to the field in the class
+        // and that field is already statically checked for null
+        if (Unsafe.IsNullRef(in location))
+            throw new ArgumentNullException(nameof(location));
+    }
 }

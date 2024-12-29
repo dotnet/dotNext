@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -13,17 +14,19 @@ public static partial class Memory
     /// <param name="chunks">The sequence of memory blocks.</param>
     /// <typeparam name="T">The type of elements in the memory blocks.</typeparam>
     /// <returns>The constructed <see cref="ReadOnlySequence{T}"/> instance containing memory blocks.</returns>
-    public static ReadOnlySequence<T> ToReadOnlySequence<T>(this IEnumerable<ReadOnlyMemory<T>> chunks)
+    public static ReadOnlySequence<T> ToReadOnlySequence<T>(this IEnumerable<ReadOnlyMemory<T>>? chunks)
     {
         Chunk<T>? head = null, tail = null;
 
         switch (chunks)
         {
+            case null:
+                break;
             case ReadOnlyMemory<T>[] array:
-                FromSpan(array.AsSpan(), ref head, ref tail);
+                CreateChunks(array.AsSpan(), ref head, ref tail);
                 break;
             case List<ReadOnlyMemory<T>> list:
-                FromSpan(CollectionsMarshal.AsSpan(list), ref head, ref tail);
+                CreateChunks(CollectionsMarshal.AsSpan(list), ref head, ref tail);
                 break;
             case LinkedList<ReadOnlyMemory<T>> list:
                 FromLinkedList(list, ref head, ref tail);
@@ -33,26 +36,11 @@ public static partial class Memory
                 break;
         }
 
-        if (head is null || tail is null)
-            return ReadOnlySequence<T>.Empty;
-
-        if (ReferenceEquals(head, tail))
-            return new(head.Memory);
-
         return Chunk<T>.CreateSequence(head, tail);
 
         static void ToReadOnlySequenceSlow(IEnumerable<ReadOnlyMemory<T>> chunks, ref Chunk<T>? head, ref Chunk<T>? tail)
         {
             foreach (var segment in chunks)
-            {
-                if (!segment.IsEmpty)
-                    Chunk<T>.AddChunk(segment, ref head, ref tail);
-            }
-        }
-
-        static void FromSpan(ReadOnlySpan<ReadOnlyMemory<T>> chunks, ref Chunk<T>? head, ref Chunk<T>? tail)
-        {
-            foreach (ref readonly var segment in chunks)
             {
                 if (!segment.IsEmpty)
                     Chunk<T>.AddChunk(segment, ref head, ref tail);
@@ -71,42 +59,60 @@ public static partial class Memory
     }
 
     /// <summary>
+    /// Converts the sequence of memory blocks to <see cref="ReadOnlySequence{T}"/> data type.
+    /// </summary>
+    /// <param name="chunks">The sequence of memory blocks.</param>
+    /// <typeparam name="T">The type of elements in the memory blocks.</typeparam>
+    /// <returns>The constructed <see cref="ReadOnlySequence{T}"/> instance containing memory blocks.</returns>
+    public static ReadOnlySequence<T> ToReadOnlySequence<T>(ReadOnlySpan<ReadOnlyMemory<T>> chunks) // TODO: use params
+    {
+        switch (chunks)
+        {
+            case []:
+                return ReadOnlySequence<T>.Empty;
+            case [var chunk]:
+                return new(chunk);
+            default:
+                Chunk<T>? head = null, tail = null;
+                CreateChunks(chunks, ref head, ref tail);
+                return Chunk<T>.CreateSequence(head, tail);
+        }
+    }
+    
+    private static void CreateChunks<T>(ReadOnlySpan<ReadOnlyMemory<T>> chunks, ref Chunk<T>? head, ref Chunk<T>? tail)
+    {
+        foreach (ref readonly var segment in chunks)
+        {
+            if (!segment.IsEmpty)
+                Chunk<T>.AddChunk(segment, ref head, ref tail);
+        }
+    }
+
+    /// <summary>
     /// Constructs a sequence of characters from a collection of strings.
     /// </summary>
     /// <param name="strings">A collection of strings.</param>
     /// <returns>A sequence of characters representing concatenated strings.</returns>
-    public static ReadOnlySequence<char> ToReadOnlySequence(this IEnumerable<string?> strings)
+    public static ReadOnlySequence<char> ToReadOnlySequence(this IEnumerable<string?>? strings)
     {
         Chunk<char>? head = null, tail = null;
 
         switch (strings)
         {
+            case null:
+                break;
             case List<string?> list:
-                ToReadOnlySequence(CollectionsMarshal.AsSpan(list), ref head, ref tail);
+                CreateChunks(CollectionsMarshal.AsSpan(list), ref head, ref tail);
                 break;
             case string?[] array:
-                ToReadOnlySequence(array.AsSpan(), ref head, ref tail);
+                CreateChunks(array.AsSpan(), ref head, ref tail);
                 break;
             default:
                 ToReadOnlySequenceSlow(strings, ref head, ref tail);
                 break;
         }
 
-        if (head is null || tail is null)
-            return ReadOnlySequence<char>.Empty;
-
-        return ReferenceEquals(head, tail)
-            ? new(head.Memory)
-            : Chunk<char>.CreateSequence(head, tail);
-
-        static void ToReadOnlySequence(ReadOnlySpan<string?> strings, ref Chunk<char>? head, ref Chunk<char>? tail)
-        {
-            foreach (var str in strings)
-            {
-                if (str is { Length: > 0 })
-                    Chunk<char>.AddChunk(str.AsMemory(), ref head, ref tail);
-            }
-        }
+        return Chunk<char>.CreateSequence(head, tail);
 
         static void ToReadOnlySequenceSlow(IEnumerable<string?> strings, ref Chunk<char>? head, ref Chunk<char>? tail)
         {
@@ -115,6 +121,35 @@ public static partial class Memory
                 if (str is { Length: > 0 })
                     Chunk<char>.AddChunk(str.AsMemory(), ref head, ref tail);
             }
+        }
+    }
+
+    /// <summary>
+    /// Constructs a sequence of characters from a collection of strings.
+    /// </summary>
+    /// <param name="strings">A collection of strings.</param>
+    /// <returns>A sequence of characters representing concatenated strings.</returns>
+    public static ReadOnlySequence<char> ToReadOnlySequence(ReadOnlySpan<string?> strings) // TODO: Use params
+    {
+        switch (strings)
+        {
+            case []:
+                return ReadOnlySequence<char>.Empty;
+            case [var str]:
+                return new(str.AsMemory());
+            default:
+                Chunk<char>? head = null, tail = null;
+                CreateChunks(strings, ref head, ref tail);
+                return Chunk<char>.CreateSequence(head, tail);
+        }
+    }
+    
+    private static void CreateChunks(ReadOnlySpan<string?> strings, ref Chunk<char>? head, ref Chunk<char>? tail)
+    {
+        foreach (var str in strings)
+        {
+            if (str is { Length: > 0 })
+                Chunk<char>.AddChunk(str.AsMemory(), ref head, ref tail);
         }
     }
 

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -10,10 +11,14 @@ using Intrinsics = Runtime.Intrinsics;
 
 public partial class FileWriter : IDynamicInterfaceCastable
 {
-    private readonly Action writeCallback, writeAndCopyCallback;
+    private Action? writeCallback, writeAndCopyCallback;
     private ReadOnlyMemory<byte> secondBuffer;
     private ManualResetValueTaskSourceCore<byte> source;
     private ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter;
+
+    private Action WriteCallback => writeCallback ??= OnWrite;
+    
+    private Action WriteAndCopyCallback => writeAndCopyCallback ??= OnWriteAndCopy;
 
     private ReadOnlyMemory<byte> GetBuffer(int index) => index switch
     {
@@ -66,16 +71,15 @@ public partial class FileWriter : IDynamicInterfaceCastable
         try
         {
             awaiter.GetResult();
-
             fileOffset += secondBuffer.Length + bufferOffset;
-            bufferOffset = 0;
+            Reset();
         }
         catch (Exception e)
         {
             source.SetException(e);
             return;
         }
-
+        
         source.SetResult(0);
     }
 
@@ -87,6 +91,7 @@ public partial class FileWriter : IDynamicInterfaceCastable
         var secondBuffer = this.secondBuffer;
         this.secondBuffer = default;
 
+        Debug.Assert(buffer.Length > 0);
         try
         {
             awaiter.GetResult();

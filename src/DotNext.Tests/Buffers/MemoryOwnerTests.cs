@@ -127,4 +127,20 @@ public sealed class MemoryOwnerTests : Test
 
         True(buffer.TryResize(10));
     }
+
+    [Fact]
+    public static void FromFactoryWithSize()
+    {
+        const int size = 512;
+        using var buffer = new MemoryOwner<byte>(MemoryPool<byte>.Shared.Rent, size);
+        True(buffer.Length >= size);
+    }
+    
+    [Fact]
+    public static void FromFactoryWithoutSize()
+    {
+        const int size = 512;
+        using var buffer = new MemoryOwner<byte>(static () => MemoryPool<byte>.Shared.Rent(size));
+        True(buffer.Length >= size);
+    }
 }

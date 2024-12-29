@@ -76,7 +76,8 @@ public static partial class Synchronization
     /// <param name="task">The task to synchronize.</param>
     /// <param name="token">Cancellation token.</param>
     /// <returns>Task result; or <see cref="System.Reflection.Missing.Value"/> returned from <see cref="Result{T}.Value"/> if <paramref name="task"/> is not of type <see cref="Task{TResult}"/>.</returns>
-    [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     public static Result<dynamic?> GetResult(this Task task, CancellationToken token)
     {
         Result<object?> result;
@@ -105,7 +106,8 @@ public static partial class Synchronization
     /// <param name="timeout">Synchronization timeout.</param>
     /// <returns>Task result; or <see cref="System.Reflection.Missing.Value"/> returned from <see cref="Result{T}.Value"/> if <paramref name="task"/> is not of type <see cref="Task{TResult}"/>.</returns>
     /// <exception cref="TimeoutException">Task is not completed.</exception>
-    [RequiresUnreferencedCode("Runtime binding may be incompatible with IL trimming")]
+    [RequiresDynamicCode("Runtime binding requires dynamic code compilation")]
+    [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     public static Result<dynamic?> GetResult(this Task task, TimeSpan timeout)
     {
         Result<dynamic?> result;

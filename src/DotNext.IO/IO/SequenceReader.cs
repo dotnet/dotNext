@@ -252,7 +252,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <param name="allocator">The memory allocator used to place the decoded block of bytes.</param>
     /// <returns>The decoded block of bytes.</returns>
     /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
-    public MemoryOwner<byte> ReadBlock(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null)
+    public MemoryOwner<byte> ReadBlock(LengthFormat lengthFormat, MemoryAllocator<byte>? allocator)
     {
         var length = ReadLength(lengthFormat);
         MemoryOwner<byte> result;
@@ -268,6 +268,15 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
 
         return result;
     }
+
+    /// <summary>
+    /// Reads length-prefixed block of bytes.
+    /// </summary>
+    /// <param name="lengthFormat">The format of the block length encoded in the underlying stream.</param>
+    /// <returns>The decoded block of bytes.</returns>
+    /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
+    public ReadOnlySequence<byte> ReadBlock(LengthFormat lengthFormat)
+        => Read(ReadLength(lengthFormat));
 
     private int Read7BitEncodedInt32()
     {

@@ -449,8 +449,7 @@ public sealed class SpanReaderTests : Test
         True(writer.Write(expected, format) > 0);
         
         var reader = IAsyncBinaryReader.Create(buffer.AsMemory(0, writer.WrittenCount));
-        using var actual = reader.ReadBlock(format);
-        Equal(expected, actual.Span);
+        Equal(expected, reader.ReadBlock(format).FirstSpan);
     }
     
     private static void EncodeDecodeLeb128<T>(ReadOnlySpan<T> values)
