@@ -27,7 +27,7 @@ stages:
             displayName: Publish AOT Tests
             inputs:
               command: publish
-              projects: $(AotTestFolder)
+              workingDirectory: $(AotTestFolder)
               arguments: --configuration Release
           - task: CmdLine@2
             displayName: Run AOT Tests
