@@ -52,6 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="Xunit" />
     <EmbeddedResource Include="node.pfx">
       <Generator></Generator>
     </EmbeddedResource>
