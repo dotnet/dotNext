@@ -341,4 +341,36 @@ public sealed class PoolingBufferedStreamTests : Test
         bufferedStream.Reset();
         False(bufferedStream.HasBufferedDataToWrite);
     }
+
+    [Fact]
+    public static void ReadFromFile()
+    {
+        var expected = RandomBytes(4096);
+        using var handle = File.OpenHandle(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.ReadWrite,
+            options: FileOptions.DeleteOnClose);
+        RandomAccess.Write(handle, expected, fileOffset: 0L);
+        RandomAccess.FlushToDisk(handle);
+
+        using var bufferedStream = new PoolingBufferedStream(handle.AsUnbufferedStream(FileAccess.Read)) { MaxBufferSize = 128 };
+        var actual = new byte[expected.Length];
+        bufferedStream.ReadExactly(actual);
+
+        Equal(expected, actual);
+    }
+    
+    [Fact]
+    public static async Task ReadFromFileAsync()
+    {
+        var expected = RandomBytes(4096);
+        using var handle = File.OpenHandle(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), FileMode.CreateNew, FileAccess.ReadWrite,
+            options: FileOptions.DeleteOnClose | FileOptions.Asynchronous);
+        await RandomAccess.WriteAsync(handle, expected, fileOffset: 0L);
+        RandomAccess.FlushToDisk(handle);
+
+        await using var bufferedStream = new PoolingBufferedStream(handle.AsUnbufferedStream(FileAccess.Read)) { MaxBufferSize = 128 };
+        var actual = new byte[expected.Length];
+        await bufferedStream.ReadExactlyAsync(actual);
+
+        Equal(expected, actual);
+    }
 }
