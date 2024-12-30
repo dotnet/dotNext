@@ -477,7 +477,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         {
             task = ValueTask.FromException<int>(new NotSupportedException());
         }
-        else if (buffer.IsEmpty)
+        else if (data.IsEmpty)
         {
             task = new(result: 0);
         }

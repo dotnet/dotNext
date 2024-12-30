@@ -66,7 +66,7 @@ This release is aimed to improve AOT compatibility. All the examples in the repo
 <a href="https://www.nuget.org/packages/dotnext.threading/5.17.0">DotNext.Threading 5.17.0</a>
 * Improved AOT support
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.17.0">DotNext.IO 5.17.0</a>
+<a href="https://www.nuget.org/packages/dotnext.io/5.17.1">DotNext.IO 5.17.1</a>
 * Reduced memory consumption for applications that use `FileReader` and `FileWriter` classes. These classes are now implemented by using lazy buffer pattern. It means that the different instances can reuse the same buffer taken from the pool
 * Fixed [255](https://github.com/dotnet/dotNext/issues/255)
 * `PoolingBufferedStream` is introduced to replace classic [BufferedStream](https://learn.microsoft.com/en-us/dotnet/api/system.io.bufferedstream). This class supports memory pooling and implements lazy buffer pattern

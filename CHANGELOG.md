@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 12-30-2024
+<a href="https://www.nuget.org/packages/dotnext.io/5.17.1">DotNext.IO 5.17.1</a>
+* Fixed `EndOfStreamException` caused by async read from `PoolingBufferedStream`
+
 # 12-29-2024
 This release is aimed to improve AOT compatibility. All the examples in the repo are now AOT compatible.
 <a href="https://www.nuget.org/packages/dotnext/5.17.0">DotNext 5.17.0</a>
