@@ -27,7 +27,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
     /// <param name="configuration">The configuration of the persistent audit trail.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
     protected DiskBasedStateMachine(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
-        : base(path, recordsPerPartition, configuration ??= new())
+        : base(path, recordsPerPartition, configuration ?? new())
     {
     }
 
@@ -201,7 +201,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
     /// committed log entries that were not moved to the snapshot.
     /// </summary>
     /// <remarks>
-    /// The method calls <see cref="ApplyAsync(LogEntry)"/> to replay the committed log entries
+    /// The method calls <see cref="ApplyAsync(PersistentState.LogEntry)"/> to replay the committed log entries
     /// in the head of the log.
     /// </remarks>
     /// <param name="token">The token that can be used to cancel the operation.</param>
