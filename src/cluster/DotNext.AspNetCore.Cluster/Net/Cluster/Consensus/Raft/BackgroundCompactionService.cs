@@ -11,7 +11,7 @@ internal sealed class BackgroundCompactionService(PersistentState state) : Backg
     private readonly Func<CancellationToken, ValueTask>? compaction = state switch
     {
         ILogCompactionSupport support => support.ForceCompactionAsync,
-        MemoryBasedStateMachine mbsm when mbsm.IsBackgroundCompaction => mbsm.ForceIncrementalCompactionAsync,
+        MemoryBasedStateMachine { IsBackgroundCompaction: true } mbsm => mbsm.ForceIncrementalCompactionAsync,
         _ => null,
     };
 
