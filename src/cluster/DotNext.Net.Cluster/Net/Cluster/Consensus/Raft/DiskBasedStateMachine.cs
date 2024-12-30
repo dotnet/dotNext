@@ -54,8 +54,6 @@ public abstract partial class DiskBasedStateMachine : PersistentState
     private ValueTask<long?> ApplyCoreAsync(LogEntry entry)
         => entry.IsEmpty ? ValueTask.FromResult<long?>(null) : ApplyAsync(entry);
 
-    private protected sealed override long LastTerm => Volatile.Read(in lastTerm);
-
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<long?> ApplyAsync(int sessionId, long startIndex, CancellationToken token)
     {

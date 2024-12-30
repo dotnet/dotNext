@@ -317,8 +317,6 @@ public partial class PersistentState
         set => state.LastApplied = value;
     }
 
-    private protected abstract long LastTerm { get; }
-
     private protected enum InternalStateScope : byte
     {
         Indexes = 0,

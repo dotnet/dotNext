@@ -97,8 +97,6 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     {
     }
 
-    private protected sealed override long LastTerm => Volatile.Read(in lastTerm);
-
     /// <summary>
     /// Gets a value indicating that log compaction should
     /// be called manually using <see cref="ForceCompactionAsync(long, CancellationToken)"/>
