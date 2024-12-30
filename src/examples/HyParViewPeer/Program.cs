@@ -132,8 +132,8 @@ static Task PrintNeighborsAsync(HttpContext context)
 
 file sealed class RumorSender : Disposable, IRumorSender
 {
-    internal const string SenderAddressHeader = "X-Sender-Address";
-    internal const string SenderIdHeader = "X-Rumor-ID";
+    private const string SenderAddressHeader = "X-Sender-Address";
+    private const string SenderIdHeader = "X-Rumor-ID";
 
     internal const string RumorResource = "/rumor";
     internal const string BroadcastResource = "/broadcast";
