@@ -49,7 +49,7 @@ public interface IAuditTrail
     /// Commits log entries into the underlying storage and marks these entries as committed.
     /// </summary>
     /// <remarks>
-    /// This method should updates cached value provided by method <see cref="LastCommittedEntryIndex"/> called with argument of value <see langword="true"/>.
+    /// This method should update cached value provided by method <see cref="LastCommittedEntryIndex"/> called with argument of value <see langword="true"/>.
     /// Additionally, it may force log compaction and squash all committed entries into single entry called snapshot.
     /// </remarks>
     /// <param name="endIndex">The index of the last entry to commit, inclusively.</param>
@@ -62,7 +62,7 @@ public interface IAuditTrail
     /// Commits log entries into the underlying storage and marks these entries as committed.
     /// </summary>
     /// <remarks>
-    /// This method should updates cached value provided by method <see cref="LastCommittedEntryIndex"/> called with argument of value <see langword="true"/>.
+    /// This method should update cached value provided by method <see cref="LastCommittedEntryIndex"/> called with argument of value <see langword="true"/>.
     /// Additionally, it may force log compaction and squash all committed entries into single entry called snapshot.
     /// </remarks>
     /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -94,7 +94,7 @@ public interface IAuditTrail
     Task InitializeAsync(CancellationToken token = default);
 
     /// <summary>
-    /// Dropes the uncommitted entries starting from the specified position to the end of the log.
+    /// Drops the uncommitted entries starting from the specified position to the end of the log.
     /// </summary>
     /// <param name="startIndex">The index of the first log entry to be dropped.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -107,7 +107,7 @@ public interface IAuditTrail
     /// Gets log entries in the specified range.
     /// </summary>
     /// <remarks>
-    /// This method may return less entries than <c>endIndex - startIndex + 1</c>. It may happen if the requested entries are committed entries and squashed into the single entry called snapshot.
+    /// This method may return fewer entries than <c>endIndex - startIndex + 1</c>. It may happen if the requested entries are committed entries and squashed into the single entry called snapshot.
     /// In this case the first entry in the collection is a snapshot entry. Additionally, the caller must call <see cref="IDisposable.Dispose"/> to release resources associated
     /// with the audit trail segment with entries.
     /// </remarks>
