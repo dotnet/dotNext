@@ -27,7 +27,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask WriteAsync<T>(T value, CancellationToken token = default)
-        where T : notnull, IBinaryFormattable<T>
+        where T : IBinaryFormattable<T>
     {
         return IBinaryFormattable<T>.TryFormat(value, Buffer.Span)
             ? AdvanceAsync(T.Size, token)
@@ -35,7 +35,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     }
 
     private async ValueTask WriteSlowAsync<T>(T value, CancellationToken token = default)
-        where T : notnull, IBinaryFormattable<T>
+        where T : IBinaryFormattable<T>
     {
         using var buffer = IBinaryFormattable<T>.Format(value);
         await WriteAsync(buffer.Memory, token).ConfigureAwait(false);
@@ -50,7 +50,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask WriteLittleEndianAsync<T>(T value, CancellationToken token = default)
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         return value.TryWriteLittleEndian(Buffer.Span, out var bytesWritten)
             ? AdvanceAsync(bytesWritten, token)
@@ -66,7 +66,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask WriteBigEndianAsync<T>(T value, CancellationToken token = default)
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         return value.TryWriteBigEndian(Buffer.Span, out var bytesWritten)
             ? AdvanceAsync(bytesWritten, token)
@@ -189,7 +189,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     ValueTask<long> FormatAsync<T>(T value, EncodingContext context, LengthFormat? lengthFormat = null, string? format = null, IFormatProvider? provider = null, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
-        where T : notnull, ISpanFormattable
+        where T : ISpanFormattable
         => EncodeAsync(value.ToString(format, provider).AsMemory(), context, lengthFormat, token);
 
     /// <summary>
@@ -204,11 +204,11 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <returns>The number of written bytes.</returns>
     /// <exception cref="InternalBufferOverflowException">The internal buffer cannot place all UTF-8 bytes exposed by <paramref name="value"/>.</exception>
     ValueTask<int> FormatAsync<T>(T value, LengthFormat? lengthFormat, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        where T : notnull, IUtf8SpanFormattable
+        where T : IUtf8SpanFormattable
         => FormatAsync(this, value, lengthFormat, format, provider, token);
 
     internal static async ValueTask<int> FormatAsync<T>(IAsyncBinaryWriter writer, T value, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
-        where T : notnull, IUtf8SpanFormattable
+        where T : IUtf8SpanFormattable
     {
         const int maxBufferSize = int.MaxValue / 2;
         for (var bufferSize = SpanOwner<byte>.StackallocThreshold; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InternalBufferOverflowException())
@@ -331,7 +331,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     }
 
     internal static Stream GetStream<TWriter>(TWriter writer, out bool keepAlive)
-        where TWriter : notnull, IAsyncBinaryWriter
+        where TWriter : IAsyncBinaryWriter
     {
         if (keepAlive = typeof(TWriter) == typeof(AsyncStreamBinaryAccessor))
             return Unsafe.As<TWriter, AsyncStreamBinaryAccessor>(ref writer).Stream;
@@ -347,7 +347,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
 
     [StructLayout(LayoutKind.Auto)]
     private readonly struct Wrapper<TWriter>(TWriter writer) : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
-        where TWriter : notnull, IAsyncBinaryWriter
+        where TWriter : IAsyncBinaryWriter
     {
         ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> source, CancellationToken token)
             => writer.Invoke(source, token);

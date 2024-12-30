@@ -34,7 +34,7 @@ public partial class MemoryBasedStateMachine
         }
 
         internal async ValueTask<long> WriteAsync<TEntry>(TEntry entry, CancellationToken token = default)
-            where TEntry : notnull, IRaftLogEntry
+            where TEntry : IRaftLogEntry
         {
             // write snapshot
             await SetWritePositionAsync(fileOffset, token).ConfigureAwait(false);

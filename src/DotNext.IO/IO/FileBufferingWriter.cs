@@ -71,7 +71,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
         public override Memory<byte> Memory => CreateMemory(length);
 
-        public override MemoryHandle Pin(int elementIndex)
+        public override MemoryHandle Pin(int elementIndex = 0)
         {
             ObjectDisposedException.ThrowIf(ptr is null, this);
             return new(Unsafe.Add<byte>(ptr, elementIndex));
@@ -117,7 +117,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
 
         public override Memory<byte> Memory => memory;
 
-        public override MemoryHandle Pin(int elementIndex)
+        public override MemoryHandle Pin(int elementIndex = 0)
             => memory.Slice(elementIndex).Pin();
 
         public override void Unpin()
@@ -392,70 +392,70 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     }
 
     /// <inheritdoc/>
-    public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token = default)
+    public override ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token = default)
     {
         if (IsReading)
             return ValueTask.FromException(new InvalidOperationException(ExceptionMessages.WriterInReadMode));
 
-        switch (PrepareMemory(buffer.Length, out var output))
+        switch (PrepareMemory(input.Length, out var output))
         {
             default:
                 return ValueTask.CompletedTask;
             case MemoryEvaluationResult.Success:
-                buffer.CopyTo(output);
-                position += buffer.Length;
+                input.CopyTo(output);
+                position += input.Length;
                 goto default;
             case MemoryEvaluationResult.PersistExistingBuffer:
-                return PersistExistingBufferAsync(buffer, token);
+                return PersistExistingBufferAsync(input, token);
             case MemoryEvaluationResult.PersistAll:
-                return PersistAllAsync(buffer, token);
+                return PersistAllAsync(input, token);
         }
     }
 
-    private ValueTask PersistExistingBufferAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
+    private ValueTask PersistExistingBufferAsync(ReadOnlyMemory<byte> input, CancellationToken token)
     {
         Debug.Assert(HasBufferedData);
 
         EnsureBackingStore();
-        secondBuffer = buffer;
+        secondBuffer = input;
         return Submit(RandomAccess.WriteAsync(fileBackend, WrittenMemory, filePosition, token), writeAndCopyCallback);
     }
 
-    private ValueTask PersistAllAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
+    private ValueTask PersistAllAsync(ReadOnlyMemory<byte> input, CancellationToken token)
     {
         EnsureBackingStore();
 
         ValueTask task;
         if (HasBufferedData)
         {
-            secondBuffer = buffer;
+            secondBuffer = input;
             task = RandomAccess.WriteAsync(fileBackend, (IReadOnlyList<ReadOnlyMemory<byte>>)this.As<IDynamicInterfaceCastable>(), filePosition, token);
         }
         else
         {
-            position = buffer.Length;
-            task = RandomAccess.WriteAsync(fileBackend, buffer, filePosition, token);
+            position = input.Length;
+            task = RandomAccess.WriteAsync(fileBackend, input, filePosition, token);
         }
 
         return Submit(task, writeCallback);
     }
 
-    /// <inheritdoc/>
-    public override void Write(ReadOnlySpan<byte> buffer)
+    /// <inheritdoc cref="Stream.Write(ReadOnlySpan{byte})"/>
+    public override void Write(ReadOnlySpan<byte> input)
     {
         if (IsReading)
             throw new InvalidOperationException(ExceptionMessages.WriterInReadMode);
 
-        switch (PrepareMemory(buffer.Length, out var output))
+        switch (PrepareMemory(input.Length, out var output))
         {
             case MemoryEvaluationResult.Success:
-                buffer.CopyTo(output.Span);
-                position += buffer.Length;
+                input.CopyTo(output.Span);
+                position += input.Length;
                 break;
             case MemoryEvaluationResult.PersistExistingBuffer:
                 PersistBuffer(flushToDisk: false);
-                buffer.CopyTo(this.buffer.Span);
-                position = buffer.Length;
+                input.CopyTo(this.buffer.Span);
+                position = input.Length;
                 break;
             case MemoryEvaluationResult.PersistAll:
                 if (HasBufferedData)
@@ -463,8 +463,8 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
                 else
                     EnsureBackingStore();
 
-                RandomAccess.Write(fileBackend, buffer, filePosition);
-                filePosition += buffer.Length;
+                RandomAccess.Write(fileBackend, input, filePosition);
+                filePosition += input.Length;
                 break;
         }
     }
@@ -473,28 +473,28 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     private void EnsureBackingStore() => fileBackend ??= fileProvider.CreateBackingFileHandle(position, out fileName);
 
     /// <inheritdoc/>
-    public override void Write(byte[] buffer, int offset, int count)
+    public override void Write(byte[] data, int offset, int count)
     {
-        ValidateBufferArguments(buffer, offset, count);
-        Write(new ReadOnlySpan<byte>(buffer, offset, count));
+        ValidateBufferArguments(data, offset, count);
+        Write(new ReadOnlySpan<byte>(data, offset, count));
     }
 
     /// <inheritdoc/>
-    public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token)
-        => WriteAsync(new ReadOnlyMemory<byte>(buffer, offset, count), token).AsTask();
+    public override Task WriteAsync(byte[] data, int offset, int count, CancellationToken token)
+        => WriteAsync(new ReadOnlyMemory<byte>(data, offset, count), token).AsTask();
 
     /// <inheritdoc/>
     public override void WriteByte(byte value)
         => Write(new(ref value));
 
     /// <inheritdoc/>
-    public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-        => TaskToAsyncResult.Begin(WriteAsync(buffer, offset, count), callback, state);
+    public override IAsyncResult BeginWrite(byte[] data, int offset, int count, AsyncCallback? callback, object? state)
+        => TaskToAsyncResult.Begin(WriteAsync(data, offset, count), callback, state);
 
     /// <inheritdoc/>
     public override void EndWrite(IAsyncResult ar) => TaskToAsyncResult.End(ar);
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="Stream.Flush()"/>
     public override void Flush() => Flush(flushToDisk: false);
 
     /// <summary>
@@ -553,7 +553,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         return result;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="Stream.FlushAsync(CancellationToken)"/>
     public override Task FlushAsync(CancellationToken token)
         => FlushAsync(flushToDisk: false, token).AsTask();
 
@@ -562,23 +562,23 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         => throw new NotSupportedException();
 
     /// <inheritdoc/>
-    public override int Read(byte[] buffer, int offset, int count)
+    public override int Read(byte[] data, int offset, int count)
         => throw new NotSupportedException();
 
     /// <inheritdoc/>
-    public override int Read(Span<byte> buffer)
+    public override int Read(Span<byte> data)
         => throw new NotSupportedException();
 
     /// <inheritdoc/>
-    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
+    public override Task<int> ReadAsync(byte[] data, int offset, int count, CancellationToken token)
         => Task.FromException<int>(new NotSupportedException());
 
     /// <inheritdoc/>
-    public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
+    public override ValueTask<int> ReadAsync(Memory<byte> data, CancellationToken token = default)
         => ValueTask.FromException<int>(new NotSupportedException());
 
     /// <inheritdoc/>
-    public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
+    public override IAsyncResult BeginRead(byte[] data, int offset, int count, AsyncCallback? callback, object? state)
         => throw new NotSupportedException();
 
     /// <inheritdoc/>
@@ -599,7 +599,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public async Task CopyToAsync<TConsumer>(TConsumer consumer, int bufferSize, CancellationToken token)
-        where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+        where TConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
@@ -607,7 +607,7 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         {
             using var buffer = allocator.AllocateAtLeast(bufferSize);
             int count;
-            for (long offset = 0L; (count = await RandomAccess.ReadAsync(fileBackend, buffer.Memory, offset, token).ConfigureAwait(false)) > 0; offset += count)
+            for (var offset = 0L; (count = await RandomAccess.ReadAsync(fileBackend, buffer.Memory, offset, token).ConfigureAwait(false)) > 0; offset += count)
                 await consumer.Invoke(buffer.Memory.Slice(0, count), token).ConfigureAwait(false);
         }
 
@@ -628,13 +628,13 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public void CopyTo<TConsumer>(TConsumer consumer, int bufferSize, CancellationToken token)
-        where TConsumer : notnull, IReadOnlySpanConsumer<byte>
+        where TConsumer : IReadOnlySpanConsumer<byte>
     {
         if (fileBackend is not null)
         {
             using var buffer = allocator.AllocateAtLeast(bufferSize);
             int count;
-            for (long offset = 0L; (count = RandomAccess.Read(fileBackend, buffer.Span, offset)) > 0; offset += count, token.ThrowIfCancellationRequested())
+            for (var offset = 0L; (count = RandomAccess.Read(fileBackend, buffer.Span, offset)) > 0; offset += count, token.ThrowIfCancellationRequested())
                 consumer.Invoke(buffer.Span.Slice(0, count));
         }
 

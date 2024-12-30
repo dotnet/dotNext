@@ -17,7 +17,7 @@ public static class TupleExtensions
     /// <param name="tuple">The tuple instance.</param>
     /// <returns>An array of tuple items.</returns>
     public static object?[] ToArray<T>(this T tuple)
-        where T : notnull, ITuple
+        where T : ITuple
     {
         object?[] result;
         if (tuple.Length > 0)

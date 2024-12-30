@@ -7,8 +7,8 @@ public partial class MessageHandler
     private delegate Task<IMessage> RpcHandler(ISubscriber sender, IMessage request, object? context, CancellationToken token);
 
     private sealed class RpcHandler<TInput, TOutput> : ISupplier<RpcHandler>
-        where TInput : notnull, ISerializable<TInput>
-        where TOutput : notnull, ISerializable<TOutput>
+        where TInput : ISerializable<TInput>
+        where TOutput : ISerializable<TOutput>
     {
         private readonly string outputMessageName;
         private readonly string? outputMessageType;

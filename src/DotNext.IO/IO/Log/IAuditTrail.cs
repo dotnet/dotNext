@@ -197,7 +197,7 @@ public interface IAuditTrail<TEntry> : IAuditTrail
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="skipCommitted"/> is <see langword="false"/>; or the collection of entries contains the snapshot entry.</exception>
     ValueTask AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, long startIndex, bool skipCommitted = false, CancellationToken token = default)
-        where TEntryImpl : notnull, TEntry;
+        where TEntryImpl : TEntry;
 
     /// <summary>
     /// Adds uncommitted log entries and commits previously added log entries as an atomic operation.
@@ -212,7 +212,7 @@ public interface IAuditTrail<TEntry> : IAuditTrail
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="skipCommitted"/> is <see langword="false"/>; or the collection of entries contains the snapshot entry.</exception>
     async ValueTask<long> AppendAndCommitAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token = default)
-        where TEntryImpl : notnull, TEntry
+        where TEntryImpl : TEntry
     {
         await AppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
         return await CommitAsync(commitIndex, token).ConfigureAwait(false);
@@ -232,7 +232,7 @@ public interface IAuditTrail<TEntry> : IAuditTrail
     /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask<long> AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, CancellationToken token = default)
-        where TEntryImpl : notnull, TEntry;
+        where TEntryImpl : TEntry;
 
     /// <summary>
     /// Adds uncommitted log entry to the end of this log.
@@ -251,7 +251,7 @@ public interface IAuditTrail<TEntry> : IAuditTrail
     /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask AppendAsync<TEntryImpl>(TEntryImpl entry, long startIndex, CancellationToken token = default)
-        where TEntryImpl : notnull, TEntry;
+        where TEntryImpl : TEntry;
 
     /// <summary>
     /// Adds uncommitted log entry to the end of this log.
@@ -266,6 +266,6 @@ public interface IAuditTrail<TEntry> : IAuditTrail
     /// <exception cref="InvalidOperationException"><paramref name="entry"/> is the snapshot entry.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask<long> AppendAsync<TEntryImpl>(TEntryImpl entry, CancellationToken token = default)
-        where TEntryImpl : notnull, TEntry
+        where TEntryImpl : TEntry
         => AppendAsync(new SingleEntryProducer<TEntryImpl>(entry), token);
 }

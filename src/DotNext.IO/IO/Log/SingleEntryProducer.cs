@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 namespace DotNext.IO.Log;
 
 internal sealed class SingleEntryProducer<TEntry>(TEntry entry) : ILogEntryProducer<TEntry>
-    where TEntry : notnull, ILogEntry
+    where TEntry : ILogEntry
 {
     private bool available = true;
 

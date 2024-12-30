@@ -106,7 +106,7 @@ public readonly struct BufferedLogEntry : IRaftLogEntry, IDisposable
     bool IDataTransferObject.IsReusable => true;
 
     private static async ValueTask<BufferedLogEntry> CopyToMemoryOrFileAsync<TEntry>(TEntry entry, LogEntryBufferingOptions options, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         var writer = options.CreateBufferingWriter();
         var buffer = options.RentBuffer();
@@ -133,7 +133,7 @@ public readonly struct BufferedLogEntry : IRaftLogEntry, IDisposable
     }
 
     private static async ValueTask<BufferedLogEntry> CopyToMemoryAsync<TEntry>(TEntry entry, int length, MemoryAllocator<byte>? allocator, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         var writer = new PoolingBufferWriter<byte>(allocator) { Capacity = length };
         try
@@ -150,7 +150,7 @@ public readonly struct BufferedLogEntry : IRaftLogEntry, IDisposable
     }
 
     internal static async ValueTask<BufferedLogEntry> CopyToFileAsync<TEntry>(TEntry entry, LogEntryBufferingOptions options, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         var output = new FileStream(options.GetRandomFileName(), new FileStreamOptions
         {
@@ -194,7 +194,7 @@ public readonly struct BufferedLogEntry : IRaftLogEntry, IDisposable
     /// <returns>Buffered copy of <paramref name="entry"/>.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask<BufferedLogEntry> CopyAsync<TEntry>(TEntry entry, LogEntryBufferingOptions options, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         ValueTask<BufferedLogEntry> result;
         if (entry.Length is not { } length)

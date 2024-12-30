@@ -28,7 +28,7 @@ public interface ISerializable<TSelf> : IDataTransferObject
     /// <returns>The decoded object.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static abstract ValueTask<TSelf> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
-        where TReader : notnull, IAsyncBinaryReader;
+        where TReader : IAsyncBinaryReader;
 
     /// <summary>
     /// Deserializes the object from the stream.
@@ -74,7 +74,7 @@ public interface ISerializable<TSelf> : IDataTransferObject
     /// <returns>Deserialized object.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask<TSelf> TransformAsync<TInput>(TInput input, CancellationToken token = default)
-        where TInput : notnull, IDataTransferObject
+        where TInput : IDataTransferObject
         => input.TransformAsync<TSelf, DeserializingTransformation>(new(), token);
 
     [StructLayout(LayoutKind.Auto)]

@@ -17,7 +17,7 @@ public static partial class Memory
     /// <typeparam name="T">The type of items in the rented memory.</typeparam>
     /// <param name="owner">The rented memory.</param>
     public static void ReleaseAll<T>(this ref MemoryOwner<T> owner)
-        where T : notnull, IDisposable
+        where T : IDisposable
     {
         foreach (ref var item in owner.Span)
         {

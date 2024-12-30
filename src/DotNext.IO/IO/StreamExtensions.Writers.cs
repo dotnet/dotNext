@@ -27,7 +27,7 @@ public static partial class StreamExtensions
     /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small to encode <paramref name="value"/>.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask WriteAsync<T>(this Stream stream, T value, Memory<byte> buffer, CancellationToken token = default)
-        where T : notnull, IBinaryFormattable<T>
+        where T : IBinaryFormattable<T>
     {
         if (buffer.Length < T.Size)
             return ValueTask.FromException(new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer)));
@@ -49,7 +49,7 @@ public static partial class StreamExtensions
     /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small to encode <paramref name="value"/>.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask WriteLittleEndianAsync<T>(this Stream stream, T value, Memory<byte> buffer, CancellationToken token = default)
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         return value.TryWriteLittleEndian(buffer.Span, out var bytesWritten)
             ? stream.WriteAsync(buffer.Slice(0, bytesWritten), token)
@@ -68,7 +68,7 @@ public static partial class StreamExtensions
     /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small to encode <paramref name="value"/>.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask WriteBigEndianAsync<T>(this Stream stream, T value, Memory<byte> buffer, CancellationToken token = default)
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         return value.TryWriteBigEndian(buffer.Span, out var bytesWritten)
             ? stream.WriteAsync(buffer.Slice(0, bytesWritten), token)
@@ -154,7 +154,7 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static async ValueTask<long> FormatAsync<T>(this Stream stream, T value, EncodingContext context, LengthFormat? lengthFormat, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
-        where T : notnull, ISpanFormattable
+        where T : ISpanFormattable
     {
         ThrowIfEmpty(buffer);
 
@@ -186,7 +186,7 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static async ValueTask<int> FormatAsync<T>(this Stream stream, T value, LengthFormat? lengthFormat, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        where T : notnull, IUtf8SpanFormattable
+        where T : IUtf8SpanFormattable
     {
         Memory<byte> bufferForLength;
         if (lengthFormat.HasValue)

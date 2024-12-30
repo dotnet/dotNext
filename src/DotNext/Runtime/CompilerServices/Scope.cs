@@ -174,7 +174,7 @@ public struct Scope : IDisposable, IAsyncDisposable
 
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
         static async ValueTask ExecuteCallbacksAsync<T>(T callbacks, BoxedValue<ExceptionAggregator> exceptions)
-            where T : notnull, ITuple
+            where T : ITuple
         {
             for (int i = 0, count = callbacks.Length; i < count; i++)
             {

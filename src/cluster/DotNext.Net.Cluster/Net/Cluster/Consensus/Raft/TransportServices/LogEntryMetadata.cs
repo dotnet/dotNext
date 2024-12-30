@@ -28,7 +28,7 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     }
 
     internal static LogEntryMetadata Create<TEntry>(TEntry entry)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
         => new(entry.Term, entry.Timestamp, entry.IsSnapshot, entry.CommandId, entry.Length);
 
     internal LogEntryMetadata(ref SpanReader<byte> reader)

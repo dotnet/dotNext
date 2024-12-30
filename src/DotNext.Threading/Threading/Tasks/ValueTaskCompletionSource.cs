@@ -65,7 +65,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     protected virtual Exception? OnCanceled(CancellationToken token) => new OperationCanceledException(token);
 
     private bool SetResult<TFactory>(object? completionData, short? completionToken, TFactory factory)
-        where TFactory : notnull, ISupplier<Exception?>
+        where TFactory : ISupplier<Exception?>
     {
         bool result;
         EnterLock();

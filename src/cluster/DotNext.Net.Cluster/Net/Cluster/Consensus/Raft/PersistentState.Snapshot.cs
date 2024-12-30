@@ -12,7 +12,7 @@ public partial class PersistentState
         => state.UpdateSnapshotMetadata(in metadata);
 
     private protected abstract ValueTask InstallSnapshotAsync<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
-        where TSnapshot : notnull, IRaftLogEntry;
+        where TSnapshot : IRaftLogEntry;
 
     private protected abstract ValueTask<IAsyncBinaryReader> BeginReadSnapshotAsync(int sessionId, CancellationToken token);
 

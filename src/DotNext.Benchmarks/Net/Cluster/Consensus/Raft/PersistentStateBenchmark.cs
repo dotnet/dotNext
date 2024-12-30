@@ -45,9 +45,9 @@ public class PersistentStateBenchmark
             where TList : notnull, IReadOnlyList<TEntryImpl>
         {
             var result = 0L;
-            foreach (var entry in entries)
+            for (var i = 0; i < entries.Count; i++)
             {
-                using var buffer = await entry.ToMemoryAsync();
+                using var buffer = await entries[i].ToMemoryAsync(token: token);
                 result += buffer.Length;
             }
 

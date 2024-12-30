@@ -279,7 +279,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         => SendMessageAsync(message, responseReader, false, token);
 
     internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, bool respectLeadership, CancellationToken token)
-        where TResponse : notnull, ISerializable<TResponse>
+        where TResponse : ISerializable<TResponse>
         => SendAsync<TResponse, CustomSerializableMessage<TResponse>>(new(context.LocalMemberId, message) { RespectLeadership = respectLeadership }, token);
 
     Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, CancellationToken token)

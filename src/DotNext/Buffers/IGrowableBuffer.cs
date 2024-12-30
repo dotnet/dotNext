@@ -62,7 +62,7 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
     /// <typeparam name="TConsumer">The type of the object that represents the consumer.</typeparam>
     /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
     void CopyTo<TConsumer>(TConsumer consumer)
-        where TConsumer : notnull, IReadOnlySpanConsumer<T>;
+        where TConsumer : IReadOnlySpanConsumer<T>;
 
     /// <summary>
     /// Passes the contents of this writer to the callback asynchronously.
@@ -75,7 +75,7 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
     /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
     /// <returns>The task representing asynchronous execution of this method.</returns>
     ValueTask CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
-        where TConsumer : notnull, ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>;
+        where TConsumer : ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>;
 
     /// <summary>
     /// Copies the contents of this writer to the specified memory block.

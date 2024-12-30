@@ -10,7 +10,7 @@ using Runtime.Serialization;
 /// </summary>
 /// <typeparam name="T">The payload of the message.</typeparam>
 internal sealed class Message<T>() : IMessage
-    where T : notnull, ISerializable<T>
+    where T : ISerializable<T>
 {
     private readonly string name = string.Empty;
     private ContentType? type;
@@ -22,7 +22,7 @@ internal sealed class Message<T>() : IMessage
     /// <summary>
     /// Gets payload of this message.
     /// </summary>
-    required public T Payload { get; init; }
+    public required T Payload { get; init; }
 
     /// <summary>
     /// Gets name of this message.

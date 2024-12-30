@@ -10,11 +10,11 @@ public partial class CommandInterpreter
     private abstract class CommandHandler
     {
         internal abstract ValueTask InterpretAsync<TReader>(TReader reader, object? context, CancellationToken token)
-            where TReader : notnull, IAsyncBinaryReader;
+            where TReader : IAsyncBinaryReader;
     }
 
     private sealed class CommandHandler<TCommand>(Func<TCommand, object?, CancellationToken, ValueTask> handler) : CommandHandler
-        where TCommand : notnull, ISerializable<TCommand>
+        where TCommand : ISerializable<TCommand>
     {
         public CommandHandler(Func<TCommand, CancellationToken, ValueTask> handler)
             : this(handler.Invoke<TCommand>)

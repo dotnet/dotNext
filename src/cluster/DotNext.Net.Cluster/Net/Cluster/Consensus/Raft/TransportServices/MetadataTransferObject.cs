@@ -41,7 +41,7 @@ internal readonly struct MetadataTransferObject : ISerializable<MetadataTransfer
     }
 
     private static async ValueTask WriteAsync<TWriter>(TWriter writer, IReadOnlyDictionary<string, string> metadata, CancellationToken token)
-        where TWriter : notnull, IAsyncBinaryWriter
+        where TWriter : IAsyncBinaryWriter
     {
         await writer.WriteLittleEndianAsync(metadata.Count, token).ConfigureAwait(false);
 
@@ -79,7 +79,7 @@ internal readonly struct MetadataTransferObject : ISerializable<MetadataTransfer
     }
 
     private static bool TryGetSequenceReader<TReader>(TReader reader, out SequenceReader result)
-        where TReader : notnull, IAsyncBinaryReader
+        where TReader : IAsyncBinaryReader
     {
         if (typeof(TReader) == typeof(SequenceReader))
         {
@@ -119,7 +119,7 @@ internal readonly struct MetadataTransferObject : ISerializable<MetadataTransfer
     }
 
     private static async ValueTask<MetadataTransferObject> ReadAsync<TReader>(TReader reader, CancellationToken token)
-        where TReader : notnull, IAsyncBinaryReader
+        where TReader : IAsyncBinaryReader
     {
         var length = await reader.ReadLittleEndianAsync<int>(token).ConfigureAwait(false);
         var output = new Dictionary<string, string>(length, StringComparer.Ordinal);
@@ -141,7 +141,7 @@ internal readonly struct MetadataTransferObject : ISerializable<MetadataTransfer
     }
 
     public static ValueTask<MetadataTransferObject> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
-        where TReader : notnull, IAsyncBinaryReader
+        where TReader : IAsyncBinaryReader
     {
         ValueTask<MetadataTransferObject> result;
 

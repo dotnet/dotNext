@@ -1,7 +1,7 @@
 namespace DotNext.IO;
 
 internal sealed class AsyncWriterStream<TOutput>(TOutput output) : WriterStream<TOutput>(output)
-    where TOutput : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
+    where TOutput : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
 {
     private const int DefaultTimeout = 4000;
     private int timeout = DefaultTimeout;

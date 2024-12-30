@@ -396,7 +396,7 @@ public static partial class Atomic
 {
     private static (TValue OldValue, TValue NewValue) Update<TValue, TUpdater, TOperations>(ref TValue value, TUpdater updater)
         where TValue : IEqualityOperators<TValue, TValue, bool>
-        where TUpdater : notnull, ISupplier<TValue, TValue>
+        where TUpdater : ISupplier<TValue, TValue>
         where TOperations : IInterlockedOperations<TValue>
     {
         TValue oldValue, newValue, tmp = TOperations.VolatileRead(in value);
@@ -411,7 +411,7 @@ public static partial class Atomic
 
     private static (TValue OldValue, TValue NewValue) Accumulate<TValue, TAccumulator, TOperations>(ref TValue value, TValue x, TAccumulator accumulator)
         where TValue : IEqualityOperators<TValue, TValue, bool>
-        where TAccumulator : notnull, ISupplier<TValue, TValue, TValue>
+        where TAccumulator : ISupplier<TValue, TValue, TValue>
         where TOperations : IInterlockedOperations<TValue>
     {
         TValue oldValue, newValue, tmp = TOperations.VolatileRead(in value);

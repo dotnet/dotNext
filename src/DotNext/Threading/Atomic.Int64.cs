@@ -18,7 +18,7 @@ public static partial class Atomic
     /// <returns>The updated value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long AccumulateAndGet<TAccumulator>(ref long value, long x, TAccumulator accumulator)
-        where TAccumulator : notnull, ISupplier<long, long, long>
+        where TAccumulator : ISupplier<long, long, long>
         => Accumulate<long, TAccumulator, InterlockedOperations>(ref value, x, accumulator).NewValue;
 
     /// <summary>
@@ -50,7 +50,7 @@ public static partial class Atomic
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long GetAndAccumulate<TAccumulator>(ref long value, long x, TAccumulator accumulator)
-        where TAccumulator : notnull, ISupplier<long, long, long>
+        where TAccumulator : ISupplier<long, long, long>
         => Accumulate<long, TAccumulator, InterlockedOperations>(ref value, x, accumulator).OldValue;
 
     /// <summary>
@@ -78,7 +78,7 @@ public static partial class Atomic
     /// <returns>The updated value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long UpdateAndGet<TUpdater>(ref long value, TUpdater updater)
-        where TUpdater : notnull, ISupplier<long, long>
+        where TUpdater : ISupplier<long, long>
         => Update<long, TUpdater, InterlockedOperations>(ref value, updater).NewValue;
 
     /// <summary>
@@ -102,7 +102,7 @@ public static partial class Atomic
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long GetAndUpdate<TUpdater>(ref long value, TUpdater updater)
-        where TUpdater : notnull, ISupplier<long, long>
+        where TUpdater : ISupplier<long, long>
         => Update<long, TUpdater, InterlockedOperations>(ref value, updater).OldValue;
 
     /// <summary>

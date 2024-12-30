@@ -22,7 +22,7 @@ internal sealed class EncodingTextWriter<TWriter> : TextBufferWriter<byte, TWrit
         => Encoding.GetBytes(chars, writer);
 
     private void WriteFormattable<T>(T value)
-        where T : notnull, ISpanFormattable
+        where T : ISpanFormattable
     {
         var writer = new BufferWriterSlim<char>(stackalloc char[ConversionBufferSize]);
         try

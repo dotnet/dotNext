@@ -219,7 +219,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public void CopyTo<TConsumer>(TConsumer consumer)
-        where TConsumer : notnull, IReadOnlySpanConsumer<T>
+        where TConsumer : IReadOnlySpanConsumer<T>
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         for (var current = first; current is not null; current = current.Next)

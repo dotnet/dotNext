@@ -7,7 +7,7 @@ public partial class MessageHandler
     private delegate Task SignalHandler(ISubscriber sender, IMessage signal, object? context, CancellationToken token);
 
     private sealed class SignalHandler<TInput> : ISupplier<SignalHandler>
-        where TInput : notnull, ISerializable<TInput>
+        where TInput : ISerializable<TInput>
     {
         private readonly MulticastDelegate handler;
 

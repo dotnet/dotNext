@@ -5,7 +5,7 @@ using IO.Log;
 public partial class RaftCluster<TMember>
 {
     private sealed class ReplicationWithSenderTermDetector<TEntry>(ILogEntryProducer<TEntry> entries, long expectedTerm) : ILogEntryProducer<TEntry>
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         private bool replicatedWithExpectedTerm;
 

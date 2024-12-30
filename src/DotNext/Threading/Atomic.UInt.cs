@@ -19,7 +19,7 @@ public static partial class Atomic
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
     public static nuint AccumulateAndGet<TAccumulator>(ref nuint value, nuint x, TAccumulator accumulator)
-        where TAccumulator : notnull, ISupplier<nuint, nuint, nuint>
+        where TAccumulator : ISupplier<nuint, nuint, nuint>
         => Accumulate<nuint, TAccumulator, InterlockedOperations>(ref value, x, accumulator).NewValue;
 
     /// <summary>
@@ -53,7 +53,7 @@ public static partial class Atomic
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
     public static nuint GetAndAccumulate<TAccumulator>(ref nuint value, nuint x, TAccumulator accumulator)
-        where TAccumulator : notnull, ISupplier<nuint, nuint, nuint>
+        where TAccumulator : ISupplier<nuint, nuint, nuint>
         => Accumulate<nuint, TAccumulator, InterlockedOperations>(ref value, x, accumulator).OldValue;
 
     /// <summary>
@@ -83,7 +83,7 @@ public static partial class Atomic
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
     public static nuint UpdateAndGet<TUpdater>(ref nuint value, TUpdater updater)
-        where TUpdater : notnull, ISupplier<nuint, nuint>
+        where TUpdater : ISupplier<nuint, nuint>
         => Update<nuint, TUpdater, InterlockedOperations>(ref value, updater).NewValue;
 
     /// <summary>
@@ -109,7 +109,7 @@ public static partial class Atomic
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
     public static nuint GetAndUpdate<TUpdater>(ref nuint value, TUpdater updater)
-        where TUpdater : notnull, ISupplier<nuint, nuint>
+        where TUpdater : ISupplier<nuint, nuint>
         => Update<nuint, TUpdater, InterlockedOperations>(ref value, updater).OldValue;
 
     /// <summary>

@@ -43,7 +43,7 @@ public static partial class StreamExtensions
     /// <exception cref="ArgumentException"><paramref name="buffer"/> too small for decoding value.</exception>
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public static async ValueTask<T> ReadAsync<T>(this Stream stream, Memory<byte> buffer, CancellationToken token = default)
-        where T : notnull, IBinaryFormattable<T>
+        where T : IBinaryFormattable<T>
     {
         if (buffer.Length < T.Size)
             throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
@@ -65,7 +65,7 @@ public static partial class StreamExtensions
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public static async ValueTask<T> ReadLittleEndianAsync<T>(this Stream stream, Memory<byte> buffer, CancellationToken token = default)
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         ArgumentNullException.ThrowIfNull(stream);
         ThrowIfEmpty(buffer);
@@ -87,7 +87,7 @@ public static partial class StreamExtensions
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public static async ValueTask<T> ReadBigEndianAsync<T>(this Stream stream, Memory<byte> buffer, CancellationToken token = default)
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         ArgumentNullException.ThrowIfNull(stream);
         ThrowIfEmpty(buffer);
@@ -293,7 +293,7 @@ public static partial class StreamExtensions
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static async ValueTask<T> ParseAsync<T>(this Stream stream, LengthFormat lengthFormat, Memory<byte> buffer, IFormatProvider? provider = null, CancellationToken token = default)
-        where T : notnull, IUtf8SpanParsable<T>
+        where T : IUtf8SpanParsable<T>
     {
         var length = await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false);
         if (length > 0)
@@ -324,7 +324,7 @@ public static partial class StreamExtensions
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static async ValueTask<T> ParseAsync<T>(this Stream stream, LengthFormat lengthFormat, Memory<byte> buffer, NumberStyles style, IFormatProvider? provider = null, CancellationToken token = default)
-        where T : notnull, INumberBase<T>
+        where T : INumberBase<T>
     {
         var length = await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false);
         if (length > 0)
@@ -352,7 +352,7 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
     public static async ValueTask CopyToAsync<TConsumer>(this Stream source, TConsumer consumer, Memory<byte> buffer, CancellationToken token = default)
-        where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+        where TConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
         ThrowIfEmpty(buffer);
 
@@ -377,7 +377,7 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes.</exception>
     public static async ValueTask CopyToAsync<TConsumer>(this Stream source, TConsumer consumer, long count, Memory<byte> buffer, CancellationToken token = default)
-        where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+        where TConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
         ArgumentOutOfRangeException.ThrowIfNegative(count);
         ThrowIfEmpty(buffer);

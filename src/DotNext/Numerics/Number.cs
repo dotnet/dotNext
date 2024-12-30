@@ -18,7 +18,7 @@ public static partial class Number
     /// otherwise, <see langword="false"/>.
     /// </returns>
     public static bool IsSigned<T>()
-        where T : notnull, INumberBase<T>
+        where T : INumberBase<T>
         => T.IsNegative(-T.One);
 
     /// <summary>
@@ -28,7 +28,7 @@ public static partial class Number
     /// <typeparam name="T">The integer type to check.</typeparam>
     /// <returns>The maximum numbers bytes that can be occupied by the value of <typeparamref name="T"/>.</returns>
     public static int GetMaxByteCount<T>()
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
         => typeof(T).IsPrimitive ? Unsafe.SizeOf<T>() : T.AllBitsSet.GetByteCount();
 
     /// <summary>

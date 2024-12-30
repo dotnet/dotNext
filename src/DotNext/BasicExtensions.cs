@@ -133,8 +133,8 @@ public static class BasicExtensions
     /// <seealso cref="Disclosed{T}(T)"/>
     public static bool IsBetween<T, TLowerBound, TUpperBound>(this T value, TLowerBound lowerBound, TUpperBound upperBound)
         where T : notnull
-        where TLowerBound : notnull, IRangeEndpoint<T>
-        where TUpperBound : notnull, IRangeEndpoint<T>
+        where TLowerBound : IRangeEndpoint<T>
+        where TUpperBound : IRangeEndpoint<T>
         => lowerBound.IsOnRight(value) && upperBound.IsOnLeft(value);
 
     /// <summary>
@@ -145,7 +145,7 @@ public static class BasicExtensions
     /// <returns>The range endpoint.</returns>
     /// <seealso cref="IsBetween{T, TLowerBound, TUpperBound}(T, TLowerBound, TUpperBound)"/>
     public static EnclosedEndpoint<T> Enclosed<T>(this T value)
-        where T : notnull, IComparable<T>
+        where T : IComparable<T>
         => new() { Value = value };
 
     /// <summary>
@@ -156,6 +156,6 @@ public static class BasicExtensions
     /// <returns>The range endpoint.</returns>
     /// <seealso cref="IsBetween{T, TLowerBound, TUpperBound}(T, TLowerBound, TUpperBound)"/>
     public static DisclosedEndpoint<T> Disclosed<T>(this T value)
-        where T : notnull, IComparable<T>
+        where T : IComparable<T>
         => new() { Value = value };
 }

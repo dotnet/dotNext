@@ -196,7 +196,7 @@ public static class BufferWriter
     }
 
     private static bool TryFormat<T>(IBufferWriter<byte> writer, T value, Span<char> buffer, in EncodingContext context, LengthFormat? lengthFormat, ReadOnlySpan<char> format, IFormatProvider? provider, out long bytesWritten)
-        where T : notnull, ISpanFormattable
+        where T : ISpanFormattable
     {
         if (!value.TryFormat(buffer, out var charsWritten, format, provider))
         {
@@ -228,7 +228,7 @@ public static class BufferWriter
     /// <returns>The number of written bytes.</returns>
     [SkipLocalsInit]
     public static long Format<T>(this IBufferWriter<byte> writer, T value, in EncodingContext context, LengthFormat? lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, MemoryAllocator<char>? allocator = null)
-        where T : notnull, ISpanFormattable
+        where T : ISpanFormattable
     {
         // attempt to allocate char buffer on the stack
         Span<char> charBuffer = stackalloc char[SpanOwner<char>.StackallocThreshold];
@@ -259,7 +259,7 @@ public static class BufferWriter
     /// <returns>The number of written bytes.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough free space to place UTF-8 bytes.</exception>
     public static int Format<T>(this IBufferWriter<byte> writer, T value, LengthFormat? lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        where T : notnull, IUtf8SpanFormattable
+        where T : IUtf8SpanFormattable
     {
         var expectedLengthSize = lengthFormat switch
         {
