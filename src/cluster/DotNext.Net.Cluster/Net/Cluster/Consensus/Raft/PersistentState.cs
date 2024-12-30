@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Collections.Specialized;
-using DotNext.Buffers;
+using Buffers;
 using IO.Log;
 using static IO.DataTransferObject;
 using AsyncTrigger = Threading.AsyncTrigger;
