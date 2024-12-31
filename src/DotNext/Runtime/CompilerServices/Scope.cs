@@ -4,6 +4,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Runtime.CompilerServices;
 
+using static Threading.Tasks.Synchronization;
 using ExceptionAggregator = ExceptionServices.ExceptionAggregator;
 
 /// <summary>
@@ -114,8 +115,6 @@ public struct Scope : IDisposable, IAsyncDisposable
 
         static void ExecuteCallbacks(ReadOnlySpan<object?> callbacks, ref ExceptionAggregator aggregator)
         {
-            Task t;
-
             foreach (var cb in callbacks)
             {
                 try
@@ -128,22 +127,14 @@ public struct Scope : IDisposable, IAsyncDisposable
                             callback();
                             break;
                         case Func<ValueTask> callback:
-                            using (t = callback().AsTask())
-                            {
-                                t.Wait();
-                            }
-
+                            callback().Wait();
                             break;
                         case IDisposable disposable:
                             // IDisposable in synchronous implementation has higher priority than IAsyncDisposable
                             disposable.Dispose();
                             break;
                         case IAsyncDisposable disposable:
-                            using (t = disposable.DisposeAsync().AsTask())
-                            {
-                                t.Wait();
-                            }
-
+                            disposable.DisposeAsync().Wait();
                             break;
                     }
                 }

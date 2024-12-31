@@ -22,9 +22,9 @@ public static partial class Synchronization
         {
             result = task.Wait(timeout) ? new(task.Result) : new(new TimeoutException());
         }
-        catch (AggregateException e) when (e.InnerExceptions.Count == 1)
+        catch (AggregateException e) when (e.InnerExceptions is [var innerEx])
         {
-            result = new(e.InnerExceptions[0]);
+            result = new(innerEx);
         }
         catch (Exception e)
         {
@@ -49,9 +49,9 @@ public static partial class Synchronization
             task.Wait(token);
             result = task.Result;
         }
-        catch (AggregateException e) when (e.InnerExceptions.Count == 1)
+        catch (AggregateException e) when (e.InnerExceptions is [var innerEx])
         {
-            result = new(e.InnerExceptions[0]);
+            result = new(innerEx);
         }
         catch (Exception e)
         {
@@ -87,9 +87,9 @@ public static partial class Synchronization
             var awaiter = new DynamicTaskAwaitable.Awaiter(task, ConfigureAwaitOptions.None);
             result = new(awaiter.GetRawResult());
         }
-        catch (AggregateException e) when (e.InnerExceptions.Count is 1)
+        catch (AggregateException e) when (e.InnerExceptions is [var innerEx])
         {
-            result = new(e.InnerExceptions[0]);
+            result = new(innerEx);
         }
         catch (Exception e)
         {
@@ -119,9 +119,9 @@ public static partial class Synchronization
             var awaiter = new DynamicTaskAwaitable.Awaiter(task, ConfigureAwaitOptions.None);
             result = new(awaiter.GetRawResult());
         }
-        catch (AggregateException e) when (e.InnerExceptions.Count is 1)
+        catch (AggregateException e) when (e.InnerExceptions is [var innerEx])
         {
-            result = new(e.InnerExceptions[0]);
+            result = new(innerEx);
         }
         catch (Exception e)
         {
