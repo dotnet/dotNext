@@ -1,7 +1,7 @@
 namespace DotNext.Runtime;
 
 [TestClass]
-public sealed class BoxedValueTests
+public class BoxedValueTests
 {
     [TestMethod]
     public void BoxUnbox()
