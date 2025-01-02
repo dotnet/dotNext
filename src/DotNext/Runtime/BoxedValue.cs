@@ -1,10 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using static InlineIL.MethodRef;
-using static InlineIL.TypeRef;
 
 namespace DotNext.Runtime;
 
@@ -29,6 +25,13 @@ public class BoxedValue<T> // do not add any interfaces or base types
     where T : struct
 {
     private T value;
+
+    static BoxedValue()
+    {
+        // AOT: instantiate the class to make instance members visible to AOT
+        var boxed = new BoxedValue<T>();
+        GC.KeepAlive(boxed);
+    }
     
     [ExcludeFromCodeCoverage]
     private BoxedValue()
@@ -63,14 +66,7 @@ public class BoxedValue<T> // do not add any interfaces or base types
     /// </summary>
     /// <param name="value">The value to be boxed.</param>
     /// <returns>A boxed representation of the value.</returns>
-    public static BoxedValue<T> Box(T value)
-    {
-        Push(value);
-        Box<T>();
-        Dup();
-        Call(Constructor(Type<BoxedValue<T>>()));
-        return Return<BoxedValue<T>>();
-    }
+    public static BoxedValue<T> Box(T value) => Unsafe.As<BoxedValue<T>>(value);
 
     /// <summary>
     /// Boxes nullable value type to an object.
@@ -78,7 +74,7 @@ public class BoxedValue<T> // do not add any interfaces or base types
     /// <param name="value">The value to be boxed.</param>
     /// <returns>A boxed representation of the value.</returns>
     [return: NotNullIfNotNull(nameof(value))]
-    public static BoxedValue<T>? TryBox(in T? value) => value.HasValue ? Box(value.GetValueOrDefault()) : null;
+    public static BoxedValue<T>? TryBox(in T? value) => Unsafe.As<BoxedValue<T>?>(value);
 
     /// <summary>
     /// Unboxes the value.
