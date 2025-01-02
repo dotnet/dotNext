@@ -7,7 +7,7 @@ public class BoxedValueTests
     public void BoxUnbox()
     {
         var obj = (BoxedValue<int>)42;
-        // Assert.AreEqual(42.GetHashCode(), obj.GetHashCode());
+        Assert.AreEqual(42.GetHashCode(), obj.GetHashCode());
         Assert.AreEqual(42, obj.GetReference());
         // Assert.AreEqual(42, (int)obj);
         // Assert.AreEqual(typeof(int), obj.GetType());
