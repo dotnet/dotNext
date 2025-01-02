@@ -24,14 +24,25 @@ namespace DotNext.Runtime;
 public class BoxedValue<T> // do not add any interfaces or base types
     where T : struct
 {
+    private T value;
+
+    static BoxedValue()
+    {
+        // AOT: instantiate the class to make instance members visible to AOT
+        var boxed = new BoxedValue<T>();
+        GC.KeepAlive(boxed);
+    }
+    
     [ExcludeFromCodeCoverage]
-    private BoxedValue() => throw new NotImplementedException();
+    private BoxedValue()
+    {
+    }
 
     /// <summary>
     /// Gets a reference to the boxed value.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public ref T Value => ref Unsafe.Unbox<T>(this);
+    public ref T Value => ref value;
 
     /// <summary>
     /// Converts untyped reference to a boxed value into a typed reference.
