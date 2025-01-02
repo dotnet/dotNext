@@ -24,7 +24,7 @@ namespace DotNext.Runtime;
 public class BoxedValue<T> // do not add any interfaces or base types
     where T : struct
 {
-    private T value;
+    internal T value;
 
     static BoxedValue()
     {
@@ -119,4 +119,11 @@ public class BoxedValue<T> // do not add any interfaces or base types
     /// <returns>Mutable reference to the boxed value.</returns>
     public static implicit operator ValueReference<T>(BoxedValue<T> boxedValue)
         => new(boxedValue, ref boxedValue.value);
+}
+
+public static class BoxedValue
+{
+    public static ref T GetReference<T>(this BoxedValue<T> boxedValue)
+        where T : struct
+        => ref boxedValue.value;
 }
