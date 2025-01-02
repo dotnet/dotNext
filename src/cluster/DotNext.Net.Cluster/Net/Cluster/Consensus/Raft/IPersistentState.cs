@@ -1,5 +1,6 @@
 ﻿namespace DotNext.Net.Cluster.Consensus.Raft;
 
+using Runtime;
 using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 
 /// <summary>
@@ -54,5 +55,5 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     ValueTask UpdateVotedForAsync(ClusterMemberId member, CancellationToken token = default);
 
     internal static bool IsVotedFor(BoxedClusterMemberId? lastVote, in ClusterMemberId expected)
-        => lastVote is null || lastVote.Value == expected;
+        => lastVote is null || lastVote.Unbox() == expected;
 }

@@ -7,8 +7,8 @@ public sealed class BoxedValueTests : Test
     {
         var obj = (BoxedValue<int>)42;
         Equal(42.GetHashCode(), obj.GetHashCode());
-        Equal(42, obj.Value);
-        Equal(42, (int)obj);
+        Equal(42, obj.Unbox());
+        Equal(42, obj);
         Equal(typeof(int), obj.GetType());
     }
 
@@ -19,7 +19,7 @@ public sealed class BoxedValueTests : Test
         Null(BoxedValue<int>.GetTypedReference(obj));
 
         obj = 42;
-        Equal(42, BoxedValue<int>.GetTypedReference(obj).Value);
+        Equal(42, BoxedValue<int>.GetTypedReference(obj));
 
         obj = string.Empty;
         Throws<ArgumentException>(() => BoxedValue<int>.GetTypedReference(obj));
@@ -54,9 +54,9 @@ public sealed class BoxedValueTests : Test
         var boxed2 = boxed1.Copy();
         NotSame(boxed1, boxed2);
 
-        boxed1.Value.Value = 42;
-        boxed2.Value.Value = 43;
+        boxed1.Unbox().Value = 42;
+        boxed2.Unbox().Value = 43;
 
-        NotEqual(boxed1.Value.Value, boxed2.Value.Value);
+        NotEqual(boxed1.Unbox().Value, boxed2.Unbox().Value);
     }
 }

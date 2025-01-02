@@ -145,8 +145,8 @@ public class ValueReferenceTests
         var boxedInt = BoxedValue<int>.Box(42);
         ValueReference<int> reference = boxedInt;
 
-        boxedInt.Value = 56;
-        Assert.AreEqual(boxedInt.Value, reference.Value);
+        boxedInt.Unbox() = 56;
+        Assert.AreEqual(boxedInt, reference.Value);
     }
 
     [TestMethod]

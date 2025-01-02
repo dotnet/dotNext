@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -25,12 +24,6 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     where T : struct
 {
     internal T value;
-
-    /// <summary>
-    /// Gets a reference to the boxed value.
-    /// </summary>
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public ref T Value => ref value;
 
     /// <summary>
     /// Converts untyped reference to a boxed value into a typed reference.
@@ -87,12 +80,6 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
         => Unsafe.As<ValueType>(boxedValue);
 
     /// <summary>
-    /// Creates a bitwise copy of the boxed value.
-    /// </summary>
-    /// <returns>A reference to bitwise copy of the boxed value.</returns>
-    public BoxedValue<T> Copy() => Unsafe.As<BoxedValue<T>>(MemberwiseClone());
-
-    /// <summary>
     /// Boxes nullable value type to an object.
     /// </summary>
     /// <param name="value">The value to be boxed.</param>
@@ -118,9 +105,28 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     public abstract override string ToString(); // abstract to avoid inlining by AOT/JIT
 }
 
+/// <summary>
+/// Represents extension methods for <see cref="BoxedValue{T}"/> class.
+/// </summary>
 public static class BoxedValue
 {
+    /// <summary>
+    /// Unboxes the value.
+    /// </summary>
+    /// <param name="boxedValue">A reference to the boxed value.</param>
+    /// <typeparam name="T">The value type.</typeparam>
+    /// <returns>A reference to the boxed value.</returns>
     public static ref T Unbox<T>(this BoxedValue<T> boxedValue)
         where T : struct
         => ref boxedValue.value;
+
+    /// <summary>
+    /// Creates a bitwise copy of the boxed value.
+    /// </summary>
+    /// <returns>A reference to bitwise copy of the boxed value.</returns>
+    public static BoxedValue<T> Copy<T>(this BoxedValue<T> boxedValue) where T : struct
+        => Unsafe.As<BoxedValue<T>>(MemberwiseClone(boxedValue));
+
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = nameof(MemberwiseClone))]
+    private static extern object MemberwiseClone(object target);
 }
