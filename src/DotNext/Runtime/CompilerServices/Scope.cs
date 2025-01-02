@@ -152,19 +152,18 @@ public struct Scope : IDisposable, IAsyncDisposable
     /// <returns>The task representing asynchronous execution.</returns>
     public readonly async ValueTask DisposeAsync()
     {
-        var exceptions = BoxedValue<ExceptionAggregator>.Box(new());
-        await ExecuteCallbacksAsync(callbacks, exceptions).ConfigureAwait(false);
+        var exceptions = await ExecuteCallbacksAsync(callbacks).ConfigureAwait(false);
 
         if (rest is not null)
         {
-            await ExecuteCallbacksAsync(rest, exceptions).ConfigureAwait(false);
+            exceptions = await ExecuteCallbacksAsync(rest, exceptions).ConfigureAwait(false);
             rest.Clear();
         }
 
-        exceptions.Value.ThrowIfNeeded();
+        exceptions.ThrowIfNeeded();
 
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-        static async ValueTask ExecuteCallbacksAsync<T>(T callbacks, BoxedValue<ExceptionAggregator> exceptions)
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        static async ValueTask<ExceptionAggregator> ExecuteCallbacksAsync<T>(T callbacks, ExceptionAggregator exceptions = default)
             where T : ITuple
         {
             for (int i = 0, count = callbacks.Length; i < count; i++)
@@ -174,7 +173,7 @@ public struct Scope : IDisposable, IAsyncDisposable
                     switch (callbacks[i])
                     {
                         case null:
-                            return;
+                            goto exit;
                         case Action callback:
                             callback();
                             break;
@@ -192,9 +191,12 @@ public struct Scope : IDisposable, IAsyncDisposable
                 }
                 catch (Exception e)
                 {
-                    exceptions.Value.Add(e);
+                    exceptions.Add(e);
                 }
             }
+
+            exit:
+            return exceptions;
         }
     }
 }
