@@ -26,17 +26,8 @@ public class BoxedValue<T> // do not add any interfaces or base types
 {
     internal T value;
 
-    static BoxedValue()
-    {
-        // AOT: instantiate the class to make instance members visible to AOT
-        var boxed = new BoxedValue<T>();
-        GC.KeepAlive(boxed);
-    }
-    
     [ExcludeFromCodeCoverage]
-    private BoxedValue()
-    {
-    }
+    private BoxedValue() => throw new NotImplementedException();
 
     /// <summary>
     /// Gets a reference to the boxed value.
