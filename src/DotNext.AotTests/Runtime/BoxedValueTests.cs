@@ -8,9 +8,9 @@ public class BoxedValueTests
     {
         var obj = (BoxedValue<int>)42;
         Assert.AreEqual(42.GetHashCode(), obj.GetHashCode());
-        Assert.AreEqual(42, obj.GetReference());
-        // Assert.AreEqual(42, (int)obj);
-        // Assert.AreEqual(typeof(int), obj.GetType());
+        Assert.AreEqual(42, obj.Unbox());
+        Assert.AreEqual(42, (int)obj);
+        Assert.AreEqual(typeof(int), obj.GetType());
     }
 
     // [TestMethod]

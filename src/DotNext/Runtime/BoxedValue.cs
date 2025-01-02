@@ -120,7 +120,7 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
 
 public static class BoxedValue
 {
-    public static ref T GetReference<T>(this BoxedValue<T> boxedValue)
+    public static ref T Unbox<T>(this BoxedValue<T> boxedValue)
         where T : struct
         => ref boxedValue.value;
 }
