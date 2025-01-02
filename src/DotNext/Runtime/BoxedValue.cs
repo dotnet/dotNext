@@ -80,7 +80,7 @@ public class BoxedValue<T> // do not add any interfaces or base types
     /// Unboxes the value.
     /// </summary>
     /// <param name="boxedValue">The boxed representation of the value.</param>
-    public static implicit operator T(BoxedValue<T> boxedValue) => boxedValue.Value;
+    public static implicit operator T(BoxedValue<T> boxedValue) => boxedValue.value;
 
     /// <summary>
     /// Converts a value type to an object reference.
@@ -118,5 +118,5 @@ public class BoxedValue<T> // do not add any interfaces or base types
     /// <param name="boxedValue">Boxed value.</param>
     /// <returns>Mutable reference to the boxed value.</returns>
     public static implicit operator ValueReference<T>(BoxedValue<T> boxedValue)
-        => new(boxedValue, ref boxedValue.Value);
+        => new(boxedValue, ref boxedValue.value);
 }
