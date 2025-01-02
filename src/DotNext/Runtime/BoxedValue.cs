@@ -21,13 +21,10 @@ namespace DotNext.Runtime;
 /// not for <see cref="BoxedValue{T}"/>.
 /// </remarks>
 /// <typeparam name="T">The value type.</typeparam>
-public class BoxedValue<T> // do not add any interfaces or base types
+public abstract class BoxedValue<T> // do not add any interfaces or base types
     where T : struct
 {
     internal T value;
-
-    [ExcludeFromCodeCoverage]
-    private BoxedValue() => throw new NotImplementedException();
 
     /// <summary>
     /// Gets a reference to the boxed value.
@@ -110,6 +107,15 @@ public class BoxedValue<T> // do not add any interfaces or base types
     /// <returns>Mutable reference to the boxed value.</returns>
     public static implicit operator ValueReference<T>(BoxedValue<T> boxedValue)
         => new(boxedValue, ref boxedValue.value);
+    
+    /// <inheritdoc />
+    public abstract override bool Equals([NotNullWhen(true)] object? obj);  // abstract to avoid inlining by AOT/JIT
+
+    /// <inheritdoc />
+    public abstract override int GetHashCode(); // abstract to avoid inlining by AOT/JIT
+
+    /// <inheritdoc />
+    public abstract override string ToString(); // abstract to avoid inlining by AOT/JIT
 }
 
 public static class BoxedValue
