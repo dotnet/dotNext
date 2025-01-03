@@ -44,9 +44,10 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 01-01-2025
+Release Date: 01-03-2025
 
 <a href="https://www.nuget.org/packages/dotnext/5.17.2">DotNext 5.17.2</a>
+* Improved AOT compatibility
 * Fixed nullability attributes
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.17.2">DotNext.Metaprogramming 5.17.2</a>
