@@ -7,7 +7,7 @@ namespace DotNext.Linq.Expressions;
 /// <summary>
 /// Represents unsigned right shift expression.
 /// </summary>
-public class UnsignedRightShiftExpression : CustomExpression
+public sealed class UnsignedRightShiftExpression : CustomExpression
 {
     private const string SpecialName = "op_UnsignedRightShift";
     private const BindingFlags Flags = BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static;
