@@ -32,9 +32,10 @@ public static partial class ExpressionBuilder
     /// The equivalent code is <c>-a</c>.
     /// </remarks>
     /// <param name="expression">The operand.</param>
+    /// <param name="checked"><see langword="true"/> to perform checked arithmetic operation; otherwise, <see langword="false"/>.</param>
     /// <returns>Unary expression.</returns>
-    public static UnaryExpression Negate(this Expression expression)
-        => Expression.Negate(expression);
+    public static UnaryExpression Negate(this Expression expression, bool @checked = false)
+        => @checked ? Expression.NegateChecked(expression) : Expression.Negate(expression);
 
     /// <summary>
     /// Constructs logical NOT expression.
@@ -114,9 +115,10 @@ public static partial class ExpressionBuilder
     /// </remarks>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
+    /// <param name="checked"><see langword="true"/> to perform checked arithmetic operation; otherwise, <see langword="false"/>.</param>
     /// <returns>Binary expression.</returns>
-    public static BinaryExpression Add(this Expression left, Expression right)
-        => Expression.Add(left, right);
+    public static BinaryExpression Add(this Expression left, Expression right, bool @checked = false)
+        => @checked ? Expression.AddChecked(left, right) : Expression.Add(left, right);
 
     private static MethodCallExpression Concat(Expression[] strings) => strings.LongLength switch
     {
@@ -143,9 +145,10 @@ public static partial class ExpressionBuilder
     /// </remarks>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
+    /// <param name="checked"><see langword="true"/> to perform checked arithmetic operation; otherwise, <see langword="false"/>.</param>
     /// <returns>Binary expression.</returns>
-    public static BinaryExpression Subtract(this Expression left, Expression right)
-        => Expression.Subtract(left, right);
+    public static BinaryExpression Subtract(this Expression left, Expression right, bool @checked = false)
+        => @checked ? Expression.SubtractChecked(left, right) : Expression.Subtract(left, right);
 
     /// <summary>
     /// Constructs binary arithmetic multiplication expression.
@@ -155,9 +158,10 @@ public static partial class ExpressionBuilder
     /// </remarks>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
+    /// <param name="checked"><see langword="true"/> to perform checked arithmetic operation; otherwise, <see langword="false"/>.</param>
     /// <returns>Binary expression.</returns>
-    public static BinaryExpression Multiply(this Expression left, Expression right)
-        => Expression.Multiply(left, right);
+    public static BinaryExpression Multiply(this Expression left, Expression right, bool @checked = false)
+        => @checked ? Expression.MultiplyChecked(left, right) : Expression.Multiply(left, right);
 
     /// <summary>
     /// Constructs binary arithmetic division expression.
