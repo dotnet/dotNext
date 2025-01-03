@@ -4,13 +4,8 @@ namespace DotNext.Runtime.CompilerServices;
 
 using static Linq.Expressions.ExpressionBuilder;
 
-internal sealed class EnterGuardedCodeExpression : TransitionExpression
+internal sealed class EnterGuardedCodeExpression(uint stateId) : TransitionExpression(stateId)
 {
-    internal EnterGuardedCodeExpression(uint stateId)
-        : base(stateId)
-    {
-    }
-
     public override Type Type => typeof(void);
 
     public override Expression Reduce() => Empty();

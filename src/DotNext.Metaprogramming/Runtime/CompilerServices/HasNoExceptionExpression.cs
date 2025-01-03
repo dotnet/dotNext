@@ -5,7 +5,7 @@ namespace DotNext.Runtime.CompilerServices;
 using static Linq.Expressions.ExpressionBuilder;
 
 /// <summary>
-/// Represents exception check inside of state machine.
+/// Represents exception check inside the state machine.
 /// </summary>
 internal sealed class HasNoExceptionExpression : StateMachineExpression
 {
