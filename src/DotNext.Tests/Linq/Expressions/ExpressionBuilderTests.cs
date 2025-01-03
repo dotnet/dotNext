@@ -220,7 +220,7 @@ public sealed class ExpressionBuilderTests : Test
         expr = 42.Const().LeftShift(2.Const());
         Equal(ExpressionType.LeftShift, expr.NodeType);
 
-        expr = 42.Const().RightShift(2.Const());
+        expr = (BinaryExpression)42.Const().RightShift(2.Const());
         Equal(ExpressionType.RightShift, expr.NodeType);
 
         expr = 42.Const().LessThanOrEqual(43.Const());
@@ -657,5 +657,26 @@ public sealed class ExpressionBuilderTests : Test
 
         Contains(mut.Bindings, static item => nameof(Net.Cluster.Consensus.Raft.Result<bool>.Value) == item.Member.Name);
         Equal(typeof(Net.Cluster.Consensus.Raft.Result<bool>), mut.Reduce().Type);
+    }
+
+    [Theory]
+    [InlineData(typeof(byte), typeof(BinaryExpression))]
+    [InlineData(typeof(ushort), typeof(BinaryExpression))]
+    [InlineData(typeof(uint), typeof(BinaryExpression))]
+    [InlineData(typeof(ulong), typeof(BinaryExpression))]
+    [InlineData(typeof(sbyte), typeof(UnaryExpression))]
+    [InlineData(typeof(short), typeof(UnaryExpression))]
+    [InlineData(typeof(int), typeof(UnaryExpression))]
+    [InlineData(typeof(long), typeof(UnaryExpression))]
+    [InlineData(typeof(nint), typeof(MethodCallExpression))]
+    [InlineData(typeof(nuint), typeof(MethodCallExpression))]
+    [InlineData(typeof(Int128), typeof(MethodCallExpression))]
+    [InlineData(typeof(UInt128), typeof(MethodCallExpression))]
+    public static void UnsignedRightShift(Type primitiveType, Type expressionType)
+    {
+        var expr = new UnsignedRightShiftExpression(Expression.Default(primitiveType), 2.Const());
+        var reduced = expr.Reduce();
+        IsAssignableFrom(expressionType, reduced);
+        Same(primitiveType, reduced.Type);
     }
 }

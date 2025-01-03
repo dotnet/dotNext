@@ -331,9 +331,10 @@ public static partial class ExpressionBuilder
     /// </remarks>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
+    /// <param name="isUnsigned"><see langword="true"/> to perform unsigned right sift; otherwise, <see langword="false"/>.</param>
     /// <returns>Binary expression.</returns>
-    public static BinaryExpression RightShift(this Expression left, Expression right)
-        => Expression.RightShift(left, right);
+    public static Expression RightShift(this Expression left, Expression right, bool isUnsigned = false)
+        => isUnsigned ? new UnsignedRightShiftExpression(left, right) : Expression.RightShift(left, right);
 
     /// <summary>
     /// Constructs an expression that decrements given expression by 1 and assigns the result back to the expression.
