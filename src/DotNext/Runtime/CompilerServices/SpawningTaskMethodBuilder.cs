@@ -30,7 +30,7 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>()
     /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam>
     /// <param name="stateMachine">The state machine instance, passed by reference.</param>
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
-        where TStateMachine : notnull, IAsyncStateMachine
+        where TStateMachine : IAsyncStateMachine
     {
         var awaiter = SpawningAsyncTaskMethodBuilder.Awaiter;
         builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
@@ -45,8 +45,8 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>()
     /// <param name="awaiter">The awaiter.</param>
     /// <param name="stateMachine">The state machine.</param>
     public void AwaitOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
-        where TAwaiter : notnull, INotifyCompletion
-        where TStateMachine : notnull, IAsyncStateMachine
+        where TAwaiter : INotifyCompletion
+        where TStateMachine : IAsyncStateMachine
         => builder.AwaitOnCompleted(ref awaiter, ref stateMachine);
 
     /// <summary>
@@ -58,8 +58,8 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>()
     /// <param name="awaiter">The awaiter.</param>
     /// <param name="stateMachine">The state machine.</param>
     public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
-        where TAwaiter : notnull, ICriticalNotifyCompletion
-        where TStateMachine : notnull, IAsyncStateMachine
+        where TAwaiter : ICriticalNotifyCompletion
+        where TStateMachine : IAsyncStateMachine
         => builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
 
     /// <summary>
@@ -94,7 +94,7 @@ public struct SpawningAsyncTaskMethodBuilder<TResult>()
 /// spawns method execution as a new work item in the thread pool, i.e. in parallel.
 /// </summary>
 /// <remarks>
-/// This builder has the same effect as <see cref="Task.Run(Func{Task?})"/> but consumes
+/// This builder has the same effect as <see cref="Task.Run(Func{System.Threading.Tasks.Task})"/> but consumes
 /// less memory.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
@@ -119,7 +119,7 @@ public struct SpawningAsyncTaskMethodBuilder()
     /// <typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam>
     /// <param name="stateMachine">The state machine instance, passed by reference.</param>
     public void Start<TStateMachine>(ref TStateMachine stateMachine)
-        where TStateMachine : notnull, IAsyncStateMachine
+        where TStateMachine : IAsyncStateMachine
     {
         var awaiter = Awaiter;
         builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
@@ -134,8 +134,8 @@ public struct SpawningAsyncTaskMethodBuilder()
     /// <param name="awaiter">The awaiter.</param>
     /// <param name="stateMachine">The state machine.</param>
     public void AwaitOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
-        where TAwaiter : notnull, INotifyCompletion
-        where TStateMachine : notnull, IAsyncStateMachine
+        where TAwaiter : INotifyCompletion
+        where TStateMachine : IAsyncStateMachine
         => builder.AwaitOnCompleted(ref awaiter, ref stateMachine);
 
     /// <summary>
@@ -147,8 +147,8 @@ public struct SpawningAsyncTaskMethodBuilder()
     /// <param name="awaiter">The awaiter.</param>
     /// <param name="stateMachine">The state machine.</param>
     public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
-        where TAwaiter : notnull, ICriticalNotifyCompletion
-        where TStateMachine : notnull, IAsyncStateMachine
+        where TAwaiter : ICriticalNotifyCompletion
+        where TStateMachine : IAsyncStateMachine
         => builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
 
     /// <summary>

@@ -52,5 +52,5 @@ public interface IReplicationCluster<TEntry> : IReplicationCluster
     /// <exception cref="InvalidOperationException">The current node is not a leader.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask<bool> ReplicateAsync<TEntryImpl>(TEntryImpl entry, CancellationToken token = default)
-        where TEntryImpl : notnull, TEntry;
+        where TEntryImpl : TEntry;
 }

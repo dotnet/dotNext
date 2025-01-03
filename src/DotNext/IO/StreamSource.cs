@@ -70,7 +70,7 @@ public static partial class StreamSource
     /// <typeparam name="TOutput">The type of the consumer.</typeparam>
     /// <returns>The stream wrapping <typeparamref name="TOutput"/>.</returns>
     public static Stream AsSynchronousStream<TOutput>(TOutput output)
-        where TOutput : notnull, IFlushable, IReadOnlySpanConsumer<byte>
+        where TOutput : IFlushable, IReadOnlySpanConsumer<byte>
         => new SyncWriterStream<TOutput>(output);
 
     /// <summary>
@@ -130,7 +130,7 @@ public static partial class StreamSource
     /// <typeparam name="TOutput">The type of the consumer.</typeparam>
     /// <returns>The stream wrapping <typeparamref name="TOutput"/>.</returns>
     public static Stream AsAsynchronousStream<TOutput>(TOutput output)
-        where TOutput : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
+        where TOutput : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
         => new AsyncWriterStream<TOutput>(output);
 
     /// <summary>

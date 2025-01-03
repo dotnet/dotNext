@@ -15,7 +15,7 @@ public partial class CommandInterpreter : IBuildable<CommandInterpreter, Command
         private int? snapshotCommandId;
 
         private Builder Add<TCommand>(int commandId, CommandHandler<TCommand> handler, bool snapshotHandler)
-            where TCommand : notnull, ISerializable<TCommand>
+            where TCommand : ISerializable<TCommand>
         {
             identifiers.Add(typeof(TCommand), commandId);
             interpreters.Add(commandId, handler);
@@ -39,7 +39,7 @@ public partial class CommandInterpreter : IBuildable<CommandInterpreter, Command
         /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <see langword="null"/>.</exception>
         /// <exception cref="GenericArgumentException">Type <typaparamref name="TCommand"/> is not annotated with <see cref="CommandAttribute"/> attribute.</exception>
         public Builder Add<TCommand>(int commandId, Func<TCommand, CancellationToken, ValueTask> handler, bool snapshotHandler = false)
-            where TCommand : notnull, ISerializable<TCommand>
+            where TCommand : ISerializable<TCommand>
         {
             ArgumentNullException.ThrowIfNull(handler);
 
@@ -60,7 +60,7 @@ public partial class CommandInterpreter : IBuildable<CommandInterpreter, Command
         /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <see langword="null"/>.</exception>
         /// <exception cref="GenericArgumentException">Type <typaparamref name="TCommand"/> is not annotated with <see cref="CommandAttribute"/> attribute.</exception>
         public Builder Add<TCommand>(int commandId, Func<TCommand, object?, CancellationToken, ValueTask> handler, bool snapshotHandler = false)
-            where TCommand : notnull, ISerializable<TCommand>
+            where TCommand : ISerializable<TCommand>
         {
             ArgumentNullException.ThrowIfNull(handler);
 

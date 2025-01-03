@@ -3,7 +3,7 @@
 using IReadOnlySpanConsumer = Buffers.IReadOnlySpanConsumer<byte>;
 
 internal sealed class SyncWriterStream<TOutput>(TOutput output) : WriterStream<TOutput>(output)
-    where TOutput : notnull, IReadOnlySpanConsumer, IFlushable
+    where TOutput : IReadOnlySpanConsumer, IFlushable
 {
     public override bool CanTimeout => false;
 

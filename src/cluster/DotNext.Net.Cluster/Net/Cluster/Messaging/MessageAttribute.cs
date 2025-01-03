@@ -51,7 +51,7 @@ public abstract class MessageAttribute : Attribute
 /// </remarks>
 /// <param name="name">The name of the message.</param>
 public sealed class MessageAttribute<TMessage>(string name) : MessageAttribute(name)
-    where TMessage : notnull, ISerializable<TMessage>
+    where TMessage : ISerializable<TMessage>
 {
     internal override Type MessageType => typeof(TMessage);
 }

@@ -33,7 +33,7 @@ public class MemoryTransferObject(int length, MemoryAllocator<byte>? allocator =
     /// <returns>The converted DTO content.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token = default)
-        where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
+        where TTransformation : IDataTransferObject.ITransformation<TResult>
         => IsDisposed ? new(GetDisposedTask<TResult>()) : transformation.TransformAsync(new SequenceReader(Content), token);
 
     /// <summary>

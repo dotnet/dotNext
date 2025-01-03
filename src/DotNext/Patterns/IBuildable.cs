@@ -6,8 +6,8 @@ namespace DotNext.Patterns;
 /// <typeparam name="TSelf">The type that can be constructed using builder pattern.</typeparam>
 /// <typeparam name="TBuilder">The type of the builder.</typeparam>
 public interface IBuildable<out TSelf, out TBuilder>
-    where TSelf : notnull, IBuildable<TSelf, TBuilder>
-    where TBuilder : notnull, ISupplier<TSelf>, IResettable
+    where TSelf : IBuildable<TSelf, TBuilder>
+    where TBuilder : ISupplier<TSelf>, IResettable
 {
     /// <summary>
     /// Creates a new builder for type <typeparamref name="TSelf"/>.

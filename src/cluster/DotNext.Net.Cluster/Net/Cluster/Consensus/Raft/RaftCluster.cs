@@ -524,7 +524,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="null"/> if snapshot is outdated.</returns>
     protected async ValueTask<Result<HeartbeatResult>> InstallSnapshotAsync<TSnapshot>(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
-        where TSnapshot : notnull, IRaftLogEntry
+        where TSnapshot : IRaftLogEntry
     {
         Result<HeartbeatResult> result;
         var lockTaken = false;
@@ -576,7 +576,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <returns>The processing result.</returns>
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))] // hot path, avoid allocations
     protected async ValueTask<Result<HeartbeatResult>> AppendEntriesAsync<TEntry>(ClusterMemberId sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         Result<HeartbeatResult> result;
         var lockTaken = false;
@@ -1217,7 +1217,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public async ValueTask<bool> ReplicateAsync<TEntry>(TEntry entry, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 

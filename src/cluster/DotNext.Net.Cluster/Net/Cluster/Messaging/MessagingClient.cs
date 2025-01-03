@@ -31,7 +31,7 @@ public class MessagingClient
     /// <returns>The message name and MIME type.</returns>
     /// <exception cref="GenericArgumentException{TMessage}"><typeparamref name="TMessage"/> is not registered via <see cref="RegisterMessage{TMessage}(string, ContentType?)"/>.</exception>
     protected virtual (string MessageName, ContentType MessageType) GetMessageInfo<TMessage>()
-        where TMessage : notnull, ISerializable<TMessage>
+        where TMessage : ISerializable<TMessage>
         => messages.TryGetValue(typeof(TMessage), out var info) ? info : throw new GenericArgumentException<TMessage>(ExceptionMessages.MissingMessageName);
 
     /// <summary>
@@ -42,7 +42,7 @@ public class MessagingClient
     /// <param name="type">MIME type of the message.</param>
     /// <returns>This client.</returns>
     public MessagingClient RegisterMessage<TMessage>(string name, ContentType? type = null)
-        where TMessage : notnull, ISerializable<TMessage>
+        where TMessage : ISerializable<TMessage>
     {
         messages.Add(typeof(TMessage), (name, type ?? new ContentType(MediaTypeNames.Application.Octet)));
         return this;
@@ -55,7 +55,7 @@ public class MessagingClient
     /// <param name="messageInfo">The information about message type.</param>
     /// <returns>This client.</returns>
     public MessagingClient RegisterMessage<TMessage>(MessageAttribute<TMessage> messageInfo)
-        where TMessage : notnull, ISerializable<TMessage>
+        where TMessage : ISerializable<TMessage>
         => RegisterMessage<TMessage>(messageInfo.Name, new(messageInfo.MimeType));
 
     /// <summary>
@@ -69,13 +69,13 @@ public class MessagingClient
     /// <exception cref="InvalidOperationException">Attempts to send message to local or unavailable endpoint.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task<TOutput> SendMessageAsync<TInput, TOutput>(TInput input, CancellationToken token = default)
-        where TInput : notnull, ISerializable<TInput>
-        where TOutput : notnull, ISerializable<TOutput>
+        where TInput : ISerializable<TInput>
+        where TOutput : ISerializable<TOutput>
     {
         Task<TOutput> result;
         try
         {
-            result = channel.SendMessageAsync<TOutput>(CreateMessage<TInput>(input), token);
+            result = channel.SendMessageAsync<TOutput>(CreateMessage(input), token);
         }
         catch (Exception e)
         {
@@ -95,12 +95,12 @@ public class MessagingClient
     /// <exception cref="InvalidOperationException">Attempts to send message to local or unavailable endpoint.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task SendSignalAsync<TInput>(TInput input, CancellationToken token = default)
-        where TInput : notnull, ISerializable<TInput>
+        where TInput : ISerializable<TInput>
     {
         Task result;
         try
         {
-            result = channel.SendSignalAsync(CreateMessage<TInput>(input), token);
+            result = channel.SendSignalAsync(CreateMessage(input), token);
         }
         catch (Exception e)
         {
@@ -111,7 +111,7 @@ public class MessagingClient
     }
 
     private Message<TInput> CreateMessage<TInput>(TInput payload)
-        where TInput : notnull, ISerializable<TInput>
+        where TInput : ISerializable<TInput>
     {
         var (name, type) = GetMessageInfo<TInput>();
         return new() { Name = name, Payload = payload, Type = type };

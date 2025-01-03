@@ -7,7 +7,7 @@ namespace DotNext.IO.Log;
 /// <typeparam name="TEntry">The type of the supplied entries.</typeparam>
 /// <param name="entries">The list of the log entries to be returned by the producer.</param>
 public sealed class LogEntryProducer<TEntry>(IReadOnlyList<TEntry> entries) : ILogEntryProducer<TEntry>, IResettable
-    where TEntry : notnull, ILogEntry
+    where TEntry : ILogEntry
 {
     private const int InitialPosition = -1;
     private int currentIndex = InitialPosition;

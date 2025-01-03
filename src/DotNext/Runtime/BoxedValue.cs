@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -24,14 +23,7 @@ namespace DotNext.Runtime;
 public abstract class BoxedValue<T> // do not add any interfaces or base types
     where T : struct
 {
-    [ExcludeFromCodeCoverage]
-    private BoxedValue() => throw new NotImplementedException();
-
-    /// <summary>
-    /// Gets a reference to the boxed value.
-    /// </summary>
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    public ref T Value => ref Unsafe.Unbox<T>(this);
+    internal T value;
 
     /// <summary>
     /// Converts untyped reference to a boxed value into a typed reference.
@@ -69,7 +61,7 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     /// Unboxes the value.
     /// </summary>
     /// <param name="boxedValue">The boxed representation of the value.</param>
-    public static implicit operator T(BoxedValue<T> boxedValue) => boxedValue.Value;
+    public static implicit operator T(BoxedValue<T> boxedValue) => boxedValue.value;
 
     /// <summary>
     /// Converts a value type to an object reference.
@@ -88,12 +80,6 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
         => Unsafe.As<ValueType>(boxedValue);
 
     /// <summary>
-    /// Creates a bitwise copy of the boxed value.
-    /// </summary>
-    /// <returns>A reference to bitwise copy of the boxed value.</returns>
-    public BoxedValue<T> Copy() => Unsafe.As<BoxedValue<T>>(MemberwiseClone());
-
-    /// <summary>
     /// Boxes nullable value type to an object.
     /// </summary>
     /// <param name="value">The value to be boxed.</param>
@@ -107,8 +93,8 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     /// <param name="boxedValue">Boxed value.</param>
     /// <returns>Mutable reference to the boxed value.</returns>
     public static implicit operator ValueReference<T>(BoxedValue<T> boxedValue)
-        => new(boxedValue, ref boxedValue.Value);
-
+        => new(boxedValue, ref boxedValue.value);
+    
     /// <inheritdoc />
     public abstract override bool Equals([NotNullWhen(true)] object? obj);  // abstract to avoid inlining by AOT/JIT
 
@@ -117,4 +103,30 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
 
     /// <inheritdoc />
     public abstract override string ToString(); // abstract to avoid inlining by AOT/JIT
+}
+
+/// <summary>
+/// Represents extension methods for <see cref="BoxedValue{T}"/> class.
+/// </summary>
+public static class BoxedValue
+{
+    /// <summary>
+    /// Unboxes the value.
+    /// </summary>
+    /// <param name="boxedValue">A reference to the boxed value.</param>
+    /// <typeparam name="T">The value type.</typeparam>
+    /// <returns>A reference to the boxed value.</returns>
+    public static ref T Unbox<T>(this BoxedValue<T> boxedValue)
+        where T : struct
+        => ref boxedValue.value;
+
+    /// <summary>
+    /// Creates a bitwise copy of the boxed value.
+    /// </summary>
+    /// <returns>A reference to bitwise copy of the boxed value.</returns>
+    public static BoxedValue<T> Copy<T>(this BoxedValue<T> boxedValue) where T : struct
+        => Unsafe.As<BoxedValue<T>>(MemberwiseClone(boxedValue));
+
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = nameof(MemberwiseClone))]
+    private static extern object MemberwiseClone(object target);
 }

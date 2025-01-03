@@ -171,12 +171,12 @@ public partial class PersistentState
         protected abstract LogEntryMetadata GetMetadata(int index);
 
         protected abstract ValueTask PersistAsync<TEntry>(TEntry entry, int index, CancellationToken token)
-            where TEntry : notnull, IRaftLogEntry;
+            where TEntry : IRaftLogEntry;
 
         protected abstract ValueTask WriteThroughAsync(CachedLogEntry entry, int index, CancellationToken token);
 
         internal ValueTask WriteAsync<TEntry>(TEntry entry, long absoluteIndex, CancellationToken token)
-            where TEntry : notnull, IRaftLogEntry
+            where TEntry : IRaftLogEntry
         {
             // write operation always expects absolute index, so we need to convert it to the relative index
             var relativeIndex = ToRelativeIndex(absoluteIndex);

@@ -32,7 +32,7 @@ internal readonly struct LogEntryMetadata
     }
 
     internal static LogEntryMetadata Create<TEntry>(TEntry entry)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
         => new(entry.Term, entry.Timestamp, entry.Length.GetValueOrDefault(), entry.CommandId);
 
     internal LogEntryMetadata(ReadOnlyMemory<byte> input)

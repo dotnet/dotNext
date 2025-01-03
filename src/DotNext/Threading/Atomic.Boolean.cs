@@ -76,13 +76,13 @@ public static partial class Atomic
         /// Negates currently stored value atomically.
         /// </summary>
         /// <returns>Negation result.</returns>
-        public unsafe bool NegateAndGet() => Update(new Negation()).NewValue;
+        public bool NegateAndGet() => Update(new Negation()).NewValue;
 
         /// <summary>
         /// Negates currently stored value atomically.
         /// </summary>
         /// <returns>The original value before negation.</returns>
-        public unsafe bool GetAndNegate() => Update(new Negation()).OldValue;
+        public bool GetAndNegate() => Update(new Negation()).OldValue;
 
         /// <summary>
         /// Modifies the current value atomically.
@@ -106,7 +106,7 @@ public static partial class Atomic
         }
 
         private (bool OldValue, bool NewValue) Update<TUpdater>(TUpdater updater)
-            where TUpdater : notnull, ISupplier<bool, bool>
+            where TUpdater : ISupplier<bool, bool>
         {
             bool oldValue, newValue, tmp = Value;
             do
@@ -119,7 +119,7 @@ public static partial class Atomic
         }
 
         private (bool OldValue, bool NewValue) Accumulate<TAccumulator>(bool x, TAccumulator accumulator)
-            where TAccumulator : notnull, ISupplier<bool, bool, bool>
+            where TAccumulator : ISupplier<bool, bool, bool>
         {
             bool oldValue, newValue, tmp = Value;
             do
@@ -143,7 +143,7 @@ public static partial class Atomic
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The updated value.</returns>
         public bool AccumulateAndGet<TAccumulator>(bool x, TAccumulator accumulator)
-            where TAccumulator : notnull, ISupplier<bool, bool, bool>
+            where TAccumulator : ISupplier<bool, bool, bool>
             => Accumulate(x, accumulator).NewValue;
 
         /// <summary>
@@ -171,7 +171,7 @@ public static partial class Atomic
         /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <returns>The original value.</returns>
         public bool GetAndAccumulate<TAccumulator>(bool x, TAccumulator accumulator)
-            where TAccumulator : notnull, ISupplier<bool, bool, bool>
+            where TAccumulator : ISupplier<bool, bool, bool>
             => Accumulate(x, accumulator).OldValue;
 
         /// <summary>
@@ -195,7 +195,7 @@ public static partial class Atomic
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The updated value.</returns>
         public bool UpdateAndGet<TUpdater>(TUpdater updater)
-            where TUpdater : notnull, ISupplier<bool, bool>
+            where TUpdater : ISupplier<bool, bool>
             => Update(updater).NewValue;
 
         /// <summary>
@@ -215,7 +215,7 @@ public static partial class Atomic
         /// <param name="updater">A side-effect-free function.</param>
         /// <returns>The original value.</returns>
         public bool GetAndUpdate<TUpdater>(TUpdater updater)
-            where TUpdater : notnull, ISupplier<bool, bool>
+            where TUpdater : ISupplier<bool, bool>
             => Update(updater).OldValue;
 
         /// <summary>

@@ -44,42 +44,29 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 12-29-2024
+Release Date: 01-03-2025
 
-This release is aimed to improve AOT compatibility. All the examples in the repo are now AOT compatible.
-<a href="https://www.nuget.org/packages/dotnext/5.17.0">DotNext 5.17.0</a>
-* Fixed AOT compatibility in `TaskType` class
-* Added [ISpanFormattable](https://learn.microsoft.com/en-us/dotnet/api/system.ispanformattable) and [IParsable&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.iparsable-1) interfaces to `HttpEndPoint`
-* Introduced `TryEncodeAsUtf8` extension method for `SpanWriter<T>`
-* Added more factory methods to `DotNext.Buffers.Memory` class to create [ReadOnlySequence&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1)
-* `Intrinsics.KeepAlive` is introduced for value types
-* Added `Synchronization.Wait()` synchronous methods for blocking wait of [value tasks](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask) without wait handles
+<a href="https://www.nuget.org/packages/dotnext/5.17.2">DotNext 5.17.2</a>
+* Improved AOT compatibility
+* Fixed nullability attributes
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.17.0">DotNext.Metaprogramming 5.17.0</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.17.2">DotNext.Metaprogramming 5.17.2</a>
+* Fixed nullability attributes
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/5.17.0">DotNext.Unsafe 5.17.0</a>
-* Improved AOT support
-* Fixed finalizer for unmanaged memory manager that allows to release the allocated unmanaged memory automatically by GC to avoid memory leak
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.17.2">DotNext.Unsafe 5.17.2</a>
+* Fixed nullability attributes
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.17.0">DotNext.Threading 5.17.0</a>
-* Improved AOT support
+<a href="https://www.nuget.org/packages/dotnext.threading/5.17.2">DotNext.Threading 5.17.2</a>
+* Fixed nullability attributes
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.17.0">DotNext.IO 5.17.0</a>
-* Reduced memory consumption for applications that use `FileReader` and `FileWriter` classes. These classes are now implemented by using lazy buffer pattern. It means that the different instances can reuse the same buffer taken from the pool
-* Fixed [255](https://github.com/dotnet/dotNext/issues/255)
-* `PoolingBufferedStream` is introduced to replace classic [BufferedStream](https://learn.microsoft.com/en-us/dotnet/api/system.io.bufferedstream). This class supports memory pooling and implements lazy buffer pattern
+<a href="https://www.nuget.org/packages/dotnext.io/5.17.2">DotNext.IO 5.17.2</a>
+* Fixed nullability attributes
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.17.0">DotNext.Net.Cluster 5.17.0</a>
-* Improved AOT support
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.17.2">DotNext.Net.Cluster 5.17.2</a>
+* Fixed nullability attributes
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.17.0">DotNext.AspNetCore.Cluster 5.17.0</a>
-* Improved AOT support
-* Fixed [254](https://github.com/dotnet/dotNext/issues/254)
-
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/0.5.0">DotNext.MaintenanceServices 0.5.0</a>
-* Improved AOT support
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.17.2">DotNext.AspNetCore.Cluster 5.17.2</a>
+* Fixed nullability attributes
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

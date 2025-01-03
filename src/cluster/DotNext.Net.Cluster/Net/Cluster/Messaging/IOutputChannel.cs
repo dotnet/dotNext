@@ -33,7 +33,7 @@ public interface IOutputChannel
     /// <exception cref="InvalidOperationException">Attempts to send message to local or unavailable endpoint.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     Task<TResponse> SendMessageAsync<TResponse>(IMessage message, CancellationToken token = default)
-        where TResponse : notnull, ISerializable<TResponse>
+        where TResponse : ISerializable<TResponse>
         => SendMessageAsync(message, ISerializable<TResponse>.TransformAsync<IMessage>, token);
 
     /// <summary>

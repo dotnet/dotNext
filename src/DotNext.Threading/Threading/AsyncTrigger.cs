@@ -253,12 +253,12 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public ValueTask<bool> SpinWaitAsync<TCondition>(TCondition condition, TimeSpan timeout, CancellationToken token = default)
-        where TCondition : notnull, ISupplier<bool>
+        where TCondition : ISupplier<bool>
         => SpinWaitAsync(new ConditionalLockManager<TCondition> { Condition = condition }, new(timeout), token);
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<bool> SpinWaitAsync<TCondition>(ConditionalLockManager<TCondition> manager, Timeout timeout, CancellationToken token)
-        where TCondition : notnull, ISupplier<bool>
+        where TCondition : ISupplier<bool>
     {
         do
         {
@@ -285,12 +285,12 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public ValueTask SpinWaitAsync<TCondition>(TCondition condition, CancellationToken token = default)
-        where TCondition : notnull, ISupplier<bool>
+        where TCondition : ISupplier<bool>
         => SpinWaitAsync(new ConditionalLockManager<TCondition> { Condition = condition }, new CancellationTokenOnly(token));
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask SpinWaitAsync<TCondition>(ConditionalLockManager<TCondition> manager, CancellationTokenOnly options)
-        where TCondition : notnull, ISupplier<bool>
+        where TCondition : ISupplier<bool>
     {
         while (!manager.Condition.Invoke())
             await AcquireAsync(ref pool, ref manager, options).ConfigureAwait(false);
@@ -298,9 +298,9 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
 
     [StructLayout(LayoutKind.Auto)]
     private struct ConditionalLockManager<TCondition> : ILockManager<DefaultWaitNode>
-        where TCondition : notnull, ISupplier<bool>
+        where TCondition : ISupplier<bool>
     {
-        required internal TCondition Condition;
+        internal required TCondition Condition;
 
         bool ILockManager.IsLockAllowed => Condition.Invoke();
 

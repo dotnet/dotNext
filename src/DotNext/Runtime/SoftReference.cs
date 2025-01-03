@@ -24,10 +24,7 @@ public sealed class SoftReference<T> : IOptionMonad<T>
         ~Tracker()
         {
             // Thread safety: preserve order of fields
-            var target = parent.strongRef;
-            var thisRef = parent.trackerRef;
-
-            if (target is null || thisRef is null)
+            if (parent.strongRef is not { } target || parent.trackerRef is not { } thisRef)
             {
                 // do nothing
             }

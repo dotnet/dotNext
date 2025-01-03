@@ -37,7 +37,7 @@ public partial class DiskBasedStateMachine
     /// <param name="snapshot">The log entry containing snapshot.</param>
     /// <returns>The size of the snapshot, in bytes.</returns>
     protected abstract ValueTask<long> InstallSnapshotAsync<TSnapshot>(TSnapshot snapshot)
-        where TSnapshot : notnull, IRaftLogEntry;
+        where TSnapshot : IRaftLogEntry;
 
     private protected sealed override async ValueTask InstallSnapshotAsync<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
     {

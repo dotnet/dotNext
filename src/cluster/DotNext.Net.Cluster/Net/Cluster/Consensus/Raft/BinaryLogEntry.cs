@@ -13,7 +13,7 @@ using IO.Log;
 /// <typeparam name="T">Binary-formattable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
 public readonly struct BinaryLogEntry<T>() : IInputLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
-    where T : notnull, IBinaryFormattable<T>
+    where T : IBinaryFormattable<T>
 {
     /// <summary>
     /// Gets or sets the log entry payload.

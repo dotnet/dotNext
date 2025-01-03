@@ -1,6 +1,33 @@
 Release Notes
 ====
 
+# 01-03-2025
+<a href="https://www.nuget.org/packages/dotnext/5.17.2">DotNext 5.17.2</a>
+* Improved AOT compatibility
+* Fixed nullability attributes
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.17.2">DotNext.Metaprogramming 5.17.2</a>
+* Fixed nullability attributes
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.17.2">DotNext.Unsafe 5.17.2</a>
+* Fixed nullability attributes
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.17.2">DotNext.Threading 5.17.2</a>
+* Fixed nullability attributes
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.17.2">DotNext.IO 5.17.2</a>
+* Fixed nullability attributes
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.17.2">DotNext.Net.Cluster 5.17.2</a>
+* Fixed nullability attributes
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.17.2">DotNext.AspNetCore.Cluster 5.17.2</a>
+* Fixed nullability attributes
+
+# 12-30-2024
+<a href="https://www.nuget.org/packages/dotnext.io/5.17.1">DotNext.IO 5.17.1</a>
+* Fixed `EndOfStreamException` caused by async read from `PoolingBufferedStream`
+
 # 12-29-2024
 This release is aimed to improve AOT compatibility. All the examples in the repo are now AOT compatible.
 <a href="https://www.nuget.org/packages/dotnext/5.17.0">DotNext 5.17.0</a>

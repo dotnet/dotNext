@@ -78,8 +78,8 @@ internal partial class Client : RaftClusterMember
     }
 
     private sealed class AppendEntriesExchange<TEntry, TList> : AppendEntriesExchange, IClientExchange<Result<HeartbeatResult>>
-        where TEntry : notnull, IRaftLogEntry
-        where TList : notnull, IReadOnlyList<TEntry>
+        where TEntry : IRaftLogEntry
+        where TList : IReadOnlyList<TEntry>
     {
         private TList? entries;
 

@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Collections.Specialized;
-using DotNext.Buffers;
+using Buffers;
 using IO.Log;
 using static IO.DataTransferObject;
 using AsyncTrigger = Threading.AsyncTrigger;
@@ -398,7 +398,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     }
 
     private protected ValueTask UnsafeAppendAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         Debug.Assert(startIndex <= state.TailIndex);
         Debug.Assert(supplier.RemainingCount > 0L);
@@ -432,7 +432,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     private async ValueTask AppendCachedAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool writeThrough, bool skipCommitted, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
         {
@@ -470,7 +470,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     }
 
     private async Task AppendUncachedAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         for (Partition? partition = null; await supplier.MoveNextAsync().ConfigureAwait(false); startIndex++)
         {
@@ -502,7 +502,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         => IsDisposed ? new(DisposedTask) : entries.RemainingCount is 0L ? ValueTask.CompletedTask : AppendAsync(entries, startIndex, skipCommitted, token);
 
     private async ValueTask AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         // assuming that we want to add log entry to the tail
         LockType lockType;
@@ -533,7 +533,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     }
 
     private protected abstract ValueTask<long> AppendAndCommitAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry;
+        where TEntry : IRaftLogEntry;
 
     /// <inheritdoc />
     ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAndCommitAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token)
@@ -549,7 +549,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<long> AppendAndCommitSlowAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, long commitIndex, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         await AppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
         return await CommitAsync(new long?(commitIndex), token).ConfigureAwait(false);
@@ -557,7 +557,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private ValueTask UnsafeAppendAsync<TEntry>(TEntry entry, long startIndex, [NotNull] out Partition? partition, CancellationToken token = default)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         partition = LastPartition;
         GetOrCreatePartition(startIndex, ref partition);
@@ -565,7 +565,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     }
 
     private async ValueTask UnsafeAppendAsync<TEntry>(TEntry entry, long startIndex, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         Debug.Assert(startIndex <= state.TailIndex);
         Debug.Assert(startIndex > state.CommitIndex);
@@ -595,7 +595,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <returns>The task representing asynchronous state of the method.</returns>
     /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
     public ValueTask AppendAsync<TEntry>(TEntry entry, long startIndex, CancellationToken token = default)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         if (IsDisposed)
             return new(DisposedTask);
@@ -658,7 +658,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     }
 
     private async ValueTask<long> AppendUncachedAsync<TEntry>(TEntry entry, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         long startIndex;
         await syncRoot.AcquireAsync(LockType.WriteLock, token).ConfigureAwait(false);
@@ -680,7 +680,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     }
 
     private async ValueTask<long> AppendCachedAsync<TEntry>(TEntry entry, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
         => await AppendCachedAsync(new CachedLogEntry
         {
             Content = await entry.ToMemoryAsync(bufferManager.BufferAllocator, token).ConfigureAwait(false),
@@ -724,7 +724,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <returns>The index of the added entry.</returns>
     /// <exception cref="InvalidOperationException"><paramref name="entry"/> is the snapshot entry.</exception>
     public ValueTask<long> AppendAsync<TEntry>(TEntry entry, CancellationToken token = default)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
         => AppendAsync(entry, true, token);
 
     /// <summary>
@@ -743,7 +743,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <returns>The index of the added entry.</returns>
     /// <exception cref="InvalidOperationException"><paramref name="entry"/> is the snapshot entry.</exception>
     public ValueTask<long> AppendAsync<TEntry>(TEntry entry, bool addToCache, CancellationToken token = default)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         ValueTask<long> result;
         if (IsDisposed)
@@ -785,7 +785,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
     /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
     public async ValueTask<long> AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, CancellationToken token = default)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         if (entries.RemainingCount is 0L)

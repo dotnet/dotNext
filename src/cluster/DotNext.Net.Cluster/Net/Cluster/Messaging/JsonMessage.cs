@@ -10,17 +10,17 @@ using Text.Json;
 /// </summary>
 /// <typeparam name="T">JSON-serializable type.</typeparam>
 public sealed class JsonMessage<T> : IMessage
-    where T : notnull, IJsonSerializable<T>
+    where T : IJsonSerializable<T>
 {
     /// <summary>
     /// Gets the name of this message.
     /// </summary>
-    required public string Name { get; init; }
+    public required string Name { get; init; }
 
     /// <summary>
     /// Gets the content of this message.
     /// </summary>
-    required public T Content { get; init; }
+    public required T Content { get; init; }
 
     /// <inheritdoc />
     ContentType IMessage.Type { get; } = new(MediaTypeNames.Application.Json);

@@ -54,7 +54,7 @@ public readonly struct BufferedLogEntryList : IDisposable, IReadOnlyList<Buffere
     /// <returns>The copy of the log entries.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static Task<BufferedLogEntryList> CopyAsync<TEntry>(ILogEntryProducer<TEntry> producer, LogEntriesBufferingOptions options, CancellationToken token = default)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         return CreateListAsync<IAsyncEnumerator<TEntry>>(BufferizeAsync, producer, producer.RemainingCount, options, token);
 
@@ -73,11 +73,11 @@ public readonly struct BufferedLogEntryList : IDisposable, IReadOnlyList<Buffere
     }
 
     private static ValueTask<BufferedLogEntry> BufferizeAsync<TEntry>(TEntry entry, LogEntriesBufferingOptions options, long bufferedBytes, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
         => bufferedBytes < options.MemoryLimit ? BufferedLogEntry.CopyAsync(entry, options, token) : BufferedLogEntry.CopyToFileAsync(entry, options, token);
 
     /// <summary>
-    /// Constructs bufferized copy of all log entries presented in the list.
+    /// Constructs buffered copy of all log entries presented in the list.
     /// </summary>
     /// <param name="list">The list of log entries to be copied.</param>
     /// <param name="options">Buffering options.</param>
@@ -87,13 +87,13 @@ public readonly struct BufferedLogEntryList : IDisposable, IReadOnlyList<Buffere
     /// <returns>The copy of the log entries.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static Task<BufferedLogEntryList> CopyAsync<TEntry, TList>(TList list, LogEntriesBufferingOptions options, CancellationToken token = default)
-        where TEntry : notnull, IRaftLogEntry
-        where TList : notnull, IReadOnlyList<TEntry>
+        where TEntry : IRaftLogEntry
+        where TList : IReadOnlyList<TEntry>
         => CreateListAsync(BufferizeAsync<TEntry, TList>, list, list.Count, options, token);
 
     internal static async IAsyncEnumerator<BufferedLogEntry> BufferizeAsync<TEntry, TList>(TList list, LogEntriesBufferingOptions options, CancellationToken token)
-        where TEntry : notnull, IRaftLogEntry
-        where TList : notnull, IReadOnlyList<TEntry>
+        where TEntry : IRaftLogEntry
+        where TList : IReadOnlyList<TEntry>
     {
         var bufferedBytes = 0L;
         for (var i = 0; i < list.Count; i++)

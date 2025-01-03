@@ -32,7 +32,7 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <param name="signalHandler">The handler.</param>
         /// <returns>This builder.</returns>
         public Builder Add<TInput>(string messageName, Func<TInput, CancellationToken, Task> signalHandler)
-            where TInput : notnull, ISerializable<TInput>
+            where TInput : ISerializable<TInput>
         {
             signalHandlers.Add(messageName, new SignalHandler<TInput>(signalHandler));
             return this;
@@ -46,7 +46,7 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <param name="signalHandler">The handler.</param>
         /// <returns>This builder.</returns>
         public Builder Add<TInput>(string messageName, Func<TInput, object?, CancellationToken, Task> signalHandler)
-            where TInput : notnull, ISerializable<TInput>
+            where TInput : ISerializable<TInput>
         {
             signalHandlers.Add(messageName, new SignalHandler<TInput>(signalHandler));
             return this;
@@ -60,7 +60,7 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <param name="signalHandler">The handler.</param>
         /// <returns>This builder.</returns>
         public Builder Add<TInput>(string messageName, Func<ISubscriber, TInput, CancellationToken, Task> signalHandler)
-            where TInput : notnull, ISerializable<TInput>
+            where TInput : ISerializable<TInput>
         {
             signalHandlers.Add(messageName, new SignalHandler<TInput>(signalHandler));
             return this;
@@ -74,7 +74,7 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <param name="signalHandler">The handler.</param>
         /// <returns>This builder.</returns>
         public Builder Add<TInput>(string messageName, Func<ISubscriber, TInput, object?, CancellationToken, Task> signalHandler)
-            where TInput : notnull, ISerializable<TInput>
+            where TInput : ISerializable<TInput>
         {
             signalHandlers.Add(messageName, new SignalHandler<TInput>(signalHandler));
             return this;
@@ -91,8 +91,8 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <param name="outputMessageType">MIME type of <typeparamref name="TOutput"/> message.</param>
         /// <returns>This builder.</returns>
         public Builder Add<TInput, TOutput>(string inputMessageName, Func<TInput, CancellationToken, Task<TOutput>> messageHandler, string outputMessageName, string? outputMessageType = null)
-            where TInput : notnull, ISerializable<TInput>
-            where TOutput : notnull, ISerializable<TOutput>
+            where TInput : ISerializable<TInput>
+            where TOutput : ISerializable<TOutput>
         {
             rpcHandlers.Add(inputMessageName, new RpcHandler<TInput, TOutput>(messageHandler, outputMessageName, outputMessageType));
             return this;
@@ -109,8 +109,8 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <param name="outputMessageType">MIME type of <typeparamref name="TOutput"/> message.</param>
         /// <returns>This builder.</returns>
         public Builder Add<TInput, TOutput>(string inputMessageName, Func<TInput, object?, CancellationToken, Task<TOutput>> messageHandler, string outputMessageName, string? outputMessageType = null)
-            where TInput : notnull, ISerializable<TInput>
-            where TOutput : notnull, ISerializable<TOutput>
+            where TInput : ISerializable<TInput>
+            where TOutput : ISerializable<TOutput>
         {
             rpcHandlers.Add(inputMessageName, new RpcHandler<TInput, TOutput>(messageHandler, outputMessageName, outputMessageType));
             return this;
@@ -127,8 +127,8 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <param name="outputMessageType">MIME type of <typeparamref name="TOutput"/> message.</param>
         /// <returns>This builder.</returns>
         public Builder Add<TInput, TOutput>(string inputMessageName, Func<ISubscriber, TInput, CancellationToken, Task<TOutput>> messageHandler, string outputMessageName, string? outputMessageType = null)
-            where TInput : notnull, ISerializable<TInput>
-            where TOutput : notnull, ISerializable<TOutput>
+            where TInput : ISerializable<TInput>
+            where TOutput : ISerializable<TOutput>
         {
             rpcHandlers.Add(inputMessageName, new RpcHandler<TInput, TOutput>(messageHandler, outputMessageName, outputMessageType));
             return this;
@@ -145,8 +145,8 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         /// <param name="outputMessageType">MIME type of <typeparamref name="TOutput"/> message.</param>
         /// <returns>This builder.</returns>
         public Builder Add<TInput, TOutput>(string inputMessageName, Func<ISubscriber, TInput, object?, CancellationToken, Task<TOutput>> messageHandler, string outputMessageName, string? outputMessageType = null)
-            where TInput : notnull, ISerializable<TInput>
-            where TOutput : notnull, ISerializable<TOutput>
+            where TInput : ISerializable<TInput>
+            where TOutput : ISerializable<TOutput>
         {
             rpcHandlers.Add(inputMessageName, new RpcHandler<TInput, TOutput>(messageHandler, outputMessageName, outputMessageType));
             return this;
@@ -162,7 +162,7 @@ public partial class MessageHandler : IBuildable<MessageHandler, MessageHandler.
         }
 
         /// <summary>
-        /// Constructs message hander based on registered delegates.
+        /// Constructs message handler based on registered delegates.
         /// </summary>
         /// <returns>The constructed message handler.</returns>
         public MessageHandler Build() => new(rpcHandlers, signalHandlers);

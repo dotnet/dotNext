@@ -157,7 +157,7 @@ internal class CustomMessage : HttpMessage, IHttpMessage<IMessage?>
     }
 
     private protected static async Task<T> ParseResponseAsync<T>(HttpResponseMessage response, CancellationToken token)
-        where T : notnull, ISerializable<T>
+        where T : ISerializable<T>
     {
         var content = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
         try
@@ -185,7 +185,7 @@ internal sealed class CustomMessage<T> : CustomMessage, IHttpMessage<T>
 }
 
 internal sealed class CustomSerializableMessage<T> : CustomMessage, IHttpMessage<T>
-    where T : notnull, ISerializable<T>
+    where T : ISerializable<T>
 {
     internal CustomSerializableMessage(in ClusterMemberId sender, IMessage message)
         : base(sender, message, DeliveryMode.RequestReply)

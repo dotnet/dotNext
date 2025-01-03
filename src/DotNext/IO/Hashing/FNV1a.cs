@@ -17,7 +17,7 @@ using Intrinsics = Runtime.Intrinsics;
 /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHashAlgorithm(Unsafe.SizeOf<THash>()), IResettable
     where THash : unmanaged, IBinaryNumber<THash>
-    where TParameters : notnull, IFNV1aParameters<THash>
+    where TParameters : IFNV1aParameters<THash>
 {
     private State state = new(salted);
 
@@ -106,7 +106,7 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
     /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
     /// <returns>The computed FNV-1a hash.</returns>
     public static THash Hash<T, TIndex>(Func<T, TIndex, THash> accessor, TIndex count, T arg, bool salted = false)
-        where TIndex : notnull, IComparisonOperators<TIndex, TIndex, bool>, IAdditiveIdentity<TIndex, TIndex>, IIncrementOperators<TIndex>
+        where TIndex : IComparisonOperators<TIndex, TIndex, bool>, IAdditiveIdentity<TIndex, TIndex>, IIncrementOperators<TIndex>
     {
         ArgumentNullException.ThrowIfNull(accessor);
 

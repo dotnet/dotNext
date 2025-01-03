@@ -10,8 +10,8 @@ public sealed class AddMessage : ISerializable<AddMessage>
 {
     internal const string Name = "Add";
 
-    public int X { get; set; }
-    public int Y { get; set; }
+    public int X { get; init; }
+    public int Y { get; init; }
 
     public int Execute() => X + Y;
 
@@ -25,7 +25,7 @@ public sealed class AddMessage : ISerializable<AddMessage>
 
     public static async ValueTask<AddMessage> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
         where TReader : notnull, IAsyncBinaryReader
-        => new AddMessage
+        => new()
         {
             X = await reader.ReadLittleEndianAsync<int>(token),
             Y = await reader.ReadLittleEndianAsync<int>(token),
