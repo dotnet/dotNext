@@ -124,7 +124,7 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     private async ValueTask<long> AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, long? startIndex, bool skipCommitted, CancellationToken token)
-        where TEntryImpl : notnull, IRaftLogEntry
+        where TEntryImpl : IRaftLogEntry
     {
         long skip;
         if (startIndex is null)

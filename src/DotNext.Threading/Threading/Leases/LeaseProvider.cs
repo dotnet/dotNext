@@ -53,8 +53,8 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     public TimeSpan TimeToLive { get; }
 
     private async ValueTask<AcquisitionResult?> TryChangeStateAsync<TCondition, TUpdater>(TCondition condition, TUpdater updater, CancellationToken token)
-        where TCondition : notnull, ITransitionCondition
-        where TUpdater : notnull, ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
+        where TCondition : ITransitionCondition
+        where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
     {
         var cts = token.LinkTo(LifetimeToken);
         try
@@ -115,7 +115,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         => TryChangeStateAsync(AcquisitionCondition.Instance, NoOpUpdater.Instance, token);
 
     private async ValueTask<AcquisitionResult> AcquireAsync<TUpdater>(TUpdater updater, CancellationToken token)
-        where TUpdater : notnull, ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
+        where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
     {
         var cts = token.LinkTo(LifetimeToken);
         try
@@ -211,7 +211,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         => TryChangeStateAsync(new RenewalCondition(identity, reacquire), NoOpUpdater.Instance, token);
 
     private async ValueTask<LeaseIdentity?> ReleaseAsync<TUpdater>(LeaseIdentity identity, TUpdater updater, CancellationToken token)
-        where TUpdater : notnull, ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
+        where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
     {
         if (identity.Version is LeaseIdentity.InitialVersion)
             return null;
@@ -270,7 +270,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         => ReleaseAsync(identity, NoOpUpdater.Instance, token);
 
     private async ValueTask<LeaseIdentity?> UnsafeTryReleaseAsync<TUpdater>(TUpdater updater, CancellationToken token)
-        where TUpdater : notnull, ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
+        where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
     {
         var cts = token.LinkTo(LifetimeToken);
         try
@@ -329,7 +329,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         => UnsafeTryReleaseAsync(NoOpUpdater.Instance, token);
 
     private async ValueTask<LeaseIdentity> UnsafeReleaseAsync<TUpdater>(TUpdater updater, CancellationToken token)
-        where TUpdater : notnull, ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
+        where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
     {
         var cts = token.LinkTo(LifetimeToken);
         try

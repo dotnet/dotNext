@@ -62,8 +62,8 @@ internal readonly struct LogEntryConsumer<TEntry, TResult> : ILogEntryConsumer<T
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The result returned by the reader.</returns>
     public ValueTask<TResult> ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
-        where TEntryImpl : notnull, TEntry
-        where TList : notnull, IReadOnlyList<TEntryImpl>
+        where TEntryImpl : TEntry
+        where TList : IReadOnlyList<TEntryImpl>
         => consumer switch
         {
             null => ValueTask.FromException<TResult>(new NotSupportedException()),

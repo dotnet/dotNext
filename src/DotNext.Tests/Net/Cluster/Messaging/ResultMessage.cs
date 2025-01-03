@@ -10,7 +10,7 @@ public sealed class ResultMessage : ISerializable<ResultMessage>
 {
     internal const string Name = "Result";
 
-    public int Result { get; set; }
+    public int Result { get; init; }
 
     long? IDataTransferObject.Length => sizeof(int);
 
@@ -18,7 +18,7 @@ public sealed class ResultMessage : ISerializable<ResultMessage>
         => writer.WriteLittleEndianAsync(Result, token);
 
     public static async ValueTask<ResultMessage> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
-        where TReader : notnull, IAsyncBinaryReader
+        where TReader : IAsyncBinaryReader
         => await reader.ReadLittleEndianAsync<int>(token);
 
     public static implicit operator ResultMessage(int value) => new() { Result = value };

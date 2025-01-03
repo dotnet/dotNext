@@ -107,7 +107,7 @@ public static partial class PipeExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     public static ValueTask<T> ReadAsync<T>(this PipeReader reader, CancellationToken token = default)
-        where T : notnull, IBinaryFormattable<T>
+        where T : IBinaryFormattable<T>
     {
         return T.Size <= BinaryFormattable256Reader<T>.MaxSize
             ? ReadAsync<T, BinaryFormattable256Reader<T>>(reader, new(), token)
@@ -124,7 +124,7 @@ public static partial class PipeExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     public static ValueTask<T> ReadLittleEndianAsync<T>(this PipeReader reader, CancellationToken token = default)
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         var type = typeof(T);
         return type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128)
@@ -142,7 +142,7 @@ public static partial class PipeExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     public static ValueTask<T> ReadBigEndianAsync<T>(this PipeReader reader, CancellationToken token = default)
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         var type = typeof(T);
         return type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128)
@@ -291,7 +291,7 @@ public static partial class PipeExtensions
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static ValueTask<T> ParseAsync<T>(this PipeReader reader, LengthFormat lengthFormat, IFormatProvider? provider = null, CancellationToken token = default)
-        where T : notnull, IUtf8SpanParsable<T>
+        where T : IUtf8SpanParsable<T>
         => reader.ParseAsync(provider, T.Parse, lengthFormat, token);
 
     /// <summary>
@@ -308,7 +308,7 @@ public static partial class PipeExtensions
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static ValueTask<T> ParseAsync<T>(this PipeReader reader, LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null, CancellationToken token = default)
-        where T : notnull, INumberBase<T>
+        where T : INumberBase<T>
     {
         return reader.ParseAsync((style, provider), Parse, lengthFormat, token);
 
@@ -326,7 +326,7 @@ public static partial class PipeExtensions
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static async ValueTask CopyToAsync<TConsumer>(this PipeReader reader, TConsumer consumer, CancellationToken token = default)
-        where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+        where TConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
         await foreach (var chunk in ReadAllAsync(reader, token).ConfigureAwait(false))
         {
@@ -345,7 +345,7 @@ public static partial class PipeExtensions
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static async ValueTask CopyToAsync<TConsumer>(this PipeReader reader, TConsumer consumer, long count, CancellationToken token = default)
-        where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+        where TConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
         ArgumentOutOfRangeException.ThrowIfNegative(count);
 

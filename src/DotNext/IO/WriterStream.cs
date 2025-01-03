@@ -3,7 +3,7 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 namespace DotNext.IO;
 
 internal abstract class WriterStream<TOutput> : Stream, IFlushable
-    where TOutput : notnull, IFlushable
+    where TOutput : IFlushable
 {
     // not readonly to avoid defensive copying
     private protected TOutput output;

@@ -64,7 +64,7 @@ internal partial class HttpPeerController
     }
 
     private async Task PostAsync<TRequest>(EndPoint peer, string messageType, TRequest content, CancellationToken token)
-        where TRequest : notnull, ISupplier<ReadOnlyMemory<byte>>
+        where TRequest : ISupplier<ReadOnlyMemory<byte>>
     {
         var client = GetOrCreatePeer((UriEndPoint)peer);
 

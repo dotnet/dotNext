@@ -5,7 +5,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO.Pipelines;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -71,7 +70,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <typeparam name="T">The type of the result.</typeparam>
     /// <returns>The parsed value.</returns>
     public T Read<T>()
-        where T : notnull, IBinaryFormattable<T>
+        where T : IBinaryFormattable<T>
     {
         if (T.Size <= BinaryFormattable256Reader<T>.MaxSize)
         {
@@ -92,7 +91,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <returns>The integer value.</returns>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     public T ReadLittleEndian<T>()
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         var type = typeof(T);
         if (type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128))
@@ -114,7 +113,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <returns>The integer value.</returns>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     public T ReadBigEndian<T>()
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         var type = typeof(T);
         if (type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128))
@@ -415,7 +414,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public T Parse<T>(LengthFormat lengthFormat, IFormatProvider? provider = null)
-        where T : notnull, IUtf8SpanParsable<T>
+        where T : IUtf8SpanParsable<T>
     {
         unsafe
         {
@@ -434,7 +433,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public T Parse<T>(LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null)
-        where T : notnull, INumberBase<T>
+        where T : INumberBase<T>
     {
         unsafe
         {
@@ -458,7 +457,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public T Parse<T>(in DecodingContext context, LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null, MemoryAllocator<char>? allocator = null)
-        where T : notnull, INumberBase<T>
+        where T : INumberBase<T>
     {
         using var buffer = Decode(context, lengthFormat, allocator);
         return T.Parse(buffer.Span, style, provider);

@@ -47,12 +47,12 @@ public interface IFiniteRangeEndpoint<T> : IRangeEndpoint<T>
 /// </summary>
 /// <typeparam name="T">The type of the endpoint.</typeparam>
 public readonly struct EnclosedEndpoint<T> : IFiniteRangeEndpoint<T>
-    where T : notnull, IComparable<T>
+    where T : IComparable<T>
 {
     /// <summary>
     /// Gets a value of this endpoint.
     /// </summary>
-    required public T Value
+    public required T Value
     {
         get;
         init;
@@ -84,12 +84,12 @@ public readonly struct EnclosedEndpoint<T> : IFiniteRangeEndpoint<T>
 /// </summary>
 /// <typeparam name="T">The type of the endpoint.</typeparam>
 public readonly struct DisclosedEndpoint<T> : IFiniteRangeEndpoint<T>
-    where T : notnull, IComparable<T>
+    where T : IComparable<T>
 {
     /// <summary>
     /// Gets a value of this endpoint.
     /// </summary>
-    required public T Value
+    public required T Value
     {
         get;
         init;

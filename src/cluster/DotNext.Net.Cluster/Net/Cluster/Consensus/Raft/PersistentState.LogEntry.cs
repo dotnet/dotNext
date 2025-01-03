@@ -186,7 +186,7 @@ public partial class PersistentState
 
         /// <inheritdoc/>
         public ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-            where TTransformation : notnull, IDataTransferObject.ITransformation<TResult>
+            where TTransformation : IDataTransferObject.ITransformation<TResult>
         {
             return GetReader(out var buffer) is { } reader
                 ? transformation.TransformAsync(reader, token)
@@ -242,7 +242,7 @@ public partial class PersistentState
     /// <returns>The log entry encapsulating JSON-serializable content.</returns>
     /// <seealso cref="JsonSerializable{T}.TransformAsync{TInput}(TInput, CancellationToken)"/>
     public JsonLogEntry<T> CreateJsonLogEntry<T>(T? content)
-        where T : notnull, IJsonSerializable<T>
+        where T : IJsonSerializable<T>
         => new() { Term = Term, Content = content };
 
     /// <summary>
@@ -260,6 +260,6 @@ public partial class PersistentState
     /// <param name="content">Binary payload.</param>
     /// <returns>The log entry encapsulating binary payload.</returns>
     public BinaryLogEntry<T> CreateBinaryLogEntry<T>(T content)
-        where T : notnull, IBinaryFormattable<T>
+        where T : IBinaryFormattable<T>
         => new() { Term = Term, Content = content };
 }

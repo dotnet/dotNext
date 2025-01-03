@@ -37,7 +37,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
     /// <param name="token">The token that can be used to cancel the write operation.</param>
     /// <returns>A task that represents the asynchronous write operation.</returns>
     public static ValueTask SerializeAsync<TWriter>(TWriter writer, T? value, CancellationToken token)
-        where TWriter : notnull, IAsyncBinaryWriter
+        where TWriter : IAsyncBinaryWriter
     {
         ValueTask result;
 
@@ -97,7 +97,7 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
     /// <param name="token">The token which may be used to cancel the read operation.</param>
     /// <returns>A value deserialized from JSON.</returns>
     public static ValueTask<T?> DeserializeAsync<TReader>(TReader reader, CancellationToken token = default)
-        where TReader : notnull, IAsyncBinaryReader
+        where TReader : IAsyncBinaryReader
     {
         ValueTask<T?> result;
 
@@ -152,16 +152,16 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
     /// <returns>Deserialized object.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask<T?> TransformAsync<TInput>(TInput input, CancellationToken token = default)
-        where TInput : notnull, IDataTransferObject
+        where TInput : IDataTransferObject
         => input.TransformAsync<T?, DeserializingTransformation>(new(), token);
 
     /// <inheritdoc cref="ISerializable{TSelf}.ReadFromAsync{TReader}(TReader, CancellationToken)"/>
     public static async ValueTask<JsonSerializable<T>> ReadFromAsync<TReader>(TReader reader, CancellationToken token = default)
-        where TReader : notnull, IAsyncBinaryReader
+        where TReader : IAsyncBinaryReader
         => new() { Value = await DeserializeAsync(reader, token).ConfigureAwait(false) };
 
     /// <inheritdoc />
-    public override readonly string? ToString() => Value?.ToString();
+    public readonly override string? ToString() => Value?.ToString();
 
     [StructLayout(LayoutKind.Auto)]
     private readonly struct DeserializingTransformation : IDataTransferObject.ITransformation<T?>

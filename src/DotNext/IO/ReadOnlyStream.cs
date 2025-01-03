@@ -2,6 +2,9 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO;
 
+using Buffers;
+using static Threading.Tasks.Synchronization;
+
 internal abstract class ReadOnlyStream : Stream
 {
     public sealed override bool CanRead => true;
@@ -84,7 +87,6 @@ internal sealed class ReadOnlyStream<TArg>(Func<Memory<byte>, TArg, Cancellation
 {
     private const int DefaultTimeout = 4000;
     private int timeout = DefaultTimeout;
-    private byte[]? synchronousBuffer;
     private CancellationTokenSource? timeoutSource;
 
     public override int ReadTimeout
@@ -121,38 +123,28 @@ internal sealed class ReadOnlyStream<TArg>(Func<Memory<byte>, TArg, Cancellation
         }
         else
         {
-            var tempBuffer = RentBuffer(buffer.Length);
+            var tempBuffer = Memory.AllocateExactly<byte>(buffer.Length);
             timeoutSource ??= new();
             timeoutSource.CancelAfter(timeout);
-            var task = ReadAsync(tempBuffer, timeoutSource.Token).AsTask();
+            var task = ReadAsync(tempBuffer.Memory, timeoutSource.Token);
             try
             {
-                task.Wait();
-                writtenCount = task.Result;
+                writtenCount = task.Wait();
+                tempBuffer.Span.Slice(0, writtenCount).CopyTo(buffer);
             }
             finally
             {
-                task.Dispose();
-
                 if (!timeoutSource.TryReset())
                 {
                     timeoutSource.Dispose();
                     timeoutSource = null;
                 }
+                
+                tempBuffer.Dispose();
             }
-
-            tempBuffer.AsSpan(0, writtenCount).CopyTo(buffer);
         }
 
         return writtenCount;
-    }
-
-    private ArraySegment<byte> RentBuffer(int length)
-    {
-        if (synchronousBuffer is null || synchronousBuffer.Length < length)
-            synchronousBuffer = GC.AllocateUninitializedArray<byte>(length);
-
-        return new(synchronousBuffer, 0, length);
     }
 
     protected override void Dispose(bool disposing)

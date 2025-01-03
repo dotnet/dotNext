@@ -47,7 +47,7 @@ public static class DataTransferObject
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask WriteToAsync<TObject>(this TObject dto, Stream output, Memory<byte> buffer, CancellationToken token = default)
-        where TObject : notnull, IDataTransferObject
+        where TObject : IDataTransferObject
         => dto.WriteToAsync(new AsyncStreamBinaryAccessor(output, buffer), token);
 
     /// <summary>
@@ -61,7 +61,7 @@ public static class DataTransferObject
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask WriteToAsync<TObject>(this TObject dto, Stream output, int bufferSize = DefaultBufferSize, CancellationToken token = default)
-        where TObject : notnull, IDataTransferObject
+        where TObject : IDataTransferObject
     {
         return dto.TryGetMemory(out var memory) ?
             output.WriteAsync(memory, token) :
@@ -85,7 +85,7 @@ public static class DataTransferObject
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask WriteToAsync<TObject>(this TObject dto, PipeWriter output, long bufferSize = 0L, CancellationToken token = default)
-        where TObject : notnull, IDataTransferObject
+        where TObject : IDataTransferObject
     {
         return bufferSize >= 0L
             ? dto.WriteToAsync(new PipeBinaryWriter(output, bufferSize), token)
@@ -102,7 +102,7 @@ public static class DataTransferObject
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask WriteToAsync<TObject>(this TObject dto, IBufferWriter<byte> writer, CancellationToken token = default)
-        where TObject : notnull, IDataTransferObject
+        where TObject : IDataTransferObject
     {
         ValueTask result;
         if (dto.TryGetMemory(out var memory))
@@ -136,7 +136,7 @@ public static class DataTransferObject
     /// <returns>The content of the object.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask<string> ToStringAsync<TObject>(this TObject dto, Encoding encoding, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
-        where TObject : notnull, IDataTransferObject
+        where TObject : IDataTransferObject
     {
         ValueTask<string> result;
 
@@ -186,7 +186,7 @@ public static class DataTransferObject
     /// <returns>The content of the object.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask<byte[]> ToByteArrayAsync<TObject>(this TObject dto, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
-        where TObject : notnull, IDataTransferObject
+        where TObject : IDataTransferObject
     {
         ValueTask<byte[]> result;
 
@@ -236,7 +236,7 @@ public static class DataTransferObject
     /// <returns>The content of the object.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask<MemoryOwner<byte>> ToMemoryAsync<TObject>(this TObject dto, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
-        where TObject : notnull, IDataTransferObject
+        where TObject : IDataTransferObject
     {
         ValueTask<MemoryOwner<byte>> result;
 
@@ -287,6 +287,6 @@ public static class DataTransferObject
     /// <returns>The converted DTO content.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static ValueTask<TResult> TransformAsync<TResult, TObject>(this TObject dto, Func<IAsyncBinaryReader, CancellationToken, ValueTask<TResult>> transformation, CancellationToken token = default)
-        where TObject : notnull, IDataTransferObject
+        where TObject : IDataTransferObject
         => dto.TransformAsync<TResult, DelegatingDecoder<TResult>>(new DelegatingDecoder<TResult>(transformation), token);
 }

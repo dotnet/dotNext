@@ -8,8 +8,8 @@ namespace DotNext.Buffers.Binary;
 /// Represents an object that can be converted to and restored from the binary representation.
 /// </summary>
 /// <typeparam name="TSelf">The implementing type.</typeparam>
-public interface IBinaryFormattable<TSelf>
-    where TSelf : notnull, IBinaryFormattable<TSelf>
+public interface IBinaryFormattable<out TSelf>
+    where TSelf : IBinaryFormattable<TSelf>
 {
     /// <summary>
     /// Gets size of the object, in bytes.

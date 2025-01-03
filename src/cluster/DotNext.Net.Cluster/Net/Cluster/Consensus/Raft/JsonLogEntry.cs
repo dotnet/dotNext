@@ -11,17 +11,17 @@ using Text.Json;
 /// <typeparam name="T">JSON-serializable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
 public readonly struct JsonLogEntry<T>() : IInputLogEntry
-    where T : notnull, IJsonSerializable<T>
+    where T : IJsonSerializable<T>
 {
     /// <summary>
     /// Gets the payload of this log entry.
     /// </summary>
-    required public T? Content { get; init; }
+    public required T? Content { get; init; }
 
     /// <summary>
     /// Gets Term value associated with this log entry.
     /// </summary>
-    required public long Term { get; init; }
+    public required long Term { get; init; }
 
     /// <summary>
     /// Gets the timestamp of this log entry.

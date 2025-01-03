@@ -21,9 +21,9 @@ public static class Set
     /// <param name="upperBound">The upper bound of the range.</param>
     /// <returns>An ordered set of elements in the range.</returns>
     public static IReadOnlySet<T> Range<T, TLowerBound, TUpperBound>(TLowerBound lowerBound, TUpperBound upperBound)
-        where T : notnull, IBinaryInteger<T>
-        where TLowerBound : notnull, IFiniteRangeEndpoint<T>
-        where TUpperBound : notnull, IFiniteRangeEndpoint<T>
+        where T : IBinaryInteger<T>
+        where TLowerBound : IFiniteRangeEndpoint<T>
+        where TUpperBound : IFiniteRangeEndpoint<T>
     {
         var (minValue, maxValue) = GetMinMaxValues<T, TLowerBound, TUpperBound>(lowerBound, upperBound);
 
@@ -36,9 +36,9 @@ public static class Set
     }
 
     private static (T MinValue, T MaxValue) GetMinMaxValues<T, TLowerBound, TUpperBound>(TLowerBound lowerBound, TUpperBound upperBound)
-        where T : notnull, IBinaryInteger<T>
-        where TLowerBound : notnull, IFiniteRangeEndpoint<T>
-        where TUpperBound : notnull, IFiniteRangeEndpoint<T>
+        where T : IBinaryInteger<T>
+        where TLowerBound : IFiniteRangeEndpoint<T>
+        where TUpperBound : IFiniteRangeEndpoint<T>
     {
         var minValue = lowerBound.IsOnRight(lowerBound.Value)
             ? lowerBound.Value
@@ -61,7 +61,7 @@ public static class Set
         => new SingletonList<T> { Item = item };
 
     private sealed class RangeSet<T>(T lowerBound, T upperBound) : IReadOnlySet<T>
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         private readonly T lowerBound = lowerBound;
         private readonly T upperBound = upperBound;
@@ -91,7 +91,7 @@ public static class Set
             return other switch
             {
                 RangeSet<T> range => lowerBound == range.lowerBound && upperBound == range.upperBound,
-                SingletonList<T> list => false,
+                SingletonList<T> => false,
                 _ when other.TryGetNonEnumeratedCount(out var count) && count is 0 => false,
                 _ => other.All(Contains),
             };

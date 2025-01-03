@@ -214,7 +214,7 @@ public static class List
     /// <param name="comparer">The comparer function.</param>
     /// <returns>The actual index of the inserted item.</returns>
     public static int InsertOrdered<T, TComparer>(this List<T> list, T item, TComparer comparer)
-        where TComparer : notnull, IComparer<T>
+        where TComparer : IComparer<T>
     {
         var span = CollectionsMarshal.AsSpan(list);
         var low = 0;
@@ -245,7 +245,7 @@ public static class List
     /// <param name="comparer">The comparer function.</param>
     /// <returns>The actual index of the inserted item.</returns>
     public static int InsertOrdered<T, TComparer>(this IList<T> list, T item, TComparer comparer)
-        where TComparer : notnull, IComparer<T>
+        where TComparer : IComparer<T>
     {
         var low = 0;
         for (var high = list.Count; low < high;)

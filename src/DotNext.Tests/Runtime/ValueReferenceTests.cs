@@ -173,8 +173,8 @@ public sealed class ValueReferenceTests : Test
         var boxedInt = BoxedValue<int>.Box(42);
         ValueReference<int> reference = boxedInt;
 
-        boxedInt.Value = 56;
-        Equal(boxedInt.Value, reference.Value);
+        boxedInt.Unbox() = 56;
+        Equal(boxedInt, reference.Value);
     }
 
     [Fact]

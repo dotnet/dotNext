@@ -306,7 +306,7 @@ public static class CharBuffer
     /// <param name="provider">The format provider.</param>
     /// <returns><see langword="true"/> if <paramref name="writer"/> has enough space to place the value; otherwise, <see langword="false"/>.</returns>
     public static bool TryFormat<T>(this ref SpanWriter<char> writer, T value, scoped ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        where T : notnull, ISpanFormattable
+        where T : ISpanFormattable
     {
         bool result;
         if (result = value.TryFormat(writer.RemainingSpan, out var writtenCount, format, provider))

@@ -19,7 +19,7 @@ public static partial class Atomic
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
     public static ulong AccumulateAndGet<TAccumulator>(ref ulong value, ulong x, TAccumulator accumulator)
-        where TAccumulator : notnull, ISupplier<ulong, ulong, ulong>
+        where TAccumulator : ISupplier<ulong, ulong, ulong>
         => Accumulate<ulong, TAccumulator, InterlockedOperations>(ref value, x, accumulator).NewValue;
 
     /// <summary>
@@ -53,7 +53,7 @@ public static partial class Atomic
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
     public static ulong GetAndAccumulate<TAccumulator>(ref ulong value, ulong x, TAccumulator accumulator)
-        where TAccumulator : notnull, ISupplier<ulong, ulong, ulong>
+        where TAccumulator : ISupplier<ulong, ulong, ulong>
         => Accumulate<ulong, TAccumulator, InterlockedOperations>(ref value, x, accumulator).OldValue;
 
     /// <summary>
@@ -83,7 +83,7 @@ public static partial class Atomic
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
     public static ulong UpdateAndGet<TUpdater>(ref ulong value, TUpdater updater)
-        where TUpdater : notnull, ISupplier<ulong, ulong>
+        where TUpdater : ISupplier<ulong, ulong>
         => Update<ulong, TUpdater, InterlockedOperations>(ref value, updater).NewValue;
 
     /// <summary>
@@ -109,7 +109,7 @@ public static partial class Atomic
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     [CLSCompliant(false)]
     public static ulong GetAndUpdate<TUpdater>(ref ulong value, TUpdater updater)
-        where TUpdater : notnull, ISupplier<ulong, ulong>
+        where TUpdater : ISupplier<ulong, ulong>
         => Update<ulong, TUpdater, InterlockedOperations>(ref value, updater).OldValue;
 
     /// <summary>

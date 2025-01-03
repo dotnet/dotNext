@@ -5,7 +5,7 @@ namespace DotNext.IO.Log;
 /// </summary>
 /// <typeparam name="TEntry">The type of the supplied log entries.</typeparam>
 public interface ILogEntryProducer<out TEntry> : IAsyncEnumerator<TEntry>
-    where TEntry : notnull, ILogEntry
+    where TEntry : ILogEntry
 {
     /// <summary>
     /// Gets the remaining count of log entries in this object.

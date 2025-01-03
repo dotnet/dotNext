@@ -18,7 +18,7 @@ public static partial class Atomic
     /// <returns>The updated value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static nint AccumulateAndGet<TAccumulator>(ref nint value, nint x, TAccumulator accumulator)
-        where TAccumulator : notnull, ISupplier<nint, nint, nint>
+        where TAccumulator : ISupplier<nint, nint, nint>
         => Accumulate<nint, TAccumulator, InterlockedOperations>(ref value, x, accumulator).NewValue;
 
     /// <summary>
@@ -50,7 +50,7 @@ public static partial class Atomic
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static nint GetAndAccumulate<TAccumulator>(ref nint value, nint x, TAccumulator accumulator)
-        where TAccumulator : notnull, ISupplier<nint, nint, nint>
+        where TAccumulator : ISupplier<nint, nint, nint>
         => Accumulate<nint, TAccumulator, InterlockedOperations>(ref value, x, accumulator).OldValue;
 
     /// <summary>
@@ -78,7 +78,7 @@ public static partial class Atomic
     /// <returns>The updated value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static nint UpdateAndGet<TUpdater>(ref nint value, TUpdater updater)
-        where TUpdater : notnull, ISupplier<nint, nint>
+        where TUpdater : ISupplier<nint, nint>
         => Update<nint, TUpdater, InterlockedOperations>(ref value, updater).NewValue;
 
     /// <summary>
@@ -102,7 +102,7 @@ public static partial class Atomic
     /// <returns>The original value.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static nint GetAndUpdate<TUpdater>(ref nint value, TUpdater updater)
-        where TUpdater : notnull, ISupplier<nint, nint>
+        where TUpdater : ISupplier<nint, nint>
         => Update<nint, TUpdater, InterlockedOperations>(ref value, updater).OldValue;
 
     /// <summary>

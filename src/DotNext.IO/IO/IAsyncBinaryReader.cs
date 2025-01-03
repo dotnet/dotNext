@@ -34,7 +34,7 @@ public interface IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     ValueTask<T> ReadAsync<T>(CancellationToken token = default)
-        where T : notnull, IBinaryFormattable<T>
+        where T : IBinaryFormattable<T>
     {
         return T.Size <= BinaryFormattable256Reader<T>.MaxSize
             ? ReadAsync<T, BinaryFormattable256Reader<T>>(new(), token)
@@ -50,7 +50,7 @@ public interface IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     ValueTask<T> ReadLittleEndianAsync<T>(CancellationToken token = default)
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         var type = typeof(T);
         return type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128)
@@ -67,7 +67,7 @@ public interface IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     ValueTask<T> ReadBigEndianAsync<T>(CancellationToken token = default)
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         var type = typeof(T);
         return type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128)
@@ -249,7 +249,7 @@ public interface IAsyncBinaryReader
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     async ValueTask<T> ParseAsync<T>(LengthFormat lengthFormat, IFormatProvider? provider = null, CancellationToken token = default)
-        where T : notnull, IUtf8SpanParsable<T>
+        where T : IUtf8SpanParsable<T>
     {
         using var buffer = await ReadAsync(lengthFormat, allocator: null, token).ConfigureAwait(false);
         return T.Parse(buffer.Span, provider);
@@ -268,7 +268,7 @@ public interface IAsyncBinaryReader
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     async ValueTask<T> ParseAsync<T>(LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null, CancellationToken token = default)
-        where T : notnull, INumberBase<T>
+        where T : INumberBase<T>
     {
         using var buffer = await ReadAsync(lengthFormat, allocator: null, token).ConfigureAwait(false);
         return T.Parse(buffer.Span, style, provider);
@@ -289,11 +289,11 @@ public interface IAsyncBinaryReader
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     ValueTask<T> ParseAsync<T>(DecodingContext context, LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
-        where T : notnull, INumberBase<T>
+        where T : INumberBase<T>
         => ParseAsync((style, provider), Parse<T>, context, lengthFormat, allocator, token);
 
     internal static T Parse<T>(ReadOnlySpan<char> source, (NumberStyles, IFormatProvider?) args)
-        where T : notnull, INumberBase<T>
+        where T : INumberBase<T>
         => T.Parse(source, args.Item1, args.Item2);
 
     /// <summary>
@@ -382,7 +382,7 @@ public interface IAsyncBinaryReader
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask CopyToAsync<TConsumer>(TConsumer consumer, long? count = null, CancellationToken token = default)
-        where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>;
+        where TConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>;
 
     /// <summary>
     /// Attempts to get the entire content represented by this reader.
@@ -453,7 +453,7 @@ public interface IAsyncBinaryReader
     public static IAsyncBinaryReader Create(PipeReader reader) => new PipeBinaryReader(reader);
 
     internal static Stream GetStream<TReader>(TReader reader, out bool keepAlive)
-        where TReader : notnull, IAsyncBinaryReader
+        where TReader : IAsyncBinaryReader
     {
         if (keepAlive = typeof(TReader) == typeof(AsyncStreamBinaryAccessor))
             return Unsafe.As<TReader, AsyncStreamBinaryAccessor>(ref reader).Stream;

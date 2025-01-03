@@ -164,7 +164,7 @@ internal partial class LeaderState<TMember>
         }
 
         private ConfiguredTaskAwaitable<Result<HeartbeatResult>>.ConfiguredTaskAwaiter ReplicateSnapshot<TSnapshot>(TSnapshot snapshot, long snapshotIndex, CancellationToken token)
-            where TSnapshot : notnull, IRaftLogEntry
+            where TSnapshot : IRaftLogEntry
         {
             Debug.Assert(snapshot.IsSnapshot);
 
@@ -175,8 +175,8 @@ internal partial class LeaderState<TMember>
         }
 
         private ConfiguredTaskAwaitable<Result<HeartbeatResult>>.ConfiguredTaskAwaiter ReplicateEntries<TEntry, TList>(TList entries, CancellationToken token)
-            where TEntry : notnull, IRaftLogEntry
-            where TList : notnull, IReadOnlyList<TEntry>
+            where TEntry : IRaftLogEntry
+            where TList : IReadOnlyList<TEntry>
         {
             logger.ReplicaSize(Member.EndPoint, entries.Count, replicationIndex, precedingTerm, fingerprint, Member.State.ConfigurationFingerprint, applyConfig);
             var result = Member.AppendEntriesAsync<TEntry, TList>(term, entries, replicationIndex, precedingTerm, commitIndex, configuration, applyConfig, token).ConfigureAwait(false).GetAwaiter();

@@ -47,7 +47,7 @@ public partial class PersistentState
     }
 
     private sealed class BufferingLogEntryProducer<TEntry> : ILogEntryProducer<CachedLogEntry>
-        where TEntry : notnull, IRaftLogEntry
+        where TEntry : IRaftLogEntry
     {
         private readonly Channel<CachedLogEntry> queue;
         private readonly MemoryAllocator<byte> allocator;

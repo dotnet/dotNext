@@ -37,7 +37,7 @@ public sealed class CommandInterpreterTests : Test
 
         public static async ValueTask<BinaryOperationCommand> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
             where TReader : notnull, IAsyncBinaryReader
-            => new BinaryOperationCommand
+            => new()
             {
                 X = await reader.ReadLittleEndianAsync<int>(token),
                 Y = await reader.ReadLittleEndianAsync<int>(token),
@@ -62,7 +62,7 @@ public sealed class CommandInterpreterTests : Test
 
         public static async ValueTask<UnaryOperationCommand> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
             where TReader : notnull, IAsyncBinaryReader
-            => new UnaryOperationCommand
+            => new()
             {
                 X = await reader.ReadLittleEndianAsync<int>(token),
                 Type = (UnaryOperation)await reader.ReadLittleEndianAsync<int>(token),
@@ -82,7 +82,7 @@ public sealed class CommandInterpreterTests : Test
 
         public static async ValueTask<AssignCommand> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
             where TReader : notnull, IAsyncBinaryReader
-            => new AssignCommand
+            => new()
             {
                 Value = await reader.ReadLittleEndianAsync<int>(token),
             };
@@ -101,7 +101,7 @@ public sealed class CommandInterpreterTests : Test
 
         public static async ValueTask<SnapshotCommand> ReadFromAsync<TReader>(TReader reader, CancellationToken token)
             where TReader : notnull, IAsyncBinaryReader
-            => new SnapshotCommand
+            => new()
             {
                 Value = await reader.ReadLittleEndianAsync<int>(token),
             };
@@ -157,15 +157,10 @@ public sealed class CommandInterpreterTests : Test
         }
     }
 
-    private sealed class TestPersistenceState : MemoryBasedStateMachine
+    private sealed class TestPersistenceState() : MemoryBasedStateMachine(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), 4,
+        new Options { CompactionMode = CompactionMode.Background })
     {
-        private readonly CustomInterpreter interpreter;
-
-        public TestPersistenceState()
-            : base(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), 4, new Options { CompactionMode = CompactionMode.Background })
-        {
-            interpreter = new CustomInterpreter();
-        }
+        private readonly CustomInterpreter interpreter = new();
 
         internal int Value => interpreter.Value;
 

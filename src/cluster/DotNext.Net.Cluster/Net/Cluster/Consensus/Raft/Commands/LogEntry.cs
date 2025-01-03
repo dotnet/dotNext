@@ -12,7 +12,7 @@ using Runtime.Serialization;
 /// <seealso cref="Text.Json.JsonSerializable{T}"/>
 [StructLayout(LayoutKind.Auto)]
 public readonly struct LogEntry<TCommand>() : IRaftLogEntry
-    where TCommand : notnull, ISerializable<TCommand>
+    where TCommand : ISerializable<TCommand>
 {
     /// <summary>
     /// Gets the command associated with this log entry.

@@ -79,7 +79,7 @@ public partial class FileReader : IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     public ValueTask<T> ReadAsync<T>(CancellationToken token = default)
-        where T : notnull, IBinaryFormattable<T>
+        where T : IBinaryFormattable<T>
     {
         return T.Size <= BinaryFormattable256Reader<T>.MaxSize
             ? ReadAsync<T, BinaryFormattable256Reader<T>>(new(), token)
@@ -95,7 +95,7 @@ public partial class FileReader : IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     public ValueTask<T> ReadLittleEndianAsync<T>(CancellationToken token = default)
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         var type = typeof(T);
         return type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128)
@@ -112,7 +112,7 @@ public partial class FileReader : IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     public ValueTask<T> ReadBigEndianAsync<T>(CancellationToken token = default)
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         var type = typeof(T);
         return type.IsPrimitive || type == typeof(Int128) || type == typeof(UInt128)
@@ -227,7 +227,7 @@ public partial class FileReader : IAsyncBinaryReader
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public async ValueTask<T> ParseAsync<T>(LengthFormat lengthFormat, IFormatProvider? provider = null, CancellationToken token = default)
-        where T : notnull, IUtf8SpanParsable<T>
+        where T : IUtf8SpanParsable<T>
     {
         var length = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
         T result;
@@ -271,7 +271,7 @@ public partial class FileReader : IAsyncBinaryReader
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public async ValueTask<T> ParseAsync<T>(LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null, CancellationToken token = default)
-        where T : notnull, INumberBase<T>
+        where T : INumberBase<T>
     {
         var length = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
 
@@ -309,7 +309,7 @@ public partial class FileReader : IAsyncBinaryReader
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public async ValueTask CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token = default)
-        where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+        where TConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
         for (ReadOnlyMemory<byte> buffer; length > 0L && (HasBufferedData || await ReadAsync(token).ConfigureAwait(false)); ConsumeUnsafe(buffer.Length))
         {
@@ -331,7 +331,7 @@ public partial class FileReader : IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying file doesn't have enough bytes to read.</exception>
     public async ValueTask CopyToAsync<TConsumer>(TConsumer consumer, long count, CancellationToken token = default)
-        where TConsumer : notnull, ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+        where TConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
         ArgumentOutOfRangeException.ThrowIfNegative(count);
 

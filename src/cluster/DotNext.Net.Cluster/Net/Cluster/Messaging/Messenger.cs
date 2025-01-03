@@ -1,9 +1,7 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace DotNext.Net.Cluster.Messaging;
 
 using IO;
-using Net.Mime;
+using Mime;
 using Text.Json;
 
 /// <summary>
@@ -80,7 +78,7 @@ public static class Messenger
     /// <typeparam name="TResponse">The type of inbound message.</typeparam>
     /// <returns>The deserialized response.</returns>
     public static Task<TResponse> SendJsonMessageAsync<TRequest, TResponse>(this ISubscriber messenger, MessageReader<TResponse> responseReader, string messageName, TRequest request, CancellationToken token)
-        where TRequest : notnull, IJsonSerializable<TRequest>
+        where TRequest : IJsonSerializable<TRequest>
         => messenger.SendMessageAsync(new JsonMessage<TRequest> { Content = request, Name = messageName }, responseReader, token);
 
     /// <summary>
@@ -94,6 +92,6 @@ public static class Messenger
     /// <typeparam name="TSignal">JSON-serializable type of signal payload.</typeparam>
     /// <returns>The task representing asynchronous execution of the method.</returns>
     public static Task SendJsonSignalAsync<TSignal>(this ISubscriber messenger, string messageName, TSignal signal, bool requiresConfirmation = true, CancellationToken token = default)
-        where TSignal : notnull, IJsonSerializable<TSignal>
+        where TSignal : IJsonSerializable<TSignal>
         => messenger.SendSignalAsync(new JsonMessage<TSignal> { Content = signal, Name = messageName }, requiresConfirmation, token);
 }

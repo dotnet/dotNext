@@ -26,7 +26,7 @@ public abstract class CommandAttribute(int id) : Attribute
 /// </remarks>
 /// <param name="id">The identifier of the log entry.</param>
 public sealed class CommandAttribute<TCommand>(int id) : CommandAttribute(id)
-    where TCommand : notnull, ISerializable<TCommand>
+    where TCommand : ISerializable<TCommand>
 {
     internal override Type CommandType => typeof(TCommand);
 }

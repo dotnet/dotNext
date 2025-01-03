@@ -80,7 +80,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WriteAsync<T>(T value, CancellationToken token = default)
-        where T : notnull, IBinaryFormattable<T>
+        where T : IBinaryFormattable<T>
         => WriteAsync(value, static (destination, value) => value.Format(destination), T.Size, token);
 
     /// <summary>
@@ -92,7 +92,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WriteLittleEndianAsync<T>(T value, CancellationToken token = default)
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         return WriteAsync(value, Write, Number.GetMaxByteCount<T>(), token);
 
@@ -112,7 +112,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WriteBigEndianAsync<T>(T value, CancellationToken token = default)
-        where T : notnull, IBinaryInteger<T>
+        where T : IBinaryInteger<T>
     {
         return WriteAsync(value, Write, Number.GetMaxByteCount<T>(), token);
 
@@ -215,7 +215,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public async ValueTask<long> FormatAsync<T>(T value, EncodingContext context, LengthFormat? lengthFormat, string? format = null, IFormatProvider? provider = null, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
-        where T : notnull, ISpanFormattable
+        where T : ISpanFormattable
     {
         const int initialCharBufferSize = 128;
         const int maxBufferSize = int.MaxValue / 2;
@@ -243,7 +243,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <returns>The number of written bytes.</returns>
     /// <exception cref="InternalBufferOverflowException">The internal buffer cannot place all UTF-8 bytes exposed by <paramref name="value"/>.</exception>
     public ValueTask<int> FormatAsync<T>(T value, LengthFormat? lengthFormat, string? format = null, IFormatProvider? provider = null, CancellationToken token = default)
-        where T : notnull, IUtf8SpanFormattable
+        where T : IUtf8SpanFormattable
     {
         return TryFormat(value, lengthFormat, format, provider, out var bytesWritten)
             ? ValueTask.FromResult(bytesWritten)
@@ -251,7 +251,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     }
 
     private bool TryFormat<T>(T value, LengthFormat? lengthFormat, ReadOnlySpan<char> format, IFormatProvider? provider, out int bytesWritten)
-        where T : notnull, IUtf8SpanFormattable
+        where T : IUtf8SpanFormattable
     {
         var expectedLengthSize = lengthFormat switch
         {
@@ -284,7 +284,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     }
 
     private async ValueTask<int> FormatSlowAsync<T>(T value, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
-        where T : notnull, IUtf8SpanFormattable
+        where T : IUtf8SpanFormattable
     {
         await FlushAsync(token).ConfigureAwait(false);
         

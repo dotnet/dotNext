@@ -60,7 +60,7 @@ internal struct MemoryReader(Memory<byte> destination) : IBufferReader, ISupplie
 
 [StructLayout(LayoutKind.Auto)]
 internal unsafe struct WellKnownIntegerReader<T>(delegate*<ReadOnlySpan<byte>, bool, T> parser) : IBufferReader, ISupplier<T>
-    where T : notnull, IBinaryInteger<T>
+    where T : IBinaryInteger<T>
 {
     private T? buffer;
     private int writtenBytes;
@@ -84,7 +84,7 @@ internal unsafe struct WellKnownIntegerReader<T>(delegate*<ReadOnlySpan<byte>, b
 
 [StructLayout(LayoutKind.Auto)]
 internal unsafe struct IntegerReader<T>(delegate*<ReadOnlySpan<byte>, bool, T> parser) : IBufferReader, ISupplier<T>
-    where T : notnull, IBinaryInteger<T>
+    where T : IBinaryInteger<T>
 {
     private MemoryOwner<byte> buffer = Memory.AllocateExactly<byte>(Number.GetMaxByteCount<T>());
     private int writtenBytes;
@@ -116,7 +116,7 @@ internal unsafe struct IntegerReader<T>(delegate*<ReadOnlySpan<byte>, bool, T> p
 
 [StructLayout(LayoutKind.Auto)]
 internal struct BinaryFormattable256Reader<T> : IBufferReader, ISupplier<T>
-    where T : notnull, IBinaryFormattable<T>
+    where T : IBinaryFormattable<T>
 {
     private Buffer256 buffer;
     private int writtenBytes;
@@ -141,7 +141,7 @@ internal struct BinaryFormattable256Reader<T> : IBufferReader, ISupplier<T>
 
 [StructLayout(LayoutKind.Auto)]
 internal struct BinaryFormattableReader<T>() : IBufferReader, ISupplier<T>
-    where T : notnull, IBinaryFormattable<T>
+    where T : IBinaryFormattable<T>
 {
     private MemoryOwner<byte> buffer = Memory.AllocateExactly<byte>(T.Size);
     private int writtenBytes;

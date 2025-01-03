@@ -37,7 +37,7 @@ public interface IDataTransferObject
         /// <typeparam name="TReader">The type of binary reader.</typeparam>
         /// <returns>The converted DTO content.</returns>
         ValueTask<TResult> TransformAsync<TReader>(TReader reader, CancellationToken token)
-            where TReader : notnull, IAsyncBinaryReader;
+            where TReader : IAsyncBinaryReader;
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ public interface IDataTransferObject
     /// <returns>The task representing state of asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-        where TWriter : notnull, IAsyncBinaryWriter;
+        where TWriter : IAsyncBinaryWriter;
 
     private static void ResetStream(Stream stream, bool resetStream)
     {
@@ -84,7 +84,7 @@ public interface IDataTransferObject
     /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     protected static async ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, Memory<byte> buffer, CancellationToken token)
-        where TTransformation : notnull, ITransformation<TResult>
+        where TTransformation : ITransformation<TResult>
     {
         if (buffer.IsEmpty)
             throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
@@ -112,7 +112,7 @@ public interface IDataTransferObject
     /// <returns>The decoded stream.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     protected static async ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, MemoryAllocator<byte>? allocator, CancellationToken token)
-        where TTransformation : notnull, ITransformation<TResult>
+        where TTransformation : ITransformation<TResult>
     {
         var buffer = allocator.AllocateAtLeast(DefaultBufferSize);
         try
@@ -138,7 +138,7 @@ public interface IDataTransferObject
     /// <returns>The decoded stream.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     protected static ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, CancellationToken token)
-        where TTransformation : notnull, ITransformation<TResult>
+        where TTransformation : ITransformation<TResult>
         => TransformAsync<TResult, TTransformation>(input, transformation, resetStream, default(MemoryAllocator<byte>), token);
 
     /// <summary>
@@ -152,12 +152,12 @@ public interface IDataTransferObject
     /// <returns>The decoded stream.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     protected static ValueTask<TResult> TransformAsync<TResult, TTransformation>(PipeReader input, TTransformation transformation, CancellationToken token)
-        where TTransformation : notnull, ITransformation<TResult>
+        where TTransformation : ITransformation<TResult>
         => transformation.TransformAsync(new Pipelines.PipeBinaryReader(input), token);
 
     // use rented buffer of the small size
     private async ValueTask<TResult> GetSmallObjectDataAsync<TResult, TTransformation>(TTransformation parser, long length, CancellationToken token)
-        where TTransformation : notnull, ITransformation<TResult>
+        where TTransformation : ITransformation<TResult>
     {
         Debug.Assert(length <= Array.MaxLength);
 
@@ -169,7 +169,7 @@ public interface IDataTransferObject
     // use FileBufferingWriter to keep the balance between I/O performance and memory consumption
     // when size is unknown
     private async ValueTask<TResult> GetUnknownObjectDataAsync<TResult, TTransformation>(TTransformation parser, CancellationToken token)
-        where TTransformation : notnull, ITransformation<TResult>
+        where TTransformation : ITransformation<TResult>
     {
         var output = new FileBufferingWriter(asyncIO: true);
         await using (output.ConfigureAwait(false))
@@ -191,7 +191,7 @@ public interface IDataTransferObject
 
     // use disk I/O for large-size object
     private async ValueTask<TResult> GetLargeObjectDataAsync<TResult, TTransformation>(TTransformation parser, long length, CancellationToken token)
-        where TTransformation : notnull, ITransformation<TResult>
+        where TTransformation : ITransformation<TResult>
     {
         var tempFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         const FileOptions tempFileOptions = FileOptions.Asynchronous | FileOptions.DeleteOnClose | FileOptions.SequentialScan;
@@ -233,7 +233,7 @@ public interface IDataTransferObject
     /// <returns>The converted DTO content.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask<TResult> TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token = default)
-        where TTransformation : notnull, ITransformation<TResult>
+        where TTransformation : ITransformation<TResult>
     {
         if (TryGetMemory(out var memory))
             return transformation.TransformAsync(IAsyncBinaryReader.Create(memory), token);

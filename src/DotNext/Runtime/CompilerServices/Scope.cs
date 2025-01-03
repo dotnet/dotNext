@@ -4,6 +4,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Runtime.CompilerServices;
 
+using static Threading.Tasks.Synchronization;
 using ExceptionAggregator = ExceptionServices.ExceptionAggregator;
 
 /// <summary>
@@ -114,8 +115,6 @@ public struct Scope : IDisposable, IAsyncDisposable
 
         static void ExecuteCallbacks(ReadOnlySpan<object?> callbacks, ref ExceptionAggregator aggregator)
         {
-            Task t;
-
             foreach (var cb in callbacks)
             {
                 try
@@ -128,22 +127,14 @@ public struct Scope : IDisposable, IAsyncDisposable
                             callback();
                             break;
                         case Func<ValueTask> callback:
-                            using (t = callback().AsTask())
-                            {
-                                t.Wait();
-                            }
-
+                            callback().Wait();
                             break;
                         case IDisposable disposable:
                             // IDisposable in synchronous implementation has higher priority than IAsyncDisposable
                             disposable.Dispose();
                             break;
                         case IAsyncDisposable disposable:
-                            using (t = disposable.DisposeAsync().AsTask())
-                            {
-                                t.Wait();
-                            }
-
+                            disposable.DisposeAsync().Wait();
                             break;
                     }
                 }
@@ -161,20 +152,19 @@ public struct Scope : IDisposable, IAsyncDisposable
     /// <returns>The task representing asynchronous execution.</returns>
     public readonly async ValueTask DisposeAsync()
     {
-        var exceptions = BoxedValue<ExceptionAggregator>.Box(new());
-        await ExecuteCallbacksAsync(callbacks, exceptions).ConfigureAwait(false);
+        var exceptions = await ExecuteCallbacksAsync(callbacks).ConfigureAwait(false);
 
         if (rest is not null)
         {
-            await ExecuteCallbacksAsync(rest, exceptions).ConfigureAwait(false);
+            exceptions = await ExecuteCallbacksAsync(rest, exceptions).ConfigureAwait(false);
             rest.Clear();
         }
 
-        exceptions.Value.ThrowIfNeeded();
+        exceptions.ThrowIfNeeded();
 
-        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-        static async ValueTask ExecuteCallbacksAsync<T>(T callbacks, BoxedValue<ExceptionAggregator> exceptions)
-            where T : notnull, ITuple
+        [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+        static async ValueTask<ExceptionAggregator> ExecuteCallbacksAsync<T>(T callbacks, ExceptionAggregator exceptions = default)
+            where T : ITuple
         {
             for (int i = 0, count = callbacks.Length; i < count; i++)
             {
@@ -183,7 +173,7 @@ public struct Scope : IDisposable, IAsyncDisposable
                     switch (callbacks[i])
                     {
                         case null:
-                            return;
+                            goto exit;
                         case Action callback:
                             callback();
                             break;
@@ -201,9 +191,12 @@ public struct Scope : IDisposable, IAsyncDisposable
                 }
                 catch (Exception e)
                 {
-                    exceptions.Value.Add(e);
+                    exceptions.Add(e);
                 }
             }
+
+            exit:
+            return exceptions;
         }
     }
 }
