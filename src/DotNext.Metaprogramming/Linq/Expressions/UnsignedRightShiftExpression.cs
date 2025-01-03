@@ -22,7 +22,7 @@ public class UnsignedRightShiftExpression : CustomExpression
     {
         Left = expr;
         Right = shiftAmount;
-        
+
         var shiftOperatorInterface = typeof(IShiftOperators<,,>).MakeGenericType(expr.Type, shiftAmount.Type, expr.Type);
         if (shiftOperatorInterface.IsAssignableFrom(expr.Type))
         {
@@ -35,14 +35,9 @@ public class UnsignedRightShiftExpression : CustomExpression
             }
         }
 
-        if (expr.GetType().GetMethod(SpecialName, Flags, null, [], null) is { } method)
-        {
-            Method = method;
-        }
-        else
-        {
-            throw new ArgumentException(ExceptionMessages.InterfaceNotImplemented(expr.Type, typeof(IShiftOperators<,,>)), nameof(expr));
-        }
+        Method = expr.GetType().GetMethod(SpecialName, Flags, null, [], null) is { IsSpecialName: true } method
+            ? method
+            : throw new ArgumentException(ExceptionMessages.InterfaceNotImplemented(expr.Type, typeof(IShiftOperators<,,>)), nameof(expr));
     }
 
     /// <summary>

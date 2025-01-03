@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using static System.Linq.Enumerable;
 
 namespace DotNext.Linq.Expressions;
 
@@ -269,8 +268,8 @@ public static partial class ExpressionBuilder
 
         // handle reference type or value type
         return operand.Type is { IsValueType: false, IsPointer: false, IsPrimitive: false }
-            ? Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type)) :
-            Const<bool>(false);
+            ? Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type))
+            : Const(false);
     }
 
     /// <summary>
@@ -284,7 +283,7 @@ public static partial class ExpressionBuilder
     public static Expression IsNotNull(this Expression operand)
     {
         // handle nullable value type
-        Type? underlyingType = Nullable.GetUnderlyingType(operand.Type);
+        var underlyingType = Nullable.GetUnderlyingType(operand.Type);
         if (underlyingType is not null)
             return operand.Property(nameof(Nullable<int>.HasValue));
 
@@ -296,7 +295,7 @@ public static partial class ExpressionBuilder
         // handle reference type or value type
         return operand.Type is { IsValueType: false, IsPointer: false, IsPrimitive: false }
             ? Expression.ReferenceNotEqual(operand, Expression.Constant(null, operand.Type))
-            : Const<bool>(true);
+            : Const(true);
     }
 
     /// <summary>
@@ -1073,7 +1072,7 @@ public static partial class ExpressionBuilder
     /// <param name="test">Test expression.</param>
     /// <param name="ifTrue">Positive branch.</param>
     /// <param name="ifFalse">Negative branch.</param>
-    /// <param name="type">The type of conditional expression. Default is <see cref="void"/>.</param>
+    /// <param name="type">The type of conditional expression. Default is <see cref="Void"/>.</param>
     /// <returns>Conditional expression.</returns>
     public static ConditionalExpression Condition(this Expression test, Expression? ifTrue = null, Expression? ifFalse = null, Type? type = null)
         => Expression.Condition(test, ifTrue ?? Expression.Empty(), ifFalse ?? Expression.Empty(), type ?? typeof(void));
@@ -1084,7 +1083,7 @@ public static partial class ExpressionBuilder
     /// <remarks>
     /// The equivalent code is <c>a ? b : c</c>.
     /// </remarks>
-    /// <typeparam name="TResult">The type of conditional expression. Default is <see cref="void"/>.</typeparam>
+    /// <typeparam name="TResult">The type of conditional expression. Default is <see cref="Void"/>.</typeparam>
     /// <param name="test">Test expression.</param>
     /// <param name="ifTrue">Positive branch.</param>
     /// <param name="ifFalse">Negative branch.</param>
@@ -1110,7 +1109,7 @@ public static partial class ExpressionBuilder
     /// The equivalent code is <c>throw e</c>.
     /// </remarks>
     /// <param name="exception">An exception to be thrown.</param>
-    /// <param name="type">The type of expression. Default is <see cref="void"/>.</param>
+    /// <param name="type">The type of expression. Default is <see cref="Void"/>.</param>
     /// <returns><c>throw</c> expression.</returns>
     public static UnaryExpression Throw(this Expression exception, Type? type = null) => Expression.Throw(exception, type ?? typeof(void));
 
@@ -1186,7 +1185,7 @@ public static partial class ExpressionBuilder
         }
         else
         {
-            variables = Empty<ParameterExpression>();
+            variables = [];
             result = instructions.Prepend(expression);
         }
 
