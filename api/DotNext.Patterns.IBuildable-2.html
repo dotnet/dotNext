@@ -77,7 +77,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Patterns_IBuildable_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IBuildable&lt;out TSelf, out TBuilder&gt; where TSelf : notnull, IBuildable&lt;out TSelf, out TBuilder&gt; where TBuilder : notnull, ISupplier&lt;out TSelf&gt;, IResettable</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IBuildable&lt;out TSelf, out TBuilder&gt; where TSelf : IBuildable&lt;out TSelf, out TBuilder&gt; where TBuilder : ISupplier&lt;out TSelf&gt;, IResettable</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">

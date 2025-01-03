@@ -885,7 +885,7 @@ performs buffered write.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;long&gt; FormatAsync&lt;T&gt;(T value, EncodingContext context, LengthFormat? lengthFormat, string? format = null, IFormatProvider? provider = null, MemoryAllocator&lt;char&gt;? allocator = null, CancellationToken token = default) where T : notnull, ISpanFormattable</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;long&gt; FormatAsync&lt;T&gt;(T value, EncodingContext context, LengthFormat? lengthFormat, string? format = null, IFormatProvider? provider = null, MemoryAllocator&lt;char&gt;? allocator = null, CancellationToken token = default) where T : ISpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1008,7 +1008,7 @@ performs buffered write.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;int&gt; FormatAsync&lt;T&gt;(T value, LengthFormat? lengthFormat, string? format = null, IFormatProvider? provider = null, CancellationToken token = default) where T : notnull, IUtf8SpanFormattable</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;int&gt; FormatAsync&lt;T&gt;(T value, LengthFormat? lengthFormat, string? format = null, IFormatProvider? provider = null, CancellationToken token = default) where T : IUtf8SpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1545,7 +1545,7 @@ according to the specified format.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask WriteAsync&lt;T&gt;(T value, CancellationToken token = default) where T : notnull, IBinaryFormattable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask WriteAsync&lt;T&gt;(T value, CancellationToken token = default) where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1633,7 +1633,7 @@ according to the specified format.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask WriteBigEndianAsync&lt;T&gt;(T value, CancellationToken token = default) where T : notnull, IBinaryInteger&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask WriteBigEndianAsync&lt;T&gt;(T value, CancellationToken token = default) where T : IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1721,7 +1721,7 @@ according to the specified format.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask WriteLittleEndianAsync&lt;T&gt;(T value, CancellationToken token = default) where T : notnull, IBinaryInteger&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask WriteLittleEndianAsync&lt;T&gt;(T value, CancellationToken token = default) where T : IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

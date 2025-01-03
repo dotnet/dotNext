@@ -328,7 +328,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long Format&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value, in EncodingContext context, LengthFormat? lengthFormat, ReadOnlySpan&lt;char&gt; format = default, IFormatProvider? provider = null, MemoryAllocator&lt;char&gt;? allocator = null) where T : notnull, ISpanFormattable</code></pre>
+    <pre><code class="lang-csharp hljs">public static long Format&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value, in EncodingContext context, LengthFormat? lengthFormat, ReadOnlySpan&lt;char&gt; format = default, IFormatProvider? provider = null, MemoryAllocator&lt;char&gt;? allocator = null) where T : ISpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -430,7 +430,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int Format&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value, LengthFormat? lengthFormat, ReadOnlySpan&lt;char&gt; format = default, IFormatProvider? provider = null) where T : notnull, IUtf8SpanFormattable</code></pre>
+    <pre><code class="lang-csharp hljs">public static int Format&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value, LengthFormat? lengthFormat, ReadOnlySpan&lt;char&gt; format = default, IFormatProvider? provider = null) where T : IUtf8SpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

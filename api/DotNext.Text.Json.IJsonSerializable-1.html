@@ -77,7 +77,7 @@
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_Text_Json_IJsonSerializable_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IJsonSerializable&lt;TSelf&gt; where TSelf : notnull, IJsonSerializable&lt;TSelf&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IJsonSerializable&lt;TSelf&gt; where TSelf : IJsonSerializable&lt;TSelf&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">

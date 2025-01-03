@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class Set | .NEXT </title>
+    <title>Class BoxedValue | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class Set | .NEXT ">
+    <meta name="title" content="Class BoxedValue | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,18 +65,18 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Collections.Generic.Set">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.BoxedValue">
 
 
 
-  <h1 id="DotNext_Collections_Generic_Set" data-uid="DotNext.Collections.Generic.Set" class="text-break">Class Set</h1>
-  <div class="markdown level0 summary"><p>Represents various extension methods for sets.</p>
+  <h1 id="DotNext_Runtime_BoxedValue" data-uid="DotNext.Runtime.BoxedValue" class="text-break">Class BoxedValue</h1>
+  <div class="markdown level0 summary"><p>Represents extension methods for <a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue&lt;T&gt;</a> class.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><span class="xref">Set</span></div>
+    <div class="level1"><span class="xref">BoxedValue</span></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -102,29 +102,29 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Collections.html">Collections</a>.<a class="xref" href="DotNext.Collections.Generic.html">Generic</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Runtime.html">Runtime</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
-  <h5 id="DotNext_Collections_Generic_Set_syntax">Syntax</h5>
+  <h5 id="DotNext_Runtime_BoxedValue_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class Set</code></pre>
+    <pre><code class="lang-csharp hljs">public static class BoxedValue</code></pre>
   </div>
   <h3 id="methods">Methods
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Set_Range__3___1___2_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Set.Range%60%603(%60%601%2C%60%602)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_BoxedValue_Copy__1_DotNext_Runtime_BoxedValue___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue.Copy%60%601(DotNext.Runtime.BoxedValue%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Set.cs/#L23">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L127">View Source</a>
   </span>
-  <a id="DotNext_Collections_Generic_Set_Range_" data-uid="DotNext.Collections.Generic.Set.Range*"></a>
-  <h4 id="DotNext_Collections_Generic_Set_Range__3___1___2_" data-uid="DotNext.Collections.Generic.Set.Range``3(``1,``2)">Range&lt;T, TLowerBound, TUpperBound&gt;(TLowerBound, TUpperBound)</h4>
-  <div class="markdown level1 summary"><p>Creates a range using the specified bounds.</p>
+  <a id="DotNext_Runtime_BoxedValue_Copy_" data-uid="DotNext.Runtime.BoxedValue.Copy*"></a>
+  <h4 id="DotNext_Runtime_BoxedValue_Copy__1_DotNext_Runtime_BoxedValue___0__" data-uid="DotNext.Runtime.BoxedValue.Copy``1(DotNext.Runtime.BoxedValue{``0})">Copy&lt;T&gt;(BoxedValue&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a bitwise copy of the boxed value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IReadOnlySet&lt;T&gt; Range&lt;T, TLowerBound, TUpperBound&gt;(TLowerBound lowerBound, TUpperBound upperBound) where T : IBinaryInteger&lt;T&gt; where TLowerBound : IFiniteRangeEndpoint&lt;T&gt; where TUpperBound : IFiniteRangeEndpoint&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static BoxedValue&lt;T&gt; Copy&lt;T&gt;(this BoxedValue&lt;T&gt; boxedValue) where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -137,16 +137,9 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">TLowerBound</span></td>
-        <td><span class="parametername">lowerBound</span></td>
-        <td><p>The lower bound of the range.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">TUpperBound</span></td>
-        <td><span class="parametername">upperBound</span></td>
-        <td><p>The upper bound of the range.</p>
-</td>
+        <td><a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue</a>&lt;T&gt;</td>
+        <td><span class="parametername">boxedValue</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -160,8 +153,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlyset-1">IReadOnlySet</a>&lt;T&gt;</td>
-        <td><p>An ordered set of elements in the range.</p>
+        <td><a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue</a>&lt;T&gt;</td>
+        <td><p>A reference to bitwise copy of the boxed value.</p>
 </td>
       </tr>
     </tbody>
@@ -177,36 +170,25 @@
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the elements in the range.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">TLowerBound</span></td>
-        <td><p>The type of lower bound.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">TUpperBound</span></td>
-        <td><p>The type of upper bound.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Set_Singleton__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Set.Singleton%60%601(%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_BoxedValue_Unbox__1_DotNext_Runtime_BoxedValue___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue.Unbox%60%601(DotNext.Runtime.BoxedValue%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Set.cs/#L60">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L119">View Source</a>
   </span>
-  <a id="DotNext_Collections_Generic_Set_Singleton_" data-uid="DotNext.Collections.Generic.Set.Singleton*"></a>
-  <h4 id="DotNext_Collections_Generic_Set_Singleton__1___0_" data-uid="DotNext.Collections.Generic.Set.Singleton``1(``0)">Singleton&lt;T&gt;(T)</h4>
-  <div class="markdown level1 summary"><p>Constructs read-only set with a single item in it.</p>
+  <a id="DotNext_Runtime_BoxedValue_Unbox_" data-uid="DotNext.Runtime.BoxedValue.Unbox*"></a>
+  <h4 id="DotNext_Runtime_BoxedValue_Unbox__1_DotNext_Runtime_BoxedValue___0__" data-uid="DotNext.Runtime.BoxedValue.Unbox``1(DotNext.Runtime.BoxedValue{``0})">Unbox&lt;T&gt;(BoxedValue&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Unboxes the value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IReadOnlySet&lt;T&gt; Singleton&lt;T&gt;(T item)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ref T Unbox&lt;T&gt;(this BoxedValue&lt;T&gt; boxedValue) where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -214,30 +196,30 @@
       <tr>
         <th>Type</th>
         <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.BoxedValue-1.html">BoxedValue</a>&lt;T&gt;</td>
+        <td><span class="parametername">boxedValue</span></td>
+        <td><p>A reference to the boxed value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td><span class="xref">T</span></td>
-        <td><span class="parametername">item</span></td>
-        <td><p>An item to be placed into set.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlyset-1">IReadOnlySet</a>&lt;T&gt;</td>
-        <td><p>Read-only set containing single item.</p>
+        <td><p>A reference to the boxed value.</p>
 </td>
       </tr>
     </tbody>
@@ -253,7 +235,7 @@
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>Type of set items.</p>
+        <td><p>The value type.</p>
 </td>
       </tr>
     </tbody>
@@ -267,10 +249,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Set.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Set%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_BoxedValue.md&amp;value=---%0Auid%3A%20DotNext.Runtime.BoxedValue%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Set.cs/#L12" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/BoxedValue.cs/#L111" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

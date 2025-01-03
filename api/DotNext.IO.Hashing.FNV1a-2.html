@@ -144,7 +144,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_IO_Hashing_FNV1a_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class FNV1a&lt;THash, TParameters&gt; : NonCryptographicHashAlgorithm, IResettable where THash : unmanaged, IBinaryNumber&lt;THash&gt; where TParameters : notnull, IFNV1aParameters&lt;THash&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public class FNV1a&lt;THash, TParameters&gt; : NonCryptographicHashAlgorithm, IResettable where THash : unmanaged, IBinaryNumber&lt;THash&gt; where TParameters : IFNV1aParameters&lt;THash&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -637,7 +637,7 @@ public static THash Hash(void* address, nuint length, bool salted = false)</code
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static THash Hash&lt;T, TIndex&gt;(Func&lt;T, TIndex, THash&gt; accessor, TIndex count, T arg, bool salted = false) where TIndex : notnull, IComparisonOperators&lt;TIndex, TIndex, bool&gt;, IAdditiveIdentity&lt;TIndex, TIndex&gt;, IIncrementOperators&lt;TIndex&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static THash Hash&lt;T, TIndex&gt;(Func&lt;T, TIndex, THash&gt; accessor, TIndex count, T arg, bool salted = false) where TIndex : IComparisonOperators&lt;TIndex, TIndex, bool&gt;, IAdditiveIdentity&lt;TIndex, TIndex&gt;, IIncrementOperators&lt;TIndex&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

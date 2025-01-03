@@ -193,7 +193,7 @@ less memory.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void AwaitOnCompleted&lt;TAwaiter, TStateMachine&gt;(ref TAwaiter awaiter, ref TStateMachine stateMachine) where TAwaiter : notnull, INotifyCompletion where TStateMachine : notnull, IAsyncStateMachine</code></pre>
+    <pre><code class="lang-csharp hljs">public void AwaitOnCompleted&lt;TAwaiter, TStateMachine&gt;(ref TAwaiter awaiter, ref TStateMachine stateMachine) where TAwaiter : INotifyCompletion where TStateMachine : IAsyncStateMachine</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -255,7 +255,7 @@ without capturing execution context.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void AwaitUnsafeOnCompleted&lt;TAwaiter, TStateMachine&gt;(ref TAwaiter awaiter, ref TStateMachine stateMachine) where TAwaiter : notnull, ICriticalNotifyCompletion where TStateMachine : notnull, IAsyncStateMachine</code></pre>
+    <pre><code class="lang-csharp hljs">public void AwaitUnsafeOnCompleted&lt;TAwaiter, TStateMachine&gt;(ref TAwaiter awaiter, ref TStateMachine stateMachine) where TAwaiter : ICriticalNotifyCompletion where TStateMachine : IAsyncStateMachine</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -450,7 +450,7 @@ without capturing execution context.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Start&lt;TStateMachine&gt;(ref TStateMachine stateMachine) where TStateMachine : notnull, IAsyncStateMachine</code></pre>
+    <pre><code class="lang-csharp hljs">public void Start&lt;TStateMachine&gt;(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

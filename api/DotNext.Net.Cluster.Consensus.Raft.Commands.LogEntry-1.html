@@ -104,7 +104,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_Commands_LogEntry_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct LogEntry&lt;TCommand&gt; : IRaftLogEntry, ILogEntry, IDataTransferObject where TCommand : notnull, ISerializable&lt;TCommand&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct LogEntry&lt;TCommand&gt; : IRaftLogEntry, ILogEntry, IDataTransferObject where TCommand : ISerializable&lt;TCommand&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">

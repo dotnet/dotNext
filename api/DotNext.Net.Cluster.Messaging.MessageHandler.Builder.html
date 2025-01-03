@@ -145,7 +145,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;ISubscriber, TInput, object?, CancellationToken, Task&gt; signalHandler) where TInput : notnull, ISerializable&lt;TInput&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;ISubscriber, TInput, object?, CancellationToken, Task&gt; signalHandler) where TInput : ISerializable&lt;TInput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -217,7 +217,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;ISubscriber, TInput, CancellationToken, Task&gt; signalHandler) where TInput : notnull, ISerializable&lt;TInput&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;ISubscriber, TInput, CancellationToken, Task&gt; signalHandler) where TInput : ISerializable&lt;TInput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -289,7 +289,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;TInput, object?, CancellationToken, Task&gt; signalHandler) where TInput : notnull, ISerializable&lt;TInput&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;TInput, object?, CancellationToken, Task&gt; signalHandler) where TInput : ISerializable&lt;TInput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -361,7 +361,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;TInput, CancellationToken, Task&gt; signalHandler) where TInput : notnull, ISerializable&lt;TInput&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput&gt;(string messageName, Func&lt;TInput, CancellationToken, Task&gt; signalHandler) where TInput : ISerializable&lt;TInput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -433,7 +433,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;ISubscriber, TInput, object?, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string? outputMessageType = null) where TInput : notnull, ISerializable&lt;TInput&gt; where TOutput : notnull, ISerializable&lt;TOutput&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;ISubscriber, TInput, object?, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string? outputMessageType = null) where TInput : ISerializable&lt;TInput&gt; where TOutput : ISerializable&lt;TOutput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -522,7 +522,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;ISubscriber, TInput, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string? outputMessageType = null) where TInput : notnull, ISerializable&lt;TInput&gt; where TOutput : notnull, ISerializable&lt;TOutput&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;ISubscriber, TInput, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string? outputMessageType = null) where TInput : ISerializable&lt;TInput&gt; where TOutput : ISerializable&lt;TOutput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -611,7 +611,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;TInput, object?, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string? outputMessageType = null) where TInput : notnull, ISerializable&lt;TInput&gt; where TOutput : notnull, ISerializable&lt;TOutput&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;TInput, object?, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string? outputMessageType = null) where TInput : ISerializable&lt;TInput&gt; where TOutput : ISerializable&lt;TOutput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -700,7 +700,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;TInput, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string? outputMessageType = null) where TInput : notnull, ISerializable&lt;TInput&gt; where TOutput : notnull, ISerializable&lt;TOutput&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public MessageHandler.Builder Add&lt;TInput, TOutput&gt;(string inputMessageName, Func&lt;TInput, CancellationToken, Task&lt;TOutput&gt;&gt; messageHandler, string outputMessageName, string? outputMessageType = null) where TInput : ISerializable&lt;TInput&gt; where TOutput : ISerializable&lt;TOutput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -784,7 +784,7 @@
   </span>
   <a id="DotNext_Net_Cluster_Messaging_MessageHandler_Builder_Build_" data-uid="DotNext.Net.Cluster.Messaging.MessageHandler.Builder.Build*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_MessageHandler_Builder_Build" data-uid="DotNext.Net.Cluster.Messaging.MessageHandler.Builder.Build">Build()</h4>
-  <div class="markdown level1 summary"><p>Constructs message hander based on registered delegates.</p>
+  <div class="markdown level1 summary"><p>Constructs message handler based on registered delegates.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>

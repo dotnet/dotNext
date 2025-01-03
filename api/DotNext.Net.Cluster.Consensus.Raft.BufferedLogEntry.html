@@ -254,7 +254,7 @@ It's not recommended to use the type in the application code.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;BufferedLogEntry&gt; CopyAsync&lt;TEntry&gt;(TEntry entry, LogEntryBufferingOptions options, CancellationToken token) where TEntry : notnull, IRaftLogEntry</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;BufferedLogEntry&gt; CopyAsync&lt;TEntry&gt;(TEntry entry, LogEntryBufferingOptions options, CancellationToken token) where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

@@ -77,7 +77,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_Binary_IBinaryFormattable_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IBinaryFormattable&lt;TSelf&gt; where TSelf : notnull, IBinaryFormattable&lt;TSelf&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IBinaryFormattable&lt;out TSelf&gt; where TSelf : IBinaryFormattable&lt;out TSelf&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">

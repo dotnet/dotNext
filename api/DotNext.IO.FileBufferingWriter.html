@@ -599,7 +599,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)</code></pre>
+    <pre><code class="lang-csharp hljs">public override IAsyncResult BeginRead(byte[] data, int offset, int count, AsyncCallback? callback, object? state)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -613,9 +613,8 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>The buffer to read the data into.</p>
-</td>
+        <td><span class="parametername">data</span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
@@ -706,7 +705,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)</code></pre>
+    <pre><code class="lang-csharp hljs">public override IAsyncResult BeginWrite(byte[] data, int offset, int count, AsyncCallback? callback, object? state)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -720,9 +719,8 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>The buffer to write data from.</p>
-</td>
+        <td><span class="parametername">data</span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
@@ -1331,7 +1329,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task CopyToAsync&lt;TConsumer&gt;(TConsumer consumer, int bufferSize, CancellationToken token) where TConsumer : notnull, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public Task CopyToAsync&lt;TConsumer&gt;(TConsumer consumer, int bufferSize, CancellationToken token) where TConsumer : ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1509,7 +1507,7 @@ uses the value returned by <a class="xref" href="https://learn.microsoft.com/dot
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void CopyTo&lt;TConsumer&gt;(TConsumer consumer, int bufferSize, CancellationToken token) where TConsumer : notnull, IReadOnlySpanConsumer&lt;byte&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public void CopyTo&lt;TConsumer&gt;(TConsumer consumer, int bufferSize, CancellationToken token) where TConsumer : IReadOnlySpanConsumer&lt;byte&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2589,7 +2587,7 @@ synchronize a file's in-core state with storage device.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override int Read(byte[] buffer, int offset, int count)</code></pre>
+    <pre><code class="lang-csharp hljs">public override int Read(byte[] data, int offset, int count)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2603,9 +2601,8 @@ synchronize a file's in-core state with storage device.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>An array of bytes. When this method returns, the buffer contains the specified byte array with the values between <code class="paramref">offset</code> and (<code class="paramref">offset</code> + <code class="paramref">count</code> - 1) replaced by the bytes read from the current source.</p>
-</td>
+        <td><span class="parametername">data</span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
@@ -2694,7 +2691,7 @@ synchronize a file's in-core state with storage device.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override int Read(Span&lt;byte&gt; buffer)</code></pre>
+    <pre><code class="lang-csharp hljs">public override int Read(Span&lt;byte&gt; data)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2708,9 +2705,8 @@ synchronize a file's in-core state with storage device.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</p>
-</td>
+        <td><span class="parametername">data</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -2746,7 +2742,7 @@ synchronize a file's in-core state with storage device.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Task&lt;int&gt; ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)</code></pre>
+    <pre><code class="lang-csharp hljs">public override Task&lt;int&gt; ReadAsync(byte[] data, int offset, int count, CancellationToken token)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2760,9 +2756,8 @@ synchronize a file's in-core state with storage device.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>The buffer to write the data into.</p>
-</td>
+        <td><span class="parametername">data</span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
@@ -2856,7 +2851,7 @@ synchronize a file's in-core state with storage device.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override ValueTask&lt;int&gt; ReadAsync(Memory&lt;byte&gt; buffer, CancellationToken token)</code></pre>
+    <pre><code class="lang-csharp hljs">public override ValueTask&lt;int&gt; ReadAsync(Memory&lt;byte&gt; data, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2870,9 +2865,8 @@ synchronize a file's in-core state with storage device.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>The region of memory to write the data into.</p>
-</td>
+        <td><span class="parametername">data</span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
@@ -3231,7 +3225,7 @@ This method is useful only if the file was not created as temporary file.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override void Write(byte[] buffer, int offset, int count)</code></pre>
+    <pre><code class="lang-csharp hljs">public override void Write(byte[] data, int offset, int count)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -3245,9 +3239,8 @@ This method is useful only if the file was not created as temporary file.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>An array of bytes. This method copies <code class="paramref">count</code> bytes from <code class="paramref">buffer</code> to the current stream.</p>
-</td>
+        <td><span class="parametername">data</span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
@@ -3320,7 +3313,7 @@ This method is useful only if the file was not created as temporary file.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override void Write(ReadOnlySpan&lt;byte&gt; buffer)</code></pre>
+    <pre><code class="lang-csharp hljs">public override void Write(ReadOnlySpan&lt;byte&gt; input)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -3334,9 +3327,8 @@ This method is useful only if the file was not created as temporary file.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>A region of memory. This method copies the contents of this region to the current stream.</p>
-</td>
+        <td><span class="parametername">input</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -3356,7 +3348,7 @@ This method is useful only if the file was not created as temporary file.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token)</code></pre>
+    <pre><code class="lang-csharp hljs">public override Task WriteAsync(byte[] data, int offset, int count, CancellationToken token)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -3370,9 +3362,8 @@ This method is useful only if the file was not created as temporary file.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>The buffer to write data from.</p>
-</td>
+        <td><span class="parametername">data</span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
@@ -3466,7 +3457,7 @@ This method is useful only if the file was not created as temporary file.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override ValueTask WriteAsync(ReadOnlyMemory&lt;byte&gt; buffer, CancellationToken token = default)</code></pre>
+    <pre><code class="lang-csharp hljs">public override ValueTask WriteAsync(ReadOnlyMemory&lt;byte&gt; input, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -3480,9 +3471,8 @@ This method is useful only if the file was not created as temporary file.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>The region of memory to write data from.</p>
-</td>
+        <td><span class="parametername">input</span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>

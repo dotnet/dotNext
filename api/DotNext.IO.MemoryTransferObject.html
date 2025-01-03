@@ -286,7 +286,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TTransformation&gt;(TTransformation transformation, CancellationToken token = default) where TTransformation : notnull, IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TTransformation&gt;(TTransformation transformation, CancellationToken token = default) where TTransformation : IDataTransferObject.ITransformation&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

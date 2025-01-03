@@ -198,7 +198,7 @@ manager.As&lt;IDisposable&gt;().Dispose();</code></pre>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static DisclosedEndpoint&lt;T&gt; Disclosed&lt;T&gt;(this T value) where T : notnull, IComparable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static DisclosedEndpoint&lt;T&gt; Disclosed&lt;T&gt;(this T value) where T : IComparable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -268,7 +268,7 @@ manager.As&lt;IDisposable&gt;().Dispose();</code></pre>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static EnclosedEndpoint&lt;T&gt; Enclosed&lt;T&gt;(this T value) where T : notnull, IComparable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static EnclosedEndpoint&lt;T&gt; Enclosed&lt;T&gt;(this T value) where T : IComparable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -412,7 +412,7 @@ Any user data are transient and can't be passed across process boundaries (i.e. 
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool IsBetween&lt;T, TLowerBound, TUpperBound&gt;(this T value, TLowerBound lowerBound, TUpperBound upperBound) where T : notnull where TLowerBound : notnull, IRangeEndpoint&lt;T&gt; where TUpperBound : notnull, IRangeEndpoint&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool IsBetween&lt;T, TLowerBound, TUpperBound&gt;(this T value, TLowerBound lowerBound, TUpperBound upperBound) where T : notnull where TLowerBound : IRangeEndpoint&lt;T&gt; where TUpperBound : IRangeEndpoint&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

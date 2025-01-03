@@ -206,7 +206,7 @@ with <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Commands.CommandIn
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public LogEntry&lt;TCommand&gt; CreateLogEntry&lt;TCommand&gt;(TCommand command, long term) where TCommand : notnull, ISerializable&lt;TCommand&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public LogEntry&lt;TCommand&gt; CreateLogEntry&lt;TCommand&gt;(TCommand command, long term) where TCommand : ISerializable&lt;TCommand&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

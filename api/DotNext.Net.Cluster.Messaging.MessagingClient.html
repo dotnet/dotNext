@@ -176,7 +176,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected virtual (string MessageName, ContentType MessageType) GetMessageInfo&lt;TMessage&gt;() where TMessage : notnull, ISerializable&lt;TMessage&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">protected virtual (string MessageName, ContentType MessageType) GetMessageInfo&lt;TMessage&gt;() where TMessage : ISerializable&lt;TMessage&gt;</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
@@ -240,7 +240,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MessagingClient RegisterMessage&lt;TMessage&gt;(MessageAttribute&lt;TMessage&gt; messageInfo) where TMessage : notnull, ISerializable&lt;TMessage&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public MessagingClient RegisterMessage&lt;TMessage&gt;(MessageAttribute&lt;TMessage&gt; messageInfo) where TMessage : ISerializable&lt;TMessage&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -306,7 +306,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MessagingClient RegisterMessage&lt;TMessage&gt;(string name, ContentType? type = null) where TMessage : notnull, ISerializable&lt;TMessage&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public MessagingClient RegisterMessage&lt;TMessage&gt;(string name, ContentType? type = null) where TMessage : ISerializable&lt;TMessage&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -378,7 +378,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task&lt;TOutput&gt; SendMessageAsync&lt;TInput, TOutput&gt;(TInput input, CancellationToken token = default) where TInput : notnull, ISerializable&lt;TInput&gt; where TOutput : notnull, ISerializable&lt;TOutput&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public Task&lt;TOutput&gt; SendMessageAsync&lt;TInput, TOutput&gt;(TInput input, CancellationToken token = default) where TInput : ISerializable&lt;TInput&gt; where TOutput : ISerializable&lt;TOutput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -476,7 +476,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task SendSignalAsync&lt;TInput&gt;(TInput input, CancellationToken token = default) where TInput : notnull, ISerializable&lt;TInput&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public Task SendSignalAsync&lt;TInput&gt;(TInput input, CancellationToken token = default) where TInput : ISerializable&lt;TInput&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

@@ -915,7 +915,7 @@ handler.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected ValueTask&lt;Result&lt;HeartbeatResult&gt;&gt; AppendEntriesAsync&lt;TEntry&gt;(ClusterMemberId sender, long senderTerm, ILogEntryProducer&lt;TEntry&gt; entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token) where TEntry : notnull, IRaftLogEntry</code></pre>
+    <pre><code class="lang-csharp hljs">protected ValueTask&lt;Result&lt;HeartbeatResult&gt;&gt; AppendEntriesAsync&lt;TEntry&gt;(ClusterMemberId sender, long senderTerm, ILogEntryProducer&lt;TEntry&gt; entries, long prevLogIndex, long prevLogTerm, long commitIndex, IClusterConfiguration config, bool applyConfig, CancellationToken token) where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1401,7 +1401,7 @@ handler.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected ValueTask&lt;Result&lt;HeartbeatResult&gt;&gt; InstallSnapshotAsync&lt;TSnapshot&gt;(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token) where TSnapshot : notnull, IRaftLogEntry</code></pre>
+    <pre><code class="lang-csharp hljs">protected ValueTask&lt;Result&lt;HeartbeatResult&gt;&gt; InstallSnapshotAsync&lt;TSnapshot&gt;(ClusterMemberId sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token) where TSnapshot : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1736,7 +1736,7 @@ handler.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; ReplicateAsync&lt;TEntry&gt;(TEntry entry, CancellationToken token) where TEntry : notnull, IRaftLogEntry</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; ReplicateAsync&lt;TEntry&gt;(TEntry entry, CancellationToken token) where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

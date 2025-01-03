@@ -105,7 +105,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_JsonLogEntry_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct JsonLogEntry&lt;T&gt; : IInputLogEntry, IRaftLogEntry, ILogEntry, IDataTransferObject where T : notnull, IJsonSerializable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct JsonLogEntry&lt;T&gt; : IInputLogEntry, IRaftLogEntry, ILogEntry, IDataTransferObject where T : IJsonSerializable&lt;T&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">

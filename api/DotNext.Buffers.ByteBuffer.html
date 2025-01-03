@@ -124,7 +124,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int Format&lt;T&gt;(this ref BufferWriterSlim&lt;byte&gt; writer, T value, ReadOnlySpan&lt;char&gt; format = default, IFormatProvider? provider = null) where T : notnull, IUtf8SpanFormattable</code></pre>
+    <pre><code class="lang-csharp hljs">public static int Format&lt;T&gt;(this ref BufferWriterSlim&lt;byte&gt; writer, T value, ReadOnlySpan&lt;char&gt; format = default, IFormatProvider? provider = null) where T : IUtf8SpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -224,7 +224,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int Format&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value, ReadOnlySpan&lt;char&gt; format = default, IFormatProvider? provider = null) where T : notnull, IUtf8SpanFormattable</code></pre>
+    <pre><code class="lang-csharp hljs">public static int Format&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value, ReadOnlySpan&lt;char&gt; format = default, IFormatProvider? provider = null) where T : IUtf8SpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -324,7 +324,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static T ReadBigEndian&lt;T&gt;(this ref SpanReader&lt;byte&gt; reader) where T : notnull, IBinaryInteger&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static T ReadBigEndian&lt;T&gt;(this ref SpanReader&lt;byte&gt; reader) where T : IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -456,7 +456,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static T ReadLittleEndian&lt;T&gt;(this ref SpanReader&lt;byte&gt; reader) where T : notnull, IBinaryInteger&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static T ReadLittleEndian&lt;T&gt;(this ref SpanReader&lt;byte&gt; reader) where T : IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -522,7 +522,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static T Read&lt;T&gt;(this ref SpanReader&lt;byte&gt; reader) where T : notnull, IBinaryFormattable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static T Read&lt;T&gt;(this ref SpanReader&lt;byte&gt; reader) where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -644,7 +644,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool TryFormat&lt;T&gt;(this ref SpanWriter&lt;byte&gt; writer, T value, ReadOnlySpan&lt;char&gt; format = default, IFormatProvider? provider = null) where T : notnull, IUtf8SpanFormattable</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool TryFormat&lt;T&gt;(this ref SpanWriter&lt;byte&gt; writer, T value, ReadOnlySpan&lt;char&gt; format = default, IFormatProvider? provider = null) where T : IUtf8SpanFormattable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -729,7 +729,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool TryRead&lt;T&gt;(this ref SpanReader&lt;byte&gt; reader, out T? value) where T : notnull, IBinaryFormattable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool TryRead&lt;T&gt;(this ref SpanReader&lt;byte&gt; reader, out T? value) where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -871,7 +871,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool TryWrite&lt;T&gt;(this ref SpanWriter&lt;byte&gt; writer, T value) where T : notnull, IBinaryFormattable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool TryWrite&lt;T&gt;(this ref SpanWriter&lt;byte&gt; writer, T value) where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1112,7 +1112,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int WriteBigEndian&lt;T&gt;(this ref BufferWriterSlim&lt;byte&gt; writer, T value) where T : notnull, IBinaryInteger&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static int WriteBigEndian&lt;T&gt;(this ref BufferWriterSlim&lt;byte&gt; writer, T value) where T : IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1200,7 +1200,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int WriteBigEndian&lt;T&gt;(this ref SpanWriter&lt;byte&gt; writer, T value) where T : notnull, IBinaryInteger&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static int WriteBigEndian&lt;T&gt;(this ref SpanWriter&lt;byte&gt; writer, T value) where T : IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1288,7 +1288,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int WriteBigEndian&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value) where T : notnull, IBinaryInteger&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static int WriteBigEndian&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value) where T : IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1518,7 +1518,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int WriteLittleEndian&lt;T&gt;(this ref BufferWriterSlim&lt;byte&gt; writer, T value) where T : notnull, IBinaryInteger&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static int WriteLittleEndian&lt;T&gt;(this ref BufferWriterSlim&lt;byte&gt; writer, T value) where T : IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1606,7 +1606,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int WriteLittleEndian&lt;T&gt;(this ref SpanWriter&lt;byte&gt; writer, T value) where T : notnull, IBinaryInteger&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static int WriteLittleEndian&lt;T&gt;(this ref SpanWriter&lt;byte&gt; writer, T value) where T : IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1694,7 +1694,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int WriteLittleEndian&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value) where T : notnull, IBinaryInteger&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static int WriteLittleEndian&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value) where T : IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1782,7 +1782,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this ref BufferWriterSlim&lt;byte&gt; writer, T value) where T : notnull, IBinaryFormattable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this ref BufferWriterSlim&lt;byte&gt; writer, T value) where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1838,7 +1838,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this ref SpanWriter&lt;byte&gt; writer, T value) where T : notnull, IBinaryFormattable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this ref SpanWriter&lt;byte&gt; writer, T value) where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1894,7 +1894,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value) where T : notnull, IBinaryFormattable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this IBufferWriter&lt;byte&gt; writer, T value) where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

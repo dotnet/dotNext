@@ -38425,6 +38425,44 @@ references:
   commentId: N:DotNext.Runtime
   fullName: DotNext.Runtime
   nameWithType: DotNext.Runtime
+- uid: DotNext.Runtime.BoxedValue
+  name: BoxedValue
+  href: api/DotNext.Runtime.BoxedValue.html
+  commentId: T:DotNext.Runtime.BoxedValue
+  fullName: DotNext.Runtime.BoxedValue
+  nameWithType: BoxedValue
+- uid: DotNext.Runtime.BoxedValue.Copy*
+  name: Copy
+  href: api/DotNext.Runtime.BoxedValue.html#DotNext_Runtime_BoxedValue_Copy_
+  commentId: Overload:DotNext.Runtime.BoxedValue.Copy
+  isSpec: "True"
+  fullName: DotNext.Runtime.BoxedValue.Copy
+  nameWithType: BoxedValue.Copy
+- uid: DotNext.Runtime.BoxedValue.Copy``1(DotNext.Runtime.BoxedValue{``0})
+  name: Copy<T>(BoxedValue<T>)
+  href: api/DotNext.Runtime.BoxedValue.html#DotNext_Runtime_BoxedValue_Copy__1_DotNext_Runtime_BoxedValue___0__
+  commentId: M:DotNext.Runtime.BoxedValue.Copy``1(DotNext.Runtime.BoxedValue{``0})
+  name.vb: Copy(Of T)(BoxedValue(Of T))
+  fullName: DotNext.Runtime.BoxedValue.Copy<T>(DotNext.Runtime.BoxedValue<T>)
+  fullName.vb: DotNext.Runtime.BoxedValue.Copy(Of T)(DotNext.Runtime.BoxedValue(Of T))
+  nameWithType: BoxedValue.Copy<T>(BoxedValue<T>)
+  nameWithType.vb: BoxedValue.Copy(Of T)(BoxedValue(Of T))
+- uid: DotNext.Runtime.BoxedValue.Unbox*
+  name: Unbox
+  href: api/DotNext.Runtime.BoxedValue.html#DotNext_Runtime_BoxedValue_Unbox_
+  commentId: Overload:DotNext.Runtime.BoxedValue.Unbox
+  isSpec: "True"
+  fullName: DotNext.Runtime.BoxedValue.Unbox
+  nameWithType: BoxedValue.Unbox
+- uid: DotNext.Runtime.BoxedValue.Unbox``1(DotNext.Runtime.BoxedValue{``0})
+  name: Unbox<T>(BoxedValue<T>)
+  href: api/DotNext.Runtime.BoxedValue.html#DotNext_Runtime_BoxedValue_Unbox__1_DotNext_Runtime_BoxedValue___0__
+  commentId: M:DotNext.Runtime.BoxedValue.Unbox``1(DotNext.Runtime.BoxedValue{``0})
+  name.vb: Unbox(Of T)(BoxedValue(Of T))
+  fullName: DotNext.Runtime.BoxedValue.Unbox<T>(DotNext.Runtime.BoxedValue<T>)
+  fullName.vb: DotNext.Runtime.BoxedValue.Unbox(Of T)(DotNext.Runtime.BoxedValue(Of T))
+  nameWithType: BoxedValue.Unbox<T>(BoxedValue<T>)
+  nameWithType.vb: BoxedValue.Unbox(Of T)(BoxedValue(Of T))
 - uid: DotNext.Runtime.BoxedValue`1
   name: BoxedValue<T>
   href: api/DotNext.Runtime.BoxedValue-1.html
@@ -38451,23 +38489,6 @@ references:
   fullName.vb: DotNext.Runtime.BoxedValue(Of T).Box
   nameWithType: BoxedValue<T>.Box
   nameWithType.vb: BoxedValue(Of T).Box
-- uid: DotNext.Runtime.BoxedValue`1.Copy
-  name: Copy()
-  href: api/DotNext.Runtime.BoxedValue-1.html#DotNext_Runtime_BoxedValue_1_Copy
-  commentId: M:DotNext.Runtime.BoxedValue`1.Copy
-  fullName: DotNext.Runtime.BoxedValue<T>.Copy()
-  fullName.vb: DotNext.Runtime.BoxedValue(Of T).Copy()
-  nameWithType: BoxedValue<T>.Copy()
-  nameWithType.vb: BoxedValue(Of T).Copy()
-- uid: DotNext.Runtime.BoxedValue`1.Copy*
-  name: Copy
-  href: api/DotNext.Runtime.BoxedValue-1.html#DotNext_Runtime_BoxedValue_1_Copy_
-  commentId: Overload:DotNext.Runtime.BoxedValue`1.Copy
-  isSpec: "True"
-  fullName: DotNext.Runtime.BoxedValue<T>.Copy
-  fullName.vb: DotNext.Runtime.BoxedValue(Of T).Copy
-  nameWithType: BoxedValue<T>.Copy
-  nameWithType.vb: BoxedValue(Of T).Copy
 - uid: DotNext.Runtime.BoxedValue`1.Equals(System.Object)
   name: Equals(object?)
   href: api/DotNext.Runtime.BoxedValue-1.html#DotNext_Runtime_BoxedValue_1_Equals_System_Object_
@@ -38556,23 +38577,6 @@ references:
   fullName.vb: DotNext.Runtime.BoxedValue(Of T).TryBox
   nameWithType: BoxedValue<T>.TryBox
   nameWithType.vb: BoxedValue(Of T).TryBox
-- uid: DotNext.Runtime.BoxedValue`1.Value
-  name: Value
-  href: api/DotNext.Runtime.BoxedValue-1.html#DotNext_Runtime_BoxedValue_1_Value
-  commentId: P:DotNext.Runtime.BoxedValue`1.Value
-  fullName: DotNext.Runtime.BoxedValue<T>.Value
-  fullName.vb: DotNext.Runtime.BoxedValue(Of T).Value
-  nameWithType: BoxedValue<T>.Value
-  nameWithType.vb: BoxedValue(Of T).Value
-- uid: DotNext.Runtime.BoxedValue`1.Value*
-  name: Value
-  href: api/DotNext.Runtime.BoxedValue-1.html#DotNext_Runtime_BoxedValue_1_Value_
-  commentId: Overload:DotNext.Runtime.BoxedValue`1.Value
-  isSpec: "True"
-  fullName: DotNext.Runtime.BoxedValue<T>.Value
-  fullName.vb: DotNext.Runtime.BoxedValue(Of T).Value
-  nameWithType: BoxedValue<T>.Value
-  nameWithType.vb: BoxedValue(Of T).Value
 - uid: DotNext.Runtime.BoxedValue`1.op_Explicit(System.Nullable{`0}@)~DotNext.Runtime.BoxedValue{`0}
   name: explicit operator BoxedValue<T>?(in T?)
   href: api/DotNext.Runtime.BoxedValue-1.html#DotNext_Runtime_BoxedValue_1_op_Explicit_System_Nullable__0____DotNext_Runtime_BoxedValue__0_

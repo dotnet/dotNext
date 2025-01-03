@@ -212,7 +212,7 @@ It's not recommended to use the type in the application code.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;BufferedLogEntryList&gt; CopyAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt; producer, LogEntriesBufferingOptions options, CancellationToken token = default) where TEntry : notnull, IRaftLogEntry</code></pre>
+    <pre><code class="lang-csharp hljs">public static Task&lt;BufferedLogEntryList&gt; CopyAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt; producer, LogEntriesBufferingOptions options, CancellationToken token = default) where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -301,12 +301,12 @@ It's not recommended to use the type in the application code.</p>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_BufferedLogEntryList_CopyAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.BufferedLogEntryList.CopyAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_BufferedLogEntryList_CopyAsync__2___1_DotNext_Net_Cluster_Consensus_Raft_LogEntriesBufferingOptions_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.BufferedLogEntryList.CopyAsync``2(``1,DotNext.Net.Cluster.Consensus.Raft.LogEntriesBufferingOptions,System.Threading.CancellationToken)">CopyAsync&lt;TEntry, TList&gt;(TList, LogEntriesBufferingOptions, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Constructs bufferized copy of all log entries presented in the list.</p>
+  <div class="markdown level1 summary"><p>Constructs buffered copy of all log entries presented in the list.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;BufferedLogEntryList&gt; CopyAsync&lt;TEntry, TList&gt;(TList list, LogEntriesBufferingOptions options, CancellationToken token = default) where TEntry : notnull, IRaftLogEntry where TList : notnull, IReadOnlyList&lt;TEntry&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static Task&lt;BufferedLogEntryList&gt; CopyAsync&lt;TEntry, TList&gt;(TList list, LogEntriesBufferingOptions options, CancellationToken token = default) where TEntry : IRaftLogEntry where TList : IReadOnlyList&lt;TEntry&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

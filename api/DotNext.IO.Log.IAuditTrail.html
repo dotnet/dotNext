@@ -234,7 +234,7 @@ obtained from this audit trail is always not <a href="https://learn.microsoft.co
     </tbody>
   </table>
   <h5 id="DotNext_IO_Log_IAuditTrail_CommitAsync_System_Int64_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method should updates cached value provided by method <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_LastCommittedEntryIndex">LastCommittedEntryIndex</a> called with argument of value <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>.
+  <div class="markdown level1 remarks"><p>This method should update cached value provided by method <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_LastCommittedEntryIndex">LastCommittedEntryIndex</a> called with argument of value <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>.
 Additionally, it may force log compaction and squash all committed entries into single entry called snapshot.</p>
 </div>
   <h5 class="exceptions">Exceptions</h5>
@@ -304,7 +304,7 @@ Additionally, it may force log compaction and squash all committed entries into 
     </tbody>
   </table>
   <h5 id="DotNext_IO_Log_IAuditTrail_CommitAsync_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method should updates cached value provided by method <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_LastCommittedEntryIndex">LastCommittedEntryIndex</a> called with argument of value <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>.
+  <div class="markdown level1 remarks"><p>This method should update cached value provided by method <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_LastCommittedEntryIndex">LastCommittedEntryIndex</a> called with argument of value <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>.
 Additionally, it may force log compaction and squash all committed entries into single entry called snapshot.</p>
 </div>
   <h5 class="exceptions">Exceptions</h5>
@@ -409,7 +409,7 @@ Additionally, it may force log compaction and squash all committed entries into 
   </span>
   <a id="DotNext_IO_Log_IAuditTrail_DropAsync_" data-uid="DotNext.IO.Log.IAuditTrail.DropAsync*"></a>
   <h4 id="DotNext_IO_Log_IAuditTrail_DropAsync_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail.DropAsync(System.Int64,System.Threading.CancellationToken)">DropAsync(long, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Dropes the uncommitted entries starting from the specified position to the end of the log.</p>
+  <div class="markdown level1 summary"><p>Drops the uncommitted entries starting from the specified position to the end of the log.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -632,7 +632,7 @@ It can save the performance of the first modification performed to this log.</p>
     </tbody>
   </table>
   <h5 id="DotNext_IO_Log_IAuditTrail_ReadAsync__1_DotNext_IO_Log_ILogEntryConsumer_DotNext_IO_Log_ILogEntry___0__System_Int64_System_Int64_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method may return less entries than <code>endIndex - startIndex + 1</code>. It may happen if the requested entries are committed entries and squashed into the single entry called snapshot.
+  <div class="markdown level1 remarks"><p>This method may return fewer entries than <code>endIndex - startIndex + 1</code>. It may happen if the requested entries are committed entries and squashed into the single entry called snapshot.
 In this case the first entry in the collection is a snapshot entry. Additionally, the caller must call <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable.dispose">Dispose()</a> to release resources associated
 with the audit trail segment with entries.</p>
 </div>

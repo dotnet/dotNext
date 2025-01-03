@@ -372,7 +372,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static abstract ValueTask&lt;TSelf&gt; ReadFromAsync&lt;TReader&gt;(TReader reader, CancellationToken token) where TReader : notnull, IAsyncBinaryReader</code></pre>
+    <pre><code class="lang-csharp hljs">public static abstract ValueTask&lt;TSelf&gt; ReadFromAsync&lt;TReader&gt;(TReader reader, CancellationToken token) where TReader : IAsyncBinaryReader</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -460,7 +460,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;TSelf&gt; TransformAsync&lt;TInput&gt;(TInput input, CancellationToken token = default) where TInput : notnull, IDataTransferObject</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;TSelf&gt; TransformAsync&lt;TInput&gt;(TInput input, CancellationToken token = default) where TInput : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

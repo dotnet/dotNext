@@ -124,7 +124,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;byte[]&gt; ToByteArrayAsync&lt;TObject&gt;(this TObject dto, MemoryAllocator&lt;byte&gt;? allocator = null, CancellationToken token = default) where TObject : notnull, IDataTransferObject</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;byte[]&gt; ToByteArrayAsync&lt;TObject&gt;(this TObject dto, MemoryAllocator&lt;byte&gt;? allocator = null, CancellationToken token = default) where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -218,7 +218,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;MemoryOwner&lt;byte&gt;&gt; ToMemoryAsync&lt;TObject&gt;(this TObject dto, MemoryAllocator&lt;byte&gt;? allocator = null, CancellationToken token = default) where TObject : notnull, IDataTransferObject</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;MemoryOwner&lt;byte&gt;&gt; ToMemoryAsync&lt;TObject&gt;(this TObject dto, MemoryAllocator&lt;byte&gt;? allocator = null, CancellationToken token = default) where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -312,7 +312,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;string&gt; ToStringAsync&lt;TObject&gt;(this TObject dto, Encoding encoding, MemoryAllocator&lt;byte&gt;? allocator = null, CancellationToken token = default) where TObject : notnull, IDataTransferObject</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;string&gt; ToStringAsync&lt;TObject&gt;(this TObject dto, Encoding encoding, MemoryAllocator&lt;byte&gt;? allocator = null, CancellationToken token = default) where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -412,7 +412,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TObject&gt;(this TObject dto, Func&lt;IAsyncBinaryReader, CancellationToken, ValueTask&lt;TResult&gt;&gt; transformation, CancellationToken token = default) where TObject : notnull, IDataTransferObject</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;TResult&gt; TransformAsync&lt;TResult, TObject&gt;(this TObject dto, Func&lt;IAsyncBinaryReader, CancellationToken, ValueTask&lt;TResult&gt;&gt; transformation, CancellationToken token = default) where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -511,7 +511,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask WriteToAsync&lt;TObject&gt;(this TObject dto, IBufferWriter&lt;byte&gt; writer, CancellationToken token = default) where TObject : notnull, IDataTransferObject</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask WriteToAsync&lt;TObject&gt;(this TObject dto, IBufferWriter&lt;byte&gt; writer, CancellationToken token = default) where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -605,7 +605,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask WriteToAsync&lt;TObject&gt;(this TObject dto, PipeWriter output, long bufferSize = 0, CancellationToken token = default) where TObject : notnull, IDataTransferObject</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask WriteToAsync&lt;TObject&gt;(this TObject dto, PipeWriter output, long bufferSize = 0, CancellationToken token = default) where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -705,7 +705,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask WriteToAsync&lt;TObject&gt;(this TObject dto, Stream output, int bufferSize = 1024, CancellationToken token = default) where TObject : notnull, IDataTransferObject</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask WriteToAsync&lt;TObject&gt;(this TObject dto, Stream output, int bufferSize = 1024, CancellationToken token = default) where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -805,7 +805,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask WriteToAsync&lt;TObject&gt;(this TObject dto, Stream output, Memory&lt;byte&gt; buffer, CancellationToken token = default) where TObject : notnull, IDataTransferObject</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask WriteToAsync&lt;TObject&gt;(this TObject dto, Stream output, Memory&lt;byte&gt; buffer, CancellationToken token = default) where TObject : IDataTransferObject</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

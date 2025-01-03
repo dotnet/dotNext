@@ -638,7 +638,7 @@ implemented by this class.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask CopyToAsync&lt;TConsumer&gt;(TConsumer consumer, long count, CancellationToken token = default) where TConsumer : notnull, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask CopyToAsync&lt;TConsumer&gt;(TConsumer consumer, long count, CancellationToken token = default) where TConsumer : ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -742,7 +742,7 @@ implemented by this class.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask CopyToAsync&lt;TConsumer&gt;(TConsumer consumer, CancellationToken token = default) where TConsumer : notnull, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask CopyToAsync&lt;TConsumer&gt;(TConsumer consumer, CancellationToken token = default) where TConsumer : ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1054,7 +1054,7 @@ implemented by this class.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ParseAsync&lt;T&gt;(LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null, CancellationToken token = default) where T : notnull, INumberBase&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ParseAsync&lt;T&gt;(LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider = null, CancellationToken token = default) where T : INumberBase&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1164,7 +1164,7 @@ implemented by this class.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ParseAsync&lt;T&gt;(LengthFormat lengthFormat, IFormatProvider? provider = null, CancellationToken token = default) where T : notnull, IUtf8SpanParsable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ParseAsync&lt;T&gt;(LengthFormat lengthFormat, IFormatProvider? provider = null, CancellationToken token = default) where T : IUtf8SpanParsable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1630,7 +1630,7 @@ implemented by this class.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(CancellationToken token = default) where T : notnull, IBinaryFormattable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(CancellationToken token = default) where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1717,7 +1717,7 @@ implemented by this class.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ReadBigEndianAsync&lt;T&gt;(CancellationToken token = default) where T : notnull, IBinaryInteger&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ReadBigEndianAsync&lt;T&gt;(CancellationToken token = default) where T : IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1804,7 +1804,7 @@ implemented by this class.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ReadLittleEndianAsync&lt;T&gt;(CancellationToken token = default) where T : notnull, IBinaryInteger&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ReadLittleEndianAsync&lt;T&gt;(CancellationToken token = default) where T : IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

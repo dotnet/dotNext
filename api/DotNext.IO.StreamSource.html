@@ -124,7 +124,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Stream AsAsynchronousStream&lt;TOutput&gt;(TOutput output) where TOutput : notnull, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, IFlushable</code></pre>
+    <pre><code class="lang-csharp hljs">public static Stream AsAsynchronousStream&lt;TOutput&gt;(TOutput output) where TOutput : ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, IFlushable</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -813,7 +813,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Stream AsSynchronousStream&lt;TOutput&gt;(TOutput output) where TOutput : notnull, IFlushable, IReadOnlySpanConsumer&lt;byte&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static Stream AsSynchronousStream&lt;TOutput&gt;(TOutput output) where TOutput : IFlushable, IReadOnlySpanConsumer&lt;byte&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

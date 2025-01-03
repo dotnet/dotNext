@@ -520,7 +520,7 @@ concurrent flows.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask SpinWaitAsync&lt;TCondition&gt;(TCondition condition, CancellationToken token = default) where TCondition : notnull, ISupplier&lt;bool&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask SpinWaitAsync&lt;TCondition&gt;(TCondition condition, CancellationToken token = default) where TCondition : ISupplier&lt;bool&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -621,7 +621,7 @@ concurrent flows.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; SpinWaitAsync&lt;TCondition&gt;(TCondition condition, TimeSpan timeout, CancellationToken token = default) where TCondition : notnull, ISupplier&lt;bool&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;bool&gt; SpinWaitAsync&lt;TCondition&gt;(TCondition condition, TimeSpan timeout, CancellationToken token = default) where TCondition : ISupplier&lt;bool&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

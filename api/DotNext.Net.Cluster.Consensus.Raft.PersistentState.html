@@ -305,7 +305,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;long&gt; AppendAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt; entries, CancellationToken token = default) where TEntry : notnull, IRaftLogEntry</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;long&gt; AppendAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt; entries, CancellationToken token = default) where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -398,7 +398,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;long&gt; AppendAsync&lt;TEntry&gt;(TEntry entry, bool addToCache, CancellationToken token = default) where TEntry : notnull, IRaftLogEntry</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;long&gt; AppendAsync&lt;TEntry&gt;(TEntry entry, bool addToCache, CancellationToken token = default) where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -496,7 +496,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask AppendAsync&lt;TEntry&gt;(TEntry entry, long startIndex, CancellationToken token = default) where TEntry : notnull, IRaftLogEntry</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask AppendAsync&lt;TEntry&gt;(TEntry entry, long startIndex, CancellationToken token = default) where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -596,7 +596,7 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueTask&lt;long&gt; AppendAsync&lt;TEntry&gt;(TEntry entry, CancellationToken token = default) where TEntry : notnull, IRaftLogEntry</code></pre>
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;long&gt; AppendAsync&lt;TEntry&gt;(TEntry entry, CancellationToken token = default) where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1013,7 +1013,7 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public BinaryLogEntry&lt;T&gt; CreateBinaryLogEntry&lt;T&gt;(T content) where T : notnull, IBinaryFormattable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public BinaryLogEntry&lt;T&gt; CreateBinaryLogEntry&lt;T&gt;(T content) where T : IBinaryFormattable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1079,7 +1079,7 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public JsonLogEntry&lt;T&gt; CreateJsonLogEntry&lt;T&gt;(T? content) where T : notnull, IJsonSerializable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public JsonLogEntry&lt;T&gt; CreateJsonLogEntry&lt;T&gt;(T? content) where T : IJsonSerializable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">

@@ -656,7 +656,7 @@ to the current and given values, returning the updated value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static double AccumulateAndGet&lt;TAccumulator&gt;(ref double value, double x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;double, double, double&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static double AccumulateAndGet&lt;TAccumulator&gt;(ref double value, double x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;double, double, double&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -738,7 +738,7 @@ to the current and given values, returning the updated value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int AccumulateAndGet&lt;TAccumulator&gt;(ref int value, int x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;int, int, int&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static int AccumulateAndGet&lt;TAccumulator&gt;(ref int value, int x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;int, int, int&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -820,7 +820,7 @@ to the current and given values, returning the updated value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long AccumulateAndGet&lt;TAccumulator&gt;(ref long value, long x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;long, long, long&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static long AccumulateAndGet&lt;TAccumulator&gt;(ref long value, long x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;long, long, long&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -902,7 +902,7 @@ to the current and given values, returning the updated value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static nint AccumulateAndGet&lt;TAccumulator&gt;(ref nint value, nint x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;nint, nint, nint&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static nint AccumulateAndGet&lt;TAccumulator&gt;(ref nint value, nint x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;nint, nint, nint&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -984,7 +984,7 @@ to the current and given values, returning the updated value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float AccumulateAndGet&lt;TAccumulator&gt;(ref float value, float x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;float, float, float&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static float AccumulateAndGet&lt;TAccumulator&gt;(ref float value, float x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;float, float, float&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1067,7 +1067,7 @@ to the current and given values, returning the updated value.</p>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static uint AccumulateAndGet&lt;TAccumulator&gt;(ref uint value, uint x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;uint, uint, uint&gt;</code></pre>
+public static uint AccumulateAndGet&lt;TAccumulator&gt;(ref uint value, uint x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;uint, uint, uint&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1150,7 +1150,7 @@ to the current and given values, returning the updated value.</p>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static ulong AccumulateAndGet&lt;TAccumulator&gt;(ref ulong value, ulong x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;ulong, ulong, ulong&gt;</code></pre>
+public static ulong AccumulateAndGet&lt;TAccumulator&gt;(ref ulong value, ulong x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;ulong, ulong, ulong&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1233,7 +1233,7 @@ to the current and given values, returning the updated value.</p>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static nuint AccumulateAndGet&lt;TAccumulator&gt;(ref nuint value, nuint x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;nuint, nuint, nuint&gt;</code></pre>
+public static nuint AccumulateAndGet&lt;TAccumulator&gt;(ref nuint value, nuint x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;nuint, nuint, nuint&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1846,7 +1846,7 @@ to the current and given values, returning the original value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static double GetAndAccumulate&lt;TAccumulator&gt;(ref double value, double x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;double, double, double&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static double GetAndAccumulate&lt;TAccumulator&gt;(ref double value, double x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;double, double, double&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1928,7 +1928,7 @@ to the current and given values, returning the original value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int GetAndAccumulate&lt;TAccumulator&gt;(ref int value, int x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;int, int, int&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static int GetAndAccumulate&lt;TAccumulator&gt;(ref int value, int x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;int, int, int&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2010,7 +2010,7 @@ to the current and given values, returning the original value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long GetAndAccumulate&lt;TAccumulator&gt;(ref long value, long x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;long, long, long&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static long GetAndAccumulate&lt;TAccumulator&gt;(ref long value, long x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;long, long, long&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2092,7 +2092,7 @@ to the current and given values, returning the original value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static nint GetAndAccumulate&lt;TAccumulator&gt;(ref nint value, nint x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;nint, nint, nint&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static nint GetAndAccumulate&lt;TAccumulator&gt;(ref nint value, nint x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;nint, nint, nint&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2174,7 +2174,7 @@ to the current and given values, returning the original value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float GetAndAccumulate&lt;TAccumulator&gt;(ref float value, float x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;float, float, float&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static float GetAndAccumulate&lt;TAccumulator&gt;(ref float value, float x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;float, float, float&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2257,7 +2257,7 @@ to the current and given values, returning the original value.</p>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static uint GetAndAccumulate&lt;TAccumulator&gt;(ref uint value, uint x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;uint, uint, uint&gt;</code></pre>
+public static uint GetAndAccumulate&lt;TAccumulator&gt;(ref uint value, uint x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;uint, uint, uint&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2340,7 +2340,7 @@ to the current and given values, returning the original value.</p>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static ulong GetAndAccumulate&lt;TAccumulator&gt;(ref ulong value, ulong x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;ulong, ulong, ulong&gt;</code></pre>
+public static ulong GetAndAccumulate&lt;TAccumulator&gt;(ref ulong value, ulong x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;ulong, ulong, ulong&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2423,7 +2423,7 @@ to the current and given values, returning the original value.</p>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static nuint GetAndAccumulate&lt;TAccumulator&gt;(ref nuint value, nuint x, TAccumulator accumulator) where TAccumulator : notnull, ISupplier&lt;nuint, nuint, nuint&gt;</code></pre>
+public static nuint GetAndAccumulate&lt;TAccumulator&gt;(ref nuint value, nuint x, TAccumulator accumulator) where TAccumulator : ISupplier&lt;nuint, nuint, nuint&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -2964,7 +2964,7 @@ of applying the given function, returning the original value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static double GetAndUpdate&lt;TUpdater&gt;(ref double value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;double, double&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static double GetAndUpdate&lt;TUpdater&gt;(ref double value, TUpdater updater) where TUpdater : ISupplier&lt;double, double&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -3037,7 +3037,7 @@ of applying the given function, returning the original value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int GetAndUpdate&lt;TUpdater&gt;(ref int value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;int, int&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static int GetAndUpdate&lt;TUpdater&gt;(ref int value, TUpdater updater) where TUpdater : ISupplier&lt;int, int&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -3110,7 +3110,7 @@ of applying the given function, returning the original value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long GetAndUpdate&lt;TUpdater&gt;(ref long value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;long, long&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static long GetAndUpdate&lt;TUpdater&gt;(ref long value, TUpdater updater) where TUpdater : ISupplier&lt;long, long&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -3183,7 +3183,7 @@ of applying the given function, returning the original value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static nint GetAndUpdate&lt;TUpdater&gt;(ref nint value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;nint, nint&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static nint GetAndUpdate&lt;TUpdater&gt;(ref nint value, TUpdater updater) where TUpdater : ISupplier&lt;nint, nint&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -3256,7 +3256,7 @@ of applying the given function, returning the original value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float GetAndUpdate&lt;TUpdater&gt;(ref float value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;float, float&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static float GetAndUpdate&lt;TUpdater&gt;(ref float value, TUpdater updater) where TUpdater : ISupplier&lt;float, float&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -3330,7 +3330,7 @@ of applying the given function, returning the original value.</p>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static uint GetAndUpdate&lt;TUpdater&gt;(ref uint value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;uint, uint&gt;</code></pre>
+public static uint GetAndUpdate&lt;TUpdater&gt;(ref uint value, TUpdater updater) where TUpdater : ISupplier&lt;uint, uint&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -3404,7 +3404,7 @@ of applying the given function, returning the original value.</p>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static ulong GetAndUpdate&lt;TUpdater&gt;(ref ulong value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;ulong, ulong&gt;</code></pre>
+public static ulong GetAndUpdate&lt;TUpdater&gt;(ref ulong value, TUpdater updater) where TUpdater : ISupplier&lt;ulong, ulong&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -3478,7 +3478,7 @@ of applying the given function, returning the original value.</p>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static nuint GetAndUpdate&lt;TUpdater&gt;(ref nuint value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;nuint, nuint&gt;</code></pre>
+public static nuint GetAndUpdate&lt;TUpdater&gt;(ref nuint value, TUpdater updater) where TUpdater : ISupplier&lt;nuint, nuint&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -4059,7 +4059,7 @@ of applying the given function, returning the updated value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static double UpdateAndGet&lt;TUpdater&gt;(ref double value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;double, double&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static double UpdateAndGet&lt;TUpdater&gt;(ref double value, TUpdater updater) where TUpdater : ISupplier&lt;double, double&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -4132,7 +4132,7 @@ of applying the given function, returning the updated value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int UpdateAndGet&lt;TUpdater&gt;(ref int value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;int, int&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static int UpdateAndGet&lt;TUpdater&gt;(ref int value, TUpdater updater) where TUpdater : ISupplier&lt;int, int&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -4205,7 +4205,7 @@ of applying the given function, returning the updated value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long UpdateAndGet&lt;TUpdater&gt;(ref long value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;long, long&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static long UpdateAndGet&lt;TUpdater&gt;(ref long value, TUpdater updater) where TUpdater : ISupplier&lt;long, long&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -4278,7 +4278,7 @@ of applying the given function, returning the updated value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static nint UpdateAndGet&lt;TUpdater&gt;(ref nint value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;nint, nint&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static nint UpdateAndGet&lt;TUpdater&gt;(ref nint value, TUpdater updater) where TUpdater : ISupplier&lt;nint, nint&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -4351,7 +4351,7 @@ of applying the given function, returning the updated value.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float UpdateAndGet&lt;TUpdater&gt;(ref float value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;float, float&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static float UpdateAndGet&lt;TUpdater&gt;(ref float value, TUpdater updater) where TUpdater : ISupplier&lt;float, float&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -4425,7 +4425,7 @@ of applying the given function, returning the updated value.</p>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static uint UpdateAndGet&lt;TUpdater&gt;(ref uint value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;uint, uint&gt;</code></pre>
+public static uint UpdateAndGet&lt;TUpdater&gt;(ref uint value, TUpdater updater) where TUpdater : ISupplier&lt;uint, uint&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -4499,7 +4499,7 @@ of applying the given function, returning the updated value.</p>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static ulong UpdateAndGet&lt;TUpdater&gt;(ref ulong value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;ulong, ulong&gt;</code></pre>
+public static ulong UpdateAndGet&lt;TUpdater&gt;(ref ulong value, TUpdater updater) where TUpdater : ISupplier&lt;ulong, ulong&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -4573,7 +4573,7 @@ of applying the given function, returning the updated value.</p>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static nuint UpdateAndGet&lt;TUpdater&gt;(ref nuint value, TUpdater updater) where TUpdater : notnull, ISupplier&lt;nuint, nuint&gt;</code></pre>
+public static nuint UpdateAndGet&lt;TUpdater&gt;(ref nuint value, TUpdater updater) where TUpdater : ISupplier&lt;nuint, nuint&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
