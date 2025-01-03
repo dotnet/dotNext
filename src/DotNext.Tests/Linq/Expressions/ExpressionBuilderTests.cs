@@ -192,15 +192,15 @@ public sealed class ExpressionBuilderTests : Test
 
         var site = label.LandingSite(42.Const());
         Equal(ExpressionType.Label, site.NodeType);
-        Equal(ExpressionType.Constant, site.DefaultValue.NodeType);
+        Equal(ExpressionType.Constant, site.DefaultValue?.NodeType);
     }
 
     [Fact]
     public static void ArrayElement()
     {
-        var indexer = new int[0].Const().ElementAt(1.Const());
+        var indexer = Array.Empty<int>().Const().ElementAt(1.Const());
         Equal(ExpressionType.Index, indexer.NodeType);
-        Equal(ExpressionType.Constant, indexer.Object.NodeType);
+        Equal(ExpressionType.Constant, indexer.Object?.NodeType);
     }
 
     [Fact]
@@ -321,7 +321,7 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void ForEachLoop()
     {
-        var expr = new int[3].Const().ForEach((current, continueLabel, breakLabel) =>
+        var expr = new int[3].Const().ForEach((current, _, _) =>
         {
             Equal(typeof(int), current.Type);
             Equal(ExpressionType.MemberAccess, current.NodeType);
@@ -336,8 +336,8 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void ItemIndex()
     {
-        const short IndexValue = 10;
-        var index = new ItemIndexExpression(IndexValue.Const());
+        const short indexValue = 10;
+        var index = new ItemIndexExpression(indexValue.Const());
         False(index.IsFromEnd);
         Equal(ExpressionType.New, index.Reduce().NodeType);
         Equal(typeof(Index), index.Type);
@@ -424,7 +424,7 @@ public sealed class ExpressionBuilderTests : Test
     {
         var parameter = Expression.Parameter(typeof(List<long>));
         var lambda = Expression.Lambda<Func<List<long>, List<long>>>(parameter.Slice(1.Index(false), 1.Index(true)), parameter).Compile();
-        Equal(new[] { 3L, 5L }, lambda(new List<long> { 1L, 3L, 5L, 7L }));
+        Equal(new[] { 3L, 5L }, lambda([1L, 3L, 5L, 7L]));
     }
 
     [Fact]
@@ -490,8 +490,8 @@ public sealed class ExpressionBuilderTests : Test
         var lambda = Expression.Lambda<Func<int?>>(2.Const().AsNullable()).Compile();
         Equal(2, lambda());
 
-        var lambda2 = Expression.Lambda<Func<int?>>(2.Const().AsNullable()).Compile();
-        Equal(2, lambda());
+        var lambda2 = Expression.Lambda<Func<int?>>(new int?(2).Const().AsNullable()).Compile();
+        Equal(2, lambda2());
 
         var lambda3 = Expression.Lambda<Func<string>>("Hello, world!".Const().AsNullable()).Compile();
         Equal("Hello, world!", lambda3());
@@ -500,8 +500,8 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void ConvertToOptional()
     {
-        var lamdba = Expression.Lambda<Func<Optional<int>>>(2.Const().AsOptional()).Compile();
-        Equal(2, lamdba());
+        var lambda = Expression.Lambda<Func<Optional<int>>>(2.Const().AsOptional()).Compile();
+        Equal(2, lambda());
     }
 
     [Fact]
@@ -604,7 +604,7 @@ public sealed class ExpressionBuilderTests : Test
         Contains(initialization.Bindings, static item => nameof(UriBuilder.Scheme) == item.Member.Name);
     }
 
-    public record class RecordClass(int A);
+    private record RecordClass(int A);
 
     [Fact]
     public static void MutateRecordClass1()
@@ -633,7 +633,7 @@ public sealed class ExpressionBuilderTests : Test
         Equal(typeof(RecordClass), mut.Reduce().Type);
     }
 
-    public record struct RecordStruct(int A);
+    private record struct RecordStruct(int A);
 
     [Fact]
     public static void MutateRecordStruct()
