@@ -675,6 +675,10 @@ public sealed class ExpressionBuilderTests : Test
     public static void UnsignedRightShift(Type primitiveType, Type expressionType)
     {
         var expr = new UnsignedRightShiftExpression(Expression.Default(primitiveType), 2.Const());
+        IsAssignableFrom<DefaultExpression>(expr.Left);
+        IsAssignableFrom<ConstantExpression>(expr.Right);
+        True(expr.Method.IsStatic);
+        
         var reduced = expr.Reduce();
         IsAssignableFrom(expressionType, reduced);
         Same(primitiveType, reduced.Type);
