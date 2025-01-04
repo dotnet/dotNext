@@ -225,4 +225,20 @@ public sealed class ResultTests : Test
     private static TResult FromError<TError, TResult>(TError error)
         where TResult : struct, IResultMonad<int, TError, TResult>
         => TResult.FromError(error);
+
+    [Fact]
+    public static async Task ConvertToTask()
+    {
+        Result<int> result = 42;
+        var task = (Task<int>)result;
+        Equal(42, await task);
+
+        result = Result.FromException<int>(new OperationCanceledException(new CancellationToken(canceled: true)));
+        task = (Task<int>)result;
+        True(task.IsCanceled);
+
+        result = Result.FromException<int>(new Exception());
+        task = (Task<int>)result;
+        await ThrowsAsync<Exception>(Func.Constant(task));
+    }
 }
