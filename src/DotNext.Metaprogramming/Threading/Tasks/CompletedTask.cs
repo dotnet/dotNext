@@ -54,12 +54,12 @@ internal readonly struct CompletedTask<T>
     /// </summary>
     /// <param name="task">Completed task.</param>
     public static implicit operator Task<T>(CompletedTask<T> task)
-        => task.result.AsTask();
+        => task.result.AsTask().AsTask();
 
     /// <summary>
     /// Obtains <see cref="ValueTask{TResult}"/> completed synchronously.
     /// </summary>
     /// <param name="task">Completed task.</param>
     public static implicit operator ValueTask<T>(CompletedTask<T> task)
-        => new(task.result.AsTask());
+        => task.result.AsTask();
 }

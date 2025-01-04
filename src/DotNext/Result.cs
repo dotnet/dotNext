@@ -319,12 +319,12 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// Converts this result to <see cref="Task{TResult}"/>.
     /// </summary>
     /// <returns>The completed task representing the result.</returns>
-    public Task<T> AsTask()
+    public ValueTask<T> AsTask()
         => exception?.SourceException switch
         {
-            null => Task.FromResult(value),
-            OperationCanceledException canceledEx => Task.FromCanceled<T>(canceledEx.CancellationToken),
-            { } error => Task.FromException<T>(error),
+            null => new(value),
+            OperationCanceledException canceledEx => ValueTask.FromCanceled<T>(canceledEx.CancellationToken),
+            { } error => ValueTask.FromException<T>(error),
         };
 
     /// <summary>
@@ -332,7 +332,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// </summary>
     /// <param name="result">The result to be converted.</param>
     /// <returns>The completed task representing the result.</returns>
-    public static explicit operator Task<T>(in Result<T> result) => result.AsTask();
+    public static explicit operator ValueTask<T>(in Result<T> result) => result.AsTask();
 
     /// <summary>
     /// Gets boxed representation of the result.

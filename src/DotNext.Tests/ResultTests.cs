@@ -230,15 +230,12 @@ public sealed class ResultTests : Test
     public static async Task ConvertToTask()
     {
         Result<int> result = 42;
-        var task = (Task<int>)result;
-        Equal(42, await task);
+        Equal(42, await (ValueTask<int>)result);
 
         result = Result.FromException<int>(new OperationCanceledException(new CancellationToken(canceled: true)));
-        task = (Task<int>)result;
-        True(task.IsCanceled);
+        True(result.AsTask().IsCanceled);
 
         result = Result.FromException<int>(new Exception());
-        task = (Task<int>)result;
-        await ThrowsAsync<Exception>(Func.Constant(task));
+        await ThrowsAsync<Exception>(result.AsTask().AsTask);
     }
 }
