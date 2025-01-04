@@ -238,4 +238,14 @@ public sealed class ResultTests : Test
         result = Result.FromException<int>(new Exception());
         await ThrowsAsync<Exception>(result.AsTask().AsTask);
     }
+
+    [Fact]
+    public static void ValueRef()
+    {
+        Result<int> result = 42;
+        Equal(42, result.ValueRef);
+
+        result = Result.FromException<int>(new ArithmeticException());
+        Throws<ArithmeticException>(() => result.ValueRef);
+    }
 }
