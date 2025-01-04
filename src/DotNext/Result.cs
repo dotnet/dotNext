@@ -316,6 +316,25 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
         => x.IsSuccessful ? x : y;
 
     /// <summary>
+    /// Converts this result to <see cref="Task{TResult}"/>.
+    /// </summary>
+    /// <returns>The completed task representing the result.</returns>
+    public Task<T> AsTask()
+        => exception?.SourceException switch
+        {
+            null => Task.FromResult(value),
+            OperationCanceledException canceledEx => Task.FromCanceled<T>(canceledEx.CancellationToken),
+            { } error => Task.FromException<T>(error),
+        };
+
+    /// <summary>
+    /// Converts the result to <see cref="Task{TResult}"/>.
+    /// </summary>
+    /// <param name="result">The result to be converted.</param>
+    /// <returns>The completed task representing the result.</returns>
+    public static explicit operator Task<T>(in Result<T> result) => result.AsTask();
+
+    /// <summary>
     /// Gets boxed representation of the result.
     /// </summary>
     /// <returns>The boxed representation of the result.</returns>
