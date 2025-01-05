@@ -341,6 +341,15 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     public T? Or(T? defaultValue) => HasValue ? value : defaultValue;
 
     /// <summary>
+    /// Concatenates optional values.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <typeparam name="TOther"></typeparam>
+    /// <returns>The optional value that is defined only when both containers have values.</returns>
+    public Optional<(T, TOther)> Concat<TOther>(in Optional<TOther> other)
+        => HasValue && other.HasValue ? new((ValueOrDefault, other.ValueOrDefault)) : default;
+
+    /// <summary>
     /// If a value is present, returns the value, otherwise throw exception.
     /// </summary>
     /// <typeparam name="TException">Type of exception to throw.</typeparam>
