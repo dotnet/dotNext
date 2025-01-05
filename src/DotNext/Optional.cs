@@ -619,12 +619,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// This method uses <see cref="EqualityComparer{T}"/> type
     /// to get hash code of <see cref="Value"/>.
     /// </remarks>
-    public override int GetHashCode() => kind switch
-    {
-        UndefinedValue => 0,
-        NullValue => NullValue,
-        _ => EqualityComparer<T?>.Default.GetHashCode(value!),
-    };
+    public override int GetHashCode() => HasValue ? EqualityComparer<T>.Default.GetHashCode(value) : kind;
 
     /// <summary>
     /// Determines whether this container stored the same
@@ -675,12 +670,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// </summary>
     /// <param name="comparer">The comparer implementing hash code function.</param>
     /// <returns>The hash code of <see cref="Value"/>.</returns>
-    public int GetHashCode(IEqualityComparer comparer) => kind switch
-    {
-        UndefinedValue => 0,
-        NullValue => NullValue,
-        _ => comparer.GetHashCode(value!),
-    };
+    public int GetHashCode(IEqualityComparer comparer) => HasValue ? comparer.GetHashCode(value) : kind;
 
     /// <summary>
     /// Wraps value into Optional container.
