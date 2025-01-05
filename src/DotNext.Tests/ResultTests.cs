@@ -125,7 +125,7 @@ public sealed class ResultTests : Test
         result = (Result<string>)new Optional<string>("Hello, world!");
         True(result.IsSuccessful);
         Equal("Hello, world!", result.Value);
-        Equal("Hello, world!", Optional.Create<string, Result<string>>(result));
+        Equal("Hello, world!", Optional<string>.Create(result));
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public sealed class ResultTests : Test
         Optional<string> opt = result;
         Equal("Hello, world!", opt);
 
-        opt = Optional.Create<string, Result<string, EnvironmentVariableTarget>>(result);
+        opt = Optional<string>.Create(result);
         Equal("Hello, world!", opt);
 
         result = new(EnvironmentVariableTarget.Machine);

@@ -169,17 +169,6 @@ public static class Optional
         => new(null);
 
     /// <summary>
-    /// Converts the monad to <see cref="Optional{T}"/>.
-    /// </summary>
-    /// <typeparam name="T">The type of the underlying value.</typeparam>
-    /// <typeparam name="TMonad">The type of the monad.</typeparam>
-    /// <param name="value">The value to convert.</param>
-    /// <returns>The value represented as <see cref="Optional{T}"/> or <see cref="Optional{T}.None"/> if there is no value.</returns>
-    public static Optional<T> Create<T, TMonad>(TMonad value)
-        where TMonad : struct, IOptionMonad<T>
-        => value.TryGet(out var result) ? new(result) : None<T>();
-
-    /// <summary>
     /// Flattens the nested optional value.
     /// </summary>
     /// <typeparam name="T">The type of the underlying value.</typeparam>
@@ -242,6 +231,16 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
             ? UndefinedValue
             : NotEmptyValue;
     }
+
+    /// <summary>
+    /// Converts the monad to <see cref="Optional{T}"/>.
+    /// </summary>
+    /// <typeparam name="TMonad">The type of the monad.</typeparam>
+    /// <param name="value">The value to convert.</param>
+    /// <returns>The value represented as <see cref="Optional{T}"/> or <see cref="Optional{T}.None"/> if there is no value.</returns>
+    public static Optional<T> Create<TMonad>(TMonad value)
+        where TMonad : struct, IOptionMonad<T>
+        => value.TryGet(out var result) ? new(result) : None;
 
     /// <summary>
     /// Determines whether the object represents meaningful value.
