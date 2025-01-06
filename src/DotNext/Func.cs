@@ -2,6 +2,8 @@
 
 namespace DotNext;
 
+using Runtime;
+
 /// <summary>
 /// Provides extension methods for delegate <see cref="Func{TResult}"/> and
 /// predefined functions.
@@ -93,17 +95,15 @@ public static class Func
             return Unsafe.As<Func<T>>(Constant(Unsafe.As<T, bool>(ref obj)));
 
         // slow path - allocates a new delegate
-        return obj is null
-            ? Default<T?>!
-            : typeof(T).IsValueType
-                ? new BoxedConstant<T>(obj).GetValue
-                : Unsafe.As<T, object>(ref obj).ReinterpretRefType<T>;
+        return obj is null ? Default<T?>! : obj.UnboxAny<T>;
     }
-    
+
     internal static T? Default<T>() => default;
 
-    private static T ReinterpretRefType<T>(this object obj)
-        => Unsafe.As<object, T>(ref obj);
+    private static T UnboxAny<T>(this object obj)
+        => typeof(T).IsValueType
+            ? Unsafe.As<byte, T>(ref Intrinsics.GetRawData(obj))
+            : Unsafe.As<object, T>(ref obj);
 
     private static Func<bool> Constant(bool value)
     {
@@ -483,12 +483,5 @@ public static class Func
         }
 
         return result;
-    }
-
-    private sealed class BoxedConstant<T>(T value)
-    {
-        internal T GetValue() => value;
-
-        public override string? ToString() => value?.ToString();
     }
 }
