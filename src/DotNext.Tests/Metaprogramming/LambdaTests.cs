@@ -98,13 +98,12 @@ public sealed class LambdaTests : Test
     }
 
     [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public static void SimpleUntypedAsyncLambda(bool usePooling)
+    [InlineData(AsyncLambdaFlags.None)]
+    [InlineData(AsyncLambdaFlags.UseTaskPooling)]
+    public static void SimpleUntypedAsyncLambda(AsyncLambdaFlags flags)
     {
         var sumMethod = typeof(LambdaTests).GetMethod(nameof(Sum), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-        var flags = usePooling ? AsyncLambdaFlags.UseTaskPooling : AsyncLambdaFlags.None;
-        var lambda = AsyncLambda(new[] { typeof(long), typeof(long) }, typeof(long), flags, fun =>
+        var lambda = AsyncLambda([typeof(long), typeof(long)], typeof(long), flags, fun =>
        {
            var (arg1, arg2) = fun;
            var temp = DeclareVariable<long>("tmp");
