@@ -1074,6 +1074,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 await state.AppendAsync(entry);
             }
 
+            await state.AppendAsync(new BinaryLogEntry<Blittable<int>> { Content = new() { Value = 42 }, Term = 2L });
             await state.CommitAsync();
         }
 
@@ -1085,6 +1086,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Null(snapshotIndex);
                 Equal(1L, entries[0].Term);
                 Equal(1L, entries[1].Term);
+                Equal(2L, entries[2].Term);
                 return ValueTask.FromResult(Missing.Value);
             };
 
