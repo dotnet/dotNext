@@ -19,6 +19,13 @@ public sealed class TypeExtensionsTests : Test
     }
 
     [Fact]
+    public static void InvokeInvalidDelegate()
+    {
+        var ex = ThrowsAny<GenericArgumentException>(static () => DelegateType.GetInvokeMethod<MulticastDelegate>());
+        Same(typeof(MulticastDelegate), ex.Argument);
+    }
+
+    [Fact]
     public static void IsGenericInstanceOf()
     {
         True(typeof(Func<string>).IsGenericInstanceOf(typeof(Func<>)));
