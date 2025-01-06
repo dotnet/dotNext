@@ -413,11 +413,7 @@ public static class Intrinsics
     }
 
     internal static ref byte GetRawData(object obj)
-    {
-        Debug.Assert(obj is not null);
-
-        return ref Unsafe.As<RawData>(obj).data;
-    }
+        => ref Unsafe.As<RawData>(obj).data;
 }
 
 file abstract class RawData

@@ -80,6 +80,14 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     /// Gets a reference to the field.
     /// </summary>
     public ref T Value => ref ValueReference.GetObjectData<T>(owner, offset);
+    
+    /// <summary>
+    /// Obtains managed pointer to the referenced value.
+    /// </summary>
+    /// <returns>The managed pointer to the referenced value.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ref T GetPinnableReference() => ref Value;
 
     /// <inheritdoc cref="IConsumer{T}.Invoke(T)"/>
     void IConsumer<T>.Invoke(T value) => Value = value;
@@ -239,6 +247,14 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
     /// Gets a reference to the field.
     /// </summary>
     public ref readonly T Value => ref ValueReference.GetObjectData<T>(owner, offset);
+
+    /// <summary>
+    /// Obtains managed pointer to the referenced value.
+    /// </summary>
+    /// <returns>The managed pointer to the referenced value.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ref readonly T GetPinnableReference() => ref Value;
 
     /// <inheritdoc cref="ISupplier{T}.Invoke()"/>
     T ISupplier<T>.Invoke() => Value;
