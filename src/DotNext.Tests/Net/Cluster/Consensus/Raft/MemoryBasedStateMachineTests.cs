@@ -263,10 +263,10 @@ public sealed class MemoryBasedStateMachineTests : Test
             Equal(0L, entries[0].Term);
             Equal(42L, entries[1].Term);
 
-            Equal(entry.Content, await entries[1].ToStringAsync(Encoding.UTF8));
+            Equal(entry.Content, await entries[1].ToStringAsync(Encoding.UTF8, token: token));
 
             // append a new log entry
-            return await state.AppendAsync(new TestLogEntry("SET Y = 42") { Term = 43L });
+            return await state.AppendAsync(new TestLogEntry("SET Y = 42") { Term = 43L }, token: token);
         };
 
         var index = await state.ReadAsync(new IO.Log.LogEntryConsumer<IRaftLogEntry, long>(checker), 0L);
@@ -326,7 +326,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Null(snapshotIndex);
                 Single(entries);
                 False(entries[0].IsSnapshot);
-                Equal(entry1.Content, await entries[0].ToStringAsync(Encoding.UTF8));
+                Equal(entry1.Content, await entries[0].ToStringAsync(Encoding.UTF8, token: token));
                 return Missing.Value;
             };
             await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1L, CancellationToken.None);
@@ -354,7 +354,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Null(snapshotIndex);
                 Single(entries);
                 False(entries[0].IsSnapshot);
-                Equal(entry2.Content, await entries[0].ToStringAsync(Encoding.UTF8));
+                Equal(entry2.Content, await entries[0].ToStringAsync(Encoding.UTF8, token: token));
                 return Missing.Value;
             };
             await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1L, CancellationToken.None);
@@ -392,7 +392,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Null(snapshotIndex);
                 Single(entries);
                 False(entries[0].IsSnapshot);
-                Equal(entry1.Content, await entries[0].ToStringAsync(Encoding.UTF8));
+                Equal(entry1.Content, await entries[0].ToStringAsync(Encoding.UTF8, token: token));
                 return Missing.Value;
             };
             await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1L, CancellationToken.None);
@@ -434,21 +434,21 @@ public sealed class MemoryBasedStateMachineTests : Test
                 False(entries[0].IsSnapshot);
                 Equal(0L, entries[0].Term);
                 Equal(42L, entries[1].Term);
-                Equal(entry1.Content, await entries[1].ToStringAsync(Encoding.UTF8));
+                Equal(entry1.Content, await entries[1].ToStringAsync(Encoding.UTF8, token: token));
                 Equal(entry1.Timestamp, entries[1].Timestamp);
                 Equal(43L, entries[2].Term);
-                Equal(entry2.Content, await entries[2].ToStringAsync(Encoding.UTF8));
+                Equal(entry2.Content, await entries[2].ToStringAsync(Encoding.UTF8, token: token));
                 Equal(entry2.Timestamp, entries[2].Timestamp);
                 Equal(44L, entries[3].Term);
-                Equal(entry3.Content, await entries[3].ToStringAsync(Encoding.UTF8));
+                Equal(entry3.Content, await entries[3].ToStringAsync(Encoding.UTF8, token: token));
                 Equal(entry3.Timestamp, entries[3].Timestamp);
                 Equal(45L, entries[4].Term);
-                Equal(entry4.Content, await entries[4].ToStringAsync(Encoding.UTF8));
+                Equal(entry4.Content, await entries[4].ToStringAsync(Encoding.UTF8, token: token));
                 Equal(entry4.Timestamp, entries[4].Timestamp);
                 Equal(46L, entries[5].Term);
-                Equal(entry5.Content, await entries[5].ToStringAsync(Encoding.UTF8));
+                Equal(entry5.Content, await entries[5].ToStringAsync(Encoding.UTF8, token: token));
                 Equal(entry5.Timestamp, entries[5].Timestamp);
-                return default;
+                return null;
             };
             await state.ReadAsync(new LogEntryConsumer(checker), 0L, CancellationToken.None);
         }
@@ -468,19 +468,19 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Equal(6, entries.Count);
                 Equal(0L, entries[0].Term);
                 Equal(42L, entries[1].Term);
-                Equal(entry1.Content, await entries[1].ToStringAsync(Encoding.UTF8));
+                Equal(entry1.Content, await entries[1].ToStringAsync(Encoding.UTF8, token: token));
                 Equal(entry1.Timestamp, entries[1].Timestamp);
                 Equal(43L, entries[2].Term);
-                Equal(entry2.Content, await entries[2].ToStringAsync(Encoding.UTF8));
+                Equal(entry2.Content, await entries[2].ToStringAsync(Encoding.UTF8, token: token));
                 Equal(entry2.Timestamp, entries[2].Timestamp);
                 Equal(44L, entries[3].Term);
-                Equal(entry3.Content, await entries[3].ToStringAsync(Encoding.UTF8));
+                Equal(entry3.Content, await entries[3].ToStringAsync(Encoding.UTF8, token: token));
                 Equal(entry3.Timestamp, entries[3].Timestamp);
                 Equal(45L, entries[4].Term);
-                Equal(entry4.Content, await entries[4].ToStringAsync(Encoding.UTF8));
+                Equal(entry4.Content, await entries[4].ToStringAsync(Encoding.UTF8, token: token));
                 Equal(entry4.Timestamp, entries[4].Timestamp);
                 Equal(46L, entries[5].Term);
-                Equal(entry5.Content, await entries[5].ToStringAsync(Encoding.UTF8));
+                Equal(entry5.Content, await entries[5].ToStringAsync(Encoding.UTF8, token: token));
                 Equal(entry5.Timestamp, entries[5].Timestamp);
                 return Missing.Value;
             };
@@ -541,7 +541,7 @@ public sealed class MemoryBasedStateMachineTests : Test
             Equal(3, await state.CommitAsync(3, CancellationToken.None));
             //install snapshot and erase all existing entries up to 7th (inclusive)
             await state.AppendAsync(new Int64LogEntry { Content = 100500L, IsSnapshot = true, Term = 0L }, 7);
-            checker = static (readResult, snapshotIndex, token) =>
+            checker = static (readResult, snapshotIndex, _) =>
             {
                 Equal(3, readResult.Count);
                 Equal(7, snapshotIndex);
@@ -567,7 +567,7 @@ public sealed class MemoryBasedStateMachineTests : Test
             };
             await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker) { LogEntryMetadataOnly = true }, 6, 9, CancellationToken.None);
             await state.AppendAsync(new Int64LogEntry { Content = 90L, IsSnapshot = true, Term = 0L }, 11);
-            checker = static (readResult, snapshotIndex, token) =>
+            checker = static (readResult, snapshotIndex, _) =>
             {
                 Single(readResult);
                 Equal(11, snapshotIndex);
@@ -586,7 +586,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         Equal(1L, await state.AppendAsync(new TestLogEntry("SET X = 0") { Term = 42L }, true));
         await state.AppendAsync(new EmptyLogEntry { Term = 43L }, 1L);
 
-        Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = static (readResult, snapshotIndex, token) =>
+        Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = static (readResult, snapshotIndex, _) =>
         {
             Null(snapshotIndex);
             NotEmpty(readResult);
@@ -607,7 +607,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         Equal(3, await state.CommitAsync(3, CancellationToken.None));
         //install snapshot and erase all existing entries up to 7th (inclusive)
         await state.AppendAsync(new Int64LogEntry { Content = 100500L, IsSnapshot = true, Term = 0L }, 7);
-        checker = static (readResult, snapshotIndex, token) =>
+        checker = static (readResult, snapshotIndex, _) =>
         {
             Equal(3, readResult.Count);
             Equal(7, snapshotIndex);
@@ -736,7 +736,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 return default;
             };
             await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, 6, CancellationToken.None);
-            checker = static (readResult, snapshotIndex, token) =>
+            checker = static (readResult, snapshotIndex, _) =>
             {
                 Equal(7, readResult.Count);
                 Equal(3, snapshotIndex);
@@ -751,7 +751,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         //read again
         using (var state = new PersistentStateWithSnapshot(dir, useCaching))
         {
-            checker = static (readResult, snapshotIndex, token) =>
+            checker = static (readResult, snapshotIndex, _) =>
             {
                 Equal(4, readResult.Count);
                 NotNull(snapshotIndex);
@@ -759,7 +759,7 @@ public sealed class MemoryBasedStateMachineTests : Test
             };
             await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, 6, CancellationToken.None);
             Equal(0L, state.Value);
-            checker = static (readResult, snapshotIndex, token) =>
+            checker = static (readResult, snapshotIndex, _) =>
             {
                 Equal(7, readResult.Count);
                 Equal(3, snapshotIndex);
@@ -802,7 +802,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         //read again
         using (var state = new PersistentStateWithSnapshot(dir, useCaching))
         {
-            checker = static (readResult, snapshotIndex, token) =>
+            checker = static (readResult, snapshotIndex, _) =>
             {
                 Equal(4, readResult.Count);
                 NotNull(snapshotIndex);
@@ -810,7 +810,7 @@ public sealed class MemoryBasedStateMachineTests : Test
             };
             await state.As<IRaftLog>().ReadAsync(new LogEntryConsumer(checker), 1, 6, CancellationToken.None);
             Equal(0L, state.Value);
-            checker = static (readResult, snapshotIndex, token) =>
+            checker = static (readResult, snapshotIndex, _) =>
             {
                 Equal(7, readResult.Count);
                 Equal(3, snapshotIndex);
@@ -836,7 +836,7 @@ public sealed class MemoryBasedStateMachineTests : Test
             await state.CommitAsync(5, CancellationToken.None);
             await state.CommitAsync(CancellationToken.None);
             Equal(entries.Length + 41L, state.Value);
-            checker = static (readResult, snapshotIndex, token) =>
+            checker = static (readResult, snapshotIndex, _) =>
             {
                 Equal(2, readResult.Count);
                 Equal(5, snapshotIndex);
@@ -849,7 +849,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         //read again
         using (var state = new PersistentStateWithSnapshot(dir, useCaching))
         {
-            checker = static (readResult, snapshotIndex, token) =>
+            checker = static (readResult, snapshotIndex, _) =>
             {
                 Equal(2, readResult.Count);
                 NotNull(snapshotIndex);
@@ -909,7 +909,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         {
             Equal(5, state.LastEntryIndex);
             Equal(2, state.LastCommittedEntryIndex);
-            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = (entries, snapshotIndex, token) =>
+            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = (entries, snapshotIndex, _) =>
             {
                 Equal(entry1.Term, entries[0].Term);
                 Equal(entry2.Term, entries[1].Term);
@@ -1064,10 +1064,10 @@ public sealed class MemoryBasedStateMachineTests : Test
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         using (var state = new PersistentStateWithoutSnapshot(path, RecordsPerPartition, new() { UseCaching = true }))
         {
-            IReadOnlyList<Int64LogEntry> entries =
+            IReadOnlyList<BinaryLogEntry> entries =
             [
-                new() { Term = 1L, Content = 10L },
-                new() { Term = 1L, Content = 11L }
+                new() { Term = 1L, Content = BitConverter.GetBytes(10L) },
+                new() { Term = 1L, Content = BitConverter.GetBytes(43L) }
             ];
             foreach (var entry in entries)
             {
@@ -1079,7 +1079,7 @@ public sealed class MemoryBasedStateMachineTests : Test
 
         using (var state = new PersistentStateWithoutSnapshot(path, RecordsPerPartition, new() { UseCaching = true }))
         {
-            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = (entries, snapshotIndex, token) =>
+            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = (entries, snapshotIndex, _) =>
             {
                 NotEmpty(entries);
                 Null(snapshotIndex);
