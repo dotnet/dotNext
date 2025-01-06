@@ -182,7 +182,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Equal(2, entries.Count);
                 Equal(0L, entries.First().Term);          // element 0
                 Equal(42L, entries.Skip(1).First().Term); // element 1
-                Equal(entry1.Content, await entries[1].ToStringAsync(Encoding.UTF8));
+                Equal(entry1.Content, await entries[1].ToStringAsync(Encoding.UTF8, token: token));
                 Equal(entry1.Context, IsAssignableFrom<IInputLogEntry>(entries[1]).Context);
                 return Missing.Value;
             };
@@ -196,7 +196,7 @@ public sealed class MemoryBasedStateMachineTests : Test
                 Null(snapshotIndex);
                 Single(entries);
                 Equal(43L, entries[0].Term);
-                Equal(entry2.Content, await entries[0].ToStringAsync(Encoding.UTF8));
+                Equal(entry2.Content, await entries[0].ToStringAsync(Encoding.UTF8, token: token));
                 return Missing.Value;
             };
 
