@@ -2,9 +2,10 @@ using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.Encodings.Web;
-using DotNext.Buffers;
 
 namespace DotNext.IO;
+
+using Buffers;
 
 /// <summary>
 /// Represents operations to work with <c>file://</c> scheme.
@@ -18,6 +19,10 @@ public static class FileUri
     // \\.\folder => file://./folder
     private const string FileScheme = "file://";
     private const string UncPrefix = @"\\";
+    private const char DriveSeparatorChar = ':';
+
+    private static readonly SearchValues<char> Delimiters =
+        SearchValues.Create(OperatingSystem.IsWindows() ? [Path.DirectorySeparatorChar, DriveSeparatorChar] : [Path.DirectorySeparatorChar]);
 
     /// <summary>
     /// Encodes file name as URI.
@@ -79,6 +84,7 @@ public static class FileUri
     private static bool TryEncodeCore(ReadOnlySpan<char> fileName, UrlEncoder encoder, Span<char> output, out int charsWritten)
     {
         const char slash = '/';
+        const char escapedDriveSeparatorChar = '|';
         var result = false;
         var writer = new SpanWriter<char>(output);
         writer.Write(FileScheme);
@@ -92,22 +98,27 @@ public static class FileUri
         }
         else
         {
-            writer.Add(Path.DirectorySeparatorChar);
+            writer.Add(slash);
         }
 
         while (!fileName.IsEmpty)
         {
-            var index = fileName.IndexOf(Path.DirectorySeparatorChar);
+            var index = fileName.IndexOfAny(Delimiters);
+            char replacement;
             ReadOnlySpan<char> component;
             if (index >= 0)
             {
                 component = fileName.Slice(0, index);
                 fileName = fileName.Slice(index + 1);
+                replacement = OperatingSystem.IsWindows() && fileName[index] is DriveSeparatorChar
+                    ? escapedDriveSeparatorChar
+                    : slash;
             }
             else
             {
                 component = fileName;
                 fileName = default;
+                replacement = '\0';
             }
 
             result = encoder.Encode(component, writer.RemainingSpan, out _, out charsWritten) is OperationStatus.Done;
@@ -115,8 +126,8 @@ public static class FileUri
                 break;
 
             writer.Advance(charsWritten);
-            if (index >= 0)
-                writer.Add(Path.DirectorySeparatorChar);
+            if (replacement is not '\0')
+                writer.Add(replacement);
         }
 
         charsWritten = writer.WrittenCount;
