@@ -14,7 +14,6 @@ public sealed class FileUriTests : Test
             data.Add(@"C:\with\trailing\backslash", @"C:\with\trailing\backslash");
             data.Add(@"C:\with\trailing\backslash and space", @"C:\with\trailing\backslash and space");
             data.Add(@"C:\with\..\relative\.\components\", @"C:\relative\components\");
-            data.Add(@"C:\with\..\relative\.\components\", @"C:\relative\components\");
             data.Add(@"C:\with\specials\chars\#\$\", @"C:\with\specials\chars\#\$\");
             data.Add(@"C:\с\кириллицей", @"C:\с\кириллицей");
             data.Add(@"\\unc\path", @"\\unc\path");
