@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text.Encodings.Web;
 
 namespace DotNext.IO;
@@ -109,10 +110,12 @@ public static class FileUri
             if (index >= 0)
             {
                 component = fileName.Slice(0, index);
-                fileName = fileName.Slice(index + 1);
-                replacement = OperatingSystem.IsWindows() && fileName[index] is DriveSeparatorChar
+                
+                // skip bounds check
+                replacement = OperatingSystem.IsWindows() && Unsafe.Add(ref MemoryMarshal.GetReference(fileName), index) is DriveSeparatorChar
                     ? escapedDriveSeparatorChar
                     : slash;
+                fileName = fileName.Slice(index + 1);
             }
             else
             {
