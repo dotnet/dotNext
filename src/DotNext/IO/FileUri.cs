@@ -10,7 +10,7 @@ namespace DotNext.IO;
 /// </summary>
 public static class FileUri
 {
-    private const string FileScheme = "file://";
+    private static string FileScheme => OperatingSystem.IsWindows() ? "file:///" : "file://";
 
     /// <summary>
     /// Encodes file name as URI.
