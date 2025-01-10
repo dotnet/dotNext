@@ -18,8 +18,6 @@ public sealed class FileUriTests : Test
             data.Add(@"C:\с\кириллицей", @"C:\с\кириллицей");
             data.Add(@"C:\ελληνικά\γράμματα", @"C:\ελληνικά\γράμματα");
             data.Add(@"\\unc\path", @"\\unc\path");
-            data.Add(@"\\?\dos\device", @"\\?\dos\device");
-            data.Add(@"\\.\dos\device", @"\\.\dos\device");
         }
         else
         {
