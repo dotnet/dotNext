@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text.Encodings.Web;
 using DotNext.Buffers;
 
@@ -10,7 +11,13 @@ namespace DotNext.IO;
 /// </summary>
 public static class FileUri
 {
-    private static string FileScheme => OperatingSystem.IsWindows() ? "file:///" : "file://";
+    // On Windows:
+    // C:\folder => file:///C:/folder
+    // \\hostname\folder => file://folder
+    // \\?\folder => file://?/folder
+    // \\.\folder => file://./folder
+    private const string FileScheme = "file://";
+    private const string UncPrefix = @"\\";
 
     /// <summary>
     /// Encodes file name as URI.
@@ -23,7 +30,7 @@ public static class FileUri
     {
         ThrowIfNotFullyQualified(fileName);
         var encoder = settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings);
-        var maxLength = FileScheme.Length + encoder.MaxOutputCharactersPerInputCharacter * fileName.Length;
+        var maxLength = GetMaxEncodedLengthCore(fileName, encoder);
         using var buffer = (uint)maxLength <= (uint)SpanOwner<char>.StackallocThreshold
             ? stackalloc char[maxLength]
             : new SpanOwner<char>(maxLength);
@@ -31,6 +38,20 @@ public static class FileUri
         TryEncodeCore(fileName, encoder, buffer.Span, out var writtenCount);
         return new(buffer.Span.Slice(0, writtenCount).ToString(), UriKind.Absolute);
     }
+
+    /// <summary>
+    /// Gets the maximum number of characters that can be produced by <see cref="TryEncode"/> method.
+    /// </summary>
+    /// <param name="fileName">The file name to be encoded.</param>
+    /// <param name="encoder">The encoder.</param>
+    /// <returns>The maximum number of characters that can be produced by the encoder.</returns>
+    public static int GetMaxEncodedLength(ReadOnlySpan<char> fileName, UrlEncoder? encoder = null)
+        => GetMaxEncodedLengthCore(fileName, encoder ?? UrlEncoder.Default);
+
+    private static int GetMaxEncodedLengthCore(ReadOnlySpan<char> fileName, UrlEncoder encoder)
+        => FileScheme.Length
+           + Unsafe.BitCast<bool, byte>(OperatingSystem.IsWindows())
+           + encoder.MaxOutputCharactersPerInputCharacter * fileName.Length;
 
     /// <summary>
     /// Tries to encode file name as URI.
@@ -57,9 +78,23 @@ public static class FileUri
 
     private static bool TryEncodeCore(ReadOnlySpan<char> fileName, UrlEncoder encoder, Span<char> output, out int charsWritten)
     {
+        const char slash = '/';
         var result = false;
         var writer = new SpanWriter<char>(output);
         writer.Write(FileScheme);
+        if (!OperatingSystem.IsWindows())
+        {
+            // nothing to do
+        }
+        else if (fileName.StartsWith(UncPrefix))
+        {
+            fileName = fileName.Slice(UncPrefix.Length);
+        }
+        else
+        {
+            writer.Add(slash);
+        }
+
         while (!fileName.IsEmpty)
         {
             var index = fileName.IndexOf(Path.DirectorySeparatorChar);
@@ -81,7 +116,7 @@ public static class FileUri
 
             writer.Advance(charsWritten);
             if (index >= 0)
-                writer.Add(Path.DirectorySeparatorChar);
+                writer.Add(slash);
         }
 
         charsWritten = writer.WrittenCount;

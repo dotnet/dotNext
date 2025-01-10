@@ -53,4 +53,11 @@ public sealed class FileUriTests : Test
         var uri = new Uri(buffer.Slice(0, charsWritten).ToString(), UriKind.Absolute);
         Equal(expected, uri.LocalPath);
     }
+    
+    [Fact]
+    public static void MaxEncodedLength()
+    {
+        const string path = "/some/path";
+        True(FileUri.GetMaxEncodedLength(path) > path.Length);
+    }
 }
