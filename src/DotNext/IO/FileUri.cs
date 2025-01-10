@@ -13,8 +13,8 @@ using Buffers;
 public static class FileUri
 {
     // On Windows:
-    // C:\folder => file:///C:/folder
-    // \\hostname\folder => file://folder
+    // C:\folder => file:///C|/folder
+    // \\hostname\folder => file://hostname/folder
     // \\?\folder => file://?/folder
     // \\.\folder => file://./folder
     private const string FileScheme = "file://";
