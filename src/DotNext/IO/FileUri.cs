@@ -92,7 +92,7 @@ public static class FileUri
         }
         else
         {
-            writer.Add(slash);
+            writer.Add(Path.DirectorySeparatorChar);
         }
 
         while (!fileName.IsEmpty)
@@ -116,7 +116,7 @@ public static class FileUri
 
             writer.Advance(charsWritten);
             if (index >= 0)
-                writer.Add(slash);
+                writer.Add(Path.DirectorySeparatorChar);
         }
 
         charsWritten = writer.WrittenCount;
