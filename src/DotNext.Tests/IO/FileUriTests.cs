@@ -40,6 +40,7 @@ public sealed class FileUriTests : Test
     public static void EncodeAsUri(string fileName, string expected)
     {
         var uri = FileUri.Encode(fileName);
+        True(uri.IsFile);
         Equal(expected, uri.LocalPath);
     }
 
