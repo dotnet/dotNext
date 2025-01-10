@@ -16,6 +16,7 @@ public sealed class FileUriTests : Test
             data.Add(@"C:\with\..\relative\.\components\", @"C:\relative\components\");
             data.Add(@"C:\with\specials\chars\#\$\", @"C:\with\specials\chars\#\$\");
             data.Add(@"C:\с\кириллицей", @"C:\с\кириллицей");
+            data.Add(@"C:\ελληνικά\γράμματα", @"C:\ελληνικά\γράμματα");
             data.Add(@"\\unc\path", @"\\unc\path");
             data.Add(@"\\?\dos\device", @"\\?\dos\device");
             data.Add(@"\\.\dos\device", @"\\.\dos\device");
@@ -29,6 +30,7 @@ public sealed class FileUriTests : Test
             data.Add("/with/../relative/./components/", "/relative/components/");
             data.Add("/with/special/chars/?/>/</", "/with/special/chars/?/>/</");
             data.Add("/с/кириллицей", "/с/кириллицей");
+            data.Add("/ελληνικά/γράμματα", "/ελληνικά/γράμματα");
         }
 
         return data;
@@ -47,7 +49,7 @@ public sealed class FileUriTests : Test
     [MemberData(nameof(GetPaths))]
     public static void EncodeAsUriChars(string fileName, string expected)
     {
-        Span<char> buffer = stackalloc char[256];
+        Span<char> buffer = stackalloc char[512];
         True(FileUri.TryEncode(fileName, UrlEncoder.Default, buffer, out var charsWritten));
 
         var uri = new Uri(buffer.Slice(0, charsWritten).ToString(), UriKind.Absolute);
