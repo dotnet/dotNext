@@ -34,7 +34,7 @@ public static class FileUri
     /// <exception cref="ArgumentException"><paramref name="fileName"/> is not fully-qualified.</exception>
     public static Uri Encode(ReadOnlySpan<char> fileName, TextEncoderSettings? settings = null)
     {
-        ThrowIfNotFullyQualified(fileName);
+        ThrowIfPartiallyQualified(fileName);
         var encoder = settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings);
         var maxLength = GetMaxEncodedLengthCore(fileName, encoder);
         using var buffer = (uint)maxLength <= (uint)SpanOwner<char>.StackallocThreshold
@@ -70,13 +70,13 @@ public static class FileUri
     /// <exception cref="ArgumentException"><paramref name="fileName"/> is not fully-qualified.</exception>
     public static bool TryEncode(ReadOnlySpan<char> fileName, UrlEncoder? encoder, Span<char> output, out int charsWritten)
     {
-        ThrowIfNotFullyQualified(fileName);
+        ThrowIfPartiallyQualified(fileName);
 
         return TryEncodeCore(fileName, encoder ?? UrlEncoder.Default, output, out charsWritten);
     }
 
     [StackTraceHidden]
-    private static void ThrowIfNotFullyQualified(ReadOnlySpan<char> fileName)
+    private static void ThrowIfPartiallyQualified(ReadOnlySpan<char> fileName)
     {
         if (!Path.IsPathFullyQualified(fileName))
             throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
