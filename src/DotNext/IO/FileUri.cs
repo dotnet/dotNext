@@ -40,9 +40,9 @@ public static class FileUri
         using var buffer = (uint)maxLength <= (uint)SpanOwner<char>.StackallocThreshold
             ? stackalloc char[maxLength]
             : new SpanOwner<char>(maxLength);
-        
+
         return TryEncodeCore(fileName, encoder, buffer.Span, out var writtenCount)
-            ? buffer.Span.Slice(0, writtenCount).ToString()
+            ? new(buffer.Span.Slice(0, writtenCount))
             : string.Empty;
     }
 
