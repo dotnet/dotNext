@@ -106,13 +106,7 @@ public ref struct SpanOwner<T>
         if (UseNativeAllocation)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(minBufferSize);
-
-            unsafe
-            {
-                var ptr = NativeMemory.Alloc((uint)minBufferSize, (uint)Unsafe.SizeOf<T>());
-                memory = new(ptr, minBufferSize);
-            }
-
+            memory = Allocate(minBufferSize);
             owner = Sentinel.Instance;
         }
         else
@@ -120,6 +114,12 @@ public ref struct SpanOwner<T>
             var owner = ArrayPool<T>.Shared.Rent(minBufferSize);
             memory = exactSize ? new(owner, 0, minBufferSize) : new(owner);
             this.owner = owner;
+        }
+
+        static unsafe Span<T> Allocate(int length)
+        {
+            var sizeInBytes = (nuint)length * (nuint)Unsafe.SizeOf<T>();
+            return new(NativeMemory.AlignedAlloc(sizeInBytes, (uint)Intrinsics.AlignOf<T>()), length);
         }
     }
 
@@ -170,7 +170,7 @@ public ref struct SpanOwner<T>
     /// Gets textual representation of the rented memory.
     /// </summary>
     /// <returns>The textual representation of the rented memory.</returns>
-    public override readonly string ToString() => memory.ToString();
+    public readonly override string ToString() => memory.ToString();
 
     /// <summary>
     /// Returns the memory back to the pool.
@@ -185,7 +185,7 @@ public ref struct SpanOwner<T>
         {
             unsafe
             {
-                NativeMemory.Free(Unsafe.AsPointer(ref MemoryMarshal.GetReference(memory)));
+                NativeMemory.AlignedFree(Unsafe.AsPointer(ref MemoryMarshal.GetReference(memory)));
             }
         }
         else
