@@ -137,7 +137,7 @@ public ref struct SpanOwner<T>
     private static bool IsNaturalAlignment => Intrinsics.AlignOf<T>() <= nuint.Size;
 
     private static bool UseNativeAllocation
-        => !LibrarySettings.DisableNativeAllocation && !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
+        => LibrarySettings.UseNativeAllocation && !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
 
     /// <summary>
     /// Gets the rented memory.

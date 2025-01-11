@@ -1,7 +1,12 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext;
 
 internal static class LibrarySettings
 {
+    private const string UseNativeAllocationFeature = "DotNext.Buffers.NativeAllocation";
+    private const string UseRandomStringInternalBufferCleanupFeature = "DotNext.Security.RandomStringInternalBufferCleanup";
+    
     internal static int StackallocThreshold
     {
         get
@@ -19,32 +24,15 @@ internal static class LibrarySettings
             return result > minimumValue ? result : defaultValue;
         }
     }
+    
+    private static bool IsSupported([ConstantExpected] string featureName)
+        => !AppContext.TryGetSwitch(featureName, out var result) || result;
 
-    internal static bool DisableRandomStringInternalBufferCleanup
-    {
-        get
-        {
-            const string switchName = "DotNext.Security.DisableRandomStringInternalBufferCleanup";
-            const bool defaultValue = false;
+    // TODO: [FeatureSwitchDefinition(UseRandomStringInternalBufferCleanupFeature)]
+    internal static bool UseRandomStringInternalBufferCleanup
+        => IsSupported(UseRandomStringInternalBufferCleanupFeature);
 
-            if (!AppContext.TryGetSwitch(switchName, out var result))
-                result = defaultValue;
-
-            return result;
-        }
-    }
-
-    internal static bool DisableNativeAllocation
-    {
-        get
-        {
-            const string switchName = "DotNext.Buffers.DisableNativeAllocation";
-            const bool defaultValue = false;
-
-            if (!AppContext.TryGetSwitch(switchName, out var result))
-                result = defaultValue;
-
-            return result;
-        }
-    }
+    // TODO: [FeatureSwitchDefinition(EnableNativeAllocationFeature)]
+    internal static bool UseNativeAllocation
+        => IsSupported(UseNativeAllocationFeature);
 }
