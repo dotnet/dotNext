@@ -30,9 +30,9 @@ public static class FileUri
     /// </summary>
     /// <param name="fileName">The fully-qualified file name.</param>
     /// <param name="settings">The encoding settings.</param>
-    /// <returns><paramref name="fileName"/> as <see cref="Uri"/>.</returns>
+    /// <returns><paramref name="fileName"/> as URI. The return value can be passed to <see cref="Uri(string)"/> constructor.</returns>
     /// <exception cref="ArgumentException"><paramref name="fileName"/> is not fully-qualified.</exception>
-    public static Uri Encode(ReadOnlySpan<char> fileName, TextEncoderSettings? settings = null)
+    public static string Encode(ReadOnlySpan<char> fileName, TextEncoderSettings? settings = null)
     {
         ThrowIfPartiallyQualified(fileName);
         var encoder = settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings);
@@ -40,9 +40,10 @@ public static class FileUri
         using var buffer = (uint)maxLength <= (uint)SpanOwner<char>.StackallocThreshold
             ? stackalloc char[maxLength]
             : new SpanOwner<char>(maxLength);
-
-        TryEncodeCore(fileName, encoder, buffer.Span, out var writtenCount);
-        return new(buffer.Span.Slice(0, writtenCount).ToString(), UriKind.Absolute);
+        
+        return TryEncodeCore(fileName, encoder, buffer.Span, out var writtenCount)
+            ? buffer.Span.Slice(0, writtenCount).ToString()
+            : string.Empty;
     }
 
     /// <summary>

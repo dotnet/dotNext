@@ -38,7 +38,7 @@ public sealed class FileUriTests : Test
     [MemberData(nameof(GetPaths))]
     public static void EncodeAsUri(string fileName, string expected)
     {
-        var uri = FileUri.Encode(fileName);
+        var uri = new Uri(FileUri.Encode(fileName), UriKind.Absolute);
         True(uri.IsFile);
         Equal(expected, uri.LocalPath);
     }
