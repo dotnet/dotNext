@@ -470,6 +470,14 @@ public sealed class SpanTests : Test
     }
 
     [Fact]
+    public static void AlignedAllocation()
+    {
+        using var owner = new SpanOwner<UInt128>(64);
+        owner.Span[0] = UInt128.One;
+        Equal(UInt128.One, owner.Span[0]);
+    }
+
+    [Fact]
     public static void TransformElements()
     {
         // left < right

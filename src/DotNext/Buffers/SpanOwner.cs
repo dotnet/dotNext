@@ -118,13 +118,26 @@ public ref struct SpanOwner<T>
 
         static unsafe Span<T> Allocate(int length)
         {
-            var sizeInBytes = (nuint)length * (nuint)Unsafe.SizeOf<T>();
-            return new(NativeMemory.AlignedAlloc(sizeInBytes, (uint)Intrinsics.AlignOf<T>()), length);
+            void* ptr;
+
+            if (IsNaturalAlignment)
+            {
+                ptr = NativeMemory.Alloc((uint)length, (uint)Unsafe.SizeOf<T>());
+            }
+            else
+            {
+                var byteCount = checked((uint)Unsafe.SizeOf<T>() * (nuint)(uint)length);
+                ptr = NativeMemory.AlignedAlloc(byteCount, (uint)Intrinsics.AlignOf<T>());
+            }
+
+            return new(ptr, length);
         }
     }
 
+    private static bool IsNaturalAlignment => Intrinsics.AlignOf<T>() <= nuint.Size;
+
     private static bool UseNativeAllocation
-        => !LibrarySettings.DisableNativeAllocation && !RuntimeHelpers.IsReferenceOrContainsReferences<T>() && Intrinsics.AlignOf<T>() <= nuint.Size;
+        => !LibrarySettings.DisableNativeAllocation && !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
 
     /// <summary>
     /// Gets the rented memory.
@@ -181,11 +194,19 @@ public ref struct SpanOwner<T>
         {
             ArrayPool<T>.Shared.Return(array, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
         }
-        else if (ReferenceEquals(owner, Sentinel.Instance))
+        else if (UseNativeAllocation && ReferenceEquals(owner, Sentinel.Instance))
         {
             unsafe
             {
-                NativeMemory.AlignedFree(Unsafe.AsPointer(ref MemoryMarshal.GetReference(memory)));
+                var ptr = Unsafe.AsPointer(ref MemoryMarshal.GetReference(memory));
+                if (IsNaturalAlignment)
+                {
+                    NativeMemory.Free(ptr);
+                }
+                else
+                {
+                    NativeMemory.AlignedFree(ptr);
+                }
             }
         }
         else
