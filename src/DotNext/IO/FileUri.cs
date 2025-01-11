@@ -87,7 +87,6 @@ public static class FileUri
     {
         const char slash = '/';
         const char escapedDriveSeparatorChar = '|';
-        var result = false;
         var writer = new SpanWriter<char>(output);
         writer.Write(FileScheme);
         if (!OperatingSystem.IsWindows())
@@ -125,9 +124,8 @@ public static class FileUri
                 replacement = '\0';
             }
 
-            result = encoder.Encode(component, writer.RemainingSpan, out _, out charsWritten) is OperationStatus.Done;
-            if (!result)
-                break;
+            if (encoder.Encode(component, writer.RemainingSpan, out _, out charsWritten) is not OperationStatus.Done)
+                return false;
 
             writer.Advance(charsWritten);
             if (replacement is not '\0')
@@ -135,6 +133,6 @@ public static class FileUri
         }
 
         charsWritten = writer.WrittenCount;
-        return result;
+        return true;
     }
 }
