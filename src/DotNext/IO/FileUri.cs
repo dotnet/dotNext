@@ -18,7 +18,6 @@ public static class FileUri
     // \\?\folder => file://?/folder
     // \\.\folder => file://./folder
     private const string FileScheme = "file://";
-    private const string UncPrefix = @"\\";
 
     /// <summary>
     /// Encodes file name as URI.
@@ -91,12 +90,13 @@ public static class FileUri
         {
             // nothing to do
         }
-        else if (fileName.StartsWith(UncPrefix))
+        else if (fileName is ['\\', '\\', .. var rest]) // UNC path
         {
-            fileName = fileName.Slice(UncPrefix.Length);
+            fileName = rest;
         }
         else if (GetPathComponent(ref fileName, out endsWithTrailingSeparator) is [.. var drive, driveSeparator])
         {
+            writer.Add(slash);
             writer.Write(drive);
             writer.Write(endsWithTrailingSeparator ? [escapedDriveSeparatorChar, slash] : [escapedDriveSeparatorChar]);
         }
