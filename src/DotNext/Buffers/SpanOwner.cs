@@ -126,7 +126,9 @@ public ref struct SpanOwner<T>
             }
             else
             {
-                var byteCount = checked((uint)Unsafe.SizeOf<T>() * (nuint)(uint)length);
+                var x = (uint)Unsafe.SizeOf<T>();
+                var y = (nuint)(uint)length;
+                var byteCount = checked(x * y);
                 ptr = NativeMemory.AlignedAlloc(byteCount, (uint)Intrinsics.AlignOf<T>());
             }
 
