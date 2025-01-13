@@ -1,7 +1,6 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Text.Encodings.Web;
 
 namespace DotNext.IO;
@@ -20,10 +19,6 @@ public static class FileUri
     // \\.\folder => file://./folder
     private const string FileScheme = "file://";
     private const string UncPrefix = @"\\";
-    private const char DriveSeparatorChar = ':';
-
-    private static readonly SearchValues<char> Delimiters =
-        SearchValues.Create(OperatingSystem.IsWindows() ? [Path.DirectorySeparatorChar, DriveSeparatorChar] : [Path.DirectorySeparatorChar]);
 
     /// <summary>
     /// Encodes file name as URI.
@@ -86,9 +81,12 @@ public static class FileUri
     private static bool TryEncodeCore(ReadOnlySpan<char> fileName, UrlEncoder encoder, Span<char> output, out int charsWritten)
     {
         const char slash = '/';
+        const char driveSeparator = ':';
         const char escapedDriveSeparatorChar = '|';
         var writer = new SpanWriter<char>(output);
         writer.Write(FileScheme);
+
+        bool endsWithTrailingSeparator;
         if (!OperatingSystem.IsWindows())
         {
             // nothing to do
@@ -97,42 +95,42 @@ public static class FileUri
         {
             fileName = fileName.Slice(UncPrefix.Length);
         }
-        else
+        else if (GetPathComponent(ref fileName, out endsWithTrailingSeparator) is [.. var drive, driveSeparator])
         {
-            writer.Add(slash);
+            writer.Write(drive);
+            writer.Write(endsWithTrailingSeparator ? [escapedDriveSeparatorChar, slash] : [escapedDriveSeparatorChar]);
         }
 
-        while (!fileName.IsEmpty)
+        for (;; writer.Add(slash))
         {
-            var index = fileName.IndexOfAny(Delimiters);
-            char replacement;
-            ReadOnlySpan<char> component;
-            if (index >= 0)
-            {
-                component = fileName.Slice(0, index);
-                
-                // skip bounds check
-                replacement = OperatingSystem.IsWindows() && Unsafe.Add(ref MemoryMarshal.GetReference(fileName), index) is DriveSeparatorChar
-                    ? escapedDriveSeparatorChar
-                    : slash;
-                fileName = fileName.Slice(index + 1);
-            }
-            else
-            {
-                component = fileName;
-                fileName = default;
-                replacement = '\0';
-            }
-
+            var component = GetPathComponent(ref fileName, out endsWithTrailingSeparator);
             if (encoder.Encode(component, writer.RemainingSpan, out _, out charsWritten) is not OperationStatus.Done)
                 return false;
 
             writer.Advance(charsWritten);
-            if (replacement is not '\0')
-                writer.Add(replacement);
+            if (!endsWithTrailingSeparator)
+                break;
         }
 
         charsWritten = writer.WrittenCount;
         return true;
+    }
+
+    private static ReadOnlySpan<char> GetPathComponent(ref ReadOnlySpan<char> fileName, out bool endsWithTrailingSeparator)
+    {
+        ReadOnlySpan<char> component;
+        var index = fileName.IndexOf(Path.DirectorySeparatorChar);
+        if (endsWithTrailingSeparator = index >= 0)
+        {
+            component = fileName.Slice(0, index);
+            fileName = fileName.Slice(index + 1);
+        }
+        else
+        {
+            component = fileName;
+            fileName = default;
+        }
+
+        return component;
     }
 }
