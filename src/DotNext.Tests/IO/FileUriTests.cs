@@ -4,35 +4,29 @@ namespace DotNext.IO;
 
 public sealed class FileUriTests : Test
 {
-    public static TheoryData<string, string> GetPaths()
+    public static TheoryData<string, string> GetPaths() => new()
     {
-        var data = new TheoryData<string, string>();
-        if (OperatingSystem.IsWindows())
-        {
-            data.Add(@"C:\without\whitespace", @"C:\without\whitespace");
-            data.Add(@"C:\with whitespace", @"C:\with whitespace");
-            data.Add(@"C:\with\trailing\backslash", @"C:\with\trailing\backslash");
-            data.Add(@"C:\with\trailing\backslash and space", @"C:\with\trailing\backslash and space");
-            data.Add(@"C:\with\..\relative\.\components\", @"C:\relative\components\");
-            data.Add(@"C:\with\specials\chars\#\$\", @"C:\with\specials\chars\#\$\");
-            data.Add(@"C:\с\кириллицей", @"C:\с\кириллицей");
-            data.Add(@"C:\ελληνικά\γράμματα", @"C:\ελληνικά\γράμματα");
-            data.Add(@"\\unc\path", @"\\unc\path");
-        }
-        else
-        {
-            data.Add("/without/whitespace", "/without/whitespace");
-            data.Add("/with whitespace", "/with whitespace");
-            data.Add("/with/trailing/slash/", "/with/trailing/slash/");
-            data.Add("/with/trailing/slash and space/", "/with/trailing/slash and space/");
-            data.Add("/with/../relative/./components/", "/relative/components/");
-            data.Add("/with/special/chars/?/>/</", "/with/special/chars/?/>/</");
-            data.Add("/с/кириллицей", "/с/кириллицей");
-            data.Add("/ελληνικά/γράμματα", "/ελληνικά/γράμματα");
-        }
+        // Windows path
+        { @"C:\without\whitespace", @"C:\without\whitespace" },
+        { @"C:\with whitespace", @"C:\with whitespace" },
+        { @"C:\with\trailing\backslash", @"C:\with\trailing\backslash" },
+        { @"C:\with\trailing\backslash and space", @"C:\with\trailing\backslash and space" },
+        { @"C:\with\..\relative\.\components\", @"C:\relative\components\" },
+        { @"C:\with\specials\chars\#\$\", @"C:\with\specials\chars\#\$\" },
+        { @"C:\с\кириллицей", @"C:\с\кириллицей" },
+        { @"C:\ελληνικά\γράμματα", @"C:\ελληνικά\γράμματα" },
+        { @"\\unc\path", @"\\unc\path" },
 
-        return data;
-    }
+        // Unix path
+        { "/without/whitespace", "/without/whitespace" },
+        { "/with whitespace", "/with whitespace" },
+        { "/with/trailing/slash/", "/with/trailing/slash/" },
+        { "/with/trailing/slash and space/", "/with/trailing/slash and space/" },
+        { "/with/../relative/./components/", "/relative/components/" },
+        { "/with/special/chars/?/>/</", "/with/special/chars/?/>/</" },
+        { "/с/кириллицей", "/с/кириллицей" },
+        { "/ελληνικά/γράμματα", "/ελληνικά/γράμματα" }
+    };
 
     [Theory]
     [MemberData(nameof(GetPaths))]
@@ -59,5 +53,14 @@ public sealed class FileUriTests : Test
     {
         const string path = "/some/path";
         True(FileUri.GetMaxEncodedLength(path) > path.Length);
+    }
+
+    [Theory]
+    [InlineData("~/path/name")]
+    [InlineData("C:path\\name")]
+    [InlineData("")]
+    public static void CheckFullyQualifiedPath(string path)
+    {
+        Throws<ArgumentException>(() => FileUri.Encode(path));
     }
 }

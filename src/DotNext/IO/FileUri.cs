@@ -18,6 +18,9 @@ public static class FileUri
     // \\?\folder => file://?/folder
     // \\.\folder => file://./folder
     private const string FileScheme = "file://";
+    private const char UriPathSeparator = '/';
+    private static readonly SearchValues<char> UnixDirectorySeparators = SearchValues.Create([UriPathSeparator]);
+    private static readonly SearchValues<char> WindowsDirectorySeparators = SearchValues.Create([UriPathSeparator, '\\']);
 
     /// <summary>
     /// Encodes file name as URI.
@@ -28,7 +31,9 @@ public static class FileUri
     /// <exception cref="ArgumentException"><paramref name="fileName"/> is not fully-qualified.</exception>
     public static string Encode(ReadOnlySpan<char> fileName, TextEncoderSettings? settings = null)
     {
-        ThrowIfPartiallyQualified(fileName);
+        if (fileName.IsEmpty)
+            throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
+        
         var encoder = settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings);
         var maxLength = GetMaxEncodedLengthCore(fileName, encoder);
         using var buffer = (uint)maxLength <= (uint)SpanOwner<char>.StackallocThreshold
@@ -47,11 +52,11 @@ public static class FileUri
     /// <param name="encoder">The encoder.</param>
     /// <returns>The maximum number of characters that can be produced by the encoder.</returns>
     public static int GetMaxEncodedLength(ReadOnlySpan<char> fileName, UrlEncoder? encoder = null)
-        => GetMaxEncodedLengthCore(fileName, encoder ?? UrlEncoder.Default);
+        => fileName.IsEmpty ? 0 : GetMaxEncodedLengthCore(fileName, encoder ?? UrlEncoder.Default);
 
     private static int GetMaxEncodedLengthCore(ReadOnlySpan<char> fileName, UrlEncoder encoder)
         => FileScheme.Length
-           + Unsafe.BitCast<bool, byte>(OperatingSystem.IsWindows())
+           + Unsafe.BitCast<bool, byte>(fileName[0] is not UriPathSeparator)
            + encoder.MaxOutputCharactersPerInputCharacter * fileName.Length;
 
     /// <summary>
@@ -65,45 +70,44 @@ public static class FileUri
     /// <exception cref="ArgumentException"><paramref name="fileName"/> is not fully-qualified.</exception>
     public static bool TryEncode(ReadOnlySpan<char> fileName, UrlEncoder? encoder, Span<char> output, out int charsWritten)
     {
-        ThrowIfPartiallyQualified(fileName);
+        if (fileName.IsEmpty)
+            throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
 
         return TryEncodeCore(fileName, encoder ?? UrlEncoder.Default, output, out charsWritten);
     }
 
-    [StackTraceHidden]
-    private static void ThrowIfPartiallyQualified(ReadOnlySpan<char> fileName)
-    {
-        if (!Path.IsPathFullyQualified(fileName))
-            throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
-    }
-
     private static bool TryEncodeCore(ReadOnlySpan<char> fileName, UrlEncoder encoder, Span<char> output, out int charsWritten)
     {
-        const char slash = '/';
-        const char driveSeparator = ':';
-        const char escapedDriveSeparatorChar = '|';
         var writer = new SpanWriter<char>(output);
         writer.Write(FileScheme);
 
         bool endsWithTrailingSeparator;
-        if (!OperatingSystem.IsWindows())
+        SearchValues<char> directoryPathSeparators;
+        switch (fileName)
         {
-            // nothing to do
-        }
-        else if (fileName is ['\\', '\\', .. var rest]) // UNC path
-        {
-            fileName = rest;
-        }
-        else if (GetPathComponent(ref fileName, out endsWithTrailingSeparator) is [.. var drive, driveSeparator])
-        {
-            writer.Add(slash);
-            writer.Write(drive);
-            writer.Write(endsWithTrailingSeparator ? [escapedDriveSeparatorChar, slash] : [escapedDriveSeparatorChar]);
+            case [UriPathSeparator, ..]: // Unix path
+                directoryPathSeparators = UnixDirectorySeparators;
+                break;
+            case ['\\', '\\', .. var rest]: // Windows UNC path
+                directoryPathSeparators = WindowsDirectorySeparators;
+                fileName = rest;
+                break;
+            default: // Windows path
+                const char driveSeparator = ':';
+                const char escapedDriveSeparatorChar = '|';
+                if (GetPathComponent(ref fileName, directoryPathSeparators = WindowsDirectorySeparators, out endsWithTrailingSeparator)
+                    is not [.. var drive, driveSeparator])
+                    throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
+
+                writer.Add(UriPathSeparator);
+                writer.Write(drive);
+                writer.Write(endsWithTrailingSeparator ? [escapedDriveSeparatorChar, UriPathSeparator] : [escapedDriveSeparatorChar]);
+                break;
         }
 
-        for (;; writer.Add(slash))
+        for (;; writer.Add(UriPathSeparator))
         {
-            var component = GetPathComponent(ref fileName, out endsWithTrailingSeparator);
+            var component = GetPathComponent(ref fileName, directoryPathSeparators, out endsWithTrailingSeparator);
             if (encoder.Encode(component, writer.RemainingSpan, out _, out charsWritten) is not OperationStatus.Done)
                 return false;
 
@@ -116,10 +120,10 @@ public static class FileUri
         return true;
     }
 
-    private static ReadOnlySpan<char> GetPathComponent(ref ReadOnlySpan<char> fileName, out bool endsWithTrailingSeparator)
+    private static ReadOnlySpan<char> GetPathComponent(ref ReadOnlySpan<char> fileName, SearchValues<char> directorySeparatorChars, out bool endsWithTrailingSeparator)
     {
         ReadOnlySpan<char> component;
-        var index = fileName.IndexOf(Path.DirectorySeparatorChar);
+        var index = fileName.IndexOfAny(directorySeparatorChars);
         if (endsWithTrailingSeparator = index >= 0)
         {
             component = fileName.Slice(0, index);
