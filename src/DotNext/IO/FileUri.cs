@@ -33,8 +33,12 @@ public static class FileUri
     {
         if (fileName.IsEmpty)
             throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
-        
-        var encoder = settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings);
+
+        return EncodeCore(fileName, settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings));
+    }
+
+    private static string EncodeCore(ReadOnlySpan<char> fileName, UrlEncoder encoder)
+    {
         var maxLength = GetMaxEncodedLengthCore(fileName, encoder);
         using var buffer = (uint)maxLength <= (uint)SpanOwner<char>.StackallocThreshold
             ? stackalloc char[maxLength]
@@ -136,5 +140,18 @@ public static class FileUri
         }
 
         return component;
+    }
+
+    /// <summary>
+    /// Gets URI that points to the file system object.
+    /// </summary>
+    /// <param name="fileInfo">The information about file system object.</param>
+    /// <param name="settings">The encoding settings.</param>
+    /// <returns><see cref="Uri"/> that points to the file system object.</returns>
+    public static Uri GetUri(this FileSystemInfo fileInfo, TextEncoderSettings? settings = null)
+    {
+        ArgumentNullException.ThrowIfNull(fileInfo);
+
+        return new(EncodeCore(fileInfo.FullName, settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings)), UriKind.Absolute);
     }
 }

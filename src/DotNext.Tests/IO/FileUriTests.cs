@@ -37,6 +37,14 @@ public sealed class FileUriTests : Test
         Equal(expected, uri.LocalPath);
     }
 
+    [Fact]
+    public static void GetUriExtension()
+    {
+        var fileName = OperatingSystem.IsWindows() ? "C:\\some\\path" : "/some/path";
+        var uri = new FileInfo(fileName).GetUri();
+        Equal(fileName, uri.LocalPath);
+    }
+
     [Theory]
     [MemberData(nameof(GetPaths))]
     public static void EncodeAsUriChars(string fileName, string expected)
