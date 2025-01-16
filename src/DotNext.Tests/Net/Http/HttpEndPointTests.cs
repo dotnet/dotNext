@@ -108,4 +108,13 @@ public sealed class HttpEndPointTests : Test
             where T : IParsable<T>
             => T.TryParse(input, provider: null, out result);
     }
+
+    [Theory]
+    [InlineData("192.168.0.1", AddressFamily.InterNetwork)]
+    [InlineData("2001:0db8:0000:0000:0000:8a2e:0370:7334", AddressFamily.InterNetworkV6)]
+    [InlineData("host", AddressFamily.Unspecified)]
+    public static void AutoDetectAddressFamily(string hostName, AddressFamily expected)
+    {
+        Equal(expected, new HttpEndPoint(hostName, 8080, false).AddressFamily);
+    }
 }
