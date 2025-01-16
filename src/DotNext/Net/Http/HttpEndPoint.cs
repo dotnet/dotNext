@@ -168,7 +168,7 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
                                   && writer.TryFormat(Port, format, provider)
                                   && writer.TryAdd('/'))
             ? writer.WrittenCount
-            : default;
+            : 0;
         
         return success;
     }
@@ -185,7 +185,7 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
                                   && writer.TryFormat(Port, format, provider)
                                   && writer.TryAdd((byte)'/'))
             ? writer.WrittenCount
-            : default;
+            : 0;
 
         return success;
     }
