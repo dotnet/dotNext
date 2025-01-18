@@ -1,5 +1,7 @@
 namespace DotNext.Threading;
 
+using static Tasks.Synchronization;
+
 /// <summary>
 /// Represents asynchronous event.
 /// </summary>
@@ -55,8 +57,5 @@ public interface IAsyncEvent : IDisposable, IResettable
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     bool Wait(TimeSpan timeout)
-    {
-        using var task = WaitAsync(timeout).AsTask();
-        return task.Wait(timeout);
-    }
+        => WaitAsync(timeout).Wait();
 }
