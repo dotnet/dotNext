@@ -28,28 +28,28 @@ public static class FileUri
     /// <param name="settings">The encoding settings.</param>
     /// <returns><paramref name="fileName"/> as URI. The return value can be passed to <see cref="Uri(string)"/> constructor.</returns>
     /// <exception cref="ArgumentException"><paramref name="fileName"/> is not fully-qualified.</exception>
-    public static string Encode(ReadOnlySpan<char> fileName, TextEncoderSettings? settings = null)
+    public static string CreateFromFileName(ReadOnlySpan<char> fileName, TextEncoderSettings? settings = null)
     {
         if (fileName.IsEmpty)
             throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
 
-        return EncodeCore(fileName, settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings));
+        return CreateFromFileNameCore(fileName, settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings));
     }
 
-    private static string EncodeCore(ReadOnlySpan<char> fileName, UrlEncoder encoder)
+    private static string CreateFromFileNameCore(ReadOnlySpan<char> fileName, UrlEncoder encoder)
     {
         var maxLength = GetMaxEncodedLengthCore(fileName, encoder);
         using var buffer = (uint)maxLength <= (uint)SpanOwner<char>.StackallocThreshold
             ? stackalloc char[maxLength]
             : new SpanOwner<char>(maxLength);
 
-        return TryEncodeCore(fileName, encoder, buffer.Span, out var writtenCount)
+        return TryCreateFromFileNameCore(fileName, encoder, buffer.Span, out var writtenCount)
             ? new(buffer.Span.Slice(0, writtenCount))
             : string.Empty;
     }
 
     /// <summary>
-    /// Gets the maximum number of characters that can be produced by <see cref="TryEncode"/> method.
+    /// Gets the maximum number of characters that can be produced by <see cref="TryCreateFromFileName"/> method.
     /// </summary>
     /// <param name="fileName">The file name to be encoded.</param>
     /// <param name="encoder">The encoder.</param>
@@ -71,15 +71,15 @@ public static class FileUri
     /// <param name="charsWritten">The number of characters written to <paramref name="output"/>.</param>
     /// <returns><see langword="true"/> if <paramref name="fileName"/> is encoded successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ArgumentException"><paramref name="fileName"/> is not fully-qualified.</exception>
-    public static bool TryEncode(ReadOnlySpan<char> fileName, UrlEncoder? encoder, Span<char> output, out int charsWritten)
+    public static bool TryCreateFromFileName(ReadOnlySpan<char> fileName, UrlEncoder? encoder, Span<char> output, out int charsWritten)
     {
         if (fileName.IsEmpty)
             throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
 
-        return TryEncodeCore(fileName, encoder ?? UrlEncoder.Default, output, out charsWritten);
+        return TryCreateFromFileNameCore(fileName, encoder ?? UrlEncoder.Default, output, out charsWritten);
     }
 
-    private static bool TryEncodeCore(ReadOnlySpan<char> fileName, UrlEncoder encoder, Span<char> output, out int charsWritten)
+    private static bool TryCreateFromFileNameCore(ReadOnlySpan<char> fileName, UrlEncoder encoder, Span<char> output, out int charsWritten)
     {
         var writer = new SpanWriter<char>(output);
         writer.Write(FileScheme);
@@ -151,6 +151,6 @@ public static class FileUri
     {
         ArgumentNullException.ThrowIfNull(fileInfo);
 
-        return new(EncodeCore(fileInfo.FullName, settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings)), UriKind.Absolute);
+        return new(CreateFromFileNameCore(fileInfo.FullName, settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings)), UriKind.Absolute);
     }
 }

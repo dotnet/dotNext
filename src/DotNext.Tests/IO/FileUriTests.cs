@@ -30,15 +30,15 @@ public sealed class FileUriTests : Test
 
     [Theory]
     [MemberData(nameof(GetPaths))]
-    public static void EncodeAsUri(string fileName, string expected)
+    public static void FromFileNameToUri(string fileName, string expected)
     {
-        var uri = new Uri(FileUri.Encode(fileName), UriKind.Absolute);
+        var uri = new Uri(FileUri.CreateFromFileName(fileName), UriKind.Absolute);
         True(uri.IsFile);
         Equal(expected, uri.LocalPath);
     }
 
     [Fact]
-    public static void GetUriExtension()
+    public static void GetUriExtensionMethod()
     {
         var fileName = OperatingSystem.IsWindows() ? "C:\\some\\path" : "/some/path";
         var uri = new FileInfo(fileName).GetUri();
@@ -47,10 +47,10 @@ public sealed class FileUriTests : Test
 
     [Theory]
     [MemberData(nameof(GetPaths))]
-    public static void EncodeAsUriChars(string fileName, string expected)
+    public static void TryCreateFromFileName(string fileName, string expected)
     {
         Span<char> buffer = stackalloc char[512];
-        True(FileUri.TryEncode(fileName, UrlEncoder.Default, buffer, out var charsWritten));
+        True(FileUri.TryCreateFromFileName(fileName, UrlEncoder.Default, buffer, out var charsWritten));
 
         var uri = new Uri(buffer.Slice(0, charsWritten).ToString(), UriKind.Absolute);
         Equal(expected, uri.LocalPath);
@@ -66,9 +66,11 @@ public sealed class FileUriTests : Test
     [Theory]
     [InlineData("~/path/name")]
     [InlineData("C:path\\name")]
+    [InlineData("../path")]
+    [InlineData("./path")]
     [InlineData("")]
     public static void CheckFullyQualifiedPath(string path)
     {
-        Throws<ArgumentException>(() => FileUri.Encode(path));
+        Throws<ArgumentException>(() => FileUri.CreateFromFileName(path));
     }
 }
