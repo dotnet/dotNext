@@ -22,7 +22,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
         readonly bool ILockManager.IsLockAllowed => Value;
 
-        void ILockManager.AcquireLock(bool synchronously) => Value = false;
+        void ILockManager.AcquireLock() => Value = false;
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
@@ -78,7 +78,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         Monitor.Enter(SyncRoot);
-        var result = TryAcquire(ref manager, synchronously: true);
+        var result = TryAcquire(ref manager);
         Monitor.Exit(SyncRoot);
 
         return result;
@@ -96,25 +96,28 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         var suspendedCaller = default(ManualResetCompletionSource);
         bool result;
 
-        lock (SyncRoot)
+        if (result = !manager.Value)
         {
-            if (result = !manager.Value)
+            lock (SyncRoot)
             {
-                for (LinkedValueTaskCompletionSource<bool>? current = WaitQueueHead, next; ; current = next)
+                if (result = !manager.Value)
                 {
-                    if (current is null)
+                    for (LinkedValueTaskCompletionSource<bool>? current = WaitQueueHead, next;; current = next)
                     {
-                        manager.Value = true;
-                        break;
-                    }
+                        if (current is null)
+                        {
+                            manager.Value = true;
+                            break;
+                        }
 
-                    next = current.Next;
+                        next = current.Next;
 
-                    // skip dead node
-                    if (RemoveAndSignal(current, out var resumable))
-                    {
-                        suspendedCaller = resumable ? current : null;
-                        break;
+                        // skip dead node
+                        if (RemoveAndSignal(current, out var resumable))
+                        {
+                            suspendedCaller = resumable ? current : null;
+                            break;
+                        }
                     }
                 }
             }

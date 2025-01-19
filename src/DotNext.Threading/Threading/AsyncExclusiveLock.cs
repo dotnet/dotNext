@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 
 namespace DotNext.Threading;
 
@@ -17,25 +16,23 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     private struct LockManager : ILockManager<DefaultWaitNode>
     {
         // null - not acquired, Sentinel.Instance - acquired asynchronously, Thread - acquired synchronously
-        private object? state;
+        private bool state;
 
-        internal readonly bool Value => state is not null;
+        internal readonly bool Value => state;
 
-        internal readonly bool VolatileRead() => Volatile.Read(in state) is not null;
+        internal readonly bool VolatileRead() => Volatile.Read(in state);
 
-        public readonly bool IsLockAllowed => state is null;
+        public readonly bool IsLockAllowed => state is false;
 
-        public void AcquireLock(bool synchronously)
-            => state = synchronously ? Thread.CurrentThread : Sentinel.Instance;
+        public void AcquireLock()
+            => state = true;
 
-        internal void ExitLock() => state = null;
-
-        readonly bool ILockManager.IsLockHeldByCurrentThread
-            => ReferenceEquals(state, Thread.CurrentThread);
+        internal void ExitLock() => state = false;
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private LockManager manager;
+    private Thread? lockOwner;
 
     /// <summary>
     /// Initializes a new asynchronous exclusive lock.
@@ -88,10 +85,20 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         return TryAcquireCore();
     }
 
+    private bool IsLockHelpByCurrentThread
+    {
+        get => lockOwner is not { } owner || ReferenceEquals(owner, Thread.CurrentThread);
+        set
+        {
+            if (value)
+                lockOwner = Thread.CurrentThread;
+        }
+    }
+
     private bool TryAcquireCore()
     {
         Monitor.Enter(SyncRoot);
-        var result = TryAcquire(ref manager, synchronously: true);
+        var result = IsLockHelpByCurrentThread = TryAcquire(ref manager);
         Monitor.Exit(SyncRoot);
 
         return result;
@@ -106,16 +113,22 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="LockRecursionException">The lock is already acquired by the current thread.</exception>
-    [UnsupportedOSPlatform("browser")]
     public bool TryAcquire(TimeSpan timeout, CancellationToken token = default)
     {
-        ObjectDisposedException.ThrowIf(IsDisposed, this);
+        if (IsLockHelpByCurrentThread)
+            throw new LockRecursionException();
+        
+        bool result;
+        try
+        {
+            IsLockHelpByCurrentThread = result = TryAcquireAsync(timeout, token).Wait();
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == token)
+        {
+            result = false;
+        }
 
-        return timeout == TimeSpan.Zero
-            ? TryAcquireCore()
-            : token.CanBeCanceled
-                ? TryAcquire(new Timeout(timeout), ref manager, token)
-                : TryAcquire(new Timeout(timeout), ref manager);
+        return result;
     }
 
     /// <summary>
@@ -228,7 +241,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
             // skip dead node
             if (RemoveAndSignal(current, out var resumable))
             {
-                manager.AcquireLock(synchronously: false);
+                manager.AcquireLock();
                 return resumable ? current : null;
             }
         }
@@ -252,16 +265,12 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             manager.ExitLock();
+            lockOwner = null;
             suspendedCaller = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
             {
                 Dispose(true);
-                Monitor.PulseAll(SyncRoot);
-            }
-            else
-            {
-                Monitor.Pulse(SyncRoot);
             }
         }
 

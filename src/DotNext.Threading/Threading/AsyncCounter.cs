@@ -21,7 +21,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     [StructLayout(LayoutKind.Auto)]
     private struct StateManager : ILockManager<DefaultWaitNode>
     {
-        required internal long Value;
+        internal required long Value;
 
         internal void Increment(long delta) => Value = checked(Value + delta);
 
@@ -36,7 +36,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 
         readonly bool ILockManager.IsLockAllowed => Value > 0L;
 
-        void ILockManager.AcquireLock(bool synchronously) => Decrement();
+        void ILockManager.AcquireLock() => Decrement();
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
@@ -203,7 +203,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         Monitor.Enter(SyncRoot);
-        var result = TryAcquire(ref manager, synchronously: true);
+        var result = TryAcquire(ref manager);
         Monitor.Exit(SyncRoot);
 
         return result;

@@ -30,7 +30,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
         readonly bool ILockManager.IsLockAllowed => Value;
 
-        readonly void ILockManager.AcquireLock(bool synchronously)
+        readonly void ILockManager.AcquireLock()
         {
             // nothing to do here
         }

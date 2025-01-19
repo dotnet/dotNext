@@ -37,14 +37,13 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     // describes internal state of reader/writer lock
     [StructLayout(LayoutKind.Auto)]
     [SuppressMessage("Usage", "CA1001", Justification = "The disposable field is disposed in the Dispose() method")]
-    internal struct State : IDisposable
+    internal struct State
     {
         private ulong version;  // version of write lock
 
         // number of acquired read locks
         private long readLocks; // volatile
         private bool writeLock;
-        private ThreadLocal<bool>? lockOwnerState;
 
         internal readonly bool WriteLock => Volatile.Read(ref Unsafe.AsRef(in writeLock));
 
@@ -54,10 +53,9 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             readLocks = 1L;
         }
 
-        internal bool ExitLock()
+        internal void ExitLock()
         {
-            bool result;
-            if (result = writeLock)
+            if (writeLock)
             {
                 writeLock = false;
                 readLocks = 0L;
@@ -66,9 +64,6 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             {
                 readLocks--;
             }
-
-            IsLockHelpByCurrentThread = false;
-            return result;
         }
 
         internal readonly long ReadLocks => Volatile.Read(in readLocks);
@@ -79,47 +74,16 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
         internal readonly bool IsUpgradeToWriteLockAllowed => writeLock is false && readLocks is 1L;
 
-        internal void AcquireWriteLock(bool synchronously)
+        internal void AcquireWriteLock()
         {
             readLocks = 0L;
             writeLock = true;
             version++;
-
-            if (synchronously)
-                IsLockHelpByCurrentThread = true;
         }
 
         internal readonly bool IsReadLockAllowed => !writeLock;
 
-        internal void AcquireReadLock(bool synchronously)
-        {
-            readLocks++;
-
-            if (synchronously)
-                IsLockHelpByCurrentThread = true;
-        }
-
-        public bool IsLockHelpByCurrentThread
-        {
-            readonly get => lockOwnerState?.Value ?? false;
-            set
-            {
-                if (lockOwnerState is not null)
-                {
-                    lockOwnerState.Value = value;
-                }
-                else if (value)
-                {
-                    lockOwnerState = new() { Value = true };
-                }
-            }
-        }
-
-        public void Dispose()
-        {
-            lockOwnerState?.Dispose();
-            lockOwnerState = null;
-        }
+        internal void AcquireReadLock() => readLocks++;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -130,10 +94,8 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         readonly bool ILockManager.IsLockAllowed
             => state.IsReadLockAllowed;
 
-        void ILockManager.AcquireLock(bool synchronously)
-            => state.AcquireReadLock(synchronously);
-
-        readonly bool ILockManager.IsLockHeldByCurrentThread => state.IsLockHelpByCurrentThread;
+        void ILockManager.AcquireLock()
+            => state.AcquireReadLock();
 
         static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.Type = LockType.Read;
@@ -147,10 +109,8 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         readonly bool ILockManager.IsLockAllowed
             => state.IsWriteLockAllowed;
 
-        void ILockManager.AcquireLock(bool synchronously)
-            => state.AcquireWriteLock(synchronously);
-        
-        readonly bool ILockManager.IsLockHeldByCurrentThread => state.IsLockHelpByCurrentThread;
+        void ILockManager.AcquireLock()
+            => state.AcquireWriteLock();
 
         static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.Type = LockType.Exclusive;
@@ -164,13 +124,11 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         readonly bool ILockManager.IsLockAllowed
             => state.IsUpgradeToWriteLockAllowed;
 
-        void ILockManager.AcquireLock(bool synchronously)
-            => state.AcquireWriteLock(synchronously: false);
+        void ILockManager.AcquireLock()
+            => state.AcquireWriteLock();
 
         static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
             => node.Type = LockType.Upgrade;
-
-        readonly bool ILockManager.IsLockHeldByCurrentThread => false;
     }
 
     /// <summary>
@@ -238,6 +196,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
     private State state;
     private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
+    private ThreadLocal<bool>? lockOwnerState;
 
     /// <summary>
     /// Initializes a new reader/writer lock.
@@ -250,6 +209,25 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
         state = new();
         pool = new(OnCompleted, concurrencyLevel);
+    }
+    
+    private bool IsLockHelpByCurrentThread
+    {
+        get => lockOwnerState?.Value ?? false;
+        set
+        {
+            if (lockOwnerState is { } ownerFlag)
+            {
+                ownerFlag.Value = value;
+            }
+            else if (value)
+            {
+                Monitor.Enter(SyncRoot);
+                ownerFlag = lockOwnerState ??= new(trackAllValues: false);
+                ownerFlag.Value = true;
+                Monitor.Exit(SyncRoot);
+            }
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -339,20 +317,28 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="LockRecursionException">The lock is already acquired by the current thread.</exception>
-    [UnsupportedOSPlatform("browser")]
     public bool TryEnterReadLock(TimeSpan timeout, CancellationToken token = default)
-    {
-        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        return TryEnter<ReadLockManager>(timeout, token);
-    }
+        => TryEnter<ReadLockManager>(timeout, token);
 
     private bool TryEnter<TLockManager>(TimeSpan timeout, CancellationToken token)
         where TLockManager : struct, ILockManager<WaitNode>
-        => timeout == TimeSpan.Zero
-            ? TryEnter<TLockManager>()
-            : token.CanBeCanceled
-                ? TryAcquire(new Timeout(timeout), ref GetLockManager<TLockManager>(), token)
-                : TryAcquire(new Timeout(timeout), ref GetLockManager<TLockManager>());
+    {
+        if (IsLockHelpByCurrentThread)
+            throw new LockRecursionException();
+
+        bool result;
+        try
+        {
+            IsLockHelpByCurrentThread = result =
+                TryAcquireAsync(ref pool, ref GetLockManager<TLockManager>(), new TimeoutAndCancellationToken(timeout, token)).Wait();
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == token)
+        {
+            result = false;
+        }
+
+        return result;
+    }
 
     /// <summary>
     /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
@@ -404,8 +390,13 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         Monitor.Enter(SyncRoot);
-        var result = stamp.IsValid(in state) && TryAcquire(ref GetLockManager<WriteLockManager>(), synchronously: true);
+        var result = stamp.IsValid(in state) && TryAcquire(ref GetLockManager<WriteLockManager>());
         Monitor.Exit(SyncRoot);
+
+        if (result)
+        {
+            IsLockHelpByCurrentThread = true;
+        }
 
         return result;
     }
@@ -430,7 +421,6 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="LockRecursionException">The lock is already acquired by the current thread.</exception>
-    [UnsupportedOSPlatform("browser")]
     public bool TryEnterWriteLock(TimeSpan timeout, CancellationToken token = default)
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
@@ -491,7 +481,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         where TLockManager : struct, ILockManager<WaitNode>
     {
         Monitor.Enter(SyncRoot);
-        var result = TryAcquire(ref GetLockManager<TLockManager>(), synchronously: true);
+        var result = IsLockHelpByCurrentThread = TryAcquire(ref GetLockManager<TLockManager>());
         Monitor.Exit(SyncRoot);
 
         return result;
@@ -599,7 +589,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
                     if (!RemoveAndSignal(current, out var resumable))
                         continue;
 
-                    state.AcquireWriteLock(synchronously: false);
+                    state.AcquireWriteLock();
                     if (resumable)
                         detachedQueue.Add(current);
 
@@ -612,7 +602,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
                     if (!RemoveAndSignal(current, out resumable))
                         continue;
 
-                    state.AcquireWriteLock(synchronously: false);
+                    state.AcquireWriteLock();
                     if (resumable)
                         detachedQueue.Add(current);
 
@@ -622,7 +612,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
                         goto exit;
 
                     if (RemoveAndSignal(current, out resumable))
-                        state.AcquireReadLock(synchronously: false);
+                        state.AcquireReadLock();
 
                     if (resumable)
                         detachedQueue.Add(current);
@@ -654,23 +644,12 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             if (state.IsWriteLockAllowed)
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
-            var writeLockReleased = state.ExitLock();
+            state.ExitLock();
             suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
             {
                 Dispose(true);
-                Monitor.PulseAll(SyncRoot);
-            }
-            else if (writeLockReleased)
-            {
-                // assuming that we have multiple readers suspended
-                Monitor.PulseAll(SyncRoot);
-            }
-            else
-            {
-                // assuming that we have only one writer suspended
-                Monitor.Pulse(SyncRoot);
             }
         }
 
@@ -698,9 +677,6 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
             state.DowngradeFromWriteLock();
             suspendedCallers = DrainWaitQueue();
-            
-            // resume multiple readers if available
-            Monitor.PulseAll(SyncRoot);
         }
 
         suspendedCallers?.Unwind();
@@ -713,7 +689,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     {
         if (disposing)
         {
-            state.Dispose();
+            lockOwnerState?.Dispose();
         }
 
         base.Dispose(disposing);
