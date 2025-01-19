@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Runtime.Versioning;
 
 namespace DotNext.Threading;
 
@@ -108,7 +107,6 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
             result = !manager.Value;
             manager.Value = !autoReset;
             suspendedCallers = DetachWaitQueue()?.SetResult(true, out _);
-            Monitor.PulseAll(SyncRoot);
         }
 
         suspendedCallers?.Unwind();
@@ -155,43 +153,4 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
         => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
-
-    /// <summary>
-    /// Blocks the current thread until this event is set.
-    /// </summary>
-    /// <param name="timeout">The time to wait for the event.</param>
-    /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
-    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
-    [UnsupportedOSPlatform("browser")]
-    public bool Wait(TimeSpan timeout)
-    {
-        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        return Wait(new Timeout(timeout));
-    }
-
-    [UnsupportedOSPlatform("browser")]
-    private bool Wait(Timeout timeout)
-    {
-        bool result;
-        if (timeout.TryGetRemainingTime(out var remainingTime) && Monitor.TryEnter(SyncRoot, remainingTime))
-        {
-            try
-            {
-                result = TryAcquire(ref manager, synchronously: true) ||
-                         timeout.TryGetRemainingTime(out remainingTime)
-                         && Monitor.Wait(SyncRoot, remainingTime);
-            }
-            finally
-            {
-                Monitor.Exit(SyncRoot);
-            }
-        }
-        else
-        {
-            result = false;
-        }
-
-        return result;
-    }
 }
