@@ -1,10 +1,8 @@
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 
 namespace DotNext.Threading;
 
@@ -159,7 +157,7 @@ public class QueuedSynchronizer : Disposable
         where TLockManager : struct, ILockManager<TNode>
         => EnqueueNode<TNode, StaticInitializer<TNode, TLockManager>>(ref pool, new(flags));
 
-    private protected bool TryAcquire<TLockManager>(ref TLockManager manager, [ConstantExpected] bool synchronously)
+    private protected bool TryAcquire<TLockManager>(ref TLockManager manager)
         where TLockManager : struct, ILockManager
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
@@ -167,110 +165,8 @@ public class QueuedSynchronizer : Disposable
         if (TLockManager.RequiresEmptyQueue && WaitQueueHead is not null || !manager.IsLockAllowed)
             return false;
 
-        manager.AcquireLock(synchronously);
+        manager.AcquireLock();
         return true;
-    }
-    
-    [UnsupportedOSPlatform("browser")]
-    private protected bool TryAcquire<TLockManager>(Timeout timeout, ref TLockManager manager)
-        where TLockManager : struct, ILockManager
-    {
-        bool result;
-        if (timeout.TryGetRemainingTime(out var remainingTime) && Monitor.TryEnter(SyncRoot, remainingTime))
-        {
-            try
-            {
-                if (manager.IsLockHeldByCurrentThread)
-                    throw new LockRecursionException();
-
-                while (!(result = TryAcquireOrThrow(ref manager)))
-                {
-                    if (timeout.TryGetRemainingTime(out remainingTime) && Monitor.Wait(SyncRoot, remainingTime))
-                        continue;
-                    
-                    break;
-                }
-            }
-            finally
-            {
-                Monitor.Exit(SyncRoot);
-            }
-        }
-        else
-        {
-            result = false;
-        }
-
-        return result;
-    }
-
-    [UnsupportedOSPlatform("browser")]
-    private protected bool TryAcquire<TLockManager>(Timeout timeout, ref TLockManager manager, CancellationToken token)
-        where TLockManager : struct, ILockManager
-    {
-        Debug.Assert(token.CanBeCanceled);
-
-        var result = false;
-        var entered = false;
-        var registration = token.UnsafeRegister(Interrupt, Thread.CurrentThread);
-        try
-        {
-            if (entered = timeout.TryGetRemainingTime(out var remainingTime) && Monitor.TryEnter(SyncRoot, remainingTime))
-            {
-                if (manager.IsLockHeldByCurrentThread)
-                    throw new LockRecursionException();
-                
-                while (!(result = TryAcquireOrThrow(ref manager)))
-                {
-                    if (timeout.TryGetRemainingTime(out remainingTime) && Monitor.Wait(SyncRoot, remainingTime))
-                        continue;
-
-                    goto exit;
-                }
-            }
-        }
-        catch (ThreadInterruptedException) when (token.IsCancellationRequested)
-        {
-            // nothing to do
-        }
-        finally
-        {
-            if (entered)
-                Monitor.Exit(SyncRoot);
-
-            registration.Dispose();
-        }
-
-        // make sure that the interruption was not called on this thread concurrently with registration.Dispose()
-        if (token.IsCancellationRequested)
-        {
-            try
-            {
-                Thread.Sleep(0); // reset interrupted state
-            }
-            catch (ThreadInterruptedException)
-            {
-                // suspend exception
-            }
-        }
-
-        exit:
-        return result;
-        
-        static void Interrupt(object? thread)
-        {
-            Debug.Assert(thread is Thread);
-            
-            Unsafe.As<Thread>(thread).Interrupt();
-        }
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private bool TryAcquireOrThrow<TLockManager>(ref TLockManager manager)
-        where TLockManager : struct, ILockManager
-    {
-        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        return TryAcquire(ref manager, synchronously: true);
     }
     
     private T AcquireAsync<T, TNode, TInitializer, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, TInitializer initializer, TOptions options)
@@ -303,7 +199,7 @@ public class QueuedSynchronizer : Disposable
                         ? Interrupt(options.InterruptionReason)
                         : null;
 
-                    task = TryAcquire(ref manager, synchronously: false)
+                    task = TryAcquire(ref manager)
                         ? TNode.SuccessfulTask
                         : TNode.TimedOutTask;
                 }
@@ -330,7 +226,7 @@ public class QueuedSynchronizer : Disposable
                         ? Interrupt(options.InterruptionReason)
                         : null;
 
-                    if (TryAcquire(ref manager, synchronously: false))
+                    if (TryAcquire(ref manager))
                     {
                         task = TNode.SuccessfulTask;
                         break;
@@ -429,7 +325,6 @@ public class QueuedSynchronizer : Disposable
         lock (SyncRoot)
         {
             suspendedCallers = DetachWaitQueue()?.SetException(reason, out _);
-            Monitor.PulseAll(SyncRoot);
         }
 
         suspendedCallers?.Unwind();
@@ -659,9 +554,7 @@ public class QueuedSynchronizer : Disposable
     {
         bool IsLockAllowed { get; }
 
-        void AcquireLock(bool synchronously);
-
-        bool IsLockHeldByCurrentThread => false;
+        void AcquireLock();
 
         static virtual bool RequiresEmptyQueue => true;
     }

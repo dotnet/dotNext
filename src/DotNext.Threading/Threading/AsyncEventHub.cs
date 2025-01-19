@@ -562,7 +562,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 
         bool ILockManager.IsLockAllowed => (state.Value & mask) == mask;
 
-        void ILockManager.AcquireLock(bool synchronously)
+        void ILockManager.AcquireLock()
         {
             // no need to reset events
         }
@@ -595,7 +595,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 
         bool ILockManager.IsLockAllowed => (state.Value & mask) != UInt128.Zero;
 
-        void ILockManager.AcquireLock(bool synchronously)
+        void ILockManager.AcquireLock()
         {
             if (Events is { } collection)
                 FillIndices(state.Value & mask, collection);
