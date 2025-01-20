@@ -20091,12 +20091,15 @@ references:
   commentId: T:DotNext.Linq.Expressions.ExpressionBuilder
   fullName: DotNext.Linq.Expressions.ExpressionBuilder
   nameWithType: ExpressionBuilder
-- uid: DotNext.Linq.Expressions.ExpressionBuilder.Add(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
-  name: Add(Expression, Expression)
-  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Add_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_
-  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Add(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
-  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Add(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)
-  nameWithType: ExpressionBuilder.Add(Expression, Expression)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Add(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression,System.Boolean)
+  name: Add(Expression, Expression, bool)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Add_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_System_Boolean_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Add(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression,System.Boolean)
+  name.vb: Add(Expression, Expression, Boolean)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Add(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, bool)
+  fullName.vb: DotNext.Linq.Expressions.ExpressionBuilder.Add(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, Boolean)
+  nameWithType: ExpressionBuilder.Add(Expression, Expression, bool)
+  nameWithType.vb: ExpressionBuilder.Add(Expression, Expression, Boolean)
 - uid: DotNext.Linq.Expressions.ExpressionBuilder.Add*
   name: Add
   href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Add_
@@ -20861,12 +20864,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.ExpressionBuilder.Modulo
   nameWithType: ExpressionBuilder.Modulo
-- uid: DotNext.Linq.Expressions.ExpressionBuilder.Multiply(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
-  name: Multiply(Expression, Expression)
-  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Multiply_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_
-  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Multiply(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
-  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Multiply(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)
-  nameWithType: ExpressionBuilder.Multiply(Expression, Expression)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Multiply(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression,System.Boolean)
+  name: Multiply(Expression, Expression, bool)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Multiply_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_System_Boolean_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Multiply(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression,System.Boolean)
+  name.vb: Multiply(Expression, Expression, Boolean)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Multiply(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, bool)
+  fullName.vb: DotNext.Linq.Expressions.ExpressionBuilder.Multiply(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, Boolean)
+  nameWithType: ExpressionBuilder.Multiply(Expression, Expression, bool)
+  nameWithType.vb: ExpressionBuilder.Multiply(Expression, Expression, Boolean)
 - uid: DotNext.Linq.Expressions.ExpressionBuilder.Multiply*
   name: Multiply
   href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Multiply_
@@ -20874,12 +20880,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.ExpressionBuilder.Multiply
   nameWithType: ExpressionBuilder.Multiply
-- uid: DotNext.Linq.Expressions.ExpressionBuilder.Negate(System.Linq.Expressions.Expression)
-  name: Negate(Expression)
-  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Negate_System_Linq_Expressions_Expression_
-  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Negate(System.Linq.Expressions.Expression)
-  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Negate(System.Linq.Expressions.Expression)
-  nameWithType: ExpressionBuilder.Negate(Expression)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Negate(System.Linq.Expressions.Expression,System.Boolean)
+  name: Negate(Expression, bool)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Negate_System_Linq_Expressions_Expression_System_Boolean_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Negate(System.Linq.Expressions.Expression,System.Boolean)
+  name.vb: Negate(Expression, Boolean)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Negate(System.Linq.Expressions.Expression, bool)
+  fullName.vb: DotNext.Linq.Expressions.ExpressionBuilder.Negate(System.Linq.Expressions.Expression, Boolean)
+  nameWithType: ExpressionBuilder.Negate(Expression, bool)
+  nameWithType.vb: ExpressionBuilder.Negate(Expression, Boolean)
 - uid: DotNext.Linq.Expressions.ExpressionBuilder.Negate*
   name: Negate
   href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Negate_
@@ -21239,12 +21248,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.ExpressionBuilder.Return
   nameWithType: ExpressionBuilder.Return
-- uid: DotNext.Linq.Expressions.ExpressionBuilder.RightShift(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
-  name: RightShift(Expression, Expression)
-  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_RightShift_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_
-  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.RightShift(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
-  fullName: DotNext.Linq.Expressions.ExpressionBuilder.RightShift(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)
-  nameWithType: ExpressionBuilder.RightShift(Expression, Expression)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.RightShift(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression,System.Boolean)
+  name: RightShift(Expression, Expression, bool)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_RightShift_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_System_Boolean_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.RightShift(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression,System.Boolean)
+  name.vb: RightShift(Expression, Expression, Boolean)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.RightShift(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, bool)
+  fullName.vb: DotNext.Linq.Expressions.ExpressionBuilder.RightShift(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, Boolean)
+  nameWithType: ExpressionBuilder.RightShift(Expression, Expression, bool)
+  nameWithType.vb: ExpressionBuilder.RightShift(Expression, Expression, Boolean)
 - uid: DotNext.Linq.Expressions.ExpressionBuilder.RightShift*
   name: RightShift
   href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_RightShift_
@@ -21274,12 +21286,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.ExpressionBuilder.Slice
   nameWithType: ExpressionBuilder.Slice
-- uid: DotNext.Linq.Expressions.ExpressionBuilder.Subtract(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
-  name: Subtract(Expression, Expression)
-  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Subtract_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_
-  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Subtract(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
-  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Subtract(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)
-  nameWithType: ExpressionBuilder.Subtract(Expression, Expression)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Subtract(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression,System.Boolean)
+  name: Subtract(Expression, Expression, bool)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Subtract_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_System_Boolean_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Subtract(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression,System.Boolean)
+  name.vb: Subtract(Expression, Expression, Boolean)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Subtract(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, bool)
+  fullName.vb: DotNext.Linq.Expressions.ExpressionBuilder.Subtract(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression, Boolean)
+  nameWithType: ExpressionBuilder.Subtract(Expression, Expression, bool)
+  nameWithType.vb: ExpressionBuilder.Subtract(Expression, Expression, Boolean)
 - uid: DotNext.Linq.Expressions.ExpressionBuilder.Subtract*
   name: Subtract
   href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Subtract_
@@ -22686,6 +22701,96 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.SliceExpression.VisitChildren
   nameWithType: SliceExpression.VisitChildren
+- uid: DotNext.Linq.Expressions.UnsignedRightShiftExpression
+  name: UnsignedRightShiftExpression
+  href: api/DotNext.Linq.Expressions.UnsignedRightShiftExpression.html
+  commentId: T:DotNext.Linq.Expressions.UnsignedRightShiftExpression
+  fullName: DotNext.Linq.Expressions.UnsignedRightShiftExpression
+  nameWithType: UnsignedRightShiftExpression
+- uid: DotNext.Linq.Expressions.UnsignedRightShiftExpression.#ctor(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
+  name: UnsignedRightShiftExpression(Expression, Expression)
+  href: api/DotNext.Linq.Expressions.UnsignedRightShiftExpression.html#DotNext_Linq_Expressions_UnsignedRightShiftExpression__ctor_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Linq.Expressions.UnsignedRightShiftExpression.#ctor(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
+  name.vb: New(Expression, Expression)
+  fullName: DotNext.Linq.Expressions.UnsignedRightShiftExpression.UnsignedRightShiftExpression(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)
+  fullName.vb: DotNext.Linq.Expressions.UnsignedRightShiftExpression.New(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)
+  nameWithType: UnsignedRightShiftExpression.UnsignedRightShiftExpression(Expression, Expression)
+  nameWithType.vb: UnsignedRightShiftExpression.New(Expression, Expression)
+- uid: DotNext.Linq.Expressions.UnsignedRightShiftExpression.#ctor*
+  name: UnsignedRightShiftExpression
+  href: api/DotNext.Linq.Expressions.UnsignedRightShiftExpression.html#DotNext_Linq_Expressions_UnsignedRightShiftExpression__ctor_
+  commentId: Overload:DotNext.Linq.Expressions.UnsignedRightShiftExpression.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Linq.Expressions.UnsignedRightShiftExpression.UnsignedRightShiftExpression
+  fullName.vb: DotNext.Linq.Expressions.UnsignedRightShiftExpression.New
+  nameWithType: UnsignedRightShiftExpression.UnsignedRightShiftExpression
+  nameWithType.vb: UnsignedRightShiftExpression.New
+- uid: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Left
+  name: Left
+  href: api/DotNext.Linq.Expressions.UnsignedRightShiftExpression.html#DotNext_Linq_Expressions_UnsignedRightShiftExpression_Left
+  commentId: P:DotNext.Linq.Expressions.UnsignedRightShiftExpression.Left
+  fullName: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Left
+  nameWithType: UnsignedRightShiftExpression.Left
+- uid: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Left*
+  name: Left
+  href: api/DotNext.Linq.Expressions.UnsignedRightShiftExpression.html#DotNext_Linq_Expressions_UnsignedRightShiftExpression_Left_
+  commentId: Overload:DotNext.Linq.Expressions.UnsignedRightShiftExpression.Left
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Left
+  nameWithType: UnsignedRightShiftExpression.Left
+- uid: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Method
+  name: Method
+  href: api/DotNext.Linq.Expressions.UnsignedRightShiftExpression.html#DotNext_Linq_Expressions_UnsignedRightShiftExpression_Method
+  commentId: P:DotNext.Linq.Expressions.UnsignedRightShiftExpression.Method
+  fullName: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Method
+  nameWithType: UnsignedRightShiftExpression.Method
+- uid: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Method*
+  name: Method
+  href: api/DotNext.Linq.Expressions.UnsignedRightShiftExpression.html#DotNext_Linq_Expressions_UnsignedRightShiftExpression_Method_
+  commentId: Overload:DotNext.Linq.Expressions.UnsignedRightShiftExpression.Method
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Method
+  nameWithType: UnsignedRightShiftExpression.Method
+- uid: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Reduce
+  name: Reduce()
+  href: api/DotNext.Linq.Expressions.UnsignedRightShiftExpression.html#DotNext_Linq_Expressions_UnsignedRightShiftExpression_Reduce
+  commentId: M:DotNext.Linq.Expressions.UnsignedRightShiftExpression.Reduce
+  fullName: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Reduce()
+  nameWithType: UnsignedRightShiftExpression.Reduce()
+- uid: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Reduce*
+  name: Reduce
+  href: api/DotNext.Linq.Expressions.UnsignedRightShiftExpression.html#DotNext_Linq_Expressions_UnsignedRightShiftExpression_Reduce_
+  commentId: Overload:DotNext.Linq.Expressions.UnsignedRightShiftExpression.Reduce
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Reduce
+  nameWithType: UnsignedRightShiftExpression.Reduce
+- uid: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Right
+  name: Right
+  href: api/DotNext.Linq.Expressions.UnsignedRightShiftExpression.html#DotNext_Linq_Expressions_UnsignedRightShiftExpression_Right
+  commentId: P:DotNext.Linq.Expressions.UnsignedRightShiftExpression.Right
+  fullName: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Right
+  nameWithType: UnsignedRightShiftExpression.Right
+- uid: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Right*
+  name: Right
+  href: api/DotNext.Linq.Expressions.UnsignedRightShiftExpression.html#DotNext_Linq_Expressions_UnsignedRightShiftExpression_Right_
+  commentId: Overload:DotNext.Linq.Expressions.UnsignedRightShiftExpression.Right
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.UnsignedRightShiftExpression.Right
+  nameWithType: UnsignedRightShiftExpression.Right
+- uid: DotNext.Linq.Expressions.UnsignedRightShiftExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  name: VisitChildren(ExpressionVisitor)
+  href: api/DotNext.Linq.Expressions.UnsignedRightShiftExpression.html#DotNext_Linq_Expressions_UnsignedRightShiftExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor_
+  commentId: M:DotNext.Linq.Expressions.UnsignedRightShiftExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  fullName: DotNext.Linq.Expressions.UnsignedRightShiftExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  nameWithType: UnsignedRightShiftExpression.VisitChildren(ExpressionVisitor)
+- uid: DotNext.Linq.Expressions.UnsignedRightShiftExpression.VisitChildren*
+  name: VisitChildren
+  href: api/DotNext.Linq.Expressions.UnsignedRightShiftExpression.html#DotNext_Linq_Expressions_UnsignedRightShiftExpression_VisitChildren_
+  commentId: Overload:DotNext.Linq.Expressions.UnsignedRightShiftExpression.VisitChildren
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.UnsignedRightShiftExpression.VisitChildren
+  nameWithType: UnsignedRightShiftExpression.VisitChildren
 - uid: DotNext.Linq.Expressions.UsingExpression
   name: UsingExpression
   href: api/DotNext.Linq.Expressions.UsingExpression.html
@@ -35478,22 +35583,6 @@ references:
   fullName.vb: DotNext.Optional.Convert(Of TInput, TOutput)(System.Threading.Tasks.Task(Of DotNext.Optional(Of TInput)), System.Converter(Of TInput, TOutput))
   nameWithType: Optional.Convert<TInput, TOutput>(Task<Optional<TInput>>, Converter<TInput, TOutput>)
   nameWithType.vb: Optional.Convert(Of TInput, TOutput)(Task(Of Optional(Of TInput)), Converter(Of TInput, TOutput))
-- uid: DotNext.Optional.Create*
-  name: Create
-  href: api/DotNext.Optional.html#DotNext_Optional_Create_
-  commentId: Overload:DotNext.Optional.Create
-  isSpec: "True"
-  fullName: DotNext.Optional.Create
-  nameWithType: Optional.Create
-- uid: DotNext.Optional.Create``2(``1)
-  name: Create<T, TMonad>(TMonad)
-  href: api/DotNext.Optional.html#DotNext_Optional_Create__2___1_
-  commentId: M:DotNext.Optional.Create``2(``1)
-  name.vb: Create(Of T, TMonad)(TMonad)
-  fullName: DotNext.Optional.Create<T, TMonad>(TMonad)
-  fullName.vb: DotNext.Optional.Create(Of T, TMonad)(TMonad)
-  nameWithType: Optional.Create<T, TMonad>(TMonad)
-  nameWithType.vb: Optional.Create(Of T, TMonad)(TMonad)
 - uid: DotNext.Optional.Flatten*
   name: Flatten
   href: api/DotNext.Optional.html#DotNext_Optional_Flatten_
@@ -35759,6 +35848,24 @@ references:
   fullName.vb: DotNext.Optional(Of T).Box
   nameWithType: Optional<T>.Box
   nameWithType.vb: Optional(Of T).Box
+- uid: DotNext.Optional`1.Concat*
+  name: Concat
+  href: api/DotNext.Optional-1.html#DotNext_Optional_1_Concat_
+  commentId: Overload:DotNext.Optional`1.Concat
+  isSpec: "True"
+  fullName: DotNext.Optional<T>.Concat
+  fullName.vb: DotNext.Optional(Of T).Concat
+  nameWithType: Optional<T>.Concat
+  nameWithType.vb: Optional(Of T).Concat
+- uid: DotNext.Optional`1.Concat``1(DotNext.Optional{``0}@)
+  name: Concat<TOther>(in Optional<TOther>)
+  href: api/DotNext.Optional-1.html#DotNext_Optional_1_Concat__1_DotNext_Optional___0___
+  commentId: M:DotNext.Optional`1.Concat``1(DotNext.Optional{``0}@)
+  name.vb: Concat(Of TOther)(Optional(Of TOther))
+  fullName: DotNext.Optional<T>.Concat<TOther>(in DotNext.Optional<TOther>)
+  fullName.vb: DotNext.Optional(Of T).Concat(Of TOther)(DotNext.Optional(Of TOther))
+  nameWithType: Optional<T>.Concat<TOther>(in Optional<TOther>)
+  nameWithType.vb: Optional(Of T).Concat(Of TOther)(Optional(Of TOther))
 - uid: DotNext.Optional`1.Convert*
   name: Convert
   href: api/DotNext.Optional-1.html#DotNext_Optional_1_Convert_
@@ -35795,6 +35902,24 @@ references:
   fullName.vb: DotNext.Optional(Of T).Convert(Of TResult)(System.Converter(Of T, TResult))
   nameWithType: Optional<T>.Convert<TResult>(Converter<T, TResult>)
   nameWithType.vb: Optional(Of T).Convert(Of TResult)(Converter(Of T, TResult))
+- uid: DotNext.Optional`1.Create*
+  name: Create
+  href: api/DotNext.Optional-1.html#DotNext_Optional_1_Create_
+  commentId: Overload:DotNext.Optional`1.Create
+  isSpec: "True"
+  fullName: DotNext.Optional<T>.Create
+  fullName.vb: DotNext.Optional(Of T).Create
+  nameWithType: Optional<T>.Create
+  nameWithType.vb: Optional(Of T).Create
+- uid: DotNext.Optional`1.Create``1(``0)
+  name: Create<TMonad>(TMonad)
+  href: api/DotNext.Optional-1.html#DotNext_Optional_1_Create__1___0_
+  commentId: M:DotNext.Optional`1.Create``1(``0)
+  name.vb: Create(Of TMonad)(TMonad)
+  fullName: DotNext.Optional<T>.Create<TMonad>(TMonad)
+  fullName.vb: DotNext.Optional(Of T).Create(Of TMonad)(TMonad)
+  nameWithType: Optional<T>.Create<TMonad>(TMonad)
+  nameWithType.vb: Optional(Of T).Create(Of TMonad)(TMonad)
 - uid: DotNext.Optional`1.Equals(DotNext.Optional{`0})
   name: Equals(Optional<T>)
   href: api/DotNext.Optional-1.html#DotNext_Optional_1_Equals_DotNext_Optional__0__
@@ -37586,6 +37711,23 @@ references:
   fullName.vb: DotNext.Result(Of T).New
   nameWithType: Result<T>.Result
   nameWithType.vb: Result(Of T).New
+- uid: DotNext.Result`1.AsTask
+  name: AsTask()
+  href: api/DotNext.Result-1.html#DotNext_Result_1_AsTask
+  commentId: M:DotNext.Result`1.AsTask
+  fullName: DotNext.Result<T>.AsTask()
+  fullName.vb: DotNext.Result(Of T).AsTask()
+  nameWithType: Result<T>.AsTask()
+  nameWithType.vb: Result(Of T).AsTask()
+- uid: DotNext.Result`1.AsTask*
+  name: AsTask
+  href: api/DotNext.Result-1.html#DotNext_Result_1_AsTask_
+  commentId: Overload:DotNext.Result`1.AsTask
+  isSpec: "True"
+  fullName: DotNext.Result<T>.AsTask
+  fullName.vb: DotNext.Result(Of T).AsTask
+  nameWithType: Result<T>.AsTask
+  nameWithType.vb: Result(Of T).AsTask
 - uid: DotNext.Result`1.Box
   name: Box()
   href: api/DotNext.Result-1.html#DotNext_Result_1_Box
@@ -37886,6 +38028,15 @@ references:
   fullName.vb: DotNext.Result(Of T).CType(DotNext.Optional(Of T))
   nameWithType: Result<T>.explicit operator Result<T>(in Optional<T>)
   nameWithType.vb: Result(Of T).CType(Optional(Of T))
+- uid: DotNext.Result`1.op_Explicit(DotNext.Result{`0}@)~System.Threading.Tasks.ValueTask{`0}
+  name: explicit operator ValueTask<T>(in Result<T>)
+  href: api/DotNext.Result-1.html#DotNext_Result_1_op_Explicit_DotNext_Result__0____System_Threading_Tasks_ValueTask__0_
+  commentId: M:DotNext.Result`1.op_Explicit(DotNext.Result{`0}@)~System.Threading.Tasks.ValueTask{`0}
+  name.vb: CType(Result(Of T))
+  fullName: DotNext.Result<T>.explicit operator System.Threading.Tasks.ValueTask<T>(in DotNext.Result<T>)
+  fullName.vb: DotNext.Result(Of T).CType(DotNext.Result(Of T))
+  nameWithType: Result<T>.explicit operator ValueTask<T>(in Result<T>)
+  nameWithType.vb: Result(Of T).CType(Result(Of T))
 - uid: DotNext.Result`1.op_Explicit(DotNext.Result{`0}@)~`0
   name: explicit operator T(in Result<T>)
   href: api/DotNext.Result-1.html#DotNext_Result_1_op_Explicit_DotNext_Result__0_____0
@@ -38985,14 +39136,14 @@ references:
   fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).New
   nameWithType: RandomAccessCache<TKey, TValue>.RandomAccessCache
   nameWithType.vb: RandomAccessCache(Of TKey, TValue).New
-- uid: DotNext.Runtime.Caching.RandomAccessCache`2.Change(`0,System.TimeSpan)
-  name: Change(TKey, TimeSpan)
-  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Change__0_System_TimeSpan_
-  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.Change(`0,System.TimeSpan)
-  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.Change(TKey, System.TimeSpan)
-  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).Change(TKey, System.TimeSpan)
-  nameWithType: RandomAccessCache<TKey, TValue>.Change(TKey, TimeSpan)
-  nameWithType.vb: RandomAccessCache(Of TKey, TValue).Change(TKey, TimeSpan)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.Change(`0,System.TimeSpan,System.Threading.CancellationToken)
+  name: Change(TKey, TimeSpan, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Change__0_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.Change(`0,System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.Change(TKey, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).Change(TKey, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TKey, TValue>.Change(TKey, TimeSpan, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).Change(TKey, TimeSpan, CancellationToken)
 - uid: DotNext.Runtime.Caching.RandomAccessCache`2.Change*
   name: Change
   href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Change_
@@ -39088,14 +39239,14 @@ references:
   fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).Eviction
   nameWithType: RandomAccessCache<TKey, TValue>.Eviction
   nameWithType.vb: RandomAccessCache(Of TKey, TValue).Eviction
-- uid: DotNext.Runtime.Caching.RandomAccessCache`2.Invalidate(`0,System.TimeSpan)
-  name: Invalidate(TKey, TimeSpan)
-  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Invalidate__0_System_TimeSpan_
-  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.Invalidate(`0,System.TimeSpan)
-  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.Invalidate(TKey, System.TimeSpan)
-  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).Invalidate(TKey, System.TimeSpan)
-  nameWithType: RandomAccessCache<TKey, TValue>.Invalidate(TKey, TimeSpan)
-  nameWithType.vb: RandomAccessCache(Of TKey, TValue).Invalidate(TKey, TimeSpan)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.Invalidate(`0,System.TimeSpan,System.Threading.CancellationToken)
+  name: Invalidate(TKey, TimeSpan, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Invalidate__0_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.Invalidate(`0,System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.Invalidate(TKey, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).Invalidate(TKey, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TKey, TValue>.Invalidate(TKey, TimeSpan, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).Invalidate(TKey, TimeSpan, CancellationToken)
 - uid: DotNext.Runtime.Caching.RandomAccessCache`2.Invalidate*
   name: Invalidate
   href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Invalidate_
@@ -39235,15 +39386,15 @@ references:
   fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).TryRead
   nameWithType: RandomAccessCache<TKey, TValue>.TryRead
   nameWithType.vb: RandomAccessCache(Of TKey, TValue).TryRead
-- uid: DotNext.Runtime.Caching.RandomAccessCache`2.TryRemove(`0,System.TimeSpan,DotNext.Runtime.Caching.RandomAccessCache{`0,`1}.ReadSession@)
-  name: TryRemove(TKey, TimeSpan, out ReadSession)
-  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_TryRemove__0_System_TimeSpan_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__
-  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.TryRemove(`0,System.TimeSpan,DotNext.Runtime.Caching.RandomAccessCache{`0,`1}.ReadSession@)
-  name.vb: TryRemove(TKey, TimeSpan, ReadSession)
-  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.TryRemove(TKey, System.TimeSpan, out DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadSession)
-  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).TryRemove(TKey, System.TimeSpan, DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadSession)
-  nameWithType: RandomAccessCache<TKey, TValue>.TryRemove(TKey, TimeSpan, out RandomAccessCache<TKey, TValue>.ReadSession)
-  nameWithType.vb: RandomAccessCache(Of TKey, TValue).TryRemove(TKey, TimeSpan, RandomAccessCache(Of TKey, TValue).ReadSession)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.TryRemove(`0,DotNext.Runtime.Caching.RandomAccessCache{`0,`1}.ReadSession@,System.TimeSpan,System.Threading.CancellationToken)
+  name: TryRemove(TKey, out ReadSession, TimeSpan, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_TryRemove__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.TryRemove(`0,DotNext.Runtime.Caching.RandomAccessCache{`0,`1}.ReadSession@,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: TryRemove(TKey, ReadSession, TimeSpan, CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.TryRemove(TKey, out DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadSession, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).TryRemove(TKey, DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadSession, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TKey, TValue>.TryRemove(TKey, out RandomAccessCache<TKey, TValue>.ReadSession, TimeSpan, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).TryRemove(TKey, RandomAccessCache(Of TKey, TValue).ReadSession, TimeSpan, CancellationToken)
 - uid: DotNext.Runtime.Caching.RandomAccessCache`2.TryRemove*
   name: TryRemove
   href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_TryRemove_
@@ -44478,6 +44629,82 @@ references:
   isSpec: "True"
   fullName: DotNext.Text.EncodingExtensions.WithoutPreamble
   nameWithType: EncodingExtensions.WithoutPreamble
+- uid: DotNext.Text.Encodings.Web
+  name: DotNext.Text.Encodings.Web
+  href: api/DotNext.Text.Encodings.Web.html
+  commentId: N:DotNext.Text.Encodings.Web
+  fullName: DotNext.Text.Encodings.Web
+  nameWithType: DotNext.Text.Encodings.Web
+- uid: DotNext.Text.Encodings.Web.FileUri
+  name: FileUri
+  href: api/DotNext.Text.Encodings.Web.FileUri.html
+  commentId: T:DotNext.Text.Encodings.Web.FileUri
+  fullName: DotNext.Text.Encodings.Web.FileUri
+  nameWithType: FileUri
+- uid: DotNext.Text.Encodings.Web.FileUri.CreateFromFileName(System.ReadOnlySpan{System.Char},System.Text.Encodings.Web.TextEncoderSettings)
+  name: CreateFromFileName(ReadOnlySpan<char>, TextEncoderSettings?)
+  href: api/DotNext.Text.Encodings.Web.FileUri.html#DotNext_Text_Encodings_Web_FileUri_CreateFromFileName_System_ReadOnlySpan_System_Char__System_Text_Encodings_Web_TextEncoderSettings_
+  commentId: M:DotNext.Text.Encodings.Web.FileUri.CreateFromFileName(System.ReadOnlySpan{System.Char},System.Text.Encodings.Web.TextEncoderSettings)
+  name.vb: CreateFromFileName(ReadOnlySpan(Of Char), TextEncoderSettings)
+  fullName: DotNext.Text.Encodings.Web.FileUri.CreateFromFileName(System.ReadOnlySpan<char>, System.Text.Encodings.Web.TextEncoderSettings?)
+  fullName.vb: DotNext.Text.Encodings.Web.FileUri.CreateFromFileName(System.ReadOnlySpan(Of Char), System.Text.Encodings.Web.TextEncoderSettings)
+  nameWithType: FileUri.CreateFromFileName(ReadOnlySpan<char>, TextEncoderSettings?)
+  nameWithType.vb: FileUri.CreateFromFileName(ReadOnlySpan(Of Char), TextEncoderSettings)
+- uid: DotNext.Text.Encodings.Web.FileUri.CreateFromFileName*
+  name: CreateFromFileName
+  href: api/DotNext.Text.Encodings.Web.FileUri.html#DotNext_Text_Encodings_Web_FileUri_CreateFromFileName_
+  commentId: Overload:DotNext.Text.Encodings.Web.FileUri.CreateFromFileName
+  isSpec: "True"
+  fullName: DotNext.Text.Encodings.Web.FileUri.CreateFromFileName
+  nameWithType: FileUri.CreateFromFileName
+- uid: DotNext.Text.Encodings.Web.FileUri.GetMaxEncodedLength(System.ReadOnlySpan{System.Char},System.Text.Encodings.Web.UrlEncoder)
+  name: GetMaxEncodedLength(ReadOnlySpan<char>, UrlEncoder?)
+  href: api/DotNext.Text.Encodings.Web.FileUri.html#DotNext_Text_Encodings_Web_FileUri_GetMaxEncodedLength_System_ReadOnlySpan_System_Char__System_Text_Encodings_Web_UrlEncoder_
+  commentId: M:DotNext.Text.Encodings.Web.FileUri.GetMaxEncodedLength(System.ReadOnlySpan{System.Char},System.Text.Encodings.Web.UrlEncoder)
+  name.vb: GetMaxEncodedLength(ReadOnlySpan(Of Char), UrlEncoder)
+  fullName: DotNext.Text.Encodings.Web.FileUri.GetMaxEncodedLength(System.ReadOnlySpan<char>, System.Text.Encodings.Web.UrlEncoder?)
+  fullName.vb: DotNext.Text.Encodings.Web.FileUri.GetMaxEncodedLength(System.ReadOnlySpan(Of Char), System.Text.Encodings.Web.UrlEncoder)
+  nameWithType: FileUri.GetMaxEncodedLength(ReadOnlySpan<char>, UrlEncoder?)
+  nameWithType.vb: FileUri.GetMaxEncodedLength(ReadOnlySpan(Of Char), UrlEncoder)
+- uid: DotNext.Text.Encodings.Web.FileUri.GetMaxEncodedLength*
+  name: GetMaxEncodedLength
+  href: api/DotNext.Text.Encodings.Web.FileUri.html#DotNext_Text_Encodings_Web_FileUri_GetMaxEncodedLength_
+  commentId: Overload:DotNext.Text.Encodings.Web.FileUri.GetMaxEncodedLength
+  isSpec: "True"
+  fullName: DotNext.Text.Encodings.Web.FileUri.GetMaxEncodedLength
+  nameWithType: FileUri.GetMaxEncodedLength
+- uid: DotNext.Text.Encodings.Web.FileUri.GetUri(System.IO.FileSystemInfo,System.Text.Encodings.Web.TextEncoderSettings)
+  name: GetUri(FileSystemInfo, TextEncoderSettings?)
+  href: api/DotNext.Text.Encodings.Web.FileUri.html#DotNext_Text_Encodings_Web_FileUri_GetUri_System_IO_FileSystemInfo_System_Text_Encodings_Web_TextEncoderSettings_
+  commentId: M:DotNext.Text.Encodings.Web.FileUri.GetUri(System.IO.FileSystemInfo,System.Text.Encodings.Web.TextEncoderSettings)
+  name.vb: GetUri(FileSystemInfo, TextEncoderSettings)
+  fullName: DotNext.Text.Encodings.Web.FileUri.GetUri(System.IO.FileSystemInfo, System.Text.Encodings.Web.TextEncoderSettings?)
+  fullName.vb: DotNext.Text.Encodings.Web.FileUri.GetUri(System.IO.FileSystemInfo, System.Text.Encodings.Web.TextEncoderSettings)
+  nameWithType: FileUri.GetUri(FileSystemInfo, TextEncoderSettings?)
+  nameWithType.vb: FileUri.GetUri(FileSystemInfo, TextEncoderSettings)
+- uid: DotNext.Text.Encodings.Web.FileUri.GetUri*
+  name: GetUri
+  href: api/DotNext.Text.Encodings.Web.FileUri.html#DotNext_Text_Encodings_Web_FileUri_GetUri_
+  commentId: Overload:DotNext.Text.Encodings.Web.FileUri.GetUri
+  isSpec: "True"
+  fullName: DotNext.Text.Encodings.Web.FileUri.GetUri
+  nameWithType: FileUri.GetUri
+- uid: DotNext.Text.Encodings.Web.FileUri.TryCreateFromFileName(System.ReadOnlySpan{System.Char},System.Text.Encodings.Web.UrlEncoder,System.Span{System.Char},System.Int32@)
+  name: TryCreateFromFileName(ReadOnlySpan<char>, UrlEncoder?, Span<char>, out int)
+  href: api/DotNext.Text.Encodings.Web.FileUri.html#DotNext_Text_Encodings_Web_FileUri_TryCreateFromFileName_System_ReadOnlySpan_System_Char__System_Text_Encodings_Web_UrlEncoder_System_Span_System_Char__System_Int32__
+  commentId: M:DotNext.Text.Encodings.Web.FileUri.TryCreateFromFileName(System.ReadOnlySpan{System.Char},System.Text.Encodings.Web.UrlEncoder,System.Span{System.Char},System.Int32@)
+  name.vb: TryCreateFromFileName(ReadOnlySpan(Of Char), UrlEncoder, Span(Of Char), Integer)
+  fullName: DotNext.Text.Encodings.Web.FileUri.TryCreateFromFileName(System.ReadOnlySpan<char>, System.Text.Encodings.Web.UrlEncoder?, System.Span<char>, out int)
+  fullName.vb: DotNext.Text.Encodings.Web.FileUri.TryCreateFromFileName(System.ReadOnlySpan(Of Char), System.Text.Encodings.Web.UrlEncoder, System.Span(Of Char), Integer)
+  nameWithType: FileUri.TryCreateFromFileName(ReadOnlySpan<char>, UrlEncoder?, Span<char>, out int)
+  nameWithType.vb: FileUri.TryCreateFromFileName(ReadOnlySpan(Of Char), UrlEncoder, Span(Of Char), Integer)
+- uid: DotNext.Text.Encodings.Web.FileUri.TryCreateFromFileName*
+  name: TryCreateFromFileName
+  href: api/DotNext.Text.Encodings.Web.FileUri.html#DotNext_Text_Encodings_Web_FileUri_TryCreateFromFileName_
+  commentId: Overload:DotNext.Text.Encodings.Web.FileUri.TryCreateFromFileName
+  isSpec: "True"
+  fullName: DotNext.Text.Encodings.Web.FileUri.TryCreateFromFileName
+  nameWithType: FileUri.TryCreateFromFileName
 - uid: DotNext.Text.InterpolatedString
   name: InterpolatedString
   href: api/DotNext.Text.InterpolatedString.html
@@ -44873,19 +45100,6 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncAutoResetEvent.Set
   nameWithType: AsyncAutoResetEvent.Set
-- uid: DotNext.Threading.AsyncAutoResetEvent.Wait(System.TimeSpan)
-  name: Wait(TimeSpan)
-  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent_Wait_System_TimeSpan_
-  commentId: M:DotNext.Threading.AsyncAutoResetEvent.Wait(System.TimeSpan)
-  fullName: DotNext.Threading.AsyncAutoResetEvent.Wait(System.TimeSpan)
-  nameWithType: AsyncAutoResetEvent.Wait(TimeSpan)
-- uid: DotNext.Threading.AsyncAutoResetEvent.Wait*
-  name: Wait
-  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent_Wait_
-  commentId: Overload:DotNext.Threading.AsyncAutoResetEvent.Wait
-  isSpec: "True"
-  fullName: DotNext.Threading.AsyncAutoResetEvent.Wait
-  nameWithType: AsyncAutoResetEvent.Wait
 - uid: DotNext.Threading.AsyncAutoResetEvent.WaitAsync(System.Threading.CancellationToken)
   name: WaitAsync(CancellationToken)
   href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent_WaitAsync_System_Threading_CancellationToken_
@@ -46892,19 +47106,6 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncManualResetEvent.Set
   nameWithType: AsyncManualResetEvent.Set
-- uid: DotNext.Threading.AsyncManualResetEvent.Wait(System.TimeSpan)
-  name: Wait(TimeSpan)
-  href: api/DotNext.Threading.AsyncManualResetEvent.html#DotNext_Threading_AsyncManualResetEvent_Wait_System_TimeSpan_
-  commentId: M:DotNext.Threading.AsyncManualResetEvent.Wait(System.TimeSpan)
-  fullName: DotNext.Threading.AsyncManualResetEvent.Wait(System.TimeSpan)
-  nameWithType: AsyncManualResetEvent.Wait(TimeSpan)
-- uid: DotNext.Threading.AsyncManualResetEvent.Wait*
-  name: Wait
-  href: api/DotNext.Threading.AsyncManualResetEvent.html#DotNext_Threading_AsyncManualResetEvent_Wait_
-  commentId: Overload:DotNext.Threading.AsyncManualResetEvent.Wait
-  isSpec: "True"
-  fullName: DotNext.Threading.AsyncManualResetEvent.Wait
-  nameWithType: AsyncManualResetEvent.Wait
 - uid: DotNext.Threading.AsyncManualResetEvent.WaitAsync(System.Threading.CancellationToken)
   name: WaitAsync(CancellationToken)
   href: api/DotNext.Threading.AsyncManualResetEvent.html#DotNext_Threading_AsyncManualResetEvent_WaitAsync_System_Threading_CancellationToken_
