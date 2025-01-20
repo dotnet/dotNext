@@ -2,7 +2,7 @@ using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Text.Encodings.Web;
 
-namespace DotNext.IO;
+namespace DotNext.Text.Encodings.Web;
 
 using Buffers;
 

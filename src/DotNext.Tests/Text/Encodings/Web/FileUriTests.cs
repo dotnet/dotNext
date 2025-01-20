@@ -1,6 +1,6 @@
 using System.Text.Encodings.Web;
 
-namespace DotNext.IO;
+namespace DotNext.Text.Encodings.Web;
 
 public sealed class FileUriTests : Test
 {
