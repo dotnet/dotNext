@@ -99,8 +99,10 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         get
         {
             ThrowIfDisposed();
-            
-            WriteCore();
+
+            if (WriteCore())
+                Reset();
+
             return stream.Length;
         }
     }
@@ -111,7 +113,9 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         ArgumentOutOfRangeException.ThrowIfNegative(value);
         ThrowIfDisposed();
         
-        WriteCore();
+        if (WriteCore())
+            Reset();
+        
         stream.SetLength(value);
     }
 
@@ -196,7 +200,8 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         if (!stream.CanWrite)
             throw new NotSupportedException();
 
-        WriteCore();
+        if (WriteCore())
+            Reset();
     }
 
     /// <summary>
@@ -215,7 +220,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         }
         else if (stream.CanWrite)
         {
-            task = WriteCoreAsync(token);
+            task = WriteCoreAsync(out _, token);
         }
         else
         {
@@ -225,21 +230,28 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         return task;
     }
 
-    private void WriteCore()
+    private bool WriteCore()
     {
         Debug.Assert(stream is not null);
-        
-        if (WrittenMemory.Span is { IsEmpty: false } writeBuf)
+
+        var writeBuf = WrittenMemory.Span;
+        bool result;
+        if (result = !writeBuf.IsEmpty)
         {
             stream.Write(writeBuf);
             writePosition = 0;
         }
+
+        return result;
     }
 
-    private ValueTask WriteCoreAsync(CancellationToken token)
-        => WrittenMemory is { IsEmpty: false } writeBuf
+    private ValueTask WriteCoreAsync(out bool isWritten, CancellationToken token)
+    {
+        var writeBuf = WrittenMemory;
+        return (isWritten = !writeBuf.IsEmpty)
             ? WriteAndResetAsync(writeBuf, token)
             : ValueTask.CompletedTask;
+    }
 
     private ValueTask WriteAndResetAsync(ReadOnlyMemory<byte> data, CancellationToken token)
     {
@@ -269,12 +281,6 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         
         Debug.Assert(!result.IsEmpty);
         return ref result;
-    }
-
-    private void ResetIfNeeded()
-    {
-        if (writePosition is 0 && readLength == readPosition)
-            Reset();
     }
 
     /// <inheritdoc/>
@@ -307,7 +313,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         if (data.Length > freeBuf.Length)
         {
             stream.Write(data);
-            ResetIfNeeded();
+            Reset();
         }
         else
         {
@@ -366,15 +372,15 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         // drain buffered data if needed
         if (freeBuf.Length < data.Length)
         {
-            await WriteCoreAsync(token).ConfigureAwait(false);
+            await WriteCoreAsync(out _, token).ConfigureAwait(false);
             freeBuf = buffer.Memory.Slice(writePosition);
         }
-            
+
         // if internal buffer has not enough space then just write through
         if (data.Length > freeBuf.Length)
         {
             await stream.WriteAsync(data, token).ConfigureAwait(false);
-            ResetIfNeeded();
+            Reset();
         }
         else
         {
@@ -403,7 +409,6 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         {
             readBuf.CopyTo(destination, out count);
             readPosition += count;
-            ResetIfNeeded();
         }
         else
         {
@@ -433,10 +438,17 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     private int ReadCore(Span<byte> data)
     {
         Debug.Assert(stream is not null);
-        
-        var bytesRead = ReadFromBuffer(data);
-        data = data.Slice(bytesRead);
-        WriteCore();
+
+        int bytesRead;
+        if (WriteCore())
+        {
+            bytesRead = 0;
+        }
+        else
+        {
+            bytesRead = ReadFromBuffer(data);
+            data = data.Slice(bytesRead);
+        }
 
         if (data.IsEmpty)
         {
@@ -451,6 +463,9 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
             readLength = stream.Read(EnsureBufferAllocated().Span);
             bytesRead += ReadFromBuffer(data);
         }
+        
+        if (readPosition == readLength)
+            Reset();
 
         return bytesRead;
     }
@@ -496,24 +511,37 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     private async ValueTask<int> ReadCoreAsync(Memory<byte> data, CancellationToken token)
     {
         Debug.Assert(stream is not null);
-        
-        var bytesRead = ReadFromBuffer(data.Span);
-        data = data.Slice(bytesRead);
 
-        await WriteCoreAsync(token).ConfigureAwait(false);
+        int bytesRead;
+        await WriteCoreAsync(out var isWritten, token).ConfigureAwait(false);
+        if (isWritten)
+        {
+             bytesRead = 0;
+        }
+        else
+        {
+            bytesRead = ReadFromBuffer(data.Span);
+            data = data.Slice(bytesRead);
+        }
+
         if (data.IsEmpty)
         {
             // nothing to do
         }
         else if (data.Length > MaxBufferSize)
         {
+            Debug.Assert(readPosition == readLength);
             bytesRead += await stream.ReadAsync(data, token).ConfigureAwait(false);
         }
         else
         {
+            Debug.Assert(readPosition == readLength);
             readLength = await stream.ReadAsync(EnsureBufferAllocated().Memory, token).ConfigureAwait(false);
             bytesRead += ReadFromBuffer(data.Span);
         }
+        
+        if (readPosition == readLength)
+            Reset();
 
         return bytesRead;
     }
@@ -536,14 +564,16 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
 
         if (!stream.CanRead)
             throw new NotSupportedException();
-        
-        await WriteCoreAsync(token).ConfigureAwait(false);
+
+        await WriteCoreAsync(out _, token).ConfigureAwait(false);
 
         var count = PrepareReadBuffer(out var readBuf)
             ? await stream.ReadAsync(readBuf, token).ConfigureAwait(false)
             : throw new InternalBufferOverflowException();
         readLength += count;
-        ResetIfNeeded();
+        
+        if (readPosition == readLength)
+            Reset();
 
         return count > 0;
     }
@@ -568,7 +598,9 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
             ? stream.Read(readBuf.Span)
             : throw new InternalBufferOverflowException();
         readLength += count;
-        ResetIfNeeded();
+        
+        if (readPosition == readLength)
+            Reset();
         
         return count > 0;
     }
@@ -660,20 +692,13 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         AssertState();
         ThrowIfDisposed();
 
-        long result;
-        if (WrittenMemory.Span is { IsEmpty: false } writeBuf)
+        if (WriteCore())
         {
-            stream.Write(writeBuf);
-            writePosition = 0;
-            ResetIfNeeded();
-            result = stream.Seek(offset, origin);
-        }
-        else
-        {
-            result = SeekNoWriteBuffer(offset, origin);
+            Reset();
+            return stream.Seek(offset, origin);
         }
 
-        return result;
+        return SeekNoWriteBuffer(offset, origin);
     }
 
     private long SeekNoWriteBuffer(long offset, SeekOrigin origin)
@@ -766,14 +791,13 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
             destination.Write(readBuf);
             readLength = readPosition = 0;
         }
-        else if (WrittenMemory.Span is { IsEmpty: false } writeBuf)
+        else
         {
-            stream.Write(writeBuf);
-            writePosition = 0;
+            WriteCore();
         }
 
         stream.CopyTo(destination, bufferSize);
-        ResetIfNeeded();
+        Reset();
     }
 
     /// <inheritdoc/>
@@ -788,14 +812,13 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
             await destination.WriteAsync(readBuf, token).ConfigureAwait(false);
             readLength = readPosition = 0;
         }
-        else if (WrittenMemory is { IsEmpty: false } writeBuf)
+        else
         {
-            await stream.WriteAsync(writeBuf, token).ConfigureAwait(false);
-            writePosition = 0;
+            await WriteCoreAsync(out _, token).ConfigureAwait(false);
         }
 
         await stream.CopyToAsync(destination, bufferSize, token).ConfigureAwait(false);
-        ResetIfNeeded();
+        Reset();
     }
 
     /// <inheritdoc/>
