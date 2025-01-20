@@ -149,7 +149,7 @@ public readonly struct Pointer<T> :
     /// Determines whether this pointer is aligned
     /// to the size of <typeparamref name="T"/>.
     /// </summary>
-    public unsafe bool IsAligned => Address % Intrinsics.AlignOf<T>() is 0;
+    public bool IsAligned => Address % Intrinsics.AlignOf<T>() is 0;
 
     /// <summary>
     /// Fills the elements of the array with a specified value.

@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using static System.Linq.Enumerable;
 
 namespace DotNext.Linq.Expressions;
 
@@ -32,9 +31,10 @@ public static partial class ExpressionBuilder
     /// The equivalent code is <c>-a</c>.
     /// </remarks>
     /// <param name="expression">The operand.</param>
+    /// <param name="checked"><see langword="true"/> to perform checked arithmetic operation; otherwise, <see langword="false"/>.</param>
     /// <returns>Unary expression.</returns>
-    public static UnaryExpression Negate(this Expression expression)
-        => Expression.Negate(expression);
+    public static UnaryExpression Negate(this Expression expression, bool @checked = false)
+        => @checked ? Expression.NegateChecked(expression) : Expression.Negate(expression);
 
     /// <summary>
     /// Constructs logical NOT expression.
@@ -114,9 +114,10 @@ public static partial class ExpressionBuilder
     /// </remarks>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
+    /// <param name="checked"><see langword="true"/> to perform checked arithmetic operation; otherwise, <see langword="false"/>.</param>
     /// <returns>Binary expression.</returns>
-    public static BinaryExpression Add(this Expression left, Expression right)
-        => Expression.Add(left, right);
+    public static BinaryExpression Add(this Expression left, Expression right, bool @checked = false)
+        => @checked ? Expression.AddChecked(left, right) : Expression.Add(left, right);
 
     private static MethodCallExpression Concat(Expression[] strings) => strings.LongLength switch
     {
@@ -143,9 +144,10 @@ public static partial class ExpressionBuilder
     /// </remarks>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
+    /// <param name="checked"><see langword="true"/> to perform checked arithmetic operation; otherwise, <see langword="false"/>.</param>
     /// <returns>Binary expression.</returns>
-    public static BinaryExpression Subtract(this Expression left, Expression right)
-        => Expression.Subtract(left, right);
+    public static BinaryExpression Subtract(this Expression left, Expression right, bool @checked = false)
+        => @checked ? Expression.SubtractChecked(left, right) : Expression.Subtract(left, right);
 
     /// <summary>
     /// Constructs binary arithmetic multiplication expression.
@@ -155,9 +157,10 @@ public static partial class ExpressionBuilder
     /// </remarks>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
+    /// <param name="checked"><see langword="true"/> to perform checked arithmetic operation; otherwise, <see langword="false"/>.</param>
     /// <returns>Binary expression.</returns>
-    public static BinaryExpression Multiply(this Expression left, Expression right)
-        => Expression.Multiply(left, right);
+    public static BinaryExpression Multiply(this Expression left, Expression right, bool @checked = false)
+        => @checked ? Expression.MultiplyChecked(left, right) : Expression.Multiply(left, right);
 
     /// <summary>
     /// Constructs binary arithmetic division expression.
@@ -265,8 +268,8 @@ public static partial class ExpressionBuilder
 
         // handle reference type or value type
         return operand.Type is { IsValueType: false, IsPointer: false, IsPrimitive: false }
-            ? Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type)) :
-            Const<bool>(false);
+            ? Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type))
+            : Const(false);
     }
 
     /// <summary>
@@ -280,7 +283,7 @@ public static partial class ExpressionBuilder
     public static Expression IsNotNull(this Expression operand)
     {
         // handle nullable value type
-        Type? underlyingType = Nullable.GetUnderlyingType(operand.Type);
+        var underlyingType = Nullable.GetUnderlyingType(operand.Type);
         if (underlyingType is not null)
             return operand.Property(nameof(Nullable<int>.HasValue));
 
@@ -292,7 +295,7 @@ public static partial class ExpressionBuilder
         // handle reference type or value type
         return operand.Type is { IsValueType: false, IsPointer: false, IsPrimitive: false }
             ? Expression.ReferenceNotEqual(operand, Expression.Constant(null, operand.Type))
-            : Const<bool>(true);
+            : Const(true);
     }
 
     /// <summary>
@@ -327,9 +330,10 @@ public static partial class ExpressionBuilder
     /// </remarks>
     /// <param name="left">The left operand.</param>
     /// <param name="right">The right operand.</param>
+    /// <param name="isUnsigned"><see langword="true"/> to perform unsigned right sift; otherwise, <see langword="false"/>.</param>
     /// <returns>Binary expression.</returns>
-    public static BinaryExpression RightShift(this Expression left, Expression right)
-        => Expression.RightShift(left, right);
+    public static Expression RightShift(this Expression left, Expression right, bool isUnsigned = false)
+        => isUnsigned ? new UnsignedRightShiftExpression(left, right) : Expression.RightShift(left, right);
 
     /// <summary>
     /// Constructs an expression that decrements given expression by 1 and assigns the result back to the expression.
@@ -1068,7 +1072,7 @@ public static partial class ExpressionBuilder
     /// <param name="test">Test expression.</param>
     /// <param name="ifTrue">Positive branch.</param>
     /// <param name="ifFalse">Negative branch.</param>
-    /// <param name="type">The type of conditional expression. Default is <see cref="void"/>.</param>
+    /// <param name="type">The type of conditional expression. Default is <see cref="Void"/>.</param>
     /// <returns>Conditional expression.</returns>
     public static ConditionalExpression Condition(this Expression test, Expression? ifTrue = null, Expression? ifFalse = null, Type? type = null)
         => Expression.Condition(test, ifTrue ?? Expression.Empty(), ifFalse ?? Expression.Empty(), type ?? typeof(void));
@@ -1079,7 +1083,7 @@ public static partial class ExpressionBuilder
     /// <remarks>
     /// The equivalent code is <c>a ? b : c</c>.
     /// </remarks>
-    /// <typeparam name="TResult">The type of conditional expression. Default is <see cref="void"/>.</typeparam>
+    /// <typeparam name="TResult">The type of conditional expression. Default is <see cref="Void"/>.</typeparam>
     /// <param name="test">Test expression.</param>
     /// <param name="ifTrue">Positive branch.</param>
     /// <param name="ifFalse">Negative branch.</param>
@@ -1105,7 +1109,7 @@ public static partial class ExpressionBuilder
     /// The equivalent code is <c>throw e</c>.
     /// </remarks>
     /// <param name="exception">An exception to be thrown.</param>
-    /// <param name="type">The type of expression. Default is <see cref="void"/>.</param>
+    /// <param name="type">The type of expression. Default is <see cref="Void"/>.</param>
     /// <returns><c>throw</c> expression.</returns>
     public static UnaryExpression Throw(this Expression exception, Type? type = null) => Expression.Throw(exception, type ?? typeof(void));
 
@@ -1181,7 +1185,7 @@ public static partial class ExpressionBuilder
         }
         else
         {
-            variables = Empty<ParameterExpression>();
+            variables = [];
             result = instructions.Prepend(expression);
         }
 

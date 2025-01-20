@@ -30,7 +30,7 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
     /// <param name="secure"><see langword="true"/> for HTTPS; <see langword="false"/> for HTTP.</param>
     /// <param name="family">The type of the host name.</param>
     public HttpEndPoint(string hostName, int port, bool secure, AddressFamily family = AddressFamily.Unspecified)
-        : base(hostName, port, family)
+        : base(hostName, port, family is AddressFamily.Unspecified ? ToAddressFamily(hostName) : family)
         => IsSecure = secure;
 
     /// <summary>
@@ -68,6 +68,8 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
         UriHostNameType.IPv6 => AddressFamily.InterNetworkV6,
         _ => AddressFamily.Unspecified,
     };
+
+    private static AddressFamily ToAddressFamily(string? hostName) => ToAddressFamily(Uri.CheckHostName(hostName));
 
     /// <summary>
     /// Gets a value indicating that HTTP over TLS should be used (HTTPS).
@@ -166,7 +168,7 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
                                   && writer.TryFormat(Port, format, provider)
                                   && writer.TryAdd('/'))
             ? writer.WrittenCount
-            : default;
+            : 0;
         
         return success;
     }
@@ -183,7 +185,7 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
                                   && writer.TryFormat(Port, format, provider)
                                   && writer.TryAdd((byte)'/'))
             ? writer.WrittenCount
-            : default;
+            : 0;
 
         return success;
     }

@@ -93,4 +93,18 @@ public sealed class AtomicContainerTests : Test
         var container = new Atomic<decimal> { Value = 42M };
         Equal(42M.ToString(), container.ToString());
     }
+
+    [Fact]
+    public static void SwapValues()
+    {
+        var x = new Atomic<int> { Value = 42 };
+        var y = new Atomic<int> { Value = 43 };
+
+        Equal(42, x.Value);
+        Equal(43, y.Value);
+
+        x.Swap(ref y);
+        Equal(43, x.Value);
+        Equal(42, y.Value);
+    }
 }

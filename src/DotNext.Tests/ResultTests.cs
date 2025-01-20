@@ -125,7 +125,7 @@ public sealed class ResultTests : Test
         result = (Result<string>)new Optional<string>("Hello, world!");
         True(result.IsSuccessful);
         Equal("Hello, world!", result.Value);
-        Equal("Hello, world!", Optional.Create<string, Result<string>>(result));
+        Equal("Hello, world!", Optional<string>.Create(result));
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public sealed class ResultTests : Test
         Optional<string> opt = result;
         Equal("Hello, world!", opt);
 
-        opt = Optional.Create<string, Result<string, EnvironmentVariableTarget>>(result);
+        opt = Optional<string>.Create(result);
         Equal("Hello, world!", opt);
 
         result = new(EnvironmentVariableTarget.Machine);
@@ -225,4 +225,27 @@ public sealed class ResultTests : Test
     private static TResult FromError<TError, TResult>(TError error)
         where TResult : struct, IResultMonad<int, TError, TResult>
         => TResult.FromError(error);
+
+    [Fact]
+    public static async Task ConvertToTask()
+    {
+        Result<int> result = 42;
+        Equal(42, await (ValueTask<int>)result);
+
+        result = Result.FromException<int>(new OperationCanceledException(new CancellationToken(canceled: true)));
+        True(result.AsTask().IsCanceled);
+
+        result = Result.FromException<int>(new Exception());
+        await ThrowsAsync<Exception>(result.AsTask().AsTask);
+    }
+
+    [Fact]
+    public static void ValueRef()
+    {
+        Result<int> result = 42;
+        Equal(42, result.ValueRef);
+
+        result = Result.FromException<int>(new ArithmeticException());
+        Throws<ArithmeticException>(() => result.ValueRef);
+    }
 }

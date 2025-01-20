@@ -147,7 +147,7 @@ public readonly struct DelegatingReadOnlySpanConsumer<T, TArg> : IReadOnlySpanCo
 /// </summary>
 /// <typeparam name="T">The type of the consumer argument.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct BufferConsumer<T> : IReadOnlySpanConsumer<T>, IEquatable<BufferConsumer<T>>
+public readonly record struct BufferConsumer<T> : IReadOnlySpanConsumer<T>
 {
     private readonly IBufferWriter<T> output;
 

@@ -1,13 +1,8 @@
-using System.Reflection;
-
 namespace DotNext.Reflection;
 
 public sealed class TypeExtensionsTests : Test
 {
-    public sealed class MyList : List<string>
-    {
-
-    }
+    public sealed class MyList : List<string>;
 
     [Fact]
     public static void DelegateSignature()
@@ -16,6 +11,13 @@ public sealed class TypeExtensionsTests : Test
         NotNull(signature);
         Equal(typeof(int), signature.GetParameters()[0].ParameterType);
         Equal(typeof(string), signature.ReturnParameter.ParameterType);
+    }
+
+    [Fact]
+    public static void InvokeInvalidDelegate()
+    {
+        var ex = ThrowsAny<GenericArgumentException>(static () => DelegateType.GetInvokeMethod<MulticastDelegate>());
+        Same(typeof(MulticastDelegate), ex.Argument);
     }
 
     [Fact]
@@ -72,7 +74,7 @@ public sealed class TypeExtensionsTests : Test
     }
 
     [Fact]
-    public static unsafe void IsImmutable()
+    public static void IsImmutable()
     {
         True(typeof(ReadOnlySpan<int>).IsImmutable());
         True(typeof(Guid).IsImmutable());
@@ -119,7 +121,7 @@ public sealed class TypeExtensionsTests : Test
     }
 
     [Fact]
-    public static unsafe void DefaultValues()
+    public static void DefaultValues()
     {
         Null(typeof(string).GetDefaultValue());
         Null(typeof(void*).GetDefaultValue());

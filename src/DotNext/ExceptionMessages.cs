@@ -56,4 +56,6 @@ internal static class ExceptionMessages
     internal static string EndOfBuffer(long remaining) => string.Format(Resources.GetString("EndOfBuffer")!, remaining);
 
     internal static string OverlappedRange => Resources.GetString("OverlappedRange")!;
+
+    internal static string FullyQualifiedPathExpected => Resources.GetString("FullyQualifiedPathExpected")!;
 }

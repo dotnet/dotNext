@@ -113,7 +113,7 @@ public sealed class MemoryWriterTests : Test
     {
         using var writer = new PoolingArrayBufferWriter<byte> { Capacity = 25 };
         True(writer.Capacity >= 25);
-        True(writer.WrittenArray.Count == 0);
+        Equal(0, writer.WrittenArray.Count);
         Equal(0, writer.WrittenCount);
 
         var memory = writer.GetArray(100);
@@ -158,13 +158,13 @@ public sealed class MemoryWriterTests : Test
         using var writer = new PoolingArrayBufferWriter<byte>();
 
         // serialize dictionary to memory
-        using (var output = StreamSource.AsStream(writer))
+        await using (var output = writer.AsStream())
         {
             await DictionarySerializer.SerializeAsync(dict, output, buffer);
         }
 
         // deserialize from memory
-        using (var input = StreamSource.AsStream(writer.WrittenArray))
+        await using (var input = writer.WrittenArray.AsStream())
         {
             Equal(dict, await DictionarySerializer.DeserializeAsync(input, buffer));
         }
@@ -225,7 +225,7 @@ public sealed class MemoryWriterTests : Test
         Throws<IndexOutOfRangeException>(() => collection[1]);
         Equal(42, Single(collection));
 
-        writer.AddAll(new[] { 43, 44 });
+        writer.AddAll([43, 44]);
         Equal(3, writer.WrittenCount);
         Equal(3, collection.Count);
         Equal(42, collection[0]);
@@ -233,7 +233,7 @@ public sealed class MemoryWriterTests : Test
         Equal(44, collection[2]);
         Throws<IndexOutOfRangeException>(() => collection[3]);
         Equal(3, Enumerable.Count(collection));
-        Equal(new[] { 42, 43, 44 }, Enumerable.ToArray(collection));
+        Equal<int>([42, 43, 44], collection);
     }
 
     [Fact]
@@ -296,7 +296,7 @@ public sealed class MemoryWriterTests : Test
     [Fact]
     public static void Insertion()
     {
-        Span<byte> block = stackalloc byte[] { 10, 20, 30 };
+        Span<byte> block = [10, 20, 30];
         using var writer = new PoolingArrayBufferWriter<byte>();
 
         writer.Insert(0, block);
@@ -327,14 +327,14 @@ public sealed class MemoryWriterTests : Test
         block[2] = 120;
 
         writer.Insert(writer.WrittenCount - 1, block);
-        Equal(random[0..(random.Length - 1)], writer.WrittenMemory.Span.Slice(0, random.Length - 1).ToArray());
+        Equal(random[..^1], writer.WrittenMemory.Span.Slice(0, random.Length - 1).ToArray());
         Equal(block.ToArray(), writer.WrittenMemory.Span.Slice(random.Length - 1, 3).ToArray());
     }
 
     [Fact]
     public static void Overwrite()
     {
-        Span<byte> block = stackalloc byte[] { 10, 20, 30 };
+        Span<byte> block = [10, 20, 30];
         using var writer = new PoolingArrayBufferWriter<byte>();
 
         writer.Overwrite(0, block);

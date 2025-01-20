@@ -87,7 +87,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 
     private bool IsLockHelpByCurrentThread
     {
-        get => lockOwner is not { } owner || ReferenceEquals(owner, Thread.CurrentThread);
+        get => lockOwner is { } owner && ReferenceEquals(owner, Thread.CurrentThread);
         set
         {
             if (value)
