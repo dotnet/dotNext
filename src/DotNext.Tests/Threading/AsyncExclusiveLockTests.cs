@@ -186,7 +186,7 @@ public sealed class AsyncExclusiveLockTests : Test
         using var l = new AsyncExclusiveLock();
         True(l.TryAcquire(DefaultTimeout));
 
-        False(l.TryAcquire(TimeSpan.Zero));
+        False(l.TryAcquire());
     }
 
     [Fact]
