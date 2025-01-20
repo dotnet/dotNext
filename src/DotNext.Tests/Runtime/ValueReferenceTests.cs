@@ -3,8 +3,6 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime;
 
-using InteropServices;
-
 public sealed class ValueReferenceTests : Test
 {
     [Fact]
@@ -210,8 +208,6 @@ public sealed class ValueReferenceTests : Test
 
         True(Unsafe.AreSame(in reference.Value, in span[0]));
     }
-
-    
 
     private record MyClass : IResettable
     {
