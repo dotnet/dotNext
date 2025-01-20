@@ -1,6 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using DotNext.Threading.Tasks;
+using static System.Threading.Timeout;
 
 namespace DotNext.Runtime.Caching;
 
@@ -66,21 +68,9 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         get => keyComparer;
         init => keyComparer = ReferenceEquals(value, EqualityComparer<TKey>.Default) ? null : value;
     }
-
-    /// <summary>
-    /// Opens a session that can be used to modify the value associated with the key.
-    /// </summary>
-    /// <remarks>
-    /// The cache guarantees that the value cannot be evicted concurrently with the returned session. However,
-    /// the value can be evicted immediately after. The caller must dispose session.
-    /// </remarks>
-    /// <param name="key">The key of the cache record.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The session that can be used to read or modify the cache record.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
+    
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    public async ValueTask<ReadOrWriteSession> ChangeAsync(TKey key, CancellationToken token = default)
+    private async ValueTask<ReadOrWriteSession> ChangeAsync(TKey key, TimeSpan timeout, CancellationToken token)
     {
         var keyComparerCopy = KeyComparer;
         var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
@@ -90,7 +80,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         var lockTaken = false;
         try
         {
-            await bucket.AcquireAsync(token).ConfigureAwait(false);
+            await bucket.AcquireAsync(timeout, token).ConfigureAwait(false);
             lockTaken = true;
 
             if (bucket.Modify(keyComparerCopy, key, hashCode) is { } valueHolder)
@@ -118,6 +108,21 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     }
 
     /// <summary>
+    /// Opens a session that can be used to modify the value associated with the key.
+    /// </summary>
+    /// <remarks>
+    /// The cache guarantees that the value cannot be evicted concurrently with the returned session. However,
+    /// the value can be evicted immediately after. The caller must dispose session.
+    /// </remarks>
+    /// <param name="key">The key of the cache record.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The session that can be used to read or modify the cache record.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
+    public ValueTask<ReadOrWriteSession> ChangeAsync(TKey key, CancellationToken token = default)
+        => ChangeAsync(key, InfiniteTimeSpan, token);
+
+    /// <summary>
     /// Opens a session synchronously that can be used to modify the value associated with the key.
     /// </summary>
     /// <remarks>
@@ -126,32 +131,13 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// </remarks>
     /// <param name="key">The key of the cache record.</param>
     /// <param name="timeout">The time to wait for the cache lock.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The session that can be used to read or modify the cache record.</returns>
     /// <exception cref="TimeoutException">The internal lock cannot be acquired in timely manner.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
-    public ReadOrWriteSession Change(TKey key, TimeSpan timeout)
-    {
-        var keyComparerCopy = KeyComparer;
-        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
-        var bucket = GetBucket(hashCode);
-
-        bool lockTaken;
-        if (!(lockTaken = bucket.TryAcquire(timeout)))
-            throw new TimeoutException();
-        try
-        {
-            if (bucket.Modify(keyComparerCopy, key, hashCode) is { } valueHolder)
-                return new(this, valueHolder);
-
-            lockTaken = false;
-            return new(this, bucket, key, hashCode);
-        }
-        finally
-        {
-            if (lockTaken)
-                bucket.Release();
-        }
-    }
+    public ReadOrWriteSession Change(TKey key, TimeSpan timeout, CancellationToken token = default)
+        => ChangeAsync(key, timeout, token).Wait();
 
     /// <summary>
     /// Tries to read the cached record.
@@ -177,19 +163,9 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         session = default;
         return false;
     }
-
-    /// <summary>
-    /// Tries to invalidate cache record associated with the provided key.
-    /// </summary>
-    /// <param name="key">The key of the cache record to be removed.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>
-    /// The session that can be used to read the removed cache record;
-    /// or <see langword="null"/> if there is no record associated with <paramref name="key"/>.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
+    
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    public async ValueTask<ReadSession?> TryRemoveAsync(TKey key, CancellationToken token = default)
+    private async ValueTask<ReadSession?> TryRemoveAsync(TKey key, TimeSpan timeout, CancellationToken token)
     {
         var keyComparerCopy = KeyComparer;
         var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
@@ -199,7 +175,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         var lockTaken = false;
         try
         {
-            await bucket.AcquireAsync(token).ConfigureAwait(false);
+            await bucket.AcquireAsync(timeout, token).ConfigureAwait(false);
             lockTaken = true;
 
             return bucket.TryRemove(keyComparerCopy, key, hashCode) is { } removedPair
@@ -222,48 +198,40 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 bucket.Release();
         }
     }
-    
+
+    /// <summary>
+    /// Tries to invalidate cache record associated with the provided key.
+    /// </summary>
+    /// <param name="key">The key of the cache record to be removed.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>
+    /// The session that can be used to read the removed cache record;
+    /// or <see langword="null"/> if there is no record associated with <paramref name="key"/>.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
+    public ValueTask<ReadSession?> TryRemoveAsync(TKey key, CancellationToken token = default)
+        => TryRemoveAsync(key, InfiniteTimeSpan, token);
+
     /// <summary>
     /// Tries to invalidate cache record associated with the provided key synchronously.
     /// </summary>
     /// <param name="key">The key of the cache record to be removed.</param>
-    /// <param name="timeout">The time to wait for the cache lock.</param>
     /// <param name="session">The session that can be used to read the removed cache record.</param>
+    /// <param name="timeout">The time to wait for the cache lock.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if the record associated with <paramref name="key"/> exists; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="TimeoutException">The internal lock cannot be acquired in timely manner.</exception>
-    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
-    public bool TryRemove(TKey key, TimeSpan timeout, out ReadSession session)
-    {
-        var keyComparerCopy = KeyComparer;
-        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
-        var bucket = GetBucket(hashCode);
-        
-        if (!bucket.TryAcquire(timeout))
-            throw new TimeoutException();
-        try
-        {
-            session = bucket.TryRemove(keyComparerCopy, key, hashCode) is { } removedPair
-                ? new(Eviction, removedPair)
-                : default;
-        }
-        finally
-        {
-            bucket.Release();
-        }
-
-        return session.IsValid;
-    }
-
-    /// <summary>
-    /// Invalidates the cache record associated with the specified key.
-    /// </summary>
-    /// <param name="key">The key of the cache record to be removed.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns><see langword="true"/> if the cache record associated with <paramref name="key"/> is removed successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
+    public bool TryRemove(TKey key, out ReadSession session, TimeSpan timeout, CancellationToken token = default)
+    {
+        var result = TryRemoveAsync(key, timeout, token).Wait();
+        session = result.GetValueOrDefault();
+        return result.HasValue;
+    }
+    
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    public async ValueTask<bool> InvalidateAsync(TKey key, CancellationToken token = default)
+    private async ValueTask<bool> InvalidateAsync(TKey key, TimeSpan timeout, CancellationToken token)
     {
         var keyComparerCopy = KeyComparer;
         var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
@@ -274,7 +242,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         KeyValuePair? removedPair;
         try
         {
-            await bucket.AcquireAsync(token).ConfigureAwait(false);
+            await bucket.AcquireAsync(timeout, token).ConfigureAwait(false);
             lockTaken = true;
             removedPair = bucket.TryRemove(keyComparerCopy, key, hashCode);
         }
@@ -307,46 +275,30 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 
         return true;
     }
-    
+
+    /// <summary>
+    /// Invalidates the cache record associated with the specified key.
+    /// </summary>
+    /// <param name="key">The key of the cache record to be removed.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if the cache record associated with <paramref name="key"/> is removed successfully; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
+    public ValueTask<bool> InvalidateAsync(TKey key, CancellationToken token = default)
+        => InvalidateAsync(key, InfiniteTimeSpan, token);
+
     /// <summary>
     /// Invalidates the cache record associated with the specified key.
     /// </summary>
     /// <param name="key">The key of the cache record to be removed.</param>
     /// <param name="timeout">The time to wait for the cache lock.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if the cache record associated with <paramref name="key"/> is removed successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="TimeoutException">The internal lock cannot be acquired in timely manner.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
-    public bool Invalidate(TKey key, TimeSpan timeout)
-    {
-        var keyComparerCopy = KeyComparer;
-        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
-        var bucket = GetBucket(hashCode);
-        
-        KeyValuePair? removedPair;
-        if (!bucket.TryAcquire(timeout))
-            throw new TimeoutException();
-        try
-        {
-            removedPair = bucket.TryRemove(keyComparerCopy, key, hashCode);
-        }
-        finally
-        {
-            bucket.Release();
-        }
-
-        if (removedPair is null)
-        {
-            return false;
-        }
-
-        if (removedPair.ReleaseCounter() is false)
-        {
-            Eviction?.Invoke(key, GetValue(removedPair));
-            ClearValue(removedPair);
-        }
-
-        return true;
-    }
+    public bool Invalidate(TKey key, TimeSpan timeout, CancellationToken token = default)
+        => InvalidateAsync(key, timeout, token).Wait();
 
     /// <summary>
     /// Invalidates the entire cache.
