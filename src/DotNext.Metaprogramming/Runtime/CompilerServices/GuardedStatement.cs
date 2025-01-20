@@ -2,13 +2,7 @@
 
 namespace DotNext.Runtime.CompilerServices;
 
-internal abstract class GuardedStatement : Statement
+internal abstract class GuardedStatement(Expression expression, LabelTarget faultLabel) : Statement(expression)
 {
-    internal readonly LabelTarget FaultLabel;
-
-    private protected GuardedStatement(Expression expression, LabelTarget faultLabel)
-        : base(expression)
-    {
-        FaultLabel = faultLabel;
-    }
+    internal readonly LabelTarget FaultLabel = faultLabel;
 }

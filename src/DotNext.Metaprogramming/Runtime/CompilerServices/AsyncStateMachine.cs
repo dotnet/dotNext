@@ -14,7 +14,7 @@ namespace DotNext.Runtime.CompilerServices;
 /// </remarks>
 /// <typeparam name="TState">The local state of async function used to store computation state.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-internal struct AsyncStateMachine<TState> : IAsyncStateMachine<TState>
+internal struct AsyncStateMachine<TState> : IAsyncStateMachine<TState, ValueTask, AsyncStateMachine<TState>>
     where TState : struct
 {
     private readonly Transition<TState, AsyncStateMachine<TState>> transition;
@@ -53,7 +53,7 @@ internal struct AsyncStateMachine<TState> : IAsyncStateMachine<TState>
 
     /// <summary>
     /// Enters guarded code block which represents <c>try</c> block of code
-    /// inside of async lambda function.
+    /// inside the async lambda function.
     /// </summary>
     /// <param name="newState">The identifier of the async state machine representing guarded code.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -78,7 +78,7 @@ internal struct AsyncStateMachine<TState> : IAsyncStateMachine<TState>
 
     /// <summary>
     /// Attempts to recover from the exception and indicating prologue of <c>try</c> statement
-    /// inside of async lambda function.
+    /// inside the async lambda function.
     /// </summary>
     /// <typeparam name="TException">Type of expression to be caught.</typeparam>
     /// <param name="restoredException">Reference to the captured exception.</param>
@@ -208,7 +208,7 @@ internal struct AsyncStateMachine<TState> : IAsyncStateMachine<TState>
 /// <typeparam name="TState">The local state of async function used to store computation state.</typeparam>
 /// <typeparam name="TResult">Result type of asynchronous function.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-internal struct AsyncStateMachine<TState, TResult> : IAsyncStateMachine<TState>
+internal struct AsyncStateMachine<TState, TResult> : IAsyncStateMachine<TState, ValueTask<TResult?>, AsyncStateMachine<TState, TResult>>
     where TState : struct
 {
     private readonly Transition<TState, AsyncStateMachine<TState, TResult>> transition;
@@ -248,7 +248,7 @@ internal struct AsyncStateMachine<TState, TResult> : IAsyncStateMachine<TState>
 
     /// <summary>
     /// Enters guarded code block which represents <c>try</c> block of code
-    /// inside of async lambda function.
+    /// inside the async lambda function.
     /// </summary>
     /// <param name="newState">The identifier of the async machine state representing guarded code.</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -273,7 +273,7 @@ internal struct AsyncStateMachine<TState, TResult> : IAsyncStateMachine<TState>
 
     /// <summary>
     /// Attempts to recover from the exception and indicating prologue of <c>try</c> statement
-    /// inside of async lambda function.
+    /// inside the async lambda function.
     /// </summary>
     /// <typeparam name="TException">Type of expression to be caught.</typeparam>
     /// <param name="restoredException">Reference to the captured exception.</param>

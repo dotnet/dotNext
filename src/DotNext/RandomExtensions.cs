@@ -19,8 +19,6 @@ public static class RandomExtensions
     /// </summary>
     internal static readonly int BitwiseHashSalt = Random.Shared.Next();
 
-    private static readonly bool CleanupInternalBuffer = !LibrarySettings.DisableRandomStringInternalBufferCleanup;
-
     private interface IRandomBytesSource
     {
         void GetBytes(Span<byte> bytes);
@@ -141,7 +139,7 @@ public static class RandomExtensions
             new CachedRandomNumberGenerator<TRandom>(random, randomVectorBuffer.Span).Randomize(allowedInput, buffer);
         }
 
-        if (CleanupInternalBuffer)
+        if (Features.UseRandomStringInternalBufferCleanup)
             randomVectorBuffer.Span.Clear();
 
         static void FastPath(ref uint randomVectorPtr, ref T inputPtr, uint moduloOperand, Span<T> output)
@@ -470,4 +468,13 @@ public static class RandomExtensions
             _ => span[random.Next(length)],
         };
     }
+}
+
+file static class Features
+{
+    private const string UseRandomStringInternalBufferCleanupFeature = "DotNext.Security.RandomStringInternalBufferCleanup";
+    
+    // TODO: [FeatureSwitchDefinition(UseRandomStringInternalBufferCleanupFeature)]
+    internal static bool UseRandomStringInternalBufferCleanup
+        => LibraryFeature.IsSupported(UseRandomStringInternalBufferCleanupFeature);
 }

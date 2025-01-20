@@ -85,6 +85,7 @@ public sealed class ValueReferenceTests : Test
         var reference = default(ValueReference<string>);
         True(reference.IsEmpty);
         Null(reference.ToString());
+        Throws<NullReferenceException>(() => reference.Value);
 
         Span<string> span = reference;
         True(span.IsEmpty);
@@ -99,6 +100,7 @@ public sealed class ValueReferenceTests : Test
         var reference = default(ReadOnlyValueReference<string>);
         True(reference.IsEmpty);
         Null(reference.ToString());
+        Throws<NullReferenceException>(() => reference.Value);
         
         ReadOnlySpan<string> span = reference;
         True(span.IsEmpty);
@@ -207,9 +209,7 @@ public sealed class ValueReferenceTests : Test
         True(Unsafe.AreSame(in reference.Value, in span[0]));
     }
 
-    
-
-    private record class MyClass : IResettable
+    private record MyClass : IResettable
     {
         internal static string StaticObject;
         
@@ -222,6 +222,21 @@ public sealed class ValueReferenceTests : Test
         public virtual void Reset()
         {
             
+        }
+    }
+
+    [Fact]
+    public static unsafe void PinAnonymousValue()
+    {
+        ValueReference<int> valueRef = new(42);
+        fixed (int* ptr = valueRef)
+        {
+            Equal(42, *ptr);
+        }
+
+        fixed (int* ptr = (ReadOnlyValueReference<int>)valueRef)
+        {
+            Equal(42, *ptr);
         }
     }
 }

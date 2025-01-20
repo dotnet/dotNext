@@ -169,17 +169,6 @@ public static class Optional
         => new(null);
 
     /// <summary>
-    /// Converts the monad to <see cref="Optional{T}"/>.
-    /// </summary>
-    /// <typeparam name="T">The type of the underlying value.</typeparam>
-    /// <typeparam name="TMonad">The type of the monad.</typeparam>
-    /// <param name="value">The value to convert.</param>
-    /// <returns>The value represented as <see cref="Optional{T}"/> or <see cref="Optional{T}.None"/> if there is no value.</returns>
-    public static Optional<T> Create<T, TMonad>(TMonad value)
-        where TMonad : struct, IOptionMonad<T>
-        => value.TryGet(out var result) ? new(result) : None<T>();
-
-    /// <summary>
     /// Flattens the nested optional value.
     /// </summary>
     /// <typeparam name="T">The type of the underlying value.</typeparam>
@@ -242,6 +231,16 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
             ? UndefinedValue
             : NotEmptyValue;
     }
+
+    /// <summary>
+    /// Converts the monad to <see cref="Optional{T}"/>.
+    /// </summary>
+    /// <typeparam name="TMonad">The type of the monad.</typeparam>
+    /// <param name="value">The value to convert.</param>
+    /// <returns>The value represented as <see cref="Optional{T}"/> or <see cref="Optional{T}.None"/> if there is no value.</returns>
+    public static Optional<T> Create<TMonad>(TMonad value)
+        where TMonad : struct, IOptionMonad<T>
+        => value.TryGet(out var result) ? new(result) : None;
 
     /// <summary>
     /// Determines whether the object represents meaningful value.
@@ -339,6 +338,15 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
     [return: NotNullIfNotNull(nameof(defaultValue))]
     public T? Or(T? defaultValue) => HasValue ? value : defaultValue;
+
+    /// <summary>
+    /// Concatenates optional values.
+    /// </summary>
+    /// <param name="other"></param>
+    /// <typeparam name="TOther"></typeparam>
+    /// <returns>The optional value that is defined only when both containers have values.</returns>
+    public Optional<(T, TOther)> Concat<TOther>(in Optional<TOther> other)
+        => HasValue && other.HasValue ? new((ValueOrDefault, other.ValueOrDefault)) : default;
 
     /// <summary>
     /// If a value is present, returns the value, otherwise throw exception.
@@ -610,12 +618,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// This method uses <see cref="EqualityComparer{T}"/> type
     /// to get hash code of <see cref="Value"/>.
     /// </remarks>
-    public override int GetHashCode() => kind switch
-    {
-        UndefinedValue => 0,
-        NullValue => NullValue,
-        _ => EqualityComparer<T?>.Default.GetHashCode(value!),
-    };
+    public override int GetHashCode() => HasValue ? EqualityComparer<T>.Default.GetHashCode(value) : kind;
 
     /// <summary>
     /// Determines whether this container stored the same
@@ -666,12 +669,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// </summary>
     /// <param name="comparer">The comparer implementing hash code function.</param>
     /// <returns>The hash code of <see cref="Value"/>.</returns>
-    public int GetHashCode(IEqualityComparer comparer) => kind switch
-    {
-        UndefinedValue => 0,
-        NullValue => NullValue,
-        _ => comparer.GetHashCode(value!),
-    };
+    public int GetHashCode(IEqualityComparer comparer) => HasValue ? comparer.GetHashCode(value) : kind;
 
     /// <summary>
     /// Wraps value into Optional container.

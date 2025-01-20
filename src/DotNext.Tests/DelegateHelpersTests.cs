@@ -196,8 +196,24 @@ public sealed class DelegateHelpersTests : Test
         Same(Func.Constant(true), Func.Constant(true));
         Same(Func.Constant(false), Func.Constant(false));
 
-        Equal(42, Func.Constant<int>(42).Invoke());
-        Equal("Hello, world", Func.Constant<string>("Hello, world").Invoke());
+        Equal(42, Func.Constant(42).Invoke());
+        Equal("Hello, world", Func.Constant("Hello, world").Invoke());
+    }
+    
+    [Fact]
+    public static void ValueTypeConst()
+    {
+        const long value = 42L;
+        var provider = Func.Constant(value);
+        Equal(value, provider.Target);
+    }
+
+    [Fact]
+    public static void StringConst()
+    {
+        const string value = "Hello, world";
+        var provider = Func.Constant(value);
+        Same(value, provider.Target);
     }
 
     [Fact]

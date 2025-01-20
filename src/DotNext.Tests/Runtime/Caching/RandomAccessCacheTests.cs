@@ -134,8 +134,8 @@ public sealed class RandomAccessCacheTests : Test
             writeSession.SetValue("10");
         }
 
-        False(cache.TryRemove(11L, DefaultTimeout, out _));
-        True(cache.TryRemove(10L, DefaultTimeout, out var session));
+        False(cache.TryRemove(11L, out _, DefaultTimeout));
+        True(cache.TryRemove(10L, out var session, DefaultTimeout));
 
         using (session)
         {

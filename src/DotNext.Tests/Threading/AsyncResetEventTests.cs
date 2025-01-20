@@ -141,9 +141,9 @@ public sealed class AsyncResetEventTests : Test
     [Fact]
     public static async Task AutoResetOnSyncWait()
     {
-        using var are = new AsyncAutoResetEvent(false);
+        using IAsyncEvent are = new AsyncAutoResetEvent(false);
         var t = Task.Factory.StartNew(() => are.Wait(DefaultTimeout), TaskCreationOptions.LongRunning);
-        True(are.Set());
+        True(are.Signal());
 
         True(await t);
         False(are.IsSet);
@@ -152,15 +152,15 @@ public sealed class AsyncResetEventTests : Test
     [Fact]
     public static async Task ResumeSuspendedCallersSequentially()
     {
-        using var are = new AsyncAutoResetEvent(false);
+        using IAsyncEvent are = new AsyncAutoResetEvent(false);
         var t1 = Task.Factory.StartNew(Wait, TaskCreationOptions.LongRunning);
         var t2 = Task.Factory.StartNew(Wait, TaskCreationOptions.LongRunning);
         
-        True(are.Set());
+        True(are.Signal());
 
         True(await Task.WhenAny(t1, t2).Unwrap());
         
-        True(are.Set());
+        True(are.Signal());
         Equal(new[] { true, true }, await Task.WhenAll(t1, t2));
 
         bool Wait() => are.Wait(DefaultTimeout);

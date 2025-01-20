@@ -6,8 +6,8 @@ using Buffers;
 using IO;
 
 // this is not a public class because it's designed for special purpose: bufferize content of another DTO.
-// For that purpose we using growable buffer which relies on the pooled memory
-internal sealed class InMemoryMessage : Disposable, IDataTransferObject, IBufferedMessage
+// For that purpose we are using growable buffer which relies on the pooled memory
+internal sealed class InMemoryMessage : Disposable, IBufferedMessage
 {
     private readonly int initialSize;
     private MemoryOwner<byte> buffer;

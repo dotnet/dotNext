@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 
 namespace DotNext.Threading;
 
@@ -23,7 +22,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
         readonly bool ILockManager.IsLockAllowed => Value;
 
-        void ILockManager.AcquireLock(bool synchronously) => Value = false;
+        void ILockManager.AcquireLock() => Value = false;
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
@@ -79,7 +78,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         Monitor.Enter(SyncRoot);
-        var result = TryAcquire(ref manager, synchronously: true);
+        var result = TryAcquire(ref manager);
         Monitor.Exit(SyncRoot);
 
         return result;
@@ -97,29 +96,30 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         var suspendedCaller = default(ManualResetCompletionSource);
         bool result;
 
-        lock (SyncRoot)
+        if (result = !manager.Value)
         {
-            if (result = !manager.Value)
+            lock (SyncRoot)
             {
-                for (LinkedValueTaskCompletionSource<bool>? current = WaitQueueHead, next; ; current = next)
+                if (result = !manager.Value)
                 {
-                    if (current is null)
+                    for (LinkedValueTaskCompletionSource<bool>? current = WaitQueueHead, next;; current = next)
                     {
-                        manager.Value = true;
-                        break;
-                    }
+                        if (current is null)
+                        {
+                            manager.Value = true;
+                            break;
+                        }
 
-                    next = current.Next;
+                        next = current.Next;
 
-                    // skip dead node
-                    if (RemoveAndSignal(current, out var resumable))
-                    {
-                        suspendedCaller = resumable ? current : null;
-                        break;
+                        // skip dead node
+                        if (RemoveAndSignal(current, out var resumable))
+                        {
+                            suspendedCaller = resumable ? current : null;
+                            break;
+                        }
                     }
                 }
-                
-                Monitor.Pulse(SyncRoot);
             }
         }
 
@@ -154,48 +154,4 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
         => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
-
-    /// <summary>
-    /// Blocks the current thread until this event is set.
-    /// </summary>
-    /// <param name="timeout">The time to wait for the event.</param>
-    /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
-    /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
-    [UnsupportedOSPlatform("browser")]
-    public bool Wait(TimeSpan timeout)
-    {
-        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        return Wait(new Timeout(timeout));
-    }
-
-    [UnsupportedOSPlatform("browser")]
-    private bool Wait(Timeout timeout)
-    {
-        bool result;
-        if (result = timeout.TryGetRemainingTime(out var remainingTime) && Monitor.TryEnter(SyncRoot, remainingTime))
-        {
-            try
-            {
-                if (TryAcquire(ref manager, synchronously: true))
-                {
-                    // nothing to do
-                }
-                else if (timeout.TryGetRemainingTime(out remainingTime) && Monitor.Wait(SyncRoot, remainingTime))
-                {
-                    manager.Value = false;
-                }
-                else
-                {
-                    result = false;
-                }
-            }
-            finally
-            {
-                Monitor.Exit(SyncRoot);
-            }
-        }
-
-        return result;
-    }
 }

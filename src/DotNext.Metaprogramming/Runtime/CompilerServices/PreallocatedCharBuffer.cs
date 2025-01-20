@@ -1,12 +1,14 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.CompilerServices;
 
-internal unsafe struct PreallocatedCharBuffer
+[InlineArray(BufferSize)]
+internal struct PreallocatedCharBuffer
 {
     private const int BufferSize = 64;
+    
+    private char element0;
 
-    private fixed char buffer[BufferSize];
-
-    public Span<char> Span => MemoryMarshal.CreateSpan(ref buffer[0], BufferSize);
+    public Span<char> Span => MemoryMarshal.CreateSpan(ref element0, BufferSize);
 }

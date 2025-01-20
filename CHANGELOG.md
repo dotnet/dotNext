@@ -1,6 +1,29 @@
 Release Notes
 ====
 
+# 01-20-2025
+<a href="https://www.nuget.org/packages/dotnext/5.18.0">DotNext 5.18.0</a>
+* Introduced `FileUri` class that allows to convert Windows/Unix file names to URI according to `file://` scheme
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.18.0">DotNext.Metaprogramming 5.18.0</a>
+* Introduced expression tree for unsigned right shift operator `>>>`
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.18.0">DotNext.Unsafe 5.18.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.18.0">DotNext.Threading 5.18.0</a>
+* Synchronous `TryAcquire` implemented by `AsyncExclusiveLock` and `AsyncReaderWriterLock` are now implemented in portable way. Previously, WASM target was not supported. Additionally, the method supports lock stealing
+* * Improved synchronous support for `RandomAccessCache` class
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.18.0">DotNext.IO 5.18.0</a>
+* Fixed issue of `PoolingBufferedStream` class when the stream has buffered bytes in the write buffer and `Position` is set to backward
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.18.0">DotNext.Net.Cluster 5.18.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.18.0">DotNext.AspNetCore.Cluster 5.18.0</a>
+* Updated dependencies
+
 # 01-03-2025
 <a href="https://www.nuget.org/packages/dotnext/5.17.2">DotNext 5.17.2</a>
 * Improved AOT compatibility

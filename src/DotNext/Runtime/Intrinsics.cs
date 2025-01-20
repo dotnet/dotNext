@@ -411,4 +411,14 @@ public static class Intrinsics
         if (Unsafe.IsNullRef(in location))
             throw new ArgumentNullException(nameof(location));
     }
+
+    internal static ref byte GetRawData(object obj)
+        => ref Unsafe.As<RawData>(obj).data;
+}
+
+file abstract class RawData
+{
+    internal byte data;
+
+    private RawData() => throw new NotImplementedException();
 }

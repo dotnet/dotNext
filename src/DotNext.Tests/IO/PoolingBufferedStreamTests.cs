@@ -373,4 +373,20 @@ public sealed class PoolingBufferedStreamTests : Test
 
         Equal(expected, actual);
     }
+
+    [Fact]
+    public static void OverwriteStream()
+    {
+        using var buffered = new PoolingBufferedStream(new MemoryStream(), leaveOpen: false);
+        Equal(0L, buffered.Position);
+        
+        buffered.Write("text"u8);
+        Equal(4L, buffered.Position);
+        
+        buffered.Position = 0;
+        Equal(0L, buffered.Position);
+        
+        buffered.Write("text"u8);
+        Equal(4L, buffered.Position);
+    }
 }

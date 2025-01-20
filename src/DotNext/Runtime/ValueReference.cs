@@ -23,7 +23,7 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     ISupplier<T>,
     IConsumer<T>
 {
-    private readonly nint offset = RawData.GetOffset(owner, in fieldRef);
+    private readonly nint offset = ValueReference.GetOffset(owner, in fieldRef);
 
     /// <summary>
     /// Creates a reference to an array element.
@@ -78,7 +78,15 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     /// <summary>
     /// Gets a reference to the field.
     /// </summary>
-    public ref T Value => ref RawData.GetObjectData<T>(owner, offset);
+    public ref T Value => ref ValueReference.GetObjectData<T>(owner, offset);
+    
+    /// <summary>
+    /// Obtains managed pointer to the referenced value.
+    /// </summary>
+    /// <returns>The managed pointer to the referenced value.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ref T GetPinnableReference() => ref Value;
 
     /// <inheritdoc cref="IConsumer{T}.Invoke(T)"/>
     void IConsumer<T>.Invoke(T value) => Value = value;
@@ -123,7 +131,7 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
 
     /// <inheritdoc/>
     public override string? ToString()
-        => owner is not null ? RawData.GetObjectData<T>(owner, offset)?.ToString() : null;
+        => owner is not null ? ValueReference.GetObjectData<T>(owner, offset)?.ToString() : null;
 
     /// <inheritdoc/>
     public override bool Equals([NotNullWhen(true)] object? other)
@@ -200,7 +208,7 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
     IEqualityOperators<ReadOnlyValueReference<T>, ReadOnlyValueReference<T>, bool>,
     ISupplier<T>
 {
-    private readonly nint offset = RawData.GetOffset(owner, in fieldRef);
+    private readonly nint offset = ValueReference.GetOffset(owner, in fieldRef);
     
     /// <summary>
     /// Creates a reference to an array element.
@@ -237,7 +245,15 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
     /// <summary>
     /// Gets a reference to the field.
     /// </summary>
-    public ref readonly T Value => ref RawData.GetObjectData<T>(owner, offset);
+    public ref readonly T Value => ref ValueReference.GetObjectData<T>(owner, offset);
+
+    /// <summary>
+    /// Obtains managed pointer to the referenced value.
+    /// </summary>
+    /// <returns>The managed pointer to the referenced value.</returns>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ref readonly T GetPinnableReference() => ref Value;
 
     /// <inheritdoc cref="ISupplier{T}.Invoke()"/>
     T ISupplier<T>.Invoke() => Value;
@@ -273,7 +289,7 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
 
     /// <inheritdoc/>
     public override string? ToString()
-        => owner is not null ? RawData.GetObjectData<T>(owner, offset)?.ToString() : null;
+        => owner is not null ? ValueReference.GetObjectData<T>(owner, offset)?.ToString() : null;
 
     /// <inheritdoc/>
     public override bool Equals([NotNullWhen(true)] object? other)
@@ -321,28 +337,23 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
         => reference.ToFunc();
 }
 
-[SuppressMessage("Performance", "CA1812", Justification = "Used for reinterpret cast")]
-file abstract class RawData
+file static class ValueReference
 {
     // TODO: Replace with public counterpart in future
     private static readonly Func<object, nuint>? GetRawObjectDataSize;
 
     [DynamicDependency(DynamicallyAccessedMemberTypes.NonPublicMethods, typeof(RuntimeHelpers))]
-    static RawData()
+    static ValueReference()
     {
         const BindingFlags flags = BindingFlags.DeclaredOnly | BindingFlags.NonPublic | BindingFlags.Static;
         GetRawObjectDataSize = typeof(RuntimeHelpers)
             .GetMethod(nameof(GetRawObjectDataSize), flags, [typeof(object)])
             ?.CreateDelegate<Func<object, nuint>>();
     }
-    
-    private byte data;
-
-    private RawData() => throw new NotImplementedException();
 
     internal static nint GetOffset<T>(object owner, ref readonly T field, [CallerArgumentExpression(nameof(field))] string? paramName = null)
     {
-        ref var rawData = ref Unsafe.As<RawData>(owner).data;
+        ref var rawData = ref Intrinsics.GetRawData(owner);
         var offset = Unsafe.ByteOffset(in rawData, in Intrinsics.InToRef<T, byte>(in field));
 
         // Ensure that the reference is an interior pointer to the field inside the object
@@ -354,14 +365,14 @@ file abstract class RawData
 
     internal static ref T GetObjectData<T>(object owner, nint offset)
     {
-        ref var rawData = ref Unsafe.As<RawData>(owner).data;
+        ref var rawData = ref Intrinsics.GetRawData(owner);
         return ref Unsafe.As<byte, T>(ref Unsafe.Add(ref rawData, offset));
     }
 }
 
 file sealed class StaticFieldAccessor<T>(nint offset)
 {
-    public T GetValue() => RawData.GetObjectData<T>(Sentinel.Instance, offset);
+    public T GetValue() => ValueReference.GetObjectData<T>(Sentinel.Instance, offset);
 
-    public void SetValue(T value) => RawData.GetObjectData<T>(Sentinel.Instance, offset) = value;
+    public void SetValue(T value) => ValueReference.GetObjectData<T>(Sentinel.Instance, offset) = value;
 }

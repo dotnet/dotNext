@@ -91,25 +91,20 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// Initializes a new successful result.
     /// </summary>
     /// <param name="value">The value to be stored as result.</param>
-    public Result(T value)
-    {
-        this.value = value;
-        exception = null;
-    }
+    public Result(T value) => this.value = value;
 
     /// <summary>
     /// Initializes a new unsuccessful result.
     /// </summary>
     /// <param name="error">The exception representing error. Cannot be <see langword="null"/>.</param>
     public Result(Exception error)
+        : this(ExceptionDispatchInfo.Capture(error))
     {
-        exception = ExceptionDispatchInfo.Capture(error);
-        Unsafe.SkipInit(out value);
     }
 
     private Result(ExceptionDispatchInfo dispatchInfo)
     {
-        value = default!;
+        Unsafe.SkipInit(out value);
         exception = dispatchInfo;
     }
 
@@ -314,6 +309,25 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// <returns>The first successful result.</returns>
     public static Result<T> operator |(in Result<T> x, in Result<T> y)
         => x.IsSuccessful ? x : y;
+
+    /// <summary>
+    /// Converts this result to <see cref="Task{TResult}"/>.
+    /// </summary>
+    /// <returns>The completed task representing the result.</returns>
+    public ValueTask<T> AsTask()
+        => exception?.SourceException switch
+        {
+            null => new(value),
+            OperationCanceledException canceledEx => ValueTask.FromCanceled<T>(canceledEx.CancellationToken),
+            { } error => ValueTask.FromException<T>(error),
+        };
+
+    /// <summary>
+    /// Converts the result to <see cref="Task{TResult}"/>.
+    /// </summary>
+    /// <param name="result">The result to be converted.</param>
+    /// <returns>The completed task representing the result.</returns>
+    public static explicit operator ValueTask<T>(in Result<T> result) => result.AsTask();
 
     /// <summary>
     /// Gets boxed representation of the result.

@@ -321,4 +321,14 @@ public sealed class OptionalTest : Test
         functional = Optional.None<int>();
         Null(functional.ToDelegate().Invoke());
     }
+
+    [Fact]
+    public static void ConcatTwoValues()
+    {
+        Optional<(int, long)> optional = new Optional<int>(42).Concat<long>(43L);
+        Equal((42, 43L), optional.Value);
+
+        optional = Optional<int>.None.Concat<long>(42L);
+        False(optional.HasValue);
+    }
 }

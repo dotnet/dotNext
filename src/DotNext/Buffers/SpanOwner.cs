@@ -38,7 +38,7 @@ public ref struct SpanOwner<T>
     /// </remarks>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [CLSCompliant(false)]
-    public static int StackallocThreshold { get; } = 1 + (LibrarySettings.StackallocThreshold / Unsafe.SizeOf<T>());
+    public static int StackallocThreshold { get; } = 1 + Features.StackallocThreshold / Unsafe.SizeOf<T>();
 
     private readonly object? owner;
     private readonly Span<T> memory;
@@ -106,13 +106,7 @@ public ref struct SpanOwner<T>
         if (UseNativeAllocation)
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(minBufferSize);
-
-            unsafe
-            {
-                var ptr = NativeMemory.Alloc((uint)minBufferSize, (uint)Unsafe.SizeOf<T>());
-                memory = new(ptr, minBufferSize);
-            }
-
+            memory = Allocate(minBufferSize);
             owner = Sentinel.Instance;
         }
         else
@@ -121,10 +115,31 @@ public ref struct SpanOwner<T>
             memory = exactSize ? new(owner, 0, minBufferSize) : new(owner);
             this.owner = owner;
         }
+
+        static unsafe Span<T> Allocate(int length)
+        {
+            void* ptr;
+
+            if (IsNaturalAlignment)
+            {
+                ptr = NativeMemory.Alloc((uint)length, (uint)Unsafe.SizeOf<T>());
+            }
+            else
+            {
+                var x = (uint)Unsafe.SizeOf<T>();
+                var y = (nuint)(uint)length;
+                var byteCount = checked(x * y);
+                ptr = NativeMemory.AlignedAlloc(byteCount, (uint)Intrinsics.AlignOf<T>());
+            }
+
+            return new(ptr, length);
+        }
     }
 
+    private static bool IsNaturalAlignment => Intrinsics.AlignOf<T>() <= nuint.Size;
+
     private static bool UseNativeAllocation
-        => !LibrarySettings.DisableNativeAllocation && !RuntimeHelpers.IsReferenceOrContainsReferences<T>() && Intrinsics.AlignOf<T>() <= nuint.Size;
+        => Features.UseNativeAllocation && !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
 
     /// <summary>
     /// Gets the rented memory.
@@ -170,7 +185,7 @@ public ref struct SpanOwner<T>
     /// Gets textual representation of the rented memory.
     /// </summary>
     /// <returns>The textual representation of the rented memory.</returns>
-    public override readonly string ToString() => memory.ToString();
+    public readonly override string ToString() => memory.ToString();
 
     /// <summary>
     /// Returns the memory back to the pool.
@@ -181,11 +196,19 @@ public ref struct SpanOwner<T>
         {
             ArrayPool<T>.Shared.Return(array, RuntimeHelpers.IsReferenceOrContainsReferences<T>());
         }
-        else if (ReferenceEquals(owner, Sentinel.Instance))
+        else if (UseNativeAllocation && ReferenceEquals(owner, Sentinel.Instance))
         {
             unsafe
             {
-                NativeMemory.Free(Unsafe.AsPointer(ref MemoryMarshal.GetReference(memory)));
+                var ptr = Unsafe.AsPointer(ref MemoryMarshal.GetReference(memory));
+                if (IsNaturalAlignment)
+                {
+                    NativeMemory.Free(ptr);
+                }
+                else
+                {
+                    NativeMemory.AlignedFree(ptr);
+                }
             }
         }
         else
@@ -194,5 +217,32 @@ public ref struct SpanOwner<T>
         }
 
         this = default;
+    }
+}
+
+file static class Features
+{
+    private const string UseNativeAllocationFeature = "DotNext.Buffers.NativeAllocation";
+
+    // TODO: [FeatureSwitchDefinition(EnableNativeAllocationFeature)]
+    internal static bool UseNativeAllocation
+        => LibraryFeature.IsSupported(UseNativeAllocationFeature);
+    
+    internal static int StackallocThreshold
+    {
+        get
+        {
+            const string environmentVariableName = "DOTNEXT_STACK_ALLOC_THRESHOLD";
+            const string configurationParameterName = "DotNext.Buffers.StackAllocThreshold";
+            const int defaultValue = 511;
+            const int minimumValue = 14;
+
+            if (AppContext.GetData(configurationParameterName) is not int result)
+            {
+                int.TryParse(Environment.GetEnvironmentVariable(environmentVariableName), out result);
+            }
+
+            return result > minimumValue ? result : defaultValue;
+        }
     }
 }
