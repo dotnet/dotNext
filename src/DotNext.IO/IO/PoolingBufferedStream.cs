@@ -664,8 +664,9 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         if (WrittenMemory.Span is { IsEmpty: false } writeBuf)
         {
             stream.Write(writeBuf);
-            result = stream.Seek(offset, origin);
+            writePosition = 0;
             ResetIfNeeded();
+            result = stream.Seek(offset, origin);
         }
         else
         {
