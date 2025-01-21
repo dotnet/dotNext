@@ -492,7 +492,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
             if (readPosition == readLength)
                 Reset();
         }
-        else if (data.Length > maxBufferSize)
+        else if (data.Length >= maxBufferSize)
         {
             Debug.Assert(readPosition == readLength);
             
