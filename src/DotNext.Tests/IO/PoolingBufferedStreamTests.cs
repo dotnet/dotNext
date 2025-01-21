@@ -389,4 +389,51 @@ public sealed class PoolingBufferedStreamTests : Test
         buffered.Write("text"u8);
         Equal(4L, buffered.Position);
     }
+
+    [Fact]
+    public static async Task RegressionIssue256()
+    {
+        const int dataSize = 128 + 3105 + 66 + 3111 + 66 + 3105 + 66 + 2513 + 128;
+        ReadOnlyMemory<byte> expected = RandomBytes(dataSize);
+        await using var ms = new MemoryStream();
+
+        await using (var buffered = new PoolingBufferedStream(ms, leaveOpen: true) { MaxBufferSize = 8192 })
+        {
+            await buffered.WriteAsync(expected);
+            await buffered.FlushAsync();
+        }
+
+        ms.Position = 0;
+        await using (var reader = new PoolingBufferedStream(ms, leaveOpen: true) { MaxBufferSize = 4096 })
+        {
+            Memory<byte> buffer = new byte[dataSize];
+            await reader.ReadExactlyAsync(buffer.Slice(0, 3175));
+            reader.Position = 3303;
+            await reader.ReadExactlyAsync(buffer.Slice(0, 3107));
+            Equal(expected.Slice(3303, 3107), buffer.Slice(0, 3107));
+        }
+    }
+
+    [Fact]
+    public static void RepeatableReads()
+    {
+        var bytes = RandomBytes(128);
+        using var reader = new PoolingBufferedStream(new MemoryStream(bytes)) { MaxBufferSize = 256 };
+        True(reader.Read());
+        False(reader.Read());
+        True(reader.HasBufferedDataToRead);
+
+        Equal(bytes, reader.As<IBufferedReader>().Buffer);
+    }
+    
+    [Fact]
+    public static void ReadEmpty()
+    {
+        var bytes = RandomBytes(128);
+        using var reader = new PoolingBufferedStream(new MemoryStream(bytes)) { MaxBufferSize = 256 };
+        True(reader.Read());
+        reader.ReadExactly(new byte[bytes.Length]);
+        False(reader.Read());
+        False(reader.HasBufferedDataToRead);
+    }
 }
