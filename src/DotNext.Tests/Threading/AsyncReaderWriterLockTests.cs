@@ -263,5 +263,8 @@ public sealed class AsyncReaderWriterLockTests : Test
 
         Throws<LockRecursionException>(() => l.TryEnterReadLock(DefaultTimeout));
         Throws<LockRecursionException>(() => l.TryEnterWriteLock(DefaultTimeout));
+        
+        l.Release();
+        True(l.TryEnterReadLock(DefaultTimeout));
     }
 }

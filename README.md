@@ -55,7 +55,7 @@ Release Date: 01-20-2025
 <a href="https://www.nuget.org/packages/dotnext.unsafe/5.18.0">DotNext.Unsafe 5.18.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.18.0">DotNext.Threading 5.18.0</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/5.18.1">DotNext.Threading 5.18.1</a>
 * Synchronous `TryAcquire` implemented by `AsyncExclusiveLock` and `AsyncReaderWriterLock` are now implemented in portable way. Previously, WASM target was not supported. Additionally, the method supports lock stealing
 * Improved synchronous support for `RandomAccessCache` class
 

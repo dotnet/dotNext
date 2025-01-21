@@ -97,7 +97,7 @@ public static class Func
         // slow path - allocates a new delegate
         return obj is null ? Default<T?>! : obj.UnboxAny<T>;
     }
-    
+
     internal static T? Default<T>() => default;
 
     private static T UnboxAny<T>(this object obj)
