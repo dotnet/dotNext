@@ -239,19 +239,17 @@ public partial class FileWriter : Disposable, IFlushable, IBufferedWriter
 
     private void WriteSlow(ReadOnlySpan<byte> input)
     {
+        RandomAccess.Write(handle, WrittenBuffer.Span, fileOffset);
+        fileOffset += bufferOffset;
+        
         if (input.Length >= maxBufferSize)
         {
-            RandomAccess.Write(handle, WrittenBuffer.Span, fileOffset);
-            fileOffset += bufferOffset;
-
             RandomAccess.Write(handle, input, fileOffset);
             fileOffset += input.Length;
             Reset();
         }
         else
         {
-            RandomAccess.Write(handle, WrittenBuffer.Span, fileOffset);
-            fileOffset += bufferOffset;
             input.CopyTo(EnsureBufferAllocated().Span);
             bufferOffset += input.Length;
         }
