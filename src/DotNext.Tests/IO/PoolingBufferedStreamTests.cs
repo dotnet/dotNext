@@ -391,7 +391,7 @@ public sealed class PoolingBufferedStreamTests : Test
     }
 
     [Fact]
-    public static async Task RegressionIssue256()
+    public static async Task RegressionIssue256Async()
     {
         const int dataSize = 128 + 3105 + 66 + 3111 + 66 + 3105 + 66 + 2513 + 128;
         ReadOnlyMemory<byte> expected = RandomBytes(dataSize);
@@ -410,6 +410,30 @@ public sealed class PoolingBufferedStreamTests : Test
             await reader.ReadExactlyAsync(buffer.Slice(0, 3175));
             reader.Position = 3303;
             await reader.ReadExactlyAsync(buffer.Slice(0, 3107));
+            Equal(expected.Slice(3303, 3107), buffer.Slice(0, 3107));
+        }
+    }
+    
+    [Fact]
+    public static void RegressionIssue256()
+    {
+        const int dataSize = 128 + 3105 + 66 + 3111 + 66 + 3105 + 66 + 2513 + 128;
+        ReadOnlySpan<byte> expected = RandomBytes(dataSize);
+        using var ms = new MemoryStream();
+
+        using (var buffered = new PoolingBufferedStream(ms, leaveOpen: true) { MaxBufferSize = 8192 })
+        {
+            buffered.Write(expected);
+            buffered.Flush();
+        }
+
+        ms.Position = 0;
+        using (var reader = new PoolingBufferedStream(ms, leaveOpen: true) { MaxBufferSize = 4096 })
+        {
+            Span<byte> buffer = new byte[dataSize];
+            reader.ReadExactly(buffer.Slice(0, 3175));
+            reader.Position = 3303;
+            reader.ReadExactly(buffer.Slice(0, 3107));
             Equal(expected.Slice(3303, 3107), buffer.Slice(0, 3107));
         }
     }
