@@ -489,21 +489,24 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
 
         if (data.IsEmpty)
         {
-            // nothing to do
+            if (readPosition == readLength)
+                Reset();
         }
         else if (data.Length > maxBufferSize)
         {
+            Debug.Assert(readPosition == readLength);
+            
             bytesRead += stream.Read(data);
+            Reset();
         }
         else
         {
+            Debug.Assert(readPosition == readLength);
+            
             readPosition = 0;
             readLength = stream.Read(EnsureBufferAllocated().Span);
             bytesRead += ReadFromBuffer(data);
         }
-        
-        if (readPosition == readLength)
-            Reset();
 
         return bytesRead;
     }
@@ -564,12 +567,13 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
 
         if (data.IsEmpty)
         {
-            // nothing to do
+            if (readPosition == readLength)
+                Reset();
         }
-        else if (data.Length > MaxBufferSize)
+        else if (data.Length >= maxBufferSize)
         {
-            Debug.Assert(readPosition == readLength);
             bytesRead += await stream.ReadAsync(data, token).ConfigureAwait(false);
+            Reset();
         }
         else
         {
@@ -578,9 +582,6 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
             readLength = await stream.ReadAsync(EnsureBufferAllocated().Memory, token).ConfigureAwait(false);
             bytesRead += ReadFromBuffer(data.Span);
         }
-        
-        if (readPosition == readLength)
-            Reset();
 
         return bytesRead;
     }
