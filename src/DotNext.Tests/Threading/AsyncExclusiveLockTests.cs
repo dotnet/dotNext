@@ -236,5 +236,8 @@ public sealed class AsyncExclusiveLockTests : Test
         False(l.TryAcquire());
 
         Throws<LockRecursionException>(() => l.TryAcquire(DefaultTimeout));
+        
+        l.Release();
+        True(l.TryAcquire(DefaultTimeout));
     }
 }

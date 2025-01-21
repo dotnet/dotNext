@@ -645,6 +645,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.ExitLock();
+            IsLockHelpByCurrentThread = false;
             suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
