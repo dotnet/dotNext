@@ -222,7 +222,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         }
         else if (stream.CanWrite)
         {
-            task = WriteCoreAsync(out _, token);
+            task = WriteCoreAsync(token);
         }
         else
         {
@@ -230,6 +230,13 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         }
 
         return task;
+    }
+
+    private async ValueTask WriteCoreAsync(CancellationToken token)
+    {
+        await WriteCoreAsync(out var isWritten, token).ConfigureAwait(false);
+        if (isWritten)
+            Reset();
     }
 
     private bool WriteCore()
