@@ -213,27 +213,13 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     /// <returns>The task representing asynchronous execution of the operation.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The stream is disposed.</exception>
-    public ValueTask WriteAsync(CancellationToken token = default)
+    public async ValueTask WriteAsync(CancellationToken token = default)
     {
-        ValueTask task;
-        if (stream is null)
-        {
-            task = new(DisposedTask);
-        }
-        else if (stream.CanWrite)
-        {
-            task = WriteCoreAsync(token);
-        }
-        else
-        {
-            task = ValueTask.FromException(new NotSupportedException());
-        }
+        AssertState();
+        ThrowIfDisposed();
+        if (!stream.CanWrite)
+            throw new NotSupportedException();
 
-        return task;
-    }
-
-    private async ValueTask WriteCoreAsync(CancellationToken token)
-    {
         await WriteCoreAsync(out var isWritten, token).ConfigureAwait(false);
         if (isWritten)
             Reset();
