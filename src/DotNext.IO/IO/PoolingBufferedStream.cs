@@ -674,13 +674,13 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     public override Task FlushAsync(CancellationToken token)
     {
         Task task;
-        if (writePosition > 0)
-        {
-            task = WriteAndFlushAsync(token);
-        }
-        else if (stream is null)
+        if (stream is null)
         {
             task = DisposedTask;
+        }
+        else if (writePosition > 0)
+        {
+            task = WriteAndFlushAsync(token);
         }
         else
         {
@@ -697,10 +697,9 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
 
     private async Task WriteAndFlushAsync(CancellationToken token)
     {
+        Debug.Assert(stream is not null);
         Debug.Assert(writePosition > 0);
         Debug.Assert(buffer.Length > 0);
-
-        ThrowIfDisposed();
 
         await stream.WriteAsync(WrittenMemory, token).ConfigureAwait(false);
         await stream.FlushAsync(token).ConfigureAwait(false);
