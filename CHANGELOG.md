@@ -15,7 +15,7 @@ Release Notes
 * Synchronous `TryAcquire` implemented by `AsyncExclusiveLock` and `AsyncReaderWriterLock` are now implemented in portable way. Previously, WASM target was not supported. Additionally, the method supports lock stealing
 * * Improved synchronous support for `RandomAccessCache` class
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.18.1">DotNext.IO 5.18.1</a>
+<a href="https://www.nuget.org/packages/dotnext.io/5.18.2">DotNext.IO 5.18.2</a>
 * Fixed issue of `PoolingBufferedStream` class when the stream has buffered bytes in the write buffer and `Position` is set to backward
 * Fixed [256](https://github.com/dotnet/dotNext/issues/256)
 

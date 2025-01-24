@@ -213,23 +213,16 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     /// <returns>The task representing asynchronous execution of the operation.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The stream is disposed.</exception>
-    public ValueTask WriteAsync(CancellationToken token = default)
+    public async ValueTask WriteAsync(CancellationToken token = default)
     {
-        ValueTask task;
-        if (stream is null)
-        {
-            task = new(DisposedTask);
-        }
-        else if (stream.CanWrite)
-        {
-            task = WriteCoreAsync(out _, token);
-        }
-        else
-        {
-            task = ValueTask.FromException(new NotSupportedException());
-        }
+        AssertState();
+        ThrowIfDisposed();
+        if (!stream.CanWrite)
+            throw new NotSupportedException();
 
-        return task;
+        await WriteCoreAsync(out var isWritten, token).ConfigureAwait(false);
+        if (isWritten)
+            Reset();
     }
 
     private bool WriteCore()
@@ -681,13 +674,13 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     public override Task FlushAsync(CancellationToken token)
     {
         Task task;
-        if (writePosition > 0)
-        {
-            task = WriteAndFlushAsync(token);
-        }
-        else if (stream is null)
+        if (stream is null)
         {
             task = DisposedTask;
+        }
+        else if (writePosition > 0)
+        {
+            task = WriteAndFlushAsync(token);
         }
         else
         {
@@ -704,10 +697,9 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
 
     private async Task WriteAndFlushAsync(CancellationToken token)
     {
+        Debug.Assert(stream is not null);
         Debug.Assert(writePosition > 0);
         Debug.Assert(buffer.Length > 0);
-
-        ThrowIfDisposed();
 
         await stream.WriteAsync(WrittenMemory, token).ConfigureAwait(false);
         await stream.FlushAsync(token).ConfigureAwait(false);
