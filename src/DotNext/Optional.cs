@@ -116,7 +116,7 @@ public static class Optional
     public static Type? GetUnderlyingType(Type optionalType) => IsOptional(optionalType) ? optionalType.GetGenericArguments()[0] : null;
 
     /// <summary>
-    /// Constructs optional value from nullable reference type.
+    /// Constructs optional value from nullable value type.
     /// </summary>
     /// <typeparam name="T">Type of value.</typeparam>
     /// <param name="value">The value to convert.</param>
