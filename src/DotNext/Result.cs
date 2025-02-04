@@ -69,12 +69,34 @@ public static class Result
     public static Result<T> FromValue<T>(T value) => new(value);
 
     /// <summary>
+    /// Creates a new instance of <see cref="Result{T}"/> from the specified value.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TError">The type of the error code. Default value must represent the successful result.</typeparam>
+    /// <param name="value">The value to be placed to the container.</param>
+    /// <returns>The value encapsulated by <see cref="Result{T, TError}"/>.</returns>
+    public static Result<T, TError> FromValue<T, TError>(T value)
+        where TError: struct, Enum
+        => new(value);
+
+    /// <summary>
     /// Creates a new instance of <see cref="Result{T}"/> from the specified exception.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="e">The exception to be placed to the container.</param>
     /// <returns>The exception encapsulated by <see cref="Result{T}"/>.</returns>
     public static Result<T> FromException<T>(Exception e) => new(e);
+
+    /// <summary>
+    /// Creates a new instance of <see cref="Result{T, TError}"/> from the specified exception.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TError">The type of the error code. Default value must represent the successful result.</typeparam>
+    /// <param name="e">The error to be placed to the container.</param>
+    /// <returns>The exception encapsulated by <see cref="Result{T}"/>.</returns>
+    public static Result<T, TError> FromError<T, TError>(TError e)
+        where TError: struct, Enum
+        => new(e);
 
     /// <summary>
     /// If successful result is present, apply the provided mapping function hiding any exception

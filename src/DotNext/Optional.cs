@@ -73,6 +73,14 @@ public static class Optional
         => await (await task.ConfigureAwait(false)).Convert(converter).ConfigureAwait(false);
 
     /// <summary>
+    /// Creates a new instance of <see cref="Optional{T}"/> from the specified value.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <param name="value">The value to be placed to the container.</param>
+    /// <returns>The value encapsulated by <see cref="Result{T}"/>.</returns>
+    public static Optional<T> FromValue<T>(T value) => new(value);
+
+    /// <summary>
     /// Creates <see cref="Result{T}"/> from <see cref="Optional{T}"/> instance.
     /// </summary>
     /// <param name="optional">The optional value.</param>
