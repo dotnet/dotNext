@@ -198,7 +198,7 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
             var remaining = RemainingBuffer;
             if (remaining.Length < sizeof(THash) && (uint)remaining.Length <= length)
             {
-                data = ref Unsafe.Add(ref data, Append(remaining, ref data, ref length));
+                data = ref Unsafe.Add(ref data, Append(remaining, in data, ref length));
             }
 
             for (; length >= (uint)sizeof(THash); length -= (uint)sizeof(THash), data = ref Unsafe.Add(ref data, sizeof(THash)))
@@ -214,9 +214,9 @@ public class FNV1a<THash, TParameters>(bool salted = false) : NonCryptographicHa
             }
         }
 
-        private int Append(Span<byte> remaining, ref byte data, ref nuint length)
+        private int Append(Span<byte> remaining, ref readonly byte data, ref nuint length)
         {
-            var input = MemoryMarshal.CreateReadOnlySpan(ref data, remaining.Length);
+            var input = MemoryMarshal.CreateReadOnlySpan(in data, remaining.Length);
             input.CopyTo(remaining);
             Flush();
             length -= (uint)input.Length;
