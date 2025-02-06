@@ -222,7 +222,7 @@ public partial class PersistentState
 
     internal abstract class ConcurrentStorageAccess : Disposable
     {
-        private readonly bool autoFlush;
+        private protected readonly bool requiresExplicitFlushToDisk;
         internal readonly SafeFileHandle Handle;
         private protected readonly FileWriter writer;
         private protected readonly int fileOffset;
@@ -270,7 +270,7 @@ public partial class PersistentState
             if (readers.Length is 1)
                 readers[0] = new(Handle, version) { FilePosition = this.fileOffset, MaxBufferSize = bufferSize, Allocator = allocator };
 
-            autoFlush = writeMode is WriteMode.AutoFlush;
+            requiresExplicitFlushToDisk = writeMode is WriteMode.AutoFlush;
         }
 
         internal long FileSize => RandomAccess.GetLength(Handle);
@@ -303,7 +303,7 @@ public partial class PersistentState
         public virtual ValueTask FlushAsync(CancellationToken token = default)
         {
             Invalidate();
-            return autoFlush ? FlushToDiskAsync(writer, token) : writer.WriteAsync(token);
+            return requiresExplicitFlushToDisk ? FlushToDiskAsync(writer, token) : writer.WriteAsync(token);
 
             static async ValueTask FlushToDiskAsync(FileWriter writer, CancellationToken token)
             {

@@ -48,7 +48,7 @@ public partial class PersistentState
         private readonly bool integrityCheck;
         private MemoryOwner<byte> buffer;
 
-        // boxed ClusterMemberId or null if there is not last vote stored
+        // boxed ClusterMemberId or null if there is no last vote stored
         private volatile BoxedClusterMemberId? votedFor;
         private long term, commitIndex, lastIndex, lastApplied;  // volatile
         private SnapshotMetadata snapshot; // cached snapshot metadata to avoid backward writes

@@ -26,7 +26,7 @@ public partial class PersistentState
         NoFlush = 0,
 
         /// <summary>
-        /// Flushes data to disk only if the internal buffer oveflows.
+        /// Flushes data to disk only if the internal buffer overflows.
         /// </summary>
         AutoFlush,
 
