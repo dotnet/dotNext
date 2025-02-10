@@ -12,15 +12,15 @@ public partial class RandomAccessCache<TKey, TValue>
 {
     // devirtualize Value getter manually (JIT will replace this method with one of the actual branches)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static TValue GetValue(KeyValuePair pair)
+    private static ref readonly TValue GetValue(KeyValuePair pair)
     {
         Debug.Assert(pair is not null);
         Debug.Assert(pair is not FakeKeyValuePair);
         Debug.Assert(Atomic.IsAtomic<TValue>() ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
 
-        return Atomic.IsAtomic<TValue>()
-            ? Unsafe.As<KeyValuePairAtomicAccess>(pair).Value
-            : Unsafe.As<KeyValuePairNonAtomicAccess>(pair).Value;
+        return ref Atomic.IsAtomic<TValue>()
+            ? ref Unsafe.As<KeyValuePairAtomicAccess>(pair).Value
+            : ref Unsafe.As<KeyValuePairNonAtomicAccess>(pair).ValueRef;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -150,6 +150,8 @@ public partial class RandomAccessCache<TKey, TValue>
 
             [MemberNotNull(nameof(holder))] set => holder = new(value);
         }
+
+        internal ref readonly TValue ValueRef => ref holder.Value;
 
         internal void ClearValue() => holder = DefaultHolder;
 

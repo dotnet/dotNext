@@ -18,7 +18,7 @@ public sealed class RandomAccessCacheTests : Test
         for (long i = 0; i < 150; i++)
         {
             using var handle = await cache.ChangeAsync(i);
-            False(handle.TryGetValue(out _));
+            True(Unsafe.IsNullRef(in handle.ValueRefOrNullRef));
 
             handle.SetValue(i.ToString());
         }

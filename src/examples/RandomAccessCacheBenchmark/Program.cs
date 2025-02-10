@@ -95,7 +95,7 @@ sealed class BenchmarkState
         {
             using (session)
             {
-                Crc32.HashToUInt32(session.Value.Span);
+                Crc32.HashToUInt32(session.ValueRef.Span);
             }
             
             task = Task.CompletedTask;

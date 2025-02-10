@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -414,12 +415,16 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             this.valueHolder = valueHolder;
         }
 
-        internal bool IsValid => valueHolder is not null;
-
         /// <summary>
         /// Gets the value of the cache record.
         /// </summary>
-        public TValue Value => GetValue(valueHolder);
+        public TValue Value => ValueRef;
+
+        /// <summary>
+        /// Gets a reference to a value.
+        /// </summary>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public ref readonly TValue ValueRef => ref GetValue(valueHolder);
 
         /// <summary>
         /// Closes the session.
@@ -480,6 +485,16 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             result = default;
             return false;
         }
+
+        /// <summary>
+        /// Gets a reference to a value.
+        /// </summary>
+        /// <value>A reference to a value; or <see langowrd="null"/> reference.</value>
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public ref readonly TValue ValueRefOrNullRef
+            => ref bucketOrValueHolder is KeyValuePair valueHolder
+                ? ref GetValue(valueHolder)
+                : ref Unsafe.NullRef<TValue>();
 
         /// <summary>
         /// Promotes or modifies the cache record value.
