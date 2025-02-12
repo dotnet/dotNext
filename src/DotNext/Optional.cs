@@ -529,7 +529,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
-    /// non-null, return an Optional describing the result. Otherwise returns <see cref="None"/>.
+    /// non-null, return an Optional describing the result. Otherwise, returns <see cref="None"/>.
     /// </summary>
     /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
     /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
@@ -539,7 +539,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
-    /// non-null, return an Optional describing the result. Otherwise returns <see cref="None"/>.
+    /// non-null, return an Optional describing the result. Otherwise, returns <see cref="None"/>.
     /// </summary>
     /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
     /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
@@ -555,7 +555,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
-    /// non-null, return an Optional describing the result. Otherwise returns <see cref="None"/>.
+    /// non-null, return an Optional describing the result. Otherwise, returns <see cref="None"/>.
     /// </summary>
     /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
     /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
@@ -633,7 +633,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     /// <summary>
     /// Determines whether this container stores
-    /// the same value as other.
+    /// the same value as the specified one.
     /// </summary>
     /// <param name="other">Other container to compare.</param>
     /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
