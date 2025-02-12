@@ -141,17 +141,25 @@ public sealed class OptionalTest : Test
         var opt = new Optional<int>(10);
         Equal(10, await Task.FromResult(opt).OrDefault());
         Equal(10, await Task.FromResult(opt).OrNull());
+        
         opt = default;
         Equal(0, await Task.FromResult(opt).OrDefault());
         Equal(10, await Task.FromResult(opt).OrInvoke(() => 10));
         Null(await Task.FromResult(opt).OrNull());
+        
         opt = 20;
         Equal(20, await Task.FromResult(opt).OrInvoke(() => 10));
         Equal(20, await Task.FromResult(opt).OrThrow<int, ArithmeticException>());
         Equal(20, await Task.FromResult(opt).OrThrow(() => new ArithmeticException()));
+        Equal(20D, await Task.FromResult(opt).Convert(double.CreateChecked));
+        Equal(20, await Task.FromResult(opt).Or(42));
+        Equal(20, await Task.FromResult(opt).If(int.IsEvenInteger));
+        
         opt = default;
+        Equal(42, await Task.FromResult(opt).Or(42));
+        Equal(Optional<int>.None, await Task.FromResult(opt).If(int.IsEvenInteger));
         await ThrowsAsync<ArithmeticException>(Task.FromResult(opt).OrThrow<int, ArithmeticException>);
-        await ThrowsAsync<ArithmeticException>(() => Task.FromResult(opt).OrThrow(() => new ArithmeticException()));
+        await ThrowsAsync<ArithmeticException>(() => Task.FromResult(opt).OrThrow(static () => new ArithmeticException()));
     }
 
     [Fact]
@@ -307,6 +315,15 @@ public sealed class OptionalTest : Test
         var value = Optional<string>.None.Convert(Converter.Identity<string, string>());
         False(value.HasValue);
         False(value.IsNull);
+    }
+
+    [Fact]
+    public static void ConvertToOptional()
+    {
+        Equal(Optional.None<double>(), Optional.None<int>().Convert(ToDouble));
+        Equal(42D, new Optional<int>(42).Convert(ToDouble));
+
+        static Optional<double> ToDouble(int value) => double.CreateChecked(value);
     }
 
     [Fact]
