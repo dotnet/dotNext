@@ -44,10 +44,10 @@ public sealed class ConversionTests : Test
     [Fact]
     public static async Task SuspendException()
     {
-        await Task.FromException(new Exception()).SuspendException();
-        await ValueTask.FromException(new Exception()).SuspendException();
+        await Task.FromException(new Exception()).SuspendException().ConfigureAwait(true);
+        await ValueTask.FromException(new Exception()).SuspendException().ConfigureAwait(true);
 
-        var result = await Task.FromException<int>(new ArithmeticException()).SuspendException();
+        var result = await Task.FromException<int>(new ArithmeticException()).SuspendException().ConfigureAwait(true);
         False(result.IsSuccessful);
         IsType<ArithmeticException>(result.Error);
     }
@@ -63,8 +63,8 @@ public sealed class ConversionTests : Test
     [Fact]
     public static async Task SuspendExceptionParametrized()
     {
-        await Task.FromException(new Exception()).SuspendException(42, (_, i) => i is 42);
-        await ValueTask.FromException(new Exception()).SuspendException(42, (_, i) => i is 42);
-        await ThrowsAsync<Exception>(async () => await Task.FromException(new Exception()).SuspendException(43, (_, i) => i is 42));
+        await Task.FromException(new Exception()).SuspendException(42, (_, i) => i is 42).ConfigureAwait(true);
+        await ValueTask.FromException(new Exception()).SuspendException(42, (_, i) => i is 42).ConfigureAwait(true);
+        await ThrowsAsync<Exception>(async () => await Task.FromException(new Exception()).SuspendException(43, (_, i) => i is 42).ConfigureAwait(true));
     }
 }
