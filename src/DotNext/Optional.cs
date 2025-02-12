@@ -38,7 +38,7 @@ public static class Optional
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
-    /// non-null, return an Optional describing the result. Otherwise returns <see cref="Optional{T}.None"/>.
+    /// non-null, return an Optional describing the result. Otherwise, returns <see cref="Optional{T}.None"/>.
     /// </summary>
     /// <typeparam name="TInput">The type of stored in the Optional container.</typeparam>
     /// <typeparam name="TOutput">The type of the result of the mapping function.</typeparam>
