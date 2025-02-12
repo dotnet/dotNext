@@ -68,6 +68,14 @@ public static class Conversion
     public static DynamicTaskAwaitable AsDynamic(this Task task) => new(task);
 
     /// <summary>
+    /// Returns a task that never throws an exception.
+    /// </summary>
+    /// <param name="task">The task to convert.</param>
+    /// <typeparam name="T">The type of the task.</typeparam>
+    /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
+    public static AwaitableResult<T> SuspendException<T>(this Task<T> task) => new(task);
+
+    /// <summary>
     /// Suspends the exception that can be raised by the task.
     /// </summary>
     /// <param name="task">The task.</param>
