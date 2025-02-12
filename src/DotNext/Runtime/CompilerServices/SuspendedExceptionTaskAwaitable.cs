@@ -58,9 +58,7 @@ public readonly struct SuspendedExceptionTaskAwaitable
         private readonly ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter;
 
         internal Awaiter(in ValueTask task, bool continueOnCapturedContext)
-        {
-            awaiter = task.ConfigureAwait(continueOnCapturedContext).GetAwaiter();
-        }
+            => awaiter = task.ConfigureAwait(continueOnCapturedContext).GetAwaiter();
 
         internal Predicate<Exception>? Filter
         {
