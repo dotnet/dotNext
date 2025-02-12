@@ -95,7 +95,7 @@ internal sealed class GenericServer : Server
         finally
         {
             await connection.DisposeAsync().ConfigureAwait(false);
-            protocol.Dispose();
+            await protocol.DisposeAsync().ConfigureAwait(false);
             tokenSource?.Dispose();
         }
     }
