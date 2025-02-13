@@ -16,6 +16,9 @@ public sealed class ConversionTests : Test
     {
         var t = Task.FromResult("12").Convert(int.Parse);
         Equal(12, await t);
+
+        t = Task.FromResult("12").Convert(static str => Task.FromResult(int.Parse(str)));
+        Equal(12, await t);
     }
 
     [Fact]
