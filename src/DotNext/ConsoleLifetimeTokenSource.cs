@@ -22,7 +22,7 @@ public sealed class ConsoleLifetimeTokenSource : CancellationTokenSource
         ReadOnlySpan<PosixSignal> signals = [PosixSignal.SIGINT, PosixSignal.SIGQUIT, PosixSignal.SIGTERM];
         var result = new PosixSignalRegistration[signals.Length];
         Action<PosixSignalContext> handler = Cancel;
-        for (int i = 0; i < result.Length; i++)
+        for (var i = 0; i < result.Length; i++)
         {
             result[i] = PosixSignalRegistration.Create(signals[i], handler);
         }
