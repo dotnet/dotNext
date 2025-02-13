@@ -106,10 +106,10 @@ static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string?
     AddMembersToCluster(config.UseInMemoryConfigurationStorage());
     var loggerFactory = LoggerFactory.Create(ConfigureLogging);
     config.LoggerFactory = loggerFactory;
-    using var cluster = new RaftCluster(config);
+    await using var cluster = new RaftCluster(config);
     cluster.LeaderChanged += ClusterConfigurator.LeaderChanged;
     var modifier = default(DataModifier?);
-    if (!string.IsNullOrEmpty(persistentStorage))
+    if (persistentStorage is { Length: > 0 })
     {
         var state = new SimplePersistentState(persistentStorage);
         cluster.AuditTrail = state;
