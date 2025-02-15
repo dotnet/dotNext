@@ -413,12 +413,12 @@ public static class Intrinsics
     }
 
     internal static ref byte GetRawData(object obj)
-        => ref Unsafe.As<RawData>(obj).data;
+        => ref Unsafe.As<RawData>(obj).Data;
 }
 
 file abstract class RawData
 {
-    internal byte data;
+    internal byte Data;
 
     private RawData() => throw new NotImplementedException();
 }
