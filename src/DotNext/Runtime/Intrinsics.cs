@@ -320,7 +320,7 @@ public static class Intrinsics
     /// Gets length of the array.
     /// </summary>
     /// <remarks>
-    /// This method supports one-dimensional as well as multi-dimensional arrays.
+    /// This method supports one-dimensional as well as multidimensional arrays.
     /// </remarks>
     /// <param name="array">The array object.</param>
     /// <returns>The length of the array as native unsigned integer.</returns>
