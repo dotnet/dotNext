@@ -53,6 +53,10 @@ public sealed class ConversionTests : Test
         var result = await Task.FromException<int>(new ArithmeticException()).SuspendException().ConfigureAwait(true);
         False(result.IsSuccessful);
         IsType<ArithmeticException>(result.Error);
+
+        result = await ValueTask.FromException<int>(new ArithmeticException()).SuspendException().ConfigureAwait(true);
+        False(result.IsSuccessful);
+        IsType<ArithmeticException>(result.Error);
     }
 
     [Fact]

@@ -194,9 +194,14 @@ public readonly struct SuspendedExceptionTaskAwaitable<TArg>
 [StructLayout(LayoutKind.Auto)]
 public readonly struct AwaitableResult<T>
 {
-    private readonly Task<T> task;
+    private readonly ValueTask<T> task;
 
-    internal AwaitableResult(Task<T> task) => this.task = task;
+    internal AwaitableResult(Task<T> task)
+        : this(new ValueTask<T>(task))
+    {
+    }
+
+    internal AwaitableResult(ValueTask<T> task) => this.task = task;
     
     internal bool ContinueOnCapturedContext
     {
@@ -227,9 +232,9 @@ public readonly struct AwaitableResult<T>
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Awaiter : ICriticalNotifyCompletion
     {
-        private readonly ConfiguredTaskAwaitable<T>.ConfiguredTaskAwaiter awaiter;
+        private readonly ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter awaiter;
 
-        internal Awaiter(Task<T> task, bool continueOnCapturedContext)
+        internal Awaiter(in ValueTask<T> task, bool continueOnCapturedContext)
             => awaiter = task.ConfigureAwait(continueOnCapturedContext).GetAwaiter();
 
         /// <summary>
