@@ -27,7 +27,7 @@ public static class EnumType
         => GetField(value)?.GetCustomAttribute<TAttribute>(false);
 
     /// <summary>
-    /// Gets custom attributes associayed with the specified enum value.
+    /// Gets custom attributes associated with the specified enum value.
     /// </summary>
     /// <param name="value">The value to be reflected.</param>
     /// <typeparam name="TEnum">The type of the enum to be reflected.</typeparam>
