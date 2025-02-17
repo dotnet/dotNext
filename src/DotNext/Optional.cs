@@ -49,6 +49,27 @@ public static class Optional
         => (await task.ConfigureAwait(false)).Convert(converter);
 
     /// <summary>
+    /// If a value is present, apply the provided mapping function to it, and if the result is
+    /// non-null, return an Optional describing the result. Otherwise, returns <see cref="Optional{T}.None"/>.
+    /// </summary>
+    /// <typeparam name="TInput">The type of stored in the Optional container.</typeparam>
+    /// <typeparam name="TOutput">The type of the result of the mapping function.</typeparam>
+    /// <param name="task">The task containing Optional value.</param>
+    /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Optional{T}.None"/>.</returns>
+    public static async Task<Optional<TOutput>> Convert<TInput, TOutput>(this Task<Optional<TInput>> task,
+        Func<TInput, CancellationToken, Task<TOutput>> converter, CancellationToken token = default)
+    {
+        var optional = await task.ConfigureAwait(false);
+        return optional.HasValue
+            ? await converter.Invoke(optional.ValueOrDefault, token).ConfigureAwait(false)
+            : optional.IsNull && Intrinsics.IsNullable<TOutput>()
+                ? new(default)
+                : Optional<TOutput>.None;
+    }
+
+    /// <summary>
     /// If a value is present, returns the value, otherwise throw exception.
     /// </summary>
     /// <param name="task">The task returning optional value.</param>
