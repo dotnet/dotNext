@@ -1,12 +1,11 @@
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using static Numerics.Number;
+using Numerics;
 
 internal partial class LeaderState<TMember>
 {
@@ -24,15 +23,9 @@ internal partial class LeaderState<TMember>
 
         internal int HashCode => hashCode;
 
-        internal TMember? Key
-        {
-            get => Unsafe.As<TMember>(handle.Target);
-        }
+        internal TMember? Key => Unsafe.As<TMember>(handle.Target);
 
-        internal Replicator? Value
-        {
-            get => Unsafe.As<Replicator>(handle.Dependent);
-        }
+        internal Replicator? Value => Unsafe.As<Replicator>(handle.Dependent);
 
         internal void Reuse(TMember key, int hashCode, Func<TMember, Replicator> factory, out Replicator result)
         {
@@ -70,32 +63,18 @@ internal partial class LeaderState<TMember>
             1674319, 2009191, 2411033, 2893249, 3471899, 4166287, 4999559, 5999471, 7199369];
 
         private ContextEntry?[] entries;
-        private ulong fastModMultiplier;
+        private FastMod fastMod;
 
         public Context(int sizeHint)
         {
             Debug.Assert(sizeHint > 0);
 
-            var size = GetPrime(sizeHint, Primes);
-            fastModMultiplier = UIntPtr.Size is sizeof(ulong) ? GetFastModMultiplier((uint)size) : default;
+            var size = Number.GetPrime(sizeHint, Primes);
+            fastMod = new((uint)size);
             entries = new ContextEntry?[size];
         }
 
-        private static ulong GetFastModMultiplier(ulong divisor)
-            => ulong.MaxValue / divisor + 1UL;
-
-        // Daniel Lemire's fastmod algorithm: https://lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/
-        private static uint FastMod(uint value, uint divisor, ulong multiplier)
-        {
-            Debug.Assert(divisor <= int.MaxValue);
-
-            var result = (uint)(((((multiplier * value) >> 32) + 1UL) * divisor) >> 32);
-            Debug.Assert(result == value % divisor);
-
-            return result;
-        }
-
-        private static int Grow(int size, out ulong multiplier)
+        private static int Grow(int size, out FastMod fastMod)
         {
             // This is the maximum prime smaller than Array.MaxLength
             const int maxPrimeLength = 0x7FFFFFC3;
@@ -105,18 +84,16 @@ internal partial class LeaderState<TMember>
                 ? throw new InsufficientMemoryException()
                 : (uint)(newSize = size << 1) > maxPrimeLength && maxPrimeLength > size
                     ? maxPrimeLength
-                    : GetPrime(newSize, Primes);
+                    : Number.GetPrime(newSize, Primes);
 
-            multiplier = IntPtr.Size is sizeof(ulong) ? GetFastModMultiplier((uint)newSize) : default;
+            fastMod = new((uint)newSize);
             return newSize;
         }
 
         public Context() => entries = [];
 
         private readonly int GetIndex(int hashCode)
-            => (int)(IntPtr.Size is sizeof(ulong)
-                ? FastMod((uint)hashCode, (uint)entries.Length, fastModMultiplier)
-                : (uint)hashCode % (uint)entries.Length);
+            => (int)fastMod.GetRemainder((uint)hashCode);
 
         private readonly int GetIndex(TMember member, out int hashCode)
             => GetIndex(hashCode = RuntimeHelpers.GetHashCode(member));
@@ -127,7 +104,7 @@ internal partial class LeaderState<TMember>
         private void ResizeAndRemoveDeadEntries(CancellationToken token)
         {
             var oldEntries = entries;
-            entries = new ContextEntry?[Grow(oldEntries.Length, out fastModMultiplier)];
+            entries = new ContextEntry?[Grow(oldEntries.Length, out fastMod)];
 
             // copy elements from old array to a new one
             for (var i = 0; i < oldEntries.Length; i++, token.ThrowIfCancellationRequested())

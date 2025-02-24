@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace DotNext.Numerics;
 
 internal static class PrimeNumber
@@ -14,18 +12,4 @@ internal static class PrimeNumber
     ];
 
     internal static int GetPrime(int min) => Number.GetPrime(min, Primes);
-
-    internal static ulong GetFastModMultiplier(ulong divisor)
-        => ulong.MaxValue / divisor + 1UL;
-
-    // Daniel Lemire's fastmod algorithm: https://lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/
-    internal static uint FastMod(uint value, uint divisor, ulong multiplier)
-    {
-        Debug.Assert(divisor <= int.MaxValue);
-
-        var result = (uint)(((((multiplier * value) >> 32) + 1UL) * divisor) >> 32);
-        Debug.Assert(result == value % divisor);
-
-        return result;
-    }
 }

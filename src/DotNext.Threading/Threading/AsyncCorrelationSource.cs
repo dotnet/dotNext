@@ -25,7 +25,7 @@ using Tasks;
 public partial class AsyncCorrelationSource<TKey, TValue>
     where TKey : notnull
 {
-    private readonly ulong fastModMultiplier;
+    private readonly FastMod fastMod;
     private readonly Bucket?[] buckets;
     private readonly IEqualityComparer<TKey>? comparer; // if null then use Default comparer
 
@@ -40,7 +40,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         concurrencyLevel = PrimeNumber.GetPrime(concurrencyLevel);
-        fastModMultiplier = IntPtr.Size is sizeof(ulong) ? PrimeNumber.GetFastModMultiplier((uint)concurrencyLevel) : default;
+        fastMod = new((uint)concurrencyLevel);
         buckets = new Bucket[concurrencyLevel];
         this.comparer = comparer;
     }

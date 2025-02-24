@@ -40,9 +40,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 
         maxCacheSize = cacheSize;
         var dictionarySize = PrimeNumber.GetPrime(cacheSize);
-        fastModMultiplier = IntPtr.Size is sizeof(ulong)
-            ? PrimeNumber.GetFastModMultiplier((uint)dictionarySize)
-            : default;
+        fastMod = new((uint)dictionarySize);
 
         Span.Initialize<Bucket>(buckets = new Bucket[dictionarySize]);
 

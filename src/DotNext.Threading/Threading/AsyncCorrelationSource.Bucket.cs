@@ -157,12 +157,9 @@ public partial class AsyncCorrelationSource<TKey, TValue>
 
     private ref Bucket? GetBucket(TKey eventId)
     {
-        var hashCode = (uint)(comparer?.GetHashCode(eventId) ?? EqualityComparer<TKey>.Default.GetHashCode(eventId));
-        var bucketIndex = (int)(IntPtr.Size is sizeof(ulong)
-            ? PrimeNumber.FastMod(hashCode, (uint)buckets.Length, fastModMultiplier)
-            : hashCode % (uint)buckets.Length);
-        
-        Debug.Assert((uint)bucketIndex < (uint)buckets.Length);
+        var hashCode = comparer?.GetHashCode(eventId) ?? EqualityComparer<TKey>.Default.GetHashCode(eventId);
+        var bucketIndex = fastMod.GetRemainder((uint)hashCode);
+        Debug.Assert(bucketIndex < (uint)buckets.Length);
 
         return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), bucketIndex);
     }

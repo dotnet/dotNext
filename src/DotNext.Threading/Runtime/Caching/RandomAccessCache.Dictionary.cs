@@ -65,15 +65,12 @@ public partial class RandomAccessCache<TKey, TValue>
     }
 
     private readonly Bucket[] buckets;
-    private readonly ulong fastModMultiplier;
+    private readonly FastMod fastMod;
 
     private Bucket GetBucket(int hashCode)
     {
-        var index = (int)(IntPtr.Size is sizeof(ulong)
-            ? PrimeNumber.FastMod((uint)hashCode, (uint)buckets.Length, fastModMultiplier)
-            : (uint)hashCode % (uint)buckets.Length);
-
-        Debug.Assert((uint)index < (uint)buckets.Length);
+        var index = fastMod.GetRemainder((uint)hashCode);
+        Debug.Assert(index < (uint)buckets.Length);
 
         return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
     }
