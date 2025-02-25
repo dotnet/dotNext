@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Threading.Channels;
 
 namespace DotNext.Runtime.Caching;
 
@@ -226,5 +227,68 @@ public sealed class RandomAccessCacheTests : Test
         }
 
         await cache.InvalidateAsync();
+    }
+
+    [Fact]
+    public static async Task EvictLargeItemImmediately()
+    {
+        const long value = 101L;
+        var source = new TaskCompletionSource<long>();
+        await using var cache = new CacheWithWeight(42, value - 1L)
+        {
+            Eviction = (_, v) => source.TrySetResult(v),
+        };
+        
+        using (var session = await cache.ChangeAsync("101"))
+        {
+            False(session.TryGetValue(out _));
+            session.SetValue(101L); // 101 > 100, must be evicted immediately
+        }
+
+        Equal(value, await source.Task.WaitAsync(DefaultTimeout));
+    }
+
+    [Fact]
+    public static async Task EvictRedundantItems()
+    {
+        var channel = Channel.CreateBounded<long>(2);
+        await using var cache = new CacheWithWeight(42, 100L)
+        {
+            Eviction = (_, v) => True(channel.Writer.TryWrite(v)),
+        };
+        
+        using (var session = await cache.ChangeAsync("60"))
+        {
+            False(session.TryGetValue(out _));
+            session.SetValue(60L);
+        }
+        
+        using (var session = await cache.ChangeAsync("40"))
+        {
+            False(session.TryGetValue(out _));
+            session.SetValue(40L);
+        }
+        
+        using (var session = await cache.ChangeAsync("100"))
+        {
+            False(session.TryGetValue(out _));
+            session.SetValue(100L);
+        }
+
+        var x = await channel.Reader.ReadAsync();
+        var y = await channel.Reader.ReadAsync();
+        Equal(100L, x + y);
+    }
+
+    private sealed class CacheWithWeight(int cacheSize, long maxWeight) : RandomAccessCache<string, long, long>(cacheSize, 0L)
+    {
+        protected override void AddWeight(ref long total, string key, long value)
+            => Interlocked.Add(ref total, value);
+
+        protected override bool IsEvictionRequired(ref readonly long current, string key, long value)
+            => value + current > maxWeight;
+
+        protected override void RemoveWeight(ref long total, string key, long value)
+            => Interlocked.Add(ref total, -value);
     }
 }

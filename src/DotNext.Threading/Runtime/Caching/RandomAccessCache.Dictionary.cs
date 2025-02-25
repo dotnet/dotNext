@@ -12,7 +12,7 @@ public partial class RandomAccessCache<TKey, TValue>
 {
     // devirtualize Value getter manually (JIT will replace this method with one of the actual branches)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ref readonly TValue GetValue(KeyValuePair pair)
+    private protected static ref readonly TValue GetValue(KeyValuePair pair)
     {
         Debug.Assert(pair is not null);
         Debug.Assert(pair is not FakeKeyValuePair);

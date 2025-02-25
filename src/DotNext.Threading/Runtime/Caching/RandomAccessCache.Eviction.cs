@@ -40,25 +40,29 @@ public partial class RandomAccessCache<TKey, TValue>
         }
     }
 
-    private void EvictOrInsert(KeyValuePair dequeued)
+    private void EvictOrInsert(KeyValuePair promoted)
     {
-        if (currentSize == maxCacheSize)
-            Evict();
-
-        Debug.Assert(currentSize < maxCacheSize);
-        dequeued.Prepend(ref evictionHead, ref evictionTail);
-        sieveHand ??= evictionTail;
-        currentSize++;
+        if (Evict(promoted))
+        {
+            promoted.Prepend(ref evictionHead, ref evictionTail);
+            sieveHand ??= evictionTail;
+            currentSize++;
+            OnAdded(promoted);
+        }
     }
 
-    private void Evict()
+    private bool Evict(KeyValuePair promoted)
     {
-        Debug.Assert(sieveHand is not null);
-        Debug.Assert(evictionHead is not null);
-        Debug.Assert(evictionTail is not null);
-
-        while (sieveHand is not null)
+        while (IsEvictionRequired(promoted))
         {
+            if (sieveHand is null)
+            {
+                // if eviction still required, we need to release the enqueued key/value pair because the current cache
+                // doesn't have enough resources
+                Clear(promoted);
+                return false;
+            }
+            
             if (!sieveHand.Evict(out var removed))
             {
                 sieveHand = sieveHand.MoveBackward() ?? evictionTail;
@@ -70,13 +74,31 @@ public partial class RandomAccessCache<TKey, TValue>
                 currentSize--;
                 if (!removed && removedPair.ReleaseCounter() is false)
                 {
-                    Eviction?.Invoke(removedPair.Key, GetValue(removedPair));
-                    ClearValue(removedPair);
+                    OnRemoved(removedPair);
                     TryCleanUpBucket(GetBucket(removedPair.KeyHashCode));
-                    break;
                 }
             }
         }
+
+        return true;
+    }
+    
+    // cannot be called concurrently, doesn't require synchronization
+    private protected virtual bool IsEvictionRequired(KeyValuePair promoted)
+        => currentSize == maxCacheSize;
+
+    // cannot be called concurrently, doesn't require synchronization
+    private protected virtual void OnAdded(KeyValuePair promoted)
+    {
+    }
+
+    private protected virtual void OnRemoved(KeyValuePair demoted)
+        => Clear(demoted);
+
+    private void Clear(KeyValuePair demoted)
+    {
+        Eviction?.Invoke(demoted.Key, GetValue(demoted));
+        ClearValue(demoted);
     }
 
     private void TryCleanUpBucket(Bucket bucket)

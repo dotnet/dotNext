@@ -155,7 +155,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 
         if (GetBucket(hashCode).TryGet(keyComparerCopy, key, hashCode) is { } valueHolder)
         {
-            session = new(Eviction, valueHolder);
+            session = new(this, valueHolder);
             return true;
         }
 
@@ -178,7 +178,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             lockTaken = true;
 
             return bucket.TryRemove(keyComparerCopy, key, hashCode) is { } removedPair
-                ? new ReadSession(Eviction, removedPair)
+                ? new ReadSession(this, removedPair)
                 : null;
         }
         catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
@@ -268,8 +268,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 
         if (removedPair.ReleaseCounter() is false)
         {
-            Eviction?.Invoke(key, GetValue(removedPair));
-            ClearValue(removedPair);
+            OnRemoved(removedPair);
         }
 
         return true;
@@ -307,7 +306,6 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
     public async ValueTask InvalidateAsync(CancellationToken token = default)
     {
-        var cleanup = CreateCleanupAction(Eviction);
         var cts = token.LinkTo(lifetimeToken);
 
         try
@@ -320,7 +318,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                     await bucket.AcquireAsync(token).ConfigureAwait(false);
                     lockTaken = true;
 
-                    bucket.Invalidate(keyComparer, cleanup);
+                    bucket.Invalidate(keyComparer, OnRemoved);
                 }
                 catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
                 {
@@ -342,19 +340,6 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         finally
         {
             cts?.Dispose();
-        }
-
-        static Action<KeyValuePair> CreateCleanupAction(Action<TKey, TValue>? eviction)
-        {
-            return eviction is not null
-                ? pair => CleanUp(eviction, pair)
-                : ClearValue;
-        }
-
-        static void CleanUp(Action<TKey, TValue> eviction, KeyValuePair removedPair)
-        {
-            eviction(removedPair.Key, GetValue(removedPair));
-            ClearValue(removedPair);
         }
     }
 
@@ -404,12 +389,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     [StructLayout(LayoutKind.Auto)]
     public readonly struct ReadSession : IDisposable
     {
-        private readonly Action<TKey, TValue>? eviction;
+        private readonly RandomAccessCache<TKey, TValue> cache;
         private readonly KeyValuePair valueHolder;
 
-        internal ReadSession(Action<TKey, TValue>? eviction, KeyValuePair valueHolder)
+        internal ReadSession(RandomAccessCache<TKey, TValue> cache, KeyValuePair valueHolder)
         {
-            this.eviction = eviction;
+            this.cache = cache;
             this.valueHolder = valueHolder;
         }
 
@@ -431,8 +416,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         {
             if (valueHolder?.ReleaseCounter() is false)
             {
-                eviction?.Invoke(valueHolder.Key, GetValue(valueHolder));
-                ClearValue(valueHolder);
+                cache.OnRemoved(valueHolder);
             }
         }
     }
@@ -526,10 +510,61 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                     bucket.Release();
                     break;
                 case KeyValuePair pair when pair.ReleaseCounter() is false:
-                    cache.Eviction?.Invoke(key, GetValue(pair));
-                    ClearValue(pair);
+                    cache.OnRemoved(pair);
                     break;
             }
         }
+    }
+}
+
+/// <summary>
+/// Represents concurrent cache optimized for random access. The number of items in the cache is limited
+/// by their weight. 
+/// </summary>
+/// <typeparam name="TKey">The type of the keys.</typeparam>
+/// <typeparam name="TValue">The type of the values.</typeparam>
+/// <typeparam name="TWeight">The weight of the cache items.</typeparam>
+/// <param name="expectedMaxCount">The expected max number of items within the cache.</param>
+/// <param name="initial">The initial weight value.</param>
+public abstract class RandomAccessCache<TKey, TValue, TWeight>(int expectedMaxCount, TWeight initial) : RandomAccessCache<TKey, TValue>(expectedMaxCount)
+    where TKey : notnull
+    where TValue : notnull
+    where TWeight : notnull
+{
+    /// <summary>
+    /// Adds a weight of the specified key/value pair to the total weight.
+    /// </summary>
+    /// <param name="total">The total weight of all items in the cache.</param>
+    /// <param name="key">The key of the cache item.</param>
+    /// <param name="value">The value of the cache item.</param>
+    protected abstract void AddWeight(ref TWeight total, TKey key, TValue value);
+
+    private protected sealed override void OnAdded(KeyValuePair promoted)
+        => AddWeight(ref initial, promoted.Key, GetValue(promoted));
+
+    /// <summary>
+    /// Checks whether the current cache has enough capacity to promote the specified key/value pair.
+    /// </summary>
+    /// <param name="current">The total weight of all items in the cache.</param>
+    /// <param name="key">The key of the cache item.</param>
+    /// <param name="value">The value of the cache item.</param>
+    /// <returns><see langword="true"/> if the cache must evict one or more items to place a new one; otherwise, <see langword="false"/>.</returns>
+    protected abstract bool IsEvictionRequired(ref readonly TWeight current, TKey key, TValue value);
+
+    private protected override bool IsEvictionRequired(KeyValuePair promoted)
+        => IsEvictionRequired(in initial, promoted.Key, GetValue(promoted));
+
+    /// <summary>
+    /// Removes the weight of the specified cache item from the total weight.
+    /// </summary>
+    /// <param name="total">The total weight of all items in the cache.</param>
+    /// <param name="key">The key of the cache item.</param>
+    /// <param name="value">The value of the cache item.</param>
+    protected abstract void RemoveWeight(ref TWeight total, TKey key, TValue value);
+
+    private protected override void OnRemoved(KeyValuePair demoted)
+    {
+        base.OnRemoved(demoted);
+        RemoveWeight(ref initial, demoted.Key, GetValue(demoted));
     }
 }
