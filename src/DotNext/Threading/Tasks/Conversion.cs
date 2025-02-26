@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading.Tasks;
 
+using System.Threading.Tasks;
 using Runtime.CompilerServices;
 
 /// <summary>
@@ -23,6 +24,16 @@ public static class Conversion
     /// <summary>
     /// Converts one type of task into another.
     /// </summary>
+    /// <typeparam name="TInput">The source Result type.</typeparam>
+    /// <typeparam name="TOutput">The target Result type.</typeparam>
+    /// <param name="awaitableResult">The awaitable Result to convert.</param>
+    /// <returns>The converted task.</returns>
+    public static AwaitableResult<TOutput> Convert<TInput, TOutput>(this AwaitableResult<TInput> awaitableResult)
+        where TInput : TOutput => awaitableResult.Convert(Converter.Identity<TInput, TOutput>());
+
+    /// <summary>
+    /// Converts one type of task into another.
+    /// </summary>
     /// <typeparam name="TInput">The source task type.</typeparam>
     /// <typeparam name="TOutput">The target task type.</typeparam>
     /// <param name="task">The task to convert.</param>
@@ -30,6 +41,25 @@ public static class Conversion
     /// <returns>The converted task.</returns>
     public static async Task<TOutput> Convert<TInput, TOutput>(this Task<TInput> task, Converter<TInput, TOutput> converter)
         => converter(await task.ConfigureAwait(false));
+
+    /// <summary>
+    /// Converts one type of task into another.
+    /// </summary>
+    /// <typeparam name="TInput">The source Result type.</typeparam>
+    /// <typeparam name="TOutput">The target Result type.</typeparam>
+    /// <param name="awaitableResult">The awaitable Result to convert.</param>
+    /// <param name="converter">Non-blocking conversion function.</param>
+    /// <returns>The converted task.</returns>
+    public static AwaitableResult<TOutput> Convert<TInput, TOutput>(this AwaitableResult<TInput> awaitableResult, Converter<TInput, TOutput> converter)
+    {
+        async Task<TOutput> ConvertInternal()
+        {
+            var result = await awaitableResult.ConfigureAwait(false);
+            return result.IsSuccessful ? converter(result.Value) : throw result.Error;
+        }
+
+        return ConvertInternal().SuspendException();
+    }
 
     /// <summary>
     /// Converts value type into nullable value type.
@@ -52,6 +82,26 @@ public static class Conversion
     /// <returns>The converted task.</returns>
     public static async Task<TOutput> Convert<TInput, TOutput>(this Task<TInput> task, Converter<TInput, Task<TOutput>> converter)
         => await converter(await task.ConfigureAwait(false)).ConfigureAwait(false);
+
+    /// <summary>
+    /// Converts one type of awaitable Result into another.
+    /// </summary>
+    /// <typeparam name="TInput">The source Result type.</typeparam>
+    /// <typeparam name="TOutput">The target Result type.</typeparam>
+    /// <param name="awaitableResult">The awaitable Result to convert.</param>
+    /// <param name="converter">Asynchronous conversion function.</param>
+    /// <returns>The converted task.</returns>
+    public static AwaitableResult<TOutput> Convert<TInput, TOutput>(this AwaitableResult<TInput> awaitableResult, Converter<TInput, AwaitableResult<TOutput>> converter)
+    {
+        async Task<TOutput> ConvertInternal()
+        {
+            var result = await awaitableResult.ConfigureAwait(false);
+            var conversionResult = result.IsSuccessful ? await converter(result.Value).ConfigureAwait(false) : throw result.Error;
+            return conversionResult.IsSuccessful ? conversionResult.Value : throw conversionResult.Error;
+        }
+
+        return ConvertInternal().SuspendException();
+    }
 
     /// <summary>
     /// Allows to convert <see cref="Task{TResult}"/> of unknown result type into dynamically
