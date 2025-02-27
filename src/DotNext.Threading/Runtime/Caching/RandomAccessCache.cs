@@ -397,7 +397,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             }
 
             // invalidate all buckets
-            bucketsCopy.Invalidate(keyComparer, OnRemoved);
+            bucketsCopy.Invalidate(OnRemoved);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
         {

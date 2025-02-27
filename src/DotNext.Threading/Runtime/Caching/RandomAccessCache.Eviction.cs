@@ -121,7 +121,7 @@ public partial class RandomAccessCache<TKey, TValue>
             try
             {
                 if (ReferenceEquals(bucketsCopy, buckets))
-                    bucket.CleanUp(keyComparer);
+                    bucket.CleanUp();
             }
             finally
             {

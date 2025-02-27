@@ -333,64 +333,31 @@ public partial class RandomAccessCache<TKey, TValue>
             return valueHolder;
         }
 
-        internal void CleanUp(IEqualityComparer<TKey>? keyComparer)
+        internal void CleanUp()
         {
             // remove all dead nodes from the bucket
-            if (keyComparer is null)
+            for (KeyValuePair? current = first, previous = null;
+                 current is not null;
+                 previous = current, current = current.NextInBucket)
             {
-                for (KeyValuePair? current = first, previous = null;
-                     current is not null;
-                     previous = current, current = current.NextInBucket)
+                if (current.IsDead)
                 {
-                    if (current.IsDead)
-                    {
-                        Remove(previous, current);
-                    }
-                }
-            }
-            else
-            {
-                for (KeyValuePair? current = first, previous = null;
-                     current is not null;
-                     previous = current, current = current.NextInBucket)
-                {
-                    if (current.IsDead)
-                    {
-                        Remove(previous, current);
-                    }
+                    Remove(previous, current);
                 }
             }
         }
         
-        internal void Invalidate(IEqualityComparer<TKey>? keyComparer, Action<KeyValuePair> cleanup)
+        internal void Invalidate(Action<KeyValuePair> cleanup)
         {
-            // remove all dead nodes from the bucket
-            if (keyComparer is null)
+            for (KeyValuePair? current = first, previous = null;
+                 current is not null;
+                 previous = current, current = current.NextInBucket)
             {
-                for (KeyValuePair? current = first, previous = null;
-                     current is not null;
-                     previous = current, current = current.NextInBucket)
-                {
-                    Remove(previous, current);
+                Remove(previous, current);
                     
-                    if (current.MarkAsEvicted() && current.ReleaseCounter() is false)
-                    {
-                        cleanup.Invoke(current);
-                    }
-                }
-            }
-            else
-            {
-                for (KeyValuePair? current = first, previous = null;
-                     current is not null;
-                     previous = current, current = current.NextInBucket)
+                if (current.MarkAsEvicted() && current.ReleaseCounter() is false)
                 {
-                    Remove(previous, current);
-                    
-                    if (current.MarkAsEvicted() && current.ReleaseCounter() is false)
-                    {
-                        cleanup.Invoke(current);
-                    }
+                    cleanup.Invoke(current);
                 }
             }
         }
@@ -494,11 +461,11 @@ public partial class RandomAccessCache<TKey, TValue>
             }
         }
 
-        internal void Invalidate(IEqualityComparer<TKey>? keyComparer, Action<KeyValuePair> cleanup)
+        internal void Invalidate(Action<KeyValuePair> cleanup)
         {
             foreach (var bucket in buckets)
             {
-                bucket.Invalidate(keyComparer, cleanup);
+                bucket.Invalidate(cleanup);
             }
         }
     }
