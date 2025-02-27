@@ -234,7 +234,7 @@ public sealed class RandomAccessCacheTests : Test
     {
         const long value = 101L;
         var source = new TaskCompletionSource<long>();
-        await using var cache = new CacheWithWeight(42, value - 1L)
+        await using var cache = new CacheWithWeight(42, value - 1L, 3)
         {
             Eviction = (_, v) => source.TrySetResult(v),
         };
@@ -252,7 +252,7 @@ public sealed class RandomAccessCacheTests : Test
     public static async Task EvictRedundantItems()
     {
         var channel = Channel.CreateBounded<long>(2);
-        await using var cache = new CacheWithWeight(42, 100L)
+        await using var cache = new CacheWithWeight(42, 100L, 3)
         {
             Eviction = (_, v) => True(channel.Writer.TryWrite(v)),
         };
@@ -280,7 +280,24 @@ public sealed class RandomAccessCacheTests : Test
         Equal(100L, x + y);
     }
 
-    private sealed class CacheWithWeight(int cacheSize, long maxWeight) : RandomAccessCache<string, long, long>(cacheSize, 0L)
+    [Fact]
+    public static async Task ResizeCache()
+    {
+        await using var cache = new CacheWithWeight(2, 100L, 1);
+        var capacity = cache.Capacity;
+        Equal(3, capacity);
+
+        for (var i = 0; i < capacity * 2; i++)
+        {
+            using var session = await cache.ChangeAsync(i.ToString());
+            False(session.TryGetValue(out _));
+            session.SetValue(i);
+        }
+
+        True(cache.Capacity > capacity);
+    }
+
+    private sealed class CacheWithWeight(int cacheCapacity, long maxWeight, int collisionThreshold) : RandomAccessCache<string, long, long>(cacheCapacity, 0L, collisionThreshold)
     {
         protected override void AddWeight(ref long total, string key, long value)
             => Interlocked.Add(ref total, value);

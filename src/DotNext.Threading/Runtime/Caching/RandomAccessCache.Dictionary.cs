@@ -64,16 +64,7 @@ public partial class RandomAccessCache<TKey, TValue>
             : new KeyValuePairNonAtomicAccess(key, hashCode) { Value = value };
     }
 
-    private readonly Bucket[] buckets;
-    private readonly FastMod fastMod;
-
-    private Bucket GetBucket(int hashCode)
-    {
-        var index = fastMod.GetRemainder((uint)hashCode);
-        Debug.Assert(index < (uint)buckets.Length);
-
-        return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
-    }
+    private volatile BucketList buckets;
 
     internal partial class KeyValuePair(TKey key, int hashCode)
     {
@@ -87,6 +78,12 @@ public partial class RandomAccessCache<TKey, TValue>
         // and eviction thread. To synchronize the decision, 'cacheState' is used. The thread that evicts the pair
         // successfully (transition from 0 => -1) is able to decrement the counter to zero.
         private volatile int lifetimeCounter = 1;
+
+        internal void Import(KeyValuePair other)
+        {
+            cacheState = other.cacheState;
+            notification = other.notification;
+        }
 
         internal bool TryAcquireCounter()
         {
@@ -156,10 +153,13 @@ public partial class RandomAccessCache<TKey, TValue>
     }
 
     [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}")]
-    internal sealed class Bucket : AsyncExclusiveLock
+    internal sealed class Bucket
     {
         private bool newPairAdded;
-        private volatile KeyValuePair? first; // volatile
+        private volatile KeyValuePair? first;
+        private int count;
+
+        internal int CollisionCount => count;
 
         [ExcludeFromCodeCoverage]
         private (int Alive, int Dead) Count => first?.BucketNodesCount ?? default;
@@ -173,13 +173,18 @@ public partial class RandomAccessCache<TKey, TValue>
             }
             else
             {
-                result = CreatePair(key, value, hashCode);
-                result.NextInBucket = first;
-                first = result;
+                Add(result = CreatePair(key, value, hashCode));
                 newPairAdded = true;
             }
 
             return result;
+        }
+
+        internal void Add(KeyValuePair pair)
+        {
+            pair.NextInBucket = first;
+            first = pair;
+            count++;
         }
 
         internal void MarkAsReadyToAdd() => newPairAdded = false;
@@ -188,6 +193,7 @@ public partial class RandomAccessCache<TKey, TValue>
         {
             ref var location = ref previous is null ? ref first : ref previous.NextInBucket;
             Volatile.Write(ref location, current.NextInBucket);
+            count--;
         }
 
         internal KeyValuePair? TryRemove(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
@@ -237,7 +243,7 @@ public partial class RandomAccessCache<TKey, TValue>
             return result;
         }
 
-        internal KeyValuePair? TryGet(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
+        internal unsafe KeyValuePair? TryGet(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode, delegate*<KeyValuePair, bool> visitor)
         {
             var result = default(KeyValuePair?);
 
@@ -250,8 +256,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 {
                     if (result is null && hashCode == current.KeyHashCode
                                        && EqualityComparer<TKey>.Default.Equals(key, current.Key)
-                                       && current.Visit()
-                                       && current.TryAcquireCounter())
+                                       && visitor(current))
                     {
                         result = current;
                     }
@@ -270,8 +275,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 {
                     if (result is null && hashCode == current.KeyHashCode
                                        && keyComparer.Equals(key, current.Key)
-                                       && current.Visit()
-                                       && current.TryAcquireCounter())
+                                       && visitor(current))
                     {
                         result = current;
                     }
@@ -389,6 +393,157 @@ public partial class RandomAccessCache<TKey, TValue>
                     }
                 }
             }
+        }
+
+        public Enumerator GetEnumerator() => new(first);
+        
+        [StructLayout(LayoutKind.Auto)]
+        public struct Enumerator(KeyValuePair? current)
+        {
+            private bool firstRequested;
+
+            public bool MoveNext()
+            {
+                if (firstRequested)
+                {
+                    current = current?.NextInBucket;
+                }
+                else
+                {
+                    firstRequested = true;
+                }
+
+                return current is not null;
+            }
+            
+            public readonly KeyValuePair Current => current;
+        }
+    }
+    
+    private sealed class BucketList
+    {
+        private readonly Bucket[] buckets;
+        private readonly AsyncExclusiveLock[] locks;
+        private readonly FastMod fastMod;
+
+        internal BucketList(int length)
+        {
+            Span.Initialize<Bucket>(buckets = new Bucket[length]);
+            Span.Initialize<AsyncExclusiveLock>(locks = new AsyncExclusiveLock[length]);
+            fastMod = new((uint)length);
+        }
+
+        internal BucketList(BucketList prototype, int length)
+        {
+            Span<AsyncExclusiveLock> locks = this.locks = new AsyncExclusiveLock[length];
+            prototype.locks.CopyTo(locks);
+            locks.Slice(prototype.locks.Length).Initialize();
+
+            Span.Initialize<Bucket>(buckets = new Bucket[length]);
+            
+            fastMod = new((uint)length);
+
+            // import pairs
+            foreach (var bucket in prototype.buckets)
+            {
+                foreach (var pair in bucket)
+                {
+                    var newPair = CreatePair(pair.Key, GetValue(pair), pair.KeyHashCode);
+                    newPair.Import(pair);
+                    GetByHash(newPair.KeyHashCode).Add(newPair);
+                }
+            }
+        }
+
+        public int Count => buckets.Length;
+
+        internal Bucket GetByHash(int hashCode, out AsyncExclusiveLock bucketLock)
+            => GetByIndex((int)fastMod.GetRemainder((uint)hashCode), out bucketLock);
+        
+        internal Bucket GetByHash(int hashCode)
+        {
+            var index = fastMod.GetRemainder((uint)hashCode);
+            Debug.Assert(index < (uint)buckets.Length);
+
+            return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
+        }
+
+        internal Bucket GetByIndex(int index, out AsyncExclusiveLock bucketLock)
+        {
+            Debug.Assert(index < (uint)buckets.Length);
+            Debug.Assert(index < (uint)locks.Length);
+
+            bucketLock = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(locks), index);
+            return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
+        }
+
+        internal unsafe KeyValuePair? FindPair(IEqualityComparer<TKey>? keyComparer, TKey key, int keyHashCode)
+        {
+            return GetByHash(keyHashCode).TryGet(keyComparer, key, keyHashCode, &NotDead);
+
+            static bool NotDead(KeyValuePair pair) => !pair.IsDead;
+        }
+
+        internal void Release(int count)
+        {
+            Debug.Assert((uint)count <= (uint)buckets.Length);
+            
+            for (var i = 0; i < count; i++)
+            {
+                locks[i].Release();
+            }
+        }
+
+        internal void Invalidate(IEqualityComparer<TKey>? keyComparer, Action<KeyValuePair> cleanup)
+        {
+            foreach (var bucket in buckets)
+            {
+                bucket.Invalidate(keyComparer, cleanup);
+            }
+        }
+    }
+    
+    private async ValueTask GrowAsync(BucketList oldVersion, Timeout timeout, CancellationToken token)
+    {
+        // This is the maximum prime smaller than Array.MaxLength
+        const int maxPrimeLength = 0x7FFFFFC3;
+        int newSize;
+        newSize = oldVersion.Count is maxPrimeLength
+            ? throw new InsufficientMemoryException()
+            : (uint)(newSize = oldVersion.Count << 1) > maxPrimeLength && maxPrimeLength > oldVersion.Count
+                ? maxPrimeLength
+                : PrimeNumber.GetPrime(newSize);
+            
+        // acquire locks
+        var lockCount = 0;
+        try
+        {
+            oldVersion.GetByIndex(lockCount, out var bucketLock);
+            await bucketLock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
+            lockCount++;
+
+            if (!ReferenceEquals(oldVersion, buckets))
+                return;
+
+            // acquire the rest of locks
+            for (; lockCount < oldVersion.Count; lockCount++)
+            {
+                oldVersion.GetByIndex(lockCount, out bucketLock);
+                await bucketLock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
+            }
+
+            // stop eviction process
+            Promote(new TerminateCommand());
+            await evictionTask.ConfigureAwait(false);
+
+            // restart eviction process
+            RebuildEvictionState(buckets = new(oldVersion, newSize));
+            queueHead = queueTail = new FakeKeyValuePair();
+            evictionTask = DoEvictionAsync();
+        }
+        finally
+        {
+            oldVersion.Release(lockCount);
         }
     }
 }

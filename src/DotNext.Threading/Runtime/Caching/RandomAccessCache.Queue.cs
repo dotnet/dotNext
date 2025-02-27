@@ -70,6 +70,11 @@ public partial class RandomAccessCache<TKey, TValue>
     {
         public override string ToString() => "Fake KV Pair";
     }
+    
+    private sealed class TerminateCommand() : KeyValuePair(default!, 0)
+    {
+        public override string ToString() => "Terminate Eviction";
+    }
 }
 
 file sealed class SentinelNotification : IThreadPoolWorkItem, ISingleton<SentinelNotification>

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Sources;
+using DotNext.Threading;
 
 namespace DotNext.Runtime.Caching;
 
@@ -12,7 +13,7 @@ public partial class RandomAccessCache<TKey, TValue>
     private readonly CancelableValueTaskCompletionSource completionSource;
     
     // SIEVE core
-    private readonly int maxCacheSize;
+    private readonly int maxCacheCapacity; // reused as contention threshold, if growable is true
     private int currentSize;
     private KeyValuePair? evictionHead, evictionTail, sieveHand;
 
@@ -36,7 +37,18 @@ public partial class RandomAccessCache<TKey, TValue>
             }
 
             Debug.Assert(queueHead is not FakeKeyValuePair);
-            EvictOrInsert(queueHead);
+
+            switch (queueHead)
+            {
+                case TerminateCommand:
+                    return;
+                case FakeKeyValuePair:
+                    Debug.Fail("Unexpected command");
+                    break;
+                default:
+                    EvictOrInsert(queueHead);
+                    break;
+            }
         }
     }
 
@@ -75,7 +87,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 if (!removed && removedPair.ReleaseCounter() is false)
                 {
                     OnRemoved(removedPair);
-                    TryCleanUpBucket(GetBucket(removedPair.KeyHashCode));
+                    TryCleanUpBucket(buckets.GetByHash(removedPair.KeyHashCode, out var bucketLock), bucketLock);
                 }
             }
         }
@@ -85,7 +97,7 @@ public partial class RandomAccessCache<TKey, TValue>
     
     // cannot be called concurrently, doesn't require synchronization
     private protected virtual bool IsEvictionRequired(KeyValuePair promoted)
-        => currentSize == maxCacheSize;
+        => currentSize == maxCacheCapacity;
 
     // cannot be called concurrently, doesn't require synchronization
     private protected virtual void OnAdded(KeyValuePair promoted)
@@ -101,21 +113,36 @@ public partial class RandomAccessCache<TKey, TValue>
         ClearValue(demoted);
     }
 
-    private void TryCleanUpBucket(Bucket bucket)
+    private void TryCleanUpBucket(Bucket bucket, AsyncExclusiveLock bucketLock)
     {
-        if (bucket.TryAcquire())
+        var bucketsCopy = buckets;
+        if (bucketLock.TryAcquire())
         {
             try
             {
-                bucket.CleanUp(keyComparer);
+                if (ReferenceEquals(bucketsCopy, buckets))
+                    bucket.CleanUp(keyComparer);
             }
             finally
             {
-                bucket.Release();
+                bucketLock.Release();
             }
         }
     }
-    
+
+    private void RebuildEvictionState(BucketList buckets)
+    {
+        KeyValuePair? newHead = null, newTail = null;
+        for (var current = evictionTail; current is { IsDead: false }; current = current.MoveBackward())
+        {
+            buckets.FindPair(keyComparer, current.Key, current.KeyHashCode)?.Prepend(ref newHead, ref newTail);
+        }
+
+        evictionHead = newHead;
+        evictionTail = newTail;
+        sieveHand = sieveHand is not null ? buckets.FindPair(keyComparer, sieveHand.Key, sieveHand.KeyHashCode) ?? newTail : null;
+    }
+
     internal partial class KeyValuePair
     {
         private const int EvictedState = -1;
