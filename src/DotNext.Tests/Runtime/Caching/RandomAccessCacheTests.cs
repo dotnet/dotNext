@@ -302,8 +302,8 @@ public sealed class RandomAccessCacheTests : Test
         protected override void AddWeight(ref long total, string key, long value)
             => Interlocked.Add(ref total, value);
 
-        protected override bool IsEvictionRequired(ref readonly long current, string key, long value)
-            => value + current > maxWeight;
+        protected override bool IsEvictionRequired(ref readonly long total, string key, long value)
+            => value + total > maxWeight;
 
         protected override void RemoveWeight(ref long total, string key, long value)
             => Interlocked.Add(ref total, -value);

@@ -634,11 +634,11 @@ public abstract class RandomAccessCache<TKey, TValue, TWeight>(int initialCapaci
     /// <summary>
     /// Checks whether the current cache has enough capacity to promote the specified key/value pair.
     /// </summary>
-    /// <param name="current">The total weight of all items in the cache.</param>
+    /// <param name="total">The total weight of all items in the cache.</param>
     /// <param name="key">The key of the cache item.</param>
     /// <param name="value">The value of the cache item.</param>
     /// <returns><see langword="true"/> if the cache must evict one or more items to place a new one; otherwise, <see langword="false"/>.</returns>
-    protected abstract bool IsEvictionRequired(ref readonly TWeight current, TKey key, TValue value);
+    protected abstract bool IsEvictionRequired(ref readonly TWeight total, TKey key, TValue value);
 
     private protected sealed override bool IsEvictionRequired(KeyValuePair promoted)
         => IsEvictionRequired(in initialWeight, promoted.Key, GetValue(promoted));
