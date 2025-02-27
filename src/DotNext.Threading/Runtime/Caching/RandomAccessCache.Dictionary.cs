@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -152,7 +153,7 @@ public partial class RandomAccessCache<TKey, TValue>
         public override string ToString() => ToString(Value);
     }
 
-    [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}")]
+    [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}, IsLockHeld = {{{nameof(IsLockHeld)}}}")]
     [StructLayout(LayoutKind.Auto)]
     internal struct Bucket
     {
@@ -169,7 +170,12 @@ public partial class RandomAccessCache<TKey, TValue>
         }
 
         [ExcludeFromCodeCoverage]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly (int Alive, int Dead) Count => first?.BucketNodesCount ?? default;
+
+        [ExcludeFromCodeCoverage]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly bool? IsLockHeld => Lock?.IsLockHeld;
 
         private KeyValuePair? TryAdd(TKey key, int hashCode, TValue value)
         {
@@ -419,8 +425,10 @@ public partial class RandomAccessCache<TKey, TValue>
         }
     }
     
+    [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
     private sealed class BucketList
     {
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
         private readonly Bucket[] buckets;
         private readonly FastMod fastMod;
 
@@ -455,6 +463,7 @@ public partial class RandomAccessCache<TKey, TValue>
             }
         }
 
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public int Count => buckets.Length;
 
         internal void GetByHash(int hashCode, out Bucket.Ref bucket)
