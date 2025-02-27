@@ -37,7 +37,8 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="cacheCapacity"/> is less than or equal to zero.</exception>
     public RandomAccessCache(int cacheCapacity)
         : this(GetDictionarySize(cacheCapacity), collisionThreshold: 0)
-        => maxCacheCapacity = cacheCapacity;
+    {
+    }
 
     private protected RandomAccessCache(int dictionarySize, int collisionThreshold)
     {
