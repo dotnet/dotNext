@@ -406,6 +406,7 @@ public partial class RandomAccessCache<TKey, TValue>
         [StructLayout(LayoutKind.Auto)]
         internal readonly struct Ref(Bucket[] buckets, int index)
         {
+            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
             internal ref Bucket Value => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
         }
     }
