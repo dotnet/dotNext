@@ -124,7 +124,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 bucketLockCopy = bucketLock;
                 bucketLock = null;
                 if (!ResizeDesired(in bucket.Value))
-                    return new(this, bucket, bucketLockCopy, key, hashCode);
+                    return new(this, in bucket, bucketLockCopy, key, hashCode);
 
                 bucketLockCopy.Release();
             }
@@ -509,7 +509,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         private readonly TKey key;
         private readonly int hashCode;
 
-        internal ReadOrWriteSession(RandomAccessCache<TKey, TValue> cache, Bucket.Ref bucket, AsyncExclusiveLock bucketLock, TKey key, int hashCode)
+        internal ReadOrWriteSession(RandomAccessCache<TKey, TValue> cache, in Bucket.Ref bucket, AsyncExclusiveLock bucketLock, TKey key, int hashCode)
         {
             this.cache = cache;
             lockOrValueHolder = bucketLock;
