@@ -400,7 +400,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 return current is not null;
             }
             
-            public readonly KeyValuePair Current => current;
+            public readonly KeyValuePair Current => current!;
         }
         
         [StructLayout(LayoutKind.Auto)]
