@@ -66,7 +66,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 
     private string ObjectName => GetType().Name;
 
-    private bool ResizeDesired(Bucket bucket)
+    private bool ResizeDesired(in Bucket.Ref bucket)
         => growable && bucket.CollisionCount >= maxCacheCapacity;
 
     /// <summary>
@@ -100,15 +100,15 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         {
             for (BucketList bucketsCopy;; await GrowAsync(bucketsCopy, timeout, token).ConfigureAwait(false))
             {
-                Bucket bucket;
+                Bucket.Ref bucket;
                 AsyncExclusiveLock? bucketLockCopy;
 
                 bucketsCopy = buckets;
                 for (BucketList newCopy;; bucketsCopy = newCopy)
                 {
-                    bucket = bucketsCopy.GetByHash(hashCode, out bucketLockCopy);
-                    await bucketLockCopy.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
-                    bucketLock = bucketLockCopy;
+                    bucketsCopy.GetByHash(hashCode, out bucket);
+                    await bucket.Lock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
+                    bucketLock = bucket.Lock;
 
                     newCopy = buckets;
                     if (ReferenceEquals(newCopy, bucketsCopy))
@@ -215,12 +215,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         var bucketLock = default(AsyncExclusiveLock);
         try
         {
-            Bucket bucket;
+            Bucket.Ref bucket;
             for (BucketList bucketsCopy = buckets, newCopy;; bucketsCopy = newCopy)
             {
-                bucket = bucketsCopy.GetByHash(hashCode, out var bucketLockCopy);
-                await bucketLockCopy.AcquireAsync(timeout, token).ConfigureAwait(false);
-                bucketLock = bucketLockCopy;
+                bucketsCopy.GetByHash(hashCode, out bucket);
+                await bucket.Lock.AcquireAsync(timeout, token).ConfigureAwait(false);
+                bucketLock = bucket.Lock;
 
                 newCopy = buckets;
                 if (ReferenceEquals(newCopy, bucketsCopy))
@@ -292,12 +292,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         KeyValuePair? removedPair;
         try
         {
-            Bucket bucket;
+            Bucket.Ref bucket;
             for (BucketList bucketsCopy = buckets, newCopy;; bucketsCopy = newCopy)
             {
-                bucket = bucketsCopy.GetByHash(hashCode, out var bucketLockCopy);
-                await bucketLockCopy.AcquireAsync(timeout, token).ConfigureAwait(false);
-                bucketLock = bucketLockCopy;
+                bucketsCopy.GetByHash(hashCode, out bucket);
+                await bucket.Lock.AcquireAsync(timeout, token).ConfigureAwait(false);
+                bucketLock = bucket.Lock;
 
                 newCopy = buckets;
                 if (ReferenceEquals(newCopy, bucketsCopy))
@@ -379,7 +379,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             // take first lock
             for (BucketList newCopy;; bucketsCopy = newCopy)
             {
-                bucketsCopy.GetByIndex(0, out bucketLock);
+                bucketLock = bucketsCopy.GetByIndex(0).Lock;
                 await bucketLock.AcquireAsync(token).ConfigureAwait(false);
 
                 newCopy = buckets;
@@ -392,7 +392,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             // take the rest of the locks
             for (lockCount = 1; lockCount < bucketsCopy.Count; lockCount++)
             {
-                bucketsCopy.GetByIndex(lockCount, out bucketLock);
+                bucketLock = bucketsCopy.GetByIndex(lockCount).Lock;
                 await bucketLock.AcquireAsync(token).ConfigureAwait(false);
             }
 
@@ -504,24 +504,24 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     public readonly struct ReadOrWriteSession : IDisposable
     {
         private readonly RandomAccessCache<TKey, TValue> cache;
-        private readonly object bucketOrValueHolder; // Bucket or KeyValuePair
-        private readonly AsyncExclusiveLock? bucketLock;
+        private readonly object lockOrValueHolder; // Bucket or KeyValuePair
+        private readonly Bucket.Ref bucket;
         private readonly TKey key;
         private readonly int hashCode;
 
-        internal ReadOrWriteSession(RandomAccessCache<TKey, TValue> cache, Bucket bucket, AsyncExclusiveLock bucketLock, TKey key, int hashCode)
+        internal ReadOrWriteSession(RandomAccessCache<TKey, TValue> cache, Bucket.Ref bucket, AsyncExclusiveLock bucketLock, TKey key, int hashCode)
         {
             this.cache = cache;
-            bucketOrValueHolder = bucket;
+            lockOrValueHolder = bucketLock;
             this.key = key;
             this.hashCode = hashCode;
-            this.bucketLock = bucketLock;
+            this.bucket = bucket;
         }
 
         internal ReadOrWriteSession(RandomAccessCache<TKey, TValue> cache, KeyValuePair valueHolder)
         {
             this.cache = cache;
-            bucketOrValueHolder = valueHolder;
+            lockOrValueHolder = valueHolder;
             key = valueHolder.Key;
             hashCode = valueHolder.KeyHashCode;
         }
@@ -533,7 +533,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         /// <returns><see langword="true"/> if value exists; otherwise, <see langword="false"/>.</returns>
         public bool TryGetValue([MaybeNullWhen(false)] out TValue result)
         {
-            if (bucketOrValueHolder is KeyValuePair valueHolder)
+            if (lockOrValueHolder is KeyValuePair valueHolder)
             {
                 result = GetValue(valueHolder);
                 return true;
@@ -549,7 +549,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         /// <value>A reference to a value; or <see langowrd="null"/> reference.</value>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public ref readonly TValue ValueRefOrNullRef
-            => ref bucketOrValueHolder is KeyValuePair valueHolder
+            => ref lockOrValueHolder is KeyValuePair valueHolder
                 ? ref GetValue(valueHolder)
                 : ref Unsafe.NullRef<TValue>();
 
@@ -560,9 +560,9 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         /// <exception cref="InvalidOperationException">The session is invalid; the value promotes more than once.</exception>
         public void SetValue(TValue value)
         {
-            switch (bucketOrValueHolder)
+            switch (lockOrValueHolder)
             {
-                case Bucket bucket when bucket.TryAdd(key, hashCode, value) is { } newPair:
+                case AsyncExclusiveLock when bucket.TryAdd(key, hashCode, value) is { } newPair:
                     cache.Promote(newPair);
                     break;
                 case KeyValuePair existingPair when cache.growable is false:
@@ -578,10 +578,9 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         /// </summary>
         void IDisposable.Dispose()
         {
-            switch (bucketOrValueHolder)
+            switch (lockOrValueHolder)
             {
-                case Bucket bucket:
-                    Debug.Assert(bucketLock is not null);
+                case AsyncExclusiveLock bucketLock:
                     bucket.MarkAsReadyToAdd();
                     bucketLock.Release();
                     break;

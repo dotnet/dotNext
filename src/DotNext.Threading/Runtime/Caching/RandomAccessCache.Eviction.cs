@@ -87,7 +87,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 if (!removed && removedPair.ReleaseCounter() is false)
                 {
                     OnRemoved(removedPair);
-                    TryCleanUpBucket(buckets.GetByHash(removedPair.KeyHashCode, out var bucketLock), bucketLock);
+                    TryCleanUpBucket(ref buckets.GetByHash(removedPair.KeyHashCode));
                 }
             }
         }
@@ -113,10 +113,10 @@ public partial class RandomAccessCache<TKey, TValue>
         ClearValue(demoted);
     }
 
-    private void TryCleanUpBucket(Bucket bucket, AsyncExclusiveLock bucketLock)
+    private void TryCleanUpBucket(ref Bucket bucket)
     {
         var bucketsCopy = buckets;
-        if (bucketLock.TryAcquire())
+        if (bucket.Lock.TryAcquire())
         {
             try
             {
@@ -125,7 +125,7 @@ public partial class RandomAccessCache<TKey, TValue>
             }
             finally
             {
-                bucketLock.Release();
+                bucket.Lock.Release();
             }
         }
     }

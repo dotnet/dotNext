@@ -153,18 +153,25 @@ public partial class RandomAccessCache<TKey, TValue>
     }
 
     [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}")]
-    internal sealed class Bucket
+    [StructLayout(LayoutKind.Auto)]
+    internal struct Bucket
     {
+        internal readonly AsyncExclusiveLock Lock;
         private bool newPairAdded;
         private volatile KeyValuePair? first;
         private int count;
 
-        internal int CollisionCount => count;
+        public Bucket(AsyncExclusiveLock bucketLock) => Lock = bucketLock;
+
+        public Bucket()
+            : this(new())
+        {
+        }
 
         [ExcludeFromCodeCoverage]
-        private (int Alive, int Dead) Count => first?.BucketNodesCount ?? default;
+        private readonly (int Alive, int Dead) Count => first?.BucketNodesCount ?? default;
 
-        internal KeyValuePair? TryAdd(TKey key, int hashCode, TValue value)
+        private KeyValuePair? TryAdd(TKey key, int hashCode, TValue value)
         {
             KeyValuePair? result;
             if (newPairAdded)
@@ -187,7 +194,7 @@ public partial class RandomAccessCache<TKey, TValue>
             count++;
         }
 
-        internal void MarkAsReadyToAdd() => newPairAdded = false;
+        private void MarkAsReadyToAdd() => newPairAdded = false;
 
         private void Remove(KeyValuePair? previous, KeyValuePair current)
         {
@@ -196,7 +203,7 @@ public partial class RandomAccessCache<TKey, TValue>
             count--;
         }
 
-        internal KeyValuePair? TryRemove(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
+        private KeyValuePair? TryRemove(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
         {
             var result = default(KeyValuePair?);
 
@@ -290,7 +297,7 @@ public partial class RandomAccessCache<TKey, TValue>
             return result;
         }
 
-        internal KeyValuePair? Modify(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
+        private KeyValuePair? Modify(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
         {
             KeyValuePair? valueHolder = null;
             if (keyComparer is null)
@@ -361,7 +368,8 @@ public partial class RandomAccessCache<TKey, TValue>
                 }
             }
         }
-
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Enumerator GetEnumerator() => new(first);
         
         [StructLayout(LayoutKind.Auto)]
@@ -385,33 +393,58 @@ public partial class RandomAccessCache<TKey, TValue>
             
             public readonly KeyValuePair Current => current;
         }
+        
+        [StructLayout(LayoutKind.Auto)]
+        public readonly struct Ref(Bucket[] buckets, int index)
+        {
+            private ref Bucket Reference => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
+
+            internal AsyncExclusiveLock Lock => Reference.Lock;
+
+            internal int CollisionCount => Reference.count;
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal KeyValuePair? TryAdd(TKey key, int hashCode, TValue value) => Reference.TryAdd(key, hashCode, value);
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal void MarkAsReadyToAdd() => Reference.MarkAsReadyToAdd();
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal KeyValuePair? TryRemove(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
+                => Reference.TryRemove(keyComparer, key, hashCode);
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            internal KeyValuePair? Modify(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
+                => Reference.Modify(keyComparer, key, hashCode);
+        }
     }
     
     private sealed class BucketList
     {
         private readonly Bucket[] buckets;
-        private readonly AsyncExclusiveLock[] locks;
         private readonly FastMod fastMod;
 
         internal BucketList(int length)
         {
             Span.Initialize<Bucket>(buckets = new Bucket[length]);
-            Span.Initialize<AsyncExclusiveLock>(locks = new AsyncExclusiveLock[length]);
             fastMod = new((uint)length);
         }
 
         internal BucketList(BucketList prototype, int length)
         {
-            Span<AsyncExclusiveLock> locks = this.locks = new AsyncExclusiveLock[length];
-            prototype.locks.CopyTo(locks);
-            locks.Slice(prototype.locks.Length).Initialize();
-
-            Span.Initialize<Bucket>(buckets = new Bucket[length]);
-            
+            buckets = new Bucket[length];
             fastMod = new((uint)length);
 
             // import pairs
-            foreach (var bucket in prototype.buckets)
+            int i;
+            for (i = 0; i < prototype.buckets.Length; i++)
+            {
+                buckets[i] = new(prototype.buckets[i].Lock);
+            }
+            
+            buckets.AsSpan(i).Initialize();
+            
+            foreach (ref var bucket in prototype.buckets.AsSpan())
             {
                 foreach (var pair in bucket)
                 {
@@ -424,24 +457,22 @@ public partial class RandomAccessCache<TKey, TValue>
 
         public int Count => buckets.Length;
 
-        internal Bucket GetByHash(int hashCode, out AsyncExclusiveLock bucketLock)
-            => GetByIndex((int)fastMod.GetRemainder((uint)hashCode), out bucketLock);
-        
-        internal Bucket GetByHash(int hashCode)
+        internal void GetByHash(int hashCode, out Bucket.Ref bucket)
         {
             var index = fastMod.GetRemainder((uint)hashCode);
             Debug.Assert(index < (uint)buckets.Length);
 
-            return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
+            bucket = new(buckets, (int)index);
         }
 
-        internal Bucket GetByIndex(int index, out AsyncExclusiveLock bucketLock)
+        internal ref Bucket GetByHash(int hashCode)
+            => ref GetByIndex((int)fastMod.GetRemainder((uint)hashCode));
+
+        internal ref Bucket GetByIndex(int index)
         {
             Debug.Assert(index < (uint)buckets.Length);
-            Debug.Assert(index < (uint)locks.Length);
-
-            bucketLock = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(locks), index);
-            return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
+            
+            return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
         }
 
         internal unsafe KeyValuePair? FindPair(IEqualityComparer<TKey>? keyComparer, TKey key, int keyHashCode)
@@ -454,16 +485,16 @@ public partial class RandomAccessCache<TKey, TValue>
         internal void Release(int count)
         {
             Debug.Assert((uint)count <= (uint)buckets.Length);
-            
+
             for (var i = 0; i < count; i++)
             {
-                locks[i].Release();
+                buckets[i].Lock.Release();
             }
         }
 
         internal void Invalidate(Action<KeyValuePair> cleanup)
         {
-            foreach (var bucket in buckets)
+            foreach (ref var bucket in buckets.AsSpan())
             {
                 bucket.Invalidate(cleanup);
             }
@@ -485,7 +516,7 @@ public partial class RandomAccessCache<TKey, TValue>
         var lockCount = 0;
         try
         {
-            oldVersion.GetByIndex(lockCount, out var bucketLock);
+            var bucketLock = oldVersion.GetByIndex(lockCount).Lock;
             await bucketLock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
             lockCount++;
 
@@ -495,7 +526,7 @@ public partial class RandomAccessCache<TKey, TValue>
             // acquire the rest of locks
             for (; lockCount < oldVersion.Count; lockCount++)
             {
-                oldVersion.GetByIndex(lockCount, out bucketLock);
+                bucketLock = oldVersion.GetByIndex(lockCount).Lock;
                 await bucketLock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
             }
 
