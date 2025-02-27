@@ -525,15 +525,25 @@ public partial class RandomAccessCache<TKey, TValue>
                 bucketLock = oldVersion.GetByIndex(lockCount).Lock;
                 await bucketLock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
             }
-
+            
+            var newSource = new CancelableValueTaskCompletionSource();
+            if (Interlocked.Exchange(ref completionSource, newSource) is { } oldSource)
+            {
+                oldSource.Dispose();
+            }
+            else
+            {
+                // if Exchange returns null then the cache is disposed
+                newSource.Dispose();
+            }
+            
             // stop eviction process
-            Promote(new TerminateCommand());
             await evictionTask.ConfigureAwait(false);
 
             // restart eviction process
             RebuildEvictionState(buckets = new(oldVersion, newSize));
             queueHead = queueTail = new FakeKeyValuePair();
-            evictionTask = DoEvictionAsync();
+            evictionTask = DoEvictionAsync(newSource);
         }
         finally
         {

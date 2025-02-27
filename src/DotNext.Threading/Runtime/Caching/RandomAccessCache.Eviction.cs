@@ -10,24 +10,25 @@ using CompilerServices;
 
 public partial class RandomAccessCache<TKey, TValue>
 {
-    private readonly CancelableValueTaskCompletionSource completionSource;
-    
     // SIEVE core
     private readonly int maxCacheCapacity; // reused as contention threshold, if growable is true
     private int currentSize;
     private KeyValuePair? evictionHead, evictionTail, sieveHand;
+    
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive.")]
+    private CancelableValueTaskCompletionSource? completionSource;
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
-    private async Task DoEvictionAsync()
+    private async Task DoEvictionAsync(CancelableValueTaskCompletionSource source)
     {
-        while (!IsDisposingOrDisposed)
+        while (!source.IsCanceled)
         {
             if (queueHead.NextInQueue is KeyValuePair newHead)
             {
                 queueHead.NextInQueue = Sentinel.Instance;
                 queueHead = newHead;
             }
-            else if (await completionSource.WaitAsync(queueHead).ConfigureAwait(false))
+            else if (await source.WaitAsync(queueHead).ConfigureAwait(false))
             {
                 continue;
             }
@@ -38,17 +39,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
             Debug.Assert(queueHead is not FakeKeyValuePair);
 
-            switch (queueHead)
-            {
-                case TerminateCommand:
-                    return;
-                case FakeKeyValuePair:
-                    Debug.Fail("Unexpected command");
-                    break;
-                default:
-                    EvictOrInsert(queueHead);
-                    break;
-            }
+            EvictOrInsert(queueHead);
         }
     }
 
@@ -300,6 +291,8 @@ public partial class RandomAccessCache<TKey, TValue>
 
             return new(this, version);
         }
+
+        internal bool IsCanceled => ReferenceEquals(continuation, ValueTaskSourceHelpers.CanceledStub);
 
         protected override void Dispose(bool disposing)
         {

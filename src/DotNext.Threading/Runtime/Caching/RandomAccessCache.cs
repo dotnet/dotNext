@@ -54,8 +54,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         lifetimeToken = lifetimeSource.Token;
         queueHead = queueTail = new FakeKeyValuePair();
 
-        completionSource = new();
-        evictionTask = DoEvictionAsync();
+        evictionTask = DoEvictionAsync(completionSource = new());
     }
     
     private protected static int GetDictionarySize(int value, [CallerArgumentExpression(nameof(value))] string? paramName = null)
@@ -434,7 +433,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         {
             if (disposing)
             {
-                completionSource.Dispose();
+                Interlocked.Exchange(ref completionSource, null)?.Dispose();
                 if (Interlocked.Exchange(ref lifetimeSource, null) is { } cts)
                 {
                     try
