@@ -379,7 +379,7 @@ public partial class RandomAccessCache<TKey, TValue>
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Enumerator GetEnumerator() => new(first);
+        public readonly Enumerator GetEnumerator() => new(first);
         
         [StructLayout(LayoutKind.Auto)]
         public struct Enumerator(KeyValuePair? current)
@@ -429,15 +429,16 @@ public partial class RandomAccessCache<TKey, TValue>
             fastMod = new((uint)length);
 
             // import pairs
+            Span<Bucket> prototypeBuckets = prototype.buckets;
             int i;
-            for (i = 0; i < prototype.buckets.Length; i++)
+            for (i = 0; i < prototypeBuckets.Length; i++)
             {
-                buckets[i] = new(prototype.buckets[i].Lock);
+                buckets[i] = new(prototypeBuckets[i].Lock);
             }
-            
+
             buckets.AsSpan(i).Initialize();
             
-            foreach (ref var bucket in prototype.buckets.AsSpan())
+            foreach (ref var bucket in prototypeBuckets)
             {
                 foreach (var pair in bucket)
                 {
