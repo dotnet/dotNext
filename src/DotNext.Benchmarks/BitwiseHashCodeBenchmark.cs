@@ -4,7 +4,7 @@ using BenchmarkDotNet.Order;
 using System;
 using System.Collections.Generic;
 
-namespace DotNext.Benchmarks;
+namespace DotNext;
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
 [Orderer(SummaryOrderPolicy.Declared)]
