@@ -57,11 +57,11 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         evictionTask = DoEvictionAsync();
     }
     
-    private protected static int GetDictionarySize(int cacheSize, [CallerArgumentExpression(nameof(cacheSize))] string? paramName = null)
+    private protected static int GetDictionarySize(int value, [CallerArgumentExpression(nameof(value))] string? paramName = null)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(cacheSize, paramName);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value, paramName);
 
-        return PrimeNumber.GetPrime(cacheSize);
+        return PrimeNumber.GetPrime(value);
     }
 
     private string ObjectName => GetType().Name;
@@ -612,11 +612,19 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 /// <param name="collisionThreshold">
 /// The maximum number of allowed hash collisions. Small number increases the memory footprint, because the cache minimizes the contention
 /// for each key. Large number decreases the memory footprint by the increased chance of lock contention.</param>
-public abstract class RandomAccessCache<TKey, TValue, TWeight>(int initialCapacity, TWeight initialWeight, int collisionThreshold) : RandomAccessCache<TKey, TValue>(GetDictionarySize(initialCapacity), collisionThreshold)
+public abstract class RandomAccessCache<TKey, TValue, TWeight>(int initialCapacity, TWeight initialWeight, int collisionThreshold) 
+    : RandomAccessCache<TKey, TValue>(GetDictionarySize(initialCapacity), ValidateThreshold(collisionThreshold))
     where TKey : notnull
     where TValue : notnull
     where TWeight : notnull
 {
+    private static int ValidateThreshold(int value, [CallerArgumentExpression(nameof(value))] string? paramName = null)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value, paramName);
+
+        return value;
+    }
+    
     /// <summary>
     /// Adds a weight of the specified key/value pair to the total weight.
     /// </summary>
