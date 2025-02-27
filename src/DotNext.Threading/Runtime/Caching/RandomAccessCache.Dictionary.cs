@@ -168,6 +168,9 @@ public partial class RandomAccessCache<TKey, TValue>
             : this(new())
         {
         }
+        
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal int CollisionCount => count;
 
         [ExcludeFromCodeCoverage]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -177,7 +180,7 @@ public partial class RandomAccessCache<TKey, TValue>
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private readonly bool? IsLockHeld => Lock?.IsLockHeld;
 
-        private KeyValuePair? TryAdd(TKey key, int hashCode, TValue value)
+        internal KeyValuePair? TryAdd(TKey key, int hashCode, TValue value)
         {
             KeyValuePair? result;
             if (newPairAdded)
@@ -200,7 +203,7 @@ public partial class RandomAccessCache<TKey, TValue>
             count++;
         }
 
-        private void MarkAsReadyToAdd() => newPairAdded = false;
+        internal void MarkAsReadyToAdd() => newPairAdded = false;
 
         private void Remove(KeyValuePair? previous, KeyValuePair current)
         {
@@ -209,7 +212,7 @@ public partial class RandomAccessCache<TKey, TValue>
             count--;
         }
 
-        private KeyValuePair? TryRemove(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
+        internal KeyValuePair? TryRemove(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
         {
             var result = default(KeyValuePair?);
 
@@ -303,7 +306,7 @@ public partial class RandomAccessCache<TKey, TValue>
             return result;
         }
 
-        private KeyValuePair? Modify(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
+        internal KeyValuePair? Modify(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
         {
             KeyValuePair? valueHolder = null;
             if (keyComparer is null)
@@ -401,27 +404,9 @@ public partial class RandomAccessCache<TKey, TValue>
         }
         
         [StructLayout(LayoutKind.Auto)]
-        public readonly struct Ref(Bucket[] buckets, int index)
+        internal readonly struct Ref(Bucket[] buckets, int index)
         {
-            private ref Bucket Reference => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
-
-            internal AsyncExclusiveLock Lock => Reference.Lock;
-
-            internal int CollisionCount => Reference.count;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal KeyValuePair? TryAdd(TKey key, int hashCode, TValue value) => Reference.TryAdd(key, hashCode, value);
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal void MarkAsReadyToAdd() => Reference.MarkAsReadyToAdd();
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal KeyValuePair? TryRemove(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
-                => Reference.TryRemove(keyComparer, key, hashCode);
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal KeyValuePair? Modify(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
-                => Reference.Modify(keyComparer, key, hashCode);
+            internal ref Bucket Value => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
         }
     }
     

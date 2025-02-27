@@ -66,7 +66,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 
     private string ObjectName => GetType().Name;
 
-    private bool ResizeDesired(in Bucket.Ref bucket)
+    private bool ResizeDesired(in Bucket bucket)
         => growable && bucket.CollisionCount >= maxCacheCapacity;
 
     /// <summary>
@@ -107,8 +107,8 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 for (BucketList newCopy;; bucketsCopy = newCopy)
                 {
                     bucketsCopy.GetByHash(hashCode, out bucket);
-                    await bucket.Lock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
-                    bucketLock = bucket.Lock;
+                    await bucket.Value.Lock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
+                    bucketLock = bucket.Value.Lock;
 
                     newCopy = buckets;
                     if (ReferenceEquals(newCopy, bucketsCopy))
@@ -118,12 +118,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                     bucketLock = null;
                 }
 
-                if (bucket.Modify(keyComparerCopy, key, hashCode) is { } valueHolder)
+                if (bucket.Value.Modify(keyComparerCopy, key, hashCode) is { } valueHolder)
                     return new(this, valueHolder);
 
                 bucketLockCopy = bucketLock;
                 bucketLock = null;
-                if (!ResizeDesired(bucket))
+                if (!ResizeDesired(in bucket.Value))
                     return new(this, bucket, bucketLockCopy, key, hashCode);
 
                 bucketLockCopy.Release();
@@ -219,8 +219,8 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             for (BucketList bucketsCopy = buckets, newCopy;; bucketsCopy = newCopy)
             {
                 bucketsCopy.GetByHash(hashCode, out bucket);
-                await bucket.Lock.AcquireAsync(timeout, token).ConfigureAwait(false);
-                bucketLock = bucket.Lock;
+                await bucket.Value.Lock.AcquireAsync(timeout, token).ConfigureAwait(false);
+                bucketLock = bucket.Value.Lock;
 
                 newCopy = buckets;
                 if (ReferenceEquals(newCopy, bucketsCopy))
@@ -230,7 +230,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 bucketLock = null;
             }
 
-            return bucket.TryRemove(keyComparerCopy, key, hashCode) is { } removedPair
+            return bucket.Value.TryRemove(keyComparerCopy, key, hashCode) is { } removedPair
                 ? new ReadSession(this, removedPair)
                 : null;
         }
@@ -296,8 +296,8 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             for (BucketList bucketsCopy = buckets, newCopy;; bucketsCopy = newCopy)
             {
                 bucketsCopy.GetByHash(hashCode, out bucket);
-                await bucket.Lock.AcquireAsync(timeout, token).ConfigureAwait(false);
-                bucketLock = bucket.Lock;
+                await bucket.Value.Lock.AcquireAsync(timeout, token).ConfigureAwait(false);
+                bucketLock = bucket.Value.Lock;
 
                 newCopy = buckets;
                 if (ReferenceEquals(newCopy, bucketsCopy))
@@ -307,7 +307,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 bucketLock = null;
             }
             
-            removedPair = bucket.TryRemove(keyComparerCopy, key, hashCode);
+            removedPair = bucket.Value.TryRemove(keyComparerCopy, key, hashCode);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
         {
@@ -562,7 +562,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         {
             switch (lockOrValueHolder)
             {
-                case AsyncExclusiveLock when bucket.TryAdd(key, hashCode, value) is { } newPair:
+                case AsyncExclusiveLock when bucket.Value.TryAdd(key, hashCode, value) is { } newPair:
                     cache.Promote(newPair);
                     break;
                 case KeyValuePair existingPair when cache.growable is false:
@@ -581,7 +581,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             switch (lockOrValueHolder)
             {
                 case AsyncExclusiveLock bucketLock:
-                    bucket.MarkAsReadyToAdd();
+                    bucket.Value.MarkAsReadyToAdd();
                     bucketLock.Release();
                     break;
                 case KeyValuePair pair when pair.ReleaseCounter() is false:
