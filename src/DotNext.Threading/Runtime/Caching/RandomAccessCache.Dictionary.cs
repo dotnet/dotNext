@@ -261,6 +261,8 @@ public partial class RandomAccessCache<TKey, TValue>
 
         internal unsafe KeyValuePair? TryGet(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode, delegate*<KeyValuePair, bool> visitor)
         {
+            Debug.Assert(visitor is not null);
+            
             var result = default(KeyValuePair?);
 
             // remove all dead nodes from the bucket
