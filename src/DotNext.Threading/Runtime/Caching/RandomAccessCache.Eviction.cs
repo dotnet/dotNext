@@ -19,25 +19,21 @@ public partial class RandomAccessCache<TKey, TValue>
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task DoEvictionAsync(CancelableValueTaskCompletionSource source)
     {
-        while (!source.IsCanceled)
+        while (await source.WaitAsync(queueHead).ConfigureAwait(false))
         {
-            if (queueHead.NextInQueue is KeyValuePair newHead)
-            {
-                queueHead.NextInQueue = Sentinel.Instance;
-                queueHead = newHead;
-            }
-            else if (await source.WaitAsync(queueHead).ConfigureAwait(false))
-            {
-                continue;
-            }
-            else
-            {
-                break;
-            }
+            ProcessQueue();
+        }
+    }
 
-            Debug.Assert(queueHead is not FakeKeyValuePair);
-
-            EvictOrInsert(queueHead);
+    private void ProcessQueue()
+    {
+        while (queueHead.NextInQueue is KeyValuePair newHead)
+        {
+            queueHead.NextInQueue = Sentinel.Instance;
+            queueHead = newHead;
+                
+            Debug.Assert(newHead is not FakeKeyValuePair);
+            EvictOrInsert(newHead);
         }
     }
 
@@ -295,8 +291,6 @@ public partial class RandomAccessCache<TKey, TValue>
 
             return new(this, version);
         }
-
-        internal bool IsCanceled => ReferenceEquals(continuation, ValueTaskSourceHelpers.CanceledStub);
 
         internal void Cancel()
         {
