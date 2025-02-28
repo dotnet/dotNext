@@ -280,12 +280,11 @@ public sealed class RandomAccessCacheTests : Test
         Equal(100L, x + y);
     }
 
-    [Fact]
-    public static async Task ResizeCache()
+    private static async Task CheckCapacity(int initialCapacity, int threshold, Action<CacheWithWeight> assertion)
     {
-        await using var cache = new CacheWithWeight(2, 100L, 1);
+        await using var cache = new CacheWithWeight(initialCapacity, 100L, threshold);
         var capacity = cache.Capacity;
-        Equal(3, capacity);
+        True(cache.Capacity > initialCapacity);
 
         for (var i = 0; i < capacity * 2; i++)
         {
@@ -294,7 +293,19 @@ public sealed class RandomAccessCacheTests : Test
             session.SetValue(i);
         }
 
-        True(cache.Capacity > capacity);
+        assertion(cache);
+    }
+
+    [Fact]
+    public static async Task ResizeCache()
+    {
+        await CheckCapacity(2, 1, static cache => True(cache.Capacity > 6));
+    }
+
+    [Fact]
+    public static async Task InfiniteThreshold()
+    {
+        await CheckCapacity(2, int.MaxValue, static cache => Equal(3, cache.Capacity));
     }
 
     private sealed class CacheWithWeight(int cacheCapacity, long maxWeight, int collisionThreshold) : RandomAccessCache<string, long, long>(cacheCapacity, 0L, collisionThreshold)

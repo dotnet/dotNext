@@ -36,32 +36,30 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <param name="cacheCapacity">Maximum cache size.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="cacheCapacity"/> is less than or equal to zero.</exception>
     public RandomAccessCache(int cacheCapacity)
-        : this(GetDictionarySize(cacheCapacity), collisionThreshold: 0)
+        : this(cacheCapacity, collisionThreshold: int.MaxValue)
     {
     }
 
-    private protected RandomAccessCache(int dictionarySize, int collisionThreshold)
+    private protected RandomAccessCache(int dictionarySize, int collisionThreshold,
+        [CallerArgumentExpression(nameof(dictionarySize))]
+        string? dictionarySizeName = null,
+        [CallerArgumentExpression(nameof(collisionThreshold))]
+        string? thresholdName = null)
     {
-        Debug.Assert(collisionThreshold >= 0);
-        Debug.Assert(Number.IsPrime(dictionarySize));
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(dictionarySize, dictionarySizeName);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(collisionThreshold, thresholdName);
 
-        maxCacheCapacity = (growable = collisionThreshold > 0)
+        dictionarySize = PrimeNumber.GetPrime(dictionarySize);
+        maxCacheCapacity = (growable = collisionThreshold is not int.MaxValue)
             ? collisionThreshold
             : dictionarySize;
-        
+
         buckets = new(dictionarySize);
         lifetimeSource = new();
         lifetimeToken = lifetimeSource.Token;
         queueHead = queueTail = new FakeKeyValuePair();
 
         evictionTask = DoEvictionAsync(completionSource = new());
-    }
-    
-    private protected static int GetDictionarySize(int value, [CallerArgumentExpression(nameof(value))] string? paramName = null)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value, paramName);
-
-        return PrimeNumber.GetPrime(value);
     }
 
     private string ObjectName => GetType().Name;
@@ -611,20 +609,15 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 /// <param name="initialWeight">The initial weight value.</param>
 /// <param name="collisionThreshold">
 /// The maximum number of allowed hash collisions. Small number increases the memory footprint, because the cache minimizes the contention
-/// for each key. Large number decreases the memory footprint by the increased chance of lock contention.</param>
+/// for each key. Large number decreases the memory footprint by the increased chance of the lock contention.
+/// If <see cref="int.MaxValue"/> is specified, then the cache doesn't grow.
+/// </param>
 public abstract class RandomAccessCache<TKey, TValue, TWeight>(int initialCapacity, TWeight initialWeight, int collisionThreshold) 
-    : RandomAccessCache<TKey, TValue>(GetDictionarySize(initialCapacity), ValidateThreshold(collisionThreshold))
+    : RandomAccessCache<TKey, TValue>(initialCapacity, collisionThreshold)
     where TKey : notnull
     where TValue : notnull
     where TWeight : notnull
 {
-    private static int ValidateThreshold(int value, [CallerArgumentExpression(nameof(value))] string? paramName = null)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value, paramName);
-
-        return value;
-    }
-    
     /// <summary>
     /// Adds a weight of the specified key/value pair to the total weight.
     /// </summary>
