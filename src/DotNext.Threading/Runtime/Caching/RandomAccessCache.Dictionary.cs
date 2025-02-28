@@ -198,18 +198,30 @@ public partial class RandomAccessCache<TKey, TValue>
 
         internal void Add(KeyValuePair pair)
         {
-            pair.NextInBucket = first;
-            first = pair;
+            // possible contention with TryRemove private method that can be called without lock
+            KeyValuePair? current, tmp = first;
+            do
+            {
+                pair.NextInBucket = current = tmp;
+            } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref first, pair, current), current));
+            
             count++;
         }
 
         internal void MarkAsReadyToAdd() => newPairAdded = false;
 
-        private void Remove(KeyValuePair? previous, KeyValuePair current)
+        private void TryRemove(KeyValuePair? previous, KeyValuePair current)
         {
+            // This method can be called concurrently by different threads. It doesn't guarantee removal of the pair.
+            // For instance, we have a => b => c => d linked pair, 'b' and 'c' are dead and 2 threads trying to remove them
+            // Thread #1 modifies a link a => b to a => c
+            // Thread #2 modifies a link b => c to b => d
+            // The produced linked list is a => c => d
+            // As we can see, the list contains dead node 'c'. We are okay with that, because the list is inspected
+            // on every access (read/write), so it will be eventually deleted
             ref var location = ref previous is null ? ref first : ref previous.NextInBucket;
-            Volatile.Write(ref location, current.NextInBucket);
-            count--;
+            if (ReferenceEquals(Interlocked.CompareExchange(ref location, current.NextInBucket, current), current))
+                count--;
         }
 
         internal KeyValuePair? TryRemove(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
@@ -232,7 +244,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
                     if (current.IsDead)
                     {
-                        Remove(previous, current);
+                        TryRemove(previous, current);
                     }
                 }
             }
@@ -251,7 +263,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
                     if (current.IsDead)
                     {
-                        Remove(previous, current);
+                        TryRemove(previous, current);
                     }
                 }
             }
@@ -281,7 +293,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
                     if (current.IsDead)
                     {
-                        Remove(previous, current);
+                        TryRemove(previous, current);
                     }
                 }
             }
@@ -300,7 +312,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
                     if (current.IsDead)
                     {
-                        Remove(previous, current);
+                        TryRemove(previous, current);
                     }
                 }
             }
@@ -325,7 +337,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
                     if (current.IsDead)
                     {
-                        Remove(previous, current);
+                        TryRemove(previous, current);
                     }
                 }
             }
@@ -343,7 +355,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
                     if (current.IsDead)
                     {
-                        Remove(previous, current);
+                        TryRemove(previous, current);
                     }
                 }
             }
@@ -360,7 +372,7 @@ public partial class RandomAccessCache<TKey, TValue>
             {
                 if (current.IsDead)
                 {
-                    Remove(previous, current);
+                    TryRemove(previous, current);
                 }
             }
         }
@@ -371,7 +383,7 @@ public partial class RandomAccessCache<TKey, TValue>
                  current is not null;
                  previous = current, current = current.NextInBucket)
             {
-                Remove(previous, current);
+                TryRemove(previous, current);
                     
                 if (current.MarkAsEvicted() && current.ReleaseCounter() is false)
                 {
