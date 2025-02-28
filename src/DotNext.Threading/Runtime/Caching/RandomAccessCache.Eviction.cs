@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Sources;
-using DotNext.Threading;
 
 namespace DotNext.Runtime.Caching;
 
@@ -15,7 +14,6 @@ public partial class RandomAccessCache<TKey, TValue>
     private int currentSize;
     private KeyValuePair? evictionHead, evictionTail, sieveHand;
     
-    [SuppressMessage("Usage", "CA2213", Justification = "False positive.")]
     private CancelableValueTaskCompletionSource? completionSource;
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
@@ -224,60 +222,66 @@ public partial class RandomAccessCache<TKey, TValue>
         }
     }
 
-    private sealed class CancelableValueTaskCompletionSource : Disposable, IValueTaskSource<bool>, IThreadPoolWorkItem
+    private sealed class CancelableValueTaskCompletionSource : IValueTaskSource<bool>, IThreadPoolWorkItem
     {
         private object? continuationState;
+        
+        // possible transitions:
+        // null or non-stub => stub (canceled, completed)
+        // null => non-stub
+        // stub (completed) => stub (canceled)
+        // non-stub or stub (completed) => null
         private volatile Action<object?>? continuation;
         private short version = short.MinValue;
 
-        private void MoveTo(Action<object?> stub)
+        private void Complete()
         {
-            Debug.Assert(ValueTaskSourceHelpers.IsStub(stub));
-
-            // null, non-stub => stub
+            // null or non-stub => stub (completed)
             Action<object?>? current, tmp = continuation;
-
             do
             {
                 current = tmp;
-                if (current is not null && ValueTaskSourceHelpers.IsStub(current))
+                if (current.IsStub())
                     return;
-            } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref continuation, stub, current), current));
+            } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref continuation, ValueTaskSourceHelpers.CompletedStub, current), current));
 
             current?.Invoke(continuationState);
         }
 
-        void IThreadPoolWorkItem.Execute() => MoveTo(ValueTaskSourceHelpers.CompletedStub);
+        private bool GetResult()
+        {
+            // null, non-stub, stub (completed) => stub (canceled)
+            Action<object?>? current, tmp = continuation;
+            do
+            {
+                current = tmp;
+                if (ReferenceEquals(current, ValueTaskSourceHelpers.CanceledStub))
+                    return false;
+            } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref continuation, null, current), current));
+
+            return true;
+        }
+
+        void IThreadPoolWorkItem.Execute() => Complete();
 
         bool IValueTaskSource<bool>.GetResult(short token)
         {
             Debug.Assert(token == version);
 
             continuationState = null;
-            if (IsDisposingOrDisposed)
-                return false;
-
-            Reset();
-            return true;
-        }
-
-        private void Reset()
-        {
             version++;
-            continuationState = null;
-            continuation = null;
+            return GetResult();
         }
 
-        ValueTaskSourceStatus IValueTaskSource<bool>.GetStatus(short token)
-        {
-            return continuation is { } c && ValueTaskSourceHelpers.IsStub(c) || IsDisposingOrDisposed
-                ? ValueTaskSourceStatus.Succeeded
-                : ValueTaskSourceStatus.Pending;
-        }
+        ValueTaskSourceStatus IValueTaskSource<bool>.GetStatus(short token) => continuation is { } c && c.IsStub()
+            ? ValueTaskSourceStatus.Succeeded
+            : ValueTaskSourceStatus.Pending;
 
         void IValueTaskSource<bool>.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
         {
             continuationState = state;
+            
+            // null => non-stub
             if (Interlocked.CompareExchange(ref this.continuation, continuation, null) is not null)
             {
                 continuation.Invoke(state);
@@ -287,21 +291,20 @@ public partial class RandomAccessCache<TKey, TValue>
         internal ValueTask<bool> WaitAsync(KeyValuePair pair)
         {
             if (!pair.TryAttachNotificationHandler(this))
-                continuation = ValueTaskSourceHelpers.CompletedStub;
+                Complete();
 
             return new(this, version);
         }
 
         internal bool IsCanceled => ReferenceEquals(continuation, ValueTaskSourceHelpers.CanceledStub);
 
-        protected override void Dispose(bool disposing)
+        internal void Cancel()
         {
-            if (disposing)
+            if (Interlocked.Exchange(ref continuation, ValueTaskSourceHelpers.CanceledStub) is { } c && !c.IsStub())
             {
-                MoveTo(ValueTaskSourceHelpers.CanceledStub);
+                c(continuationState);
+                continuationState = null;
             }
-
-            base.Dispose(disposing);
         }
     }
 }
@@ -310,11 +313,9 @@ file static class ValueTaskSourceHelpers
 {
     internal static readonly Action<object?> CompletedStub = Stub;
     internal static readonly Action<object?> CanceledStub = Stub;
+
+    private static void Stub(object? state) => Debug.Fail("Should never be called");
     
-    private static void Stub(object? state)
-    {
-    }
-    
-    internal static bool IsStub(Action<object?> continuation)
-        => continuation.Method == CompletedStub.Method;
+    internal static bool IsStub(this Action<object?>? continuation)
+        => continuation?.Method == CompletedStub.Method;
 }

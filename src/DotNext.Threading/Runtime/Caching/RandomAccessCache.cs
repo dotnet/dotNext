@@ -433,7 +433,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         {
             if (disposing)
             {
-                Interlocked.Exchange(ref completionSource, null)?.Dispose();
+                Interlocked.Exchange(ref completionSource, null)?.Cancel();
                 if (Interlocked.Exchange(ref lifetimeSource, null) is { } cts)
                 {
                     try

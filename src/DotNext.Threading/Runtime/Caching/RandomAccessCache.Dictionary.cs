@@ -527,15 +527,9 @@ public partial class RandomAccessCache<TKey, TValue>
             }
             
             var newSource = new CancelableValueTaskCompletionSource();
-            if (Interlocked.Exchange(ref completionSource, newSource) is { } oldSource)
-            {
-                oldSource.Dispose();
-            }
-            else
-            {
-                // if Exchange returns null then the cache is disposed
-                newSource.Dispose();
-            }
+            
+            // if Exchange returns null then the cache is disposed
+            (Interlocked.Exchange(ref completionSource, newSource) ?? newSource).Cancel();
             
             // stop eviction process
             await evictionTask.ConfigureAwait(false);
