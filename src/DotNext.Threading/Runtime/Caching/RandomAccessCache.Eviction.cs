@@ -244,7 +244,7 @@ public partial class RandomAccessCache<TKey, TValue>
             current?.Invoke(continuationState);
         }
 
-        private bool GetResult()
+        private bool TryReset()
         {
             // null, non-stub, stub (completed) => stub (canceled)
             Action<object?>? current, tmp = continuation;
@@ -266,7 +266,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
             continuationState = null;
             version++;
-            return GetResult();
+            return TryReset();
         }
 
         ValueTaskSourceStatus IValueTaskSource<bool>.GetStatus(short token) => continuation is { } c && c.IsStub()
