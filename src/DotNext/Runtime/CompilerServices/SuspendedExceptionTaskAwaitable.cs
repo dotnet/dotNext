@@ -273,21 +273,19 @@ public readonly struct AwaitableResult<T>
 /// </summary>
 /// <typeparam name="T">The type of the task.</typeparam>
 /// <typeparam name="TError">The type of the error.</typeparam>
-/// <typeparam name="TConverter">The exception converter.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct AwaitableResult<T, TError, TConverter>
+public readonly struct AwaitableResult<T, TError>
     where TError : struct, Enum
-    where TConverter : ISupplier<Exception, TError>
 {
     private readonly ValueTask<T> task;
-    private readonly TConverter converter;
+    private readonly Converter<Exception, TError> converter;
 
-    internal AwaitableResult(Task<T> task, TConverter converter)
+    internal AwaitableResult(Task<T> task, Converter<Exception, TError> converter)
         : this(new ValueTask<T>(task), converter)
     {
     }
 
-    internal AwaitableResult(ValueTask<T> task, TConverter converter)
+    internal AwaitableResult(ValueTask<T> task, Converter<Exception, TError> converter)
     {
         this.task = task;
         this.converter = converter;
@@ -307,7 +305,7 @@ public readonly struct AwaitableResult<T, TError, TConverter>
     /// otherwise, <see langword="false"/>.
     /// </param>
     /// <returns>The configured object.</returns>
-    public AwaitableResult<T, TError, TConverter> ConfigureAwait(bool continueOnCapturedContext)
+    public AwaitableResult<T, TError> ConfigureAwait(bool continueOnCapturedContext)
         => this with { ContinueOnCapturedContext = continueOnCapturedContext };
 
     /// <summary>
@@ -323,9 +321,9 @@ public readonly struct AwaitableResult<T, TError, TConverter>
     public readonly struct Awaiter : ICriticalNotifyCompletion
     {
         private readonly ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter awaiter;
-        private readonly TConverter converter;
+        private readonly Converter<Exception, TError> converter;
 
-        internal Awaiter(in ValueTask<T> task, TConverter converter, bool continueOnCapturedContext)
+        internal Awaiter(in ValueTask<T> task, Converter<Exception, TError> converter, bool continueOnCapturedContext)
         {
             awaiter = task.ConfigureAwait(continueOnCapturedContext).GetAwaiter();
             this.converter = converter;
@@ -354,7 +352,7 @@ public readonly struct AwaitableResult<T, TError, TConverter>
             }
             catch (Exception e)
             {
-                result = new(converter.Invoke(e));
+                result = new(converter(e));
             }
 
             return result;

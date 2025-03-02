@@ -95,11 +95,10 @@ public static class Conversion
     /// <param name="converter">The exception converter.</param>
     /// <typeparam name="T">The type of the task.</typeparam>
     /// <typeparam name="TError">The type of the error.</typeparam>
-    /// <typeparam name="TConverter">The exception converter.</typeparam>
     /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
-    public static AwaitableResult<T, TError, TConverter> SuspendException<T, TError, TConverter>(this ValueTask<T> task, TConverter converter)
+    public static AwaitableResult<T, TError> SuspendException<T, TError>(this ValueTask<T> task,
+        Converter<Exception, TError> converter)
         where TError : struct, Enum
-        where TConverter : ISupplier<Exception, TError>
         => new(task, converter);
 
     /// <summary>
@@ -110,37 +109,10 @@ public static class Conversion
     /// <typeparam name="T">The type of the task.</typeparam>
     /// <typeparam name="TError">The type of the error.</typeparam>
     /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
-    public static AwaitableResult<T, TError, DelegatingSupplier<Exception, TError>> SuspendException<T, TError>(this ValueTask<T> task,
-        Func<Exception, TError> converter)
+    public static AwaitableResult<T, TError> SuspendException<T, TError>(this Task<T> task,
+        Converter<Exception, TError> converter)
         where TError : struct, Enum
-        => SuspendException<T, TError, DelegatingSupplier<Exception, TError>>(task, converter);
-    
-    /// <summary>
-    /// Returns a task that never throws an exception.
-    /// </summary>
-    /// <param name="task">The task to convert.</param>
-    /// <param name="converter">The exception converter.</param>
-    /// <typeparam name="T">The type of the task.</typeparam>
-    /// <typeparam name="TError">The type of the error.</typeparam>
-    /// <typeparam name="TConverter">The exception converter.</typeparam>
-    /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
-    public static AwaitableResult<T, TError, TConverter> SuspendException<T, TError, TConverter>(this Task<T> task, TConverter converter)
-        where TError : struct, Enum
-        where TConverter : ISupplier<Exception, TError>
         => new(task, converter);
-
-    /// <summary>
-    /// Returns a task that never throws an exception.
-    /// </summary>
-    /// <param name="task">The task to convert.</param>
-    /// <param name="converter">The exception converter.</param>
-    /// <typeparam name="T">The type of the task.</typeparam>
-    /// <typeparam name="TError">The type of the error.</typeparam>
-    /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
-    public static AwaitableResult<T, TError, DelegatingSupplier<Exception, TError>> SuspendException<T, TError>(this Task<T> task,
-        Func<Exception, TError> converter)
-        where TError : struct, Enum
-        => SuspendException<T, TError, DelegatingSupplier<Exception, TError>>(task, converter);
 
     /// <summary>
     /// Suspends the exception that can be raised by the task.
