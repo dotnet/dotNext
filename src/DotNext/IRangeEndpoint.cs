@@ -128,4 +128,6 @@ file sealed class InfinityEndpoint<T> : IRangeEndpoint<T>, ISingleton<InfinityEn
     bool IRangeEndpoint<T>.IsOnLeft(T value) => true;
 
     bool IRangeEndpoint<T>.IsOnRight(T value) => true;
+
+    public override string ToString() => "\u221e";
 }
