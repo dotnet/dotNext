@@ -66,6 +66,20 @@ public sealed class ConversionTests : Test
         var result = await t.AsDynamic().ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing | ConfigureAwaitOptions.ContinueOnCapturedContext);
         Same(result, Missing.Value);
     }
+
+    [Fact]
+    public static async Task ConvertExceptionToError()
+    {
+        var result = await Task.FromException<int>(new Exception()).SuspendException(ToError).ConfigureAwait(true);
+        False(result.IsSuccessful);
+        Equal(EnvironmentVariableTarget.Machine, result.Error);
+        
+        result = await ValueTask.FromException<int>(new Exception()).SuspendException(ToError).ConfigureAwait(true);
+        False(result.IsSuccessful);
+        Equal(EnvironmentVariableTarget.Machine, result.Error);
+
+        static EnvironmentVariableTarget ToError(Exception e) => EnvironmentVariableTarget.Machine;
+    }
     
     [Fact]
     public static async Task SuspendExceptionParametrized()
