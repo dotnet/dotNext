@@ -41,7 +41,9 @@ internal sealed class DecodingTextReader : TextBufferReader
     {
         var result = 0;
 
-        for (int maxBytes = encoding.GetMaxByteCount(output.Length), bytesConsumed, charsProduced; !sequence.IsEmpty && !output.IsEmpty; maxBytes -= bytesConsumed, result += charsProduced)
+        for (int bytesConsumed, charsProduced, maxBytes = encoding.GetMaxByteCount(output.Length);
+             !sequence.IsEmpty && !output.IsEmpty;
+             maxBytes -= bytesConsumed, result += charsProduced)
         {
             var input = sequence.FirstSpan;
             decoder.Convert(input, output, maxBytes <= input.Length, out bytesConsumed, out charsProduced, out _);
