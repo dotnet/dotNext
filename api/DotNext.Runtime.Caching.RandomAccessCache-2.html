@@ -78,6 +78,7 @@
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
     <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
     <div class="level2"><span class="xref">RandomAccessCache&lt;TKey, TValue&gt;</span></div>
+      <div class="level3"><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-3.html">RandomAccessCache&lt;TKey, TValue, TWeight&gt;</a></div>
   </div>
   <div class="implements">
     <h5>Implements</h5>
@@ -184,7 +185,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.%23ctor(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L36">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L38">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2__ctor_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.#ctor*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2__ctor_System_Int32_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.#ctor(System.Int32)">RandomAccessCache(int)</h4>
@@ -193,7 +194,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public RandomAccessCache(int cacheSize)</code></pre>
+    <pre><code class="lang-csharp hljs">public RandomAccessCache(int cacheCapacity)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -207,7 +208,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">cacheSize</span></td>
+        <td><span class="parametername">cacheCapacity</span></td>
         <td><p>Maximum cache size.</p>
 </td>
       </tr>
@@ -224,7 +225,7 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">cacheSize</code> is less than or equal to zero.</p>
+        <td><p><code class="paramref">cacheCapacity</code> is less than or equal to zero.</p>
 </td>
       </tr>
     </tbody>
@@ -233,10 +234,41 @@
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_Capacity.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.Capacity%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L87">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_Capacity_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Capacity*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_Capacity" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Capacity">Capacity</h4>
+  <div class="markdown level1 summary"><p>Gets the capacity of this cache.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Capacity { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_Eviction.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.Eviction%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L61">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L73">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_Eviction_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Eviction*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_Eviction" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Eviction">Eviction</h4>
@@ -267,7 +299,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_KeyComparer.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.KeyComparer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L66">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L78">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_KeyComparer_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.KeyComparer*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_KeyComparer" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.KeyComparer">KeyComparer</h4>
@@ -300,7 +332,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_Change__0_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.Change(%600%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L139">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L176">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_Change_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Change*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_Change__0_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Change(`0,System.TimeSpan,System.Threading.CancellationToken)">Change(TKey, TimeSpan, CancellationToken)</h4>
@@ -392,7 +424,7 @@ the value can be evicted immediately after. The caller must dispose session.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ChangeAsync__0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ChangeAsync(%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L122">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L159">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ChangeAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ChangeAsync*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ChangeAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ChangeAsync(`0,System.Threading.CancellationToken)">ChangeAsync(TKey, CancellationToken)</h4>
@@ -473,7 +505,7 @@ the value can be evicted immediately after. The caller must dispose session.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L373">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L428">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_Dispose_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Dispose*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_Dispose_System_Boolean_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -509,7 +541,7 @@ the value can be evicted immediately after. The caller must dispose session.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.DisposeAsync%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L363">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L418">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsync*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsync" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsync">DisposeAsync()</h4>
@@ -541,7 +573,7 @@ the value can be evicted immediately after. The caller must dispose session.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsyncCore.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.DisposeAsyncCore%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L366">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L421">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsyncCore_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsyncCore*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsyncCore" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.DisposeAsyncCore">DisposeAsyncCore()</h4>
@@ -578,7 +610,7 @@ the value can be evicted immediately after. The caller must dispose session.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_Invalidate__0_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.Invalidate(%600%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L300">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L359">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_Invalidate_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Invalidate*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_Invalidate__0_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.Invalidate(`0,System.TimeSpan,System.Threading.CancellationToken)">Invalidate(TKey, TimeSpan, CancellationToken)</h4>
@@ -666,7 +698,7 @@ the value can be evicted immediately after. The caller must dispose session.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.InvalidateAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L309">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L368">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync(System.Threading.CancellationToken)">InvalidateAsync(CancellationToken)</h4>
@@ -736,7 +768,7 @@ the value can be evicted immediately after. The caller must dispose session.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync__0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.InvalidateAsync(%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L287">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L346">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.InvalidateAsync(`0,System.Threading.CancellationToken)">InvalidateAsync(TKey, CancellationToken)</h4>
@@ -813,7 +845,7 @@ the value can be evicted immediately after. The caller must dispose session.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_TryRead__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.TryRead(%600%2CDotNext.Runtime.Caching.RandomAccessCache%7B%600%2C%601%7D.ReadSession%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L152">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L189">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRead_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRead*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRead__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRead(`0,DotNext.Runtime.Caching.RandomAccessCache{`0,`1}.ReadSession@)">TryRead(TKey, out ReadSession)</h4>
@@ -873,7 +905,7 @@ the value can be evicted immediately after. The caller must dispose session.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_TryRemove__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.TryRemove(%600%2CDotNext.Runtime.Caching.RandomAccessCache%7B%600%2C%601%7D.ReadSession%40%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L226">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L275">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRemove_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRemove*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRemove__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRemove(`0,DotNext.Runtime.Caching.RandomAccessCache{`0,`1}.ReadSession@,System.TimeSpan,System.Threading.CancellationToken)">TryRemove(TKey, out ReadSession, TimeSpan, CancellationToken)</h4>
@@ -967,7 +999,7 @@ the value can be evicted immediately after. The caller must dispose session.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_TryRemoveAsync__0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.TryRemoveAsync(%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L212">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L261">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRemoveAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRemoveAsync*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_TryRemoveAsync__0_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.TryRemoveAsync(`0,System.Threading.CancellationToken)">TryRemoveAsync(TKey, CancellationToken)</h4>

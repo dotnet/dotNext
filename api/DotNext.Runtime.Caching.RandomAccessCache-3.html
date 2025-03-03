@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class RandomAccessCache&lt;TKey, TValue, TWeight&gt; | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class RandomAccessCache&lt;TKey, TValue, TWeight&gt; | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3">
+
+
+
+  <h1 id="DotNext_Runtime_Caching_RandomAccessCache_3" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3" class="text-break">Class RandomAccessCache&lt;TKey, TValue, TWeight&gt;</h1>
+  <div class="markdown level0 summary"><p>Represents concurrent cache optimized for random access. The number of items in the cache is limited
+by their weight.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
+    <div class="level2"><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html">RandomAccessCache</a>&lt;TKey, TValue&gt;</div>
+    <div class="level3"><span class="xref">RandomAccessCache&lt;TKey, TValue, TWeight&gt;</span></div>
+  </div>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Eviction">RandomAccessCache&lt;TKey, TValue&gt;.Eviction</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_KeyComparer">RandomAccessCache&lt;TKey, TValue&gt;.KeyComparer</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Capacity">RandomAccessCache&lt;TKey, TValue&gt;.Capacity</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_ChangeAsync__0_System_Threading_CancellationToken_">RandomAccessCache&lt;TKey, TValue&gt;.ChangeAsync(TKey, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Change__0_System_TimeSpan_System_Threading_CancellationToken_">RandomAccessCache&lt;TKey, TValue&gt;.Change(TKey, TimeSpan, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_TryRead__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__">RandomAccessCache&lt;TKey, TValue&gt;.TryRead(TKey, out RandomAccessCache&lt;TKey, TValue&gt;.ReadSession)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_TryRemoveAsync__0_System_Threading_CancellationToken_">RandomAccessCache&lt;TKey, TValue&gt;.TryRemoveAsync(TKey, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_TryRemove__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__System_TimeSpan_System_Threading_CancellationToken_">RandomAccessCache&lt;TKey, TValue&gt;.TryRemove(TKey, out RandomAccessCache&lt;TKey, TValue&gt;.ReadSession, TimeSpan, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync__0_System_Threading_CancellationToken_">RandomAccessCache&lt;TKey, TValue&gt;.InvalidateAsync(TKey, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Invalidate__0_System_TimeSpan_System_Threading_CancellationToken_">RandomAccessCache&lt;TKey, TValue&gt;.Invalidate(TKey, TimeSpan, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_InvalidateAsync_System_Threading_CancellationToken_">RandomAccessCache&lt;TKey, TValue&gt;.InvalidateAsync(CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsync">RandomAccessCache&lt;TKey, TValue&gt;.DisposeAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_DisposeAsyncCore">RandomAccessCache&lt;TKey, TValue&gt;.DisposeAsyncCore()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Dispose_System_Boolean_">RandomAccessCache&lt;TKey, TValue&gt;.Dispose(bool)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposing">Disposable.IsDisposing</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposedTask">Disposable.DisposedTask</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_GetDisposedTask__1">Disposable.GetDisposedTask&lt;T&gt;()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException__1_System_Threading_Tasks_TaskCompletionSource___0__">Disposable.TrySetDisposedException&lt;T&gt;(TaskCompletionSource&lt;T&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TrySetDisposedException_System_Threading_Tasks_TaskCompletionSource_">Disposable.TrySetDisposedException(TaskCompletionSource)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsyncCore">Disposable.DisposeAsyncCore()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync">Disposable.DisposeAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_TryBeginDispose">Disposable.TryBeginDispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(IEnumerable&lt;IAsyncDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;T&gt;(ReadOnlySpan&lt;T&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_IAsyncDisposable___">Disposable.DisposeAsync(params IAsyncDisposable[])</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Runtime.html">Runtime</a>.<a class="xref" href="DotNext.Runtime.Caching.html">Caching</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_3_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public abstract class RandomAccessCache&lt;TKey, TValue, TWeight&gt; : RandomAccessCache&lt;TKey, TValue&gt;, IDisposable, IAsyncDisposable where TKey : notnull where TValue : notnull where TWeight : notnull</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TKey</span></td>
+        <td><p>The type of the keys.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TValue</span></td>
+        <td><p>The type of the values.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TWeight</span></td>
+        <td><p>The weight of the cache items.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_3_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>In contrast to <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html">RandomAccessCache&lt;TKey, TValue&gt;</a>, the size of weight-based cache can grow to preserve
+<code class="paramref">collisionThreshold</code>. When the number of collisions reaches the threshold, the cache resizes
+its internal structures and rehashes all the items. This process requires global lock of all items in the cache.
+Thus, throughput degrades. To minimize a chance of resize, you can specify <code class="paramref">initialCapacity</code>
+large enough by the cost of memory footprint or increase <code class="paramref">collisionThreshold</code> by the cost
+of the contention. However, <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_TryRead__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__">TryRead(TKey, out ReadSession)</a> never causes contention even if the cache is resizing.</p>
+</div>
+  <h3 id="constructors">Constructors
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_3__ctor_System_Int32__2_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%603.%23ctor(System.Int32%2C%602%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L615">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_3__ctor_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.#ctor*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_3__ctor_System_Int32__2_System_Int32_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.#ctor(System.Int32,`2,System.Int32)">RandomAccessCache(int, TWeight, int)</h4>
+  <div class="markdown level1 summary"><p>Represents concurrent cache optimized for random access. The number of items in the cache is limited
+by their weight.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected RandomAccessCache(int initialCapacity, TWeight initialWeight, int collisionThreshold)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">initialCapacity</span></td>
+        <td><p>The expected max number of items within the cache.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TWeight</span></td>
+        <td><span class="parametername">initialWeight</span></td>
+        <td><p>The initial weight value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">collisionThreshold</span></td>
+        <td><p>The maximum number of allowed hash collisions. Small number increases the memory footprint, because the cache minimizes the contention
+for each key. Large number decreases the memory footprint by the increased chance of the lock contention.
+If <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32.maxvalue">MaxValue</a> is specified, then the cache doesn't grow.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_3__ctor_System_Int32__2_System_Int32__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>In contrast to <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html">RandomAccessCache&lt;TKey, TValue&gt;</a>, the size of weight-based cache can grow to preserve
+<code class="paramref">collisionThreshold</code>. When the number of collisions reaches the threshold, the cache resizes
+its internal structures and rehashes all the items. This process requires global lock of all items in the cache.
+Thus, throughput degrades. To minimize a chance of resize, you can specify <code class="paramref">initialCapacity</code>
+large enough by the cost of memory footprint or increase <code class="paramref">collisionThreshold</code> by the cost
+of the contention. However, <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_TryRead__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__">TryRead(TKey, out ReadSession)</a> never causes contention even if the cache is resizing.</p>
+</div>
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_3_AddWeight__2___0__1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%603.AddWeight(%602%40%2C%600%2C%601)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L630">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_3_AddWeight_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.AddWeight*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_3_AddWeight__2___0__1_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.AddWeight(`2@,`0,`1)">AddWeight(ref TWeight, TKey, TValue)</h4>
+  <div class="markdown level1 summary"><p>Adds a weight of the specified key/value pair to the total weight.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected abstract void AddWeight(ref TWeight total, TKey key, TValue value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TWeight</span></td>
+        <td><span class="parametername">total</span></td>
+        <td><p>The total weight of all items in the cache.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache item.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value of the cache item.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_3_AddWeight__2___0__1__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method can be called concurrently with <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-3.html#DotNext_Runtime_Caching_RandomAccessCache_3_RemoveWeight__2___0__1_">RemoveWeight(ref TWeight, TKey, TValue)</a>.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_3_IsEvictionRequired__2___0__1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%603.IsEvictionRequired(%602%40%2C%600%2C%601)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L642">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_3_IsEvictionRequired_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.IsEvictionRequired*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_3_IsEvictionRequired__2___0__1_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.IsEvictionRequired(`2@,`0,`1)">IsEvictionRequired(ref readonly TWeight, TKey, TValue)</h4>
+  <div class="markdown level1 summary"><p>Checks whether the current cache has enough capacity to promote the specified key/value pair.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected abstract bool IsEvictionRequired(ref readonly TWeight total, TKey key, TValue value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TWeight</span></td>
+        <td><span class="parametername">total</span></td>
+        <td><p>The total weight of all items in the cache.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache item.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value of the cache item.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the cache must evict one or more items to place a new one; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_3_RemoveWeight__2___0__1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%603.RemoveWeight(%602%40%2C%600%2C%601)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L656">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_3_RemoveWeight_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.RemoveWeight*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_3_RemoveWeight__2___0__1_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.RemoveWeight(`2@,`0,`1)">RemoveWeight(ref TWeight, TKey, TValue)</h4>
+  <div class="markdown level1 summary"><p>Removes the weight of the specified cache item from the total weight.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected abstract void RemoveWeight(ref TWeight total, TKey key, TValue value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TWeight</span></td>
+        <td><span class="parametername">total</span></td>
+        <td><p>The total weight of all items in the cache.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TKey</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the cache item.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TValue</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value of the cache item.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_3_RemoveWeight__2___0__1__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method can be called concurrently with <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-3.html#DotNext_Runtime_Caching_RandomAccessCache_3_AddWeight__2___0__1_">AddWeight(ref TWeight, TKey, TValue)</a>.</p>
+</div>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Boolean_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, bool, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Boolean_System_TimeSpan_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, bool, TimeSpan, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_3.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%603%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L615" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
