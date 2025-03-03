@@ -209,7 +209,7 @@ public static partial class Synchronization
     }
 
     /// <summary>
-    /// Creates a task that will complete when all of the passed tasks have completed.
+    /// Creates a task that will complete when all the passed tasks have completed.
     /// </summary>
     /// <typeparam name="T1">The type of the first task.</typeparam>
     /// <typeparam name="T2">The type of the second task.</typeparam>
@@ -264,7 +264,7 @@ public static partial class Synchronization
     }
 
     /// <summary>
-    /// Creates a task that will complete when all of the passed tasks have completed.
+    /// Creates a task that will complete when all the passed tasks have completed.
     /// </summary>
     /// <typeparam name="T1">The type of the first task.</typeparam>
     /// <typeparam name="T2">The type of the second task.</typeparam>

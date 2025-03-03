@@ -612,13 +612,20 @@ public partial class PersistentState
                 await RandomAccess.WriteAsync(Handle, footer.Memory, writer.FilePosition, token).ConfigureAwait(false);
             }
 
-            RandomAccess.FlushToDisk(Handle);
+            if (requiresExplicitFlushToDisk)
+            {
+                RandomAccess.FlushToDisk(Handle);
+            }
+
             RandomAccess.SetLength(Handle, writer.FilePosition + footer.Length);
 
             IsSealed = true;
             await WriteHeaderAsync(token).ConfigureAwait(false);
 
-            RandomAccess.FlushToDisk(Handle);
+            if (requiresExplicitFlushToDisk)
+            {
+                RandomAccess.FlushToDisk(Handle);
+            }
         }
 
         private ValueTask WriteHeaderAsync(CancellationToken token)

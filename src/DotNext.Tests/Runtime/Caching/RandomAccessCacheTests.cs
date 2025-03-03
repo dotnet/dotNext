@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Threading.Channels;
 
 namespace DotNext.Runtime.Caching;
 
@@ -18,7 +19,7 @@ public sealed class RandomAccessCacheTests : Test
         for (long i = 0; i < 150; i++)
         {
             using var handle = await cache.ChangeAsync(i);
-            False(handle.TryGetValue(out _));
+            True(Unsafe.IsNullRef(in handle.ValueRefOrNullRef));
 
             handle.SetValue(i.ToString());
         }
@@ -226,5 +227,96 @@ public sealed class RandomAccessCacheTests : Test
         }
 
         await cache.InvalidateAsync();
+    }
+
+    [Fact]
+    public static async Task EvictLargeItemImmediately()
+    {
+        const long value = 101L;
+        var source = new TaskCompletionSource<long>();
+        await using var cache = new CacheWithWeight(42, value - 1L, 3)
+        {
+            Eviction = (_, v) => source.TrySetResult(v),
+        };
+        
+        using (var session = await cache.ChangeAsync("101"))
+        {
+            False(session.TryGetValue(out _));
+            session.SetValue(101L); // 101 > 100, must be evicted immediately
+        }
+
+        Equal(value, await source.Task.WaitAsync(DefaultTimeout));
+    }
+
+    [Fact]
+    public static async Task EvictRedundantItems()
+    {
+        var channel = Channel.CreateBounded<long>(2);
+        await using var cache = new CacheWithWeight(42, 100L, 3)
+        {
+            Eviction = (_, v) => True(channel.Writer.TryWrite(v)),
+        };
+        
+        using (var session = await cache.ChangeAsync("60"))
+        {
+            False(session.TryGetValue(out _));
+            session.SetValue(60L);
+        }
+        
+        using (var session = await cache.ChangeAsync("40"))
+        {
+            False(session.TryGetValue(out _));
+            session.SetValue(40L);
+        }
+        
+        using (var session = await cache.ChangeAsync("100"))
+        {
+            False(session.TryGetValue(out _));
+            session.SetValue(100L);
+        }
+
+        var x = await channel.Reader.ReadAsync();
+        var y = await channel.Reader.ReadAsync();
+        Equal(100L, x + y);
+    }
+
+    private static async Task CheckCapacity(int initialCapacity, int threshold, Action<CacheWithWeight> assertion)
+    {
+        await using var cache = new CacheWithWeight(initialCapacity, 100L, threshold);
+        var capacity = cache.Capacity;
+        True(cache.Capacity > initialCapacity);
+
+        for (var i = 0; i < capacity * 2; i++)
+        {
+            using var session = await cache.ChangeAsync(i.ToString());
+            False(session.TryGetValue(out _));
+            session.SetValue(i);
+        }
+
+        assertion(cache);
+    }
+
+    [Fact]
+    public static async Task ResizeCache()
+    {
+        await CheckCapacity(2, 1, static cache => True(cache.Capacity > 6));
+    }
+
+    [Fact]
+    public static async Task InfiniteThreshold()
+    {
+        await CheckCapacity(2, int.MaxValue, static cache => Equal(3, cache.Capacity));
+    }
+
+    private sealed class CacheWithWeight(int cacheCapacity, long maxWeight, int collisionThreshold) : RandomAccessCache<string, long, long>(cacheCapacity, 0L, collisionThreshold)
+    {
+        protected override void AddWeight(ref long total, string key, long value)
+            => Interlocked.Add(ref total, value);
+
+        protected override bool IsEvictionRequired(ref readonly long total, string key, long value)
+            => value + total > maxWeight;
+
+        protected override void RemoveWeight(ref long total, string key, long value)
+            => Interlocked.Add(ref total, -value);
     }
 }

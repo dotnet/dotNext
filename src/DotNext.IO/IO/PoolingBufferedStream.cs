@@ -94,6 +94,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     }
 
     /// <inheritdoc/>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     public override long Length
     {
         get
@@ -156,6 +157,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     }
 
     /// <inheritdoc/>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     Memory<byte> IBufferedWriter.Buffer
     {
         get
@@ -211,23 +213,16 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     /// <returns>The task representing asynchronous execution of the operation.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The stream is disposed.</exception>
-    public ValueTask WriteAsync(CancellationToken token = default)
+    public async ValueTask WriteAsync(CancellationToken token = default)
     {
-        ValueTask task;
-        if (stream is null)
-        {
-            task = new(DisposedTask);
-        }
-        else if (stream.CanWrite)
-        {
-            task = WriteCoreAsync(out _, token);
-        }
-        else
-        {
-            task = ValueTask.FromException(new NotSupportedException());
-        }
+        AssertState();
+        ThrowIfDisposed();
+        if (!stream.CanWrite)
+            throw new NotSupportedException();
 
-        return task;
+        await WriteCoreAsync(out var isWritten, token).ConfigureAwait(false);
+        if (isWritten)
+            Reset();
     }
 
     private bool WriteCore()
@@ -302,23 +297,29 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         
         if (writePosition is 0)
             ClearReadBufferBeforeWrite();
-        
+
         var freeBuf = EnsureBufferAllocated().Span.Slice(writePosition);
         
-        // drain buffered data if needed
-        if (freeBuf.Length < data.Length)
-            WriteCore();
-        
-        // if internal buffer has not enough space then just write through
-        if (data.Length > freeBuf.Length)
-        {
-            stream.Write(data);
-            Reset();
-        }
-        else
+        if (data.Length <= freeBuf.Length)
         {
             data.CopyTo(freeBuf);
             writePosition += data.Length;
+        }
+        else if (data.Length < maxBufferSize)
+        {
+            data.CopyTo(freeBuf, out var bytesWritten);
+            stream.Write(freeBuf = buffer.Span);
+            data = data.Slice(bytesWritten);
+            data.CopyTo(freeBuf);
+            writePosition = data.Length;
+
+            Debug.Assert(writePosition > 0);
+        }
+        else
+        {
+            WriteCore();
+            stream.Write(data);
+            Reset();
         }
     }
 
@@ -360,35 +361,64 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         return task;
     }
 
-    private async ValueTask WriteCoreAsync(ReadOnlyMemory<byte> data, CancellationToken token)
+    private ValueTask WriteCoreAsync(ReadOnlyMemory<byte> data, CancellationToken token)
     {
         Debug.Assert(stream is not null);
         
         if (writePosition is 0)
             ClearReadBufferBeforeWrite();
 
-        var freeBuf = EnsureBufferAllocated().Memory.Slice(writePosition);
-        
-        // drain buffered data if needed
-        if (freeBuf.Length < data.Length)
-        {
-            await WriteCoreAsync(out _, token).ConfigureAwait(false);
-            freeBuf = buffer.Memory.Slice(writePosition);
-        }
+        var freeCapacity = maxBufferSize - writePosition;
 
-        // if internal buffer has not enough space then just write through
-        if (data.Length > freeBuf.Length)
+        ValueTask task;
+        if (data.Length <= freeCapacity)
         {
-            await stream.WriteAsync(data, token).ConfigureAwait(false);
-            Reset();
+            data.CopyTo(EnsureBufferAllocated().Memory.Slice(writePosition));
+            writePosition += data.Length;
+            task = ValueTask.CompletedTask;
+        }
+        else if (data.Length < maxBufferSize)
+        {
+            task = CopyAndWriteAsync(data, token);
+        }
+        else if (writePosition is 0)
+        {
+            task = stream.WriteAsync(data, token);
         }
         else
         {
-            data.CopyTo(freeBuf);
-            writePosition += data.Length;
+            task = WriteWithBufferAsync(data, token);
         }
+
+        return task;
     }
-    
+
+    private async ValueTask CopyAndWriteAsync(ReadOnlyMemory<byte> data, CancellationToken token)
+    {
+        Debug.Assert(stream is not null);
+        Debug.Assert(data.Length < maxBufferSize);
+
+        var writeBuffer = buffer.Memory;
+        data.Span.CopyTo(writeBuffer.Span.Slice(writePosition), out var bytesWritten);
+        await stream.WriteAsync(writeBuffer, token).ConfigureAwait(false);
+        data = data.Slice(bytesWritten);
+        data.CopyTo(writeBuffer);
+        writePosition = data.Length;
+
+        Debug.Assert(writePosition > 0);
+    }
+
+    private async ValueTask WriteWithBufferAsync(ReadOnlyMemory<byte> data, CancellationToken token)
+    {
+        Debug.Assert(stream is not null);
+        Debug.Assert(data.Length >= maxBufferSize);
+        Debug.Assert(writePosition > 0);
+
+        await stream.WriteAsync(WrittenMemory, token).ConfigureAwait(false);
+        await stream.WriteAsync(data, token).ConfigureAwait(false);
+        Reset();
+    }
+
     /// <inheritdoc/>
     public override Task WriteAsync(byte[] data, int offset, int count, CancellationToken token)
         => WriteAsync(new ReadOnlyMemory<byte>(data, offset, count), token).AsTask();
@@ -452,20 +482,24 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
 
         if (data.IsEmpty)
         {
-            // nothing to do
+            if (readPosition == readLength)
+                Reset();
         }
-        else if (data.Length > MaxBufferSize)
+        else if (data.Length >= maxBufferSize)
         {
+            Debug.Assert(readPosition == readLength);
+            
             bytesRead += stream.Read(data);
+            Reset();
         }
         else
         {
+            Debug.Assert(readPosition == readLength);
+            
+            readPosition = 0;
             readLength = stream.Read(EnsureBufferAllocated().Span);
             bytesRead += ReadFromBuffer(data);
         }
-        
-        if (readPosition == readLength)
-            Reset();
 
         return bytesRead;
     }
@@ -526,22 +560,21 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
 
         if (data.IsEmpty)
         {
-            // nothing to do
+            if (readPosition == readLength)
+                Reset();
         }
-        else if (data.Length > MaxBufferSize)
+        else if (data.Length >= maxBufferSize)
         {
-            Debug.Assert(readPosition == readLength);
             bytesRead += await stream.ReadAsync(data, token).ConfigureAwait(false);
+            Reset();
         }
         else
         {
             Debug.Assert(readPosition == readLength);
+            readPosition = 0;
             readLength = await stream.ReadAsync(EnsureBufferAllocated().Memory, token).ConfigureAwait(false);
             bytesRead += ReadFromBuffer(data.Span);
         }
-        
-        if (readPosition == readLength)
-            Reset();
 
         return bytesRead;
     }
@@ -641,13 +674,13 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     public override Task FlushAsync(CancellationToken token)
     {
         Task task;
-        if (writePosition > 0)
-        {
-            task = WriteAndFlushAsync(token);
-        }
-        else if (stream is null)
+        if (stream is null)
         {
             task = DisposedTask;
+        }
+        else if (writePosition > 0)
+        {
+            task = WriteAndFlushAsync(token);
         }
         else
         {
@@ -664,10 +697,9 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
 
     private async Task WriteAndFlushAsync(CancellationToken token)
     {
+        Debug.Assert(stream is not null);
         Debug.Assert(writePosition > 0);
         Debug.Assert(buffer.Length > 0);
-
-        ThrowIfDisposed();
 
         await stream.WriteAsync(WrittenMemory, token).ConfigureAwait(false);
         await stream.FlushAsync(token).ConfigureAwait(false);
@@ -740,6 +772,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     }
 
     /// <inheritdoc/>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     ReadOnlyMemory<byte> IBufferedReader.Buffer
     {
         get

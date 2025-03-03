@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using DotNext.IO.Hashing;
 using static System.Buffers.Binary.BinaryPrimitives;
 using Debug = System.Diagnostics.Debug;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
@@ -48,7 +49,7 @@ public partial class PersistentState
         private readonly bool integrityCheck;
         private MemoryOwner<byte> buffer;
 
-        // boxed ClusterMemberId or null if there is not last vote stored
+        // boxed ClusterMemberId or null if there is no last vote stored
         private volatile BoxedClusterMemberId? votedFor;
         private long term, commitIndex, lastIndex, lastApplied;  // volatile
         private SnapshotMetadata snapshot; // cached snapshot metadata to avoid backward writes
@@ -72,7 +73,7 @@ public partial class PersistentState
                 if (integrityCheck)
                 {
                     attributes = FileAttributes.NotContentIndexed | FileAttributes.IntegrityStream;
-                    WriteInt64LittleEndian(Checksum, Hash(Data));
+                    WriteInt64LittleEndian(Checksum, FNV1a64.Hash(Data));
                 }
                 else
                 {
@@ -113,42 +114,7 @@ public partial class PersistentState
         private Span<byte> Checksum => buffer.Span.Slice(ChecksumOffset);
 
         internal bool VerifyIntegrity()
-            => !integrityCheck || Hash(Data) == ReadInt64LittleEndian(Checksum);
-
-        private static long Hash(ReadOnlySpan<byte> input)
-        {
-            // we're using FNV1a 64-bit version
-            const long prime = 1099511628211;
-            const long offset = unchecked((long)14695981039346656037);
-
-            var hash = offset;
-            var length = input.Length;
-            ref byte ptr = ref MemoryMarshal.GetReference(input); // pointer is unaligned
-
-            for (; length >= sizeof(long); length -= sizeof(long))
-            {
-                hash = HashRound(hash, Unsafe.ReadUnaligned<long>(ref ptr));
-                ptr = ref Unsafe.Add(ref ptr, sizeof(long));
-            }
-
-            if (length >= sizeof(int))
-            {
-                hash = HashRound(hash, Unsafe.ReadUnaligned<int>(ref ptr));
-                ptr = ref Unsafe.Add(ref ptr, sizeof(int));
-            }
-
-            // hash rest of the data
-            for (; length > 0; length -= sizeof(byte))
-            {
-                hash = HashRound(hash, ptr);
-                ptr = ref Unsafe.Add(ref ptr, 1);
-            }
-
-            return hash;
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            static long HashRound(long hash, long data) => unchecked((hash ^ data) * prime);
-        }
+            => !integrityCheck || FNV1a64.Hash(Data) == ReadInt64LittleEndian(Checksum);
 
         internal ValueTask FlushAsync(in Range range, CancellationToken token = default)
         {
@@ -157,7 +123,7 @@ public partial class PersistentState
 
             if (integrityCheck)
             {
-                WriteInt64LittleEndian(Checksum, Hash(Data));
+                WriteInt64LittleEndian(Checksum, FNV1a64.Hash(Data));
                 offset = 0;
             }
             else

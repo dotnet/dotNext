@@ -37,8 +37,18 @@ public static class Optional
         => (await task.ConfigureAwait(false)).Or(defaultValue);
 
     /// <summary>
+    /// Returns a task that contains unwrapped value; or exception if <see cref="Optional{T}"/> has no value.
+    /// </summary>
+    /// <param name="task">The task representing optional value.</param>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <returns>The task containing a value of type <typeparamref name="T"/>; or the exception if <see cref="Optional{T}"/> has no value.</returns>
+    /// <exception cref="InvalidOperationException">No value is present.</exception>
+    public static async Task<T> Flatten<T>(this Task<Optional<T>> task)
+        => (await task.ConfigureAwait(false)).Value;
+
+    /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
-    /// non-null, return an Optional describing the result. Otherwise returns <see cref="Optional{T}.None"/>.
+    /// non-null, return an Optional describing the result. Otherwise, returns <see cref="Optional{T}.None"/>.
     /// </summary>
     /// <typeparam name="TInput">The type of stored in the Optional container.</typeparam>
     /// <typeparam name="TOutput">The type of the result of the mapping function.</typeparam>
@@ -47,6 +57,27 @@ public static class Optional
     /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Optional{T}.None"/>.</returns>
     public static async Task<Optional<TOutput>> Convert<TInput, TOutput>(this Task<Optional<TInput>> task, Converter<TInput, TOutput> converter)
         => (await task.ConfigureAwait(false)).Convert(converter);
+
+    /// <summary>
+    /// If a value is present, apply the provided mapping function to it, and if the result is
+    /// non-null, return an Optional describing the result. Otherwise, returns <see cref="Optional{T}.None"/>.
+    /// </summary>
+    /// <typeparam name="TInput">The type of stored in the Optional container.</typeparam>
+    /// <typeparam name="TOutput">The type of the result of the mapping function.</typeparam>
+    /// <param name="task">The task containing Optional value.</param>
+    /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Optional{T}.None"/>.</returns>
+    public static async Task<Optional<TOutput>> Convert<TInput, TOutput>(this Task<Optional<TInput>> task,
+        Func<TInput, CancellationToken, Task<TOutput>> converter, CancellationToken token = default)
+    {
+        var optional = await task.ConfigureAwait(false);
+        return optional.HasValue
+            ? await converter.Invoke(optional.ValueOrDefault, token).ConfigureAwait(false)
+            : optional.IsNull && Intrinsics.IsNullable<TOutput>()
+                ? new(default)
+                : Optional<TOutput>.None;
+    }
 
     /// <summary>
     /// If a value is present, returns the value, otherwise throw exception.
@@ -116,7 +147,7 @@ public static class Optional
     public static Type? GetUnderlyingType(Type optionalType) => IsOptional(optionalType) ? optionalType.GetGenericArguments()[0] : null;
 
     /// <summary>
-    /// Constructs optional value from nullable reference type.
+    /// Constructs optional value from nullable value type.
     /// </summary>
     /// <typeparam name="T">Type of value.</typeparam>
     /// <param name="value">The value to convert.</param>
@@ -525,11 +556,11 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<TResult> Convert<TResult, TConverter>(TConverter converter)
         where TConverter : struct, ISupplier<T, TResult>
-        => HasValue ? converter.Invoke(value) : IsNull && Intrinsics.IsNullable<TResult>() ? new(default(TResult)) : Optional<TResult>.None;
+        => HasValue ? converter.Invoke(value) : IsNull && Intrinsics.IsNullable<TResult>() ? new(default) : Optional<TResult>.None;
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
-    /// non-null, return an Optional describing the result. Otherwise returns <see cref="None"/>.
+    /// non-null, return an Optional describing the result. Otherwise, returns <see cref="None"/>.
     /// </summary>
     /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
     /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
@@ -539,7 +570,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
-    /// non-null, return an Optional describing the result. Otherwise returns <see cref="None"/>.
+    /// non-null, return an Optional describing the result. Otherwise, returns <see cref="None"/>.
     /// </summary>
     /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
     /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
@@ -555,7 +586,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
-    /// non-null, return an Optional describing the result. Otherwise returns <see cref="None"/>.
+    /// non-null, return an Optional describing the result. Otherwise, returns <see cref="None"/>.
     /// </summary>
     /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
     /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
@@ -565,7 +596,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
-    /// non-null, return an Optional describing the result. Otherwise returns <see cref="None"/>.
+    /// non-null, return an Optional describing the result. Otherwise, returns <see cref="None"/>.
     /// </summary>
     /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
     /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
@@ -633,7 +664,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     /// <summary>
     /// Determines whether this container stores
-    /// the same value as other.
+    /// the same value as the specified one.
     /// </summary>
     /// <param name="other">Other container to compare.</param>
     /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>

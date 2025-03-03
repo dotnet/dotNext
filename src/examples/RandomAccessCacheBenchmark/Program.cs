@@ -10,30 +10,34 @@ using DotNext.Runtime.Caching;
 switch (args)
 {
     case [var numberOfEntries, var cacheSize, var durationInSeconds, var parallelRequests]:
-        await RunBenchmark(
-            int.Parse(numberOfEntries),
-            int.Parse(cacheSize),
-            TimeSpan.FromSeconds(int.Parse(durationInSeconds)),
-            int.Parse(parallelRequests)).ConfigureAwait(false);
+        using (var cts = new ConsoleLifetimeTokenSource())
+        {
+            await RunBenchmark(
+                int.Parse(numberOfEntries),
+                int.Parse(cacheSize),
+                TimeSpan.FromSeconds(int.Parse(durationInSeconds)),
+                int.Parse(parallelRequests), cts.Token).ConfigureAwait(false);
+        }
+
         break;
     default:
         Console.WriteLine("Usage: program <number-of-entries> <cache-size> <duration-in-seconds> <parallel-requests>");
         break;
 }
 
-static async Task RunBenchmark(int numberOfEntries, int cacheSize, TimeSpan duration, int parallelRequests)
+static async Task RunBenchmark(int numberOfEntries, int cacheSize, TimeSpan duration, int parallelRequests, CancellationToken token)
 {
     // setup files to be accessed by using cache
     var files = MakeRandomFiles(numberOfEntries);
     var cache = new RandomAccessCache<string, MemoryOwner<byte>>(cacheSize) { Eviction = Evict };
     var state = new BenchmarkState();
-    var timeTracker = Task.Delay(duration);
+    var timeTracker = Task.Delay(duration, token);
 
     var requests = new List<Task>(parallelRequests);
 
     for (var i = 0; i < parallelRequests; i++)
     {
-        requests.Add(state.ReadOrAddAsync(files, cache, timeTracker));
+        requests.Add(state.ReadOrAddAsync(files, cache, timeTracker, token));
     }
 
     await Task.WhenAll(requests).ConfigureAwait(false);
@@ -75,42 +79,42 @@ sealed class BenchmarkState
         accessDuration = meter.CreateHistogram<double>("AccessDuration", "ms");
     }
 
-    internal async Task ReadOrAddAsync(IReadOnlyList<string> files, RandomAccessCache<string, MemoryOwner<byte>> cache, Task timeTracker)
+    internal async Task ReadOrAddAsync(IReadOnlyList<string> files, RandomAccessCache<string, MemoryOwner<byte>> cache, Task timeTracker, CancellationToken token)
     {
         while (!timeTracker.IsCompleted)
         {
             var ts = new Timestamp();
-            await ReadOrAddAsync(files, cache).ConfigureAwait(false);
+            await ReadOrAddAsync(files, cache, token).ConfigureAwait(false);
             accessDuration.Record(ts.ElapsedMilliseconds);
         }
     }
 
-    private Task ReadOrAddAsync(IReadOnlyList<string> files, RandomAccessCache<string, MemoryOwner<byte>> cache)
-        => ReadOrAddAsync(Random.Shared.Peek(files).Value, cache);
+    private Task ReadOrAddAsync(IReadOnlyList<string> files, RandomAccessCache<string, MemoryOwner<byte>> cache, CancellationToken token)
+        => ReadOrAddAsync(Random.Shared.Peek(files).Value, cache, token);
     
-    private Task ReadOrAddAsync(string fileName, RandomAccessCache<string, MemoryOwner<byte>> cache)
+    private Task ReadOrAddAsync(string fileName, RandomAccessCache<string, MemoryOwner<byte>> cache, CancellationToken token)
     {
         Task task;
         if (cache.TryRead(fileName, out var session))
         {
             using (session)
             {
-                Crc32.HashToUInt32(session.Value.Span);
+                Crc32.HashToUInt32(session.ValueRef.Span);
             }
             
             task = Task.CompletedTask;
         }
         else
         {
-            task = AddAsync(fileName, cache);
+            task = AddAsync(fileName, cache, token);
         }
 
         return task;
     }
 
-    private async Task AddAsync(string fileName, RandomAccessCache<string, MemoryOwner<byte>> cache)
+    private async Task AddAsync(string fileName, RandomAccessCache<string, MemoryOwner<byte>> cache, CancellationToken token)
     {
-        using var session = await cache.ChangeAsync(fileName).ConfigureAwait(false);
+        using var session = await cache.ChangeAsync(fileName, token).ConfigureAwait(false);
         if (session.TryGetValue(out var buffer))
         {
             Crc32.HashToUInt32(buffer.Span);
@@ -119,7 +123,7 @@ sealed class BenchmarkState
         {
             using var fileHandle = File.OpenHandle(fileName, options: FileOptions.Asynchronous | FileOptions.SequentialScan);
             buffer = Memory.AllocateExactly<byte>(CacheFileSize);
-            await RandomAccess.ReadAsync(fileHandle, buffer.Memory, fileOffset: 0L).ConfigureAwait(false);
+            await RandomAccess.ReadAsync(fileHandle, buffer.Memory, fileOffset: 0L, token).ConfigureAwait(false);
             session.SetValue(buffer);
         }
     }

@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -12,15 +13,15 @@ public partial class RandomAccessCache<TKey, TValue>
 {
     // devirtualize Value getter manually (JIT will replace this method with one of the actual branches)
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static TValue GetValue(KeyValuePair pair)
+    private protected static ref readonly TValue GetValue(KeyValuePair pair)
     {
         Debug.Assert(pair is not null);
         Debug.Assert(pair is not FakeKeyValuePair);
         Debug.Assert(Atomic.IsAtomic<TValue>() ? pair is KeyValuePairAtomicAccess : pair is KeyValuePairNonAtomicAccess);
 
-        return Atomic.IsAtomic<TValue>()
-            ? Unsafe.As<KeyValuePairAtomicAccess>(pair).Value
-            : Unsafe.As<KeyValuePairNonAtomicAccess>(pair).Value;
+        return ref Atomic.IsAtomic<TValue>()
+            ? ref Unsafe.As<KeyValuePairAtomicAccess>(pair).Value
+            : ref Unsafe.As<KeyValuePairNonAtomicAccess>(pair).ValueRef;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -64,19 +65,7 @@ public partial class RandomAccessCache<TKey, TValue>
             : new KeyValuePairNonAtomicAccess(key, hashCode) { Value = value };
     }
 
-    private readonly Bucket[] buckets;
-    private readonly ulong fastModMultiplier;
-
-    private Bucket GetBucket(int hashCode)
-    {
-        var index = (int)(IntPtr.Size is sizeof(ulong)
-            ? PrimeNumber.FastMod((uint)hashCode, (uint)buckets.Length, fastModMultiplier)
-            : (uint)hashCode % (uint)buckets.Length);
-
-        Debug.Assert((uint)index < (uint)buckets.Length);
-
-        return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
-    }
+    private volatile BucketList buckets;
 
     internal partial class KeyValuePair(TKey key, int hashCode)
     {
@@ -90,6 +79,12 @@ public partial class RandomAccessCache<TKey, TValue>
         // and eviction thread. To synchronize the decision, 'cacheState' is used. The thread that evicts the pair
         // successfully (transition from 0 => -1) is able to decrement the counter to zero.
         private volatile int lifetimeCounter = 1;
+
+        internal void Import(KeyValuePair other)
+        {
+            cacheState = other.cacheState;
+            notification = other.notification;
+        }
 
         internal bool TryAcquireCounter()
         {
@@ -151,19 +146,39 @@ public partial class RandomAccessCache<TKey, TValue>
             [MemberNotNull(nameof(holder))] set => holder = new(value);
         }
 
+        internal ref readonly TValue ValueRef => ref holder.Value;
+
         internal void ClearValue() => holder = DefaultHolder;
 
         public override string ToString() => ToString(Value);
     }
 
-    [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}")]
-    internal sealed class Bucket : AsyncExclusiveLock
+    [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}, IsLockHeld = {{{nameof(IsLockHeld)}}}")]
+    [StructLayout(LayoutKind.Auto)]
+    internal struct Bucket
     {
+        internal readonly AsyncExclusiveLock Lock;
         private bool newPairAdded;
-        private volatile KeyValuePair? first; // volatile
+        private volatile KeyValuePair? first;
+        private int count;
+
+        public Bucket(AsyncExclusiveLock bucketLock) => Lock = bucketLock;
+
+        public Bucket()
+            : this(new())
+        {
+        }
+        
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal int CollisionCount => count;
 
         [ExcludeFromCodeCoverage]
-        private (int Alive, int Dead) Count => first?.BucketNodesCount ?? default;
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly (int Alive, int Dead) Count => first?.BucketNodesCount ?? default;
+
+        [ExcludeFromCodeCoverage]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        private readonly bool? IsLockHeld => Lock?.IsLockHeld;
 
         internal KeyValuePair? TryAdd(TKey key, int hashCode, TValue value)
         {
@@ -174,21 +189,39 @@ public partial class RandomAccessCache<TKey, TValue>
             }
             else
             {
-                result = CreatePair(key, value, hashCode);
-                result.NextInBucket = first;
-                first = result;
+                Add(result = CreatePair(key, value, hashCode));
                 newPairAdded = true;
             }
 
             return result;
         }
 
+        internal void Add(KeyValuePair pair)
+        {
+            // possible contention with TryRemove private method that can be called without lock
+            KeyValuePair? current, tmp = first;
+            do
+            {
+                pair.NextInBucket = current = tmp;
+            } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref first, pair, current), current));
+            
+            count++;
+        }
+
         internal void MarkAsReadyToAdd() => newPairAdded = false;
 
-        private void Remove(KeyValuePair? previous, KeyValuePair current)
+        private void TryRemove(KeyValuePair? previous, KeyValuePair current)
         {
+            // This method can be called concurrently by different threads. It doesn't guarantee removal of the pair.
+            // For instance, we have a => b => c => d linked pair, 'b' and 'c' are dead and 2 threads trying to remove them
+            // Thread #1 modifies a link a => b to a => c
+            // Thread #2 modifies a link b => c to b => d
+            // The produced linked list is a => c => d
+            // As we can see, the list contains dead node 'c'. We are okay with that, because the list is inspected
+            // on every access (read/write), so it will be eventually deleted
             ref var location = ref previous is null ? ref first : ref previous.NextInBucket;
-            Volatile.Write(ref location, current.NextInBucket);
+            if (ReferenceEquals(Interlocked.CompareExchange(ref location, current.NextInBucket, current), current))
+                count--;
         }
 
         internal KeyValuePair? TryRemove(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
@@ -211,7 +244,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
                     if (current.IsDead)
                     {
-                        Remove(previous, current);
+                        TryRemove(previous, current);
                     }
                 }
             }
@@ -230,7 +263,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
                     if (current.IsDead)
                     {
-                        Remove(previous, current);
+                        TryRemove(previous, current);
                     }
                 }
             }
@@ -238,8 +271,10 @@ public partial class RandomAccessCache<TKey, TValue>
             return result;
         }
 
-        internal KeyValuePair? TryGet(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
+        internal unsafe KeyValuePair? TryGet(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode, delegate*<KeyValuePair, bool> visitor)
         {
+            Debug.Assert(visitor is not null);
+            
             var result = default(KeyValuePair?);
 
             // remove all dead nodes from the bucket
@@ -251,15 +286,14 @@ public partial class RandomAccessCache<TKey, TValue>
                 {
                     if (result is null && hashCode == current.KeyHashCode
                                        && EqualityComparer<TKey>.Default.Equals(key, current.Key)
-                                       && current.Visit()
-                                       && current.TryAcquireCounter())
+                                       && visitor(current))
                     {
                         result = current;
                     }
 
                     if (current.IsDead)
                     {
-                        Remove(previous, current);
+                        TryRemove(previous, current);
                     }
                 }
             }
@@ -271,15 +305,14 @@ public partial class RandomAccessCache<TKey, TValue>
                 {
                     if (result is null && hashCode == current.KeyHashCode
                                        && keyComparer.Equals(key, current.Key)
-                                       && current.Visit()
-                                       && current.TryAcquireCounter())
+                                       && visitor(current))
                     {
                         result = current;
                     }
 
                     if (current.IsDead)
                     {
-                        Remove(previous, current);
+                        TryRemove(previous, current);
                     }
                 }
             }
@@ -304,7 +337,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
                     if (current.IsDead)
                     {
-                        Remove(previous, current);
+                        TryRemove(previous, current);
                     }
                 }
             }
@@ -322,7 +355,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
                     if (current.IsDead)
                     {
-                        Remove(previous, current);
+                        TryRemove(previous, current);
                     }
                 }
             }
@@ -330,66 +363,199 @@ public partial class RandomAccessCache<TKey, TValue>
             return valueHolder;
         }
 
-        internal void CleanUp(IEqualityComparer<TKey>? keyComparer)
+        internal void CleanUp()
         {
             // remove all dead nodes from the bucket
-            if (keyComparer is null)
+            for (KeyValuePair? current = first, previous = null;
+                 current is not null;
+                 previous = current, current = current.NextInBucket)
             {
-                for (KeyValuePair? current = first, previous = null;
-                     current is not null;
-                     previous = current, current = current.NextInBucket)
+                if (current.IsDead)
                 {
-                    if (current.IsDead)
-                    {
-                        Remove(previous, current);
-                    }
-                }
-            }
-            else
-            {
-                for (KeyValuePair? current = first, previous = null;
-                     current is not null;
-                     previous = current, current = current.NextInBucket)
-                {
-                    if (current.IsDead)
-                    {
-                        Remove(previous, current);
-                    }
+                    TryRemove(previous, current);
                 }
             }
         }
         
-        internal void Invalidate(IEqualityComparer<TKey>? keyComparer, Action<KeyValuePair> cleanup)
+        internal void Invalidate(Action<KeyValuePair> cleanup)
         {
-            // remove all dead nodes from the bucket
-            if (keyComparer is null)
+            for (KeyValuePair? current = first, previous = null;
+                 current is not null;
+                 previous = current, current = current.NextInBucket)
             {
-                for (KeyValuePair? current = first, previous = null;
-                     current is not null;
-                     previous = current, current = current.NextInBucket)
-                {
-                    Remove(previous, current);
+                TryRemove(previous, current);
                     
-                    if (current.MarkAsEvicted() && current.ReleaseCounter() is false)
-                    {
-                        cleanup.Invoke(current);
-                    }
+                if (current.MarkAsEvicted() && current.ReleaseCounter() is false)
+                {
+                    cleanup.Invoke(current);
                 }
             }
-            else
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public readonly Enumerator GetEnumerator() => new(first);
+        
+        [StructLayout(LayoutKind.Auto)]
+        public struct Enumerator(KeyValuePair? current)
+        {
+            private bool firstRequested;
+
+            public bool MoveNext()
             {
-                for (KeyValuePair? current = first, previous = null;
-                     current is not null;
-                     previous = current, current = current.NextInBucket)
+                if (firstRequested)
                 {
-                    Remove(previous, current);
-                    
-                    if (current.MarkAsEvicted() && current.ReleaseCounter() is false)
-                    {
-                        cleanup.Invoke(current);
-                    }
+                    current = current?.NextInBucket;
+                }
+                else
+                {
+                    firstRequested = true;
+                }
+
+                return current is not null;
+            }
+            
+            public readonly KeyValuePair Current => current!;
+        }
+        
+        [StructLayout(LayoutKind.Auto)]
+        internal readonly struct Ref(Bucket[] buckets, int index)
+        {
+            [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+            internal ref Bucket Value => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
+        }
+    }
+    
+    [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
+    private sealed class BucketList
+    {
+        [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+        private readonly Bucket[] buckets;
+        private readonly FastMod fastMod;
+
+        internal BucketList(int length)
+        {
+            Span.Initialize<Bucket>(buckets = new Bucket[length]);
+            fastMod = new((uint)length);
+        }
+
+        internal BucketList(BucketList prototype, int length)
+        {
+            buckets = new Bucket[length];
+            fastMod = new((uint)length);
+
+            // import pairs
+            Span<Bucket> prototypeBuckets = prototype.buckets;
+            int i;
+            for (i = 0; i < prototypeBuckets.Length; i++)
+            {
+                buckets[i] = new(prototypeBuckets[i].Lock);
+            }
+
+            buckets.AsSpan(i).Initialize();
+            
+            foreach (ref var bucket in prototypeBuckets)
+            {
+                foreach (var pair in bucket)
+                {
+                    var newPair = CreatePair(pair.Key, GetValue(pair), pair.KeyHashCode);
+                    newPair.Import(pair);
+                    GetByHash(newPair.KeyHashCode).Add(newPair);
                 }
             }
+        }
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public int Count => buckets.Length;
+
+        internal void GetByHash(int hashCode, out Bucket.Ref bucket)
+        {
+            var index = fastMod.GetRemainder((uint)hashCode);
+            Debug.Assert(index < (uint)buckets.Length);
+
+            bucket = new(buckets, (int)index);
+        }
+
+        internal ref Bucket GetByHash(int hashCode)
+            => ref GetByIndex((int)fastMod.GetRemainder((uint)hashCode));
+
+        internal ref Bucket GetByIndex(int index)
+        {
+            Debug.Assert(index < (uint)buckets.Length);
+            
+            return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
+        }
+
+        internal unsafe KeyValuePair? FindPair(IEqualityComparer<TKey>? keyComparer, TKey key, int keyHashCode)
+        {
+            return GetByHash(keyHashCode).TryGet(keyComparer, key, keyHashCode, &NotDead);
+
+            static bool NotDead(KeyValuePair pair) => !pair.IsDead;
+        }
+
+        internal void Release(int count)
+        {
+            Debug.Assert((uint)count <= (uint)buckets.Length);
+
+            for (var i = 0; i < count; i++)
+            {
+                buckets[i].Lock.Release();
+            }
+        }
+
+        internal void Invalidate(Action<KeyValuePair> cleanup)
+        {
+            foreach (ref var bucket in buckets.AsSpan())
+            {
+                bucket.Invalidate(cleanup);
+            }
+        }
+    }
+    
+    private async ValueTask GrowAsync(BucketList oldVersion, Timeout timeout, CancellationToken token)
+    {
+        // This is the maximum prime smaller than Array.MaxLength
+        const int maxPrimeLength = 0x7FFFFFC3;
+        int newSize;
+        newSize = oldVersion.Count is maxPrimeLength
+            ? throw new InsufficientMemoryException()
+            : (uint)(newSize = oldVersion.Count << 1) > maxPrimeLength && maxPrimeLength > oldVersion.Count
+                ? maxPrimeLength
+                : PrimeNumber.GetPrime(newSize);
+            
+        // acquire locks
+        var lockCount = 0;
+        try
+        {
+            var bucketLock = oldVersion.GetByIndex(lockCount).Lock;
+            await bucketLock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
+            lockCount++;
+
+            if (!ReferenceEquals(oldVersion, buckets))
+                return;
+
+            // acquire the rest of locks
+            for (; lockCount < oldVersion.Count; lockCount++)
+            {
+                bucketLock = oldVersion.GetByIndex(lockCount).Lock;
+                await bucketLock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
+            }
+            
+            var newSource = new CancelableValueTaskCompletionSource();
+            
+            // if Exchange returns null then the cache is disposed
+            (Interlocked.Exchange(ref completionSource, newSource) ?? newSource).Cancel();
+            
+            // stop eviction process
+            await evictionTask.ConfigureAwait(false);
+
+            // restart eviction process
+            RebuildEvictionState(buckets = new(oldVersion, newSize));
+            queueHead = queueTail = new FakeKeyValuePair();
+            evictionTask = DoEvictionAsync(newSource);
+        }
+        finally
+        {
+            oldVersion.Release(lockCount);
         }
     }
 }
