@@ -65,6 +65,8 @@ public sealed class TypeExtensionsTests : Test
         True(typeof(Guid).IsUnmanaged());
         True(typeof(DateTime).IsUnmanaged());
         True(typeof((int, int)).IsUnmanaged());
+        True(typeof(Int128).IsUnmanaged());
+        True(typeof(UInt128).IsUnmanaged());
         True(typeof(Runtime.InteropServices.Pointer<int>).IsUnmanaged());
         False(typeof(ManagedStruct).IsUnmanaged());
         False(typeof((int, string)).IsUnmanaged());
@@ -92,6 +94,13 @@ public sealed class TypeExtensionsTests : Test
         Equal("abc", typeof(string).Cast("abc"));
         Throws<InvalidCastException>(() => typeof(int).Cast(null));
         Throws<InvalidCastException>(() => typeof(int).Cast("abc"));
+    }
+
+    [Fact]
+    public static void IsAssignableFromWithoutBoxing()
+    {
+        False(typeof(IConvertible).IsAssignableFromWithoutBoxing(typeof(int)));
+        True(typeof(IConvertible).IsAssignableFromWithoutBoxing(typeof(string)));
     }
 
     [Fact]

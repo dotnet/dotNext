@@ -68,13 +68,64 @@ public static class Conversion
     public static DynamicTaskAwaitable AsDynamic(this Task task) => new(task);
 
     /// <summary>
+    /// Returns a task that never throws an exception.
+    /// </summary>
+    /// <param name="task">The task to convert.</param>
+    /// <typeparam name="T">The type of the task.</typeparam>
+    /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
+    public static AwaitableResult<T> SuspendException<T>(this Task<T> task)
+    {
+        ArgumentNullException.ThrowIfNull(task);
+
+        return new(task);
+    }
+
+    /// <summary>
+    /// Returns a task that never throws an exception.
+    /// </summary>
+    /// <param name="task">The task to convert.</param>
+    /// <typeparam name="T">The type of the task.</typeparam>
+    /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
+    public static AwaitableResult<T> SuspendException<T>(this ValueTask<T> task) => new(task);
+
+    /// <summary>
+    /// Returns a task that never throws an exception.
+    /// </summary>
+    /// <param name="task">The task to convert.</param>
+    /// <param name="converter">The exception converter.</param>
+    /// <typeparam name="T">The type of the task.</typeparam>
+    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
+    public static AwaitableResult<T, TError> SuspendException<T, TError>(this ValueTask<T> task,
+        Converter<Exception, TError> converter)
+        where TError : struct, Enum
+        => new(task, converter);
+
+    /// <summary>
+    /// Returns a task that never throws an exception.
+    /// </summary>
+    /// <param name="task">The task to convert.</param>
+    /// <param name="converter">The exception converter.</param>
+    /// <typeparam name="T">The type of the task.</typeparam>
+    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
+    public static AwaitableResult<T, TError> SuspendException<T, TError>(this Task<T> task,
+        Converter<Exception, TError> converter)
+        where TError : struct, Enum
+        => new(task, converter);
+
+    /// <summary>
     /// Suspends the exception that can be raised by the task.
     /// </summary>
     /// <param name="task">The task.</param>
     /// <param name="filter">The filter of the exception to be suspended.</param>
     /// <returns>The awaitable object that suspends exceptions according to the filter.</returns>
     public static SuspendedExceptionTaskAwaitable SuspendException(this Task task, Predicate<Exception>? filter = null)
-        => new(task) { Filter = filter };
+    {
+        ArgumentNullException.ThrowIfNull(task);
+        
+        return new(task) { Filter = filter };
+    }
 
     /// <summary>
     /// Suspends the exception that can be raised by the task.
@@ -94,6 +145,7 @@ public static class Conversion
     /// <returns>The awaitable object that suspends exceptions according to the filter.</returns>
     public static SuspendedExceptionTaskAwaitable<TArg> SuspendException<TArg>(this Task task, TArg arg, Func<Exception, TArg, bool> filter)
     {
+        ArgumentNullException.ThrowIfNull(task);
         ArgumentNullException.ThrowIfNull(filter);
         
         return new(task, arg, filter);

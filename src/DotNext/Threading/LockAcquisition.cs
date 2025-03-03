@@ -9,13 +9,7 @@ public static class LockAcquisition
 {
     private static readonly UserDataSlot<ReaderWriterLockSlim> ReaderWriterLock = new();
 
-    private sealed class ReaderWriterLockSlimWithRecursion : ReaderWriterLockSlim
-    {
-        public ReaderWriterLockSlimWithRecursion()
-            : base(LockRecursionPolicy.SupportsRecursion)
-        {
-        }
-    }
+    private sealed class ReaderWriterLockSlimWithRecursion() : ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static ReaderWriterLockSlim GetReaderWriterLock<T>(this T obj)

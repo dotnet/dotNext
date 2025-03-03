@@ -9,56 +9,57 @@ using CompilerServices;
 
 public partial class RandomAccessCache<TKey, TValue>
 {
-    private readonly CancelableValueTaskCompletionSource completionSource;
-    
     // SIEVE core
-    private readonly int maxCacheSize;
+    private readonly int maxCacheCapacity; // reused as contention threshold, if growable is true
     private int currentSize;
     private KeyValuePair? evictionHead, evictionTail, sieveHand;
+    
+    private CancelableValueTaskCompletionSource? completionSource;
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
-    private async Task DoEvictionAsync()
+    private async Task DoEvictionAsync(CancelableValueTaskCompletionSource source)
     {
-        while (!IsDisposingOrDisposed)
+        while (await source.WaitAsync(queueHead).ConfigureAwait(false))
         {
-            if (queueHead.NextInQueue is KeyValuePair newHead)
-            {
-                queueHead.NextInQueue = Sentinel.Instance;
-                queueHead = newHead;
-            }
-            else if (await completionSource.WaitAsync(queueHead).ConfigureAwait(false))
-            {
-                continue;
-            }
-            else
-            {
-                break;
-            }
-
-            Debug.Assert(queueHead is not FakeKeyValuePair);
-            EvictOrInsert(queueHead);
+            ProcessQueue();
         }
     }
 
-    private void EvictOrInsert(KeyValuePair dequeued)
+    private void ProcessQueue()
     {
-        if (currentSize == maxCacheSize)
-            Evict();
-
-        Debug.Assert(currentSize < maxCacheSize);
-        dequeued.Prepend(ref evictionHead, ref evictionTail);
-        sieveHand ??= evictionTail;
-        currentSize++;
+        while (queueHead.NextInQueue is KeyValuePair newHead)
+        {
+            queueHead.NextInQueue = Sentinel.Instance;
+            queueHead = newHead;
+                
+            Debug.Assert(newHead is not FakeKeyValuePair);
+            EvictOrInsert(newHead);
+        }
     }
 
-    private void Evict()
+    private void EvictOrInsert(KeyValuePair promoted)
     {
-        Debug.Assert(sieveHand is not null);
-        Debug.Assert(evictionHead is not null);
-        Debug.Assert(evictionTail is not null);
-
-        while (sieveHand is not null)
+        if (Evict(promoted))
         {
+            promoted.Prepend(ref evictionHead, ref evictionTail);
+            sieveHand ??= evictionTail;
+            currentSize++;
+            OnAdded(promoted);
+        }
+    }
+
+    private bool Evict(KeyValuePair promoted)
+    {
+        while (IsEvictionRequired(promoted))
+        {
+            if (sieveHand is null)
+            {
+                // if eviction still required, we need to release the enqueued key/value pair because the current cache
+                // doesn't have enough resources
+                Clear(promoted);
+                return false;
+            }
+            
             if (!sieveHand.Evict(out var removed))
             {
                 sieveHand = sieveHand.MoveBackward() ?? evictionTail;
@@ -70,30 +71,63 @@ public partial class RandomAccessCache<TKey, TValue>
                 currentSize--;
                 if (!removed && removedPair.ReleaseCounter() is false)
                 {
-                    Eviction?.Invoke(removedPair.Key, GetValue(removedPair));
-                    ClearValue(removedPair);
-                    TryCleanUpBucket(GetBucket(removedPair.KeyHashCode));
-                    break;
+                    OnRemoved(removedPair);
+                    TryCleanUpBucket(ref buckets.GetByHash(removedPair.KeyHashCode));
                 }
+            }
+        }
+
+        return true;
+    }
+    
+    // cannot be called concurrently, doesn't require synchronization
+    private protected virtual bool IsEvictionRequired(KeyValuePair promoted)
+        => currentSize == maxCacheCapacity;
+
+    // cannot be called concurrently, doesn't require synchronization
+    private protected virtual void OnAdded(KeyValuePair promoted)
+    {
+    }
+
+    private protected virtual void OnRemoved(KeyValuePair demoted)
+        => Clear(demoted);
+
+    private void Clear(KeyValuePair demoted)
+    {
+        Eviction?.Invoke(demoted.Key, GetValue(demoted));
+        ClearValue(demoted);
+    }
+
+    private void TryCleanUpBucket(ref Bucket bucket)
+    {
+        var bucketsCopy = buckets;
+        if (bucket.Lock.TryAcquire())
+        {
+            try
+            {
+                if (ReferenceEquals(bucketsCopy, buckets))
+                    bucket.CleanUp();
+            }
+            finally
+            {
+                bucket.Lock.Release();
             }
         }
     }
 
-    private void TryCleanUpBucket(Bucket bucket)
+    private void RebuildEvictionState(BucketList buckets)
     {
-        if (bucket.TryAcquire())
+        KeyValuePair? newHead = null, newTail = null;
+        for (var current = evictionTail; current is { IsDead: false }; current = current.MoveBackward())
         {
-            try
-            {
-                bucket.CleanUp(keyComparer);
-            }
-            finally
-            {
-                bucket.Release();
-            }
+            buckets.FindPair(keyComparer, current.Key, current.KeyHashCode)?.Prepend(ref newHead, ref newTail);
         }
+
+        evictionHead = newHead;
+        evictionTail = newTail;
+        sieveHand = sieveHand is not null ? buckets.FindPair(keyComparer, sieveHand.Key, sieveHand.KeyHashCode) ?? newTail : null;
     }
-    
+
     internal partial class KeyValuePair
     {
         private const int EvictedState = -1;
@@ -184,60 +218,66 @@ public partial class RandomAccessCache<TKey, TValue>
         }
     }
 
-    private sealed class CancelableValueTaskCompletionSource : Disposable, IValueTaskSource<bool>, IThreadPoolWorkItem
+    private sealed class CancelableValueTaskCompletionSource : IValueTaskSource<bool>, IThreadPoolWorkItem
     {
         private object? continuationState;
+        
+        // possible transitions:
+        // null or non-stub => stub (canceled, completed)
+        // null => non-stub
+        // stub (completed) => stub (canceled)
+        // non-stub or stub (completed) => null
         private volatile Action<object?>? continuation;
         private short version = short.MinValue;
 
-        private void MoveTo(Action<object?> stub)
+        private void Complete()
         {
-            Debug.Assert(ValueTaskSourceHelpers.IsStub(stub));
-
-            // null, non-stub => stub
+            // null or non-stub => stub (completed)
             Action<object?>? current, tmp = continuation;
-
             do
             {
                 current = tmp;
-                if (current is not null && ValueTaskSourceHelpers.IsStub(current))
+                if (current.IsStub())
                     return;
-            } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref continuation, stub, current), current));
+            } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref continuation, ValueTaskSourceHelpers.CompletedStub, current), current));
 
             current?.Invoke(continuationState);
         }
 
-        void IThreadPoolWorkItem.Execute() => MoveTo(ValueTaskSourceHelpers.CompletedStub);
+        private bool TryReset()
+        {
+            // null, non-stub, stub (completed) => stub (canceled)
+            Action<object?>? current, tmp = continuation;
+            do
+            {
+                current = tmp;
+                if (ReferenceEquals(current, ValueTaskSourceHelpers.CanceledStub))
+                    return false;
+            } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref continuation, null, current), current));
+
+            return true;
+        }
+
+        void IThreadPoolWorkItem.Execute() => Complete();
 
         bool IValueTaskSource<bool>.GetResult(short token)
         {
             Debug.Assert(token == version);
 
             continuationState = null;
-            if (IsDisposingOrDisposed)
-                return false;
-
-            Reset();
-            return true;
-        }
-
-        private void Reset()
-        {
             version++;
-            continuationState = null;
-            continuation = null;
+            return TryReset();
         }
 
-        ValueTaskSourceStatus IValueTaskSource<bool>.GetStatus(short token)
-        {
-            return continuation is { } c && ValueTaskSourceHelpers.IsStub(c) || IsDisposingOrDisposed
-                ? ValueTaskSourceStatus.Succeeded
-                : ValueTaskSourceStatus.Pending;
-        }
+        ValueTaskSourceStatus IValueTaskSource<bool>.GetStatus(short token) => continuation is { } c && c.IsStub()
+            ? ValueTaskSourceStatus.Succeeded
+            : ValueTaskSourceStatus.Pending;
 
         void IValueTaskSource<bool>.OnCompleted(Action<object?> continuation, object? state, short token, ValueTaskSourceOnCompletedFlags flags)
         {
             continuationState = state;
+            
+            // null => non-stub
             if (Interlocked.CompareExchange(ref this.continuation, continuation, null) is not null)
             {
                 continuation.Invoke(state);
@@ -247,19 +287,18 @@ public partial class RandomAccessCache<TKey, TValue>
         internal ValueTask<bool> WaitAsync(KeyValuePair pair)
         {
             if (!pair.TryAttachNotificationHandler(this))
-                continuation = ValueTaskSourceHelpers.CompletedStub;
+                Complete();
 
             return new(this, version);
         }
 
-        protected override void Dispose(bool disposing)
+        internal void Cancel()
         {
-            if (disposing)
+            if (Interlocked.Exchange(ref continuation, ValueTaskSourceHelpers.CanceledStub) is { } c && !c.IsStub())
             {
-                MoveTo(ValueTaskSourceHelpers.CanceledStub);
+                c(continuationState);
+                continuationState = null;
             }
-
-            base.Dispose(disposing);
         }
     }
 }
@@ -268,11 +307,9 @@ file static class ValueTaskSourceHelpers
 {
     internal static readonly Action<object?> CompletedStub = Stub;
     internal static readonly Action<object?> CanceledStub = Stub;
+
+    private static void Stub(object? state) => Debug.Fail("Should never be called");
     
-    private static void Stub(object? state)
-    {
-    }
-    
-    internal static bool IsStub(Action<object?> continuation)
-        => continuation.Method == CompletedStub.Method;
+    internal static bool IsStub(this Action<object?>? continuation)
+        => continuation?.Method == CompletedStub.Method;
 }

@@ -320,7 +320,7 @@ public static class Intrinsics
     /// Gets length of the array.
     /// </summary>
     /// <remarks>
-    /// This method supports one-dimensional as well as multi-dimensional arrays.
+    /// This method supports one-dimensional as well as multidimensional arrays.
     /// </remarks>
     /// <param name="array">The array object.</param>
     /// <returns>The length of the array as native unsigned integer.</returns>
@@ -413,12 +413,12 @@ public static class Intrinsics
     }
 
     internal static ref byte GetRawData(object obj)
-        => ref Unsafe.As<RawData>(obj).data;
+        => ref Unsafe.As<RawData>(obj).Data;
 }
 
 file abstract class RawData
 {
-    internal byte data;
+    internal byte Data;
 
     private RawData() => throw new NotImplementedException();
 }

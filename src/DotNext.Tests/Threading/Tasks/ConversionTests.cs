@@ -16,6 +16,9 @@ public sealed class ConversionTests : Test
     {
         var t = Task.FromResult("12").Convert(int.Parse);
         Equal(12, await t);
+
+        t = Task.FromResult("12").Convert(static str => Task.FromResult(int.Parse(str)));
+        Equal(12, await t);
     }
 
     [Fact]
@@ -44,8 +47,46 @@ public sealed class ConversionTests : Test
     [Fact]
     public static async Task SuspendException()
     {
-        await Task.FromException(new Exception()).SuspendException();
-        await ValueTask.FromException(new Exception()).SuspendException();
+        await Task.FromException(new Exception()).SuspendException().ConfigureAwait(true);
+        await ValueTask.FromException(new Exception()).SuspendException().ConfigureAwait(true);
+
+        var result = await Task.FromException<int>(new ArithmeticException()).SuspendException().ConfigureAwait(true);
+        False(result.IsSuccessful);
+        IsType<ArithmeticException>(result.Error);
+
+        result = await ValueTask.FromException<int>(new ArithmeticException()).SuspendException().ConfigureAwait(true);
+        False(result.IsSuccessful);
+        IsType<ArithmeticException>(result.Error);
+    }
+
+    [Fact]
+    public static async Task SuspendException2()
+    {
+        var t = Task.FromException(new Exception());
+        var result = await t.AsDynamic().ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing | ConfigureAwaitOptions.ContinueOnCapturedContext);
+        Same(result, Missing.Value);
+    }
+
+    [Fact]
+    public static async Task ConvertExceptionToError()
+    {
+        var result = await Task.FromException<int>(new Exception()).SuspendException(ToError).ConfigureAwait(true);
+        False(result.IsSuccessful);
+        Equal(EnvironmentVariableTarget.Machine, result.Error);
+        
+        result = await ValueTask.FromException<int>(new Exception()).SuspendException(ToError).ConfigureAwait(true);
+        False(result.IsSuccessful);
+        Equal(EnvironmentVariableTarget.Machine, result.Error);
+
+        static EnvironmentVariableTarget ToError(Exception e) => EnvironmentVariableTarget.Machine;
+    }
+    
+    [Fact]
+    public static async Task SuspendExceptionParametrized()
+    {
+        await Task.FromException(new Exception()).SuspendException(42, (_, i) => i is 42).ConfigureAwait(true);
+        await ValueTask.FromException(new Exception()).SuspendException(42, (_, i) => i is 42).ConfigureAwait(true);
+        await ThrowsAsync<Exception>(async () => await Task.FromException(new Exception()).SuspendException(43, (_, i) => i is 42).ConfigureAwait(true));
     }
 
     [Fact]

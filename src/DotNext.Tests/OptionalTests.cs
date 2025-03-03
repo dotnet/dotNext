@@ -141,17 +141,29 @@ public sealed class OptionalTest : Test
         var opt = new Optional<int>(10);
         Equal(10, await Task.FromResult(opt).OrDefault());
         Equal(10, await Task.FromResult(opt).OrNull());
+        
         opt = default;
         Equal(0, await Task.FromResult(opt).OrDefault());
         Equal(10, await Task.FromResult(opt).OrInvoke(() => 10));
         Null(await Task.FromResult(opt).OrNull());
+        
         opt = 20;
         Equal(20, await Task.FromResult(opt).OrInvoke(() => 10));
         Equal(20, await Task.FromResult(opt).OrThrow<int, ArithmeticException>());
         Equal(20, await Task.FromResult(opt).OrThrow(() => new ArithmeticException()));
+        Equal(20D, await Task.FromResult(opt).Convert(double.CreateChecked));
+        Equal(20D, await Task.FromResult(opt).Convert(FromInt));
+        Equal(20, await Task.FromResult(opt).Or(42));
+        Equal(20, await Task.FromResult(opt).If(int.IsEvenInteger));
+        
         opt = default;
+        Equal(42, await Task.FromResult(opt).Or(42));
+        Equal(Optional<int>.None, await Task.FromResult(opt).If(int.IsEvenInteger));
+        Equal(Optional<double>.None, await Task.FromResult(opt).Convert(FromInt));
         await ThrowsAsync<ArithmeticException>(Task.FromResult(opt).OrThrow<int, ArithmeticException>);
-        await ThrowsAsync<ArithmeticException>(() => Task.FromResult(opt).OrThrow(() => new ArithmeticException()));
+        await ThrowsAsync<ArithmeticException>(() => Task.FromResult(opt).OrThrow(static () => new ArithmeticException()));
+
+        static Task<double> FromInt(int value, CancellationToken _) => Task.FromResult(double.CreateChecked(value));
     }
 
     [Fact]
@@ -310,6 +322,15 @@ public sealed class OptionalTest : Test
     }
 
     [Fact]
+    public static void ConvertToOptional()
+    {
+        Equal(Optional.None<double>(), Optional.None<int>().Convert(ToDouble));
+        Equal(42D, new Optional<int>(42).Convert(ToDouble));
+
+        static Optional<double> ToDouble(int value) => double.CreateChecked(value);
+    }
+
+    [Fact]
     public static void OptionalToDelegate()
     {
         IFunctional<Func<object>> functional = Optional.None<object>();
@@ -330,5 +351,12 @@ public sealed class OptionalTest : Test
 
         optional = Optional<int>.None.Concat<long>(42L);
         False(optional.HasValue);
+    }
+
+    [Fact]
+    public static async Task FlattenTask()
+    {
+        await ThrowsAsync<InvalidOperationException>(static () => Task.FromResult(Optional.None<int>()).Flatten());
+        Equal(42, await Task.FromResult(Optional.Some(42)).Flatten());
     }
 }

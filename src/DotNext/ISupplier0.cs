@@ -160,7 +160,7 @@ public readonly unsafe struct SupplierClosure<TContext, TResult>(delegate*<in TC
 /// </summary>
 /// <typeparam name="TResult">The type of the result.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct DelegatingSupplier<TResult> : ISupplier<TResult>, IEquatable<DelegatingSupplier<TResult>>
+public readonly record struct DelegatingSupplier<TResult> : ISupplier<TResult>
 {
     private readonly Func<TResult> func;
 

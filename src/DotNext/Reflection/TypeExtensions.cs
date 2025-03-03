@@ -25,34 +25,17 @@ public static class TypeExtensions
     /// <param name="type">The type to inspect.</param>
     /// <returns><see langword="true"/>, if the specified type is unmanaged value type; otherwise, <see langword="false"/>.</returns>
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
-    public static bool IsUnmanaged(this Type type)
+    public static bool IsUnmanaged(this Type type) => type switch
     {
-        switch (type)
-        {
-            case { IsGenericTypeDefinition: true }:
-                foreach (var attribute in type.GetCustomAttributesData())
-                {
-                    if (attribute.AttributeType.FullName == IsUnmanagedAttributeName)
-                        return true;
-                }
-
-                break;
-            case { IsPrimitive: true } or { IsPointer: true } or { IsEnum: true }:
-                return true;
-
-            case { IsValueType: true }:
-                // check all fields
-                foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic))
-                {
-                    if (!field.FieldType.IsUnmanaged())
-                        return false;
-                }
-
-                return true;
-        }
-
-        return false;
-    }
+        { IsGenericTypeDefinition: true } => type.GetCustomAttributesData()
+            .Any(static attribute => attribute.AttributeType.FullName is IsUnmanagedAttributeName),
+        { IsPrimitive: true } or { IsPointer: true } or { IsEnum: true } => true,
+        { IsValueType: true } =>
+            // check all fields
+            type.GetFields(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic)
+                .All(static field => field.FieldType.IsUnmanaged()),
+        _ => false
+    };
 
     /// <summary>
     /// Returns read-only collection of base types and, optionally, all implemented interfaces.
@@ -218,7 +201,7 @@ public static class TypeExtensions
     public static object? Cast(this Type type, object? obj)
     {
         if (obj is null)
-            return type.IsValueType ? throw new InvalidCastException(ExceptionMessages.CastNullToValueType) : default;
+            return type.IsValueType ? throw new InvalidCastException(ExceptionMessages.CastNullToValueType) : null;
         if (type.IsInstanceOfType(obj))
             return obj;
         throw new InvalidCastException();

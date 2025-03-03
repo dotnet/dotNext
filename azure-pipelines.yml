@@ -5,7 +5,7 @@ variables:
   AotTestFolder: src/DotNext.AotTests
   AotTestProject: $(AotTestFolder)/DotNext.AotTests.csproj
   InternetAccess: false
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: false
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 trigger:
   - master
