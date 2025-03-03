@@ -37,6 +37,16 @@ public static class Optional
         => (await task.ConfigureAwait(false)).Or(defaultValue);
 
     /// <summary>
+    /// Returns a task that contains unwrapped value; or exception if <see cref="Optional{T}"/> has no value.
+    /// </summary>
+    /// <param name="task">The task representing optional value.</param>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <returns>The task containing a value of type <typeparamref name="T"/>; or the exception if <see cref="Optional{T}"/> has no value.</returns>
+    /// <exception cref="InvalidOperationException">No value is present.</exception>
+    public static async Task<T> Flatten<T>(this Task<Optional<T>> task)
+        => (await task.ConfigureAwait(false)).Value;
+
+    /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
     /// non-null, return an Optional describing the result. Otherwise, returns <see cref="Optional{T}.None"/>.
     /// </summary>

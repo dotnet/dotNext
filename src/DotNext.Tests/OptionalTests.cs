@@ -352,4 +352,11 @@ public sealed class OptionalTest : Test
         optional = Optional<int>.None.Concat<long>(42L);
         False(optional.HasValue);
     }
+
+    [Fact]
+    public static async Task FlattenTask()
+    {
+        await ThrowsAsync<InvalidOperationException>(static () => Task.FromResult(Optional.None<int>()).Flatten());
+        Equal(42, await Task.FromResult(Optional.Some(42)).Flatten());
+    }
 }
