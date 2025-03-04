@@ -1,5 +1,3 @@
-using static System.Runtime.InteropServices.MemoryMarshal;
-
 namespace DotNext.IO;
 
 internal abstract class WriterStream<TOutput> : Stream, IFlushable
@@ -40,7 +38,7 @@ internal abstract class WriterStream<TOutput> : Stream, IFlushable
         Write(new ReadOnlySpan<byte>(buffer, offset, count));
     }
 
-    public sealed override void WriteByte(byte value) => Write(CreateReadOnlySpan(ref value, 1));
+    public sealed override void WriteByte(byte value) => Write(new(ref value));
 
     public abstract override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token);
 
