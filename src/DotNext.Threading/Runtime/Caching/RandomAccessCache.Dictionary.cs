@@ -170,7 +170,7 @@ public partial class RandomAccessCache<TKey, TValue>
         }
         
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal int CollisionCount => count;
+        internal readonly int CollisionCount => count;
 
         [ExcludeFromCodeCoverage]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
