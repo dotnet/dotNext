@@ -392,7 +392,6 @@ public partial class RandomAccessCache<TKey, TValue>
             }
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public readonly Enumerator GetEnumerator() => new(first);
         
         [StructLayout(LayoutKind.Auto)]
