@@ -160,7 +160,7 @@ public partial class RandomAccessCache<TKey, TValue>
         internal readonly AsyncExclusiveLock Lock;
         private bool newPairAdded;
         private volatile KeyValuePair? first;
-        private int count;
+        private volatile int count;
 
         public Bucket(AsyncExclusiveLock bucketLock) => Lock = bucketLock;
 
@@ -204,8 +204,8 @@ public partial class RandomAccessCache<TKey, TValue>
             {
                 pair.NextInBucket = current = tmp;
             } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref first, pair, current), current));
-            
-            count++;
+
+            Interlocked.Increment(ref count);
         }
 
         internal void MarkAsReadyToAdd() => newPairAdded = false;
@@ -221,7 +221,7 @@ public partial class RandomAccessCache<TKey, TValue>
             // on every access (read/write), so it will be eventually deleted
             ref var location = ref previous is null ? ref first : ref previous.NextInBucket;
             if (ReferenceEquals(Interlocked.CompareExchange(ref location, current.NextInBucket, current), current))
-                count--;
+                Interlocked.Decrement(ref count);
         }
 
         internal KeyValuePair? TryRemove(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
