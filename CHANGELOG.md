@@ -1,6 +1,28 @@
 Release Notes
 ====
 
+# 03-06-2025
+<a href="https://www.nuget.org/packages/dotnext/5.19.1">DotNext 5.19.1</a>
+* Smallish performance improvements of `SparseBufferWriter<T>`
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.19.1">DotNext.Metaprogramming 5.19.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.19.1">DotNext.Unsafe 5.19.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.19.1">DotNext.Threading 5.19.1</a>
+* Fixed weight counting in `RandomAccessCache<TKey, TValue, TWeight>` class
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.19.1">DotNext.IO 5.19.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.19.1">DotNext.Net.Cluster 5.19.1</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.19.1">DotNext.AspNetCore.Cluster 5.19.1</a>
+* Updated dependencies
+
 # 03-03-2025
 <a href="https://www.nuget.org/packages/dotnext/5.19.0">DotNext 5.19.0</a>
 * Added `ConsoleLifetimeTokenSource` that exposes the cancellation token bounded to the console application lifetime

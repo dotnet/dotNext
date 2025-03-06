@@ -170,7 +170,7 @@ public partial class RandomAccessCache<TKey, TValue>
         }
         
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal int CollisionCount => count;
+        internal readonly int CollisionCount => count;
 
         [ExcludeFromCodeCoverage]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -392,7 +392,6 @@ public partial class RandomAccessCache<TKey, TValue>
             }
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public readonly Enumerator GetEnumerator() => new(first);
         
         [StructLayout(LayoutKind.Auto)]
