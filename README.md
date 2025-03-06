@@ -44,31 +44,27 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 03-03-2025
+Release Date: 03-06-2025
 
-<a href="https://www.nuget.org/packages/dotnext/5.19.0">DotNext 5.19.0</a>
-* Added `ConsoleLifetimeTokenSource` that exposes the cancellation token bounded to the console application lifetime
-* Added more pipelined methods to work with `Optional<T>` and `Result<T>` in async code
+<a href="https://www.nuget.org/packages/dotnext/5.19.1">DotNext 5.19.1</a>
+* Smallish performance improvements of `SparseBufferWriter<T>`
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.19.0">DotNext.Metaprogramming 5.19.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.19.1">DotNext.Metaprogramming 5.19.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/5.19.0">DotNext.Unsafe 5.19.0</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.19.1">DotNext.Unsafe 5.19.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.19.0">DotNext.Threading 5.19.0</a>
-* Added weight-based cache on top of existing `RandomAccessCache<TKey, TValue>` class
-* Fixed potential race conditions within `RandomAccessCache<TKey, TValue>` class
-* `RandomAccessCache<TKey, TValue, TWeight>` can grow dynamically depending on the number of hash collisions
+<a href="https://www.nuget.org/packages/dotnext.threading/5.19.1">DotNext.Threading 5.19.1</a>
+* Fixed weight counting in `RandomAccessCache<TKey, TValue, TWeight>` class
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.19.0">DotNext.IO 5.19.0</a>
+<a href="https://www.nuget.org/packages/dotnext.io/5.19.1">DotNext.IO 5.19.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.19.0">DotNext.Net.Cluster 5.19.0</a>
-* Reused FNV1a hash implementation
-* Improved WAL performance if `WriteMode.NoFlush` is chosen
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.19.1">DotNext.Net.Cluster 5.19.1</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.19.0">DotNext.AspNetCore.Cluster 5.19.0</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.19.1">DotNext.AspNetCore.Cluster 5.19.1</a>
 * Updated dependencies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
