@@ -81,7 +81,5 @@ file sealed class SentinelNotification : IThreadPoolWorkItem, ISingleton<Sentine
     {
     }
 
-    void IThreadPoolWorkItem.Execute()
-    {
-    }
+    void IThreadPoolWorkItem.Execute() => Debug.Fail("Should never be called");
 }
