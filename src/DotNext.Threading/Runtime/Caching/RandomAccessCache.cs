@@ -99,7 +99,6 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             for (BucketList bucketsCopy;; await GrowAsync(bucketsCopy, timeout, token).ConfigureAwait(false))
             {
                 Bucket.Ref bucket;
-                AsyncExclusiveLock? bucketLockCopy;
 
                 bucketsCopy = buckets;
                 for (BucketList newCopy;; bucketsCopy = newCopy)
@@ -119,7 +118,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 if (bucket.Value.Modify(keyComparerCopy, key, hashCode) is { } valueHolder)
                     return new(this, valueHolder);
 
-                bucketLockCopy = bucketLock;
+                var bucketLockCopy = bucketLock;
                 bucketLock = null;
                 if (!ResizeDesired(in bucket.Value))
                     return new(this, in bucket, bucketLockCopy, key, hashCode);
