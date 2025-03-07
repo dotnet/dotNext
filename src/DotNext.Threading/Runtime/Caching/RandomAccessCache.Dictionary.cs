@@ -155,14 +155,12 @@ public partial class RandomAccessCache<TKey, TValue>
 
     [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}, IsLockHeld = {{{nameof(IsLockHeld)}}}")]
     [StructLayout(LayoutKind.Auto)]
-    internal struct Bucket
+    internal struct Bucket(AsyncExclusiveLock bucketLock)
     {
-        internal readonly AsyncExclusiveLock Lock;
+        internal readonly AsyncExclusiveLock Lock = bucketLock;
         private bool newPairAdded;
         private volatile KeyValuePair? first;
         private volatile int count;
-
-        public Bucket(AsyncExclusiveLock bucketLock) => Lock = bucketLock;
 
         public Bucket()
             : this(new())
