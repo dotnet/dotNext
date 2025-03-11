@@ -85,6 +85,7 @@ public class DiskSpacePool : Disposable
     public int MaxSegmentSize { get; }
 
     [ExcludeFromCodeCoverage]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private int ReturnedSegments
     {
         get
