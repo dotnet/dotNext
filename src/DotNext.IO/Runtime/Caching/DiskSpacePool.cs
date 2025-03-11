@@ -1,11 +1,8 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using Microsoft.Win32.SafeHandles;
 
 namespace DotNext.Runtime.Caching;
-
-using Buffers;
 
 /// <summary>
 /// Represents a pool of segments of the limited size on the disk.
@@ -15,13 +12,8 @@ using Buffers;
 /// All members of this class are thread-safe.
 /// </remarks>
 [DebuggerDisplay($"PooledSegments = {{{nameof(ReturnedSegments)}}}")]
-public class DiskSpacePool : Disposable
+public partial class DiskSpacePool : Disposable
 {
-    private readonly SafeFileHandle handle;
-    private readonly ReadOnlyMemory<byte> zeroes;
-    private volatile Node? head;
-    private long cursor;
-
     /// <summary>
     /// Initializes a new pool of segments on the disk.
     /// </summary>
@@ -96,83 +88,6 @@ public class DiskSpacePool : Disposable
 
             return result;
         }
-    }
-
-    private long RentOffset()
-    {
-        long offset;
-        for (Node? headCopy = head, tmp;; headCopy = tmp)
-        {
-            if (headCopy is null)
-            {
-                offset = Interlocked.Add(ref cursor, MaxSegmentSize);
-                break;
-            }
-
-            tmp = Interlocked.CompareExchange(ref head, headCopy.Next, headCopy);
-            if (ReferenceEquals(tmp, headCopy))
-            {
-                offset = tmp.Offset;
-                break;
-            }
-        }
-
-        return offset;
-    }
-
-    private void ReturnOffset(long offset)
-    {
-        var node = new Node(offset);
-
-        for (Node? headCopy = head, tmp;; headCopy = tmp)
-        {
-            node.Next = headCopy;
-
-            tmp = Interlocked.CompareExchange(ref head, node, headCopy);
-            if (ReferenceEquals(tmp, headCopy))
-                break;
-        }
-    }
-
-    private void EraseSegment(long offset)
-    {
-        if (zeroes.Span is { IsEmpty: false } span)
-        {
-            RandomAccess.Write(handle, span, offset);
-        }
-    }
-
-    private void ReleaseSegment(long offset)
-    {
-        EraseSegment(offset);
-        ReturnOffset(offset);
-    }
-
-    private ValueTask EraseSegmentAsync(long offset)
-        => zeroes.IsEmpty ? ValueTask.CompletedTask : RandomAccess.WriteAsync(handle, zeroes, offset);
-    
-    private async ValueTask ReleaseSegmentAsync(long offset)
-    {
-        await EraseSegmentAsync(offset).ConfigureAwait(false);
-        ReturnOffset(offset);
-    }
-
-    private void Write(long absoluteOffset, ReadOnlySpan<byte> buffer, int segmentOffset)
-        => RandomAccess.Write(handle, buffer, absoluteOffset + segmentOffset);
-    
-    private ValueTask WriteAsync(long absoluteOffset, ReadOnlyMemory<byte> buffer, int segmentOffset, CancellationToken token)
-        => RandomAccess.WriteAsync(handle, buffer, absoluteOffset + segmentOffset, token);
-
-    private int Read(long absoluteOffset, Span<byte> buffer, int segmentOffset)
-    {
-        buffer = buffer.TrimLength(MaxSegmentSize - segmentOffset);
-        return RandomAccess.Read(handle, buffer, absoluteOffset + segmentOffset);
-    }
-
-    private ValueTask<int> ReadAsync(long absoluteOffset, Memory<byte> buffer, int segmentOffset, CancellationToken token)
-    {
-        buffer = buffer.TrimLength(MaxSegmentSize - segmentOffset);
-        return RandomAccess.ReadAsync(handle, buffer, absoluteOffset + segmentOffset, token);
     }
 
     /// <summary>
@@ -339,12 +254,6 @@ public class DiskSpacePool : Disposable
 
         /// <inheritdoc/>
         public override string ToString() => absoluteOffset.ToString();
-    }
-
-    private sealed class Node(long offset)
-    {
-        internal Node? Next;
-        internal long Offset => offset;
     }
     
     /// <summary>
