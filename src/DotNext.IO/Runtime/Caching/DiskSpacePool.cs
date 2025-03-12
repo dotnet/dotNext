@@ -11,7 +11,7 @@ namespace DotNext.Runtime.Caching;
 /// This class can be used to organize on-disk cache in combination with <c>RandomAccessCache</c>.
 /// All members of this class are thread-safe.
 /// </remarks>
-[DebuggerDisplay($"PooledSegments = {{{nameof(ReturnedSegments)}}}")]
+[DebuggerDisplay($"FreeList = {{{nameof(ReturnedSegments)}}}")]
 public partial class DiskSpacePool : Disposable
 {
     /// <summary>
