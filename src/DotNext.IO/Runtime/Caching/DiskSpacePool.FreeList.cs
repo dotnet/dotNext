@@ -2,13 +2,13 @@ namespace DotNext.Runtime.Caching;
 
 public partial class DiskSpacePool
 {
-    private volatile Node? head;
+    private volatile Node? freeList;
     private long cursor;
     
     private long RentOffset()
     {
         long offset;
-        for (Node? headCopy = head, tmp;; headCopy = tmp)
+        for (Node? headCopy = freeList, tmp;; headCopy = tmp)
         {
             if (headCopy is null)
             {
@@ -16,7 +16,7 @@ public partial class DiskSpacePool
                 break;
             }
 
-            tmp = Interlocked.CompareExchange(ref head, headCopy.Next, headCopy);
+            tmp = Interlocked.CompareExchange(ref freeList, headCopy.Next, headCopy);
             if (ReferenceEquals(tmp, headCopy))
             {
                 offset = tmp.Offset;
@@ -31,11 +31,11 @@ public partial class DiskSpacePool
     {
         var node = new Node(offset);
 
-        for (Node? headCopy = head, tmp;; headCopy = tmp)
+        for (Node? headCopy = freeList, tmp;; headCopy = tmp)
         {
             node.Next = headCopy;
 
-            tmp = Interlocked.CompareExchange(ref head, node, headCopy);
+            tmp = Interlocked.CompareExchange(ref freeList, node, headCopy);
             if (ReferenceEquals(tmp, headCopy))
                 break;
         }

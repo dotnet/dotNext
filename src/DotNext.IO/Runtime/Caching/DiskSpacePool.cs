@@ -83,7 +83,7 @@ public partial class DiskSpacePool : Disposable
         get
         {
             var result = 0;
-            for (var node = head; node is not null; node = node.Next)
+            for (var node = freeList; node is not null; node = node.Next)
                 result++;
 
             return result;
@@ -107,7 +107,7 @@ public partial class DiskSpacePool : Disposable
         if (disposing)
         {
             handle.Dispose();
-            head = null;
+            freeList = null;
         }
 
         base.Dispose(disposing);
@@ -138,7 +138,7 @@ public partial class DiskSpacePool : Disposable
         {
             ObjectDisposedException.ThrowIf(!poolRef.TryGetTarget(out var pool), this);
 
-            if (offset < 0 || offset + buffer.Length > pool.MaxSegmentSize)
+            if (offset < 0 || (uint)(offset + buffer.Length) > (uint)pool.MaxSegmentSize)
                 throw new ArgumentOutOfRangeException(nameof(offset));
 
             pool.Write(absoluteOffset, buffer, offset);
@@ -160,7 +160,7 @@ public partial class DiskSpacePool : Disposable
             {
                 task = new(DisposedTask);
             }
-            else if (offset < 0 || offset + buffer.Length > pool.MaxSegmentSize)
+            else if (offset < 0 || (uint)(offset + buffer.Length) > (uint)pool.MaxSegmentSize)
             {
                 task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(offset)));
             }
@@ -216,6 +216,12 @@ public partial class DiskSpacePool : Disposable
 
             return task;
         }
+
+        /// <summary>
+        /// Creates a stream representing this segment.
+        /// </summary>
+        /// <returns>A stream representing this segment.</returns>
+        public Stream CreateStream() => new SegmentStream(poolRef, absoluteOffset);
 
         /// <inheritdoc/>
         protected override void Dispose(bool disposing)
