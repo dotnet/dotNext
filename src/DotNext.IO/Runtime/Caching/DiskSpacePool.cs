@@ -41,7 +41,7 @@ public partial class DiskSpacePool : Disposable
         MaxSegmentSize = maxSegmentSize;
         cursor = -maxSegmentSize;
 
-        if (OperatingSystem.IsLinux())
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
         {
             unsafe
             {
