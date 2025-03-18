@@ -32,6 +32,7 @@ public partial class DiskSpacePool : Disposable
         }
         else
         {
+            maxSegmentSize = AlignSegmentSize(maxSegmentSize, Environment.SystemPageSize);
             zeroes = GC.AllocateArray<byte>(maxSegmentSize, pinned: true);
             preallocationSize = 0L;
         }
@@ -57,6 +58,15 @@ public partial class DiskSpacePool : Disposable
                     Debug.Assert(errorCode is 0);
                 }
             }
+        }
+
+        static int AlignSegmentSize(int segmentSize, int pageSize)
+        {
+            Debug.Assert(int.IsPow2(pageSize));
+            
+            // page size is always a multiple of 2^n
+            var remainder = segmentSize & (pageSize - 1);
+            return remainder is 0 ? segmentSize : checked(segmentSize - remainder + pageSize);
         }
     }
 
