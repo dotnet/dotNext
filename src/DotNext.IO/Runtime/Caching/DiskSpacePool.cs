@@ -42,21 +42,17 @@ public partial class DiskSpacePool : Disposable
         MaxSegmentSize = maxSegmentSize;
         cursor = -maxSegmentSize;
 
-        if (OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD())
+        const string entryPointName = "posix_fadvise";
+        if ((OperatingSystem.IsLinux() || OperatingSystem.IsFreeBSD()) &&
+            NativeLibrary.TryGetExport(NativeLibrary.GetMainProgramHandle(), entryPointName, out var address))
         {
             unsafe
             {
-                var posix_fadvise =
-                    (delegate*unmanaged<nint, long, long, int, int>)NativeLibrary.GetExport(
-                        NativeLibrary.GetMainProgramHandle(),
-                        "posix_fadvise");
+                var posix_fadvise = (delegate*unmanaged<nint, long, long, int, int>)address;
 
-                if (posix_fadvise is not null)
-                {
-                    const int POSIX_FADV_NOREUSE = 5;
-                    var errorCode = posix_fadvise(handle.DangerousGetHandle(), 0L, 0L, POSIX_FADV_NOREUSE);
-                    Debug.Assert(errorCode is 0);
-                }
+                const int POSIX_FADV_NOREUSE = 5;
+                var errorCode = posix_fadvise(handle.DangerousGetHandle(), 0L, 0L, POSIX_FADV_NOREUSE);
+                Debug.Assert(errorCode is 0);
             }
         }
 
