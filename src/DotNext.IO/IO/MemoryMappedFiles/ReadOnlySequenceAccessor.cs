@@ -201,7 +201,7 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
         if (current != window)
         {
             segment?.ReleasePointerAndDispose();
-            ptr = default;
+            ptr = null;
             current = window;
             segment = mappedFile.CreateViewAccessor(window.Offset, window.Length, MemoryMappedFileAccess.Read);
             segment.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
