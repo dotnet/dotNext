@@ -226,6 +226,10 @@ public partial class DiskSpacePool : Disposable
         /// <summary>
         /// Creates a stream representing this segment.
         /// </summary>
+        /// <remarks>
+        /// The returned stream has a length equal to <see cref="DiskSpacePool.MaxSegmentSize"/>.
+        /// You can adjust it by calling <see cref="Stream.SetLength"/>.
+        /// </remarks>
         /// <returns>A stream representing this segment.</returns>
         public Stream CreateStream() => new SegmentStream(poolRef, absoluteOffset);
 
