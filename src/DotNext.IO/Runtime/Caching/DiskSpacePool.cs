@@ -56,13 +56,13 @@ public partial class DiskSpacePool : Disposable
             }
         }
 
-        static int AlignSegmentSize(int segmentSize, int pageSize)
+        static int AlignSegmentSize(int segmentSize, int alignment)
         {
-            Debug.Assert(int.IsPow2(pageSize));
+            Debug.Assert(int.IsPow2(alignment));
             
             // page size is always a multiple of 2^n
-            var remainder = segmentSize & (pageSize - 1);
-            return remainder is 0 ? segmentSize : checked(segmentSize - remainder + pageSize);
+            var remainder = segmentSize & (alignment - 1);
+            return remainder is 0 ? segmentSize : checked(segmentSize - remainder + alignment);
         }
     }
 
