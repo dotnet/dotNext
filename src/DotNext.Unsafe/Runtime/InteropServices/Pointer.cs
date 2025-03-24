@@ -28,8 +28,8 @@ public readonly struct Pointer<T> :
     IEquatable<Pointer<T>>,
     IComparable<Pointer<T>>,
     IStrongBox,
-    ISupplier<IntPtr>,
-    ISupplier<UIntPtr>,
+    ISupplier<nint>,
+    ISupplier<nuint>,
     IPinnable,
     ISpanFormattable,
     IComparisonOperators<Pointer<T>, Pointer<T>, bool>,
@@ -450,7 +450,7 @@ public readonly struct Pointer<T> :
 
         return result;
 
-        static async ValueTask<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length, CancellationToken token)
+        static async ValueTask<long> ReadFromStreamAsync(Stream source, nint destination, long length, CancellationToken token)
         {
             var total = 0L;
             for (int bytesRead; length > 0L; length -= bytesRead, destination += bytesRead, total += bytesRead)
@@ -1020,7 +1020,7 @@ public readonly struct Pointer<T> :
     public static implicit operator nint(Pointer<T> ptr) => ptr.Address;
 
     /// <inheritdoc/>
-    IntPtr ISupplier<IntPtr>.Invoke() => Address;
+    nint ISupplier<nint>.Invoke() => Address;
 
     /// <summary>
     /// Obtains pointer value (address) as <see cref="UIntPtr"/>.
@@ -1031,7 +1031,7 @@ public readonly struct Pointer<T> :
     public static unsafe implicit operator nuint(Pointer<T> ptr) => (nuint)ptr.value;
 
     /// <inheritdoc/>
-    unsafe UIntPtr ISupplier<UIntPtr>.Invoke() => (nuint)value;
+    unsafe nuint ISupplier<nuint>.Invoke() => (nuint)value;
 
     /// <summary>
     /// Converts this pointer the memory owner.
