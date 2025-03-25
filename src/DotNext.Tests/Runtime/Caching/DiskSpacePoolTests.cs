@@ -12,7 +12,7 @@ public sealed class DiskSpacePoolTests : Test
     public static async Task RentConcurrently(bool dontCleanUpDiskSpace)
     {
         using var pool = new DiskSpacePool(maxSegmentSize: 1028 * 1024,
-            new() { IsAsynchronous = true, DontCleanDiskSpace = dontCleanUpDiskSpace, ExpectedNumberOfSegments = 3 });
+            new() { IsAsynchronous = true, OptimizedDiskAllocation = dontCleanUpDiskSpace, ExpectedNumberOfSegments = 3 });
 
         var t1 = Task.Run(RentSegment);
         var t2 = Task.Run(RentSegment);

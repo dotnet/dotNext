@@ -7,13 +7,20 @@ using Buffers;
 public partial class DiskSpacePool
 {
     private readonly SafeFileHandle handle;
-    private readonly ReadOnlyMemory<byte> zeroes;
-    
+    private readonly IReadOnlyList<ReadOnlyMemory<byte>> zeroes;
+
     private void EraseSegment(long offset)
     {
-        if (zeroes.Span is { IsEmpty: false } span)
+        switch (zeroes)
         {
-            RandomAccess.Write(handle, span, offset);
+            case []:
+                break;
+            case [var buffer]:
+                RandomAccess.Write(handle, buffer.Span, offset);
+                break;
+            default:
+                RandomAccess.Write(handle, zeroes, offset);
+                break;
         }
     }
 
@@ -23,8 +30,12 @@ public partial class DiskSpacePool
         ReturnOffset(offset);
     }
 
-    private ValueTask EraseSegmentAsync(long offset)
-        => zeroes.IsEmpty ? ValueTask.CompletedTask : RandomAccess.WriteAsync(handle, zeroes, offset);
+    private ValueTask EraseSegmentAsync(long offset) => zeroes switch
+    {
+        [] => ValueTask.CompletedTask,
+        [var buffer] => RandomAccess.WriteAsync(handle, buffer, offset),
+        _ => RandomAccess.WriteAsync(handle, zeroes, offset),
+    };
     
     private async ValueTask ReleaseSegmentAsync(long offset)
     {

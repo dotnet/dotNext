@@ -4,6 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.Caching;
 
+using static Collections.Generic.List;
+
 /// <summary>
 /// Represents a pool of segments of the limited size on the disk.
 /// </summary>
@@ -26,14 +28,16 @@ public partial class DiskSpacePool : Disposable
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxSegmentSize);
 
         long preallocationSize;
-        if (options.DontCleanDiskSpace)
+        if (options.OptimizedDiskAllocation)
         {
             preallocationSize = options.ExpectedNumberOfSegments * (long)maxSegmentSize;
+            zeroes = [];
         }
         else
         {
-            maxSegmentSize = AlignSegmentSize(maxSegmentSize, Environment.SystemPageSize);
-            zeroes = GC.AllocateArray<byte>(maxSegmentSize, pinned: true);
+            var pageSize = Environment.SystemPageSize;
+            maxSegmentSize = AlignSegmentSize(maxSegmentSize, pageSize);
+            zeroes = AllocateZeroedBuffer(options.ZeroedBufferPagesCount, maxSegmentSize, pageSize);
             preallocationSize = 0L;
         }
 
@@ -63,6 +67,15 @@ public partial class DiskSpacePool : Disposable
             // page size is always a multiple of 2^n
             var remainder = segmentSize & (alignment - 1);
             return remainder is 0 ? segmentSize : checked(segmentSize - remainder + alignment);
+        }
+
+        static IReadOnlyList<ReadOnlyMemory<byte>> AllocateZeroedBuffer(int zeroedBufferPagesCount, int segmentSize, int pageSize)
+        {
+            var bufferSize = zeroedBufferPagesCount is 0
+                ? segmentSize
+                : checked(zeroedBufferPagesCount * pageSize);
+
+            return Repeat<ReadOnlyMemory<byte>>(GC.AllocateArray<byte>(bufferSize, pinned: true), segmentSize / bufferSize);
         }
     }
 
@@ -279,27 +292,51 @@ public partial class DiskSpacePool : Disposable
     public readonly struct Options
     {
         private readonly int segments;
+        private readonly int zeroBufPages;
+        private readonly bool normalAllocation;
         
         /// <summary>
         /// Determines whether the asynchronous I/O is preferred.
         /// </summary>
         public bool IsAsynchronous { get; init; }
-        
+
         /// <summary>
-        /// Determines whether the pool should not clean up the disk space occupied by the released segment.
+        /// Indicates that the allocation of the data on disk is optimized.
         /// </summary>
-        public bool DontCleanDiskSpace { get; init; }
+        /// <remarks>
+        /// The segment typically doesn't contain meaningful payload for a whole size of the segment. To reduce disk
+        /// space consumption, this parameter can be set to <see langword="true"/> by the cost of I/O performance.
+        /// </remarks>
+        public bool OptimizedDiskAllocation
+        {
+            get => !normalAllocation;
+            init => normalAllocation = !value;
+        }
 
         /// <summary>
         /// Gets or sets the expected number of segments to preallocate the disk space.
         /// </summary>
         /// <remarks>
-        /// It has no effect if <see cref="DontCleanDiskSpace"/> is set to <see langword="false"/>.
+        /// It has no effect if <see cref="OptimizedDiskAllocation"/> is set to <see langword="true"/>.
         /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
         public int ExpectedNumberOfSegments
         {
             get => segments > 0 ? segments : 1;
             init => segments = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        }
+
+        /// <summary>
+        /// Gets a number of memory pages reserved for zeroed buffer.
+        /// </summary>
+        /// <remarks>
+        /// Zero means automatic detection of necessary number of pages.
+        /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than zero.</exception>
+        public int ZeroedBufferPagesCount
+        {
+            get => zeroBufPages;
+            init => zeroBufPages = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         internal FileOptions FileOptions
@@ -323,6 +360,6 @@ public partial class DiskSpacePool : Disposable
         }
 
         internal FileAttributes FileAttributes
-            => DontCleanDiskSpace ? FileAttributes.NotContentIndexed : FileAttributes.NotContentIndexed | FileAttributes.SparseFile;
+            => OptimizedDiskAllocation ? FileAttributes.NotContentIndexed : FileAttributes.NotContentIndexed | FileAttributes.SparseFile;
     }
 }
