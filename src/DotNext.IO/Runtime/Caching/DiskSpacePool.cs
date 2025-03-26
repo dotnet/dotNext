@@ -37,7 +37,7 @@ public partial class DiskSpacePool : Disposable
         {
             var pageSize = Environment.SystemPageSize;
             maxSegmentSize = AlignSegmentSize(maxSegmentSize, pageSize);
-            zeroes = AllocateZeroedBuffer(options.ZeroedBufferPagesCount, maxSegmentSize, pageSize);
+            zeroes = AllocateZeroedBuffer(maxSegmentSize, pageSize);
             preallocationSize = 0L;
         }
 
@@ -62,20 +62,38 @@ public partial class DiskSpacePool : Disposable
 
         static int AlignSegmentSize(int segmentSize, int alignment)
         {
-            Debug.Assert(int.IsPow2(alignment));
-            
-            // page size is always a multiple of 2^n
-            var remainder = segmentSize & (alignment - 1);
+            var remainder = segmentSize % alignment;
             return remainder is 0 ? segmentSize : checked(segmentSize - remainder + alignment);
         }
 
-        static IReadOnlyList<ReadOnlyMemory<byte>> AllocateZeroedBuffer(int zeroedBufferPagesCount, int segmentSize, int pageSize)
+        static IReadOnlyList<ReadOnlyMemory<byte>> AllocateZeroedBuffer(int segmentSize, int pageSize)
         {
-            var bufferSize = zeroedBufferPagesCount is 0
-                ? segmentSize
-                : checked(zeroedBufferPagesCount * pageSize);
+            Debug.Assert(segmentSize % pageSize is 0);
+            
+            Memory<byte> buffer;
+            if (OperatingSystem.IsWindows())
+            {
+                // for efficient scatter/gather on Windows, the buffer needs to be page aligned
+                buffer = GC.AllocateUninitializedArray<byte>(pageSize * 2, pinned: true);
 
-            return Repeat<ReadOnlyMemory<byte>>(GC.AllocateArray<byte>(bufferSize, pinned: true), segmentSize / bufferSize);
+                var address = (nuint)Intrinsics.AddressOf(in buffer.Span[0]); // pinned already
+                var remainder = (int)(address % (uint)pageSize);
+
+                buffer = buffer.Slice(remainder is 0 ? 0 : pageSize - remainder, pageSize);
+                Debug.Assert(Intrinsics.AddressOf(in buffer.Span[0]) % pageSize is 0);
+            
+                buffer.Span.Clear();
+            }
+            else
+            {
+                // matches Linux's UIO_FASTIOV, which is the number of 'struct iovec' that get stackalloced in the Linux kernel
+                const int ioVecStackallocThreshold = 8;
+
+                var bufferSize = segmentSize / ioVecStackallocThreshold;
+                buffer = GC.AllocateArray<byte>(bufferSize < pageSize ? segmentSize : bufferSize, pinned: true);
+            }
+
+            return Repeat<ReadOnlyMemory<byte>>(buffer, segmentSize / buffer.Length);
         }
     }
 
@@ -292,7 +310,6 @@ public partial class DiskSpacePool : Disposable
     public readonly struct Options
     {
         private readonly int segments;
-        private readonly int zeroBufPages;
         private readonly bool normalAllocation;
         
         /// <summary>
@@ -326,19 +343,6 @@ public partial class DiskSpacePool : Disposable
             init => segments = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
-        /// <summary>
-        /// Gets a number of memory pages reserved for zeroed buffer.
-        /// </summary>
-        /// <remarks>
-        /// Zero means automatic detection of necessary number of pages.
-        /// </remarks>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than zero.</exception>
-        public int ZeroedBufferPagesCount
-        {
-            get => zeroBufPages;
-            init => zeroBufPages = value >= 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-        }
-
         internal FileOptions FileOptions
         {
             get
@@ -360,6 +364,6 @@ public partial class DiskSpacePool : Disposable
         }
 
         internal FileAttributes FileAttributes
-            => OptimizedDiskAllocation ? FileAttributes.NotContentIndexed : FileAttributes.NotContentIndexed | FileAttributes.SparseFile;
+            => OptimizedDiskAllocation ? FileAttributes.NotContentIndexed | FileAttributes.SparseFile : FileAttributes.NotContentIndexed;
     }
 }
