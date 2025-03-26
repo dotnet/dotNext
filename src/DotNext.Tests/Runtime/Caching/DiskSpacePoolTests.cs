@@ -14,9 +14,10 @@ public sealed class DiskSpacePoolTests : Test
         using var pool = new DiskSpacePool(maxSegmentSize: 1028 * 1024,
             new() { IsAsynchronous = true, OptimizedDiskAllocation = optimizedDiskAllocation, ExpectedNumberOfSegments = 3 });
 
-        var t1 = Task.Run(RentSegment);
-        var t2 = Task.Run(RentSegment);
-        var t3 = Task.Run(RentSegment);
+        var rent = pool.Rent;
+        var t1 = Task.Run(rent);
+        var t2 = Task.Run(rent);
+        var t3 = Task.Run(rent);
 
         var segments =  await Task.WhenAll(t1, t2, t3);
 
@@ -29,8 +30,6 @@ public sealed class DiskSpacePoolTests : Test
         Equal(expected, actual);
 
         Disposable.Dispose(segments);
-
-        DiskSpacePool.Segment RentSegment() => pool.Rent();
     }
 
     [Fact]
