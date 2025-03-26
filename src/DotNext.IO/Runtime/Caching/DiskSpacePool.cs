@@ -30,15 +30,15 @@ public partial class DiskSpacePool : Disposable
         long preallocationSize;
         if (options.OptimizedDiskAllocation)
         {
-            preallocationSize = options.ExpectedNumberOfSegments * (long)maxSegmentSize;
-            zeroes = [];
-        }
-        else
-        {
             var pageSize = Environment.SystemPageSize;
             maxSegmentSize = AlignSegmentSize(maxSegmentSize, pageSize);
             zeroes = AllocateZeroedBuffer(maxSegmentSize, pageSize);
             preallocationSize = 0L;
+        }
+        else
+        {
+            preallocationSize = options.ExpectedNumberOfSegments * (long)maxSegmentSize;
+            zeroes = [];
         }
 
         handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, options.FileOptions, preallocationSize);
