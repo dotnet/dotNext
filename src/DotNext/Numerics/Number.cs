@@ -108,7 +108,7 @@ public static partial class Number
     /// <param name="value">The value to check.</param>
     /// <returns><see langword="true"/> if <paramref name="value"/> is a prime number; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is negative or zero.</exception>
-    public static bool IsPrime<T>(T value)
+    public static bool IsPrime<T>(this T value)
         where T : struct, IBinaryNumber<T>, ISignedNumber<T>, IShiftOperators<T, int, T>
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
@@ -221,4 +221,29 @@ public static partial class Number
             return success;
         }
     }
+
+    /// <summary>
+    /// Rounds up the value to the multiple of the specified multiplier.
+    /// </summary>
+    /// <param name="value">The value to round up.</param>
+    /// <param name="multiplier">The multiplier.</param>
+    /// <typeparam name="T">The type of the number.</typeparam>
+    /// <returns><see cref="value"/> rounded up to the multiple of <see cref="multiplier"/>.</returns>
+    public static T RoundUp<T>(this T value, T multiplier)
+        where T : struct, IUnsignedNumber<T>, IModulusOperators<T, T, T>
+    {
+        var other = RoundDown(value, multiplier);
+        return other == value ? value : checked(other + multiplier);
+    }
+
+    /// <summary>
+    /// Rounds down the value to the multiple of the specified multiplier.
+    /// </summary>
+    /// <param name="value">The value to round down.</param>
+    /// <param name="multiplier">The multiplier.</param>
+    /// <typeparam name="T">The type of the number.</typeparam>
+    /// <returns><see cref="value"/> rounded down to the multiple of <see cref="multiplier"/>.</returns>
+    public static T RoundDown<T>(this T value, T multiplier)
+        where T : struct, IUnsignedNumber<T>, IModulusOperators<T, T, T>
+        => value - value % multiplier;
 }

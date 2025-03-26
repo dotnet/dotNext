@@ -4,7 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.Caching;
 
-using static Collections.Generic.List;
+using Number = Numerics.Number;
+using List = Collections.Generic.List;
 
 /// <summary>
 /// Represents a pool of segments of the limited size on the disk.
@@ -31,7 +32,7 @@ public partial class DiskSpacePool : Disposable
         if (options.OptimizedDiskAllocation)
         {
             var pageSize = Environment.SystemPageSize;
-            maxSegmentSize = AlignSegmentSize(maxSegmentSize, pageSize);
+            maxSegmentSize = (int)Number.RoundUp((uint)maxSegmentSize, (uint)pageSize);
             zeroes = AllocateZeroedBuffer(maxSegmentSize, pageSize);
             preallocationSize = 0L;
         }
@@ -58,12 +59,6 @@ public partial class DiskSpacePool : Disposable
                 var errorCode = posix_fadvise(handle.DangerousGetHandle(), 0L, 0L, POSIX_FADV_NOREUSE);
                 Debug.Assert(errorCode is 0);
             }
-        }
-
-        static int AlignSegmentSize(int segmentSize, int alignment)
-        {
-            var remainder = segmentSize % alignment;
-            return remainder is 0 ? segmentSize : checked(segmentSize - remainder + alignment);
         }
 
         static IReadOnlyList<ReadOnlyMemory<byte>> AllocateZeroedBuffer(int segmentSize, int pageSize)
@@ -93,7 +88,7 @@ public partial class DiskSpacePool : Disposable
                 buffer = GC.AllocateArray<byte>(bufferSize < pageSize ? segmentSize : bufferSize, pinned: true);
             }
 
-            return Repeat<ReadOnlyMemory<byte>>(buffer, segmentSize / buffer.Length);
+            return List.Repeat<ReadOnlyMemory<byte>>(buffer, segmentSize / buffer.Length);
         }
     }
 
