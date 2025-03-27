@@ -29,8 +29,6 @@
       href: core/softref.md
     - name: TypeMap
       href: core/typem.md
-    - name: In-Memory Cache
-      href: core/cache.md
     - name: GC Notifications
       href : core/gcnotif.md
     - name: Value References
@@ -44,6 +42,11 @@
       href: io/buffers.md
     - name: Memory-Mapped File
       href: io/mmfile.md
+- name: Concurrent Cache
+  href: cache/index.md
+  items:
+    - name: On-disk cache
+      href: cache/ondisk.md
 - name: Threading
   href: threading/index.md
   items:
