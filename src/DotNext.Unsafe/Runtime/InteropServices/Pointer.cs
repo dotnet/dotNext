@@ -1,19 +1,18 @@
 using System.Buffers;
-using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DotNext.Patterns;
 using CancellationToken = System.Threading.CancellationToken;
 using MemoryHandle = System.Buffers.MemoryHandle;
 using Pointer = System.Reflection.Pointer;
 
 namespace DotNext.Runtime.InteropServices;
 
+using Buffers;
 using Collections.Generic;
-using MemorySource = Buffers.UnmanagedMemory<byte>;
+using Patterns;
 
 /// <summary>
 /// CLS-compliant typed pointer for .NET languages without direct support of pointer data type.
@@ -371,8 +370,8 @@ public readonly struct Pointer<T> :
             for (int count; length > 0; length -= count, source += count)
             {
                 count = int.CreateSaturating(length);
-                using var manager = new MemorySource(source, count);
-                await destination.WriteAsync(manager.Memory, token).ConfigureAwait(false);
+                var memory = new UnmanagedMemory<byte>(source, count).Memory;
+                await destination.WriteAsync(memory, token).ConfigureAwait(false);
             }
         }
     }
@@ -456,8 +455,8 @@ public readonly struct Pointer<T> :
             var total = 0L;
             for (int bytesRead; length > 0L; length -= bytesRead, destination += bytesRead, total += bytesRead)
             {
-                using var manager = new MemorySource(destination, int.CreateSaturating(length));
-                if ((bytesRead = await source.ReadAsync(manager.Memory, token).ConfigureAwait(false)) is 0)
+                var memory = new UnmanagedMemory<byte>(destination, int.CreateSaturating(length)).Memory;
+                if ((bytesRead = await source.ReadAsync(memory, token).ConfigureAwait(false)) is 0)
                     break;
             }
 
@@ -1039,10 +1038,8 @@ public readonly struct Pointer<T> :
     /// </summary>
     /// <param name="length">The number of elements in the memory.</param>
     /// <returns>The instance of memory owner.</returns>
-    public IMemoryOwner<T> ToMemoryOwner(int length)
-        => IsNull || length is 0
-            ? EmptyMemoryOwner.Instance
-            : new Buffers.UnmanagedMemory<T>(Address, length);
+    public unsafe IMemoryOwner<T> ToMemoryOwner(int length)
+        => IsNull || length is 0 ? EmptyMemoryOwner.Instance : new UnmanagedMemory<T>(value, length);
 
     /// <summary>
     /// Obtains pointer to the memory represented by given memory handle.
@@ -1138,7 +1135,7 @@ public readonly struct Pointer<T> :
     /// </summary>
     /// <returns>The hexadecimal value of this pointer.</returns>
     public override string ToString() => Address.ToString("X");
-
+    
     private sealed class EmptyMemoryOwner : IMemoryOwner<T>, ISingleton<EmptyMemoryOwner>
     {
         public static EmptyMemoryOwner Instance { get; } = new();
