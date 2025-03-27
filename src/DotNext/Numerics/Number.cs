@@ -228,7 +228,7 @@ public static partial class Number
     /// <param name="value">The value to round up.</param>
     /// <param name="multiplier">The multiplier.</param>
     /// <typeparam name="T">The type of the number.</typeparam>
-    /// <returns><see cref="value"/> rounded up to the multiple of <see cref="multiplier"/>.</returns>
+    /// <returns><paramref name="value"/> rounded up to the multiple of <paramref name="multiplier"/>.</returns>
     public static T RoundUp<T>(this T value, T multiplier)
         where T : struct, IUnsignedNumber<T>, IModulusOperators<T, T, T>
     {
@@ -242,7 +242,7 @@ public static partial class Number
     /// <param name="value">The value to round down.</param>
     /// <param name="multiplier">The multiplier.</param>
     /// <typeparam name="T">The type of the number.</typeparam>
-    /// <returns><see cref="value"/> rounded down to the multiple of <see cref="multiplier"/>.</returns>
+    /// <returns><paramref name="value"/> rounded down to the multiple of <paramref name="multiplier"/>.</returns>
     public static T RoundDown<T>(this T value, T multiplier)
         where T : struct, IUnsignedNumber<T>, IModulusOperators<T, T, T>
         => value - value % multiplier;
