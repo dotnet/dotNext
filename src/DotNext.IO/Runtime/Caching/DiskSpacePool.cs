@@ -359,6 +359,6 @@ public partial class DiskSpacePool : Disposable
         }
 
         internal FileAttributes FileAttributes
-            => OptimizedDiskAllocation ? FileAttributes.NotContentIndexed | FileAttributes.SparseFile : FileAttributes.NotContentIndexed;
+            => normalAllocation ? FileAttributes.NotContentIndexed : FileAttributes.NotContentIndexed | FileAttributes.SparseFile;
     }
 }
