@@ -12,7 +12,6 @@ namespace DotNext.Runtime.InteropServices;
 
 using Buffers;
 using Collections.Generic;
-using Patterns;
 
 /// <summary>
 /// CLS-compliant typed pointer for .NET languages without direct support of pointer data type.
@@ -1039,7 +1038,7 @@ public readonly struct Pointer<T> :
     /// <param name="length">The number of elements in the memory.</param>
     /// <returns>The instance of memory owner.</returns>
     public unsafe IMemoryOwner<T> ToMemoryOwner(int length)
-        => IsNull || length is 0 ? EmptyMemoryOwner.Instance : new UnmanagedMemory<T>(value, length);
+        => IsNull || length is 0 ? UnmanagedMemory<T>.Empty() : new UnmanagedMemory<T>(value, length);
 
     /// <summary>
     /// Obtains pointer to the memory represented by given memory handle.
@@ -1135,20 +1134,4 @@ public readonly struct Pointer<T> :
     /// </summary>
     /// <returns>The hexadecimal value of this pointer.</returns>
     public override string ToString() => Address.ToString("X");
-    
-    private sealed class EmptyMemoryOwner : IMemoryOwner<T>, ISingleton<EmptyMemoryOwner>
-    {
-        public static EmptyMemoryOwner Instance { get; } = new();
-
-        private EmptyMemoryOwner()
-        {
-        }
-        
-        void IDisposable.Dispose()
-        {
-            // nothing to dispose
-        }
-
-        Memory<T> IMemoryOwner<T>.Memory => Memory<T>.Empty;
-    }
 }
