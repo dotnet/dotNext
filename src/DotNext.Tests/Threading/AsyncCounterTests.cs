@@ -71,4 +71,14 @@ public sealed class AsyncCounterTests : Test
 
         Equal(0L, counter.Value);
     }
+
+    [Fact]
+    public static void IncrementWithUpperBound()
+    {
+        const long maxValue = 2L;
+        using var counter = new AsyncCounter(0);
+        True(counter.TryIncrement(maxValue));
+        True(counter.TryIncrement(maxValue));
+        False(counter.TryIncrement(maxValue));
+    }
 }

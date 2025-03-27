@@ -25,6 +25,15 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 
         internal void Increment(long delta) => Value = checked(Value + delta);
 
+        internal bool TryIncrement(long maxValue)
+        {
+            bool result;
+            if (result = Value < maxValue)
+                Value += 1L;
+
+            return result;
+        }
+
         internal void Decrement() => Value--;
 
         internal bool TryReset()
@@ -140,6 +149,19 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         }
     }
 
+    /// <summary>
+    /// Attempts to increment this counter.
+    /// </summary>
+    /// <param name="maxValue">The maximum allowed value of this counter.</param>
+    /// <returns><see langword="true"/> if successfully incremented; <see langword="false"/> on overflow.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxValue"/> is negative or zero.</exception>
+    public bool TryIncrement(long maxValue)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxValue);
+
+        return TryIncrementCore(maxValue);
+    }
+
     private void IncrementCore(long delta)
     {
         Debug.Assert(delta > 0L);
@@ -148,20 +170,40 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         lock (SyncRoot)
         {
             manager.Increment(delta);
-
-            for (LinkedValueTaskCompletionSource<bool>? current = WaitQueueHead, next; current is not null && manager.Value > 0L; current = next)
-            {
-                next = current.Next;
-
-                if (RemoveAndSignal(current, out var resumable))
-                    manager.Decrement();
-
-                if (resumable)
-                    detachedQueue.Add(current);
-            }
+            DrainWaitQueue(ref detachedQueue);
         }
 
         detachedQueue.First?.Unwind();
+    }
+
+    private bool TryIncrementCore(long maxValue)
+    {
+        Debug.Assert(maxValue > 0);
+        
+        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
+        bool result;
+        lock (SyncRoot)
+        {
+            result = manager.TryIncrement(maxValue);
+            DrainWaitQueue(ref detachedQueue);
+        }
+
+        detachedQueue.First?.Unwind();
+        return result;
+    }
+
+    private void DrainWaitQueue(ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
+    {
+        for (LinkedValueTaskCompletionSource<bool>? current = WaitQueueHead, next; current is not null && manager.Value > 0L; current = next)
+        {
+            next = current.Next;
+
+            if (RemoveAndSignal(current, out var resumable))
+                manager.Decrement();
+
+            if (resumable)
+                detachedQueue.Add(current);
+        }
     }
 
     /// <inheritdoc/>
