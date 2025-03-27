@@ -148,7 +148,8 @@ public partial class DiskSpacePool : Disposable
     /// <summary>
     /// Provides the random access to the data within the segment.
     /// </summary>
-    public sealed class Segment : Disposable, IAsyncDisposable
+    [StructLayout(LayoutKind.Auto)]
+    public readonly struct Segment : IDisposable, IAsyncDisposable
     {
         private readonly WeakReference<DiskSpacePool?> poolRef;
         private readonly long absoluteOffset;
@@ -190,7 +191,7 @@ public partial class DiskSpacePool : Disposable
             ValueTask task;
             if (!poolRef.TryGetTarget(out var pool))
             {
-                task = new(DisposedTask);
+                task = ValueTask.FromException(new ObjectDisposedException(nameof(Segment)));
             }
             else if (offset < 0 || (uint)(offset + buffer.Length) > (uint)pool.MaxSegmentSize)
             {
@@ -235,7 +236,7 @@ public partial class DiskSpacePool : Disposable
             ValueTask<int> task;
             if (!poolRef.TryGetTarget(out var pool))
             {
-                task = new(GetDisposedTask<int>());
+                task = ValueTask.FromException<int>(new ObjectDisposedException(nameof(Segment)));
             }
             else if ((uint)offset > (uint)pool.MaxSegmentSize)
             {
@@ -260,22 +261,17 @@ public partial class DiskSpacePool : Disposable
         public Stream CreateStream() => new SegmentStream(poolRef, absoluteOffset);
 
         /// <inheritdoc/>
-        protected override void Dispose(bool disposing)
+        public void Dispose()
         {
-            if (disposing)
+            if (poolRef.TryGetTarget(out var target))
             {
-                if (poolRef.TryGetTarget(out var target))
-                {
-                    poolRef.SetTarget(target: null);
-                    target.ReleaseSegment(absoluteOffset);
-                }
+                poolRef.SetTarget(target: null);
+                target.ReleaseSegment(absoluteOffset);
             }
-
-            base.Dispose(disposing);
         }
 
         /// <inheritdoc/>
-        protected override ValueTask DisposeAsyncCore()
+        public ValueTask DisposeAsync()
         {
             ValueTask task;
             if (poolRef.TryGetTarget(out var target))
@@ -290,9 +286,6 @@ public partial class DiskSpacePool : Disposable
 
             return task;
         }
-
-        /// <inheritdoc cref="IAsyncDisposable.DisposeAsync()"/>
-        public new ValueTask DisposeAsync() => base.DisposeAsync();
 
         /// <inheritdoc/>
         public override string ToString() => absoluteOffset.ToString();
