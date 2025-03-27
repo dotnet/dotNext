@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using DotNext.Patterns;
 using CancellationToken = System.Threading.CancellationToken;
 using MemoryHandle = System.Buffers.MemoryHandle;
 using Pointer = System.Reflection.Pointer;
@@ -1038,9 +1039,9 @@ public readonly struct Pointer<T> :
     /// </summary>
     /// <param name="length">The number of elements in the memory.</param>
     /// <returns>The instance of memory owner.</returns>
-    public unsafe IMemoryOwner<T> ToMemoryOwner(int length)
-        => IsNull
-            ? Buffers.UnmanagedMemory<T>.CreateEmpty()
+    public IMemoryOwner<T> ToMemoryOwner(int length)
+        => IsNull || length is 0
+            ? EmptyMemoryOwner.Instance
             : new Buffers.UnmanagedMemory<T>(Address, length);
 
     /// <summary>
@@ -1137,4 +1138,20 @@ public readonly struct Pointer<T> :
     /// </summary>
     /// <returns>The hexadecimal value of this pointer.</returns>
     public override string ToString() => Address.ToString("X");
+
+    private sealed class EmptyMemoryOwner : IMemoryOwner<T>, ISingleton<EmptyMemoryOwner>
+    {
+        public static EmptyMemoryOwner Instance { get; } = new();
+
+        private EmptyMemoryOwner()
+        {
+        }
+        
+        void IDisposable.Dispose()
+        {
+            // nothing to dispose
+        }
+
+        Memory<T> IMemoryOwner<T>.Memory => Memory<T>.Empty;
+    }
 }

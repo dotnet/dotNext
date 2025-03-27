@@ -97,10 +97,6 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
     private readonly bool owner;
     private void* address;
 
-    private UnmanagedMemory()
-    {
-    }
-
     internal UnmanagedMemory(nint address, int length)
     {
         Debug.Assert(address is not 0);
@@ -108,8 +104,6 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
         this.address = (void*)address;
         Length = length;
     }
-
-    internal static UnmanagedMemory<T> CreateEmpty() => new();
 
     private protected UnmanagedMemory(int length, delegate*<nuint, nuint, void* > allocator)
     {
