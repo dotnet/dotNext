@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using DotNext.IO;
 
@@ -7,9 +8,23 @@ using Buffers;
 
 public partial class DiskSpacePool
 {
-    private sealed class SegmentStream(WeakReference<DiskSpacePool?> pool, long absoluteOffset) : RandomAccessStream
+    private sealed class SegmentStream(SegmentHandle handle) : RandomAccessStream
     {
-        private int length = pool.TryGetTarget(out var target) ? target.MaxSegmentSize : 0;
+        private int length = handle.TryGetOwner() is { } owner ? owner.MaxSegmentSize : 0;
+        
+        private bool TryGetOwnerAndOffset([NotNullWhen(true)] out DiskSpacePool? owner, out long absoluteOffset)
+        {
+            if (handle.TryGetOwner() is { } ownerCopy)
+            {
+                owner = ownerCopy;
+                absoluteOffset = handle.Offset;
+                return true;
+            }
+
+            owner = null;
+            absoluteOffset = 0L;
+            return false;
+        }
         
         public override void Flush()
         {
@@ -21,8 +36,8 @@ public partial class DiskSpacePool
 
         public override void SetLength(long value)
         {
-            ObjectDisposedException.ThrowIf(!pool.TryGetTarget(out var target), this);
-            ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value, (uint)target.MaxSegmentSize, nameof(value));
+            ObjectDisposedException.ThrowIf(!TryGetOwnerAndOffset(out var owner, out _), this);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value, (uint)owner.MaxSegmentSize, nameof(value));
 
             length = (int)value;
         }
@@ -33,7 +48,7 @@ public partial class DiskSpacePool
         
         public override long Length => length;
 
-        private void Write(DiskSpacePool pool, ReadOnlySpan<byte> buffer, int offset, int length)
+        private void Write(DiskSpacePool pool, long absoluteOffset, ReadOnlySpan<byte> buffer, int offset, int length)
         {
             buffer = buffer.TrimLength(length);
             pool.Write(absoluteOffset, buffer, offset);
@@ -42,23 +57,24 @@ public partial class DiskSpacePool
 
         protected override void Write(ReadOnlySpan<byte> buffer, long offset)
         {
-            ObjectDisposedException.ThrowIf(!pool.TryGetTarget(out var target), this);
+            ObjectDisposedException.ThrowIf(!TryGetOwnerAndOffset(out var owner, out var absoluteOffset), this);
 
-            var newLength = target.MaxSegmentSize - offset;
+            var newLength = owner.MaxSegmentSize - offset;
             if (newLength > 0L)
             {
-                Write(target, buffer, (int)offset, (int)newLength);
+                Write(owner, absoluteOffset, buffer, (int)offset, (int)newLength);
             }
         }
 
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-        private async ValueTask WriteAsync(DiskSpacePool pool, ReadOnlyMemory<byte> buffer, int offset, int length, CancellationToken token)
+        private async ValueTask WriteAsync(DiskSpacePool pool, long absoluteOffset, ReadOnlyMemory<byte> buffer, int offset, int length,
+            CancellationToken token)
         {
-            await WriteWithoutLengthAdjustmentAsync(pool, buffer, offset, length, token).ConfigureAwait(false);
+            await WriteWithoutLengthAdjustmentAsync(pool, absoluteOffset, buffer, offset, length, token).ConfigureAwait(false);
             this.length = int.Max(this.length, buffer.Length + offset);
         }
 
-        private ValueTask WriteWithoutLengthAdjustmentAsync(DiskSpacePool pool, ReadOnlyMemory<byte> buffer, int offset, int length,
+        private ValueTask WriteWithoutLengthAdjustmentAsync(DiskSpacePool pool, long absoluteOffset, ReadOnlyMemory<byte> buffer, int offset, int length,
             CancellationToken token)
             => pool.WriteAsync(absoluteOffset, buffer.TrimLength(length), offset, token);
 
@@ -67,15 +83,15 @@ public partial class DiskSpacePool
             ValueTask task;
             long newLength;
 
-            if (!pool.TryGetTarget(out var target))
+            if (!TryGetOwnerAndOffset(out var owner, out var absoluteOffset))
             {
                 task = ValueTask.FromException(new ObjectDisposedException(GetType().Name));
             }
-            else if ((newLength = target.MaxSegmentSize - offset) > 0L)
+            else if ((newLength = owner.MaxSegmentSize - offset) > 0L)
             {
-                task = length == target.MaxSegmentSize
-                    ? WriteWithoutLengthAdjustmentAsync(target, buffer, (int)offset, (int)newLength, token)
-                    : WriteAsync(target, buffer, (int)offset, (int)newLength, token);
+                task = length == owner.MaxSegmentSize
+                    ? WriteWithoutLengthAdjustmentAsync(owner, absoluteOffset, buffer, (int)offset, (int)newLength, token)
+                    : WriteAsync(owner, absoluteOffset, buffer, (int)offset, (int)newLength, token);
             }
             else
             {
@@ -87,11 +103,11 @@ public partial class DiskSpacePool
 
         protected override int Read(Span<byte> buffer, long offset)
         {
-            ObjectDisposedException.ThrowIf(!pool.TryGetTarget(out var target), this);
+            ObjectDisposedException.ThrowIf(!TryGetOwnerAndOffset(out var owner, out var absoluteOffset), this);
 
             var newLength = length - offset;
 
-            return newLength > 0L ? target.Read(absoluteOffset, buffer, (int)offset, (int)newLength) : 0;
+            return newLength > 0L ? owner.Read(absoluteOffset, buffer, (int)offset, (int)newLength) : 0;
         }
 
         protected override ValueTask<int> ReadAsync(Memory<byte> buffer, long offset, CancellationToken token)
@@ -99,13 +115,13 @@ public partial class DiskSpacePool
             ValueTask<int> task;
             long newLength;
 
-            if (!pool.TryGetTarget(out var target))
+            if (!TryGetOwnerAndOffset(out var owner, out var absoluteOffset))
             {
                 task = ValueTask.FromException<int>(new ObjectDisposedException(GetType().Name));
             }
             else if ((newLength = length - offset) > 0L)
             {
-                task = target.ReadAsync(absoluteOffset, buffer, (int)offset, (int)newLength, token);
+                task = owner.ReadAsync(absoluteOffset, buffer, (int)offset, (int)newLength, token);
             }
             else
             {

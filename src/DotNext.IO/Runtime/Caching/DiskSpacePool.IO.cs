@@ -36,12 +36,6 @@ public partial class DiskSpacePool
         [var buffer] => RandomAccess.WriteAsync(handle, buffer, offset),
         _ => RandomAccess.WriteAsync(handle, zeroes, offset),
     };
-    
-    private async ValueTask ReleaseSegmentAsync(long offset)
-    {
-        await EraseSegmentAsync(offset).ConfigureAwait(false);
-        ReturnOffset(offset);
-    }
 
     private void Write(long absoluteOffset, ReadOnlySpan<byte> buffer, int segmentOffset)
         => RandomAccess.Write(handle, buffer, absoluteOffset + segmentOffset);

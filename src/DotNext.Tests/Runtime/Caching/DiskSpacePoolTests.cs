@@ -29,7 +29,7 @@ public sealed class DiskSpacePoolTests : Test
         Equal(actual.Length, await last.ReadAsync(actual));
         Equal(expected, actual);
 
-        Disposable.Dispose(segments);
+        Disposable.Dispose<DiskSpacePool.Segment>(segments);
     }
 
     [Fact]

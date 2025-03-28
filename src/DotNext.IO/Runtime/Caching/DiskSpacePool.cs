@@ -115,8 +115,17 @@ public partial class DiskSpacePool : Disposable
         get
         {
             var result = 0;
-            for (var node = freeList; node is not null; node = node.Next)
-                result++;
+            for (SegmentHandle? node = freeList, next; node is not null; node = next)
+            {
+                if (node.TryGetNext(out next))
+                {
+                    result++;
+                }
+                else
+                {
+                    next = freeList;
+                }
+            }
 
             return result;
         }
@@ -130,7 +139,7 @@ public partial class DiskSpacePool : Disposable
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
-        return new(this, RentOffset());
+        return new(RentOffset());
     }
 
     /// <inheritdoc/>
@@ -151,13 +160,23 @@ public partial class DiskSpacePool : Disposable
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Segment : IDisposable, IAsyncDisposable
     {
-        private readonly WeakReference<DiskSpacePool?> poolRef;
-        private readonly long absoluteOffset;
+        private readonly SegmentHandle handle;
 
-        internal Segment(DiskSpacePool pool, long offset)
+        internal Segment(SegmentHandle handle) => this.handle = handle;
+
+        [MemberNotNullWhen(true, nameof(handle))]
+        private bool TryGetOwnerAndOffset([NotNullWhen(true)] out DiskSpacePool? owner, out long absoluteOffset)
         {
-            poolRef = new(pool, trackResurrection: false);
-            absoluteOffset = offset;
+            if (handle?.TryGetOwner() is { } ownerCopy)
+            {
+                owner = ownerCopy;
+                absoluteOffset = handle.Offset;
+                return true;
+            }
+
+            owner = null;
+            absoluteOffset = 0L;
+            return false;
         }
 
         /// <summary>
@@ -169,12 +188,13 @@ public partial class DiskSpacePool : Disposable
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="offset"/> is negative; or <paramref name="buffer"/> is too large.</exception>
         public void Write(ReadOnlySpan<byte> buffer, int offset = 0)
         {
-            ObjectDisposedException.ThrowIf(!poolRef.TryGetTarget(out var pool), this);
+            if (!TryGetOwnerAndOffset(out var owner, out var absoluteOffset))
+                throw new ObjectDisposedException(nameof(Segment));
 
-            if (offset < 0 || (uint)(offset + buffer.Length) > (uint)pool.MaxSegmentSize)
+            if (offset < 0 || (uint)(offset + buffer.Length) > (uint)owner.MaxSegmentSize)
                 throw new ArgumentOutOfRangeException(nameof(offset));
 
-            pool.Write(absoluteOffset, buffer, offset);
+            owner.Write(absoluteOffset, buffer, offset);
         }
 
         /// <summary>
@@ -189,17 +209,17 @@ public partial class DiskSpacePool : Disposable
         public ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, int offset = 0, CancellationToken token = default)
         {
             ValueTask task;
-            if (!poolRef.TryGetTarget(out var pool))
+            if (!TryGetOwnerAndOffset(out var owner, out var absoluteOffset))
             {
                 task = ValueTask.FromException(new ObjectDisposedException(nameof(Segment)));
             }
-            else if (offset < 0 || (uint)(offset + buffer.Length) > (uint)pool.MaxSegmentSize)
+            else if (offset < 0 || (uint)(offset + buffer.Length) > (uint)owner.MaxSegmentSize)
             {
                 task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(offset)));
             }
             else
             {
-                task = pool.WriteAsync(absoluteOffset, buffer, offset, token);
+                task = owner.WriteAsync(absoluteOffset, buffer, offset, token);
             }
 
             return task;
@@ -215,10 +235,12 @@ public partial class DiskSpacePool : Disposable
         /// <exception cref="ObjectDisposedException">The segment has been returned to the pool.</exception>
         public int Read(Span<byte> buffer, int offset = 0)
         {
-            ObjectDisposedException.ThrowIf(!poolRef.TryGetTarget(out var pool), this);
-            ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)offset, (uint)pool.MaxSegmentSize, nameof(offset));
+            if (!TryGetOwnerAndOffset(out var owner, out var absoluteOffset))
+                throw new ObjectDisposedException(nameof(Segment));
 
-            return pool.Read(absoluteOffset, buffer, offset);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)offset, (uint)owner.MaxSegmentSize, nameof(offset));
+
+            return owner.Read(absoluteOffset, buffer, offset);
         }
 
         /// <summary>
@@ -234,17 +256,17 @@ public partial class DiskSpacePool : Disposable
         public ValueTask<int> ReadAsync(Memory<byte> buffer, int offset = 0, CancellationToken token = default)
         {
             ValueTask<int> task;
-            if (!poolRef.TryGetTarget(out var pool))
+            if (!TryGetOwnerAndOffset(out var owner, out var absoluteOffset))
             {
                 task = ValueTask.FromException<int>(new ObjectDisposedException(nameof(Segment)));
             }
-            else if ((uint)offset > (uint)pool.MaxSegmentSize)
+            else if ((uint)offset > (uint)owner.MaxSegmentSize)
             {
                 task = ValueTask.FromException<int>(new ArgumentOutOfRangeException(nameof(offset)));
             }
             else
             {
-                task = pool.ReadAsync(absoluteOffset, buffer, offset, token);
+                task = owner.ReadAsync(absoluteOffset, buffer, offset, token);
             }
 
             return task;
@@ -258,39 +280,42 @@ public partial class DiskSpacePool : Disposable
         /// You can adjust it by calling <see cref="Stream.SetLength"/>.
         /// </remarks>
         /// <returns>A stream representing this segment.</returns>
-        public Stream CreateStream() => new SegmentStream(poolRef, absoluteOffset);
+        public Stream CreateStream()
+        {
+            if (handle is null)
+                throw new ObjectDisposedException(nameof(Segment));
+
+            return new SegmentStream(handle);
+        }
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            if (poolRef.TryGetTarget(out var target))
+            if (TryGetOwnerAndOffset(out var owner, out var absoluteOffset))
             {
-                poolRef.SetTarget(target: null);
-                target.ReleaseSegment(absoluteOffset);
+                owner.ReleaseSegment(absoluteOffset);
+                handle.MoveToDisposedState();
             }
         }
 
         /// <inheritdoc/>
         public ValueTask DisposeAsync()
-        {
-            ValueTask task;
-            if (poolRef.TryGetTarget(out var target))
-            {
-                poolRef.SetTarget(target: null);
-                task = target.ReleaseSegmentAsync(absoluteOffset);
-            }
-            else
-            {
-                task = ValueTask.CompletedTask;
-            }
+            => handle is not null ? ReleaseSegmentAsync(handle) : ValueTask.CompletedTask;
 
-            return task;
+        private static async ValueTask ReleaseSegmentAsync(SegmentHandle handle)
+        {
+            if (handle.TryGetOwner() is { } owner)
+            {
+                await owner.EraseSegmentAsync(handle.Offset).ConfigureAwait(false);
+                owner.ReturnOffset(handle.Offset);
+                handle.MoveToDisposedState();
+            }
         }
 
         /// <inheritdoc/>
-        public override string ToString() => absoluteOffset.ToString();
+        public override string? ToString() => handle?.Offset.ToString();
     }
-    
+
     /// <summary>
     /// Represents configuration of the pool.
     /// </summary>
