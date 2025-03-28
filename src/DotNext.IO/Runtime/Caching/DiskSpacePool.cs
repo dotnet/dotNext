@@ -160,7 +160,7 @@ public partial class DiskSpacePool : Disposable
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Segment : IDisposable, IAsyncDisposable
     {
-        private readonly SegmentHandle handle;
+        private readonly SegmentHandle? handle;
 
         internal Segment(SegmentHandle handle) => this.handle = handle;
 
@@ -281,12 +281,7 @@ public partial class DiskSpacePool : Disposable
         /// </remarks>
         /// <returns>A stream representing this segment.</returns>
         public Stream CreateStream()
-        {
-            if (handle is null)
-                throw new ObjectDisposedException(nameof(Segment));
-
-            return new SegmentStream(handle);
-        }
+            => handle is not null ? new SegmentStream(handle) : throw new ObjectDisposedException(nameof(Segment));
 
         /// <inheritdoc/>
         public void Dispose()
