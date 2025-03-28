@@ -142,4 +142,14 @@ public sealed class DiskSpacePoolTests : Test
         // check EOS
         Equal(0, await stream.ReadAsync(buffer));
     }
+
+    [Fact]
+    public static async Task DefaultSegment()
+    {
+        Throws<ObjectDisposedException>(new DiskSpacePool.Segment().CreateStream);
+        Throws<ObjectDisposedException>(static () => new DiskSpacePool.Segment().Read([]));
+        Throws<ObjectDisposedException>(static () => new DiskSpacePool.Segment().Write([]));
+        await ThrowsAsync<ObjectDisposedException>(new DiskSpacePool.Segment().ReadAsync(Memory<byte>.Empty).AsTask);
+        await ThrowsAsync<ObjectDisposedException>(new DiskSpacePool.Segment().WriteAsync(ReadOnlyMemory<byte>.Empty).AsTask);
+    }
 }
