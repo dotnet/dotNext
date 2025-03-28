@@ -314,7 +314,7 @@ public partial class DiskSpacePool : Disposable
         }
 
         /// <inheritdoc/>
-        public override string? ToString() => handle?.Offset.ToString();
+        public override string? ToString() => handle?.ToString();
     }
 
     /// <summary>

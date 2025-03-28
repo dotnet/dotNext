@@ -81,5 +81,7 @@ public partial class DiskSpacePool
         internal void MoveToDisposedState() => ownerOrNext = Sentinel.Instance;
         
         internal long Offset => offset;
+
+        public override string ToString() => offset.ToString();
     }
 }
