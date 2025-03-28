@@ -306,9 +306,15 @@ public partial class DiskSpacePool : Disposable
         {
             if (handle.TryGetOwner() is { } owner)
             {
-                await owner.EraseSegmentAsync(handle.Offset).ConfigureAwait(false);
-                owner.ReturnOffset(handle.Offset);
-                handle.MoveToDisposedState();
+                try
+                {
+                    await owner.EraseSegmentAsync(handle.Offset).ConfigureAwait(false);
+                }
+                finally
+                {
+                    owner.ReturnOffset(handle.Offset);
+                    handle.MoveToDisposedState();
+                }
             }
         }
 

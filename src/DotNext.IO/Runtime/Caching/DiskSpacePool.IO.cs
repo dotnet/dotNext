@@ -26,8 +26,14 @@ public partial class DiskSpacePool
 
     private void ReleaseSegment(long offset)
     {
-        EraseSegment(offset);
-        ReturnOffset(offset);
+        try
+        {
+            EraseSegment(offset);
+        }
+        finally
+        {
+            ReturnOffset(offset);
+        }
     }
 
     private ValueTask EraseSegmentAsync(long offset) => zeroes switch
