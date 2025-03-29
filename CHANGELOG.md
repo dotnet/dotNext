@@ -1,6 +1,30 @@
 Release Notes
 ====
 
+# 03-29-2025
+<a href="https://www.nuget.org/packages/dotnext/5.20.0">DotNext 5.20.0</a>
+* Introduced `List.Repeat()` static method to construct read-only lists of repeatable items. Similar to [Enumerable.Repeat](https://learn.microsoft.com/en-us/dotnet/api/system.linq.enumerable.repeat) but returns [IReadOnlyList&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlylist-1)
+* Added `Number.RoundUp` and `Number.RoundDown` generic extension methods to round the numbers to the multiple of the specified value
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.20.0">DotNext.Metaprogramming 5.20.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.20.0">DotNext.Unsafe 5.20.0</a>
+* Added static methods to `UnmanagedMemory` for page-aligned memory allocation
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.20.0">DotNext.Threading 5.20.0</a>
+* Improved debugging experience of `RandomAccessCache<TKey, TValue>` class
+* Added `AsyncCounter.TryIncrement` method that allows to specify the upper bound of the counter. As a result, `AsyncCounter` class can be used as a rate limiter
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.20.0">DotNext.IO 5.20.0</a>
+* Introduced `DiskSpacePool` class to assist with building caches when the cached data stored on the disk rather than in memory. The class can be combined with `RandomAccessCache<TKey, TValue>` to organize L1 application-specific caches (while L0 resides in memory and can be organized on top of `RandomAccessCache<TKey, TValue>` as well)
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.20.0">DotNext.Net.Cluster 5.20.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.20.0">DotNext.AspNetCore.Cluster 5.20.0</a>
+* Updated dependencies
+
 # 03-06-2025
 <a href="https://www.nuget.org/packages/dotnext/5.19.1">DotNext 5.19.1</a>
 * Smallish performance improvements of `SparseBufferWriter<T>`

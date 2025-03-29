@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 03-28-2025
+Release Date: 03-29-2025
 
 <a href="https://www.nuget.org/packages/dotnext/5.20.0">DotNext 5.20.0</a>
 * Introduced `List.Repeat()` static method to construct read-only lists of repeatable items. Similar to [Enumerable.Repeat](https://learn.microsoft.com/en-us/dotnet/api/system.linq.enumerable.repeat) but returns [IReadOnlyList&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlylist-1)
