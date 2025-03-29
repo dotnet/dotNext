@@ -11,28 +11,27 @@ public partial class DiskSpacePool
     
     private SegmentHandle RentOffset()
     {
-        SegmentHandle result;
-        for (SegmentHandle? headCopy = freeList, tmp;; headCopy = tmp)
+        SegmentHandle? tmp;
+        for (var headCopy = freeList;; headCopy = tmp)
         {
             if (headCopy is null)
             {
-                result = new(this);
+                tmp = new(this);
                 break;
             }
 
             tmp = headCopy.TryGetNext(out var next)
                 ? Interlocked.CompareExchange(ref freeList, next, headCopy)
                 : freeList;
-            
+
             if (ReferenceEquals(tmp, headCopy))
             {
                 tmp.MoveToCompletedState(this);
-                result = tmp;
                 break;
             }
         }
 
-        return result;
+        return tmp;
     }
 
     private void ReturnOffset(long offset)
