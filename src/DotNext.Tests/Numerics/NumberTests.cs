@@ -67,11 +67,29 @@ public sealed class NumberTests : Test
     [Fact]
     public static void IsPrime()
     {
-        False(Number.IsPrime(1L));
-        True(Number.IsPrime(2L));
+        False(1L.IsPrime());
+        True(2L.IsPrime());
         True(Number.IsPrime<sbyte>(3));
-        False(Number.IsPrime(4));
+        False(4.IsPrime());
 
-        True(Number.IsPrime(1669));
+        True(1669.IsPrime());
+    }
+
+    [Theory]
+    [InlineData(8192U, 4097U, 4096U)]
+    [InlineData(6U, 5U, 2U)]
+    [InlineData(8U, 8U, 8U)]
+    public static void RoundUp(uint expected, uint value, uint multiplier)
+    {
+        Equal(expected, value.RoundUp(multiplier));
+    }
+    
+    [Theory]
+    [InlineData(4096U, 4097U, 4096U)]
+    [InlineData(4U, 5U, 2U)]
+    [InlineData(8U, 8U, 8U)]
+    public static void RoundDown(uint expected, uint value, uint multiplier)
+    {
+        Equal(expected, value.RoundDown(multiplier));
     }
 }

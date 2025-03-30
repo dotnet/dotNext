@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
+using Numerics;
 using Runtime.InteropServices;
 
 /// <summary>
@@ -78,52 +79,65 @@ public static class UnmanagedMemory
         ArgumentNullException.ThrowIfNull(pointer);
         ArgumentOutOfRangeException.ThrowIfNegative(length);
 
-        if (length > 0)
-        {
-            var manager = new UnmanagedMemory<T>((nint)pointer, length);
+        return length > 0
+            ? new UnmanagedMemory<T>(pointer, length).Memory
+            : Memory<T>.Empty;
+    }
 
-            // GC perf: manager doesn't own the memory represented by the pointer, no need to call Dispose from finalizer
-            GC.SuppressFinalize(manager);
-            return manager.Memory;
-        }
+    /// <summary>
+    /// Allocates a specified number of system pages.
+    /// </summary>
+    /// <param name="pageCount">The number of system pages to be allocated.</param>
+    /// <returns>A memory owner that represents allocated system pages.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="pageCount"/> is negative or zero.</exception>
+    public static IMemoryOwner<byte> AllocateSystemPages(int pageCount)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(pageCount);
 
-        return Memory<T>.Empty;
+        return pageCount is 0 ? UnmanagedMemory<byte>.Empty() : new SystemPageManager(pageCount);
+    }
+
+    /// <summary>
+    /// Allocates page-aligned memory.
+    /// </summary>
+    /// <param name="size">The number of bytes to be allocated.</param>
+    /// <param name="roundUpSize"><see langword="true"/> to round up the <paramref name="size"/> to the page size; otherwise, <see langword="false"/>.</param>
+    /// <returns>A memory owner that represents page-aligned memory block.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="size"/> is negative or zero.</exception>
+    [CLSCompliant(false)]
+    public static IMemoryOwner<byte> AllocatePageAlignedMemory(int size, bool roundUpSize = false)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(size);
+
+        return size is 0 ? UnmanagedMemory<byte>.Empty() : new SystemPageManager(size, roundUpSize);
     }
 }
 
 internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
     where T : unmanaged
 {
-    private readonly bool owner;
-    private void* address;
+    private protected void* address;
 
     private UnmanagedMemory()
     {
     }
+    
+    internal UnmanagedMemory(void* address, int length)
+    {
+        Debug.Assert(address is not null);
+
+        this.address = address;
+        Length = length;
+    }
 
     internal UnmanagedMemory(nint address, int length)
+        : this((void*)address, length)
     {
-        Debug.Assert(address is not 0);
-
-        this.address = (void*)address;
-        Length = length;
     }
 
-    internal static UnmanagedMemory<T> CreateEmpty() => new();
+    internal static UnmanagedMemory<T> Empty() => new();
 
-    private protected UnmanagedMemory(int length, delegate*<nuint, nuint, void* > allocator)
-    {
-        Debug.Assert(length > 0);
-        Debug.Assert(allocator is not null);
-
-        address = allocator((nuint)length, (nuint)sizeof(T));
-        owner = true;
-        Length = length;
-    }
-
-    protected nuint Address => (nuint)address;
-
-    public int Length { get; private set; }
+    public int Length { get; private protected set; }
 
     public ref T this[int index]
     {
@@ -133,15 +147,6 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
 
             return ref Unsafe.Add(ref Unsafe.AsRef<T>(address), index);
         }
-    }
-
-    internal void Reallocate(int length)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
-
-        var size = (nuint)length * (nuint)sizeof(T);
-        address = NativeMemory.Realloc(address, size);
-        Length = length;
     }
 
     public sealed override Span<T> GetSpan()
@@ -162,11 +167,6 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
 
     protected override void Dispose(bool disposing)
     {
-        if (address is not null && owner)
-        {
-            NativeMemory.Free(address);
-        }
-
         address = null;
         Length = 0;
     }
@@ -179,7 +179,7 @@ internal class UnmanagedMemoryOwner<T> : UnmanagedMemory<T>, IUnmanagedMemory<T>
     where T : unmanaged
 {
     private protected unsafe UnmanagedMemoryOwner(int length, delegate*<nuint, nuint, void* > allocator)
-        : base(length, allocator)
+        : base(allocator((nuint)length, (nuint)sizeof(T)), length)
     {
     }
 
@@ -189,11 +189,79 @@ internal class UnmanagedMemoryOwner<T> : UnmanagedMemory<T>, IUnmanagedMemory<T>
     internal static unsafe UnmanagedMemoryOwner<T> CreateZeroed(int length)
         => new(length, &NativeMemory.AllocZeroed);
 
-    public Pointer<T> Pointer => new(Address);
+    public unsafe Pointer<T> Pointer => new((T*)address);
 
     Span<T> IUnmanagedMemory<T>.Span => GetSpan();
 
-    void IUnmanagedMemory<T>.Reallocate(int length) => Reallocate(length);
+    unsafe void IUnmanagedMemory<T>.Reallocate(int length)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
+
+        var size = (uint)length * (nuint)(uint)sizeof(T);
+        address = NativeMemory.Realloc(address, size);
+        Length = length;
+    }
 
     bool IUnmanagedMemory<T>.SupportsReallocation => true;
+
+    protected override unsafe void Dispose(bool disposing)
+    {
+        if (address is not null)
+        {
+            NativeMemory.Free(address);
+        }
+
+        base.Dispose(disposing);
+    }
+
+    [SuppressMessage("Reliability", "CA2015", Justification = "The caller must hold the reference to the memory object.")]
+    ~UnmanagedMemoryOwner() => Dispose(disposing: false);
+}
+
+file sealed unsafe class SystemPageManager : UnmanagedMemory<byte>
+{
+    internal SystemPageManager(int pageCount)
+        : base(Allocate(pageCount, out var length), length)
+    {
+    }
+
+    internal SystemPageManager(int sizeInBytes, bool roundUp)
+        : base(Allocate(ref sizeInBytes, roundUp), sizeInBytes)
+    {
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (address is not null)
+        {
+            NativeMemory.AlignedFree(address);
+        }
+
+        base.Dispose(disposing);
+    }
+
+    private static void* Allocate(int pageCount, out int length)
+    {
+        Debug.Assert(pageCount > 0);
+        
+        var pageSize = Environment.SystemPageSize;
+        length = checked(pageSize * pageCount);
+        return NativeMemory.AlignedAlloc((uint)length, (uint)pageSize);
+    }
+
+    private static void* Allocate(ref int sizeInBytes, bool roundUp)
+    {
+        var size = (uint)sizeInBytes;
+        var pageSize = (uint)Environment.SystemPageSize;
+        if (roundUp)
+        {
+            size = size.RoundUp(pageSize);
+            sizeInBytes = checked((int)size);
+        }
+
+        return NativeMemory.AlignedAlloc(size, pageSize);
+    }
+    
+    [SuppressMessage("Reliability", "CA2015", Justification = "The caller must hold the reference to the memory object.")]
+    ~SystemPageManager() => Dispose(disposing: false);
 }

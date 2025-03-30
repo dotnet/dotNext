@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.IO.MemoryMappedFiles;
+using System.Runtime.InteropServices;
 
 namespace DotNext.IO.MemoryMappedFiles;
 
@@ -18,6 +19,8 @@ internal sealed unsafe class MappedMemory : MemoryManager<byte>, IMappedMemory
         accessor.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
         this.accessor = accessor;
     }
+
+    SafeBuffer IMappedMemory.Buffer => accessor.SafeMemoryMappedViewHandle;
 
     int IUnmanagedMemory<byte>.Length => (int)accessor.Capacity;
 

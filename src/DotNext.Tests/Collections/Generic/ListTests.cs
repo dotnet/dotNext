@@ -148,4 +148,20 @@ public sealed class ListTests : Test
         NotEmpty(collection);
         Equal(42, collection.First());
     }
+
+    [Fact]
+    public static void Repeat()
+    {
+        const decimal value = 42M;
+        var collection = List.Repeat(value, 0);
+        Empty(collection);
+
+        collection = List.Repeat(value, 1);
+        Collection(collection, VerifyValue);
+
+        collection = List.Repeat(value, 2);
+        Collection(collection, VerifyValue, VerifyValue);
+
+        static void VerifyValue(decimal actual) => Equal(value, actual);
+    }
 }

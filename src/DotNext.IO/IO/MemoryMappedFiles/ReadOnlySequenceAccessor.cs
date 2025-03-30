@@ -31,12 +31,12 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
             Segment = segment;
         }
 
-        public override unsafe Span<byte> GetSpan()
+        public override Span<byte> GetSpan()
             => Cursor.GetSpan(in Segment);
 
         public override Memory<byte> Memory => CreateMemory(Segment.Length);
 
-        public override unsafe MemoryHandle Pin(int index)
+        public override MemoryHandle Pin(int index)
             => Cursor.Pin(in Segment, index);
 
         public override void Unpin()
@@ -201,7 +201,7 @@ public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSour
         if (current != window)
         {
             segment?.ReleasePointerAndDispose();
-            ptr = default;
+            ptr = null;
             current = window;
             segment = mappedFile.CreateViewAccessor(window.Offset, window.Length, MemoryMappedFileAccess.Read);
             segment.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);

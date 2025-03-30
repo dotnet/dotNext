@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
@@ -11,8 +10,8 @@ using Pointer = System.Reflection.Pointer;
 
 namespace DotNext.Runtime.InteropServices;
 
+using Buffers;
 using Collections.Generic;
-using MemorySource = Buffers.UnmanagedMemory<byte>;
 
 /// <summary>
 /// CLS-compliant typed pointer for .NET languages without direct support of pointer data type.
@@ -28,8 +27,8 @@ public readonly struct Pointer<T> :
     IEquatable<Pointer<T>>,
     IComparable<Pointer<T>>,
     IStrongBox,
-    ISupplier<IntPtr>,
-    ISupplier<UIntPtr>,
+    ISupplier<nint>,
+    ISupplier<nuint>,
     IPinnable,
     ISpanFormattable,
     IComparisonOperators<Pointer<T>, Pointer<T>, bool>,
@@ -370,8 +369,8 @@ public readonly struct Pointer<T> :
             for (int count; length > 0; length -= count, source += count)
             {
                 count = int.CreateSaturating(length);
-                using var manager = new MemorySource(source, count);
-                await destination.WriteAsync(manager.Memory, token).ConfigureAwait(false);
+                var memory = new UnmanagedMemory<byte>(source, count).Memory;
+                await destination.WriteAsync(memory, token).ConfigureAwait(false);
             }
         }
     }
@@ -450,13 +449,13 @@ public readonly struct Pointer<T> :
 
         return result;
 
-        static async ValueTask<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length, CancellationToken token)
+        static async ValueTask<long> ReadFromStreamAsync(Stream source, nint destination, long length, CancellationToken token)
         {
             var total = 0L;
             for (int bytesRead; length > 0L; length -= bytesRead, destination += bytesRead, total += bytesRead)
             {
-                using var manager = new MemorySource(destination, int.CreateSaturating(length));
-                if ((bytesRead = await source.ReadAsync(manager.Memory, token).ConfigureAwait(false)) is 0)
+                var memory = new UnmanagedMemory<byte>(destination, int.CreateSaturating(length)).Memory;
+                if ((bytesRead = await source.ReadAsync(memory, token).ConfigureAwait(false)) is 0)
                     break;
             }
 
@@ -1020,7 +1019,7 @@ public readonly struct Pointer<T> :
     public static implicit operator nint(Pointer<T> ptr) => ptr.Address;
 
     /// <inheritdoc/>
-    IntPtr ISupplier<IntPtr>.Invoke() => Address;
+    nint ISupplier<nint>.Invoke() => Address;
 
     /// <summary>
     /// Obtains pointer value (address) as <see cref="UIntPtr"/>.
@@ -1031,7 +1030,7 @@ public readonly struct Pointer<T> :
     public static unsafe implicit operator nuint(Pointer<T> ptr) => (nuint)ptr.value;
 
     /// <inheritdoc/>
-    unsafe UIntPtr ISupplier<UIntPtr>.Invoke() => (nuint)value;
+    unsafe nuint ISupplier<nuint>.Invoke() => (nuint)value;
 
     /// <summary>
     /// Converts this pointer the memory owner.
@@ -1039,9 +1038,7 @@ public readonly struct Pointer<T> :
     /// <param name="length">The number of elements in the memory.</param>
     /// <returns>The instance of memory owner.</returns>
     public unsafe IMemoryOwner<T> ToMemoryOwner(int length)
-        => IsNull
-            ? Buffers.UnmanagedMemory<T>.CreateEmpty()
-            : new Buffers.UnmanagedMemory<T>(Address, length);
+        => IsNull || length is 0 ? UnmanagedMemory<T>.Empty() : new UnmanagedMemory<T>(value, length);
 
     /// <summary>
     /// Obtains pointer to the memory represented by given memory handle.
