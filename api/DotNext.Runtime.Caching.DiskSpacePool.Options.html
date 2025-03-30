@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct RandomAccessCache&lt;TKey, TValue&gt;.ReadOrWriteSession | .NEXT </title>
+    <title>Struct DiskSpacePool.Options | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct RandomAccessCache&lt;TKey, TValue&gt;.ReadOrWriteSession | .NEXT ">
+    <meta name="title" content="Struct DiskSpacePool.Options | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,18 +65,14 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.Caching.DiskSpacePool.Options">
 
 
 
-  <h1 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession" class="text-break">Struct RandomAccessCache&lt;TKey, TValue&gt;.ReadOrWriteSession</h1>
-  <div class="markdown level0 summary"><p>Represents a session that can be used to read, modify or promote the cache record value.</p>
+  <h1 id="DotNext_Runtime_Caching_DiskSpacePool_Options" data-uid="DotNext.Runtime.Caching.DiskSpacePool.Options" class="text-break">Struct DiskSpacePool.Options</h1>
+  <div class="markdown level0 summary"><p>Represents configuration of the pool.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div class="implements">
-    <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
-  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -99,31 +95,28 @@
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Runtime.html">Runtime</a>.<a class="xref" href="DotNext.Runtime.Caching.html">Caching</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
-  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_syntax">Syntax</h5>
+  <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
+  <h5 id="DotNext_Runtime_Caching_DiskSpacePool_Options_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct RandomAccessCache&lt;TKey, TValue&gt;.ReadOrWriteSession : IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct DiskSpacePool.Options</code></pre>
   </div>
-  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>While session alive, the record cannot be evicted.</p>
-</div>
   <h3 id="properties">Properties
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_ValueRefOrNullRef.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ReadOrWriteSession.ValueRefOrNullRef%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_DiskSpacePool_Options_ExpectedNumberOfSegments.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.DiskSpacePool.Options.ExpectedNumberOfSegments%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L547">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Runtime/Caching/DiskSpacePool.cs/#L354">View Source</a>
   </span>
-  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_ValueRefOrNullRef_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.ValueRefOrNullRef*"></a>
-  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_ValueRefOrNullRef" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.ValueRefOrNullRef">ValueRefOrNullRef</h4>
-  <div class="markdown level1 summary"><p>Gets a reference to a value.</p>
+  <a id="DotNext_Runtime_Caching_DiskSpacePool_Options_ExpectedNumberOfSegments_" data-uid="DotNext.Runtime.Caching.DiskSpacePool.Options.ExpectedNumberOfSegments*"></a>
+  <h4 id="DotNext_Runtime_Caching_DiskSpacePool_Options_ExpectedNumberOfSegments" data-uid="DotNext.Runtime.Caching.DiskSpacePool.Options.ExpectedNumberOfSegments">ExpectedNumberOfSegments</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the expected number of segments to preallocate the disk space.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ref readonly TValue ValueRefOrNullRef { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public int ExpectedNumberOfSegments { get; init; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -135,48 +128,14 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">TValue</span></td>
-        <td><p>A reference to a value; or <see langowrd="null"></see> reference.</p>
-</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
-  <h3 id="methods">Methods
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_SetValue__1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ReadOrWriteSession.SetValue(%601)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L558">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_SetValue_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.SetValue*"></a>
-  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_SetValue__1_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.SetValue(`1)">SetValue(TValue)</h4>
-  <div class="markdown level1 summary"><p>Promotes or modifies the cache record value.</p>
+  <h5 id="DotNext_Runtime_Caching_DiskSpacePool_Options_ExpectedNumberOfSegments_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>It has no effect if <a class="xref" href="DotNext.Runtime.Caching.DiskSpacePool.Options.html#DotNext_Runtime_Caching_DiskSpacePool_Options_OptimizedDiskAllocation">OptimizedDiskAllocation</a> is set to <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>.</p>
 </div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void SetValue(TValue value)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TValue</span></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The value to promote or replace the existing value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
     <thead>
@@ -187,47 +146,29 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>The session is invalid; the value promotes more than once.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">value</code> is less than or equal to zero.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_TryGetValue__1__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ReadOrWriteSession.TryGetValue(%601%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_DiskSpacePool_Options_IsAsynchronous.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.DiskSpacePool.Options.IsAsynchronous%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L531">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Runtime/Caching/DiskSpacePool.cs/#L332">View Source</a>
   </span>
-  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_TryGetValue_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.TryGetValue*"></a>
-  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_TryGetValue__1__" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.TryGetValue(`1@)">TryGetValue(out TValue)</h4>
-  <div class="markdown level1 summary"><p>Tries to get the value of the cache record.</p>
+  <a id="DotNext_Runtime_Caching_DiskSpacePool_Options_IsAsynchronous_" data-uid="DotNext.Runtime.Caching.DiskSpacePool.Options.IsAsynchronous*"></a>
+  <h4 id="DotNext_Runtime_Caching_DiskSpacePool_Options_IsAsynchronous" data-uid="DotNext.Runtime.Caching.DiskSpacePool.Options.IsAsynchronous">IsAsynchronous</h4>
+  <div class="markdown level1 summary"><p>Determines whether the asynchronous I/O is preferred.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool TryGetValue(out TValue result)</code></pre>
+    <pre><code class="lang-csharp hljs">public bool IsAsynchronous { get; init; }</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TValue</span></td>
-        <td><span class="parametername">result</span></td>
-        <td><p>The value of the cache record.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
     <thead>
       <tr>
@@ -238,15 +179,45 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if value exists; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
-  <h3 id="implements">Implements</h3>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_DiskSpacePool_Options_OptimizedDiskAllocation.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.DiskSpacePool.Options.OptimizedDiskAllocation%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Runtime/Caching/DiskSpacePool.cs/#L341">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_DiskSpacePool_Options_OptimizedDiskAllocation_" data-uid="DotNext.Runtime.Caching.DiskSpacePool.Options.OptimizedDiskAllocation*"></a>
+  <h4 id="DotNext_Runtime_Caching_DiskSpacePool_Options_OptimizedDiskAllocation" data-uid="DotNext.Runtime.Caching.DiskSpacePool.Options.OptimizedDiskAllocation">OptimizedDiskAllocation</h4>
+  <div class="markdown level1 summary"><p>Indicates that the allocation of the data on disk is optimized.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool OptimizedDiskAllocation { get; init; }</code></pre>
   </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_DiskSpacePool_Options_OptimizedDiskAllocation_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The segment typically doesn't contain meaningful payload for a whole size of the segment. To reduce disk
+space consumption, this parameter can be set to <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> by the cost of I/O performance.</p>
+</div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
@@ -275,10 +246,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ReadOrWriteSession%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_DiskSpacePool_Options.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.DiskSpacePool.Options%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L500" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Runtime/Caching/DiskSpacePool.cs/#L323" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -5277,6 +5277,38 @@ references:
   isSpec: "True"
   fullName: DotNext.Buffers.UnmanagedMemory.Allocate
   nameWithType: UnmanagedMemory.Allocate
+- uid: DotNext.Buffers.UnmanagedMemory.AllocatePageAlignedMemory(System.Int32,System.Boolean)
+  name: AllocatePageAlignedMemory(int, bool)
+  href: api/DotNext.Buffers.UnmanagedMemory.html#DotNext_Buffers_UnmanagedMemory_AllocatePageAlignedMemory_System_Int32_System_Boolean_
+  commentId: M:DotNext.Buffers.UnmanagedMemory.AllocatePageAlignedMemory(System.Int32,System.Boolean)
+  name.vb: AllocatePageAlignedMemory(Integer, Boolean)
+  fullName: DotNext.Buffers.UnmanagedMemory.AllocatePageAlignedMemory(int, bool)
+  fullName.vb: DotNext.Buffers.UnmanagedMemory.AllocatePageAlignedMemory(Integer, Boolean)
+  nameWithType: UnmanagedMemory.AllocatePageAlignedMemory(int, bool)
+  nameWithType.vb: UnmanagedMemory.AllocatePageAlignedMemory(Integer, Boolean)
+- uid: DotNext.Buffers.UnmanagedMemory.AllocatePageAlignedMemory*
+  name: AllocatePageAlignedMemory
+  href: api/DotNext.Buffers.UnmanagedMemory.html#DotNext_Buffers_UnmanagedMemory_AllocatePageAlignedMemory_
+  commentId: Overload:DotNext.Buffers.UnmanagedMemory.AllocatePageAlignedMemory
+  isSpec: "True"
+  fullName: DotNext.Buffers.UnmanagedMemory.AllocatePageAlignedMemory
+  nameWithType: UnmanagedMemory.AllocatePageAlignedMemory
+- uid: DotNext.Buffers.UnmanagedMemory.AllocateSystemPages(System.Int32)
+  name: AllocateSystemPages(int)
+  href: api/DotNext.Buffers.UnmanagedMemory.html#DotNext_Buffers_UnmanagedMemory_AllocateSystemPages_System_Int32_
+  commentId: M:DotNext.Buffers.UnmanagedMemory.AllocateSystemPages(System.Int32)
+  name.vb: AllocateSystemPages(Integer)
+  fullName: DotNext.Buffers.UnmanagedMemory.AllocateSystemPages(int)
+  fullName.vb: DotNext.Buffers.UnmanagedMemory.AllocateSystemPages(Integer)
+  nameWithType: UnmanagedMemory.AllocateSystemPages(int)
+  nameWithType.vb: UnmanagedMemory.AllocateSystemPages(Integer)
+- uid: DotNext.Buffers.UnmanagedMemory.AllocateSystemPages*
+  name: AllocateSystemPages
+  href: api/DotNext.Buffers.UnmanagedMemory.html#DotNext_Buffers_UnmanagedMemory_AllocateSystemPages_
+  commentId: Overload:DotNext.Buffers.UnmanagedMemory.AllocateSystemPages
+  isSpec: "True"
+  fullName: DotNext.Buffers.UnmanagedMemory.AllocateSystemPages
+  nameWithType: UnmanagedMemory.AllocateSystemPages
 - uid: DotNext.Buffers.UnmanagedMemory.AllocateZeroed*
   name: AllocateZeroed
   href: api/DotNext.Buffers.UnmanagedMemory.html#DotNext_Buffers_UnmanagedMemory_AllocateZeroed_
@@ -7184,6 +7216,22 @@ references:
   fullName.vb: DotNext.Collections.Generic.List.RemoveRange(Of T)(System.Collections.Generic.List(Of T), System.Range)
   nameWithType: List.RemoveRange<T>(List<T>, Range)
   nameWithType.vb: List.RemoveRange(Of T)(List(Of T), Range)
+- uid: DotNext.Collections.Generic.List.Repeat*
+  name: Repeat
+  href: api/DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Repeat_
+  commentId: Overload:DotNext.Collections.Generic.List.Repeat
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.List.Repeat
+  nameWithType: List.Repeat
+- uid: DotNext.Collections.Generic.List.Repeat``1(``0,System.Int32)
+  name: Repeat<T>(T, int)
+  href: api/DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Repeat__1___0_System_Int32_
+  commentId: M:DotNext.Collections.Generic.List.Repeat``1(``0,System.Int32)
+  name.vb: Repeat(Of T)(T, Integer)
+  fullName: DotNext.Collections.Generic.List.Repeat<T>(T, int)
+  fullName.vb: DotNext.Collections.Generic.List.Repeat(Of T)(T, Integer)
+  nameWithType: List.Repeat<T>(T, int)
+  nameWithType.vb: List.Repeat(Of T)(T, Integer)
 - uid: DotNext.Collections.Generic.List.Singleton*
   name: Singleton
   href: api/DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Singleton_
@@ -15653,6 +15701,19 @@ references:
   commentId: T:DotNext.IO.MemoryMappedFiles.IMappedMemory
   fullName: DotNext.IO.MemoryMappedFiles.IMappedMemory
   nameWithType: IMappedMemory
+- uid: DotNext.IO.MemoryMappedFiles.IMappedMemory.Buffer
+  name: Buffer
+  href: api/DotNext.IO.MemoryMappedFiles.IMappedMemory.html#DotNext_IO_MemoryMappedFiles_IMappedMemory_Buffer
+  commentId: P:DotNext.IO.MemoryMappedFiles.IMappedMemory.Buffer
+  fullName: DotNext.IO.MemoryMappedFiles.IMappedMemory.Buffer
+  nameWithType: IMappedMemory.Buffer
+- uid: DotNext.IO.MemoryMappedFiles.IMappedMemory.Buffer*
+  name: Buffer
+  href: api/DotNext.IO.MemoryMappedFiles.IMappedMemory.html#DotNext_IO_MemoryMappedFiles_IMappedMemory_Buffer_
+  commentId: Overload:DotNext.IO.MemoryMappedFiles.IMappedMemory.Buffer
+  isSpec: "True"
+  fullName: DotNext.IO.MemoryMappedFiles.IMappedMemory.Buffer
+  nameWithType: IMappedMemory.Buffer
 - uid: DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor
   name: MemoryMappedDirectAccessor
   href: api/DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.html
@@ -35570,6 +35631,38 @@ references:
   fullName.vb: DotNext.Numerics.Number.Normalize(Of TInput, TOutput)(TInput, TInput, TInput)
   nameWithType: Number.Normalize<TInput, TOutput>(TInput, TInput, TInput)
   nameWithType.vb: Number.Normalize(Of TInput, TOutput)(TInput, TInput, TInput)
+- uid: DotNext.Numerics.Number.RoundDown*
+  name: RoundDown
+  href: api/DotNext.Numerics.Number.html#DotNext_Numerics_Number_RoundDown_
+  commentId: Overload:DotNext.Numerics.Number.RoundDown
+  isSpec: "True"
+  fullName: DotNext.Numerics.Number.RoundDown
+  nameWithType: Number.RoundDown
+- uid: DotNext.Numerics.Number.RoundDown``1(``0,``0)
+  name: RoundDown<T>(T, T)
+  href: api/DotNext.Numerics.Number.html#DotNext_Numerics_Number_RoundDown__1___0___0_
+  commentId: M:DotNext.Numerics.Number.RoundDown``1(``0,``0)
+  name.vb: RoundDown(Of T)(T, T)
+  fullName: DotNext.Numerics.Number.RoundDown<T>(T, T)
+  fullName.vb: DotNext.Numerics.Number.RoundDown(Of T)(T, T)
+  nameWithType: Number.RoundDown<T>(T, T)
+  nameWithType.vb: Number.RoundDown(Of T)(T, T)
+- uid: DotNext.Numerics.Number.RoundUp*
+  name: RoundUp
+  href: api/DotNext.Numerics.Number.html#DotNext_Numerics_Number_RoundUp_
+  commentId: Overload:DotNext.Numerics.Number.RoundUp
+  isSpec: "True"
+  fullName: DotNext.Numerics.Number.RoundUp
+  nameWithType: Number.RoundUp
+- uid: DotNext.Numerics.Number.RoundUp``1(``0,``0)
+  name: RoundUp<T>(T, T)
+  href: api/DotNext.Numerics.Number.html#DotNext_Numerics_Number_RoundUp__1___0___0_
+  commentId: M:DotNext.Numerics.Number.RoundUp``1(``0,``0)
+  name.vb: RoundUp(Of T)(T, T)
+  fullName: DotNext.Numerics.Number.RoundUp<T>(T, T)
+  fullName.vb: DotNext.Numerics.Number.RoundUp(Of T)(T, T)
+  nameWithType: Number.RoundUp<T>(T, T)
+  nameWithType.vb: Number.RoundUp(Of T)(T, T)
 - uid: DotNext.Numerics.Number.SetBit*
   name: SetBit
   href: api/DotNext.Numerics.Number.html#DotNext_Numerics_Number_SetBit_
@@ -39167,6 +39260,249 @@ references:
   fullName.vb: DotNext.Runtime.Caching.ConcurrentCache(Of TKey, TValue).TryUpdate
   nameWithType: ConcurrentCache<TKey, TValue>.TryUpdate
   nameWithType.vb: ConcurrentCache(Of TKey, TValue).TryUpdate
+- uid: DotNext.Runtime.Caching.DiskSpacePool
+  name: DiskSpacePool
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.html
+  commentId: T:DotNext.Runtime.Caching.DiskSpacePool
+  fullName: DotNext.Runtime.Caching.DiskSpacePool
+  nameWithType: DiskSpacePool
+- uid: DotNext.Runtime.Caching.DiskSpacePool.#ctor(System.Int32,DotNext.Runtime.Caching.DiskSpacePool.Options@)
+  name: DiskSpacePool(int, in Options)
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.html#DotNext_Runtime_Caching_DiskSpacePool__ctor_System_Int32_DotNext_Runtime_Caching_DiskSpacePool_Options__
+  commentId: M:DotNext.Runtime.Caching.DiskSpacePool.#ctor(System.Int32,DotNext.Runtime.Caching.DiskSpacePool.Options@)
+  name.vb: New(Integer, Options)
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.DiskSpacePool(int, in DotNext.Runtime.Caching.DiskSpacePool.Options)
+  fullName.vb: DotNext.Runtime.Caching.DiskSpacePool.New(Integer, DotNext.Runtime.Caching.DiskSpacePool.Options)
+  nameWithType: DiskSpacePool.DiskSpacePool(int, in DiskSpacePool.Options)
+  nameWithType.vb: DiskSpacePool.New(Integer, DiskSpacePool.Options)
+- uid: DotNext.Runtime.Caching.DiskSpacePool.#ctor(System.String,System.Int32,DotNext.Runtime.Caching.DiskSpacePool.Options@)
+  name: DiskSpacePool(string, int, in Options)
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.html#DotNext_Runtime_Caching_DiskSpacePool__ctor_System_String_System_Int32_DotNext_Runtime_Caching_DiskSpacePool_Options__
+  commentId: M:DotNext.Runtime.Caching.DiskSpacePool.#ctor(System.String,System.Int32,DotNext.Runtime.Caching.DiskSpacePool.Options@)
+  name.vb: New(String, Integer, Options)
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.DiskSpacePool(string, int, in DotNext.Runtime.Caching.DiskSpacePool.Options)
+  fullName.vb: DotNext.Runtime.Caching.DiskSpacePool.New(String, Integer, DotNext.Runtime.Caching.DiskSpacePool.Options)
+  nameWithType: DiskSpacePool.DiskSpacePool(string, int, in DiskSpacePool.Options)
+  nameWithType.vb: DiskSpacePool.New(String, Integer, DiskSpacePool.Options)
+- uid: DotNext.Runtime.Caching.DiskSpacePool.#ctor*
+  name: DiskSpacePool
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.html#DotNext_Runtime_Caching_DiskSpacePool__ctor_
+  commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.DiskSpacePool
+  fullName.vb: DotNext.Runtime.Caching.DiskSpacePool.New
+  nameWithType: DiskSpacePool.DiskSpacePool
+  nameWithType.vb: DiskSpacePool.New
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.html#DotNext_Runtime_Caching_DiskSpacePool_Dispose_System_Boolean_
+  commentId: M:DotNext.Runtime.Caching.DiskSpacePool.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Dispose(bool)
+  fullName.vb: DotNext.Runtime.Caching.DiskSpacePool.Dispose(Boolean)
+  nameWithType: DiskSpacePool.Dispose(bool)
+  nameWithType.vb: DiskSpacePool.Dispose(Boolean)
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Dispose*
+  name: Dispose
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.html#DotNext_Runtime_Caching_DiskSpacePool_Dispose_
+  commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.Dispose
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Dispose
+  nameWithType: DiskSpacePool.Dispose
+- uid: DotNext.Runtime.Caching.DiskSpacePool.MaxSegmentSize
+  name: MaxSegmentSize
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.html#DotNext_Runtime_Caching_DiskSpacePool_MaxSegmentSize
+  commentId: P:DotNext.Runtime.Caching.DiskSpacePool.MaxSegmentSize
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.MaxSegmentSize
+  nameWithType: DiskSpacePool.MaxSegmentSize
+- uid: DotNext.Runtime.Caching.DiskSpacePool.MaxSegmentSize*
+  name: MaxSegmentSize
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.html#DotNext_Runtime_Caching_DiskSpacePool_MaxSegmentSize_
+  commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.MaxSegmentSize
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.MaxSegmentSize
+  nameWithType: DiskSpacePool.MaxSegmentSize
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Options
+  name: DiskSpacePool.Options
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Options.html
+  commentId: T:DotNext.Runtime.Caching.DiskSpacePool.Options
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Options
+  nameWithType: DiskSpacePool.Options
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Options.ExpectedNumberOfSegments
+  name: ExpectedNumberOfSegments
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Options.html#DotNext_Runtime_Caching_DiskSpacePool_Options_ExpectedNumberOfSegments
+  commentId: P:DotNext.Runtime.Caching.DiskSpacePool.Options.ExpectedNumberOfSegments
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Options.ExpectedNumberOfSegments
+  nameWithType: DiskSpacePool.Options.ExpectedNumberOfSegments
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Options.ExpectedNumberOfSegments*
+  name: ExpectedNumberOfSegments
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Options.html#DotNext_Runtime_Caching_DiskSpacePool_Options_ExpectedNumberOfSegments_
+  commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.Options.ExpectedNumberOfSegments
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Options.ExpectedNumberOfSegments
+  nameWithType: DiskSpacePool.Options.ExpectedNumberOfSegments
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Options.IsAsynchronous
+  name: IsAsynchronous
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Options.html#DotNext_Runtime_Caching_DiskSpacePool_Options_IsAsynchronous
+  commentId: P:DotNext.Runtime.Caching.DiskSpacePool.Options.IsAsynchronous
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Options.IsAsynchronous
+  nameWithType: DiskSpacePool.Options.IsAsynchronous
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Options.IsAsynchronous*
+  name: IsAsynchronous
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Options.html#DotNext_Runtime_Caching_DiskSpacePool_Options_IsAsynchronous_
+  commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.Options.IsAsynchronous
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Options.IsAsynchronous
+  nameWithType: DiskSpacePool.Options.IsAsynchronous
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Options.OptimizedDiskAllocation
+  name: OptimizedDiskAllocation
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Options.html#DotNext_Runtime_Caching_DiskSpacePool_Options_OptimizedDiskAllocation
+  commentId: P:DotNext.Runtime.Caching.DiskSpacePool.Options.OptimizedDiskAllocation
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Options.OptimizedDiskAllocation
+  nameWithType: DiskSpacePool.Options.OptimizedDiskAllocation
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Options.OptimizedDiskAllocation*
+  name: OptimizedDiskAllocation
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Options.html#DotNext_Runtime_Caching_DiskSpacePool_Options_OptimizedDiskAllocation_
+  commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.Options.OptimizedDiskAllocation
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Options.OptimizedDiskAllocation
+  nameWithType: DiskSpacePool.Options.OptimizedDiskAllocation
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Rent
+  name: Rent()
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.html#DotNext_Runtime_Caching_DiskSpacePool_Rent
+  commentId: M:DotNext.Runtime.Caching.DiskSpacePool.Rent
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Rent()
+  nameWithType: DiskSpacePool.Rent()
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Rent*
+  name: Rent
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.html#DotNext_Runtime_Caching_DiskSpacePool_Rent_
+  commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.Rent
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Rent
+  nameWithType: DiskSpacePool.Rent
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment
+  name: DiskSpacePool.Segment
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html
+  commentId: T:DotNext.Runtime.Caching.DiskSpacePool.Segment
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment
+  nameWithType: DiskSpacePool.Segment
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.CreateStream
+  name: CreateStream()
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_CreateStream
+  commentId: M:DotNext.Runtime.Caching.DiskSpacePool.Segment.CreateStream
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.CreateStream()
+  nameWithType: DiskSpacePool.Segment.CreateStream()
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.CreateStream*
+  name: CreateStream
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_CreateStream_
+  commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.Segment.CreateStream
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.CreateStream
+  nameWithType: DiskSpacePool.Segment.CreateStream
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.Dispose
+  name: Dispose()
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_Dispose
+  commentId: M:DotNext.Runtime.Caching.DiskSpacePool.Segment.Dispose
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.Dispose()
+  nameWithType: DiskSpacePool.Segment.Dispose()
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.Dispose*
+  name: Dispose
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_Dispose_
+  commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.Segment.Dispose
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.Dispose
+  nameWithType: DiskSpacePool.Segment.Dispose
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_DisposeAsync
+  commentId: M:DotNext.Runtime.Caching.DiskSpacePool.Segment.DisposeAsync
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.DisposeAsync()
+  nameWithType: DiskSpacePool.Segment.DisposeAsync()
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_DisposeAsync_
+  commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.Segment.DisposeAsync
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.DisposeAsync
+  nameWithType: DiskSpacePool.Segment.DisposeAsync
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.Read(System.Span{System.Byte},System.Int32)
+  name: Read(Span<byte>, int)
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_Read_System_Span_System_Byte__System_Int32_
+  commentId: M:DotNext.Runtime.Caching.DiskSpacePool.Segment.Read(System.Span{System.Byte},System.Int32)
+  name.vb: Read(Span(Of Byte), Integer)
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.Read(System.Span<byte>, int)
+  fullName.vb: DotNext.Runtime.Caching.DiskSpacePool.Segment.Read(System.Span(Of Byte), Integer)
+  nameWithType: DiskSpacePool.Segment.Read(Span<byte>, int)
+  nameWithType.vb: DiskSpacePool.Segment.Read(Span(Of Byte), Integer)
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.Read*
+  name: Read
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_Read_
+  commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.Segment.Read
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.Read
+  nameWithType: DiskSpacePool.Segment.Read
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.ReadAsync(System.Memory{System.Byte},System.Int32,System.Threading.CancellationToken)
+  name: ReadAsync(Memory<byte>, int, CancellationToken)
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_ReadAsync_System_Memory_System_Byte__System_Int32_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.DiskSpacePool.Segment.ReadAsync(System.Memory{System.Byte},System.Int32,System.Threading.CancellationToken)
+  name.vb: ReadAsync(Memory(Of Byte), Integer, CancellationToken)
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.ReadAsync(System.Memory<byte>, int, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.DiskSpacePool.Segment.ReadAsync(System.Memory(Of Byte), Integer, System.Threading.CancellationToken)
+  nameWithType: DiskSpacePool.Segment.ReadAsync(Memory<byte>, int, CancellationToken)
+  nameWithType.vb: DiskSpacePool.Segment.ReadAsync(Memory(Of Byte), Integer, CancellationToken)
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.ReadAsync*
+  name: ReadAsync
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_ReadAsync_
+  commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.Segment.ReadAsync
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.ReadAsync
+  nameWithType: DiskSpacePool.Segment.ReadAsync
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.ToString
+  name: ToString()
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_ToString
+  commentId: M:DotNext.Runtime.Caching.DiskSpacePool.Segment.ToString
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.ToString()
+  nameWithType: DiskSpacePool.Segment.ToString()
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.ToString*
+  name: ToString
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_ToString_
+  commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.Segment.ToString
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.ToString
+  nameWithType: DiskSpacePool.Segment.ToString
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.Write(System.ReadOnlySpan{System.Byte},System.Int32)
+  name: Write(ReadOnlySpan<byte>, int)
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_Write_System_ReadOnlySpan_System_Byte__System_Int32_
+  commentId: M:DotNext.Runtime.Caching.DiskSpacePool.Segment.Write(System.ReadOnlySpan{System.Byte},System.Int32)
+  name.vb: Write(ReadOnlySpan(Of Byte), Integer)
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.Write(System.ReadOnlySpan<byte>, int)
+  fullName.vb: DotNext.Runtime.Caching.DiskSpacePool.Segment.Write(System.ReadOnlySpan(Of Byte), Integer)
+  nameWithType: DiskSpacePool.Segment.Write(ReadOnlySpan<byte>, int)
+  nameWithType.vb: DiskSpacePool.Segment.Write(ReadOnlySpan(Of Byte), Integer)
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.Write*
+  name: Write
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_Write_
+  commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.Segment.Write
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.Write
+  nameWithType: DiskSpacePool.Segment.Write
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Int32,System.Threading.CancellationToken)
+  name: WriteAsync(ReadOnlyMemory<byte>, int, CancellationToken)
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Int32_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.DiskSpacePool.Segment.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Int32,System.Threading.CancellationToken)
+  name.vb: WriteAsync(ReadOnlyMemory(Of Byte), Integer, CancellationToken)
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.WriteAsync(System.ReadOnlyMemory<byte>, int, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.DiskSpacePool.Segment.WriteAsync(System.ReadOnlyMemory(Of Byte), Integer, System.Threading.CancellationToken)
+  nameWithType: DiskSpacePool.Segment.WriteAsync(ReadOnlyMemory<byte>, int, CancellationToken)
+  nameWithType.vb: DiskSpacePool.Segment.WriteAsync(ReadOnlyMemory(Of Byte), Integer, CancellationToken)
+- uid: DotNext.Runtime.Caching.DiskSpacePool.Segment.WriteAsync*
+  name: WriteAsync
+  href: api/DotNext.Runtime.Caching.DiskSpacePool.Segment.html#DotNext_Runtime_Caching_DiskSpacePool_Segment_WriteAsync_
+  commentId: Overload:DotNext.Runtime.Caching.DiskSpacePool.Segment.WriteAsync
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.DiskSpacePool.Segment.WriteAsync
+  nameWithType: DiskSpacePool.Segment.WriteAsync
 - uid: DotNext.Runtime.Caching.RandomAccessCache`2
   name: RandomAccessCache<TKey, TValue>
   href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html
@@ -46217,6 +46553,22 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncCounter.TryDecrement
   nameWithType: AsyncCounter.TryDecrement
+- uid: DotNext.Threading.AsyncCounter.TryIncrement(System.Int64)
+  name: TryIncrement(long)
+  href: api/DotNext.Threading.AsyncCounter.html#DotNext_Threading_AsyncCounter_TryIncrement_System_Int64_
+  commentId: M:DotNext.Threading.AsyncCounter.TryIncrement(System.Int64)
+  name.vb: TryIncrement(Long)
+  fullName: DotNext.Threading.AsyncCounter.TryIncrement(long)
+  fullName.vb: DotNext.Threading.AsyncCounter.TryIncrement(Long)
+  nameWithType: AsyncCounter.TryIncrement(long)
+  nameWithType.vb: AsyncCounter.TryIncrement(Long)
+- uid: DotNext.Threading.AsyncCounter.TryIncrement*
+  name: TryIncrement
+  href: api/DotNext.Threading.AsyncCounter.html#DotNext_Threading_AsyncCounter_TryIncrement_
+  commentId: Overload:DotNext.Threading.AsyncCounter.TryIncrement
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncCounter.TryIncrement
+  nameWithType: AsyncCounter.TryIncrement
 - uid: DotNext.Threading.AsyncCounter.Value
   name: Value
   href: api/DotNext.Threading.AsyncCounter.html#DotNext_Threading_AsyncCounter_Value

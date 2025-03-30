@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Concurrent Cache | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Concurrent Cache | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="concurrent-cache">Concurrent Cache</h1>
+
+<p><a class="xref" href="../../api/DotNext.Runtime.Caching.RandomAccessCache-2.html">RandomAccessCache&lt;TKey,TValue&gt;</a> is a thread-safe and async-friendly cache based on <a href="https://cachemon.github.io/SIEVE-website/">SIEVE</a> eviction algorithm. It's more efficient than LRU/LFU and does not require a lock for read operations. In case of cache hit, the performance of reading cache record is very fast and scalable.</p>
+<div class="NOTE">
+<h5>Note</h5>
+<p>Time-based eviction policy is not supported.</p>
+</div>
+<h1 id="capacity-based-cache">Capacity-based cache</h1>
+<p><a class="xref" href="../../api/DotNext.Runtime.Caching.RandomAccessCache-2.html">RandomAccessCache&lt;TKey,TValue&gt;</a> is capacity-based cache. The cache can keep the specified maximum amount of items. When the capacity exceeds, the eldest item is evicted. The eviction process doesn't interfere with writers or readers, it runs in the background.</p>
+<p>All methods of the cache are asynchronous except <code>TryRead</code> that is designed to be extremely fast in case of cache hit. <code>ChangeAsync</code> is designed to be asynchronous because in case of cache miss the application needs to load the resource asynchronously. In the same time, multiple callers of cache trying to cache the same resource. This is a waste of resources because at least one caller is already in the process of resource loading. For other callers, it's better to wait. The following example demonstrates this pattern:</p>
+<pre><code class="lang-csharp">using DotNext.Runtime.Caching;
+
+var cache = new RandomAccessCache&lt;string, byte[]&gt;(100);
+
+async ValueTask&lt;byte[]&gt; ReadFile(string fileName)
+{
+    if (cache.TryRead(fileName, out var readSession))
+    {
+        // cache hit, the method can be completed synchronously
+        using (readSession)
+        {
+            return readSession.Value;
+        }
+    }
+    else
+    {
+        // Cache miss, load the file from file system.
+        // Other callers reached this branch are suspended
+        using var writeSession = await cache.ChangeAsync(fileName);
+        
+        // Resumed caller can see the value loaded by another concurrent flow, no need to load resource again
+        if (!writeSession.TryGetValue(out byte[] value))
+        {
+            // load resource asynchronously
+            value = await LoadFileFromDiskAsync(fileName);
+            writeSession.SetValue(value);
+        }
+        
+        return value;
+    }
+}
+</code></pre>
+<p>Until the session disposed, the cache record cannot be evicted. The concept of session is needed because the eviction process runs concurrently with the callers accessing the cache. In the same time, the cache evicts the record as soon as possible. Under the hood, the record chosen for eviction passes two phases: mark and sweep. The record marked for eviction can be in use by concurrent thread. In that case, eviction algorithm cannot sweep it. Instead, sweep phase is delayed while there is at least one reader of this value. The reader is an active session. When the last session closes, sweep phase executes immediately and the control passes to the custom eviction callback.</p>
+<h1 id="weight-based-cache">Weight-based cache</h1>
+<p><a class="xref" href="../../api/DotNext.Runtime.Caching.RandomAccessCache-3.html">RandomAccessCache&lt;TKey,TValue, TWeight&gt;</a> represents weight-based cache. Capacity-based cache is a special case of the weight-based cache when the weight of every item is 1. With weight-based cache, it's possible to define a custom algorithm to detect the weight of the item based on key/value pair. Under the hood, it's the same SIEVE algorithm. Weight-based cache is an abstract class because the user needs to provide a logic for weight calculation.</p>
+<p>Weight-based cache can grow over the time in contrast to capacity-based cache. To resize the internal data structures, the cache needs to acquire a global lock across all the items in the cache. It's heavyweight operation. Any writer suspends during the resize. Readers are not impacted. This behavior can be tuned with <code>collisionThreshold</code> constructor parameter:</p>
+<ul>
+<li>Higher value of <code>collisionThreshold</code> reduces the chance of the resize by the cost of potential contention between writers</li>
+<li>Lower value of <code>collisionThreshold</code> reduces the chance of contention between writes by the cost of increased chance of the resize</li>
+<li><a href="https://learn.microsoft.com/en-us/dotnet/api/system.int32.maxvalue">int.MaxValue</a> can be specified to disable the resize at all. In that case, the chance of the contention between grows linearly with the number of items in the cache.</li>
+</ul>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/docs/features/cache/index.md/#L1" class="contribution-link">Edit this page</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

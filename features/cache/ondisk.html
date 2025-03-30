@@ -5,17 +5,17 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Namespace DotNext.Runtime.Caching | .NEXT </title>
+    <title>On-disk cache | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Namespace DotNext.Runtime.Caching | .NEXT ">
+    <meta name="title" content="On-disk cache | .NEXT ">
     <meta name="generator" content="docfx ">
   
-    <link rel="shortcut icon" href="../fav.ico">
-    <link rel="stylesheet" href="../styles/docfx.vendor.css">
-    <link rel="stylesheet" href="../styles/docfx.css">
-    <link rel="stylesheet" href="../styles/main.css">
-    <meta property="docfx:navrel" content="../toc.html">
-    <meta property="docfx:tocrel" content="toc.html">
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
   
   
   
@@ -33,8 +33,8 @@
                 <span class="icon-bar"></span>
               </button>
 
-              <a class="navbar-brand" href="../index.html">
-                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
               </a>
             </div>
             <div class="collapse navbar-collapse" id="navbar">
@@ -65,50 +65,17 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.Caching">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="on-disk-cache">On-disk cache</h1>
 
-  <h1 id="DotNext_Runtime_Caching" data-uid="DotNext.Runtime.Caching" class="text-break">Namespace DotNext.Runtime.Caching</h1>
-  <div class="markdown level0 summary"></div>
-  <div class="markdown level0 conceptual"></div>
-  <div class="markdown level0 remarks"></div>
-    <h3 id="classes">
-Classes
-</h3>
-      <h4><a class="xref" href="DotNext.Runtime.Caching.ConcurrentCache-2.html">ConcurrentCache&lt;TKey, TValue&gt;</a></h4>
-      <section><p>Represents concurrent cache.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Runtime.Caching.DiskSpacePool.html">DiskSpacePool</a></h4>
-      <section><p>Represents a pool of segments of the limited size on the disk.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html">RandomAccessCache&lt;TKey, TValue&gt;</a></h4>
-      <section><p>Represents concurrent cache optimized for random access.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-3.html">RandomAccessCache&lt;TKey, TValue, TWeight&gt;</a></h4>
-      <section><p>Represents concurrent cache optimized for random access. The number of items in the cache is limited
-by their weight.</p>
-</section>
-    <h3 id="structs">
-Structs
-</h3>
-      <h4><a class="xref" href="DotNext.Runtime.Caching.DiskSpacePool.Options.html">DiskSpacePool.Options</a></h4>
-      <section><p>Represents configuration of the pool.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Runtime.Caching.DiskSpacePool.Segment.html">DiskSpacePool.Segment</a></h4>
-      <section><p>Provides the random access to the data within the segment.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.ReadOrWriteSession.html">RandomAccessCache&lt;TKey, TValue&gt;.ReadOrWriteSession</a></h4>
-      <section><p>Represents a session that can be used to read, modify or promote the cache record value.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.ReadSession.html">RandomAccessCache&lt;TKey, TValue&gt;.ReadSession</a></h4>
-      <section><p>Represents a session that can be used to read the cache record value.</p>
-</section>
-    <h3 id="enums">
-Enums
-</h3>
-      <h4><a class="xref" href="DotNext.Runtime.Caching.CacheEvictionPolicy.html">CacheEvictionPolicy</a></h4>
-      <section><p>Represents cache eviction policy.</p>
-</section>
-
+<p>Typical use case of <a class="xref" href="../../api/DotNext.Runtime.Caching.RandomAccessCache-2.html">RandomAccessCache&lt;TKey,TValue&gt;</a> class is to keep the values loaded to the memory. This is called <strong>L0 cache</strong>, because all the items are quickly accessible through the memory. But the memory is a limited resource. In some situations, the disk space can be used as <strong>L1 cache</strong>, because typically the disk has more space than RAM. However, it's slower. The cache can be organized as a set of layers: if there is no cache item in L0, try L1. Instead of keeping items in the memory, they can be stored on the disk in serialized form. Both capacity-based and weight-based caches are suitable for that.</p>
+<p>Instead of keeping the entire item, the cache can keep the reference to the data on the disk. <a class="xref" href="../../api/DotNext.Runtime.Caching.DiskSpacePool.html">DiskSpacePool</a> is designed especially for that purpose. It acts as a pool of segments stored on the disk. Every segment has maximum size, and it's represented by an object which size doesn't depend on the size of the cached item:</p>
+<pre><code class="lang-csharp">using DiskSpacePool pool = new(4096); // 4k is max entry size on the disk
+DiskSpacePool.Segment segment = pool.Rent();
+await segment.WriteAsync(data);
+</code></pre>
+<p>Once the segment rented, it can be placed as a value of the cache. <code>DiskSpacePool.Segment</code> is just a reference to the disk-allocated space. You need to use read/write methods of the class to obtain the cache item.</p>
+<p>The pool tries to minimize the impact on the page cache of the OS. Thus, every read of the segment bypasses the cache and asks the kernel to fill the read buffer directly from the disk. This is acceptable trade-off, because L0 cache has in-memory cached items for the fast access. Moreover, L1 cache capacity can be magnitude larger than the capacity of L0 cache. In that case, it's not reasonable to keep the data in the page cache.</p>
 
 </article>
           </div>
@@ -117,6 +84,9 @@ Enums
             <div class="sideaffix">
               <div class="contribution">
                 <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/docs/features/cache/ondisk.md/#L1" class="contribution-link">Edit this page</a>
+                  </li>
                 </ul>
               </div>
               <div class="toggle-mode">
@@ -167,11 +137,11 @@ Enums
             </div>
           </div>
         </div>
-        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+        <script type="text/javascript" src="../../styles/toggle-theme.js"></script>
       </footer>    </div>
 
-    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
-    <script type="text/javascript" src="../styles/docfx.js"></script>
-    <script type="text/javascript" src="../styles/main.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
   </body>
 </html>

@@ -399,7 +399,7 @@ when encoded in little-endian or big-endian format.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool IsPrime&lt;T&gt;(T value) where T : struct, IBinaryNumber&lt;T&gt;, ISignedNumber&lt;T&gt;, IShiftOperators&lt;T, int, T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool IsPrime&lt;T&gt;(this T value) where T : struct, IBinaryNumber&lt;T&gt;, ISignedNumber&lt;T&gt;, IShiftOperators&lt;T, int, T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -797,6 +797,150 @@ public static double Normalize(this ulong value)</code></pre>
       <tr>
         <td><span class="parametername">TOutput</span></td>
         <td><p>The type of normalized value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_RoundDown__1___0___0_.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.RoundDown%60%601(%60%600%2C%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.cs/#L246">View Source</a>
+  </span>
+  <a id="DotNext_Numerics_Number_RoundDown_" data-uid="DotNext.Numerics.Number.RoundDown*"></a>
+  <h4 id="DotNext_Numerics_Number_RoundDown__1___0___0_" data-uid="DotNext.Numerics.Number.RoundDown``1(``0,``0)">RoundDown&lt;T&gt;(T, T)</h4>
+  <div class="markdown level1 summary"><p>Rounds down the value to the multiple of the specified multiplier.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static T RoundDown&lt;T&gt;(this T value, T multiplier) where T : struct, IUnsignedNumber&lt;T&gt;, IModulusOperators&lt;T, T, T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to round down.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">multiplier</span></td>
+        <td><p>The multiplier.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p><code class="paramref">value</code> rounded down to the multiple of <code class="paramref">multiplier</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the number.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_RoundUp__1___0___0_.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.RoundUp%60%601(%60%600%2C%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.cs/#L232">View Source</a>
+  </span>
+  <a id="DotNext_Numerics_Number_RoundUp_" data-uid="DotNext.Numerics.Number.RoundUp*"></a>
+  <h4 id="DotNext_Numerics_Number_RoundUp__1___0___0_" data-uid="DotNext.Numerics.Number.RoundUp``1(``0,``0)">RoundUp&lt;T&gt;(T, T)</h4>
+  <div class="markdown level1 summary"><p>Rounds up the value to the multiple of the specified multiplier.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static T RoundUp&lt;T&gt;(this T value, T multiplier) where T : struct, IUnsignedNumber&lt;T&gt;, IModulusOperators&lt;T, T, T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to round up.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">multiplier</span></td>
+        <td><p>The multiplier.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p><code class="paramref">value</code> rounded up to the multiple of <code class="paramref">multiplier</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the number.</p>
 </td>
       </tr>
     </tbody>
