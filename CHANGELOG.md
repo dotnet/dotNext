@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 03-29-2025
+# 03-30-2025
 <a href="https://www.nuget.org/packages/dotnext/5.20.0">DotNext 5.20.0</a>
 * Introduced `List.Repeat()` static method to construct read-only lists of repeatable items. Similar to [Enumerable.Repeat](https://learn.microsoft.com/en-us/dotnet/api/system.linq.enumerable.repeat) but returns [IReadOnlyList&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlylist-1)
 * Added `Number.RoundUp` and `Number.RoundDown` generic extension methods to round the numbers to the multiple of the specified value
