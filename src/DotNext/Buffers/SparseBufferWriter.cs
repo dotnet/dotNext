@@ -169,9 +169,10 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         if (input.IsEmpty)
-            goto exit;
-
-        if (copyMemory)
+        {
+            // return, nothing to write
+        }
+        else if (copyMemory)
         {
             Write(input.Span);
         }
@@ -185,9 +186,6 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
             last = new ImportedMemoryChunk(input, last);
             length += input.Length;
         }
-
-    exit:
-        return;
     }
 
     /// <summary>
@@ -195,7 +193,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// </summary>
     /// <param name="item">The item to add.</param>
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
-    public void Add(T item) => Write(CreateReadOnlySpan(ref item, 1));
+    public void Add(T item) => Write(new(ref item));
 
     /// <inheritdoc />
     void IGrowableBuffer<T>.Write(T value) => Add(value);

@@ -56,7 +56,8 @@ public partial class RandomAccessCache<TKey, TValue>
                 var count = 0;
                 for (var current = this; current is not null; current = current.NextInQueue as KeyValuePair)
                 {
-                    count++;
+                    if (current.IsNotified)
+                        count++;
                 }
 
                 return count;
@@ -80,7 +81,5 @@ file sealed class SentinelNotification : IThreadPoolWorkItem, ISingleton<Sentine
     {
     }
 
-    void IThreadPoolWorkItem.Execute()
-    {
-    }
+    void IThreadPoolWorkItem.Execute() => Debug.Fail("Should never be called");
 }

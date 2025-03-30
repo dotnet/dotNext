@@ -1,4 +1,4 @@
-using static System.Runtime.InteropServices.MemoryMarshal;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.IO;
 
@@ -20,12 +20,12 @@ internal abstract class ReadOnlyStream : Stream
     public override Task FlushAsync(CancellationToken token)
         => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
 
-    public override abstract int Read(Span<byte> buffer);
+    public abstract override int Read(Span<byte> buffer);
 
     public sealed override int ReadByte()
     {
-        byte result = 0;
-        return Read(CreateSpan(ref result, 1)) is 1 ? result : -1;
+        Unsafe.SkipInit(out byte b);
+        return Read(new(ref b)) is 1 ? b : -1;
     }
 
     public sealed override int Read(byte[] buffer, int offset, int count)

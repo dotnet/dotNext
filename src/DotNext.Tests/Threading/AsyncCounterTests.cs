@@ -57,4 +57,28 @@ public sealed class AsyncCounterTests : Test
             True(counter.TryDecrement());
         }
     }
+
+    [Fact]
+    public static async Task DecrementTwice()
+    {
+        using var counter = new AsyncCounter(0);
+        var task1 = counter.WaitAsync().AsTask();
+        var task2 = counter.WaitAsync().AsTask();
+
+        counter.Increment();
+        var t = await Task.WhenAny(task1, task2);
+        True(task1.IsCompleted ^ task2.IsCompleted);
+
+        Equal(0L, counter.Value);
+    }
+
+    [Fact]
+    public static void IncrementWithUpperBound()
+    {
+        const long maxValue = 2L;
+        using var counter = new AsyncCounter(0);
+        True(counter.TryIncrement(maxValue));
+        True(counter.TryIncrement(maxValue));
+        False(counter.TryIncrement(maxValue));
+    }
 }

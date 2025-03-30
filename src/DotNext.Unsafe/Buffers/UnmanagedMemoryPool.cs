@@ -128,7 +128,7 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
 file sealed class PoolingUnmanagedMemoryOwner<T> : UnmanagedMemoryOwner<T>, IUnmanagedMemory<T>
     where T : unmanaged
 {
-    required internal Action<IUnmanagedMemory<T>>? OnDisposed;
+    internal required Action<IUnmanagedMemory<T>>? OnDisposed;
 
     internal unsafe PoolingUnmanagedMemoryOwner(int length, delegate*<nuint, nuint, void* > allocator)
         : base(length, allocator)

@@ -7,7 +7,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <IsAotCompatible>true</IsAotCompatible>
-    <VersionPrefix>5.19.0</VersionPrefix>
+    <VersionPrefix>5.20.0</VersionPrefix>
     <Features>nullablePublicOnly</Features>
     <VersionSuffix></VersionSuffix>
     <Authors>.NET Foundation and Contributors</Authors>

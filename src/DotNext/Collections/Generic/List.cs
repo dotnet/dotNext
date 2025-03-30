@@ -13,7 +13,7 @@ using static Reflection.CollectionType;
 /// <summary>
 /// Provides various extensions for <see cref="IList{T}"/> interface.
 /// </summary>
-public static class List
+public static partial class List
 {
     /// <summary>
     /// Provides strongly-typed access to list indexer.
@@ -336,4 +336,24 @@ public static class List
     /// <returns>The section of the list.</returns>
     public static ListSegment<T> Slice<T>(this IList<T> list, Range range)
         => new(list, range);
+
+    /// <summary>
+    /// Generates a list that contains one repeated value.
+    /// </summary>
+    /// <param name="item">The item to be returned from the list.</param>
+    /// <param name="count">The number of elements in the list.</param>
+    /// <typeparam name="T">Type of the list.</typeparam>
+    /// <returns>A list that contains a repeated value.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
+    public static IReadOnlyList<T> Repeat<T>(T item, int count)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+        return count switch
+        {
+            0 => Array.Empty<T>(),
+            1 => Singleton(item),
+            _ => new RepeatList<T>(item, count),
+        };
+    }
 }

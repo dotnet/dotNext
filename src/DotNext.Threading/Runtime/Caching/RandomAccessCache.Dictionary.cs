@@ -155,14 +155,12 @@ public partial class RandomAccessCache<TKey, TValue>
 
     [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}, IsLockHeld = {{{nameof(IsLockHeld)}}}")]
     [StructLayout(LayoutKind.Auto)]
-    internal struct Bucket
+    internal struct Bucket(AsyncExclusiveLock bucketLock)
     {
-        internal readonly AsyncExclusiveLock Lock;
+        internal readonly AsyncExclusiveLock Lock = bucketLock;
         private bool newPairAdded;
         private volatile KeyValuePair? first;
-        private int count;
-
-        public Bucket(AsyncExclusiveLock bucketLock) => Lock = bucketLock;
+        private volatile int count;
 
         public Bucket()
             : this(new())
@@ -170,7 +168,7 @@ public partial class RandomAccessCache<TKey, TValue>
         }
         
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        internal int CollisionCount => count;
+        internal readonly int CollisionCount => count;
 
         [ExcludeFromCodeCoverage]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -204,8 +202,8 @@ public partial class RandomAccessCache<TKey, TValue>
             {
                 pair.NextInBucket = current = tmp;
             } while (!ReferenceEquals(tmp = Interlocked.CompareExchange(ref first, pair, current), current));
-            
-            count++;
+
+            Interlocked.Increment(ref count);
         }
 
         internal void MarkAsReadyToAdd() => newPairAdded = false;
@@ -221,7 +219,7 @@ public partial class RandomAccessCache<TKey, TValue>
             // on every access (read/write), so it will be eventually deleted
             ref var location = ref previous is null ? ref first : ref previous.NextInBucket;
             if (ReferenceEquals(Interlocked.CompareExchange(ref location, current.NextInBucket, current), current))
-                count--;
+                Interlocked.Decrement(ref count);
         }
 
         internal KeyValuePair? TryRemove(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
@@ -392,7 +390,6 @@ public partial class RandomAccessCache<TKey, TValue>
             }
         }
         
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public readonly Enumerator GetEnumerator() => new(first);
         
         [StructLayout(LayoutKind.Auto)]

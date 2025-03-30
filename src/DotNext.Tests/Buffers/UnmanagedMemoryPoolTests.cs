@@ -239,4 +239,40 @@ public sealed class UnmanagedMemoryPoolTests : Test
 
         KeepAlive(in memory);
     }
+
+    [Fact]
+    public static unsafe void AllocateSystemPages()
+    {
+        using var owner = UnmanagedMemory.AllocateSystemPages(2);
+        using var handle = owner.Memory.Pin();
+        True((nuint)handle.Pointer % (uint)Environment.SystemPageSize is 0);
+    }
+
+    [Fact]
+    public static void AllocateSystemPagesInvalidPageCount()
+    {
+        Throws<ArgumentOutOfRangeException>(static () => UnmanagedMemory.AllocateSystemPages(-1));
+        
+        var owner = UnmanagedMemory.AllocateSystemPages(0);
+        Equal(Memory<byte>.Empty, owner.Memory);
+    }
+
+    [Fact]
+    public static unsafe void AllocatePageAlignedMemory()
+    {
+        using var owner = UnmanagedMemory.AllocatePageAlignedMemory(Environment.SystemPageSize - 1, roundUpSize: true);
+        Equal(Environment.SystemPageSize, owner.Memory.Length);
+        
+        using var handle = owner.Memory.Pin();
+        True((nuint)handle.Pointer % (uint)Environment.SystemPageSize is 0);
+    }
+
+    [Fact]
+    public static void AllocatePageAlignedMemoryInvalidSize()
+    {
+        Throws<ArgumentOutOfRangeException>(static () => UnmanagedMemory.AllocatePageAlignedMemory(-1));
+
+        var owner = UnmanagedMemory.AllocatePageAlignedMemory(0);
+        Equal(Memory<byte>.Empty, owner.Memory);
+    }
 }
