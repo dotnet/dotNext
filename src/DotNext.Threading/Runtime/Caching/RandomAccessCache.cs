@@ -501,7 +501,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     public readonly struct ReadOrWriteSession : IDisposable
     {
         private readonly RandomAccessCache<TKey, TValue> cache;
-        private readonly object lockOrValueHolder; // Bucket or KeyValuePair
+        private readonly object lockOrValueHolder; // AsyncExclusiveLock or KeyValuePair
         private readonly Bucket.Ref bucket;
         private readonly TKey key;
         private readonly int hashCode;
