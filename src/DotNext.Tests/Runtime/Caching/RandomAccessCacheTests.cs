@@ -117,11 +117,14 @@ public sealed class RandomAccessCacheTests : Test
         }
 
         Null(await cache.TryRemoveAsync(11L));
+        True(cache.Contains(10L));
 
         using (var session = (await cache.TryRemoveAsync(10L)).Value)
         {
             Equal("10", session.Value);
         }
+
+        False(cache.Contains(10L));
     }
     
     [Fact]
@@ -136,12 +139,17 @@ public sealed class RandomAccessCacheTests : Test
         }
 
         False(cache.TryRemove(11L, out _, DefaultTimeout));
+        
+        True(cache.Contains(10L));
         True(cache.TryRemove(10L, out var session, DefaultTimeout));
+        False(cache.Contains(10L));
 
         using (session)
         {
             Equal("10", session.Value);
         }
+
+        False(cache.Contains(10L));
     }
 
     [Fact]

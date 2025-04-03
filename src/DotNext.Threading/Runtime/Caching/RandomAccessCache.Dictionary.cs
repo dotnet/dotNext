@@ -318,6 +318,13 @@ public partial class RandomAccessCache<TKey, TValue>
             return result;
         }
 
+        internal unsafe KeyValuePair? TryGet(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
+        {
+            return TryGet(keyComparer, key, hashCode, &NotDead);
+
+            static bool NotDead(KeyValuePair pair) => !pair.IsDead;
+        }
+
         internal KeyValuePair? Modify(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
         {
             KeyValuePair? valueHolder = null;
@@ -482,12 +489,8 @@ public partial class RandomAccessCache<TKey, TValue>
             return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
         }
 
-        internal unsafe KeyValuePair? FindPair(IEqualityComparer<TKey>? keyComparer, TKey key, int keyHashCode)
-        {
-            return GetByHash(keyHashCode).TryGet(keyComparer, key, keyHashCode, &NotDead);
-
-            static bool NotDead(KeyValuePair pair) => !pair.IsDead;
-        }
+        internal KeyValuePair? FindPair(IEqualityComparer<TKey>? keyComparer, TKey key, int keyHashCode)
+            => GetByHash(keyHashCode).TryGet(keyComparer, key, keyHashCode);
 
         internal void Release(int count)
         {

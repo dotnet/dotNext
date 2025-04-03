@@ -201,7 +201,22 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 
         static bool Visit(KeyValuePair pair) => pair.Visit() && pair.TryAcquireCounter();
     }
-    
+
+    /// <summary>
+    /// Determines whether the cache entry associated with the specified key exists in the cache.
+    /// </summary>
+    /// <param name="key">The key to check.</param>
+    /// <returns><see langword="true"/> if the cache entry associated with <paramref name="key"/> exists in the cache; otherwise, <see langword="false"/>.</returns>
+    public bool Contains(TKey key)
+    {
+        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
+        
+        var keyComparerCopy = KeyComparer;
+        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
+
+        return buckets.GetByHash(hashCode).TryGet(keyComparerCopy, key, hashCode) is not null;
+    }
+
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<ReadSession?> TryRemoveAsync(TKey key, TimeSpan timeout, CancellationToken token)
     {
