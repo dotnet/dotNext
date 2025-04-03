@@ -21,7 +21,7 @@ public partial class RandomAccessCache<TKey, TValue>
         // attempt to install a new tail. Do not retry if failed, competing thread installed more recent version of it
         Interlocked.CompareExchange(ref queueTail, newPair, currentTail);
 
-        currentTail.Notify();
+        currentTail.Promoted();
     }
 
     internal partial class KeyValuePair
@@ -30,7 +30,7 @@ public partial class RandomAccessCache<TKey, TValue>
         internal object? NextInQueue;
         private volatile IThreadPoolWorkItem? notification;
 
-        internal void Notify()
+        internal void Promoted()
         {
             if (Interlocked.Exchange(ref notification, SentinelNotification.Instance) is { } callback
                 && !ReferenceEquals(callback, SentinelNotification.Instance))
@@ -41,7 +41,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
         [ExcludeFromCodeCoverage]
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private bool IsNotified => ReferenceEquals(notification, SentinelNotification.Instance);
+        private bool IsPromoted => ReferenceEquals(notification, SentinelNotification.Instance);
 
         // true - attached, false - the object is already notified
         internal bool TryAttachNotificationHandler(IThreadPoolWorkItem continuation)
@@ -56,7 +56,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 var count = 0;
                 for (var current = this; current is not null; current = current.NextInQueue as KeyValuePair)
                 {
-                    if (current.IsNotified)
+                    if (current.IsPromoted)
                         count++;
                 }
 
