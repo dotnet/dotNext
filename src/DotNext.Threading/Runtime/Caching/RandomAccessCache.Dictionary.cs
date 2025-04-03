@@ -152,6 +152,17 @@ public partial class RandomAccessCache<TKey, TValue>
 
         public override string ToString() => ToString(Value);
     }
+    
+    internal interface IKeyValuePairVisitor
+    {
+        public static abstract bool Visit(KeyValuePair pair);
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct NotDeadFilter : IKeyValuePairVisitor
+    {
+        static bool IKeyValuePairVisitor.Visit(KeyValuePair pair) => !pair.IsDead;
+    }
 
     [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}, IsLockHeld = {{{nameof(IsLockHeld)}}}")]
     [StructLayout(LayoutKind.Auto)]
@@ -269,10 +280,9 @@ public partial class RandomAccessCache<TKey, TValue>
             return result;
         }
 
-        internal unsafe KeyValuePair? TryGet(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode, delegate*<KeyValuePair, bool> visitor)
+        internal KeyValuePair? TryGet<TVisitor>(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
+            where TVisitor : struct, IKeyValuePairVisitor
         {
-            Debug.Assert(visitor is not null);
-            
             var result = default(KeyValuePair?);
 
             // remove all dead nodes from the bucket
@@ -284,7 +294,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 {
                     if (result is null && hashCode == current.KeyHashCode
                                        && EqualityComparer<TKey>.Default.Equals(key, current.Key)
-                                       && visitor(current))
+                                       && TVisitor.Visit(current))
                     {
                         result = current;
                     }
@@ -303,7 +313,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 {
                     if (result is null && hashCode == current.KeyHashCode
                                        && keyComparer.Equals(key, current.Key)
-                                       && visitor(current))
+                                       && TVisitor.Visit(current))
                     {
                         result = current;
                     }
@@ -316,13 +326,6 @@ public partial class RandomAccessCache<TKey, TValue>
             }
 
             return result;
-        }
-
-        internal unsafe KeyValuePair? TryGet(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
-        {
-            return TryGet(keyComparer, key, hashCode, &NotDead);
-
-            static bool NotDead(KeyValuePair pair) => !pair.IsDead;
         }
 
         internal KeyValuePair? Modify(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
@@ -490,7 +493,7 @@ public partial class RandomAccessCache<TKey, TValue>
         }
 
         internal KeyValuePair? FindPair(IEqualityComparer<TKey>? keyComparer, TKey key, int keyHashCode)
-            => GetByHash(keyHashCode).TryGet(keyComparer, key, keyHashCode);
+            => GetByHash(keyHashCode).TryGet<NotDeadFilter>(keyComparer, key, keyHashCode);
 
         internal void Release(int count)
         {

@@ -185,12 +185,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <param name="key">The key of the cache record.</param>
     /// <param name="session">A session that can be used to read the cached record.</param>
     /// <returns><see langword="true"/> if the record is available for reading and the session is active; otherwise, <see langword="false"/>.</returns>
-    public unsafe bool TryRead(TKey key, out ReadSession session)
+    public bool TryRead(TKey key, out ReadSession session)
     {
         var keyComparerCopy = KeyComparer;
         var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
-        if (buckets.GetByHash(hashCode).TryGet(keyComparerCopy, key, hashCode, &Visit) is { } valueHolder)
+        if (buckets.GetByHash(hashCode).TryGet<AcquisitionVisitor>(keyComparerCopy, key, hashCode) is { } valueHolder)
         {
             session = new(this, valueHolder);
             return true;
@@ -198,8 +198,6 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 
         session = default;
         return false;
-
-        static bool Visit(KeyValuePair pair) => pair.Visit() && pair.TryAcquireCounter();
     }
 
     /// <summary>
@@ -214,7 +212,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         var keyComparerCopy = KeyComparer;
         var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
-        return buckets.GetByHash(hashCode).TryGet(keyComparerCopy, key, hashCode) is not null;
+        return buckets.GetByHash(hashCode).TryGet<NotDeadFilter>(keyComparerCopy, key, hashCode) is not null;
     }
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
@@ -601,6 +599,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                     break;
             }
         }
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct AcquisitionVisitor : IKeyValuePairVisitor
+    {
+        static bool IKeyValuePairVisitor.Visit(KeyValuePair pair) => pair.Visit() && pair.TryAcquireCounter();
     }
 }
 
