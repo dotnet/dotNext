@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -511,7 +512,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// While session alive, the record cannot be evicted.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ReadOrWriteSession : IDisposable
+    public readonly struct ReadOrWriteSession : IDisposable, IAsyncDisposable
     {
         private readonly RandomAccessCache<TKey, TValue> cache;
         private readonly object lockOrValueHolder; // AsyncExclusiveLock or KeyValuePair
@@ -586,7 +587,10 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         /// <summary>
         /// Closes the session.
         /// </summary>
-        void IDisposable.Dispose()
+        /// <remarks>
+        /// This method should be called only once. The method doesn't wait for the cache entry promotion.
+        /// </remarks>
+        public void Dispose()
         {
             switch (lockOrValueHolder)
             {
@@ -598,6 +602,41 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                     cache.OnRemoved(pair);
                     break;
             }
+        }
+        
+        /// <summary>
+        /// Closes the session.
+        /// </summary>
+        /// <remarks>
+        /// This method should be called only once. It's recommended to use this method to ensure
+        /// that the cache entry is promoted. This is useful when the cache is rate-limited. Otherwise,
+        /// use <see cref="Dispose"/>, because concurrent promotions are handled by the single thread running
+        /// in the background. Thus, awaiting of the returned task can cause contention over multiple writers.
+        /// </remarks>
+        /// <returns>The task representing asynchronous state of the cache entry promotion.</returns>
+        public ValueTask DisposeAsync()
+        {
+            ValueTask task;
+            switch (lockOrValueHolder)
+            {
+                case AsyncExclusiveLock bucketLock:
+                    task = bucket.Value.MarkAsReadyToAddAndGetTask();
+                    bucketLock.Release(); // allow concurrent writers write to the same bucket without contention
+
+                    // avoid deadlock if this method is called concurrently with Dispose() on the cache
+                    if (!task.IsCompleted && cache.IsDisposingOrDisposed)
+                        task = new(cache.DisposedTask);
+                    
+                    break;
+                case KeyValuePair pair when pair.ReleaseCounter() is false:
+                    cache.OnRemoved(pair);
+                    goto default;
+                default:
+                    task = ValueTask.CompletedTask;
+                    break;
+            }
+
+            return task;
         }
     }
     
@@ -648,7 +687,10 @@ public abstract class RandomAccessCache<TKey, TValue, TWeight>(int initialCapaci
     protected abstract void AddWeight(ref TWeight total, TKey key, TValue value);
 
     private protected sealed override void OnAdded(KeyValuePair promoted)
-        => AddWeight(ref initialWeight, promoted.Key, GetValue(promoted));
+    {
+        AddWeight(ref initialWeight, promoted.Key, GetValue(promoted));
+        base.OnAdded(promoted);
+    }
 
     /// <summary>
     /// Checks whether the current cache has enough capacity to promote the specified key/value pair.

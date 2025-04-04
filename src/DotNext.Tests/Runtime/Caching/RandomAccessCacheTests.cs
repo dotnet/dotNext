@@ -110,7 +110,7 @@ public sealed class RandomAccessCacheTests : Test
     {
         await using var cache = new RandomAccessCache<long, string>(15);
 
-        using (var session = await cache.ChangeAsync(10L))
+        await using (var session = await cache.ChangeAsync(10L))
         {
             False(session.TryGetValue(out _));
             session.SetValue("10");
@@ -247,7 +247,7 @@ public sealed class RandomAccessCacheTests : Test
             Eviction = (_, v) => source.TrySetResult(v),
         };
         
-        using (var session = await cache.ChangeAsync("101"))
+        await using (var session = await cache.ChangeAsync("101"))
         {
             False(session.TryGetValue(out _));
             session.SetValue(101L); // 101 > 100, must be evicted immediately

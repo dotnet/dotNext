@@ -84,6 +84,7 @@ public partial class RandomAccessCache<TKey, TValue>
         {
             cacheState = other.cacheState;
             notification = other.notification;
+            addedEvent = other.addedEvent;
         }
 
         internal bool TryAcquireCounter()
@@ -169,7 +170,7 @@ public partial class RandomAccessCache<TKey, TValue>
     internal struct Bucket(AsyncExclusiveLock bucketLock)
     {
         internal readonly AsyncExclusiveLock Lock = bucketLock;
-        private bool newPairAdded;
+        private KeyValuePair? addedPair;
         private volatile KeyValuePair? first;
         private volatile int count;
 
@@ -192,14 +193,13 @@ public partial class RandomAccessCache<TKey, TValue>
         internal KeyValuePair? TryAdd(TKey key, int hashCode, TValue value)
         {
             KeyValuePair? result;
-            if (newPairAdded)
+            if (addedPair is not null)
             {
                 result = null;
             }
             else
             {
-                Add(result = CreatePair(key, value, hashCode));
-                newPairAdded = true;
+                Add(addedPair = result = CreatePair(key, value, hashCode));
             }
 
             return result;
@@ -217,7 +217,23 @@ public partial class RandomAccessCache<TKey, TValue>
             Interlocked.Increment(ref count);
         }
 
-        internal void MarkAsReadyToAdd() => newPairAdded = false;
+        internal void MarkAsReadyToAdd() => addedPair = null;
+
+        internal ValueTask MarkAsReadyToAddAndGetTask()
+        {
+            ValueTask task;
+            if (addedPair is not null)
+            {
+                task = new(addedPair.AddedEvent);
+                addedPair = null;
+            }
+            else
+            {
+                task = new();
+            }
+
+            return task;
+        }
 
         private void TryRemove(KeyValuePair? previous, KeyValuePair current)
         {
@@ -393,7 +409,7 @@ public partial class RandomAccessCache<TKey, TValue>
             {
                 TryRemove(previous, current);
                     
-                if (current.MarkAsEvicted() && current.ReleaseCounter() is false)
+                if (current.MarkAsDead())
                 {
                     cleanup.Invoke(current);
                 }
