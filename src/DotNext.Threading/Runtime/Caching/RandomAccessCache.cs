@@ -616,7 +616,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         /// <returns>The task representing asynchronous state of the cache entry promotion.</returns>
         public ValueTask DisposeAsync()
         {
-            ValueTask task;
+            Task task;
             switch (lockOrValueHolder)
             {
                 case AsyncExclusiveLock bucketLock:
@@ -625,18 +625,18 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
 
                     // avoid deadlock if this method is called concurrently with Dispose() on the cache
                     if (!task.IsCompleted && cache.IsDisposingOrDisposed)
-                        task = new(cache.DisposedTask);
+                        task = cache.DisposedTask;
                     
                     break;
                 case KeyValuePair pair when pair.ReleaseCounter() is false:
                     cache.OnRemoved(pair);
                     goto default;
                 default:
-                    task = ValueTask.CompletedTask;
+                    task = Task.CompletedTask;
                     break;
             }
 
-            return task;
+            return new(task);
         }
     }
     

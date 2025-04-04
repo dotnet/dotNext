@@ -219,17 +219,17 @@ public partial class RandomAccessCache<TKey, TValue>
 
         internal void MarkAsReadyToAdd() => addedPair = null;
 
-        internal ValueTask MarkAsReadyToAddAndGetTask()
+        internal Task MarkAsReadyToAddAndGetTask()
         {
-            ValueTask task;
+            Task task;
             if (addedPair is not null)
             {
-                task = new(addedPair.AddedEvent);
+                task = addedPair.AddedEvent;
                 addedPair = null;
             }
             else
             {
-                task = new();
+                task = Task.CompletedTask;
             }
 
             return task;
