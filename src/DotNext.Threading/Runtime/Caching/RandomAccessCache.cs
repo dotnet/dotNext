@@ -157,7 +157,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
     public ValueTask<ReadOrWriteSession> ChangeAsync(TKey key, CancellationToken token = default)
-        => ChangeAsync(key, new(InfiniteTimeSpan), token);
+        => ChangeAsync(key, Timeout.Infinite, token);
 
     /// <summary>
     /// Opens a session synchronously that can be used to modify the value associated with the key.
@@ -175,6 +175,89 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
     public ReadOrWriteSession Change(TKey key, TimeSpan timeout, CancellationToken token = default)
         => ChangeAsync(key, new(timeout), token).Wait();
+    
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    private async ValueTask<ReadOrWriteSession> ReplaceAsync(TKey key, Timeout timeout, CancellationToken token)
+    {
+        var keyComparerCopy = KeyComparer;
+        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
+
+        var cts = token.LinkTo(lifetimeToken);
+        var bucketLock = default(AsyncExclusiveLock);
+        try
+        {
+            for (BucketList bucketsCopy;; await GrowAsync(bucketsCopy, timeout, token).ConfigureAwait(false))
+            {
+                Bucket.Ref bucket;
+
+                bucketsCopy = buckets;
+                for (BucketList newCopy;; bucketsCopy = newCopy)
+                {
+                    bucketsCopy.GetByHash(hashCode, out bucket);
+                    await bucket.Value.Lock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
+                    bucketLock = bucket.Value.Lock;
+
+                    newCopy = buckets;
+                    if (ReferenceEquals(newCopy, bucketsCopy))
+                        break;
+
+                    bucketLock.Release();
+                    bucketLock = null;
+                }
+
+                var bucketLockCopy = bucketLock;
+                bucketLock = null;
+                if (!ResizeDesired(in bucket.Value))
+                {
+                    if (bucket.Value.TryRemove(keyComparerCopy, key, hashCode) is { } removedPair && removedPair.ReleaseCounter() is false)
+                        OnRemoved(removedPair);
+                    
+                    return new(this, in bucket, bucketLockCopy, key, hashCode);
+                }
+
+                bucketLockCopy.Release();
+            }
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
+        {
+            throw cts.CancellationOrigin == lifetimeToken
+                ? new ObjectDisposedException(ObjectName)
+                : new OperationCanceledException(cts.CancellationOrigin);
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
+        {
+            throw new ObjectDisposedException(ObjectName);
+        }
+        finally
+        {
+            cts?.Dispose();
+            bucketLock?.Release();
+        }
+    }
+
+    /// <summary>
+    /// Replaces the cache entry associated with the specified key.
+    /// </summary>
+    /// <param name="key">The key associated with the cache entry.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The session that can be used to modify the cache record.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
+    public ValueTask<ReadOrWriteSession> ReplaceAsync(TKey key, CancellationToken token = default)
+        => ReplaceAsync(key, Timeout.Infinite, token);
+
+    /// <summary>
+    /// Replaces the cache entry associated with the specified key synchronously.
+    /// </summary>
+    /// <param name="key">The key associated with the cache entry.</param>
+    /// <param name="timeout">The time to wait for the cache lock.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The session that can be used to modify the cache record.</returns>
+    /// <exception cref="TimeoutException">The internal lock cannot be acquired in timely manner.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
+    public ReadOrWriteSession Replace(TKey key, TimeSpan timeout, CancellationToken token = default)
+        => ReplaceAsync(key, new(timeout), token).Wait();
 
     /// <summary>
     /// Tries to read the cached record.
@@ -272,7 +355,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
     public ValueTask<ReadSession?> TryRemoveAsync(TKey key, CancellationToken token = default)
-        => TryRemoveAsync(key, InfiniteTimeSpan, token);
+        => TryRemoveAsync(key, Timeout.Infinite, token);
 
     /// <summary>
     /// Tries to invalidate cache record associated with the provided key synchronously.
@@ -357,7 +440,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
     public ValueTask<bool> InvalidateAsync(TKey key, CancellationToken token = default)
-        => InvalidateAsync(key, InfiniteTimeSpan, token);
+        => InvalidateAsync(key, Timeout.Infinite, token);
 
     /// <summary>
     /// Invalidates the cache record associated with the specified key.

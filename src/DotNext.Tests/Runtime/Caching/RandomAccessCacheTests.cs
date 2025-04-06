@@ -238,6 +238,68 @@ public sealed class RandomAccessCacheTests : Test
     }
 
     [Fact]
+    public static async Task ReplaceWhileReadingAsync()
+    {
+        await using var cache = new RandomAccessCache<long, string>(15);
+
+        using (var handle = await cache.ChangeAsync(42L))
+        {
+            handle.SetValue("42");
+        }
+
+        True(cache.TryRead(42L, out var readSession));
+
+        using (readSession)
+        {
+            using (var handle = await cache.ReplaceAsync(42L))
+            {
+                False(handle.TryGetValue(out _));
+                handle.SetValue("43");
+            }
+
+            Equal("42", readSession.Value);
+        }
+        
+        True(cache.TryRead(42L, out readSession));
+
+        using (readSession)
+        {
+            Equal("43", readSession.Value);
+        }
+    }
+    
+    [Fact]
+    public static void ReplaceWhileReading()
+    {
+        using var cache = new RandomAccessCache<long, string>(15);
+
+        using (var handle = cache.Change(42L, DefaultTimeout))
+        {
+            handle.SetValue("42");
+        }
+
+        True(cache.TryRead(42L, out var readSession));
+
+        using (readSession)
+        {
+            using (var handle = cache.Replace(42L, DefaultTimeout))
+            {
+                False(handle.TryGetValue(out _));
+                handle.SetValue("43");
+            }
+
+            Equal("42", readSession.Value);
+        }
+        
+        True(cache.TryRead(42L, out readSession));
+
+        using (readSession)
+        {
+            Equal("43", readSession.Value);
+        }
+    }
+
+    [Fact]
     public static async Task EvictLargeItemImmediately()
     {
         const long value = 101L;
