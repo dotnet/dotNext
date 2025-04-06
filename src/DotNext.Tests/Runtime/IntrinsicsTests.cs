@@ -213,10 +213,10 @@ public class IntrinsicsTests : Test
     [Fact]
     public static void TypeAlignment()
     {
-        Equal(4, Intrinsics.AlignOf<int>());
-        Equal(8, Intrinsics.AlignOf<long>());
-        Equal(8, Intrinsics.AlignOf<ValueTuple<byte, long>>());
-        Equal(IntPtr.Size, Intrinsics.AlignOf<string>());
+        Equal(sizeof(int), Intrinsics.AlignOf<int>());
+        Equal(sizeof(long), Intrinsics.AlignOf<long>());
+        Equal(sizeof(long), Intrinsics.AlignOf<ValueTuple<byte, long>>());
+        Equal(nint.Size, Intrinsics.AlignOf<string>());
     }
 
     [Fact]
