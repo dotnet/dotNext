@@ -87,7 +87,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     public int Capacity => buckets.Count;
     
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<ReadOrWriteSession> ChangeAsync(TKey key, Timeout timeout, CancellationToken token)
+    private async ValueTask<ReadWriteSession> ChangeAsync(TKey key, Timeout timeout, CancellationToken token)
     {
         var hashCode = keyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
@@ -154,7 +154,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <returns>The session that can be used to read or modify the cache record.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
-    public ValueTask<ReadOrWriteSession> ChangeAsync(TKey key, CancellationToken token = default)
+    public ValueTask<ReadWriteSession> ChangeAsync(TKey key, CancellationToken token = default)
         => ChangeAsync(key, Timeout.Infinite, token);
 
     /// <summary>
@@ -171,11 +171,11 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <exception cref="TimeoutException">The internal lock cannot be acquired in timely manner.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
-    public ReadOrWriteSession Change(TKey key, TimeSpan timeout, CancellationToken token = default)
+    public ReadWriteSession Change(TKey key, TimeSpan timeout, CancellationToken token = default)
         => ChangeAsync(key, new(timeout), token).Wait();
     
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<ReadOrWriteSession> ReplaceAsync(TKey key, Timeout timeout, CancellationToken token)
+    private async ValueTask<ReadWriteSession> ReplaceAsync(TKey key, Timeout timeout, CancellationToken token)
     {
         var hashCode = keyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
@@ -240,7 +240,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <returns>The session that can be used to modify the cache record.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
-    public ValueTask<ReadOrWriteSession> ReplaceAsync(TKey key, CancellationToken token = default)
+    public ValueTask<ReadWriteSession> ReplaceAsync(TKey key, CancellationToken token = default)
         => ReplaceAsync(key, Timeout.Infinite, token);
 
     /// <summary>
@@ -253,7 +253,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <exception cref="TimeoutException">The internal lock cannot be acquired in timely manner.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
-    public ReadOrWriteSession Replace(TKey key, TimeSpan timeout, CancellationToken token = default)
+    public ReadWriteSession Replace(TKey key, TimeSpan timeout, CancellationToken token = default)
         => ReplaceAsync(key, new(timeout), token).Wait();
 
     /// <summary>
@@ -630,7 +630,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// While session alive, the record cannot be evicted.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ReadOrWriteSession : IDisposable, IAsyncDisposable
+    public readonly struct ReadWriteSession : IDisposable, IAsyncDisposable
     {
         private readonly RandomAccessCache<TKey, TValue> cache;
         private readonly object lockOrValueHolder; // AsyncExclusiveLock or KeyValuePair
@@ -638,7 +638,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         private readonly TKey key;
         private readonly int hashCode;
 
-        internal ReadOrWriteSession(RandomAccessCache<TKey, TValue> cache, in Bucket.Ref bucket, AsyncExclusiveLock bucketLock, TKey key, int hashCode)
+        internal ReadWriteSession(RandomAccessCache<TKey, TValue> cache, in Bucket.Ref bucket, AsyncExclusiveLock bucketLock, TKey key, int hashCode)
         {
             this.cache = cache;
             lockOrValueHolder = bucketLock;
@@ -647,7 +647,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             this.bucket = bucket;
         }
 
-        internal ReadOrWriteSession(RandomAccessCache<TKey, TValue> cache, KeyValuePair valueHolder)
+        internal ReadWriteSession(RandomAccessCache<TKey, TValue> cache, KeyValuePair valueHolder)
         {
             this.cache = cache;
             lockOrValueHolder = valueHolder;
