@@ -80,7 +80,13 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                 ? new AcquisitionResult(in state, remainingTime, provider)
                 : null;
         }
-        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
+        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
+        {
+            throw cts.CancellationOrigin == LifetimeToken
+                ? CreateException()
+                : new OperationCanceledException(cts.CancellationOrigin);
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == LifetimeToken)
         {
             throw CreateException();
         }
@@ -148,7 +154,13 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                 await Task.Delay(remainingTime, provider, token).ConfigureAwait(false);
             }
         }
-        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
+        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
+        {
+            throw cts.CancellationOrigin == LifetimeToken
+                ? CreateException()
+                : new OperationCanceledException(cts.CancellationOrigin);
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == LifetimeToken)
         {
             throw CreateException();
         }
@@ -233,7 +245,13 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
 
             return await TryUpdateStateAsync(state, token).ConfigureAwait(false) ? state.Identity : null;
         }
-        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
+        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
+        {
+            throw cts.CancellationOrigin == LifetimeToken
+                ? CreateException()
+                : new OperationCanceledException(cts.CancellationOrigin);
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == LifetimeToken)
         {
             throw CreateException();
         }
@@ -286,7 +304,13 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
 
             return await TryUpdateStateAsync(state, token).ConfigureAwait(false) ? state.Identity : null;
         }
-        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
+        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
+        {
+            throw cts.CancellationOrigin == LifetimeToken
+                ? CreateException()
+                : new OperationCanceledException(cts.CancellationOrigin);
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == LifetimeToken)
         {
             throw CreateException();
         }
@@ -345,12 +369,17 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                     Identity = state.Identity.BumpVersion(),
                     Metadata = await updater.Invoke(state.Metadata, token).ConfigureAwait(false),
                 };
-            }
-            while (!await TryUpdateStateAsync(state, token).ConfigureAwait(false));
+            } while (!await TryUpdateStateAsync(state, token).ConfigureAwait(false));
 
             return state.Identity;
         }
-        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
+        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
+        {
+            throw cts.CancellationOrigin == LifetimeToken
+                ? CreateException()
+                : new OperationCanceledException(cts.CancellationOrigin);
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == LifetimeToken)
         {
             throw CreateException();
         }
