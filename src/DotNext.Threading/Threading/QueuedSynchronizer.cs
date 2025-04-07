@@ -319,7 +319,7 @@ public class QueuedSynchronizer : Disposable
 
     private void NotifyObjectDisposed(Exception? reason = null)
     {
-        reason ??= new ObjectDisposedException(GetType().Name);
+        reason ??= CreateException();
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)

@@ -82,7 +82,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
         {
-            throw new ObjectDisposedException(GetType().Name);
+            throw CreateException();
         }
         finally
         {
@@ -150,7 +150,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
         {
-            throw new ObjectDisposedException(GetType().Name);
+            throw CreateException();
         }
         finally
         {
@@ -235,7 +235,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
         {
-            throw new ObjectDisposedException(GetType().Name);
+            throw CreateException();
         }
         finally
         {
@@ -288,7 +288,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
         {
-            throw new ObjectDisposedException(GetType().Name);
+            throw CreateException();
         }
         finally
         {
@@ -352,7 +352,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
         {
-            throw new ObjectDisposedException(GetType().Name);
+            throw CreateException();
         }
         finally
         {

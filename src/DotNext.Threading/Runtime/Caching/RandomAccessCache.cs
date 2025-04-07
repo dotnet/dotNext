@@ -62,8 +62,6 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         evictionTask = DoEvictionAsync(completionSource = new());
     }
 
-    private string ObjectName => GetType().Name;
-
     private bool ResizeDesired(in Bucket bucket)
         => growable && bucket.CollisionCount >= maxCacheCapacity;
 
@@ -128,12 +126,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
         {
             throw cts.CancellationOrigin == lifetimeToken
-                ? new ObjectDisposedException(ObjectName)
+                ? CreateException()
                 : new OperationCanceledException(cts.CancellationOrigin);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
         {
-            throw new ObjectDisposedException(ObjectName);
+            throw CreateException();
         }
         finally
         {
@@ -218,12 +216,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
         {
             throw cts.CancellationOrigin == lifetimeToken
-                ? new ObjectDisposedException(ObjectName)
+                ? CreateException()
                 : new OperationCanceledException(cts.CancellationOrigin);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
         {
-            throw new ObjectDisposedException(ObjectName);
+            throw CreateException();
         }
         finally
         {
@@ -327,12 +325,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
         {
             throw cts.CancellationOrigin == lifetimeToken
-                ? new ObjectDisposedException(ObjectName)
+                ? CreateException()
                 : new OperationCanceledException(cts.CancellationOrigin);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
         {
-            throw new ObjectDisposedException(ObjectName);
+            throw CreateException();
         }
         finally
         {
@@ -401,12 +399,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
         {
             throw cts.CancellationOrigin == lifetimeToken
-                ? new ObjectDisposedException(ObjectName)
+                ? CreateException()
                 : new OperationCanceledException(cts.CancellationOrigin);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
         {
-            throw new ObjectDisposedException(ObjectName);
+            throw CreateException();
         }
         finally
         {
@@ -491,12 +489,12 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
         {
             throw cts.CancellationOrigin == lifetimeToken
-                ? new ObjectDisposedException(ObjectName)
+                ? CreateException()
                 : new OperationCanceledException(cts.CancellationOrigin);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
         {
-            throw new ObjectDisposedException(ObjectName);
+            throw CreateException();
         }
         finally
         {

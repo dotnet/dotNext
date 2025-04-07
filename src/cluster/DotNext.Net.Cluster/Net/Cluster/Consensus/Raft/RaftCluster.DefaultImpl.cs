@@ -339,7 +339,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
             server?.Dispose();
             server = null;
             cachedConfig.Dispose();
-            configurationEvents.Writer.TryComplete(new ObjectDisposedException(GetType().Name));
+            configurationEvents.Writer.TryComplete(CreateException());
         }
 
         base.Dispose(disposing);
