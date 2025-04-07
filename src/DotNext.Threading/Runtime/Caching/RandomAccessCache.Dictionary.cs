@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -342,49 +341,6 @@ public partial class RandomAccessCache<TKey, TValue>
             }
 
             return result;
-        }
-
-        internal KeyValuePair? Modify(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
-        {
-            KeyValuePair? valueHolder = null;
-            if (keyComparer is null)
-            {
-                for (KeyValuePair? current = first, previous = null; current is not null; previous = current, current = current.NextInBucket)
-                {
-                    if (valueHolder is null && hashCode == current.KeyHashCode
-                                            && EqualityComparer<TKey>.Default.Equals(key, current.Key)
-                                            && current.Visit()
-                                            && current.TryAcquireCounter())
-                    {
-                        valueHolder = current;
-                    }
-
-                    if (current.IsDead)
-                    {
-                        TryRemove(previous, current);
-                    }
-                }
-            }
-            else
-            {
-                for (KeyValuePair? current = first, previous = null; current is not null; previous = current, current = current.NextInBucket)
-                {
-                    if (valueHolder is null && hashCode == current.KeyHashCode
-                                            && keyComparer.Equals(key, current.Key)
-                                            && current.Visit()
-                                            && current.TryAcquireCounter())
-                    {
-                        valueHolder = current;
-                    }
-
-                    if (current.IsDead)
-                    {
-                        TryRemove(previous, current);
-                    }
-                }
-            }
-
-            return valueHolder;
         }
 
         internal void CleanUp()

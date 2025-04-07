@@ -90,8 +90,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<ReadOrWriteSession> ChangeAsync(TKey key, Timeout timeout, CancellationToken token)
     {
-        var keyComparerCopy = KeyComparer;
-        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
+        var hashCode = KeyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
         var cts = token.LinkTo(lifetimeToken);
         var bucketLock = default(AsyncExclusiveLock);
@@ -116,7 +115,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                     bucketLock = null;
                 }
 
-                if (bucket.Value.Modify(keyComparerCopy, key, hashCode) is { } valueHolder)
+                if (bucket.Value.TryGet<AcquisitionVisitor>(KeyComparer, key, hashCode) is { } valueHolder)
                     return new(this, valueHolder);
 
                 var bucketLockCopy = bucketLock;
@@ -179,8 +178,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<ReadOrWriteSession> ReplaceAsync(TKey key, Timeout timeout, CancellationToken token)
     {
-        var keyComparerCopy = KeyComparer;
-        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
+        var hashCode = KeyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
         var cts = token.LinkTo(lifetimeToken);
         var bucketLock = default(AsyncExclusiveLock);
@@ -209,7 +207,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 bucketLock = null;
                 if (!ResizeDesired(in bucket.Value))
                 {
-                    if (bucket.Value.TryRemove(keyComparerCopy, key, hashCode) is { } removedPair && removedPair.ReleaseCounter() is false)
+                    if (bucket.Value.TryRemove(KeyComparer, key, hashCode) is { } removedPair && removedPair.ReleaseCounter() is false)
                         OnRemoved(removedPair);
                     
                     return new(this, in bucket, bucketLockCopy, key, hashCode);
@@ -302,8 +300,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<ReadSession?> TryRemoveAsync(TKey key, TimeSpan timeout, CancellationToken token)
     {
-        var keyComparerCopy = KeyComparer;
-        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
+        var hashCode = KeyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
         var cts = token.LinkTo(lifetimeToken);
         var bucketLock = default(AsyncExclusiveLock);
@@ -324,7 +321,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 bucketLock = null;
             }
 
-            return bucket.Value.TryRemove(keyComparerCopy, key, hashCode) is { } removedPair
+            return bucket.Value.TryRemove(KeyComparer, key, hashCode) is { } removedPair
                 ? new ReadSession(this, removedPair)
                 : null;
         }
@@ -378,8 +375,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     private async ValueTask<bool> InvalidateAsync(TKey key, TimeSpan timeout, CancellationToken token)
     {
-        var keyComparerCopy = KeyComparer;
-        var hashCode = keyComparerCopy?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
+        var hashCode = KeyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
         var cts = token.LinkTo(lifetimeToken);
         var bucketLock = default(AsyncExclusiveLock);
@@ -401,7 +397,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 bucketLock = null;
             }
             
-            removedPair = bucket.Value.TryRemove(keyComparerCopy, key, hashCode);
+            removedPair = bucket.Value.TryRemove(KeyComparer, key, hashCode);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
         {
@@ -417,7 +413,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         {
             bucketLock?.Release();
         }
-
+        
         if (removedPair is null)
         {
             return false;
