@@ -614,7 +614,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         /// <summary>
         /// Closes the session.
         /// </summary>
-        void IDisposable.Dispose()
+        public void Dispose()
         {
             if (valueHolder?.ReleaseCounter() is false)
             {
