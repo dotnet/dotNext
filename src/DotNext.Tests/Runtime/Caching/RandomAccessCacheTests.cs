@@ -68,6 +68,7 @@ public sealed class RandomAccessCacheTests : Test
     public static async Task StressTest()
     {
         await using var cache = new RandomAccessCache<long, string>(15);
+        Null(cache.KeyComparer);
 
         const long accessCount = 1500;
 
