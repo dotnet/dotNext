@@ -44,6 +44,7 @@ public sealed class RandomAccessCacheTests : Test
             {
                 using (readSession)
                 {
+                    Equal(key, readSession.Key);
                     Equal(key.ToString(), readSession.Value);
                 }
             }
@@ -297,6 +298,27 @@ public sealed class RandomAccessCacheTests : Test
         using (readSession)
         {
             Equal("43", readSession.Value);
+        }
+    }
+
+    [Fact]
+    public static void EnumeratePartially()
+    {
+        using var cache = new RandomAccessCache<long, string>(15);
+        
+        using (var handle = cache.Change(42L, DefaultTimeout))
+        {
+            handle.SetValue("42");
+        }
+        
+        using (var handle = cache.Change(43L, DefaultTimeout))
+        {
+            handle.SetValue("43");
+        }
+
+        using (var enumerator = cache.GetEnumerator())
+        {
+            True(enumerator.MoveNext());
         }
     }
 

@@ -551,10 +551,15 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 // SIEVE is not scan-resistant, do not modify eviction state for every read
                 if (current.TryAcquireCounter())
                 {
-                    yield return new(current.Key, GetValue(current));
-
-                    if (current.ReleaseCounter() is false)
-                        OnRemoved(current);
+                    try
+                    {
+                        yield return new(current.Key, GetValue(current));
+                    }
+                    finally
+                    {
+                        if (current.ReleaseCounter() is false)
+                            OnRemoved(current);
+                    }
                 }
             }
         }
@@ -589,6 +594,11 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             this.cache = cache;
             this.valueHolder = valueHolder;
         }
+
+        /// <summary>
+        /// Gets the key associated with this cache entry.
+        /// </summary>
+        public TKey Key => valueHolder.Key;
 
         /// <summary>
         /// Gets the value of the cache record.
