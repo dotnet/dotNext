@@ -541,29 +541,6 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             base.Dispose(disposing);
         }
     }
-    
-    private IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator(BucketList buckets)
-    {
-        for (var i = 0; i < buckets.Count; i++)
-        {
-            for (var current = buckets.GetByIndex(i).First; current is not null; current = current.NextInBucket)
-            {
-                // SIEVE is not scan-resistant, do not modify eviction state for every read
-                if (current.TryAcquireCounter())
-                {
-                    try
-                    {
-                        yield return new(current.Key, GetValue(current));
-                    }
-                    finally
-                    {
-                        if (current.ReleaseCounter() is false)
-                            OnRemoved(current);
-                    }
-                }
-            }
-        }
-    }
 
     /// <summary>
     /// Gets an enumerator over the cache entries.
@@ -572,7 +549,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// SIEVE algorithm is not scan-resistant, the returned enumerator doesn't update the recency for the entry. 
     /// </remarks>
     /// <returns>The enumerator over the cache entries.</returns>
-    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => GetEnumerator(buckets);
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => buckets.GetEnumerator(OnRemoved);
 
     /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

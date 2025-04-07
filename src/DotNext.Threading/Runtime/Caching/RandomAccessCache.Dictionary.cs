@@ -405,7 +405,7 @@ public partial class RandomAccessCache<TKey, TValue>
             internal ref Bucket Value => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
         }
     }
-    
+
     [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
     private sealed class BucketList
     {
@@ -433,7 +433,7 @@ public partial class RandomAccessCache<TKey, TValue>
             }
 
             buckets.AsSpan(i).Initialize();
-            
+
             foreach (ref var bucket in prototypeBuckets)
             {
                 foreach (var pair in bucket)
@@ -462,7 +462,7 @@ public partial class RandomAccessCache<TKey, TValue>
         internal ref Bucket GetByIndex(int index)
         {
             Debug.Assert(index < (uint)buckets.Length);
-            
+
             return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
         }
 
@@ -486,8 +486,33 @@ public partial class RandomAccessCache<TKey, TValue>
                 bucket.Invalidate(cleanup);
             }
         }
+
+        private static IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator(Bucket[] buckets, Action<KeyValuePair> cleanup)
+        {
+            for (var i = 0; i < buckets.Length; i++)
+            {
+                for (var current = buckets[i].First; current is not null; current = current.NextInBucket)
+                {
+                    // SIEVE is not scan-resistant, do not modify eviction state for every read
+                    if (current.TryAcquireCounter())
+                    {
+                        try
+                        {
+                            yield return new(current.Key, GetValue(current));
+                        }
+                        finally
+                        {
+                            if (current.ReleaseCounter() is false)
+                                cleanup(current);
+                        }
+                    }
+                }
+            }
+        }
+
+        internal IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator(Action<KeyValuePair> cleanup) => GetEnumerator(buckets, cleanup);
     }
-    
+
     private async ValueTask GrowAsync(BucketList oldVersion, Timeout timeout, CancellationToken token)
     {
         // This is the maximum prime smaller than Array.MaxLength
