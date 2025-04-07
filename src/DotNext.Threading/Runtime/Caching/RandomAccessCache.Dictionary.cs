@@ -177,6 +177,8 @@ public partial class RandomAccessCache<TKey, TValue>
             : this(new())
         {
         }
+
+        internal readonly KeyValuePair? First => first;
         
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal readonly int CollisionCount => count;

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -17,7 +18,7 @@ using Threading;
 /// </remarks>
 /// <typeparam name="TKey">The type of the keys.</typeparam>
 /// <typeparam name="TValue">The type of the values.</typeparam>
-public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposable
+public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposable, IEnumerable<KeyValuePair<TKey, TValue>>
     where TKey : notnull
     where TValue : notnull
 {
@@ -540,6 +541,36 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             base.Dispose(disposing);
         }
     }
+    
+    private IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator(BucketList buckets)
+    {
+        for (var i = 0; i < buckets.Count; i++)
+        {
+            for (var current = buckets.GetByIndex(i).First; current is not null; current = current.NextInBucket)
+            {
+                // SIEVE is not scan-resistant, do not modify eviction state for every read
+                if (current.TryAcquireCounter())
+                {
+                    yield return new(current.Key, GetValue(current));
+
+                    if (current.ReleaseCounter() is false)
+                        OnRemoved(current);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets an enumerator over the cache entries.
+    /// </summary>
+    /// <remarks>
+    /// SIEVE algorithm is not scan-resistant, the returned enumerator doesn't update the recency for the entry. 
+    /// </remarks>
+    /// <returns>The enumerator over the cache entries.</returns>
+    public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => GetEnumerator(buckets);
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     /// <summary>
     /// Represents a session that can be used to read the cache record value.
