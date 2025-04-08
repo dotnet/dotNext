@@ -16,7 +16,7 @@ public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisp
 
     internal LambdaContext(LambdaExpression lambda) => this.lambda = new WeakReference(lambda);
 
-    private LambdaExpression Lambda => lambda?.Target is LambdaExpression result ? result : throw new ObjectDisposedException(nameof(LambdaContext));
+    private LambdaExpression Lambda => lambda?.Target as LambdaExpression ?? throw new ObjectDisposedException(nameof(LambdaContext));
 
     /// <summary>
     /// Gets parameter of the lambda function.

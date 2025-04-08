@@ -16,6 +16,6 @@ public partial class RandomAccessCache<TKey, TValue>
 
     internal partial class KeyValuePair
     {
-        protected string ToString(TValue value) => $"Key = {Key} Value = {value}, Promoted = {IsNotified}, IsAlive = {!IsDead}";
+        protected string ToString(TValue value) => $"Key = {Key} Value = {value}, Promoted = {IsPromoted}, IsAlive = {!IsDead}";
     }
 }

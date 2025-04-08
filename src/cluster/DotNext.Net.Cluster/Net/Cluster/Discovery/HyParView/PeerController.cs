@@ -403,7 +403,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     {
         if (disposing)
         {
-            queue.Writer.TryComplete(new ObjectDisposedException(GetType().Name));
+            queue.Writer.TryComplete(CreateException());
 
             // releases all local resources associated with the peer
             foreach (var peer in Interlocked.Exchange(ref activeView, ImmutableHashSet<EndPoint>.Empty))
@@ -423,7 +423,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     /// <inheritdoc />
     protected override async ValueTask DisposeAsyncCore()
     {
-        queue.Writer.TryComplete(new ObjectDisposedException(GetType().Name));
+        queue.Writer.TryComplete(CreateException());
 
         // releases all local resources associated with the peer
         foreach (var peer in Interlocked.Exchange(ref activeView, ImmutableHashSet<EndPoint>.Empty))
