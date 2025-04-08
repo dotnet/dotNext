@@ -23,7 +23,7 @@ namespace DotNext.Runtime;
 public abstract class BoxedValue<T> // do not add any interfaces or base types
     where T : struct
 {
-    internal T value;
+    internal T Value;
 
     /// <summary>
     /// Converts untyped reference to a boxed value into a typed reference.
@@ -61,7 +61,7 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     /// Unboxes the value.
     /// </summary>
     /// <param name="boxedValue">The boxed representation of the value.</param>
-    public static implicit operator T(BoxedValue<T> boxedValue) => boxedValue.value;
+    public static implicit operator T(BoxedValue<T> boxedValue) => boxedValue.Value;
 
     /// <summary>
     /// Converts a value type to an object reference.
@@ -93,7 +93,7 @@ public abstract class BoxedValue<T> // do not add any interfaces or base types
     /// <param name="boxedValue">Boxed value.</param>
     /// <returns>Mutable reference to the boxed value.</returns>
     public static implicit operator ValueReference<T>(BoxedValue<T> boxedValue)
-        => new(boxedValue, ref boxedValue.value);
+        => new(boxedValue, ref boxedValue.Value);
     
     /// <inheritdoc />
     public abstract override bool Equals([NotNullWhen(true)] object? obj);  // abstract to avoid inlining by AOT/JIT
@@ -118,7 +118,7 @@ public static class BoxedValue
     /// <returns>A reference to the boxed value.</returns>
     public static ref T Unbox<T>(this BoxedValue<T> boxedValue)
         where T : struct
-        => ref boxedValue.value;
+        => ref boxedValue.Value;
 
     /// <summary>
     /// Creates a bitwise copy of the boxed value.
