@@ -82,7 +82,6 @@ public partial class RandomAccessCache<TKey, TValue>
         internal void Import(KeyValuePair other)
         {
             cacheState = other.cacheState;
-            notification = other.notification;
             addedEvent = other.addedEvent;
         }
 
