@@ -1,6 +1,28 @@
 Release Notes
 ====
 
+# 04-08-2025
+<a href="https://www.nuget.org/packages/dotnext/5.21.0">DotNext 5.21.0</a>
+* Added `Disposable.CreateException()` protected method
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.21.0">DotNext.Metaprogramming 5.21.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.21.0">DotNext.Unsafe 5.21.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.21.0">DotNext.Threading 5.21.0</a>
+* Added `Contains`, `ReplaceAsync` methods to `RandomAccessCache<TKey, TValue>` class as well as scanning enumerator
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.21.0">DotNext.IO 5.21.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.21.0">DotNext.Net.Cluster 5.21.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.21.0">DotNext.AspNetCore.Cluster 5.21.0</a>
+* Updated dependencies
+
 # 03-30-2025
 <a href="https://www.nuget.org/packages/dotnext/5.20.0">DotNext 5.20.0</a>
 * Introduced `List.Repeat()` static method to construct read-only lists of repeatable items. Similar to [Enumerable.Repeat](https://learn.microsoft.com/en-us/dotnet/api/system.linq.enumerable.repeat) but returns [IReadOnlyList&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.collections.generic.ireadonlylist-1)

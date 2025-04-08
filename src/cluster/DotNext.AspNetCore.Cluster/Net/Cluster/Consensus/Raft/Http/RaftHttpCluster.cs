@@ -227,7 +227,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
             configurationTracker?.Dispose();
             duplicationDetector.Dispose();
             messageHandlers = ImmutableList<IInputChannel>.Empty;
-            configurationEvents.Writer.TryComplete(new ObjectDisposedException(GetType().Name));
+            configurationEvents.Writer.TryComplete(CreateException());
         }
 
         base.Dispose(disposing);

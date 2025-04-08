@@ -268,7 +268,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
         lock (SyncRoot)
         {
-            point?.TrySetException(new ObjectDisposedException(GetType().Name));
+            point?.TrySetException(CreateException());
             point = null;
         }
     }

@@ -44,6 +44,7 @@ public sealed class RandomAccessCacheTests : Test
             {
                 using (readSession)
                 {
+                    Equal(key, readSession.Key);
                     Equal(key.ToString(), readSession.Value);
                 }
             }
@@ -68,6 +69,7 @@ public sealed class RandomAccessCacheTests : Test
     public static async Task StressTest()
     {
         await using var cache = new RandomAccessCache<long, string>(15);
+        Null(cache.KeyComparer);
 
         const long accessCount = 1500;
 
@@ -110,18 +112,21 @@ public sealed class RandomAccessCacheTests : Test
     {
         await using var cache = new RandomAccessCache<long, string>(15);
 
-        using (var session = await cache.ChangeAsync(10L))
+        await using (var session = await cache.ChangeAsync(10L))
         {
             False(session.TryGetValue(out _));
             session.SetValue("10");
         }
 
         Null(await cache.TryRemoveAsync(11L));
+        True(cache.Contains(10L));
 
         using (var session = (await cache.TryRemoveAsync(10L)).Value)
         {
             Equal("10", session.Value);
         }
+
+        False(cache.Contains(10L));
     }
     
     [Fact]
@@ -136,12 +141,17 @@ public sealed class RandomAccessCacheTests : Test
         }
 
         False(cache.TryRemove(11L, out _, DefaultTimeout));
+        
+        True(cache.Contains(10L));
         True(cache.TryRemove(10L, out var session, DefaultTimeout));
+        False(cache.Contains(10L));
 
         using (session)
         {
             Equal("10", session.Value);
         }
+
+        False(cache.Contains(10L));
     }
 
     [Fact]
@@ -230,6 +240,89 @@ public sealed class RandomAccessCacheTests : Test
     }
 
     [Fact]
+    public static async Task ReplaceWhileReadingAsync()
+    {
+        await using var cache = new RandomAccessCache<long, string>(15);
+
+        using (var handle = await cache.ChangeAsync(42L))
+        {
+            handle.SetValue("42");
+        }
+
+        True(cache.TryRead(42L, out var readSession));
+
+        using (readSession)
+        {
+            using (var handle = await cache.ReplaceAsync(42L))
+            {
+                False(handle.TryGetValue(out _));
+                handle.SetValue("43");
+            }
+
+            Equal("42", readSession.Value);
+        }
+        
+        True(cache.TryRead(42L, out readSession));
+
+        using (readSession)
+        {
+            Equal("43", readSession.Value);
+        }
+    }
+    
+    [Fact]
+    public static void ReplaceWhileReading()
+    {
+        using var cache = new RandomAccessCache<long, string>(15);
+
+        using (var handle = cache.Change(42L, DefaultTimeout))
+        {
+            handle.SetValue("42");
+        }
+
+        True(cache.TryRead(42L, out var readSession));
+
+        using (readSession)
+        {
+            using (var handle = cache.Replace(42L, DefaultTimeout))
+            {
+                False(handle.TryGetValue(out _));
+                handle.SetValue("43");
+            }
+
+            Equal("42", readSession.Value);
+        }
+        
+        True(cache.TryRead(42L, out readSession));
+
+        using (readSession)
+        {
+            Equal("43", readSession.Value);
+        }
+    }
+
+    [Fact]
+    public static void EnumeratePartially()
+    {
+        using var cache = new RandomAccessCache<long, string>(15);
+        
+        using (var handle = cache.Change(42L, DefaultTimeout))
+        {
+            handle.SetValue("42");
+        }
+        
+        using (var handle = cache.Change(43L, DefaultTimeout))
+        {
+            handle.SetValue("43");
+        }
+
+        using (var enumerator = cache.GetEnumerator())
+        {
+            True(enumerator.MoveNext());
+        }
+    }
+
+    [Fact]
     public static async Task EvictLargeItemImmediately()
     {
         const long value = 101L;
@@ -239,7 +332,7 @@ public sealed class RandomAccessCacheTests : Test
             Eviction = (_, v) => source.TrySetResult(v),
         };
         
-        using (var session = await cache.ChangeAsync("101"))
+        await using (var session = await cache.ChangeAsync("101"))
         {
             False(session.TryGetValue(out _));
             session.SetValue(101L); // 101 > 100, must be evicted immediately

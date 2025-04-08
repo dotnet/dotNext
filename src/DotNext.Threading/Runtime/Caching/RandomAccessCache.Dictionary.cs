@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -67,7 +66,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
     private volatile BucketList buckets;
 
-    internal partial class KeyValuePair(TKey key, int hashCode)
+    internal abstract partial class KeyValuePair(TKey key, int hashCode)
     {
         internal readonly int KeyHashCode = hashCode;
         internal readonly TKey Key = key;
@@ -83,7 +82,7 @@ public partial class RandomAccessCache<TKey, TValue>
         internal void Import(KeyValuePair other)
         {
             cacheState = other.cacheState;
-            notification = other.notification;
+            addedEvent = other.addedEvent;
         }
 
         internal bool TryAcquireCounter()
@@ -152,13 +151,24 @@ public partial class RandomAccessCache<TKey, TValue>
 
         public override string ToString() => ToString(Value);
     }
+    
+    internal interface IKeyValuePairVisitor
+    {
+        public static abstract bool Visit(KeyValuePair pair);
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct NotDeadFilter : IKeyValuePairVisitor
+    {
+        static bool IKeyValuePairVisitor.Visit(KeyValuePair pair) => !pair.IsDead;
+    }
 
     [DebuggerDisplay($"NumberOfItems = {{{nameof(Count)}}}, IsLockHeld = {{{nameof(IsLockHeld)}}}")]
     [StructLayout(LayoutKind.Auto)]
     internal struct Bucket(AsyncExclusiveLock bucketLock)
     {
         internal readonly AsyncExclusiveLock Lock = bucketLock;
-        private bool newPairAdded;
+        private KeyValuePair? addedPair;
         private volatile KeyValuePair? first;
         private volatile int count;
 
@@ -166,6 +176,8 @@ public partial class RandomAccessCache<TKey, TValue>
             : this(new())
         {
         }
+
+        internal readonly KeyValuePair? First => first;
         
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal readonly int CollisionCount => count;
@@ -181,14 +193,13 @@ public partial class RandomAccessCache<TKey, TValue>
         internal KeyValuePair? TryAdd(TKey key, int hashCode, TValue value)
         {
             KeyValuePair? result;
-            if (newPairAdded)
+            if (addedPair is not null)
             {
                 result = null;
             }
             else
             {
-                Add(result = CreatePair(key, value, hashCode));
-                newPairAdded = true;
+                Add(addedPair = result = CreatePair(key, value, hashCode));
             }
 
             return result;
@@ -206,7 +217,23 @@ public partial class RandomAccessCache<TKey, TValue>
             Interlocked.Increment(ref count);
         }
 
-        internal void MarkAsReadyToAdd() => newPairAdded = false;
+        internal void MarkAsReadyToAdd() => addedPair = null;
+
+        internal Task MarkAsReadyToAddAndGetTask()
+        {
+            Task task;
+            if (addedPair is not null)
+            {
+                task = addedPair.AddedEvent;
+                addedPair = null;
+            }
+            else
+            {
+                task = Task.CompletedTask;
+            }
+
+            return task;
+        }
 
         private void TryRemove(KeyValuePair? previous, KeyValuePair current)
         {
@@ -269,10 +296,9 @@ public partial class RandomAccessCache<TKey, TValue>
             return result;
         }
 
-        internal unsafe KeyValuePair? TryGet(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode, delegate*<KeyValuePair, bool> visitor)
+        internal KeyValuePair? TryGet<TVisitor>(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
+            where TVisitor : struct, IKeyValuePairVisitor
         {
-            Debug.Assert(visitor is not null);
-            
             var result = default(KeyValuePair?);
 
             // remove all dead nodes from the bucket
@@ -284,7 +310,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 {
                     if (result is null && hashCode == current.KeyHashCode
                                        && EqualityComparer<TKey>.Default.Equals(key, current.Key)
-                                       && visitor(current))
+                                       && TVisitor.Visit(current))
                     {
                         result = current;
                     }
@@ -303,7 +329,7 @@ public partial class RandomAccessCache<TKey, TValue>
                 {
                     if (result is null && hashCode == current.KeyHashCode
                                        && keyComparer.Equals(key, current.Key)
-                                       && visitor(current))
+                                       && TVisitor.Visit(current))
                     {
                         result = current;
                     }
@@ -316,49 +342,6 @@ public partial class RandomAccessCache<TKey, TValue>
             }
 
             return result;
-        }
-
-        internal KeyValuePair? Modify(IEqualityComparer<TKey>? keyComparer, TKey key, int hashCode)
-        {
-            KeyValuePair? valueHolder = null;
-            if (keyComparer is null)
-            {
-                for (KeyValuePair? current = first, previous = null; current is not null; previous = current, current = current.NextInBucket)
-                {
-                    if (valueHolder is null && hashCode == current.KeyHashCode
-                                            && EqualityComparer<TKey>.Default.Equals(key, current.Key)
-                                            && current.Visit()
-                                            && current.TryAcquireCounter())
-                    {
-                        valueHolder = current;
-                    }
-
-                    if (current.IsDead)
-                    {
-                        TryRemove(previous, current);
-                    }
-                }
-            }
-            else
-            {
-                for (KeyValuePair? current = first, previous = null; current is not null; previous = current, current = current.NextInBucket)
-                {
-                    if (valueHolder is null && hashCode == current.KeyHashCode
-                                            && keyComparer.Equals(key, current.Key)
-                                            && current.Visit()
-                                            && current.TryAcquireCounter())
-                    {
-                        valueHolder = current;
-                    }
-
-                    if (current.IsDead)
-                    {
-                        TryRemove(previous, current);
-                    }
-                }
-            }
-
-            return valueHolder;
         }
 
         internal void CleanUp()
@@ -383,7 +366,7 @@ public partial class RandomAccessCache<TKey, TValue>
             {
                 TryRemove(previous, current);
                     
-                if (current.MarkAsEvicted() && current.ReleaseCounter() is false)
+                if (current.MarkAsDead())
                 {
                     cleanup.Invoke(current);
                 }
@@ -421,7 +404,7 @@ public partial class RandomAccessCache<TKey, TValue>
             internal ref Bucket Value => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
         }
     }
-    
+
     [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
     private sealed class BucketList
     {
@@ -449,7 +432,7 @@ public partial class RandomAccessCache<TKey, TValue>
             }
 
             buckets.AsSpan(i).Initialize();
-            
+
             foreach (ref var bucket in prototypeBuckets)
             {
                 foreach (var pair in bucket)
@@ -478,16 +461,12 @@ public partial class RandomAccessCache<TKey, TValue>
         internal ref Bucket GetByIndex(int index)
         {
             Debug.Assert(index < (uint)buckets.Length);
-            
+
             return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(buckets), index);
         }
 
-        internal unsafe KeyValuePair? FindPair(IEqualityComparer<TKey>? keyComparer, TKey key, int keyHashCode)
-        {
-            return GetByHash(keyHashCode).TryGet(keyComparer, key, keyHashCode, &NotDead);
-
-            static bool NotDead(KeyValuePair pair) => !pair.IsDead;
-        }
+        internal KeyValuePair? FindPair(IEqualityComparer<TKey>? keyComparer, TKey key, int keyHashCode)
+            => GetByHash(keyHashCode).TryGet<NotDeadFilter>(keyComparer, key, keyHashCode);
 
         internal void Release(int count)
         {
@@ -506,8 +485,33 @@ public partial class RandomAccessCache<TKey, TValue>
                 bucket.Invalidate(cleanup);
             }
         }
+
+        private static IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator(Bucket[] buckets, Action<KeyValuePair> cleanup)
+        {
+            for (var i = 0; i < buckets.Length; i++)
+            {
+                for (var current = buckets[i].First; current is not null; current = current.NextInBucket)
+                {
+                    // SIEVE is not scan-resistant, do not modify eviction state for every read
+                    if (current.TryAcquireCounter())
+                    {
+                        try
+                        {
+                            yield return new(current.Key, GetValue(current));
+                        }
+                        finally
+                        {
+                            if (current.ReleaseCounter() is false)
+                                cleanup(current);
+                        }
+                    }
+                }
+            }
+        }
+
+        internal IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator(Action<KeyValuePair> cleanup) => GetEnumerator(buckets, cleanup);
     }
-    
+
     private async ValueTask GrowAsync(BucketList oldVersion, Timeout timeout, CancellationToken token)
     {
         // This is the maximum prime smaller than Array.MaxLength

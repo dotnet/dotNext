@@ -17,7 +17,7 @@ public readonly struct LoopContext : IDisposable
 
     internal LoopContext(ILoopLabels loop) => this.loop = new WeakReference(loop);
 
-    private ILoopLabels Labels => loop?.Target is ILoopLabels result ? result : throw new ObjectDisposedException(nameof(LoopContext));
+    private ILoopLabels Labels => loop?.Target as ILoopLabels ?? throw new ObjectDisposedException(nameof(LoopContext));
 
     internal LabelTarget ContinueLabel => Labels.ContinueLabel;
 

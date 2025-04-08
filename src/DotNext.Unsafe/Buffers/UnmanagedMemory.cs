@@ -131,7 +131,7 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
     }
 
     internal UnmanagedMemory(nint address, int length)
-        : this((void*)address, length)
+        : this(address.ToPointer(), length)
     {
     }
 

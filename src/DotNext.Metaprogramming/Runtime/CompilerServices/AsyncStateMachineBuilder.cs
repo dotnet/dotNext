@@ -546,7 +546,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         }
     }
 
-    private static MemberExpression[] CreateStateHolderType(Type returnType, bool usePooling, IReadOnlyList<ParameterExpression> variables, out ParameterExpression stateMachine)
+    private static MemberExpression[] CreateStateHolderType(Type returnType, bool usePooling, ReadOnlySpan<ParameterExpression> variables, out ParameterExpression stateMachine)
     {
         var sm = new StateMachineBuilder(returnType, usePooling);
         MemberExpression[] slots;

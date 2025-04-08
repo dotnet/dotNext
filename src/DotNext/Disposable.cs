@@ -38,10 +38,16 @@ public abstract class Disposable : IDisposable
     private string ObjectName => GetType().Name;
 
     /// <summary>
+    /// Creates a new instance of <see cref="ObjectDisposedException"/> class.
+    /// </summary>
+    /// <returns>A new instance of the exception that can be thrown by the caller.</returns>
+    protected ObjectDisposedException CreateException() => new(ObjectName);
+
+    /// <summary>
     /// Gets a task representing <see cref="ObjectDisposedException"/> exception.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    protected Task DisposedTask => Task.FromException(new ObjectDisposedException(ObjectName));
+    protected Task DisposedTask => Task.FromException(CreateException());
 
     /// <summary>
     /// Returns a task representing <see cref="ObjectDisposedException"/> exception.
@@ -49,7 +55,7 @@ public abstract class Disposable : IDisposable
     /// <typeparam name="T">The type of the task.</typeparam>
     /// <returns>The task representing <see cref="ObjectDisposedException"/> exception.</returns>
     protected Task<T> GetDisposedTask<T>()
-        => Task.FromException<T>(new ObjectDisposedException(ObjectName));
+        => Task.FromException<T>(CreateException());
 
     /// <summary>
     /// Attempts to complete the task with <see cref="ObjectDisposedException"/> exception.
@@ -58,7 +64,7 @@ public abstract class Disposable : IDisposable
     /// <typeparam name="T">The type of the task.</typeparam>
     /// <returns><see langword="true"/> if operation was successful; otherwise, <see langword="false"/>.</returns>
     protected bool TrySetDisposedException<T>(TaskCompletionSource<T> source)
-        => source.TrySetException(new ObjectDisposedException(ObjectName));
+        => source.TrySetException(CreateException());
 
     /// <summary>
     /// Attempts to complete the task with <see cref="ObjectDisposedException"/> exception.
@@ -66,7 +72,7 @@ public abstract class Disposable : IDisposable
     /// <param name="source">The task completion source.</param>
     /// <returns><see langword="true"/> if operation was successful; otherwise, <see langword="false"/>.</returns>
     protected bool TrySetDisposedException(TaskCompletionSource source)
-        => source.TrySetException(new ObjectDisposedException(ObjectName));
+        => source.TrySetException(CreateException());
 
     /// <summary>
     /// Releases managed and unmanaged resources associated with this object.

@@ -55,11 +55,13 @@ public partial class RandomAccessCache<TKey, TValue>
             if (sieveHand is null)
             {
                 // if eviction still required, we need to release the enqueued key/value pair because the current cache
-                // doesn't have enough resources
+                // doesn't have enough resources (pair has too high weight)
+                promoted.MarkAsDead();
                 Clear(promoted);
+                promoted.Added();
                 return false;
             }
-            
+
             if (!sieveHand.Evict(out var removed))
             {
                 sieveHand = sieveHand.MoveBackward() ?? evictionTail;
@@ -86,8 +88,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
     // cannot be called concurrently, doesn't require synchronization
     private protected virtual void OnAdded(KeyValuePair promoted)
-    {
-    }
+        => promoted.Added();
 
     private protected virtual void OnRemoved(KeyValuePair demoted)
         => Clear(demoted);
@@ -136,6 +137,9 @@ public partial class RandomAccessCache<TKey, TValue>
 
         private (KeyValuePair? Previous, KeyValuePair? Next) sieveLinks;
         private volatile int cacheState;
+
+        // null, or Task, or AddedEventSource
+        private volatile object? addedEvent;
 
         internal KeyValuePair? MoveBackward()
             => sieveLinks.Previous;
@@ -197,6 +201,9 @@ public partial class RandomAccessCache<TKey, TValue>
         internal bool MarkAsEvicted()
             => Interlocked.Exchange(ref cacheState, EvictedState) >= NotVisitedState;
 
+        internal bool MarkAsDead()
+            => MarkAsEvicted() && ReleaseCounter() is false;
+
         internal bool IsDead => cacheState < NotVisitedState;
         
         [ExcludeFromCodeCoverage]
@@ -216,6 +223,43 @@ public partial class RandomAccessCache<TKey, TValue>
                 return (alive, dead);
             }
         }
+
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        internal Task AddedEvent
+        {
+            get
+            {
+                var result = Task.CompletedTask;
+                for (object? addedEventCopy = addedEvent; !IsDead;)
+                {
+                    switch (addedEventCopy)
+                    {
+                        case AddedEventSource source:
+                            result = source.Task;
+                            break;
+                        case Task task:
+                            result = task;
+                            break;
+                        default:
+                            var src = new AddedEventSource();
+                            addedEventCopy = Interlocked.CompareExchange(ref addedEvent, src, comparand: null) ?? src;
+                            continue;
+                    }
+
+                    break;
+                }
+
+                return result;
+            }
+        }
+
+        internal void Added()
+        {
+            if (Interlocked.CompareExchange(ref addedEvent, Task.CompletedTask, comparand: null) is AddedEventSource source)
+                source.TrySetResult();
+        }
+
+        private sealed class AddedEventSource() : TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
     }
 
     private sealed class CancelableValueTaskCompletionSource : IValueTaskSource<bool>, IThreadPoolWorkItem
