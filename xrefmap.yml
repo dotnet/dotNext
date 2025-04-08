@@ -11709,6 +11709,19 @@ references:
   commentId: T:DotNext.Disposable
   fullName: DotNext.Disposable
   nameWithType: Disposable
+- uid: DotNext.Disposable.CreateException
+  name: CreateException()
+  href: api/DotNext.Disposable.html#DotNext_Disposable_CreateException
+  commentId: M:DotNext.Disposable.CreateException
+  fullName: DotNext.Disposable.CreateException()
+  nameWithType: Disposable.CreateException()
+- uid: DotNext.Disposable.CreateException*
+  name: CreateException
+  href: api/DotNext.Disposable.html#DotNext_Disposable_CreateException_
+  commentId: Overload:DotNext.Disposable.CreateException
+  isSpec: "True"
+  fullName: DotNext.Disposable.CreateException
+  nameWithType: Disposable.CreateException
 - uid: DotNext.Disposable.Dispose
   name: Dispose()
   href: api/DotNext.Disposable.html#DotNext_Disposable_Dispose
@@ -39582,6 +39595,23 @@ references:
   fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ChangeAsync
   nameWithType: RandomAccessCache<TKey, TValue>.ChangeAsync
   nameWithType.vb: RandomAccessCache(Of TKey, TValue).ChangeAsync
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.Contains(`0)
+  name: Contains(TKey)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Contains__0_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.Contains(`0)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.Contains(TKey)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).Contains(TKey)
+  nameWithType: RandomAccessCache<TKey, TValue>.Contains(TKey)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).Contains(TKey)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.Contains*
+  name: Contains
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Contains_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.Contains
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.Contains
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).Contains
+  nameWithType: RandomAccessCache<TKey, TValue>.Contains
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).Contains
 - uid: DotNext.Runtime.Caching.RandomAccessCache`2.Dispose(System.Boolean)
   name: Dispose(bool)
   href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Dispose_System_Boolean_
@@ -39651,6 +39681,23 @@ references:
   fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).Eviction
   nameWithType: RandomAccessCache<TKey, TValue>.Eviction
   nameWithType.vb: RandomAccessCache(Of TKey, TValue).Eviction
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.GetEnumerator
+  name: GetEnumerator()
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_GetEnumerator
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.GetEnumerator
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.GetEnumerator()
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).GetEnumerator()
+  nameWithType: RandomAccessCache<TKey, TValue>.GetEnumerator()
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).GetEnumerator()
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.GetEnumerator*
+  name: GetEnumerator
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_GetEnumerator_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.GetEnumerator
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.GetEnumerator
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).GetEnumerator
+  nameWithType: RandomAccessCache<TKey, TValue>.GetEnumerator
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).GetEnumerator
 - uid: DotNext.Runtime.Caching.RandomAccessCache`2.Invalidate(`0,System.TimeSpan,System.Threading.CancellationToken)
   name: Invalidate(TKey, TimeSpan, CancellationToken)
   href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Invalidate__0_System_TimeSpan_System_Threading_CancellationToken_
@@ -39710,67 +39757,6 @@ references:
   fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).KeyComparer
   nameWithType: RandomAccessCache<TKey, TValue>.KeyComparer
   nameWithType.vb: RandomAccessCache(Of TKey, TValue).KeyComparer
-- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession
-  name: RandomAccessCache<TKey, TValue>.ReadOrWriteSession
-  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadOrWriteSession.html
-  commentId: T:DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession
-  name.vb: RandomAccessCache(Of TKey, TValue).ReadOrWriteSession
-  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadOrWriteSession
-  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadOrWriteSession
-  nameWithType: RandomAccessCache<TKey, TValue>.ReadOrWriteSession
-  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadOrWriteSession
-- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.SetValue(`1)
-  name: SetValue(TValue)
-  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadOrWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_SetValue__1_
-  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.SetValue(`1)
-  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadOrWriteSession.SetValue(TValue)
-  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.SetValue(TValue)
-  nameWithType: RandomAccessCache<TKey, TValue>.ReadOrWriteSession.SetValue(TValue)
-  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.SetValue(TValue)
-- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.SetValue*
-  name: SetValue
-  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadOrWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_SetValue_
-  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.SetValue
-  isSpec: "True"
-  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadOrWriteSession.SetValue
-  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.SetValue
-  nameWithType: RandomAccessCache<TKey, TValue>.ReadOrWriteSession.SetValue
-  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.SetValue
-- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.TryGetValue(`1@)
-  name: TryGetValue(out TValue)
-  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadOrWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_TryGetValue__1__
-  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.TryGetValue(`1@)
-  name.vb: TryGetValue(TValue)
-  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadOrWriteSession.TryGetValue(out TValue)
-  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.TryGetValue(TValue)
-  nameWithType: RandomAccessCache<TKey, TValue>.ReadOrWriteSession.TryGetValue(out TValue)
-  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.TryGetValue(TValue)
-- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.TryGetValue*
-  name: TryGetValue
-  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadOrWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_TryGetValue_
-  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.TryGetValue
-  isSpec: "True"
-  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadOrWriteSession.TryGetValue
-  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.TryGetValue
-  nameWithType: RandomAccessCache<TKey, TValue>.ReadOrWriteSession.TryGetValue
-  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.TryGetValue
-- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.ValueRefOrNullRef
-  name: ValueRefOrNullRef
-  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadOrWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_ValueRefOrNullRef
-  commentId: P:DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.ValueRefOrNullRef
-  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadOrWriteSession.ValueRefOrNullRef
-  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.ValueRefOrNullRef
-  nameWithType: RandomAccessCache<TKey, TValue>.ReadOrWriteSession.ValueRefOrNullRef
-  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.ValueRefOrNullRef
-- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.ValueRefOrNullRef*
-  name: ValueRefOrNullRef
-  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadOrWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_ValueRefOrNullRef_
-  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.ValueRefOrNullRef
-  isSpec: "True"
-  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadOrWriteSession.ValueRefOrNullRef
-  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.ValueRefOrNullRef
-  nameWithType: RandomAccessCache<TKey, TValue>.ReadOrWriteSession.ValueRefOrNullRef
-  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadOrWriteSession.ValueRefOrNullRef
 - uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession
   name: RandomAccessCache<TKey, TValue>.ReadSession
   href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadSession.html
@@ -39780,6 +39766,40 @@ references:
   fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadSession
   nameWithType: RandomAccessCache<TKey, TValue>.ReadSession
   nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadSession
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession.Dispose
+  name: Dispose()
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadSession_Dispose
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession.Dispose
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadSession.Dispose()
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadSession.Dispose()
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadSession.Dispose()
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadSession.Dispose()
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession.Dispose*
+  name: Dispose
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadSession_Dispose_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession.Dispose
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadSession.Dispose
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadSession.Dispose
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadSession.Dispose
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadSession.Dispose
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession.Key
+  name: Key
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadSession_Key
+  commentId: P:DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession.Key
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadSession.Key
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadSession.Key
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadSession.Key
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadSession.Key
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession.Key*
+  name: Key
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadSession_Key_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession.Key
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadSession.Key
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadSession.Key
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadSession.Key
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadSession.Key
 - uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadSession.Value
   name: Value
   href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadSession_Value
@@ -39814,6 +39834,135 @@ references:
   fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadSession.ValueRef
   nameWithType: RandomAccessCache<TKey, TValue>.ReadSession.ValueRef
   nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadSession.ValueRef
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession
+  name: RandomAccessCache<TKey, TValue>.ReadWriteSession
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadWriteSession.html
+  commentId: T:DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession
+  name.vb: RandomAccessCache(Of TKey, TValue).ReadWriteSession
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadWriteSession
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadWriteSession
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadWriteSession
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadWriteSession
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.Dispose
+  name: Dispose()
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_Dispose
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.Dispose
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadWriteSession.Dispose()
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadWriteSession.Dispose()
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadWriteSession.Dispose()
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadWriteSession.Dispose()
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.Dispose*
+  name: Dispose
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_Dispose_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.Dispose
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadWriteSession.Dispose
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadWriteSession.Dispose
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadWriteSession.Dispose
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadWriteSession.Dispose
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_DisposeAsync
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.DisposeAsync
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadWriteSession.DisposeAsync()
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadWriteSession.DisposeAsync()
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadWriteSession.DisposeAsync()
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadWriteSession.DisposeAsync()
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_DisposeAsync_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.DisposeAsync
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadWriteSession.DisposeAsync
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadWriteSession.DisposeAsync
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadWriteSession.DisposeAsync
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadWriteSession.DisposeAsync
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.SetValue(`1)
+  name: SetValue(TValue)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_SetValue__1_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.SetValue(`1)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadWriteSession.SetValue(TValue)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadWriteSession.SetValue(TValue)
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadWriteSession.SetValue(TValue)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadWriteSession.SetValue(TValue)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.SetValue*
+  name: SetValue
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_SetValue_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.SetValue
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadWriteSession.SetValue
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadWriteSession.SetValue
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadWriteSession.SetValue
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadWriteSession.SetValue
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.TryGetValue(`1@)
+  name: TryGetValue(out TValue)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_TryGetValue__1__
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.TryGetValue(`1@)
+  name.vb: TryGetValue(TValue)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadWriteSession.TryGetValue(out TValue)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadWriteSession.TryGetValue(TValue)
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadWriteSession.TryGetValue(out TValue)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadWriteSession.TryGetValue(TValue)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.TryGetValue*
+  name: TryGetValue
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_TryGetValue_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.TryGetValue
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadWriteSession.TryGetValue
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadWriteSession.TryGetValue
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadWriteSession.TryGetValue
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadWriteSession.TryGetValue
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.ValueRefOrNullRef
+  name: ValueRefOrNullRef
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_ValueRefOrNullRef
+  commentId: P:DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.ValueRefOrNullRef
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadWriteSession.ValueRefOrNullRef
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadWriteSession.ValueRefOrNullRef
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadWriteSession.ValueRefOrNullRef
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadWriteSession.ValueRefOrNullRef
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.ValueRefOrNullRef*
+  name: ValueRefOrNullRef
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.ReadWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_ValueRefOrNullRef_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.ValueRefOrNullRef
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReadWriteSession.ValueRefOrNullRef
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReadWriteSession.ValueRefOrNullRef
+  nameWithType: RandomAccessCache<TKey, TValue>.ReadWriteSession.ValueRefOrNullRef
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReadWriteSession.ValueRefOrNullRef
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.Replace(`0,System.TimeSpan,System.Threading.CancellationToken)
+  name: Replace(TKey, TimeSpan, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Replace__0_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.Replace(`0,System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.Replace(TKey, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).Replace(TKey, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TKey, TValue>.Replace(TKey, TimeSpan, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).Replace(TKey, TimeSpan, CancellationToken)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.Replace*
+  name: Replace
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Replace_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.Replace
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.Replace
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).Replace
+  nameWithType: RandomAccessCache<TKey, TValue>.Replace
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).Replace
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReplaceAsync(`0,System.Threading.CancellationToken)
+  name: ReplaceAsync(TKey, CancellationToken)
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReplaceAsync__0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.Caching.RandomAccessCache`2.ReplaceAsync(`0,System.Threading.CancellationToken)
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReplaceAsync(TKey, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReplaceAsync(TKey, System.Threading.CancellationToken)
+  nameWithType: RandomAccessCache<TKey, TValue>.ReplaceAsync(TKey, CancellationToken)
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReplaceAsync(TKey, CancellationToken)
+- uid: DotNext.Runtime.Caching.RandomAccessCache`2.ReplaceAsync*
+  name: ReplaceAsync
+  href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReplaceAsync_
+  commentId: Overload:DotNext.Runtime.Caching.RandomAccessCache`2.ReplaceAsync
+  isSpec: "True"
+  fullName: DotNext.Runtime.Caching.RandomAccessCache<TKey, TValue>.ReplaceAsync
+  fullName.vb: DotNext.Runtime.Caching.RandomAccessCache(Of TKey, TValue).ReplaceAsync
+  nameWithType: RandomAccessCache<TKey, TValue>.ReplaceAsync
+  nameWithType.vb: RandomAccessCache(Of TKey, TValue).ReplaceAsync
 - uid: DotNext.Runtime.Caching.RandomAccessCache`2.TryRead(`0,DotNext.Runtime.Caching.RandomAccessCache{`0,`1}.ReadSession@)
   name: TryRead(TKey, out ReadSession)
   href: api/DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_TryRead__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__

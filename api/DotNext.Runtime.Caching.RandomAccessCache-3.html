@@ -85,6 +85,8 @@ by their weight.</p>
     <h5>Implements</h5>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2">KeyValuePair</a>&lt;TKey, TValue&gt;&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -104,7 +106,16 @@ by their weight.</p>
       <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Change__0_System_TimeSpan_System_Threading_CancellationToken_">RandomAccessCache&lt;TKey, TValue&gt;.Change(TKey, TimeSpan, CancellationToken)</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReplaceAsync__0_System_Threading_CancellationToken_">RandomAccessCache&lt;TKey, TValue&gt;.ReplaceAsync(TKey, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Replace__0_System_TimeSpan_System_Threading_CancellationToken_">RandomAccessCache&lt;TKey, TValue&gt;.Replace(TKey, TimeSpan, CancellationToken)</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_TryRead__0_DotNext_Runtime_Caching_RandomAccessCache__0__1__ReadSession__">RandomAccessCache&lt;TKey, TValue&gt;.TryRead(TKey, out RandomAccessCache&lt;TKey, TValue&gt;.ReadSession)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Contains__0_">RandomAccessCache&lt;TKey, TValue&gt;.Contains(TKey)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_TryRemoveAsync__0_System_Threading_CancellationToken_">RandomAccessCache&lt;TKey, TValue&gt;.TryRemoveAsync(TKey, CancellationToken)</a>
@@ -131,6 +142,9 @@ by their weight.</p>
       <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_Dispose_System_Boolean_">RandomAccessCache&lt;TKey, TValue&gt;.Dispose(bool)</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.html#DotNext_Runtime_Caching_RandomAccessCache_2_GetEnumerator">RandomAccessCache&lt;TKey, TValue&gt;.GetEnumerator()</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
     </div>
     <div>
@@ -138,6 +152,9 @@ by their weight.</p>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_CreateException">Disposable.CreateException()</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposedTask">Disposable.DisposedTask</a>
@@ -204,7 +221,7 @@ by their weight.</p>
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
   <h5 id="DotNext_Runtime_Caching_RandomAccessCache_3_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class RandomAccessCache&lt;TKey, TValue, TWeight&gt; : RandomAccessCache&lt;TKey, TValue&gt;, IDisposable, IAsyncDisposable where TKey : notnull where TValue : notnull where TWeight : notnull</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class RandomAccessCache&lt;TKey, TValue, TWeight&gt; : RandomAccessCache&lt;TKey, TValue&gt;, IDisposable, IAsyncDisposable, IEnumerable&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;, IEnumerable where TKey : notnull where TValue : notnull where TWeight : notnull</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -247,7 +264,7 @@ of the contention. However, <a class="xref" href="DotNext.Runtime.Caching.Random
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_3__ctor_System_Int32__2_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%603.%23ctor(System.Int32%2C%602%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L614">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L765">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_3__ctor_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.#ctor*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_3__ctor_System_Int32__2_System_Int32_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.#ctor(System.Int32,`2,System.Int32)">RandomAccessCache(int, TWeight, int)</h4>
@@ -306,7 +323,7 @@ of the contention. However, <a class="xref" href="DotNext.Runtime.Caching.Random
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_3_AddWeight__2___0__1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%603.AddWeight(%602%40%2C%600%2C%601)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L629">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L780">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_3_AddWeight_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.AddWeight*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_3_AddWeight__2___0__1_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.AddWeight(`2@,`0,`1)">AddWeight(ref TWeight, TKey, TValue)</h4>
@@ -355,7 +372,7 @@ of the contention. However, <a class="xref" href="DotNext.Runtime.Caching.Random
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_3_IsEvictionRequired__2___0__1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%603.IsEvictionRequired(%602%40%2C%600%2C%601)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L641">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L795">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_3_IsEvictionRequired_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.IsEvictionRequired*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_3_IsEvictionRequired__2___0__1_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.IsEvictionRequired(`2@,`0,`1)">IsEvictionRequired(ref readonly TWeight, TKey, TValue)</h4>
@@ -417,7 +434,7 @@ of the contention. However, <a class="xref" href="DotNext.Runtime.Caching.Random
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_3_RemoveWeight__2___0__1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%603.RemoveWeight(%602%40%2C%600%2C%601)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L655">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L809">View Source</a>
   </span>
   <a id="DotNext_Runtime_Caching_RandomAccessCache_3_RemoveWeight_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.RemoveWeight*"></a>
   <h4 id="DotNext_Runtime_Caching_RandomAccessCache_3_RemoveWeight__2___0__1_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`3.RemoveWeight(`2@,`0,`1)">RemoveWeight(ref TWeight, TKey, TValue)</h4>
@@ -467,6 +484,12 @@ of the contention. However, <a class="xref" href="DotNext.Runtime.Caching.Random
   </div>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
@@ -526,6 +549,42 @@ of the contention. However, <a class="xref" href="DotNext.Runtime.Caching.Random
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Append__1_System_Collections_Generic_IEnumerable___0____0___">Collection.Append&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Copy__1_System_Collections_Generic_IEnumerable___0__System_Int32_DotNext_Buffers_MemoryAllocator___0__">Collection.Copy&lt;T&gt;(IEnumerable&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Collection.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, int, out T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_FirstOrNone__1_System_Collections_Generic_IEnumerable___0__">Collection.FirstOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Collection.ForEachAsync&lt;T&gt;(IEnumerable&lt;T&gt;, Func&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Collection.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_LastOrNone__1_System_Collections_Generic_IEnumerable___0__">Collection.LastOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Prepend__1_System_Collections_Generic_IEnumerable___0____0___">Collection.Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_SequenceHashCode__1_System_Collections_Generic_IEnumerable___0__System_Boolean_">Collection.SequenceHashCode&lt;T&gt;(IEnumerable&lt;T&gt;, bool)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__">Collection.ToAsyncEnumerable&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Collection.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, string, string)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_">Enumerator.GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</a>
+  </div>
 
 </article>
           </div>
@@ -538,7 +597,7 @@ of the contention. However, <a class="xref" href="DotNext.Runtime.Caching.Random
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_3.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%603%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L614" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L765" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

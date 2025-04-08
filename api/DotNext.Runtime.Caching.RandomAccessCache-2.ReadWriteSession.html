@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct RandomAccessCache&lt;TKey, TValue&gt;.ReadOrWriteSession | .NEXT </title>
+    <title>Struct RandomAccessCache&lt;TKey, TValue&gt;.ReadWriteSession | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct RandomAccessCache&lt;TKey, TValue&gt;.ReadOrWriteSession | .NEXT ">
+    <meta name="title" content="Struct RandomAccessCache&lt;TKey, TValue&gt;.ReadWriteSession | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,17 +65,18 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession">
 
 
 
-  <h1 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession" class="text-break">Struct RandomAccessCache&lt;TKey, TValue&gt;.ReadOrWriteSession</h1>
+  <h1 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession" class="text-break">Struct RandomAccessCache&lt;TKey, TValue&gt;.ReadWriteSession</h1>
   <div class="markdown level0 summary"><p>Represents a session that can be used to read, modify or promote the cache record value.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -100,24 +101,24 @@
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Runtime.html">Runtime</a>.<a class="xref" href="DotNext.Runtime.Caching.html">Caching</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
-  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_syntax">Syntax</h5>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct RandomAccessCache&lt;TKey, TValue&gt;.ReadOrWriteSession : IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct RandomAccessCache&lt;TKey, TValue&gt;.ReadWriteSession : IDisposable, IAsyncDisposable</code></pre>
   </div>
-  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_remarks"><strong>Remarks</strong></h5>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>While session alive, the record cannot be evicted.</p>
 </div>
   <h3 id="properties">Properties
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_ValueRefOrNullRef.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ReadOrWriteSession.ValueRefOrNullRef%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_ValueRefOrNullRef.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ReadWriteSession.ValueRefOrNullRef%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L547">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L654">View Source</a>
   </span>
-  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_ValueRefOrNullRef_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.ValueRefOrNullRef*"></a>
-  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_ValueRefOrNullRef" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.ValueRefOrNullRef">ValueRefOrNullRef</h4>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_ValueRefOrNullRef_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.ValueRefOrNullRef*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_ValueRefOrNullRef" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.ValueRefOrNullRef">ValueRefOrNullRef</h4>
   <div class="markdown level1 summary"><p>Gets a reference to a value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -145,13 +146,70 @@
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_SetValue__1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ReadOrWriteSession.SetValue(%601)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ReadWriteSession.Dispose%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L558">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L686">View Source</a>
   </span>
-  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_SetValue_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.SetValue*"></a>
-  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_SetValue__1_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.SetValue(`1)">SetValue(TValue)</h4>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_Dispose_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.Dispose*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_Dispose" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"><p>Closes the session.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_Dispose_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method should be called only once. The method doesn't wait for the cache entry promotion.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ReadWriteSession.DisposeAsync%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L710">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_DisposeAsync_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.DisposeAsync*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_DisposeAsync" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.DisposeAsync">DisposeAsync()</h4>
+  <div class="markdown level1 summary"><p>Closes the session.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask DisposeAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>The task representing asynchronous state of the cache entry promotion.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_DisposeAsync_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method should be called only once. It's recommended to use this method to ensure
+that the cache entry is promoted. This is useful when the cache is rate-limited. Otherwise,
+use <a class="xref" href="DotNext.Runtime.Caching.RandomAccessCache-2.ReadWriteSession.html#DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_Dispose">Dispose()</a>, because concurrent promotions are handled by the single thread running
+in the background. Thus, awaiting of the returned task can cause contention over multiple writers.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_SetValue__1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ReadWriteSession.SetValue(%601)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L665">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_SetValue_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.SetValue*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_SetValue__1_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.SetValue(`1)">SetValue(TValue)</h4>
   <div class="markdown level1 summary"><p>Promotes or modifies the cache record value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -195,13 +253,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_TryGetValue__1__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ReadOrWriteSession.TryGetValue(%601%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_TryGetValue__1__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ReadWriteSession.TryGetValue(%601%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L531">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L638">View Source</a>
   </span>
-  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_TryGetValue_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.TryGetValue*"></a>
-  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession_TryGetValue__1__" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadOrWriteSession.TryGetValue(`1@)">TryGetValue(out TValue)</h4>
+  <a id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_TryGetValue_" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.TryGetValue*"></a>
+  <h4 id="DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession_TryGetValue__1__" data-uid="DotNext.Runtime.Caching.RandomAccessCache`2.ReadWriteSession.TryGetValue(`1@)">TryGetValue(out TValue)</h4>
   <div class="markdown level1 summary"><p>Tries to get the value of the cache record.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -247,6 +305,9 @@
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
   </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
@@ -275,10 +336,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ReadOrWriteSession.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ReadOrWriteSession%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_Caching_RandomAccessCache_2_ReadWriteSession.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Caching.RandomAccessCache%602.ReadWriteSession%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L500" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Runtime/Caching/RandomAccessCache.cs/#L607" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
