@@ -66,7 +66,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
     private volatile BucketList buckets;
 
-    internal partial class KeyValuePair(TKey key, int hashCode)
+    internal abstract partial class KeyValuePair(TKey key, int hashCode)
     {
         internal readonly int KeyHashCode = hashCode;
         internal readonly TKey Key = key;
