@@ -13,19 +13,44 @@ if (result)  //successful
 {
     var i = (int)result;
 }
-else
-{
-    throw result.Error;
-}
 ```
 
-This type is paired with [Optional](xref:DotNext.Optional`1) data type. `Result<T>` can be converted to it implicitly. But conversion loses information about exception:
+`Value` property can be used to extract the value of the result, or throws the exception if the result is not available.
 
 ```csharp
 using DotNext;
 
 Func<string, int> parser = int.Parse;
-int result = parser.TryInvoke("42").OrInvoke(static error => 0);
+Result<int> result = parser.TryInvoke("42");
+int value = result.Value; // may throw
+```
+
+`Error` property can be used to inspect the underlying exception:
+```csharp
+using DotNext;
+
+Func<string, int> parser = int.Parse;
+Result<int> result = parser.TryInvoke("42");
+if (result.IsSuccessful)  //successful
+{
+    var i = result.ValueOrDefault;
+}
+else
+{
+    Exception e = result.Error;
+}
+```
+
+> [!NOTE]
+> It's not recommended to rethrow the exception by using `Error` property. It that case, you lose the information about initial stack trace. If you need to capture the state of the exception or rethrow it, use [ExceptionDispatchInfo](https://learn.microsoft.com/en-us/dotnet/api/system.runtime.exceptionservices.exceptiondispatchinfo) class.
+
+Result type is paired with [Optional](xref:DotNext.Optional`1) data type. `Result<T>` can be converted to it implicitly. But conversion loses information about exception:
+
+```csharp
+using DotNext;
+
+Func<string, int> parser = int.Parse;
+Optional<int> result = parser.TryInvoke("42");
 ```
 
 # Custom error codes
