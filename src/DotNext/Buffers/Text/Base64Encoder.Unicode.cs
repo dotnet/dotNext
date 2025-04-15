@@ -1,7 +1,6 @@
 using System.Buffers;
 using System.Buffers.Text;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Text.Unicode;
 
 namespace DotNext.Buffers.Text;
@@ -71,6 +70,9 @@ public partial struct Base64Encoder
         return writer.DetachOrCopyBuffer();
     }
 
+    /// <inheritdoc/>
+    MemoryOwner<char> IBufferedEncoder<char>.Encode(ReadOnlySpan<byte> bytes, MemoryAllocator<char>? allocator) => EncodeToUtf16(bytes, allocator);
+
     /// <summary>
     /// Encodes a block of bytes to base64-encoded characters.
     /// </summary>
@@ -121,26 +123,9 @@ public partial struct Base64Encoder
     /// <param name="token">The token that can be used to cancel the encoding.</param>
     /// <returns>A collection of encoded bytes.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static async IAsyncEnumerable<ReadOnlyMemory<char>> EncodeToUtf16Async(IAsyncEnumerable<ReadOnlyMemory<byte>> bytes, MemoryAllocator<char>? allocator = null, [EnumeratorCancellation] CancellationToken token = default)
-    {
-        var encoder = new Base64Encoder();
-        MemoryOwner<char> buffer;
-
-        await foreach (var chunk in bytes.WithCancellation(token).ConfigureAwait(false))
-        {
-            using (buffer = encoder.EncodeToUtf16(chunk.Span, allocator))
-                yield return buffer.Memory;
-        }
-
-        if (encoder.HasBufferedData)
-        {
-            using (buffer = allocator.AllocateAtLeast(MaxBufferedDataSize))
-            {
-                var count = encoder.Flush(buffer.Span);
-                yield return buffer.Memory.Slice(0, count);
-            }
-        }
-    }
+    public static IAsyncEnumerable<ReadOnlyMemory<char>> EncodeToUtf16Async(IAsyncEnumerable<ReadOnlyMemory<byte>> bytes,
+        MemoryAllocator<char>? allocator = null, CancellationToken token = default)
+        => IBufferedEncoder<char>.EncodeAsync<Base64Encoder>(bytes, allocator, token);
 
     /// <summary>
     /// Flushes the buffered data as base64-encoded characters to the output buffer.
