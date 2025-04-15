@@ -25,7 +25,7 @@ public static class Set
         where TLowerBound : IFiniteRangeEndpoint<T>
         where TUpperBound : IFiniteRangeEndpoint<T>
     {
-        var (minValue, maxValue) = GetMinMaxValues<T, TLowerBound, TUpperBound>(lowerBound, upperBound);
+        var (minValue, maxValue) = GetMinMaxValues(lowerBound, upperBound);
 
         return minValue.CompareTo(maxValue) switch
         {
@@ -33,22 +33,19 @@ public static class Set
             0 => Singleton(minValue),
             < 0 => new RangeSet<T>(minValue, maxValue),
         };
-    }
 
-    private static (T MinValue, T MaxValue) GetMinMaxValues<T, TLowerBound, TUpperBound>(TLowerBound lowerBound, TUpperBound upperBound)
-        where T : IBinaryInteger<T>
-        where TLowerBound : IFiniteRangeEndpoint<T>
-        where TUpperBound : IFiniteRangeEndpoint<T>
-    {
-        var minValue = lowerBound.IsOnRight(lowerBound.Value)
-            ? lowerBound.Value
-            : lowerBound.Value + T.One;
+        static (T MinValue, T MaxValue) GetMinMaxValues(TLowerBound lowerBound, TUpperBound upperBound)
+        {
+            var minValue = lowerBound.IsOnRight(lowerBound.Value)
+                ? lowerBound.Value
+                : lowerBound.Value + T.One;
 
-        var maxValue = upperBound.IsOnLeft(upperBound.Value)
-            ? upperBound.Value
-            : upperBound.Value - T.One;
+            var maxValue = upperBound.IsOnLeft(upperBound.Value)
+                ? upperBound.Value
+                : upperBound.Value - T.One;
 
-        return (minValue, maxValue);
+            return (minValue, maxValue);
+        }
     }
 
     /// <summary>
