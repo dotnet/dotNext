@@ -82,7 +82,7 @@ public partial struct Base64Decoder
     }
 
     /// <summary>
-    /// Decoes UTF-8 encoded base64 string.
+    /// Decodes UTF-8 encoded base64 string.
     /// </summary>
     /// <param name="chars">UTF-8 encoded portion of base64 string.</param>
     /// <param name="allocator">The allocator of the result buffer.</param>
