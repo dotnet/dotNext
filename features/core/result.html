@@ -78,16 +78,37 @@ if (result)  //successful
 {
     var i = (int)result;
 }
-else
-{
-    throw result.Error;
-}
 </code></pre>
-<p>This type is paired with <a class="xref" href="../../api/DotNext.Optional-1.html">Optional</a> data type. <code>Result&lt;T&gt;</code> can be converted to it implicitly. But conversion loses information about exception:</p>
+<p><code>Value</code> property can be used to extract the value of the result, or throws the exception if the result is not available.</p>
 <pre><code class="lang-csharp">using DotNext;
 
 Func&lt;string, int&gt; parser = int.Parse;
-int result = parser.TryInvoke(&quot;42&quot;).OrInvoke(static error =&gt; 0);
+Result&lt;int&gt; result = parser.TryInvoke(&quot;42&quot;);
+int value = result.Value; // may throw
+</code></pre>
+<p><code>Error</code> property can be used to inspect the underlying exception:</p>
+<pre><code class="lang-csharp">using DotNext;
+
+Func&lt;string, int&gt; parser = int.Parse;
+Result&lt;int&gt; result = parser.TryInvoke(&quot;42&quot;);
+if (result.IsSuccessful)  //successful
+{
+    var i = result.ValueOrDefault;
+}
+else
+{
+    Exception e = result.Error;
+}
+</code></pre>
+<div class="NOTE">
+<h5>Note</h5>
+<p>It's not recommended to rethrow the exception by using <code>Error</code> property. It that case, you lose the information about initial stack trace. If you need to capture the state of the exception or rethrow it, use <a href="https://learn.microsoft.com/en-us/dotnet/api/system.runtime.exceptionservices.exceptiondispatchinfo">ExceptionDispatchInfo</a> class.</p>
+</div>
+<p>Result type is paired with <a class="xref" href="../../api/DotNext.Optional-1.html">Optional</a> data type. <code>Result&lt;T&gt;</code> can be converted to it implicitly. But conversion loses information about exception:</p>
+<pre><code class="lang-csharp">using DotNext;
+
+Func&lt;string, int&gt; parser = int.Parse;
+Optional&lt;int&gt; result = parser.TryInvoke(&quot;42&quot;);
 </code></pre>
 <h1 id="custom-error-codes">Custom error codes</h1>
 <p><a class="xref" href="../../api/DotNext.Result-2.html">Result&lt;T, TError&gt;</a> is an overloaded type that allows to use custom error codes instead of exceptions. The second generic parameter expects <strong>enum</strong> type that enumerates all possible error codes.</p>
