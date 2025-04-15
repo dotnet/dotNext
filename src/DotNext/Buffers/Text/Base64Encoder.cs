@@ -20,7 +20,7 @@ using static Runtime.Intrinsics;
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay($"BufferedData = {{{nameof(BufferedDataString)}}}")]
-public partial struct Base64Encoder : IResettable, IBufferedEncoder<byte>, IBufferedEncoder<char>
+public partial struct Base64Encoder : IBufferedEncoder<byte>, IBufferedEncoder<char>
 {
     /// <summary>
     /// Gets the maximum number of bytes that can be buffered by the encoder.
