@@ -172,6 +172,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// <value>The value, if present, otherwise <c>default</c>.</value>
     public T? ValueOrDefault => value;
 
+    [StackTraceHidden]
     private void Validate() => exception?.Throw();
 
     /// <inheritdoc />
@@ -488,6 +489,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     public T? ValueOrDefault => value;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [StackTraceHidden]
     private void Validate()
     {
         if (!IsSuccessful)
