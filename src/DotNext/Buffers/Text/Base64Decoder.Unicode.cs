@@ -79,8 +79,8 @@ public partial struct Base64Decoder
         bytes.Advance(writer.WrittenCount);
         return;
 
-    bad_data:
-        throw new FormatException(ExceptionMessages.MalformedBase64);
+        bad_data:
+        throw CreateFormatException();
     }
 
     /// <summary>
@@ -102,7 +102,7 @@ public partial struct Base64Decoder
         bytes.Dispose();
 
         bad_data:
-        throw new FormatException(ExceptionMessages.MalformedBase64);
+        throw CreateFormatException();
     }
 
     /// <inheritdoc/>
@@ -118,7 +118,7 @@ public partial struct Base64Decoder
     public void DecodeFromUtf16(ReadOnlySpan<char> chars, ref BufferWriterSlim<byte> bytes)
     {
         if (reservedBufferSize is GotPaddingFlag || !DecodeFromUtf16Buffered(chars, ref bytes))
-            throw new FormatException(ExceptionMessages.MalformedBase64);
+            throw CreateFormatException();
     }
 
     /// <summary>

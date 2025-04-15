@@ -79,5 +79,7 @@ public partial struct Base64Decoder : IBufferedDecoder<byte>, IBufferedDecoder<c
     }
 
     /// <inheritdoc/>
-    static FormatException IBufferedDecoder.CreateFormatException() => new FormatException(ExceptionMessages.MalformedBase64);
+    static FormatException IBufferedDecoder.CreateFormatException() => CreateFormatException();
+
+    private static FormatException CreateFormatException() => new(ExceptionMessages.MalformedBase64);
 }
