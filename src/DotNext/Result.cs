@@ -707,6 +707,13 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     public static bool operator &(in Result<T, TError> left, in Result<T, TError> right) => left.IsSuccessful && right.IsSuccessful;
 
     /// <summary>
+    /// Indicates that the result represents error.
+    /// </summary>
+    /// <param name="result">The result to check.</param>
+    /// <returns><see langword="false"/> if this result is successful; <see langword="true"/> if this result represents exception.</returns>
+    public static bool operator !(in Result<T, TError> result) => !result.IsSuccessful;
+
+    /// <summary>
     /// Indicates that the result is successful.
     /// </summary>
     /// <param name="result">The result to check.</param>

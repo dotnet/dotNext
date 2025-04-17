@@ -72,12 +72,16 @@ public sealed class ResultTests : Test
         var result = new Result<int>(10);
         if (result) { }
         else Fail("Unexpected Result state");
+        if (!result) Fail("Unexpected Result state");
         Equal(10, (int)result);
         Equal("10", result.ToString());
         Optional<int> opt = result;
         Equal(10, opt);
         Equal(10, result.OrInvoke(static () => 20));
         result = new Result<int>(new Exception());
+        if (result) Fail("Unexpected Result state");
+        if (!result) { }
+        else Fail("Unexpected Result state");
         Equal(20, result.OrInvoke(static () => 20));
         opt = result;
         False(opt.HasValue);
@@ -89,12 +93,16 @@ public sealed class ResultTests : Test
         var result = new Result<int, EnvironmentVariableTarget>(10);
         if (result) { }
         else Fail("Unexpected Result state");
+        if (!result) Fail("Unexpected Result state");
         Equal(10, (int)result);
         Equal("10", result.ToString());
         Optional<int> opt = result;
         Equal(10, opt);
         Equal(10, result.OrInvoke(static () => 20));
         result = new Result<int, EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine);
+        if (result) Fail("Unexpected Result state");
+        if (!result) { }
+        else Fail("Unexpected Result state");
         Equal(20, result.OrInvoke(static () => 20));
         opt = result;
         False(opt.HasValue);
