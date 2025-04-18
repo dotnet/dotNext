@@ -666,7 +666,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// Determines whether this container stores
     /// the same value as the specified one.
     /// </summary>
-    /// <param name="other">Other container to compare.</param>
+    /// <param name="other">The container to compare.</param>
     /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
     public bool Equals(Optional<T> other) => Equals(in other);
 
@@ -674,7 +674,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// Determines whether this container stores
     /// the same value as the specified one.
     /// </summary>
-    /// <param name="other">Other container to compare.</param>
+    /// <param name="other">The container to compare.</param>
     /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
     public override bool Equals(object? other) => other switch
     {

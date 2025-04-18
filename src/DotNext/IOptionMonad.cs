@@ -1,7 +1,7 @@
 namespace DotNext;
 
 /// <summary>
-/// Represents common interface for all option monads.
+/// Represents the common interface for all option monads.
 /// </summary>
 /// <typeparam name="T">The type of the value in the container.</typeparam>
 public interface IOptionMonad<T> : ISupplier<object?>
@@ -20,7 +20,7 @@ public interface IOptionMonad<T> : ISupplier<object?>
     /// <summary>
     /// If a value is present, returns the value, otherwise return default value.
     /// </summary>
-    /// <value>The value, if present, otherwise default.</value>
+    /// <value>The value stored in the container, if present, otherwise, default value.</value>
     T? ValueOrDefault { get; }
 
     /// <summary>
@@ -38,7 +38,7 @@ public interface IOptionMonad<T> : ISupplier<object?>
     T OrInvoke(Func<T> defaultFunc) => HasValue ? ValueOrDefault! : defaultFunc();
 
     /// <summary>
-    /// Attempts to extract value from container if it is present.
+    /// Attempts to extract value from the container if it is present.
     /// </summary>
     /// <param name="value">Extracted value.</param>
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
@@ -50,7 +50,7 @@ public interface IOptionMonad<T> : ISupplier<object?>
 }
 
 /// <summary>
-/// Represents common interface for all option monads.
+/// Represents the common interface for all option monads.
 /// </summary>
 /// <typeparam name="T">The type of the value in the container.</typeparam>
 /// <typeparam name="TSelf">The implementing type.</typeparam>
