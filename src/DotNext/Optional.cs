@@ -271,7 +271,11 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// <returns>The value represented as <see cref="Optional{T}"/> or <see cref="Optional{T}.None"/> if there is no value.</returns>
     public static Optional<T> Create<TMonad>(TMonad value)
         where TMonad : struct, IOptionMonad<T>
-        => value.TryGet(out var result) ? new(result) : None;
+        => value is Optional<T>
+            ? Unsafe.BitCast<TMonad, Optional<T>>(value)
+            : value.TryGet(out var result)
+                ? new(result)
+                : None;
 
     /// <summary>
     /// Determines whether the object represents meaningful value.
