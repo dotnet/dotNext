@@ -47,7 +47,7 @@ public static class Result
     public static ref readonly Result<T> Coalesce<T>(this in Result<T> first, in Result<T> second) => ref first.IsSuccessful ? ref first : ref second;
 
     /// <summary>
-    /// Indicates that specified type is result type.
+    /// Indicates that the specified type is the result type.
     /// </summary>
     /// <param name="resultType">The type of <see cref="Result{T}"/>.</param>
     /// <returns><see langword="true"/>, if specified type is result type; otherwise, <see langword="false"/>.</returns>
@@ -57,7 +57,7 @@ public static class Result
     /// Returns the underlying type argument of the specified result type.
     /// </summary>
     /// <param name="resultType">Result type.</param>
-    /// <returns>Underlying type argument of result type; otherwise, <see langword="null"/>.</returns>
+    /// <returns>Underlying type argument of the result type; otherwise, <see langword="null"/>.</returns>
     public static Type? GetUnderlyingType(Type resultType) => IsResult(resultType) ? resultType.GetGenericArguments()[0] : null;
 
     /// <summary>
@@ -78,7 +78,7 @@ public static class Result
 }
 
 /// <summary>
-/// Represents a result of operation which can be actual result or exception.
+/// Represents a result of operation which can be the actual result or exception.
 /// </summary>
 /// <typeparam name="T">The type of the value stored in the Result monad.</typeparam>
 [StructLayout(LayoutKind.Auto)]
@@ -203,28 +203,28 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     }
 
     /// <summary>
-    /// If successful result is present, apply the provided mapping function hiding any exception
+    /// If the successful result is present, apply the provided mapping function hiding any exception
     /// caused by the converter.
     /// </summary>
     /// <param name="converter">A mapping function to be applied to the value, if present.</param>
-    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <typeparam name="TResult">The type of the mapping function result.</typeparam>
     /// <returns>The conversion result.</returns>
     public Result<TResult> Convert<TResult>(Converter<T, TResult> converter)
         => Convert<TResult, DelegatingConverter<T, TResult>>(converter);
 
     /// <summary>
-    /// If successful result is present, apply the provided mapping function hiding any exception
+    /// If the successful result is present, apply the provided mapping function hiding any exception
     /// caused by the converter.
     /// </summary>
     /// <param name="converter">A mapping function to be applied to the value, if present.</param>
-    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <typeparam name="TResult">The type of the mapping function result.</typeparam>
     /// <returns>The conversion result.</returns>
     [CLSCompliant(false)]
     public unsafe Result<TResult> Convert<TResult>(delegate*<T, TResult> converter)
         => Convert<TResult, Supplier<T, TResult>>(converter);
 
     /// <summary>
-    /// Attempts to extract value from container if it is present.
+    /// Attempts to extract value from the container if it is present.
     /// </summary>
     /// <param name="value">Extracted value.</param>
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
@@ -518,7 +518,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     bool IOptionMonad<T>.HasValue => IsSuccessful;
 
     /// <summary>
-    /// Attempts to extract value from container if it is present.
+    /// Attempts to extract value from the container if it is present.
     /// </summary>
     /// <param name="value">Extracted value.</param>
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
@@ -547,21 +547,21 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
         => IsSuccessful ? new(converter.Invoke(value)) : new(Error);
 
     /// <summary>
-    /// If successful result is present, apply the provided mapping function hiding any exception
+    /// If the successful result is present, apply the provided mapping function hiding any exception
     /// caused by the converter.
     /// </summary>
     /// <param name="converter">A mapping function to be applied to the value, if present.</param>
-    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <typeparam name="TResult">The type of the mapping function result.</typeparam>
     /// <returns>The conversion result.</returns>
     public Result<TResult, TError> Convert<TResult>(Converter<T, TResult> converter)
         => Convert<TResult, DelegatingConverter<T, TResult>>(converter);
 
     /// <summary>
-    /// If successful result is present, apply the provided mapping function hiding any exception
+    /// If the successful result is present, apply the provided mapping function hiding any exception
     /// caused by the converter.
     /// </summary>
     /// <param name="converter">A mapping function to be applied to the value, if present.</param>
-    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <typeparam name="TResult">The type of the mapping function result.</typeparam>
     /// <returns>The conversion result.</returns>
     [CLSCompliant(false)]
     public unsafe Result<TResult, TError> Convert<TResult>(delegate*<T, TResult> converter)

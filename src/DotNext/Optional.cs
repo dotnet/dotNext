@@ -51,7 +51,7 @@ public static class Optional
     /// non-null, return an Optional describing the result. Otherwise, returns <see cref="Optional{T}.None"/>.
     /// </summary>
     /// <typeparam name="TInput">The type of stored in the Optional container.</typeparam>
-    /// <typeparam name="TOutput">The type of the result of the mapping function.</typeparam>
+    /// <typeparam name="TOutput">The type of the mapping function result.</typeparam>
     /// <param name="task">The task containing Optional value.</param>
     /// <param name="converter">A mapping function to be applied to the value, if present.</param>
     /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Optional{T}.None"/>.</returns>
@@ -63,7 +63,7 @@ public static class Optional
     /// non-null, return an Optional describing the result. Otherwise, returns <see cref="Optional{T}.None"/>.
     /// </summary>
     /// <typeparam name="TInput">The type of stored in the Optional container.</typeparam>
-    /// <typeparam name="TOutput">The type of the result of the mapping function.</typeparam>
+    /// <typeparam name="TOutput">The type of the mapping function result.</typeparam>
     /// <param name="task">The task containing Optional value.</param>
     /// <param name="converter">A mapping function to be applied to the value, if present.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
