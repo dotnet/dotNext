@@ -84,8 +84,14 @@ public interface IOptionMonad<T, TSelf> : IOptionMonad<T>
     /// </summary>
     /// <param name="container">The container to check.</param>
     /// <returns><see langword="true"/> if this container has no value; otherwise, <see langword="false"/>.</returns>
-    public static virtual bool operator false(in TSelf container)
-        => container.HasValue is false;
+    public static virtual bool operator false(in TSelf container) => !container;
+
+    /// <summary>
+    /// Checks whether the container has no value.
+    /// </summary>
+    /// <param name="container">The container to check.</param>
+    /// <returns><see langword="true"/> if this container has no value; otherwise, <see langword="false"/>.</returns>
+    public static virtual bool operator !(in TSelf container) => container.HasValue is false;
 
     /// <summary>
     /// Returns the value if present; otherwise return default value.

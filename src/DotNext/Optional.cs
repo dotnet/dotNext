@@ -772,8 +772,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// </summary>
     /// <param name="optional">The container to check.</param>
     /// <returns><see langword="true"/> if this container has value; otherwise, <see langword="false"/>.</returns>
-    /// <see cref="HasValue"/>
-    [MemberNotNullWhen(true, nameof(ValueOrDefault))]
+    /// <seealso cref="HasValue"/>
     public static bool operator true(in Optional<T> optional) => optional.HasValue;
 
     /// <summary>
@@ -781,7 +780,14 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// </summary>
     /// <param name="optional">The container to check.</param>
     /// <returns><see langword="true"/> if this container has no value; otherwise, <see langword="false"/>.</returns>
-    /// <see cref="HasValue"/>
-    [MemberNotNullWhen(false, nameof(ValueOrDefault))]
-    public static bool operator false(in Optional<T> optional) => optional.kind < NotEmptyValue;
+    /// <seealso cref="HasValue"/>
+    public static bool operator false(in Optional<T> optional) => !optional;
+
+    /// <summary>
+    /// Checks whether the container has no value.
+    /// </summary>
+    /// <param name="optional">The container to check.</param>
+    /// <returns><see langword="true"/> if this container has no value; otherwise, <see langword="false"/>.</returns>
+    /// <seealso cref="HasValue"/>
+    public static bool operator !(in Optional<T> optional) => optional.kind < NotEmptyValue;
 }
