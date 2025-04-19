@@ -1,6 +1,7 @@
 using System.Collections.Immutable;
 using System.Numerics;
 using System.Text;
+using DotNext.Buffers.Binary;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Buffers;

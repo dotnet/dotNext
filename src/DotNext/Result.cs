@@ -377,6 +377,13 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     public static bool operator &(in Result<T> left, in Result<T> right) => left.exception is null && right.exception is null;
 
     /// <summary>
+    /// Indicates that the result represents error.
+    /// </summary>
+    /// <param name="result">The result to check.</param>
+    /// <returns><see langword="false"/> if this result is successful; <see langword="true"/> if this result represents exception.</returns>
+    public static bool operator !(in Result<T> result) => result.exception is not null;
+
+    /// <summary>
     /// Indicates that the result is successful.
     /// </summary>
     /// <param name="result">The result to check.</param>
@@ -698,6 +705,13 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// <param name="right">The second result to check.</param>
     /// <returns><see langword="true"/> if both results are successful; otherwise, <see langword="false"/>.</returns>
     public static bool operator &(in Result<T, TError> left, in Result<T, TError> right) => left.IsSuccessful && right.IsSuccessful;
+
+    /// <summary>
+    /// Indicates that the result represents error.
+    /// </summary>
+    /// <param name="result">The result to check.</param>
+    /// <returns><see langword="false"/> if this result is successful; <see langword="true"/> if this result represents exception.</returns>
+    public static bool operator !(in Result<T, TError> result) => !result.IsSuccessful;
 
     /// <summary>
     /// Indicates that the result is successful.
