@@ -771,27 +771,12 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         _ => None
     };
 
-    /// <summary>
-    /// Checks whether the container has value.
-    /// </summary>
-    /// <param name="optional">The container to check.</param>
-    /// <returns><see langword="true"/> if this container has value; otherwise, <see langword="false"/>.</returns>
-    /// <seealso cref="HasValue"/>
+    /// <inheritdoc cref="IOptionMonad{T,TSelf}.op_True"/>
     public static bool operator true(in Optional<T> optional) => optional.HasValue;
 
-    /// <summary>
-    /// Checks whether the container has no value.
-    /// </summary>
-    /// <param name="optional">The container to check.</param>
-    /// <returns><see langword="true"/> if this container has no value; otherwise, <see langword="false"/>.</returns>
-    /// <seealso cref="HasValue"/>
+    /// <inheritdoc cref="IOptionMonad{T,TSelf}.op_False"/>
     public static bool operator false(in Optional<T> optional) => !optional;
 
-    /// <summary>
-    /// Checks whether the container has no value.
-    /// </summary>
-    /// <param name="optional">The container to check.</param>
-    /// <returns><see langword="true"/> if this container has no value; otherwise, <see langword="false"/>.</returns>
-    /// <seealso cref="HasValue"/>
+    /// <inheritdoc cref="IOptionMonad{T,TSelf}.op_LogicalNot"/>
     public static bool operator !(in Optional<T> optional) => optional.kind < NotEmptyValue;
 }
