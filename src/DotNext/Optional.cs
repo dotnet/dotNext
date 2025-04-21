@@ -479,7 +479,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     }
 
     /// <summary>
-    /// Obtains immutable reference to the value in the container.
+    /// Gets an immutable reference to the value in the container.
     /// </summary>
     /// <exception cref="InvalidOperationException">No value is present.</exception>
     [UnscopedRef]
@@ -503,7 +503,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     }
 
     /// <summary>
-    /// Obtains immutable reference to the value in the container.
+    /// Gets an immutable reference to the value in the container.
     /// </summary>
     /// <typeparam name="TException">The type of the exception to throw if the optional container has no value.</typeparam>
     /// <returns>The immutable reference to the value in the container.</returns>
@@ -514,7 +514,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         => ref GetReference(new Activator<TException>());
 
     /// <summary>
-    /// Obtains immutable reference to the value in the container.
+    /// Gets an immutable reference to the value in the container.
     /// </summary>
     /// <param name="exceptionFactory">The factory used to produce exception if the container has no value.</param>
     /// <returns>The immutable reference to the value in the container.</returns>
@@ -524,7 +524,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         => ref GetReference<DelegatingSupplier<Exception>>(exceptionFactory);
 
     /// <summary>
-    /// Obtains immutable reference to the value in the container.
+    /// Gets an immutable reference to the value in the container.
     /// </summary>
     /// <param name="exceptionFactory">The factory used to produce exception if the container has no value.</param>
     /// <returns>The immutable reference to the value in the container.</returns>
@@ -566,7 +566,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// If a value is present, apply the provided mapping function to it, and if the result is
     /// non-null, return an Optional describing the result. Otherwise, returns <see cref="None"/>.
     /// </summary>
-    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <typeparam name="TResult">The type of the mapping function result.</typeparam>
     /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
     /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
     public Optional<TResult> Convert<TResult>(Converter<T, TResult> mapper)
@@ -576,7 +576,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// If a value is present, apply the provided mapping function to it, and if the result is
     /// non-null, return an Optional describing the result. Otherwise, returns <see cref="None"/>.
     /// </summary>
-    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <typeparam name="TResult">The type of the mapping function result.</typeparam>
     /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
     /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
     [CLSCompliant(false)]
