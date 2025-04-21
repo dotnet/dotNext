@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext;
 
 /// <summary>
@@ -42,7 +44,7 @@ public interface IOptionMonad<T> : ISupplier<object?>
     /// </summary>
     /// <param name="value">Extracted value.</param>
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-    bool TryGet(out T? value)
+    bool TryGet([MaybeNullWhen(false)] out T value)
     {
         value = ValueOrDefault;
         return HasValue;

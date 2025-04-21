@@ -332,23 +332,23 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     public Optional<object> Box() => IsUndefined ? default : new(value);
 
     /// <summary>
-    /// Attempts to extract value from container if it is present.
+    /// Attempts to extract value from this container if it is present.
     /// </summary>
     /// <param name="value">Extracted value.</param>
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-    public bool TryGet([MaybeNullWhen(false)] out T value)
+    public bool TryGet([NotNullWhen(true)] out T? value)
     {
         value = this.value;
         return HasValue;
     }
 
     /// <summary>
-    /// Attempts to extract value from container if it is present.
+    /// Attempts to extract value from this container if it is present.
     /// </summary>
     /// <param name="value">Extracted value.</param>
     /// <param name="isNull"><see langword="true"/> if underlying value is <see langword="null"/>; otherwise, <see langword="false"/>.</param>
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-    public bool TryGet([MaybeNullWhen(false)] out T value, out bool isNull)
+    public bool TryGet([NotNullWhen(true)] out T? value, out bool isNull)
     {
         value = this.value!;
         switch (kind)

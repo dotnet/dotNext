@@ -228,7 +228,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// </summary>
     /// <param name="value">Extracted value.</param>
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-    public bool TryGet(out T value)
+    public bool TryGet([MaybeNullWhen(false)] out T value)
     {
         value = this.value;
         return exception is null;
@@ -510,7 +510,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// </summary>
     /// <param name="value">Extracted value.</param>
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-    public bool TryGet(out T value)
+    public bool TryGet([MaybeNullWhen(false)] out T value)
     {
         value = this.value;
         return IsSuccessful;
