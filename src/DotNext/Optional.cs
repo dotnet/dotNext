@@ -117,7 +117,7 @@ public static class Optional
     /// </summary>
     /// <typeparam name="T">Type of the value.</typeparam>
     /// <param name="task">The task returning optional value.</param>
-    /// <returns>The value, if present, otherwise default.</returns>
+    /// <returns>The value stored in the container, if present, otherwise default value.</returns>
     public static async Task<T?> OrDefault<T>(this Task<Optional<T>> task)
         => (await task.ConfigureAwait(false)).ValueOrDefault;
 
@@ -143,7 +143,7 @@ public static class Optional
     /// Returns the underlying type argument of the specified optional type.
     /// </summary>
     /// <param name="optionalType">Optional type.</param>
-    /// <returns>Underlying type argument of optional type; otherwise, <see langword="null"/>.</returns>
+    /// <returns>Underlying type argument of the optional type; otherwise, <see langword="null"/>.</returns>
     public static Type? GetUnderlyingType(Type optionalType) => IsOptional(optionalType) ? optionalType.GetGenericArguments()[0] : null;
 
     /// <summary>
@@ -234,7 +234,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// <summary>
     /// Constructs non-empty container.
     /// </summary>
-    /// <param name="value">A value to be placed into container.</param>
+    /// <param name="value">A value to be placed into the container.</param>
     /// <remarks>
     /// The property <see langword="IsNull"/> of the constructed object may be <see langword="true"/>
     /// if <paramref name="value"/> is <see langword="null"/>.
