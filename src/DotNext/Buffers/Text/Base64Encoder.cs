@@ -91,5 +91,8 @@ public partial struct Base64Encoder : IBufferedEncoder<byte>, IBufferedEncoder<c
     public void Reset() => reservedBufferSize = 0;
 
     /// <inheritdoc/>
-    static int IBufferedEncoder.MaxBufferedDataSize => MaxBufferedDataSize;
+    static int IBufferedEncoder<byte>.MaxFlushBufferSize => MaxCharsToFlush;
+    
+    /// <inheritdoc/>
+    static int IBufferedEncoder<char>.MaxFlushBufferSize => MaxCharsToFlush;
 }
