@@ -22,53 +22,41 @@ public interface IAuditTrail
     long LastEntryIndex { get; }
 
     /// <summary>
-    /// Waits for the commit.
+    /// Waits for the entry to be applied to the underlying state machine.
     /// </summary>
-    /// <param name="index">The index of the log record to be committed.</param>
+    /// <param name="index">The index of the log record to be applied.</param>
     /// <param name="token">The token that can be used to cancel waiting.</param>
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 1.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-    async ValueTask WaitForCommitAsync(long index, CancellationToken token = default)
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    async ValueTask WaitForApplyAsync(long index, CancellationToken token = default)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(index);
 
         while (LastCommittedEntryIndex < index)
-            await WaitForCommitAsync(token).ConfigureAwait(false);
+            await WaitForApplyAsync(token).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Waits for the commit.
+    /// Waits for the entry to be applied to the underlying state machine.
     /// </summary>
     /// <param name="token">The token that can be used to cancel waiting.</param>
     /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-    ValueTask WaitForCommitAsync(CancellationToken token = default);
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    ValueTask WaitForApplyAsync(CancellationToken token = default);
 
     /// <summary>
     /// Commits log entries into the underlying storage and marks these entries as committed.
     /// </summary>
     /// <remarks>
     /// This method should update cached value provided by method <see cref="LastCommittedEntryIndex"/> called with argument of value <see langword="true"/>.
-    /// Additionally, it may force log compaction and squash all committed entries into single entry called snapshot.
+    /// Additionally, it may force log compaction and squash all committed entries into the single entry called snapshot.
     /// </remarks>
     /// <param name="endIndex">The index of the last entry to commit, inclusively.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The actual number of committed entries.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask<long> CommitAsync(long endIndex, CancellationToken token = default);
-
-    /// <summary>
-    /// Commits log entries into the underlying storage and marks these entries as committed.
-    /// </summary>
-    /// <remarks>
-    /// This method should update cached value provided by method <see cref="LastCommittedEntryIndex"/> called with argument of value <see langword="true"/>.
-    /// Additionally, it may force log compaction and squash all committed entries into single entry called snapshot.
-    /// </remarks>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The actual number of committed entries.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-    ValueTask<long> CommitAsync(CancellationToken token = default);
 
     /// <summary>
     /// Creates backup of this audit trail.
@@ -94,16 +82,6 @@ public interface IAuditTrail
     Task InitializeAsync(CancellationToken token = default);
 
     /// <summary>
-    /// Drops the uncommitted entries starting from the specified position to the end of the log.
-    /// </summary>
-    /// <param name="startIndex">The index of the first log entry to be dropped.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The actual number of dropped entries.</returns>
-    /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> represents index of the committed entry.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask<long> DropAsync(long startIndex, CancellationToken token = default);
-
-    /// <summary>
     /// Gets log entries in the specified range.
     /// </summary>
     /// <remarks>
@@ -122,19 +100,6 @@ public interface IAuditTrail
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="ILogEntry.IsSnapshot"/>
     ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<ILogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token = default);
-
-    /// <summary>
-    /// Gets log entries starting from the specified index to the last log entry.
-    /// </summary>
-    /// <typeparam name="TResult">The type of the result.</typeparam>
-    /// <param name="reader">The reader of the log entries.</param>
-    /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The collection of log entries.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <seealso cref="ILogEntry.IsSnapshot"/>
-    ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<ILogEntry, TResult> reader, long startIndex, CancellationToken token = default);
 }
 
 /// <summary>
@@ -148,7 +113,7 @@ public interface IAuditTrail<TEntry> : IAuditTrail
     /// Gets log entries in the specified range.
     /// </summary>
     /// <remarks>
-    /// This method may return less entries than <c>endIndex - startIndex + 1</c>. It may happen if the requested entries are committed entries and squashed into the single entry called snapshot.
+    /// This method may return fewer entries than <c>endIndex - startIndex + 1</c>. It may happen if the requested entries are committed entries and squashed into the single entry called snapshot.
     /// In this case the first entry in the collection is a snapshot entry. Additionally, the caller must call <see cref="IDisposable.Dispose"/> to release resources associated
     /// with the audit trail segment with entries.
     /// </remarks>
@@ -167,23 +132,6 @@ public interface IAuditTrail<TEntry> : IAuditTrail
     /// <inheritdoc />
     ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(ILogEntryConsumer<ILogEntry, TResult> reader, long startIndex, long endIndex, CancellationToken token)
         => ReadAsync(reader, startIndex, endIndex, token);
-
-    /// <summary>
-    /// Gets log entries starting from the specified index to the last log entry.
-    /// </summary>
-    /// <typeparam name="TResult">The type of the result.</typeparam>
-    /// <param name="reader">The reader of the log entries.</param>
-    /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The collection of log entries.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <seealso cref="ILogEntry.IsSnapshot"/>
-    ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<TEntry, TResult> reader, long startIndex, CancellationToken token = default);
-
-    /// <inheritdoc />
-    ValueTask<TResult> IAuditTrail.ReadAsync<TResult>(ILogEntryConsumer<ILogEntry, TResult> reader, long startIndex, CancellationToken token)
-        => ReadAsync(reader, startIndex, token);
 
     /// <summary>
     /// Adds uncommitted log entries into this log.
@@ -219,28 +167,12 @@ public interface IAuditTrail<TEntry> : IAuditTrail
     }
 
     /// <summary>
-    /// Adds uncommitted log entries to the end of this log.
-    /// </summary>
-    /// <remarks>
-    /// This method should updates cached value provided by method <see cref="IAuditTrail.LastEntryIndex"/> called with argument of value <see langword="false"/>.
-    /// </remarks>
-    /// <typeparam name="TEntryImpl">The actual type of the log entry returned by the supplier.</typeparam>
-    /// <param name="entries">The entries to be added into this log.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The index of the first added entry.</returns>
-    /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
-    /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    ValueTask<long> AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, CancellationToken token = default)
-        where TEntryImpl : TEntry;
-
-    /// <summary>
     /// Adds uncommitted log entry to the end of this log.
     /// </summary>
     /// <remarks>
     /// This is the only method that can be used for snapshot installation.
     /// The behavior of the method depends on the <see cref="ILogEntry.IsSnapshot"/> property.
-    /// If log entry is a snapshot then the method erases all committed log entries prior to <paramref name="startIndex"/>.
+    /// If log entry is a snapshot, then the method erases all committed log entries prior to <paramref name="startIndex"/>.
     /// If it is not, the method behaves in the same way as <see cref="AppendAsync{TEntryImpl}(ILogEntryProducer{TEntryImpl}, long, bool, CancellationToken)"/>.
     /// </remarks>
     /// <typeparam name="TEntryImpl">The actual type of the supplied log entry.</typeparam>
@@ -266,6 +198,5 @@ public interface IAuditTrail<TEntry> : IAuditTrail
     /// <exception cref="InvalidOperationException"><paramref name="entry"/> is the snapshot entry.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask<long> AppendAsync<TEntryImpl>(TEntryImpl entry, CancellationToken token = default)
-        where TEntryImpl : TEntry
-        => AppendAsync(new SingleEntryProducer<TEntryImpl>(entry), token);
+        where TEntryImpl : TEntry;
 }

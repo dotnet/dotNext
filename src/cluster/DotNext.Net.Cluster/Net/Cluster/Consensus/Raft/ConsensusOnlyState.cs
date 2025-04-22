@@ -179,15 +179,6 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     /// <inheritdoc/>
-    async ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, CancellationToken token)
-    {
-        if (entries.RemainingCount == 0L)
-            throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty);
-        using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
-            return await AppendAsync(entries, null, false, token).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
     async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(TEntry entry, long startIndex, CancellationToken token)
     {
         using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
@@ -222,13 +213,14 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
             return await AppendAsync(LogEntryProducer<TEntry>.Of(entry), null, false, CancellationToken.None).ConfigureAwait(false);
     }
 
-    private async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
+    /// <inheritdoc cref="IAuditTrail.CommitAsync(long, CancellationToken)"/>
+    public async ValueTask<long> CommitAsync(long endIndex, CancellationToken token)
     {
         long count;
         using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
         {
             var startIndex = LastCommittedEntryIndex + 1L;
-            count = (endIndex ?? LastEntryIndex) - startIndex + 1L;
+            count = endIndex - startIndex + 1L;
             if (count > 0)
             {
                 LastCommittedEntryIndex = startIndex + count - 1;
@@ -241,31 +233,6 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         }
 
         return Math.Max(count, 0L);
-    }
-
-    /// <inheritdoc/>
-    ValueTask<long> IAuditTrail.CommitAsync(long endIndex, CancellationToken token)
-        => CommitAsync(endIndex, token);
-
-    /// <inheritdoc/>
-    ValueTask<long> IAuditTrail.CommitAsync(CancellationToken token)
-        => CommitAsync(null, token);
-
-    /// <inheritdoc/>
-    async ValueTask<long> IAuditTrail.DropAsync(long startIndex, CancellationToken token)
-    {
-        long count;
-        using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
-        {
-            if (startIndex <= LastCommittedEntryIndex)
-                throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
-
-            count = LastEntryIndex - startIndex + 1L;
-            LastEntryIndex = startIndex - 1L;
-            log = log[0..^(int)count];
-        }
-
-        return count;
     }
 
     /// <summary>
@@ -367,11 +334,11 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     }
 
     /// <inheritdoc/>
-    ValueTask IAuditTrail.WaitForCommitAsync(CancellationToken token)
+    ValueTask IAuditTrail.WaitForApplyAsync(CancellationToken token)
         => commitEvent.WaitAsync(token);
 
     /// <inheritdoc/>
-    ValueTask IAuditTrail.WaitForCommitAsync(long index, CancellationToken token)
+    ValueTask IAuditTrail.WaitForApplyAsync(long index, CancellationToken token)
         => commitEvent.SpinWaitAsync(new CommitChecker(this, index), token);
 
     /// <summary>

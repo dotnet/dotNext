@@ -870,17 +870,13 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         }
     }
 
-    /// <inheritdoc />
-    ValueTask<long> IAuditTrail.DropAsync(long startIndex, CancellationToken token)
-        => DropAsync(startIndex, false, token);
-
     /// <summary>
     /// Waits for the commit.
     /// </summary>
     /// <param name="token">The token that can be used to cancel waiting.</param>
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-    public ValueTask WaitForCommitAsync(CancellationToken token = default)
+    public ValueTask WaitForApplyAsync(CancellationToken token = default)
         => commitEvent.WaitAsync(token);
 
     /// <summary>
@@ -890,8 +886,8 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <param name="token">The token that can be used to cancel waiting.</param>
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 1.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-    public ValueTask WaitForCommitAsync(long index, CancellationToken token = default)
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public ValueTask WaitForApplyAsync(long index, CancellationToken token = default)
         => commitEvent.SpinWaitAsync(new CommitChecker(state, index), token);
 
     private protected abstract ValueTask<long> CommitAsync(long? endIndex, CancellationToken token);
@@ -902,7 +898,7 @@ public abstract partial class PersistentState : Disposable, IPersistentState
     /// <param name="endIndex">The index of the last entry to commit, inclusively; if <see langword="null"/> then commits all log entries started from the first uncommitted entry to the last existing log entry.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The actual number of committed entries.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<long> CommitAsync(long endIndex, CancellationToken token = default) => CommitAsync(new long?(endIndex), token);
 
     /// <summary>

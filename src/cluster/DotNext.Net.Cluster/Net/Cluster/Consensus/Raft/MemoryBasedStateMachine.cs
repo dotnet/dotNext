@@ -181,7 +181,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     /// <returns>The task representing asynchronous execution of this operation.</returns>
     /// <exception cref="ObjectDisposedException">This log is disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public ValueTask ForceCompactionAsync(long count, CancellationToken token)
+    public ValueTask ForceCompactionAsync(long count, CancellationToken token = default)
     {
         ValueTask result;
         if (IsDisposed)

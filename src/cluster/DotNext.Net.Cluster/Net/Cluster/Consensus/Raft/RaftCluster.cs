@@ -923,7 +923,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 if (await leader.SynchronizeAsync(auditTrail.LastCommittedEntryIndex, token).ConfigureAwait(false) is not { } commitIndex)
                     continue;
 
-                await auditTrail.WaitForCommitAsync(commitIndex, token).ConfigureAwait(false);
+                await auditTrail.WaitForApplyAsync(commitIndex, token).ConfigureAwait(false);
             }
             else
             {
@@ -1232,7 +1232,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             leaderState.ForceReplication();
 
             // 3 - wait for commit
-            await auditTrail.WaitForCommitAsync(index, token).ConfigureAwait(false);
+            await auditTrail.WaitForApplyAsync(index, token).ConfigureAwait(false);
         }
         catch (OperationCanceledException e)
         {
@@ -1257,7 +1257,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             entry = new() { Term = Term };
             var index = await auditTrail.AppendAsync(entry, token).ConfigureAwait(false);
             state.ForceReplication();
-            await auditTrail.WaitForCommitAsync(index, token).ConfigureAwait(false);
+            await auditTrail.WaitForApplyAsync(index, token).ConfigureAwait(false);
         }
         while (Term != entry.Term);
     }
