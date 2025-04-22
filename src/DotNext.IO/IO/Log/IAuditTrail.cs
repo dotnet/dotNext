@@ -113,7 +113,7 @@ public interface IAuditTrail<TEntry> : IAuditTrail
     /// Gets log entries in the specified range.
     /// </summary>
     /// <remarks>
-    /// This method may return fewer entries than <c>endIndex - startIndex + 1</c>. It may happen if the requested entries are committed entries and squashed into the single entry called snapshot.
+    /// This method may return fewer entries than <c>endIndex - startIndex + 1</c>. It may happen if the requested entries are committed and squashed into the single entry called snapshot.
     /// In this case the first entry in the collection is a snapshot entry. Additionally, the caller must call <see cref="IDisposable.Dispose"/> to release resources associated
     /// with the audit trail segment with entries.
     /// </remarks>
