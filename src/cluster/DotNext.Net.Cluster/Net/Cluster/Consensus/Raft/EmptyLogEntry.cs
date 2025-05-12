@@ -2,15 +2,16 @@
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using DotNext.Buffers;
+using Buffers;
 using IO;
 using IO.Log;
+using StateMachine;
 
 /// <summary>
 /// Represents No-OP entry.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct EmptyLogEntry() : IRaftLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
+public readonly struct EmptyLogEntry() : ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>, IBinaryLogEntry, ISnapshot
 {
     /// <inheritdoc/>
     int? IRaftLogEntry.CommandId => null;
@@ -20,6 +21,9 @@ public readonly struct EmptyLogEntry() : IRaftLogEntry, ISupplier<MemoryAllocato
 
     /// <inheritdoc/>
     long? IDataTransferObject.Length => 0L;
+
+    /// <inheritdoc/>
+    int IBinaryLogEntry.Length => 0;
 
     /// <inheritdoc/>
     bool IDataTransferObject.IsReusable => true;
@@ -52,4 +56,12 @@ public readonly struct EmptyLogEntry() : IRaftLogEntry, ISupplier<MemoryAllocato
     /// <inheritdoc/>
     MemoryOwner<byte> ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>.Invoke(MemoryAllocator<byte> allocator)
         => default;
+
+    /// <inheritdoc/>
+    void IBinaryLogEntry.WriteTo(Span<byte> buffer)
+    {
+    }
+
+    /// <inheritdoc/>
+    long ISnapshot.Index => 0L;
 }

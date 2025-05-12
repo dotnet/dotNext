@@ -6,13 +6,14 @@ using Buffers;
 using Buffers.Binary;
 using IO;
 using IO.Log;
+using StateMachine;
 
 /// <summary>
 /// Represents a log entry with binary payload.
 /// </summary>
 /// <typeparam name="T">Binary-formattable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct BinaryLogEntry<T>() : IInputLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
+public readonly struct BinaryLogEntry<T>() : IInputLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>, IBinaryLogEntry
     where T : IBinaryFormattable<T>
 {
     /// <summary>
@@ -44,6 +45,9 @@ public readonly struct BinaryLogEntry<T>() : IInputLogEntry, ISupplier<MemoryAll
     /// <inheritdoc />
     long? IDataTransferObject.Length => T.Size;
 
+    /// <inheritdoc />
+    int IBinaryLogEntry.Length => T.Size;
+
     /// <inheritdoc cref="IInputLogEntry.Context"/>
     public object? Context
     {
@@ -58,13 +62,17 @@ public readonly struct BinaryLogEntry<T>() : IInputLogEntry, ISupplier<MemoryAll
     /// <inheritdoc />
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         => writer.WriteAsync(Content, token);
+
+    /// <inheritdoc />
+    void IBinaryLogEntry.WriteTo(Span<byte> output)
+        => Content.Format(output);
 }
 
 /// <summary>
 /// Represents default implementation of <see cref="IRaftLogEntry"/>.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct BinaryLogEntry() : IInputLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
+public readonly struct BinaryLogEntry() : IInputLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>, IBinaryLogEntry
 {
     private readonly ReadOnlyMemory<byte> content;
 
@@ -101,6 +109,9 @@ public readonly struct BinaryLogEntry() : IInputLogEntry, ISupplier<MemoryAlloca
 
     /// <inheritdoc />
     long? IDataTransferObject.Length => content.Length;
+    
+    /// <inheritdoc />
+    int IBinaryLogEntry.Length => content.Length;
 
     /// <inheritdoc />
     bool IDataTransferObject.IsReusable => true;
@@ -130,4 +141,8 @@ public readonly struct BinaryLogEntry() : IInputLogEntry, ISupplier<MemoryAlloca
     /// <inheritdoc />
     ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
         => transformation.TransformAsync(IAsyncBinaryReader.Create(content), token);
+    
+    /// <inheritdoc />
+    void IBinaryLogEntry.WriteTo(Span<byte> output)
+        => Content.Span.CopyTo(output);
 }
