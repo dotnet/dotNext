@@ -141,8 +141,8 @@ new Optional&lt;string&gt;(null); // IsUndefined == false, IsNull == true
 <p>There is also convenient factory methods for creating optional values:</p>
 <pre><code class="lang-csharp">using DotNext;
 
-Optional&lt;string&gt; nullValue = Optional.Null&lt;string&gt;();       // undefined
-Optional&lt;string&gt; undefinedValue = Optional.None&lt;string&gt;();  // null
+Optional&lt;string&gt; nullValue = Optional.Null&lt;string&gt;();       // null
+Optional&lt;string&gt; undefinedValue = Optional.None&lt;string&gt;();  // undefined
 Optional&lt;string&gt; value = Optional.Some(&quot;Hello, world!&quot;);    // not null
 </code></pre>
 <p>Behavior of <code>Equals</code> method and equality operators depend on underlying value and its presence. Undefined and null values behave similarily to JavaScript.</p>
