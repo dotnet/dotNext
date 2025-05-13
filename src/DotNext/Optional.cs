@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace DotNext;
 
+using System.Threading.Tasks;
 using Runtime.CompilerServices;
 using Intrinsics = Runtime.Intrinsics;
 
@@ -60,6 +61,18 @@ public static class Optional
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
+    /// non-null, return an Optional describing the result. Otherwise returns <see cref="Optional{T}.None"/>.
+    /// </summary>
+    /// <typeparam name="TInput">The type of stored in the Optional container.</typeparam>
+    /// <typeparam name="TOutput">The type of the result of the mapping function.</typeparam>
+    /// <param name="task">The task containing Optional value.</param>
+    /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+    /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Optional{T}.None"/>.</returns>
+    public static async Task<Optional<TOutput>> Convert<TInput, TOutput>(this Task<Optional<TInput>> task, Converter<TInput, Optional<TOutput>> converter)
+        => (await task.ConfigureAwait(false)).Convert(converter);
+
+    /// <summary>
+    /// If a value is present, apply the provided mapping function to it, and if the result is
     /// non-null, return an Optional describing the result. Otherwise, returns <see cref="Optional{T}.None"/>.
     /// </summary>
     /// <typeparam name="TInput">The type of stored in the Optional container.</typeparam>
@@ -77,6 +90,66 @@ public static class Optional
             : optional.IsNull && Intrinsics.IsNullable<TOutput>()
                 ? new(default)
                 : Optional<TOutput>.None;
+    }
+
+    /// <summary>
+    /// If a value is present, apply the provided mapping function to it, and if the result is
+    /// non-null, return an Optional describing the result. Otherwise returns <see cref="Optional{T}.None"/>.
+    /// </summary>
+    /// <typeparam name="TInput">The type of stored in the Optional container.</typeparam>
+    /// <typeparam name="TOutput">The type of the result of the mapping function.</typeparam>
+    /// <param name="task">The task containing Optional value.</param>
+    /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Optional{T}.None"/>.</returns>
+    public static async Task<Optional<TOutput>> Convert<TInput, TOutput>(this Task<Optional<TInput>> task,
+        Func<TInput, CancellationToken, Task<Optional<TOutput>>> converter, CancellationToken token = default)
+    {
+        var optional = await task.ConfigureAwait(false);
+        return optional.HasValue
+            ? await converter.Invoke(optional.ValueOrDefault, token).ConfigureAwait(false)
+            : optional.IsNull && Intrinsics.IsNullable<TOutput>()
+                ? new(default)
+                : Optional<TOutput>.None;
+    }
+
+    /// <summary>
+    /// Creates <see cref="Result{T}"/> from <see cref="Optional{T}"/> instance.
+    /// </summary>
+    /// <param name="optional">The optional value.</param>
+    /// <returns>The converted optional value.</returns>
+    public static Result<T> ToResult<T>(this in Optional<T> optional)
+        => Result<T>.FromOptional(optional);
+
+    /// <summary>
+    /// Creates <see cref="Result{T}"/> from <see cref="Optional{T}"/> instance.
+    /// </summary>
+    /// <param name="task">The task containing Optional value.</param>
+    /// <returns>The converted optional value.</returns>
+    public static async Task<Result<T>> ToResult<T>(this Task<Optional<T>> task)
+        => Result<T>.FromOptional(await task.ConfigureAwait(false));
+
+    /// <summary>
+    /// Creates <see cref="Result{T, TError}"/> from <see cref="Optional{T}"/> instance.
+    /// </summary>
+    /// <param name="optional">The optional value.</param>
+    /// <param name="error">The error code to apply if the value is not present.</param>
+    /// <returns>The converted optional value.</returns>
+    public static Result<T, TError> ToResult<T, TError>(this in Optional<T> optional, TError error)
+        where TError : struct, Enum
+        => optional.HasValue ? new(optional.Value) : new(error);
+
+    /// <summary>
+    /// Creates <see cref="Result{T, TError}"/> from <see cref="Optional{T}"/> instance.
+    /// </summary>
+    /// <param name="task">The task containing Optional value.</param>
+    /// <param name="error">The error code to apply if the value is not present.</param>
+    /// <returns>The converted optional value.</returns>
+    public static async Task<Result<T, TError>> ToResult<T, TError>(this Task<Optional<T>> task, TError error)
+        where TError : struct, Enum
+    {
+        var optional = await task.ConfigureAwait(false);
+        return optional.HasValue ? new(optional.Value) : new(error);
     }
 
     /// <summary>
@@ -608,6 +681,47 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [CLSCompliant(false)]
     public unsafe Optional<TResult> Convert<TResult>(delegate*<T, Optional<TResult>> mapper)
         => ConvertOptional<TResult, Supplier<T, Optional<TResult>>>(mapper);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private async Task<Optional<TResult>> ConvertTask<TResult>(Func<T, CancellationToken, Task<TResult>> converter, CancellationToken token = default)
+        => HasValue ? await converter.Invoke(value, token).ConfigureAwait(false) : Optional<TResult>.None;
+
+    /// <summary>
+    /// If a value is present, apply the provided mapping function to it, and if the result is
+    /// non-null, return an Optional describing the result. Otherwise, returns <see cref="None"/>.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
+    public Task<Optional<TResult>> Convert<TResult>(Func<T, CancellationToken, Task<TResult>> mapper, CancellationToken token = default)
+        => ConvertTask(mapper, token);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private Task<Optional<TResult>> ConvertOptionalTask<TResult, TConverter>(TConverter converter)
+        where TConverter : struct, ISupplier<T, Task<Optional<TResult>>>
+        => HasValue ? converter.Invoke(value) : Task.FromResult(Optional<TResult>.None);
+
+    /// <summary>
+    /// If a value is present, apply the provided mapping function to it, and if the result is
+    /// non-null, return an Optional describing the result. Otherwise, returns <see cref="None"/>.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
+    /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
+    public Task<Optional<TResult>> Convert<TResult>(Converter<T, Task<Optional<TResult>>> mapper)
+        => ConvertOptionalTask<TResult, DelegatingConverter<T, Task<Optional<TResult>>>>(mapper);
+
+    /// <summary>
+    /// If a value is present, apply the provided mapping function to it, and if the result is
+    /// non-null, return an Optional describing the result. Otherwise returns <see cref="None"/>.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
+    /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
+    [CLSCompliant(false)]
+    public unsafe Task<Optional<TResult>> Convert<TResult>(delegate*<T, Task<Optional<TResult>>> mapper)
+        => ConvertOptionalTask<TResult, Supplier<T, Task<Optional<TResult>>>>(mapper);
 
     /// <inheritdoc cref="IFunctional{TDelegate}.ToDelegate()"/>
     Func<object?> IFunctional<Func<object?>>.ToDelegate() => Func.Constant<object?>(kind is NotEmptyValue ? value : null);
