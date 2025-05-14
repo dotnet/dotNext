@@ -8,7 +8,12 @@ partial class WriteAheadLog
 {
     private readonly LockManager lockManager;
 
-    private enum LockType
+#if DEBUG
+    internal
+#else 
+    private
+#endif
+    enum LockType
     {
         /// <summary>
         /// Allows reading of the log entries.
@@ -52,22 +57,23 @@ partial class WriteAheadLog
         Overwrite,
     }
 
-    private sealed class LockManager(int concurrencyLevel) : QueuedSynchronizer<LockType>(concurrencyLevel)
+#if DEBUG
+    internal
+#else 
+    private
+#endif
+    sealed class LockManager(int concurrencyLevel) : QueuedSynchronizer<LockType>(concurrencyLevel)
     {
-        private const byte AppendLockState = 1;
-        private const byte OverwriteLockState = 2;
-
-        private bool commitState;
         private ulong readersCount;
-        private byte writeLockState;
+        private bool appendLockState, overwriteLockState, commitLockState;
 
         protected override bool CanAcquire(LockType type) => type switch
         {
-            LockType.Read => writeLockState <= AppendLockState,
-            LockType.ReadBarrier => writeLockState <= AppendLockState && readersCount is 0U,
-            LockType.Append => writeLockState is 0,
-            LockType.Commit => !commitState && writeLockState <= AppendLockState,
-            LockType.Overwrite => writeLockState <= AppendLockState && readersCount is 0UL && !commitState,
+            LockType.Read => !overwriteLockState,
+            LockType.ReadBarrier => !overwriteLockState && readersCount is 0U,
+            LockType.Append => !appendLockState,
+            LockType.Commit => !overwriteLockState && !commitLockState,
+            LockType.Overwrite => appendLockState && !overwriteLockState && !commitLockState && readersCount is 0UL,
             _ => false
         };
 
@@ -76,24 +82,19 @@ partial class WriteAheadLog
             switch (type)
             {
                 case LockType.Read:
-                    Debug.Assert(writeLockState <= AppendLockState);
                     readersCount++;
                     break;
                 case LockType.ReadBarrier:
-                    Debug.Assert(readersCount is 0UL && writeLockState <= AppendLockState);
                     readersCount = 1L;
                     break;
                 case LockType.Append:
-                    Debug.Assert(writeLockState is 0);
-                    writeLockState = AppendLockState;
+                    appendLockState = true;
                     break;
                 case LockType.Commit:
-                    Debug.Assert(!commitState && writeLockState <= AppendLockState);
-                    commitState = true;
+                    commitLockState = true;
                     break;
                 case LockType.Overwrite:
-                    Debug.Assert(writeLockState <= AppendLockState && readersCount is 0UL && !commitState);
-                    writeLockState = OverwriteLockState;
+                    overwriteLockState = true;
                     break;
                 default:
                     Debug.Fail($"Unexpected lock type {type}");
@@ -109,10 +110,10 @@ partial class WriteAheadLog
                     readersCount--;
                     break;
                 case LockType.Append or LockType.Overwrite:
-                    writeLockState = 0;
+                    appendLockState = overwriteLockState = false;
                     break;
                 case LockType.Commit:
-                    commitState = false;
+                    commitLockState = false;
                     break;
                 default:
                     Debug.Fail($"Unexpected lock type {type}");
