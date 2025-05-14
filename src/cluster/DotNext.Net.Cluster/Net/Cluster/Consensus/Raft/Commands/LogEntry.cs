@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands;
 
 using IO;
-using Runtime.Serialization;
+using IO.Log;
 
 /// <summary>
 /// Represents Raft log entry containing custom command.
@@ -12,26 +12,21 @@ using Runtime.Serialization;
 /// <seealso cref="Text.Json.JsonSerializable{T}"/>
 [StructLayout(LayoutKind.Auto)]
 public readonly struct LogEntry<TCommand>() : IRaftLogEntry
-    where TCommand : ISerializable<TCommand>
+    where TCommand : ICommand<TCommand>
 {
     /// <summary>
     /// Gets the command associated with this log entry.
     /// </summary>
-    required public TCommand Command { get; init; }
+    public required TCommand Command { get; init; }
 
     /// <inheritdoc />
-    required public long Term { get; init; }
+    public required long Term { get; init; }
 
     /// <inheritdoc />
     public DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
 
-    /// <summary>
-    /// Gets identifier of the underlying command associated with this log entry.
-    /// </summary>
-    required public int CommandId { get; init; }
-
     /// <inheritdoc />
-    int? IRaftLogEntry.CommandId => CommandId;
+    int? IRaftLogEntry.CommandId => TCommand.Id;
 
     /// <inheritdoc />
     bool IDataTransferObject.IsReusable => true;
@@ -42,4 +37,7 @@ public readonly struct LogEntry<TCommand>() : IRaftLogEntry
     /// <inheritdoc />
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         => Command.WriteToAsync(writer, token);
+
+    /// <inheritdoc />
+    bool ILogEntry.IsSnapshot => TCommand.IsSnapshot;
 }

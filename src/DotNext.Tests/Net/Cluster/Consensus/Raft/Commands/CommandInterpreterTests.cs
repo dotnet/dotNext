@@ -19,9 +19,9 @@ public sealed class CommandInterpreterTests : Test
         OnesComplement
     }
 
-    private struct BinaryOperationCommand : ISerializable<BinaryOperationCommand>
+    private struct BinaryOperationCommand : ICommand<BinaryOperationCommand>
     {
-        internal const int Id = 0;
+        public static int Id => 0;
 
         public int X, Y;
         public BinaryOperation Type;
@@ -45,9 +45,9 @@ public sealed class CommandInterpreterTests : Test
             };
     }
 
-    private struct UnaryOperationCommand : ISerializable<UnaryOperationCommand>
+    private struct UnaryOperationCommand : ICommand<UnaryOperationCommand>
     {
-        internal const int Id = 1;
+        public static int Id => 1;
 
         public int X;
         public UnaryOperation Type;
@@ -69,9 +69,9 @@ public sealed class CommandInterpreterTests : Test
             };
     }
 
-    private struct AssignCommand : ISerializable<AssignCommand>
+    private struct AssignCommand : ICommand<AssignCommand>
     {
-        internal const int Id = 3;
+        public static int Id => 3;
 
         public int Value;
 
@@ -88,13 +88,15 @@ public sealed class CommandInterpreterTests : Test
             };
     }
 
-    private struct SnapshotCommand : ISerializable<SnapshotCommand>
+    private struct SnapshotCommand : ICommand<SnapshotCommand>
     {
-        internal const int Id = 4;
+        public static int Id => 4;
 
         public int Value;
 
         readonly long? IDataTransferObject.Length => sizeof(int);
+
+        static bool ICommand<SnapshotCommand>.IsSnapshot => true;
 
         readonly ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => writer.WriteLittleEndianAsync(Value, token);
@@ -106,10 +108,7 @@ public sealed class CommandInterpreterTests : Test
                 Value = await reader.ReadLittleEndianAsync<int>(token),
             };
     }
-
-    [Command<BinaryOperationCommand>(BinaryOperationCommand.Id)]
-    [Command<UnaryOperationCommand>(UnaryOperationCommand.Id)]
-    [Command<SnapshotCommand>(SnapshotCommand.Id)]
+    
     private sealed class CustomInterpreter : CommandInterpreter
     {
         internal int Value;
@@ -149,7 +148,7 @@ public sealed class CommandInterpreterTests : Test
         public ValueTask DoUnaryOperation(UnaryOperationCommand command, CancellationToken token)
             => DoUnaryOperation(ref Value, command, token);
 
-        [CommandHandler(IsSnapshotHandler = true)]
+        [CommandHandler]
         public ValueTask ApplySnapshot(SnapshotCommand command, CancellationToken token)
         {
             Value = command.Value;
@@ -165,8 +164,8 @@ public sealed class CommandInterpreterTests : Test
         internal int Value => interpreter.Value;
 
         internal LogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command)
-            where TCommand : struct, ISerializable<TCommand>
-            => interpreter.CreateLogEntry(command, Term);
+            where TCommand : struct, ICommand<TCommand>
+            => new() { Command = command, Term = Term };
 
         protected override ValueTask ApplyAsync(LogEntry entry)
             => new(interpreter.InterpretAsync(entry).AsTask());
@@ -195,13 +194,23 @@ public sealed class CommandInterpreterTests : Test
     public static async Task MethodsAsHandlers()
     {
         using var interpreter = new CustomInterpreter();
-        var entry1 = interpreter.CreateLogEntry(new BinaryOperationCommand { X = 40, Y = 2, Type = BinaryOperation.Add }, 1L);
+        var entry1 = new LogEntry<BinaryOperationCommand>()
+        {
+            Command = new() { X = 40, Y = 2, Type = BinaryOperation.Add },
+            Term = 1L,
+        };
+        
         Equal(1L, entry1.Term);
         Equal(0, interpreter.Value);
         Equal(0, await interpreter.InterpretAsync(entry1));
         Equal(42, interpreter.Value);
 
-        var entry2 = interpreter.CreateLogEntry(new UnaryOperationCommand { X = 42, Type = UnaryOperation.Negate }, 10L);
+        var entry2 = new LogEntry<UnaryOperationCommand>()
+        {
+            Command = new() { X = 42, Type = UnaryOperation.Negate },
+            Term = 10L,
+        };
+        
         Equal(10L, entry2.Term);
         Equal(1, await interpreter.InterpretAsync(entry2));
         Equal(-42, interpreter.Value);
@@ -213,23 +222,38 @@ public sealed class CommandInterpreterTests : Test
         var state = new StrongBox<int>();
 
         var interpreter = new CommandInterpreter.Builder()
-            .Add(BinaryOperationCommand.Id, new Func<BinaryOperationCommand, CancellationToken, ValueTask>(BinaryOp))
-            .Add(UnaryOperationCommand.Id, new Func<UnaryOperationCommand, CancellationToken, ValueTask>(UnaryOp))
-            .Add(AssignCommand.Id, new Func<AssignCommand, object, CancellationToken, ValueTask>(AssignOp))
+            .Add(new Func<BinaryOperationCommand, CancellationToken, ValueTask>(BinaryOp))
+            .Add(new Func<UnaryOperationCommand, CancellationToken, ValueTask>(UnaryOp))
+            .Add(new Func<AssignCommand, object, CancellationToken, ValueTask>(AssignOp))
             .Build();
 
-        var entry1 = interpreter.CreateLogEntry(new BinaryOperationCommand { X = 40, Y = 2, Type = BinaryOperation.Add }, 1L);
+        var entry1 = new LogEntry<BinaryOperationCommand>()
+        {
+            Command = new() { X = 40, Y = 2, Type = BinaryOperation.Add },
+            Term = 1L,
+        };
+        
         Equal(1L, entry1.Term);
         Equal(0, state.Value);
         Equal(0, await interpreter.InterpretAsync(entry1));
         Equal(42, state.Value);
 
-        var entry2 = interpreter.CreateLogEntry(new UnaryOperationCommand { X = 42, Type = UnaryOperation.Negate }, 10L);
+        var entry2 = new LogEntry<UnaryOperationCommand>()
+        {
+            Command = new() { X = 42, Type = UnaryOperation.Negate },
+            Term = 10L,
+        };
+        
         Equal(10L, entry2.Term);
         Equal(1, await interpreter.InterpretAsync(entry2));
         Equal(-42, state.Value);
 
-        var entry3 = interpreter.CreateLogEntry(new AssignCommand { Value = int.MaxValue }, 68L);
+        var entry3 = new LogEntry<AssignCommand>()
+        {
+            Command = new() { Value = int.MaxValue },
+            Term = 68L,
+        };
+        
         Equal(68L, entry3.Term);
         Equal(3, await interpreter.InterpretAsync(entry3, string.Empty));
         Equal(int.MaxValue, state.Value);
@@ -260,10 +284,5 @@ public sealed class CommandInterpreterTests : Test
         await wal.AppendAsync(entry2);
         await wal.CommitAsync(CancellationToken.None);
         Equal(~42, wal.Value);
-
-        var entry3 = wal.CreateLogEntry(new SnapshotCommand { Value = 56 });
-        await wal.AppendAsync(entry3);
-        await wal.CommitAsync(CancellationToken.None);
-        Equal(56, wal.Value);
     }
 }

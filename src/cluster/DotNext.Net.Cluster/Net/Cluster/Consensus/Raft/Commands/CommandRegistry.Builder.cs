@@ -11,16 +11,14 @@ public partial class CommandInterpreter : IBuildable<CommandInterpreter, Command
     public sealed class Builder : ISupplier<CommandInterpreter>, IResettable
     {
         private readonly Dictionary<int, CommandHandler> interpreters = new();
-        private readonly Dictionary<Type, int> identifiers = new();
         private int? snapshotCommandId;
 
-        private Builder Add<TCommand>(int commandId, CommandHandler<TCommand> handler, bool snapshotHandler)
-            where TCommand : ISerializable<TCommand>
+        private Builder Add<TCommand>(CommandHandler<TCommand> handler)
+            where TCommand : ICommand<TCommand>
         {
-            identifiers.Add(typeof(TCommand), commandId);
-            interpreters.Add(commandId, handler);
-            if (snapshotHandler)
-                snapshotCommandId = commandId;
+            interpreters.Add(TCommand.Id, handler);
+            if (TCommand.IsSnapshot)
+                snapshotCommandId = TCommand.Id;
 
             return this;
         }
@@ -28,43 +26,31 @@ public partial class CommandInterpreter : IBuildable<CommandInterpreter, Command
         /// <summary>
         /// Registers command handler.
         /// </summary>
-        /// <param name="commandId">The identifier of the command.</param>
         /// <param name="handler">The command handler.</param>
-        /// <param name="snapshotHandler">
-        /// <see langword="true"/> to register a handler for snapshot log entry;
-        /// <see langword="false"/> to register a handler for regular log entry.
-        /// </param>
         /// <typeparam name="TCommand">The type of the command supported by the handler.</typeparam>
         /// <returns>This builder.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <see langword="null"/>.</exception>
-        /// <exception cref="GenericArgumentException">Type <typaparamref name="TCommand"/> is not annotated with <see cref="CommandAttribute"/> attribute.</exception>
-        public Builder Add<TCommand>(int commandId, Func<TCommand, CancellationToken, ValueTask> handler, bool snapshotHandler = false)
-            where TCommand : ISerializable<TCommand>
+        public Builder Add<TCommand>(Func<TCommand, CancellationToken, ValueTask> handler)
+            where TCommand : ICommand<TCommand>
         {
             ArgumentNullException.ThrowIfNull(handler);
 
-            return Add(commandId, new CommandHandler<TCommand>(handler), snapshotHandler);
+            return Add(new CommandHandler<TCommand>(handler));
         }
 
         /// <summary>
         /// Registers command handler.
         /// </summary>
-        /// <param name="commandId">The identifier of the command.</param>
         /// <param name="handler">The command handler.</param>
-        /// <param name="snapshotHandler">
-        /// <see langword="true"/> to register a handler for snapshot log entry;
-        /// <see langword="false"/> to register a handler for regular log entry.
-        /// </param>
         /// <typeparam name="TCommand">The type of the command supported by the handler.</typeparam>
         /// <returns>This builder.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <see langword="null"/>.</exception>
-        /// <exception cref="GenericArgumentException">Type <typaparamref name="TCommand"/> is not annotated with <see cref="CommandAttribute"/> attribute.</exception>
-        public Builder Add<TCommand>(int commandId, Func<TCommand, object?, CancellationToken, ValueTask> handler, bool snapshotHandler = false)
-            where TCommand : ISerializable<TCommand>
+        public Builder Add<TCommand>(Func<TCommand, object?, CancellationToken, ValueTask> handler)
+            where TCommand : ICommand<TCommand>
         {
             ArgumentNullException.ThrowIfNull(handler);
 
-            return Add(commandId, new CommandHandler<TCommand>(handler), snapshotHandler);
+            return Add(new CommandHandler<TCommand>(handler));
         }
 
         /// <summary>
@@ -73,14 +59,13 @@ public partial class CommandInterpreter : IBuildable<CommandInterpreter, Command
         public void Reset()
         {
             interpreters.Clear();
-            identifiers.Clear();
         }
 
         /// <summary>
         /// Constructs an instance of <see cref="CommandInterpreter"/>.
         /// </summary>
         /// <returns>A new instance of the interpreter.</returns>
-        public CommandInterpreter Build() => new(interpreters, identifiers, snapshotCommandId);
+        public CommandInterpreter Build() => new(interpreters, snapshotCommandId);
 
         /// <inheritdoc/>
         CommandInterpreter ISupplier<CommandInterpreter>.Invoke() => Build();
