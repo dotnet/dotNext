@@ -1,23 +1,26 @@
 using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
-public partial class PersistentState
+public partial class WriteAheadLog
 {
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private readonly PagedBufferWriter dataPages;
     
     private sealed class PagedBufferWriter(DirectoryInfo location, int pageSize) : PageManager(location, pageSize), IBufferWriter<byte>
     {
         public ulong LastWrittenAddress;
 
-        public bool TryEnsureCapacity(long? length)
+        public int? TryEnsureCapacity(long? length)
         {
-            if (length is not { } len || len > PageSize)
-                return false;
+            if (length is not { } len || (ulong)len > (uint)PageSize)
+                return null;
 
-            EnsureCapacity((int)len);
-            return true;
+            var result = (int)len;
+            EnsureCapacity(result);
+            return result;
         }
 
         private void EnsureCapacity(int length)

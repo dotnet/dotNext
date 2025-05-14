@@ -264,9 +264,9 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
     {
         /*
          * The following concurrency could happen here:
-         * UnsafeAppendAsync invalidates readers of the partition on flush
+         * UnsafeAppendAsync invalidates readers of the partition on the flush
          * while the readers are in use by ApplyAsync or snapshot building process.
-         * It's happening if caching disabled, or EvictOnCommit and Sequential compaction mode.
+         * It's happening if caching is disabled, or EvictOnCommit and Sequential compaction mode.
          * But we can easily ignore this concurrency because invalidation works only when
          * GetSessionReader() is called. In worst case, we will have empty internal buffer
          * of the reader. No additional synchronization is required.

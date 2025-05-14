@@ -8,12 +8,11 @@ using Buffers;
 using Buffers.Binary;
 using Runtime;
 
-// Perf: in case of LE, we want to store the metadata in the block of memory as-is
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(LayoutKind.Sequential)] // Perf: in case of LE, we want to store the metadata in the block of memory as-is
 internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
 {
     internal const int AlignedSize = 64; // a multiple of the system page size
-    internal const int Size = sizeof(LogEntryFlags) + sizeof(int) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long);
+    private const int Size = sizeof(LogEntryFlags) + sizeof(int) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long);
 
     internal readonly long Term;
     internal readonly long Timestamp;
@@ -133,7 +132,7 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     }
 
     internal ulong End => (ulong)Length + Offset;
-    
+
     [Flags]
     private enum LogEntryFlags : uint
     {

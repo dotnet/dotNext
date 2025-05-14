@@ -1,27 +1,33 @@
 using System.Buffers.Binary;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Threading.Channels;
-using DotNext.Threading;
 using Microsoft.Win32.SafeHandles;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
+using Diagnostics;
+using IO.Log;
 using Runtime.CompilerServices;
+using Threading;
 
-partial class PersistentState
+partial class WriteAheadLog
 {
-    private readonly ChannelWriter<long> flushTrigger;
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
+    private readonly AsyncAutoResetEvent flushTrigger;
     private readonly Task flusherTask;
     private readonly CommitIndexState commitIndexState;
+    
+    private long commitIndex; // Commit lock protects modification of this field
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
-    private async Task FlushAsync(ChannelReader<long> reader)
+    private async Task FlushAsync(long previousIndex, CancellationToken token)
     {
-        var token = reader.Completion.AsCancellationToken();
-        for (var previousIndex = commitIndexState.Value; await reader.WaitToReadAsync().ConfigureAwait(false);)
+        for (long newIndex; !IsDisposingOrDisposed; previousIndex = newIndex)
         {
-            for (long newIndex; reader.TryRead(out newIndex) && newIndex > previousIndex; previousIndex = newIndex)
+            newIndex = LastCommittedEntryIndex;
+
+            if (newIndex > previousIndex)
             {
                 // Ensure that the flusher is not running with the snapshot installation process concurrently
                 lockManager.SetCallerInformation("Flush Pages");
@@ -35,19 +41,25 @@ partial class PersistentState
                     lockManager.ReleaseReadLock();
                 }
             }
+
+            await flushTrigger.WaitAsync(token).ConfigureAwait(false);
         }
     }
 
     private void Flush(long fromIndex, long toIndex)
     {
+        var ts = new Timestamp();
         FlushMetadataPages(metadataPages, fromIndex, toIndex);
 
         var toMetadata = metadataPages[toIndex];
         var fromMetadata = metadataPages[fromIndex];
         FlushDataPages(dataPages, fromMetadata.Offset, toMetadata.End);
+        FlushDurationMeter.Record(ts.ElapsedMilliseconds);
 
         // everything up to toIndex is flushed, save the commit index
         commitIndexState.Value = toIndex;
+
+        FlushRateMeter.Add(toIndex - fromIndex, measurementTags);
     }
 
     private static void FlushMetadataPages(MetadataPageManager metadataPages, long fromIndex, long toIndex)
@@ -78,6 +90,36 @@ partial class PersistentState
                 page.DisposeAndDelete();
             }
         }
+    }
+    
+    /// <inheritdoc cref="IAuditTrail.LastCommittedEntryIndex"/>
+    public long LastCommittedEntryIndex
+    {
+        get => Volatile.Read(in commitIndex);
+        private set => Volatile.Write(ref commitIndex, value);
+    }
+    
+    private long Commit(long index)
+    {
+        var oldCommitIndex = LastCommittedEntryIndex;
+        if (index > oldCommitIndex)
+        {
+            LastCommittedEntryIndex = index;
+        }
+        else
+        {
+            index = oldCommitIndex;
+        }
+
+        return index - oldCommitIndex;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void OnCommitted(long count)
+    {
+        flushTrigger.Set();
+        applyTrigger.Set();
+        CommitRateMeter.Add(count, measurementTags);
     }
 
     [StructLayout(LayoutKind.Auto)]

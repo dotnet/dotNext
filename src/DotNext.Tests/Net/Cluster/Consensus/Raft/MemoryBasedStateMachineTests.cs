@@ -899,7 +899,7 @@ public sealed class MemoryBasedStateMachineTests : Test
             Equal(2L, await state.CommitAsync(2L));
             //save backup
             await using var backupStream = new FileStream(backupFile, FileMode.Truncate, FileAccess.Write, FileShare.None, 1024, true);
-            await state.CreateBackupAsync(backupStream);
+            await ((PersistentState)state).CreateBackupAsync(backupStream);
         }
         finally
         {
@@ -962,7 +962,7 @@ public sealed class MemoryBasedStateMachineTests : Test
             Equal(2L, await state.CommitAsync(2L));
             //save backup
             await using var backupStream = new FileStream(backupFile, FileMode.Truncate, FileAccess.Write, FileShare.None, 1024, true);
-            await state.CreateBackupAsync(backupStream);
+            await ((PersistentState)state).CreateBackupAsync(backupStream);
         }
         finally
         {

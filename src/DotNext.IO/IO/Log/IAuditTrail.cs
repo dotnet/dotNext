@@ -59,17 +59,6 @@ public interface IAuditTrail
     ValueTask<long> CommitAsync(long endIndex, CancellationToken token = default);
 
     /// <summary>
-    /// Creates backup of this audit trail.
-    /// </summary>
-    /// <param name="output">The stream used to store backup.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>A task representing state of asynchronous execution.</returns>
-    /// <exception cref="NotSupportedException">Backup is not supported by this implementation of audit trail.</exception>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    Task CreateBackupAsync(Stream output, CancellationToken token = default)
-        => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException());
-
-    /// <summary>
     /// Initializes audit trail.
     /// </summary>
     /// <remarks>

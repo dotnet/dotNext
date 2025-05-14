@@ -6,50 +6,72 @@ using DotNext.Buffers;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
-partial class PersistentState
+partial class WriteAheadLog
 {
-    private static uint GetPageIndex(ulong absoluteAddress, int pageSize, out int offset)
+    private static uint GetPageIndex(ulong address, int pageSize, out int offset)
     {
         Debug.Assert(int.IsPow2(pageSize));
 
-        offset = (int)(absoluteAddress & ((uint)pageSize - 1U));
-        return (uint)(absoluteAddress >> BitOperations.TrailingZeroCount(pageSize));
+        offset = (int)(address & ((uint)pageSize - 1U));
+        return (uint)(address >> BitOperations.TrailingZeroCount(pageSize));
     }
     
     private class PageManager : ConcurrentDictionary<uint, Page>, IDisposable
     {
         private readonly DirectoryInfo location;
         internal readonly int PageSize;
-        
-        internal PageManager(DirectoryInfo location, int pageSize)
+
+        protected PageManager(DirectoryInfo location, int pageSize)
+            : base(DictionaryConcurrencyLevel, GetPageFiles(location, pageSize, out var pages))
         {
             Debug.Assert(int.IsPow2(pageSize));
-            
+
             PageSize = pageSize;
             this.location = location;
-            
+
             // populate pages
-            foreach (var pageFile in location.EnumerateFiles())
+            foreach (var pageFile in pages)
             {
-                if (uint.TryParse(pageFile.Name, provider: null, out var pageIndex))
-                {
-                    TryAdd(pageIndex, new(location, pageIndex, pageSize));
-                }
+                TryAdd(pageFile.Key, pageFile.Value);
             }
         }
 
-        protected uint GetPageIndex(ulong absoluteAddress, out int offset)
-            => PersistentState.GetPageIndex(absoluteAddress, PageSize, out offset);
-
-        public void Delete(uint fromPage, uint toPage)
+        private static int GetPageFiles(DirectoryInfo location, int pageSize, out ReadOnlySpan<KeyValuePair<uint, Page>> pageFiles)
         {
+            pageFiles = GetPages(location)
+                .Select<uint, KeyValuePair<uint, Page>>(pageIndex =>
+                    new(pageIndex, new Page(location, pageIndex, pageSize)))
+                .ToArray();
+
+            return Math.Min(pageFiles.Length, 11);
+        }
+
+        private static IEnumerable<uint> GetPages(DirectoryInfo location)
+        {
+            return location.EnumerateFiles()
+                .Select(static info => uint.TryParse(info.Name, provider: null, out var pageIndex) ? new uint?(pageIndex) : null)
+                .Where(static pageIndex => pageIndex.HasValue)
+                .Select(static pageIndex => pageIndex.GetValueOrDefault());
+        }
+
+        protected IEnumerable<uint> GetPages() => GetPages(location);
+
+        protected uint GetPageIndex(ulong absoluteAddress, out int offset)
+            => WriteAheadLog.GetPageIndex(absoluteAddress, PageSize, out offset);
+
+        public int Delete(uint fromPage, uint toPage)
+        {
+            var count = 0;
             for (var pageIndex = fromPage; pageIndex < toPage; pageIndex++)
             {
                 if (TryRemove(pageIndex, out var page))
                 {
                     page.DisposeAndDelete();
+                    count++;
                 }
             }
+
+            return count;
         }
 
         public Page GetOrAdd(uint pageIndex)

@@ -26,7 +26,7 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     /// <summary>
     /// Increments <see cref="Term"/> value and persists the item that was voted for on in the last vote.
     /// </summary>
-    /// <param name="member">The member which identifier should be stored inside of persistence storage. May be <see langword="null"/>.</param>
+    /// <param name="member">The member which identifier should be stored inside the persistence storage. May be <see langword="null"/>.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The updated <see cref="Term"/> value.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
@@ -46,9 +46,9 @@ public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     ValueTask UpdateTermAsync(long term, bool resetLastVote, CancellationToken token = default);
 
     /// <summary>
-    /// Persists the item that was voted for on in the last vote.
+    /// Persists the item voted for on in the last vote.
     /// </summary>
-    /// <param name="member">The member which identifier should be stored inside of persistence storage.</param>
+    /// <param name="member">The member which identifier should be stored inside the persistence storage.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing state of the asynchronous execution.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>

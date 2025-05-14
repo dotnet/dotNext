@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Buffers;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -11,7 +12,7 @@ using StateMachine;
 /// Represents No-OP entry.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct EmptyLogEntry() : ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>, IBinaryLogEntry, ISnapshot
+public readonly struct EmptyLogEntry() : ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>, IBinaryLogEntry, IInputLogEntry
 {
     /// <inheritdoc/>
     int? IRaftLogEntry.CommandId => null;
@@ -19,10 +20,10 @@ public readonly struct EmptyLogEntry() : ISupplier<MemoryAllocator<byte>, Memory
     /// <inheritdoc cref="ILogEntry.IsSnapshot"/>
     public bool IsSnapshot { get; internal init; }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IDataTransferObject.Length"/>
     long? IDataTransferObject.Length => 0L;
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IBinaryLogEntry.Length"/>
     int IBinaryLogEntry.Length => 0;
 
     /// <inheritdoc/>
@@ -38,7 +39,7 @@ public readonly struct EmptyLogEntry() : ISupplier<MemoryAllocator<byte>, Memory
     /// <summary>
     /// Gets or sets log entry term.
     /// </summary>
-    required public long Term { get; init; }
+    public required long Term { get; init; }
 
     /// <summary>
     /// Gets timestamp of this log entry.
@@ -63,5 +64,9 @@ public readonly struct EmptyLogEntry() : ISupplier<MemoryAllocator<byte>, Memory
     }
 
     /// <inheritdoc/>
-    long ISnapshot.Index => 0L;
+    public object? Context
+    {
+        get;
+        init;
+    }
 }

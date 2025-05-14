@@ -8,12 +8,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using IO;
 
-partial class PersistentState
+partial class WriteAheadLog
 {
     /// <summary>
     /// Represents memory-mapped page of memory.
     /// </summary>
-    internal sealed class Page : MemoryManager<byte>, IFlushable
+    private sealed class Page : MemoryManager<byte>, IFlushable
     {
         private readonly string fileName;
         private readonly SafeFileHandle fileHandle;
