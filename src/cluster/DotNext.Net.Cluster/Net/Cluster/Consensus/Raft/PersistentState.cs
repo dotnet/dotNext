@@ -414,10 +414,6 @@ public abstract partial class PersistentState : Disposable, IPersistentState
         {
             result = AppendCachedAsync(supplier, startIndex, writeThrough: true, skipCommitted, token);
         }
-        else if (supplier.LogEntryPayloadAvailableImmediately)
-        {
-            result = AppendCachedAsync(supplier, startIndex, writeThrough: false, skipCommitted, token);
-        }
         else
         {
             // bufferize log entries in parallel with disk I/O
