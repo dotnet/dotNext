@@ -63,6 +63,7 @@ public readonly struct LogEntry : IInputLogEntry
     {
     }
 
+    /// <inheritdoc cref="IInputLogEntry.Context"/>
     public object? Context { get; init; }
 
     /// <summary>
@@ -75,8 +76,10 @@ public readonly struct LogEntry : IInputLogEntry
     /// </summary>
     public long Term { get; }
 
+    /// <inheritdoc cref="ILogEntry.Timestamp"/>
     public DateTimeOffset Timestamp { get; }
 
+    /// <inheritdoc cref="IRaftLogEntry.CommandId"/>
     public int? CommandId { get; }
 
     /// <inheritdoc/>

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
@@ -6,6 +7,7 @@ using Threading;
 
 partial class WriteAheadLog
 {
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private readonly LockManager lockManager;
 
 #if DEBUG
