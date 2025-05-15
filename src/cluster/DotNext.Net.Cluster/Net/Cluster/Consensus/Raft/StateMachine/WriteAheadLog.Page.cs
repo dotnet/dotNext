@@ -43,10 +43,10 @@ partial class WriteAheadLog
                 HandleInheritability.None, leaveOpen: true);
             accessor = mappedHandle.CreateViewAccessor(0L, pageSize, MemoryMappedFileAccess.ReadWrite);
             viewHandle = mappedHandle;
+            
+            static string GetPageFileName(DirectoryInfo directory, uint pageIndex)
+                => Path.Combine(directory.FullName, pageIndex.ToString(InvariantCulture));
         }
-
-        internal static string GetPageFileName(DirectoryInfo directory, uint pageIndex)
-            => Path.Combine(directory.FullName, pageIndex.ToString(InvariantCulture));
 
         private nint Pointer
             => accessor.SafeMemoryMappedViewHandle.DangerousGetHandle() + (nint)accessor.PointerOffset;
