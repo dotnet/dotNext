@@ -84,12 +84,12 @@ public readonly struct BinaryLogEntry() : IInputLogEntry, ISupplier<MemoryAlloca
     /// <summary>
     /// Gets Term value associated with this log entry.
     /// </summary>
-    required public long Term { get; init; }
+    public required long Term { get; init; }
 
     /// <summary>
     /// Gets the payload of the log entry.
     /// </summary>
-    required public ReadOnlyMemory<byte> Content
+    public required ReadOnlyMemory<byte> Content
     {
         get => content;
         init => content = value;

@@ -11,7 +11,7 @@ using IO.Log;
 /// <typeparam name="TCommand">The type of the command encoded by the log entry.</typeparam>
 /// <seealso cref="Text.Json.JsonSerializable{T}"/>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct LogEntry<TCommand>() : IRaftLogEntry
+public readonly struct LogEntry<TCommand>() : IInputLogEntry
     where TCommand : ICommand<TCommand>
 {
     /// <summary>
@@ -40,4 +40,9 @@ public readonly struct LogEntry<TCommand>() : IRaftLogEntry
 
     /// <inheritdoc />
     bool ILogEntry.IsSnapshot => TCommand.IsSnapshot;
+    
+    /// <summary>
+    /// Gets the context of the command.
+    /// </summary>
+    public object? Context { get; init; }
 }
