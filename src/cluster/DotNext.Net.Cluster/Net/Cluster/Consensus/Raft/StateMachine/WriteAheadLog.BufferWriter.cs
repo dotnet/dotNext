@@ -45,15 +45,11 @@ public partial class WriteAheadLog
         {
             ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
 
-            if (sizeHint <= PageSize)
-            {
-                var pageIndex = GetPageIndex(LastWrittenAddress, out var offset);
-                var page = GetOrAdd(pageIndex);
+            var page = GetOrAdd(GetPageIndex(LastWrittenAddress, out var offset));
 
-                var block = page.Memory.Slice(offset);
-                if (sizeHint is 0 || sizeHint <= block.Length)
-                    return block;
-            }
+            var block = page.Memory.Slice(offset);
+            if (sizeHint is 0 || sizeHint <= block.Length)
+                return block;
 
             throw new InsufficientMemoryException();
         }
