@@ -89,8 +89,8 @@ partial class WriteAheadLog
                 yield return new(snapshot);
             }
 
-            for (; index < count; index++)
-                yield return Read(index);
+            while (index < count)
+                yield return Read(index++);
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
