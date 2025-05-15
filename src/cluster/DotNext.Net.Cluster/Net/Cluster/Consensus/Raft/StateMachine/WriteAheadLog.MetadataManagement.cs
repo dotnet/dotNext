@@ -11,7 +11,7 @@ partial class WriteAheadLog
 
     private sealed class MetadataPageManager : PageManager
     {
-        private new const int PageSize = 4096 * 2;
+        public new const int PageSize = 4096;
 
         public MetadataPageManager(DirectoryInfo location)
             : base(location, PageSize)
@@ -19,33 +19,18 @@ partial class WriteAheadLog
             Debug.Assert(PageSize % LogEntryMetadata.AlignedSize is 0);
         }
 
-        public long? GetLowestIndex()
-        {
-            using var enumerator = GetPages().GetEnumerator();
-
-            if (!enumerator.MoveNext())
-                return null;
-
-            var lowestPage = enumerator.Current;
-            do
-            {
-                lowestPage = Math.Min(lowestPage, enumerator.Current);
-            } while (enumerator.MoveNext());
-
-            var entriesPerPage = PageSize / LogEntryMetadata.AlignedSize;
-            return (uint)entriesPerPage * (long)lowestPage;
-        }
-
         public uint GetStartPageIndex(long index)
-            => GetPageIndex((ulong)index * LogEntryMetadata.AlignedSize, out _);
+            => GetStartPageIndex(index, out _);
+
+        private uint GetStartPageIndex(long index, out int offset)
+            => GetPageIndex((ulong)index * LogEntryMetadata.AlignedSize, out offset);
 
         public uint GetEndPageIndex(long index)
             => GetPageIndex((ulong)index * LogEntryMetadata.AlignedSize + LogEntryMetadata.AlignedSize, out _);
 
         private Span<byte> TryGetMetadata(long index)
         {
-            var pageIndex = GetPageIndex((ulong)index * LogEntryMetadata.AlignedSize, out var offset);
-
+            var pageIndex = GetStartPageIndex(index, out var offset);
             return TryGetValue(pageIndex, out var page)
                 ? page.GetSpan().Slice(offset)
                 : Span<byte>.Empty;
@@ -71,10 +56,8 @@ partial class WriteAheadLog
 
             set
             {
-                if (TryGetMetadata(index) is not { Length: > 0 } metadata)
-                    throw new ArgumentOutOfRangeException(nameof(index));
-
-                value.Format(metadata);
+                var page = GetOrAdd(GetStartPageIndex(index, out var offset));
+                value.Format(page.GetSpan().Slice(offset));
             }
         }
 

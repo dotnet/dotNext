@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
@@ -22,6 +23,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     private readonly MemoryAllocator<byte> bufferAllocator;
     private readonly IStateMachine stateMachine;
     
+    private volatile ExceptionDispatchInfo? backgroundTaskFailure;
     private long lastEntryIndex; // Append lock protects modification of this field
     
     // lifetime management
@@ -61,10 +63,12 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             
             pagesLocation = new(Path.Combine(rootPath.FullName, DataPagesLocationPrefix));
             CreateIfNeeded(pagesLocation);
-            
+
             dataPages = new(pagesLocation, configuration.ChunkMaxSize)
             {
-                LastWrittenAddress = metadataPages[lastReliablyWrittenEntryIndex].End,
+                LastWrittenAddress = metadataPages.TryGetMetadata(lastReliablyWrittenEntryIndex, out var metadata)
+                    ? metadata.End
+                    : 0UL,
             };
         }
 
@@ -87,7 +91,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         
         // cleaner
         {
-            cleanupTask = CleanUpAsync(metadataPages.GetLowestIndex().GetValueOrDefault(snapshotIndex), lifetimeTokenSource.Token);
+            cleanupTask = CleanUpAsync(lifetimeTokenSource.Token);
         }
 
         static void CreateIfNeeded(DirectoryInfo directory)
@@ -120,6 +124,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         where TEntry : IRaftLogEntry
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
+        backgroundTaskFailure?.Throw();
 
         if (entry.IsSnapshot)
             throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
@@ -148,6 +153,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     {
         ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
+        backgroundTaskFailure?.Throw();
 
         lockManager.SetCallerInformation("Append Single Entry at Custom Index");
         await lockManager.AcquireAppendLockAsync(token).ConfigureAwait(false);
@@ -194,6 +200,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     {
         ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
+        backgroundTaskFailure?.Throw();
 
         lockManager.SetCallerInformation("Append Multiple Entries");
         await lockManager.AcquireAppendLockAsync(token).ConfigureAwait(false);
@@ -242,11 +249,13 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     {
         return IsDisposingOrDisposed
             ? new(GetDisposedTask<long>())
-            : entries.RemainingCount is 0L
-                ? CommitAsync(commitIndex, token)
-                : commitIndex < startIndex
-                    ? AppendAndCommitAsync(entries, startIndex, skipCommitted, commitIndex, token)
-                    : AppendAndCommitSlowAsync(entries, startIndex, skipCommitted, commitIndex, token);
+            : backgroundTaskFailure?.SourceException is { } exception
+                ? ValueTask.FromException<long>(exception)
+                : entries.RemainingCount is 0L
+                    ? CommitAsync(commitIndex, token)
+                    : commitIndex < startIndex
+                        ? AppendAndCommitAsync(entries, startIndex, skipCommitted, commitIndex, token)
+                        : AppendAndCommitSlowAsync(entries, startIndex, skipCommitted, commitIndex, token);
     }
 
     private async ValueTask<long> AppendAndCommitAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted,
@@ -384,7 +393,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     }
 
     /// <inheritdoc cref="IAuditTrail.CommitAsync(long, CancellationToken)"/>
-    public ValueTask<long> CommitAsync(long endIndex, CancellationToken token)
+    public ValueTask<long> CommitAsync(long endIndex, CancellationToken token = default)
     {
         ValueTask<long> task;
         if (endIndex < 0L || endIndex > LastEntryIndex)
@@ -394,6 +403,10 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         else if (IsDisposingOrDisposed)
         {
             task = new(GetDisposedTask<long>());
+        }
+        else if (backgroundTaskFailure?.SourceException is { } exception)
+        {
+            task = ValueTask.FromException<long>(exception);
         }
         else
         {
@@ -455,10 +468,11 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     }
 
     /// <inheritdoc cref="IAuditTrail.WaitForApplyAsync(CancellationToken)"/>
-    public ValueTask WaitForApplyAsync(CancellationToken token) => appliedEvent.WaitAsync(token);
+    public ValueTask WaitForApplyAsync(CancellationToken token = default)
+        => appliedEvent.WaitAsync(token);
 
     /// <inheritdoc cref="IAuditTrail.WaitForApplyAsync(long, CancellationToken)"/>
-    public ValueTask WaitForApplyAsync(long index, CancellationToken token)
+    public ValueTask WaitForApplyAsync(long index, CancellationToken token = default)
         => appliedEvent.SpinWaitAsync<CommitChecker>(new(this, index), token);
 
     /// <inheritdoc cref="IAuditTrail{TEntryImpl}.ReadAsync{TResult}(ILogEntryConsumer{TEntryImpl, TResult}, long, long, CancellationToken)"/>
@@ -472,6 +486,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             task = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(startIndex)));
         else if (endIndex < 0L || endIndex > LastEntryIndex)
             task = ValueTask.FromException<TResult>(new ArgumentOutOfRangeException(nameof(endIndex)));
+        else if (backgroundTaskFailure?.SourceException is { } exception)
+            task = ValueTask.FromException<TResult>(exception);
         else if (startIndex > endIndex)
             task = reader.ReadAsync<LogEntry, LogEntry[]>([], null, token);
         else
@@ -509,6 +525,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         commitIndexState.Dispose();
         state.Dispose();
         context.Clear();
+        backgroundTaskFailure = null;
     }
 
     private void CancelBackgroundJobs()

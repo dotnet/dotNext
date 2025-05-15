@@ -45,7 +45,7 @@ public partial class WriteAheadLog
         {
             ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
 
-            var block = GetPage(out var offset).Memory.Slice(offset);
+            var block = GetOrAdd(out var offset).Memory.Slice(offset);
             return sizeHint is 0 || sizeHint <= block.Length
                 ? block
                 : throw new InsufficientMemoryException();
@@ -55,13 +55,13 @@ public partial class WriteAheadLog
         {
             ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
 
-            var block = GetPage(out var offset).GetSpan().Slice(offset);
+            var block = GetOrAdd(out var offset).GetSpan().Slice(offset);
             return sizeHint is 0 || sizeHint <= block.Length
                 ? block
                 : throw new InsufficientMemoryException();
         }
-        
-        private Page GetPage(out int offset)
-            => GetOrAdd(GetPageIndex(LastWrittenAddress, out offset));
+
+        private Page GetOrAdd(out int offset)
+            => GetOrAdd(LastWrittenAddress, out offset);
     }
 }

@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using DotNext.Buffers;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
@@ -30,9 +31,16 @@ partial class WriteAheadLog
             this.location = location;
 
             // populate pages
-            foreach (var pageFile in pages)
+            if (pages.IsEmpty)
             {
-                TryAdd(pageFile.Key, pageFile.Value);
+                TryAdd(0U, new Page(location, 0U, pageSize));
+            }
+            else
+            {
+                foreach (var pageFile in pages)
+                {
+                    TryAdd(pageFile.Key, pageFile.Value);
+                }
             }
         }
 
@@ -54,17 +62,16 @@ partial class WriteAheadLog
                 .Select(static pageIndex => pageIndex.GetValueOrDefault());
         }
 
-        protected IEnumerable<uint> GetPages() => GetPages(location);
+        public uint GetPageIndex(ulong address, out int offset)
+            => WriteAheadLog.GetPageIndex(address, PageSize, out offset);
 
-        protected uint GetPageIndex(ulong absoluteAddress, out int offset)
-            => WriteAheadLog.GetPageIndex(absoluteAddress, PageSize, out offset);
-
-        public int Delete(uint fromPage, uint toPage)
+        public int Delete(uint toPage) // exclusively
         {
             var count = 0;
-            for (var pageIndex = fromPage; pageIndex < toPage; pageIndex++)
+
+            foreach (var pageIndex in GetPages(location))
             {
-                if (TryRemove(pageIndex, out var page))
+                if (pageIndex < toPage && TryRemove(pageIndex, out var page))
                 {
                     page.DisposeAndDelete();
                     count++;
@@ -74,7 +81,7 @@ partial class WriteAheadLog
             return count;
         }
 
-        public Page GetOrAdd(uint pageIndex)
+        protected Page GetOrAdd(uint pageIndex)
         {
             Page? page;
             while (!TryGetValue(pageIndex, out page))
@@ -89,34 +96,35 @@ partial class WriteAheadLog
 
             return page;
         }
+        
+        protected Page GetOrAdd(ulong address, out int offset)
+            => GetOrAdd(GetPageIndex(address, out offset));
 
         public ReadOnlySequence<byte> Read(ulong address, long length)
         {
-            var fromPageIndex = GetPageIndex(address, out var fromOffset);
-            var toPageIndex = GetPageIndex((ulong)length + address, out var toOffset);
-
-            // common case
-            return fromPageIndex == toPageIndex
-                ? new(this[fromPageIndex].Memory[fromOffset..toOffset])
-                : ReadMultiSegment(fromPageIndex, fromOffset, toPageIndex, toOffset);
+            var pageIndex = GetPageIndex(address, out var offset);
+            var page = this[pageIndex];
+            ReadOnlyMemory<byte> block = page.Memory.Slice(offset).TrimLength(int.CreateSaturating(length));
+            return block.Length == length ? new(block) : ReadMultisegment(pageIndex, ref block, length);
         }
 
-        private ReadOnlySequence<byte> ReadMultiSegment(uint fromPageIndex, int fromOffset, uint toPageIndex, int toOffset)
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private ReadOnlySequence<byte> ReadMultisegment(uint pageIndex, ref ReadOnlyMemory<byte> block, long length)
         {
-            var writer = new BufferWriterSlim<ReadOnlyMemory<byte>>((int)(toPageIndex - fromPageIndex));
+            var buffer = new ReadOnlyMemoryArray();
+            var writer = new BufferWriterSlim<ReadOnlyMemory<byte>>(buffer);
             try
             {
-                var segment = this[fromPageIndex].Memory.Slice(fromOffset);
-                writer.Add(segment);
-
-                for (var pageIndex = fromPageIndex + 1U; pageIndex < toPageIndex; pageIndex++)
+                writer.Add() = block;
+                length -= block.Length;
+                
+                do
                 {
-                    segment = this[pageIndex].Memory;
-                    writer.Add(segment);
-                }
-
-                segment = this[toPageIndex].Memory.Slice(0, toOffset);
-                writer.Add(segment);
+                    var page = this[++pageIndex];
+                    block = page.Memory.TrimLength(int.CreateSaturating(length));
+                    length -= block.Length;
+                    writer.Add() = block;
+                } while (length > 0L);
 
                 return Memory.ToReadOnlySequence(writer.WrittenSpan);
             }
@@ -132,6 +140,12 @@ partial class WriteAheadLog
             {
                 page.As<IDisposable>().Dispose();
             }
+        }
+
+        [InlineArray(3)]
+        private struct ReadOnlyMemoryArray
+        {
+            private ReadOnlyMemory<byte> element0;
         }
     }
 }

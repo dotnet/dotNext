@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Threading.Channels;
 using DotNext.Threading;
 
@@ -11,11 +12,11 @@ partial class WriteAheadLog
     private readonly Task cleanupTask;
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
-    private async Task CleanUpAsync(long previousIndex, CancellationToken token)
+    private async Task CleanUpAsync(CancellationToken token)
     {
-        for (long nextIndex; !IsDisposingOrDisposed; previousIndex = nextIndex)
+        while (!IsDisposingOrDisposed)
         {
-            nextIndex = stateMachine.TakeSnapshot()?.Index ?? 0L;
+            var nextIndex = stateMachine.TakeSnapshot()?.Index ?? 0L;
             
             // After the barrier, we know that there is no competing reader that reads the old snapshot version
             lockManager.SetCallerInformation("Remove Pages");
@@ -23,10 +24,15 @@ partial class WriteAheadLog
             try
             {
                 // The barrier can suspend this async flow. However, the OS flushes the pages in the background
-                RemoveSquashedPages(previousIndex, nextIndex);
+                RemoveSquashedPages(nextIndex);
 
                 // ensure that garbage reclamation is not running concurrently with the snapshot installation process
                 await stateMachine.ReclaimGarbageAsync(nextIndex, token).ConfigureAwait(false);
+            }
+            catch (Exception e) when (e is not OperationCanceledException canceledEx || canceledEx.CancellationToken != token)
+            {
+                backgroundTaskFailure = ExceptionDispatchInfo.Capture(e);
+                break;
             }
             finally
             {
@@ -37,25 +43,17 @@ partial class WriteAheadLog
         }
     }
 
-    private void RemoveSquashedPages(long fromIndex, long toIndex)
+    private void RemoveSquashedPages(long toIndex)
     {
-        LogEntryMetadata metadata;
-        while (!metadataPages.TryGetMetadata(fromIndex, out metadata))
-        {
-            fromIndex++;
-        }
-
-        if (fromIndex >= toIndex || !metadataPages.TryGetMetadata(toIndex, out metadata))
+        if (!metadataPages.TryGetMetadata(toIndex, out var metadata))
             return;
-        
-        var fromPage = GetPageIndex(metadata.Offset, dataPages.PageSize, out _);
-        var toPage = GetPageIndex(metadata.End, dataPages.PageSize, out _);
-        var removedDataBytes = dataPages.Delete(fromPage, toPage) * (long)dataPages.PageSize;
 
-        fromPage = metadataPages.GetStartPageIndex(fromIndex);
+        var toPage = dataPages.GetPageIndex(metadata.End, out _);
+        var removedBytes = dataPages.Delete(toPage) * (long)dataPages.PageSize;
+
         toPage = metadataPages.GetEndPageIndex(toIndex);
-        var removedMetadataBytes = metadataPages.Delete(fromPage, toPage) * (long)metadataPages.PageSize;
-        
-        BytesDeletedMeter.Record(removedDataBytes + removedMetadataBytes, measurementTags);
+        removedBytes += dataPages.Delete(toPage) * (long)MetadataPageManager.PageSize;
+
+        BytesDeletedMeter.Record(removedBytes, measurementTags);
     }
 }

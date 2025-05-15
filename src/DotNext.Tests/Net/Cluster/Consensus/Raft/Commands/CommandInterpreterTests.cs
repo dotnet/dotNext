@@ -1,9 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands;
 
 using IO;
-using Runtime.Serialization;
+using StateMachine;
 
 public sealed class CommandInterpreterTests : Test
 {
@@ -155,39 +156,19 @@ public sealed class CommandInterpreterTests : Test
             return token.IsCancellationRequested ? new ValueTask(Task.FromCanceled(token)) : new ValueTask();
         }
     }
-
-    private sealed class TestPersistenceState() : MemoryBasedStateMachine(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()), 4,
-        new Options { CompactionMode = CompactionMode.Background })
+    
+    [Experimental("DOTNEXT001")]
+    private sealed class SimpleStateMachine : NoOpSnapshotManager, IStateMachine
     {
         private readonly CustomInterpreter interpreter = new();
 
+        public async ValueTask<long> ApplyAsync(LogEntry entry, CancellationToken token)
+        {
+            await interpreter.InterpretAsync(entry, token);
+            return entry.Index;
+        }
+
         internal int Value => interpreter.Value;
-
-        internal LogEntry<TCommand> CreateLogEntry<TCommand>(TCommand command)
-            where TCommand : struct, ICommand<TCommand>
-            => new() { Command = command, Term = Term };
-
-        protected override ValueTask ApplyAsync(LogEntry entry)
-            => new(interpreter.InterpretAsync(entry).AsTask());
-
-        protected override SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context)
-            => throw new NotImplementedException();
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                interpreter.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-
-        protected override ValueTask DisposeAsyncCore()
-        {
-            interpreter.Dispose();
-            return base.DisposeAsyncCore();
-        }
     }
 
     [Fact]
@@ -271,18 +252,20 @@ public sealed class CommandInterpreterTests : Test
     }
 
     [Fact]
+    [Experimental("DOTNEXT001")]
     public static async Task InterpreterWithPersistentState()
     {
-        using var wal = new TestPersistenceState();
-        var entry1 = wal.CreateLogEntry(new BinaryOperationCommand { X = 44, Y = 2, Type = BinaryOperation.Subtract });
-        await wal.AppendAsync(entry1);
-        Equal(0, wal.Value);
-        await wal.CommitAsync(CancellationToken.None);
-        Equal(42, wal.Value);
+        var stateMachine = new SimpleStateMachine();
+        await using var wal = new WriteAheadLog(new() { Location = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()) }, stateMachine);
+        var index = await wal.AppendAsync(new BinaryOperationCommand { X = 44, Y = 2, Type = BinaryOperation.Subtract });
+        Equal(0, stateMachine.Value);
+        await wal.CommitAsync(index);
+        await wal.WaitForApplyAsync(index);
+        Equal(42, stateMachine.Value);
 
-        var entry2 = wal.CreateLogEntry(new UnaryOperationCommand { X = 42, Type = UnaryOperation.OnesComplement });
-        await wal.AppendAsync(entry2);
-        await wal.CommitAsync(CancellationToken.None);
-        Equal(~42, wal.Value);
+        index = await wal.AppendAsync(new UnaryOperationCommand { X = 42, Type = UnaryOperation.OnesComplement });
+        await wal.CommitAsync(index);
+        await wal.WaitForApplyAsync(index);
+        Equal(~42, stateMachine.Value);
     }
 }

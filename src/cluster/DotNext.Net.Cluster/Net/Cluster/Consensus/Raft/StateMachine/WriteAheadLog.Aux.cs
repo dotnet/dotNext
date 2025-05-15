@@ -36,8 +36,8 @@ partial class WriteAheadLog
 
             if (snapshot is not null)
             {
-                StartIndex = long.Max(startIndex, snapshot.Index);
-                endIndex = long.Max(endIndex, StartIndex);
+                startIndex = long.Max(startIndex, snapshot.Index);
+                endIndex = long.Max(endIndex, startIndex);
                 snapshotIndex = snapshot.Index;
             }
             else
@@ -45,6 +45,7 @@ partial class WriteAheadLog
                 snapshotIndex = null;
             }
 
+            StartIndex = startIndex;
             var length = endIndex - startIndex + 1L;
             if (length > int.MaxValue)
                 throw new InternalBufferOverflowException(ExceptionMessages.RangeTooBig);

@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 
@@ -35,6 +36,11 @@ partial class WriteAheadLog
                 try
                 {
                     Flush(previousIndex, newIndex);
+                }
+                catch (Exception e)
+                {
+                    backgroundTaskFailure = ExceptionDispatchInfo.Capture(e);
+                    break;
                 }
                 finally
                 {
@@ -72,7 +78,6 @@ partial class WriteAheadLog
             if (metadataPages.TryGetValue(pageIndex, out var page))
             {
                 page.Flush();
-                page.DisposeAndDelete();
             }
         }
     }
@@ -87,7 +92,6 @@ partial class WriteAheadLog
             if (dataPages.TryGetValue(pageIndex, out var page))
             {
                 page.Flush();
-                page.DisposeAndDelete();
             }
         }
     }

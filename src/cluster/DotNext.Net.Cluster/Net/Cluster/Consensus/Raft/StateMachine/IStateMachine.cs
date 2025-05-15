@@ -11,9 +11,14 @@ public interface IStateMachine : ISnapshotManager
     /// <summary>
     /// Applies the log entry to the underlying state machine.
     /// </summary>
+    /// <remarks>
+    /// This method is never called concurrently by <see cref="WriteAheadLog"/> infrastructure. However,
+    /// it can be called concurrently with <see cref="ISnapshotManager.TakeSnapshot"/> or <see cref="ISnapshotManager.ReclaimGarbageAsync"/>
+    /// methods.
+    /// </remarks>
     /// <param name="entry">The log entry to be applied.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The index of the last applied log entry. It should be greater than or equal to <see cref="LogEntry.Index"/>.</returns>
-    /// <exc
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     ValueTask<long> ApplyAsync(LogEntry entry, CancellationToken token);
 }

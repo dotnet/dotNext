@@ -44,19 +44,26 @@ partial class WriteAheadLog
             }
             else
             {
-                preallocationSize = sizeof(long);
+                preallocationSize = Size;
                 mode = FileMode.CreateNew;
             }
 
             handle = File.OpenHandle(path, mode, FileAccess.ReadWrite, FileShare.Read, FileOptions.WriteThrough, preallocationSize);
             buffer = GC.AllocateUninitializedArray<byte>(Size, pinned: true);
 
-            if (RandomAccess.Read(handle, buffer, fileOffset: 0L) != buffer.Length)
-                throw new InternalStateBrokenException();
-
-            if (Unsafe.BitCast<byte, bool>(buffer[LastVotePresenceOffset]))
-                votedFor = BoxedClusterMemberId.Box(new ClusterMemberId(buffer.AsSpan(LastVoteOffset)));
-            term = ReadInt64LittleEndian(buffer.AsSpan(TermOffset));
+            switch (RandomAccess.Read(handle, buffer, fileOffset: 0L))
+            {
+                case 0:
+                    Array.Clear(buffer);
+                    break;
+                case var bytesRead when bytesRead == buffer.Length:
+                    if (Unsafe.BitCast<byte, bool>(buffer[LastVotePresenceOffset]))
+                        votedFor = BoxedClusterMemberId.Box(new ClusterMemberId(buffer.AsSpan(LastVoteOffset)));
+                    term = ReadInt64LittleEndian(buffer.AsSpan(TermOffset));
+                    break;
+                default:
+                    throw new InternalStateBrokenException();
+            }
         }
 
         public readonly long Term => Volatile.Read(in term);

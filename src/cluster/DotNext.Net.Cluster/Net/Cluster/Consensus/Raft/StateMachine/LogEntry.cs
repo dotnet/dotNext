@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using IO;
+using IO.Log;
 
 /// <summary>
 /// Represents the log entry maintained by <see cref="WriteAheadLog"/> instance.
@@ -21,7 +22,7 @@ public readonly struct LogEntry : IInputLogEntry
     internal LogEntry(in LogEntryMetadata metadata, long index)
     {
         Index = index;
-        Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(metadata.Timestamp);
+        Timestamp = new(metadata.Timestamp, TimeSpan.Zero);
         CommandId = metadata.Id;
         Term = metadata.Term;
     }
@@ -37,6 +38,7 @@ public readonly struct LogEntry : IInputLogEntry
         {
             if (MemoryMarshal.TryGetArray(memory, out var segment))
             {
+                payload = segment.Array;
                 startIndex = segment.Offset;
                 endIndex = segment.Offset;
             }
@@ -63,14 +65,21 @@ public readonly struct LogEntry : IInputLogEntry
 
     public object? Context { get; init; }
 
+    /// <summary>
+    /// Gets the index of this log entry.
+    /// </summary>
     public long Index { get; }
 
+    /// <summary>
+    /// Gets the term of this log entry.
+    /// </summary>
     public long Term { get; }
 
     public DateTimeOffset Timestamp { get; }
 
     public int? CommandId { get; }
 
+    /// <inheritdoc/>
     long? IDataTransferObject.Length => TryGetSequence(out var sequence)
         ? sequence.Length
         : (payload as IDataTransferObject)?.Length;
@@ -78,10 +87,16 @@ public readonly struct LogEntry : IInputLogEntry
     /// <summary>
     /// Gets a value indicating whether this log entry is a snapshot.
     /// </summary>
-    public bool IsSnapshot => (payload as IRaftLogEntry)?.IsSnapshot ?? false;
+    public bool IsSnapshot => payload is ILogEntry { IsSnapshot: true };
 
+    /// <inheritdoc/>
     bool IDataTransferObject.IsReusable => payload is not IDataTransferObject dto || dto.IsReusable;
 
+    /// <summary>
+    /// Attempts to get log entry payload.
+    /// </summary>
+    /// <param name="sequence">A sequence of bytes representing the log entry payload.</param>
+    /// <returns><see langword="true"/> if this log entry is not a snapshot; otherwise, <see langword="false"/>.</returns>
     public bool TryGetSequence(out ReadOnlySequence<byte> sequence)
     {
         switch (payload)
@@ -103,6 +118,7 @@ public readonly struct LogEntry : IInputLogEntry
         return true;
     }
 
+    /// <inheritdoc/>
     bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
     {
         switch (payload)
@@ -123,6 +139,7 @@ public readonly struct LogEntry : IInputLogEntry
         return true;
     }
 
+    /// <inheritdoc/>
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
     {
         return payload switch

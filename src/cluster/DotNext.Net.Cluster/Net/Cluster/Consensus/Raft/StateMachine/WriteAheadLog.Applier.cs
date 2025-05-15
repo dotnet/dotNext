@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
@@ -31,6 +32,11 @@ partial class WriteAheadLog
             try
             {
                 await ApplyAsync(appliedIndex + 1L, newIndex, token).ConfigureAwait(false);
+            }
+            catch (Exception e) when (e is not OperationCanceledException canceledEx || canceledEx.CancellationToken != token)
+            {
+                backgroundTaskFailure = ExceptionDispatchInfo.Capture(e);
+                break;
             }
             finally
             {
