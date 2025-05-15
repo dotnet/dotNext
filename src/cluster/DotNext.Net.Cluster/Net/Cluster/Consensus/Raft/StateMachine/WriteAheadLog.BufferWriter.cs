@@ -11,7 +11,7 @@ public partial class WriteAheadLog
     
     private sealed class PagedBufferWriter(DirectoryInfo location, int pageSize) : PageManager(location, pageSize), IBufferWriter<byte>
     {
-        public ulong LastWrittenAddress;
+        public required ulong LastWrittenAddress;
 
         public int? TryEnsureCapacity(long? length)
         {

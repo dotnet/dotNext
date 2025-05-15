@@ -50,26 +50,29 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         state = new(rootPath);
         measurementTags = configuration.MeasurementTags;
         
+        commitIndexState = new(rootPath);
+        var lastReliablyWrittenEntryIndex = commitIndexState.Value;
+        
         // page management
         {
-            var pagesLocation = new DirectoryInfo(Path.Combine(rootPath.FullName, DataPagesLocationPrefix));
-            CreateIfNeeded(pagesLocation);
-            dataPages = new(pagesLocation, configuration.ChunkMaxSize);
-
-            pagesLocation = new(Path.Combine(rootPath.FullName, MetadataPagesLocationPrefix));
+            var pagesLocation = new DirectoryInfo(Path.Combine(rootPath.FullName, MetadataPagesLocationPrefix));
             CreateIfNeeded(pagesLocation);
             metadataPages = new(pagesLocation);
+            
+            pagesLocation = new(Path.Combine(rootPath.FullName, DataPagesLocationPrefix));
+            CreateIfNeeded(pagesLocation);
+            
+            dataPages = new(pagesLocation, configuration.ChunkMaxSize)
+            {
+                LastWrittenAddress = metadataPages[lastReliablyWrittenEntryIndex].End,
+            };
         }
 
         var snapshotIndex = stateMachine.TakeSnapshot()?.Index ?? 0L;
+        LastEntryIndex = LastCommittedEntryIndex = long.Max(lastReliablyWrittenEntryIndex, snapshotIndex);
         
         // flusher
         {
-            commitIndexState = new(rootPath);
-            var lastReliablyWrittenEntryIndex = commitIndexState.Value;
-            dataPages.LastWrittenAddress = metadataPages[lastReliablyWrittenEntryIndex].End;
-            LastEntryIndex = LastCommittedEntryIndex = long.Max(lastReliablyWrittenEntryIndex, snapshotIndex);
-
             flushTrigger = new(initialState: false) { MeasurementTags = configuration.MeasurementTags };
             flusherTask = FlushAsync(commitIndex, lifetimeTokenSource.Token);
         }
