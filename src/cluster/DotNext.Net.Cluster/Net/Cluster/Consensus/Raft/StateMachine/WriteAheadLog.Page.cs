@@ -60,6 +60,7 @@ partial class WriteAheadLog
         public void Flush()
         {
             accessor.Flush();
+            File.SetLastWriteTime(fileHandle, DateTime.Now);
             RandomAccess.FlushToDisk(fileHandle); // update file metadata and size
         }
 
