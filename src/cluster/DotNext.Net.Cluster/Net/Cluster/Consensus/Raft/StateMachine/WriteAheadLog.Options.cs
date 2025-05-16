@@ -31,7 +31,7 @@ partial class WriteAheadLog
         }
 
         /// <summary>
-        /// Gets or sets the maximum size of the single chunk file.
+        /// Gets or sets the maximum size of the single chunk file, in bytes.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
         public int ChunkMaxSize
