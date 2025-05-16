@@ -17,7 +17,7 @@ partial class WriteAheadLog
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private readonly AsyncAutoResetEvent flushTrigger;
     private readonly Task flusherTask;
-    private readonly CommitIndexState commitIndexState;
+    private readonly Checkpoint checkpoint;
     
     private long commitIndex; // Commit lock protects modification of this field
 
@@ -67,7 +67,7 @@ partial class WriteAheadLog
         FlushDurationMeter.Record(ts.ElapsedMilliseconds);
 
         // everything up to toIndex is flushed, save the commit index
-        commitIndexState.Value = toIndex;
+        checkpoint.Value = toIndex;
 
         FlushRateMeter.Add(toIndex - fromIndex, measurementTags);
     }
@@ -131,13 +131,13 @@ partial class WriteAheadLog
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct CommitIndexState : IDisposable
+    private readonly struct Checkpoint : IDisposable
     {
-        private const string FileName = "commitIndex";
+        private const string FileName = "checkpoint";
 
         private readonly SafeFileHandle handle;
 
-        internal CommitIndexState(DirectoryInfo location)
+        internal Checkpoint(DirectoryInfo location)
         {
             var path = Path.Combine(location.FullName, FileName);
             long preallocationSize;

@@ -52,8 +52,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         state = new(rootPath);
         measurementTags = configuration.MeasurementTags;
         
-        commitIndexState = new(rootPath);
-        var lastReliablyWrittenEntryIndex = commitIndexState.Value;
+        checkpoint = new(rootPath);
+        var lastReliablyWrittenEntryIndex = checkpoint.Value;
         
         // page management
         {
@@ -521,7 +521,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     {
         Dispose<PageManager>([dataPages, metadataPages]);
         Dispose<QueuedSynchronizer>([lockManager, appliedEvent, flushTrigger, applyTrigger, stateLock]);
-        commitIndexState.Dispose();
+        checkpoint.Dispose();
         state.Dispose();
         context.Clear();
         backgroundTaskFailure = null;
