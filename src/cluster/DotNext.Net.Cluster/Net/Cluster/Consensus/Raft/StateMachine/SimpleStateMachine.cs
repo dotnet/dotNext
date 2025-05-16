@@ -106,12 +106,11 @@ public abstract partial class SimpleStateMachine : IStateMachine
     /// <inheritdoc/>
     ValueTask<long> IStateMachine.ApplyAsync(LogEntry entry, CancellationToken token)
     {
-        if (appliedIndex >= entry.Index)
-            return ValueTask.FromResult(appliedIndex);
-
-        return entry.IsSnapshot
-            ? InstallSnapshotAsync(entry, token)
-            : ApplyCoreAsync(entry, token);
+        return appliedIndex >= entry.Index
+            ? ValueTask.FromResult(appliedIndex)
+            : entry.IsSnapshot
+                ? InstallSnapshotAsync(entry, token)
+                : ApplyCoreAsync(entry, token);
     }
 
     private async ValueTask<long> ApplyCoreAsync(LogEntry entry, CancellationToken token)
