@@ -41,6 +41,10 @@ public abstract partial class SimpleStateMachine : IStateMachine
     /// <summary>
     /// Restores the in-memory state from the snapshot.
     /// </summary>
+    /// <remarks>
+    /// This method is intended to be called from <see cref="RestoreAsync(System.IO.FileInfo,System.Threading.CancellationToken)"/>
+    /// when the compatibility with <see cref="CommandInterpreter"/> is required.
+    /// </remarks>
     /// <param name="interpreter">The command interpreter.</param>
     /// <param name="snapshotFile">The snapshot file.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
