@@ -48,7 +48,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         lockManager = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
         bufferAllocator = configuration.Allocator ?? ArrayPool<byte>.Shared.ToAllocator();
         this.stateMachine = stateMachine;
-        stateLock = new() { MeasurementTags = configuration.MeasurementTags };
+        stateLock = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
         state = new(rootPath);
         measurementTags = configuration.MeasurementTags;
         
