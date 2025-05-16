@@ -84,14 +84,14 @@ public abstract partial class SimpleStateMachine : IStateMachine
     ISnapshot? ISnapshotManager.TakeSnapshot() => snapshot;
 
     /// <inheritdoc/>
-    ValueTask ISnapshotManager.ReclaimGarbageAsync(long lowerSnapshotIndex, CancellationToken token)
+    ValueTask ISnapshotManager.ReclaimGarbageAsync(long watermark, CancellationToken token)
     {
         var task = ValueTask.CompletedTask;
         try
         {
             foreach (var candidate in GetSnapshots(location))
             {
-                if (candidate.Index < lowerSnapshotIndex)
+                if (candidate.Index < watermark)
                     candidate.File.Delete();
             }
         }

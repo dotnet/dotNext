@@ -316,4 +316,33 @@ public sealed class WriteAheadLogTests : Test
 
         Equal(count * (0L + count - 1L) / 2L, stateMachine.Value);
     }
+
+    [Fact]
+    public static async Task StateRecovery()
+    {
+        const long count = 1000L;
+        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        await using (var wal = new WriteAheadLog(new() { Location = dir }, new NoOpStateMachine()))
+        {
+            Memory<byte> buffer = new byte[sizeof(long)];
+            var index = 0L;
+            for (var i = 0L; i < count; i++)
+            {
+                BinaryPrimitives.WriteInt64LittleEndian(buffer.Span, i);
+                index = await wal.AppendAsync(buffer);
+            }
+
+            await wal.CommitAsync(index);
+            await wal.WaitForApplyAsync(index);
+        }
+        
+        var stateMachine = new SumStateMachine(new(dir));
+        await using (var wal = new WriteAheadLog(new() { Location = dir }, stateMachine))
+        {
+            await stateMachine.RestoreAsync();
+            await wal.InitializeAsync();
+
+            Equal(count * (0L + count - 1L) / 2L, stateMachine.Value);
+        }
+    }
 }

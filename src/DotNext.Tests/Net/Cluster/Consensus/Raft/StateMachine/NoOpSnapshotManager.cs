@@ -7,6 +7,6 @@ internal abstract class NoOpSnapshotManager : ISnapshotManager
 {
     ISnapshot ISnapshotManager.TakeSnapshot() => null;
 
-    ValueTask ISnapshotManager.ReclaimGarbageAsync(long lowerSnapshotIndex, CancellationToken token)
+    ValueTask ISnapshotManager.ReclaimGarbageAsync(long watermark, CancellationToken token)
         => ValueTask.CompletedTask;
 }
