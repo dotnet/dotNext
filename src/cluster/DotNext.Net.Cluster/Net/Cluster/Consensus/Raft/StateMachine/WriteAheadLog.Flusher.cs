@@ -24,7 +24,7 @@ partial class WriteAheadLog
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task FlushAsync(long previousIndex, CancellationToken token)
     {
-        for (long newIndex; !IsDisposingOrDisposed; previousIndex = newIndex)
+        for (long newIndex; !IsDisposingOrDisposed && backgroundTaskFailure is null; previousIndex = newIndex)
         {
             newIndex = LastCommittedEntryIndex;
 
@@ -40,6 +40,7 @@ partial class WriteAheadLog
                 catch (Exception e)
                 {
                     backgroundTaskFailure = ExceptionDispatchInfo.Capture(e);
+                    appliedEvent.Interrupt(e);
                     break;
                 }
                 finally
@@ -48,6 +49,9 @@ partial class WriteAheadLog
                 }
             }
 
+            if (cleanupTask.IsCompleted)
+                cleanupTask = CleanUpAsync(token);
+            
             await flushTrigger.WaitAsync(token).ConfigureAwait(false);
         }
     }

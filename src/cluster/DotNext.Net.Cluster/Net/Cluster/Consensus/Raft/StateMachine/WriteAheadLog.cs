@@ -88,11 +88,6 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             appenderTask = ApplyAsync(lifetimeTokenSource.Token);
             appliedEvent = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
         }
-        
-        // cleaner
-        {
-            cleanupTask = CleanUpAsync(lifetimeTokenSource.Token);
-        }
 
         static void CreateIfNeeded(DirectoryInfo directory)
         {
@@ -469,11 +464,15 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
 
     /// <inheritdoc cref="IAuditTrail.WaitForApplyAsync(CancellationToken)"/>
     public ValueTask WaitForApplyAsync(CancellationToken token = default)
-        => appliedEvent.WaitAsync(token);
+        => backgroundTaskFailure?.SourceException is { } exception
+            ? ValueTask.FromException(exception)
+            : appliedEvent.WaitAsync(token);
 
     /// <inheritdoc cref="IAuditTrail.WaitForApplyAsync(long, CancellationToken)"/>
     public ValueTask WaitForApplyAsync(long index, CancellationToken token = default)
-        => appliedEvent.SpinWaitAsync<CommitChecker>(new(this, index), token);
+        => backgroundTaskFailure?.SourceException is { } exception
+            ? ValueTask.FromException(exception)
+            : appliedEvent.SpinWaitAsync<CommitChecker>(new(this, index), token);
 
     /// <inheritdoc cref="IAuditTrail{TEntryImpl}.ReadAsync{TResult}(ILogEntryConsumer{TEntryImpl, TResult}, long, long, CancellationToken)"/>
     public ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex,

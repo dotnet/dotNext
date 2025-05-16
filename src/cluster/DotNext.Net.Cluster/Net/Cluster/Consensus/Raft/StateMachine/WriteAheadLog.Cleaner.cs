@@ -1,7 +1,5 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
-using System.Threading.Channels;
-using DotNext.Threading;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
@@ -9,37 +7,32 @@ using Runtime.CompilerServices;
 
 partial class WriteAheadLog
 {
-    private readonly Task cleanupTask;
+    private Task cleanupTask = Task.CompletedTask;
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task CleanUpAsync(CancellationToken token)
     {
-        while (!IsDisposingOrDisposed)
-        {
-            var nextIndex = stateMachine.TakeSnapshot()?.Index ?? 0L;
-            
-            // After the barrier, we know that there is no competing reader that reads the old snapshot version
-            lockManager.SetCallerInformation("Remove Pages");
-            await lockManager.AcquireReadBarrierAsync(token).ConfigureAwait(false);
-            try
-            {
-                // The barrier can suspend this async flow. However, the OS flushes the pages in the background
-                RemoveSquashedPages(nextIndex);
+        var nextIndex = stateMachine.TakeSnapshot()?.Index ?? 0L;
 
-                // ensure that garbage reclamation is not running concurrently with the snapshot installation process
-                await stateMachine.ReclaimGarbageAsync(nextIndex, token).ConfigureAwait(false);
-            }
-            catch (Exception e) when (e is not OperationCanceledException canceledEx || canceledEx.CancellationToken != token)
-            {
-                backgroundTaskFailure = ExceptionDispatchInfo.Capture(e);
-                break;
-            }
-            finally
-            {
-                lockManager.ReleaseReadLock();
-            }
-            
-            await appliedEvent.WaitAsync(token).ConfigureAwait(false);
+        // After the barrier, we know that there is no competing reader that reads the old snapshot version
+        lockManager.SetCallerInformation("Remove Pages");
+        await lockManager.AcquireReadBarrierAsync(token).ConfigureAwait(false);
+        try
+        {
+            // The barrier can suspend this async flow. However, the OS flushes the pages in the background
+            RemoveSquashedPages(nextIndex);
+
+            // ensure that garbage reclamation is not running concurrently with the snapshot installation process
+            await stateMachine.ReclaimGarbageAsync(nextIndex, token).ConfigureAwait(false);
+        }
+        catch (Exception e) when (e is not OperationCanceledException canceledEx || canceledEx.CancellationToken != token)
+        {
+            backgroundTaskFailure = ExceptionDispatchInfo.Capture(e);
+            appliedEvent.Interrupt(e);
+        }
+        finally
+        {
+            lockManager.ReleaseReadLock();
         }
     }
 
@@ -52,7 +45,7 @@ partial class WriteAheadLog
         var removedBytes = dataPages.Delete(toPage) * (long)dataPages.PageSize;
 
         toPage = metadataPages.GetEndPageIndex(toIndex);
-        removedBytes += dataPages.Delete(toPage) * (long)MetadataPageManager.PageSize;
+        removedBytes += metadataPages.Delete(toPage) * (long)MetadataPageManager.PageSize;
 
         BytesDeletedMeter.Record(removedBytes, measurementTags);
     }

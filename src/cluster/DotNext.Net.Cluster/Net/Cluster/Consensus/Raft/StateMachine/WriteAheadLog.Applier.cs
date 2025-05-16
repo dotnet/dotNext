@@ -23,10 +23,10 @@ partial class WriteAheadLog
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task ApplyAsync(CancellationToken token)
     {
-        for (long newIndex; !IsDisposingOrDisposed; await applyTrigger.WaitAsync(token).ConfigureAwait(false))
+        for (long newIndex; !IsDisposingOrDisposed && backgroundTaskFailure is null; await applyTrigger.WaitAsync(token).ConfigureAwait(false))
         {
             newIndex = LastCommittedEntryIndex;
-            
+
             // Ensure that the appender is not running with the snapshot installation process concurrently
             await lockManager.AcquireReadLockAsync(token).ConfigureAwait(false);
             try
@@ -36,6 +36,7 @@ partial class WriteAheadLog
             catch (Exception e) when (e is not OperationCanceledException canceledEx || canceledEx.CancellationToken != token)
             {
                 backgroundTaskFailure = ExceptionDispatchInfo.Capture(e);
+                appliedEvent.Interrupt(e);
                 break;
             }
             finally

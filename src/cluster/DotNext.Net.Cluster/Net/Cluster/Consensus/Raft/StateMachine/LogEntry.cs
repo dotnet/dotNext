@@ -83,7 +83,7 @@ public readonly struct LogEntry : IInputLogEntry
     public int? CommandId { get; }
 
     /// <inheritdoc/>
-    long? IDataTransferObject.Length => TryGetSequence(out var sequence)
+    public long? Length => TryGetSequence(out var sequence)
         ? sequence.Length
         : (payload as IDataTransferObject)?.Length;
 
@@ -143,7 +143,8 @@ public readonly struct LogEntry : IInputLogEntry
     }
 
     /// <inheritdoc/>
-    ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+    public ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+        where TWriter : IAsyncBinaryWriter
     {
         return payload switch
         {

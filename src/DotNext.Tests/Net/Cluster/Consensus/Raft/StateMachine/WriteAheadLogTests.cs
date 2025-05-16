@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Reflection;
@@ -289,5 +290,30 @@ public sealed class WriteAheadLogTests : Test
             
             await wal.ReadAsync(new LogEntryConsumer(checker), 1L, wal.LastEntryIndex);
         }
+    }
+
+    [Fact]
+    public static async Task IncrementalState()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        var stateMachine = new SumStateMachine(new(dir));
+        await using var wal = new WriteAheadLog(new() { Location = dir }, stateMachine);
+
+        Memory<byte> buffer = new byte[sizeof(long)];
+        const long count = 1000L;
+        using var cts = new CancellationTokenSource();
+        for (var i = 0L; i < count; i++)
+        {
+            BinaryPrimitives.WriteInt64LittleEndian(buffer.Span, i);
+            
+            cts.CancelAfter(DefaultTimeout);
+            var index = await wal.AppendAsync(buffer, token: cts.Token);
+            await wal.CommitAsync(index, cts.Token);
+            await wal.WaitForApplyAsync(index, cts.Token);
+
+            True(cts.TryReset());
+        }
+
+        Equal(count * (0L + count - 1L) / 2L, stateMachine.Value);
     }
 }
