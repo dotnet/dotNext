@@ -13,23 +13,27 @@ public sealed class AsyncEnumerableTests : Test
         Equal(0, count);
     }
 
-    [Fact]
-    public static async Task ElementAtIndexAsync()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public static async Task ElementAtIndexAsync(bool yieldIteration)
     {
         var list = new LinkedList<long>();
         list.AddLast(10);
         list.AddLast(40);
         list.AddLast(100);
 
-        var asyncList = list.ToAsyncEnumerable();
+        var asyncList = list.ToAsyncEnumerable(yieldIteration);
         Equal(100, await asyncList.ElementAtAsync(2));
         Equal(10, await asyncList.ElementAtAsync(0));
     }
 
-    [Fact]
-    public static async Task ForEachTestAsync()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public static async Task ForEachTestAsync(bool yieldIteration)
     {
-        var list = new List<int> { 1, 10, 20 }.ToAsyncEnumerable();
+        var list = new List<int> { 1, 10, 20 }.ToAsyncEnumerable(yieldIteration);
         var counter = new CollectionTests.Counter<int>();
         await list.ForEachAsync(counter.Accept);
         Equal(3, counter.value);
@@ -57,7 +61,7 @@ public sealed class AsyncEnumerableTests : Test
     [Fact]
     public static async Task FirstOrNullTestAsync()
     {
-        var array = new long[0].ToAsyncEnumerable();
+        var array = Array.Empty<long>().ToAsyncEnumerable();
         var element = await array.FirstOrNullAsync();
         Null(element);
         array = new long[] { 10, 20 }.ToAsyncEnumerable();
@@ -65,10 +69,12 @@ public sealed class AsyncEnumerableTests : Test
         Equal(10, element);
     }
 
-    [Fact]
-    public static async Task CopyListAsync()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public static async Task CopyListAsync(bool yieldIteration)
     {
-        using var copy = await new List<int> { 10, 20, 30 }.ToAsyncEnumerable().CopyAsync(sizeHint: 4);
+        using var copy = await new List<int> { 10, 20, 30 }.ToAsyncEnumerable(yieldIteration).CopyAsync(sizeHint: 4);
         Equal(3, copy.Length);
         Equal(10, copy[0]);
         Equal(20, copy[1]);
