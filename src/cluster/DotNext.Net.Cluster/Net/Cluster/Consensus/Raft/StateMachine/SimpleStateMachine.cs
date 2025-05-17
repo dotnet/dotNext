@@ -95,9 +95,14 @@ public abstract partial class SimpleStateMachine : IStateMachine
         {
             foreach (var candidate in GetSnapshots(location))
             {
+                token.ThrowIfCancellationRequested();
                 if (candidate.Index < watermark)
                     candidate.File.Delete();
             }
+        }
+        catch (OperationCanceledException e)
+        {
+            task = ValueTask.FromCanceled(e.CancellationToken);
         }
         catch (Exception e)
         {
