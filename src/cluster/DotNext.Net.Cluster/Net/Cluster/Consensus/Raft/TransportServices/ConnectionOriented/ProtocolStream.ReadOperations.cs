@@ -93,7 +93,7 @@ internal partial class ProtocolStream
     {
         (frameSize, var finalBlock) = ReadFrameHeaders(buffer.Span);
         readState = finalBlock ? ReadState.EndOfStreamReached : ReadState.FrameStarted;
-        bufferStart += FrameHeadersSize;
+        AdvanceReadCursor(FrameHeadersSize);
 
         // see WriteFrameHeaders
         static (int, bool) ReadFrameHeaders(ReadOnlySpan<byte> input)
@@ -107,7 +107,7 @@ internal partial class ProtocolStream
     {
         BeginReadFrameHeader();
 
-        // how much bytes we should read from the stream to parse the frame headers
+        // how many bytes we should read from the stream to parse the frame headers
         var frameHeaderRemainingBytes = FrameHeadersSize - bufferEnd;
 
         // frame header is not yet in the buffer
@@ -137,10 +137,36 @@ internal partial class ProtocolStream
         frameSize -= count;
     }
 
+    public bool TryReadFrameData(int length, out ReadOnlyMemory<byte> frame)
+    {
+        if (readState is ReadState.FrameNotStarted)
+        {
+            BeginReadFrameHeader();
+            
+            // how many bytes we should read from the stream to parse the frame headers
+            if (FrameHeadersSize - bufferEnd <= 0)
+            {
+                // the header is in the buffer
+                EndReadFrameHeader();
+                var writtenBuffer = WrittenBuffer;
+                if (frameSize >= length && writtenBuffer.Length >= length)
+                {
+                    AdvanceReadCursor(length);
+                    frame = writtenBuffer.Slice(0, length);
+                    frameSize -= length;
+                    return true;
+                }
+            }
+        }
+
+        frame = default;
+        return false;
+    }
+
     public sealed override int Read(Span<byte> output)
     {
     check_state:
-        switch ((readState, frameSize is 0))
+        switch (readState, frameSize is 0)
         {
             case (ReadState.FrameStarted, true):
             case (ReadState.FrameNotStarted, _):
@@ -191,7 +217,7 @@ internal partial class ProtocolStream
     {
         while (true)
         {
-            switch ((readState, frameSize))
+            switch (readState, frameSize)
             {
                 case (ReadState.FrameStarted, 0):
                 case (ReadState.FrameNotStarted, _):
