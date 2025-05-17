@@ -3,6 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
+using Buffers;
+using IO;
+
 partial class WriteAheadLog
 {
     private interface IConstant<out T>
@@ -18,6 +21,29 @@ partial class WriteAheadLog
     private struct FalseConstant : IConstant<bool>
     {
         static bool IConstant<bool>.Value => false;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private struct BufferedLogEntry(MemoryOwner<byte> buffer) : IInputLogEntry, IDisposable
+    {
+        public readonly required DateTimeOffset Timestamp { get; init; }
+        public readonly required long Term { get; init; }
+        public readonly required object? Context { get; init; }
+
+        readonly long? IDataTransferObject.Length => buffer.Length;
+
+        readonly bool IDataTransferObject.IsReusable => true;
+
+        readonly bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
+        {
+            memory = buffer.Memory;
+            return true;
+        }
+
+        readonly ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            => writer.Invoke(buffer.Memory, token);
+        
+        public void Dispose() => buffer.Dispose();
     }
     
     [StructLayout(LayoutKind.Auto)]

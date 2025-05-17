@@ -114,16 +114,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         private set => Volatile.Write(ref lastEntryIndex, value);
     }
 
-    /// <inheritdoc cref="IAuditTrail{TEntryImpl}.AppendAsync{TEntry}(TEntry, CancellationToken)"/>
-    public async ValueTask<long> AppendAsync<TEntry>(TEntry entry, CancellationToken token = default)
+    private async ValueTask<long> AppendCoreAsync<TEntry>(TEntry entry, CancellationToken token)
         where TEntry : IRaftLogEntry
     {
-        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        backgroundTaskFailure?.Throw();
-
-        if (entry.IsSnapshot)
-            throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
-        
         long currentIndex;
         lockManager.SetCallerInformation("Append Single Entry");
         await lockManager.AcquireAppendLockAsync(token).ConfigureAwait(false);
@@ -140,6 +133,64 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         }
 
         return currentIndex;
+    }
+
+    private async ValueTask<long> AppendCoreAsync(BufferedLogEntry entry, CancellationToken token)
+    {
+        long currentIndex;
+        lockManager.SetCallerInformation("Append Single Buffered Entry");
+        await lockManager.AcquireAppendLockAsync(token).ConfigureAwait(false);
+        try
+        {
+            currentIndex = LastEntryIndex + 1L;
+
+            await WritePayloadAsync(entry, out var startAddress, token).ConfigureAwait(false);
+            WriteMetadata(entry, currentIndex, startAddress);
+        }
+        finally
+        {
+            lockManager.ReleaseAppendLock();
+            entry.Dispose();
+        }
+
+        return currentIndex;
+    }
+
+    /// <inheritdoc cref="IAuditTrail{TEntryImpl}.AppendAsync{TEntry}(TEntry, CancellationToken)"/>
+    public ValueTask<long> AppendAsync<TEntry>(TEntry entry, CancellationToken token = default)
+        where TEntry : IRaftLogEntry
+    {
+        ValueTask<long> task;
+        if (IsDisposingOrDisposed)
+        {
+            task = new(GetDisposedTask<long>());
+        }
+        else if (backgroundTaskFailure?.SourceException is { } exception)
+        {
+            task = ValueTask.FromException<long>(exception);
+        }
+        else if (entry.IsSnapshot)
+        {
+            task = ValueTask.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected));
+        }
+        else if (entry is ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>> && !entry.TryGetMemory(out _))
+        {
+            // make a copy out of the lock
+            var entryCopy = new BufferedLogEntry(((ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>)entry).Invoke(bufferAllocator))
+            {
+                Term = entry.Term,
+                Timestamp = entry.Timestamp,
+                Context = entry is IInputLogEntry { Context: { } ctx } ? ctx : null,
+            };
+
+            task = AppendCoreAsync(entryCopy, token);
+        }
+        else
+        {
+            task = AppendCoreAsync(entry, token);
+        }
+
+        return task;
     }
 
     /// <inheritdoc cref="IAuditTrail{TEntryImpl}.AppendAsync{TEntry}(TEntry, long, CancellationToken)"/>
@@ -313,26 +364,22 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         startAddress = dataPages.LastWrittenAddress;
 
         ValueTask task;
-        if (entry is ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>)
+        if (dataPages.TryEnsureCapacity(entry.Length) is not { } length)
         {
-            var buffer = ((ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>)entry).Invoke(bufferAllocator);
+            task = WriteSlowAsync(dataPages, entry, bufferAllocator, token);
+        }
+        else if (entry.TryGetMemory(out var memory))
+        {
             task = ValueTask.CompletedTask;
             try
             {
-                dataPages.Write(buffer.Span);
+                memory.Span.CopyTo(dataPages.GetSpan(length));
+                dataPages.Advance(length);
             }
             catch (Exception e)
             {
                 task = ValueTask.FromException(e);
             }
-            finally
-            {
-                buffer.Dispose();
-            }
-        }
-        else if (dataPages.TryEnsureCapacity(entry.Length) is not { } length)
-        {
-            task = WriteSlowAsync(dataPages, entry, bufferAllocator, token);
         }
         else if (entry is IBinaryLogEntry)
         {
