@@ -61,10 +61,10 @@ partial class WriteAheadLog
             }
         }
 
-        public ReadOnlySequence<byte> Read(long index, PageManager dataPages, out LogEntryMetadata metadata)
+        public MemoryRange Read(long index, PageManager dataPages, out LogEntryMetadata metadata)
         {
             metadata = this[index];
-            return dataPages.Read(metadata.Offset, metadata.Length);
+            return dataPages.GetRange(metadata.Offset, metadata.Length);
         }
     }
 }

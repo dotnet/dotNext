@@ -1,11 +1,14 @@
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using DotNext.Buffers;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
+
+using Buffers;
 
 partial class WriteAheadLog
 {
@@ -100,45 +103,79 @@ partial class WriteAheadLog
         protected Page GetOrAdd(ulong address, out int offset)
             => GetOrAdd(GetPageIndex(address, out offset));
 
-        public ReadOnlySequence<byte> Read(ulong address, long length)
-        {
-            var pageIndex = GetPageIndex(address, out var offset);
-            var page = this[pageIndex];
-            ReadOnlyMemory<byte> block = page.Memory.Slice(offset).TrimLength(int.CreateSaturating(length));
-            return block.Length == length ? new(block) : ReadMultisegment(pageIndex, ref block, length);
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private ReadOnlySequence<byte> ReadMultisegment(uint pageIndex, ref ReadOnlyMemory<byte> block, long length)
-        {
-            var buffer = new ReadOnlyMemoryArray();
-            var writer = new BufferWriterSlim<ReadOnlyMemory<byte>>(buffer);
-            try
-            {
-                writer.Add() = block;
-                length -= block.Length;
-                
-                do
-                {
-                    var page = this[++pageIndex];
-                    block = page.Memory.TrimLength(int.CreateSaturating(length));
-                    length -= block.Length;
-                    writer.Add() = block;
-                } while (length > 0L);
-
-                return Memory.ToReadOnlySequence(writer.WrittenSpan);
-            }
-            finally
-            {
-                writer.Dispose();
-            }
-        }
+        public MemoryRange GetRange(ulong offset, long length) => new(this, offset, length);
 
         public void Dispose()
         {
             foreach (var page in Values)
             {
                 page.As<IDisposable>().Dispose();
+            }
+        }
+        
+        [StructLayout(LayoutKind.Auto)]
+        public readonly struct MemoryRange(PageManager manager, ulong offset, long length)
+        {
+            public Enumerator GetEnumerator() => new(manager, offset, length);
+
+            public ReadOnlySequence<byte> ToReadOnlySequence()
+            {
+                var enumerator = GetEnumerator();
+                return !enumerator.MoveNext() || !enumerator.HasNext
+                    ? new(enumerator.Current)
+                    : ReadMultiSegment(ref enumerator);
+
+                static ReadOnlySequence<byte> ReadMultiSegment(ref Enumerator enumerator)
+                {
+                    var buffer = new ReadOnlyMemoryArray();
+                    var writer = new BufferWriterSlim<ReadOnlyMemory<byte>>(buffer);
+                    writer.Add() = enumerator.Current;
+
+                    while (enumerator.MoveNext())
+                    {
+                        writer.Add() = enumerator.Current;
+                    }
+
+                    return Memory.ToReadOnlySequence(writer.WrittenSpan);
+                }
+            }
+
+            public static implicit operator ReadOnlySequence<byte>(in MemoryRange range) => range.ToReadOnlySequence();
+            
+            [StructLayout(LayoutKind.Auto)]
+            public struct Enumerator
+            {
+                private readonly ConcurrentDictionary<uint, Page> pages;
+                private long length;
+                private uint pageIndex;
+                private int offset;
+                private Memory<byte> current;
+
+                public Enumerator(PageManager manager, ulong address, long length)
+                {
+                    pages = manager;
+                    pageIndex = manager.GetPageIndex(address, out offset);
+                    this.length = length;
+                }
+
+                [UnscopedRef]
+                public readonly ref readonly Memory<byte> Current => ref current;
+
+                public readonly bool HasNext => length > 0L;
+
+                public bool MoveNext()
+                {
+                    if (HasNext)
+                    {
+                        var page = pages[pageIndex++];
+                        current = page.Memory.Slice(offset).TrimLength(int.CreateSaturating(length));
+                        length -= current.Length;
+                        offset = 0;
+                        return true;
+                    }
+
+                    return false;
+                }
             }
         }
 
