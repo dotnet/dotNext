@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -9,6 +10,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers;
+using Collections.Generic;
 
 partial class WriteAheadLog
 {
@@ -114,9 +116,25 @@ partial class WriteAheadLog
         }
         
         [StructLayout(LayoutKind.Auto)]
-        public readonly struct MemoryRange(PageManager manager, ulong offset, long length)
+        public readonly struct MemoryRange(PageManager manager, ulong offset, long length) : IEnumerable<ReadOnlyMemory<byte>>
         {
             public Enumerator GetEnumerator() => new(manager, offset, length);
+
+            private IEnumerator<ReadOnlyMemory<byte>> ToClassicEnumerator()
+                => GetEnumerator().ToClassicEnumerator<Enumerator, ReadOnlyMemory<byte>>();
+            
+            IEnumerator<ReadOnlyMemory<byte>> IEnumerable<ReadOnlyMemory<byte>>.GetEnumerator()
+                => ToClassicEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator() => ToClassicEnumerator();
+
+            public bool TryGetMemory(out ReadOnlyMemory<byte> memory)
+            {
+                var enumerator = GetEnumerator();
+                var result = !enumerator.MoveNext() || !enumerator.HasNext;
+                memory = enumerator.Current;
+                return result;
+            }
 
             public ReadOnlySequence<byte> ToReadOnlySequence()
             {
@@ -143,7 +161,7 @@ partial class WriteAheadLog
             public static implicit operator ReadOnlySequence<byte>(in MemoryRange range) => range.ToReadOnlySequence();
             
             [StructLayout(LayoutKind.Auto)]
-            public struct Enumerator
+            public struct Enumerator : IEnumerator<Enumerator, ReadOnlyMemory<byte>>
             {
                 private readonly ConcurrentDictionary<uint, Page> pages;
                 private long length;
@@ -160,6 +178,8 @@ partial class WriteAheadLog
 
                 [UnscopedRef]
                 public readonly ref readonly Memory<byte> Current => ref current;
+
+                ReadOnlyMemory<byte> IEnumerator<Enumerator, ReadOnlyMemory<byte>>.Current => Current;
 
                 public readonly bool HasNext => length > 0L;
 

@@ -8,8 +8,8 @@ public partial class WriteAheadLog
 {
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private readonly PagedBufferWriter dataPages;
-    
-    private sealed class PagedBufferWriter(DirectoryInfo location, int pageSize) : PageManager(location, pageSize), IBufferWriter<byte>
+
+    private sealed class PagedBufferWriter(DirectoryInfo location, int pageSize) : PageManager(location, pageSize), IBufferWriter<byte>, IMemoryView
     {
         public required ulong LastWrittenAddress;
 
@@ -63,5 +63,14 @@ public partial class WriteAheadLog
 
         private Page GetOrAdd(out int offset)
             => GetOrAdd(LastWrittenAddress, out offset);
+
+        ReadOnlySequence<byte> IMemoryView.GetSequence(ulong address, long length)
+            => GetRange(address, length);
+
+        bool IMemoryView.TryGetMemory(ulong address, long length, out ReadOnlyMemory<byte> memory)
+            => GetRange(address, length).TryGetMemory(out memory);
+
+        IEnumerable<ReadOnlyMemory<byte>> IMemoryView.EnumerateMemoryBlocks(ulong address, long length)
+            => GetRange(address, length);
     }
 }

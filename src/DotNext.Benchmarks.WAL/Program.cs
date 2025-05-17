@@ -64,7 +64,6 @@ static async Task FasterLogPerformanceTest(CancellationToken token)
     Memory<byte> buffer = new byte[1024];
     Random.Shared.NextBytes(buffer.Span);
 
-    var index = 0L;
     var ts = new Timestamp();
     for (var i = 0; i < count; i++)
     {

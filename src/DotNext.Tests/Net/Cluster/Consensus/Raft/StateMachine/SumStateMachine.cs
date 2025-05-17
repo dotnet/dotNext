@@ -30,7 +30,7 @@ internal sealed class SumStateMachine : SimpleStateMachine
     protected override async ValueTask<bool> ApplyAsync(LogEntry entry, CancellationToken token)
     {
         byte[] array;
-        if (entry.TryGetSequence(out var sequence))
+        if (entry.TryGetPayload(out var sequence))
         {
             array = sequence.ToArray();
         }

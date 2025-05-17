@@ -26,10 +26,10 @@ partial class WriteAheadLog
         private readonly long StartIndex;
         private readonly int count;
         private readonly MetadataPageManager metadataPages;
-        private readonly PageManager? dataPages; // if null, then take the metadata only
+        private readonly IMemoryView? dataPages; // if null, then take the metadata only
         private readonly ISnapshot? snapshot;
 
-        internal LogEntryList(ISnapshotManager manager, long startIndex, long endIndex, PageManager? dataPages, MetadataPageManager metadataPages,
+        internal LogEntryList(ISnapshotManager manager, long startIndex, long endIndex, IMemoryView? dataPages, MetadataPageManager metadataPages,
             out long? snapshotIndex)
         {
             snapshot = manager.TakeSnapshot();
@@ -71,10 +71,8 @@ partial class WriteAheadLog
 
         private LogEntry Read(int index)
         {
-            var absoluteIndex = StartIndex + index;
-            return dataPages is not null
-                ? new(metadataPages.Read(absoluteIndex, dataPages, out var metadata), in metadata, absoluteIndex)
-                : new(metadataPages[absoluteIndex], absoluteIndex);
+            var metadata = metadataPages[StartIndex + index];
+            return new(metadata, index, dataPages);
         }
 
         public IEnumerator<LogEntry> GetEnumerator()

@@ -14,39 +14,20 @@ using IO.Log;
 [Experimental("DOTNEXT001")]
 public readonly struct LogEntry : IInputLogEntry
 {
-    // ISnapshot, or byte[], or MemoryManager<byte>, or null
+    // ISnapshot, or IMemoryReader, or null
     private readonly object? payload;
-    private readonly ReadOnlySequenceSegment<byte>? endSegment;
-    private readonly int startIndex, endIndex;
+    private readonly ulong address;
+    private readonly long length;
 
-    internal LogEntry(in LogEntryMetadata metadata, long index)
+    internal LogEntry(in LogEntryMetadata metadata, long index, IMemoryView? reader)
     {
         Index = index;
         Timestamp = new(metadata.Timestamp, TimeSpan.Zero);
         CommandId = metadata.Id;
         Term = metadata.Term;
-    }
-
-    internal LogEntry(ReadOnlySequence<byte> sequence, in LogEntryMetadata metadata, long index)
-        : this(in metadata, index)
-    {
-        if (SequenceMarshal.TryGetReadOnlySequenceSegment(sequence, out var startSegment, out startIndex, out endSegment, out endIndex))
-        {
-            payload = startSegment;
-        }
-        else if (SequenceMarshal.TryGetReadOnlyMemory(sequence, out var memory))
-        {
-            if (MemoryMarshal.TryGetArray(memory, out var segment))
-            {
-                payload = segment.Array;
-                startIndex = segment.Offset;
-                endIndex = segment.Offset;
-            }
-            else if (MemoryMarshal.TryGetMemoryManager<byte, MemoryManager<byte>>(memory, out var manager, out startIndex, out endIndex))
-            {
-                payload = manager;
-            }
-        }
+        payload = reader;
+        address = metadata.Offset;
+        length = metadata.Length;
     }
 
     internal LogEntry(IRaftLogEntry snapshot, long index)
@@ -83,9 +64,7 @@ public readonly struct LogEntry : IInputLogEntry
     public int? CommandId { get; }
 
     /// <inheritdoc/>
-    public long? Length => TryGetSequence(out var sequence)
-        ? sequence.Length
-        : (payload as IDataTransferObject)?.Length;
+    public long? Length => payload is IDataTransferObject dto ? dto.Length : length;
 
     /// <summary>
     /// Gets a value indicating whether this log entry is a snapshot.
@@ -100,46 +79,38 @@ public readonly struct LogEntry : IInputLogEntry
     /// </summary>
     /// <param name="sequence">A sequence of bytes representing the log entry payload.</param>
     /// <returns><see langword="true"/> if this log entry is not a snapshot; otherwise, <see langword="false"/>.</returns>
-    public bool TryGetSequence(out ReadOnlySequence<byte> sequence)
+    public bool TryGetPayload(out ReadOnlySequence<byte> sequence)
     {
-        switch (payload)
+        if (payload is IMemoryView view)
         {
-            case byte[] array:
-                sequence = new(new ReadOnlyMemory<byte>(array, startIndex, endIndex));
-                break;
-            case MemoryManager<byte> manager:
-                sequence = new(manager.Memory.Slice(startIndex, endIndex));
-                break;
-            case ReadOnlySequenceSegment<byte> startSegment when endSegment is not null:
-                sequence = new(startSegment, startIndex, endSegment, endIndex);
-                break;
-            default:
-                sequence = ReadOnlySequence<byte>.Empty;
-                return payload is null;
+            sequence = view.GetSequence(address, length);
+            return true;
         }
 
-        return true;
+        sequence = ReadOnlySequence<byte>.Empty;
+        return payload is null;
     }
+
+    /// <summary>
+    /// Gets the payload of this log entry in the form of a memory block sequence.
+    /// </summary>
+    /// <returns>A collection of the memory blocks; or empty collection if <see cref="IsSnapshot"/> is <see langword="true"/>.</returns>
+    public IEnumerable<ReadOnlyMemory<byte>> GetPayload()
+        => (payload as IMemoryView)?.EnumerateMemoryBlocks(address, length) ?? [];
 
     /// <inheritdoc/>
     bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
     {
         switch (payload)
         {
-            case byte[] array:
-                memory = new(array, startIndex, endIndex);
-                break;
-            case MemoryManager<byte> manager:
-                memory = manager.Memory.Slice(startIndex, endIndex);
-                break;
+            case IMemoryView view:
+                return view.TryGetMemory(address, length, out memory);
             case IDataTransferObject snapshot:
                 return snapshot.TryGetMemory(out memory);
             default:
                 memory = ReadOnlyMemory<byte>.Empty;
                 return payload is null;
         }
-
-        return true;
     }
 
     /// <inheritdoc/>
@@ -148,12 +119,11 @@ public readonly struct LogEntry : IInputLogEntry
     {
         return payload switch
         {
-            byte[] array => writer.Invoke(new(array, startIndex, endIndex), token),
-            MemoryManager<byte> manager => writer.Invoke(manager.Memory.Slice(startIndex, endIndex), token),
-            ReadOnlySequenceSegment<byte> startSegment when endSegment is not null => WriteAsync(
-                new(startSegment, startIndex, endSegment, endIndex), writer, token),
-            IDataTransferObject snapshot => snapshot.WriteToAsync(writer, token),
-            _ => ValueTask.CompletedTask
+            IMemoryView reader => reader.TryGetMemory(address, length, out var memory)
+                ? writer.Invoke(memory, token)
+                : WriteAsync(reader.GetSequence(address, length), writer, token),
+            IDataTransferObject dto => dto.WriteToAsync(writer, token),
+            _ => ValueTask.CompletedTask,
         };
 
         static async ValueTask WriteAsync(ReadOnlySequence<byte> sequence, TWriter writer, CancellationToken token)

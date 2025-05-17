@@ -67,7 +67,7 @@ partial class WriteAheadLog
         var ts = new Timestamp();
         for (long index = fromIndex, appliedIndex; index <= toIndex; index = long.Max(appliedIndex + 1L, index + 1L))
         {
-            var entry = new LogEntry(metadataPages.Read(index, dataPages, out var metadata), in metadata, index)
+            var entry = new LogEntry(metadataPages[index], index, dataPages)
             {
                 Context = context.Remove(index, out var ctx) ? ctx : null,
             };

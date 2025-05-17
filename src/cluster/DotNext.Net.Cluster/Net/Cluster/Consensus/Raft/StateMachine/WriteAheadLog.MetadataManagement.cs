@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -59,12 +58,6 @@ partial class WriteAheadLog
                 var page = GetOrAdd(GetStartPageIndex(index, out var offset));
                 value.Format(page.GetSpan().Slice(offset));
             }
-        }
-
-        public MemoryRange Read(long index, PageManager dataPages, out LogEntryMetadata metadata)
-        {
-            metadata = this[index];
-            return dataPages.GetRange(metadata.Offset, metadata.Length);
         }
     }
 }
