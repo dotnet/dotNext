@@ -54,7 +54,7 @@ public abstract class TransportTestSuite : RaftTest
     {
         internal readonly IList<BufferedEntry> ReceivedEntries = new List<BufferedEntry>();
         internal ReceiveEntriesBehavior Behavior;
-        internal byte[] ReceivedConfiguration = Array.Empty<byte>();
+        internal byte[] ReceivedConfiguration = [];
         private readonly ClusterMemberId localId = Random.Shared.Next<ClusterMemberId>();
 
         internal LocalMember(bool smallAmountOfMetadata = false)
@@ -286,7 +286,7 @@ public abstract class TransportTestSuite : RaftTest
         byte[] buffer;
         if (useEmptyEntry)
         {
-            buffer = Array.Empty<byte>();
+            buffer = [];
         }
         else
         {
