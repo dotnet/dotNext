@@ -472,23 +472,24 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         where TNotify : struct, IConstant<bool>
     {
         ValueTask<long> task;
-        
+
         if (lockManager.TryAcquireCommitLock())
         {
-            long count;
+            var count = Commit(endIndex);
+            lockManager.ReleaseCommitLock();
+            
+            // notify out of the lock
             try
             {
-                count = Commit(endIndex);
-            }
-            finally
-            {
-                lockManager.ReleaseCommitLock();
-            }
+                if (TNotify.Value && count > 0L)
+                    OnCommitted(count);
 
-            if (TNotify.Value && count > 0L)
-                OnCommitted(count);
-            
-            task = new(count);
+                task = new(count);
+            }
+            catch (Exception e)
+            {
+                task = ValueTask.FromException<long>(e);
+            }
         }
         else
         {
@@ -501,21 +502,14 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     private async ValueTask<long> CommitSlowAsync<TNotify>(long endIndex, CancellationToken token)
         where TNotify : struct, IConstant<bool>
     {
-        long count;
         lockManager.SetCallerInformation("Commit");
         await lockManager.AcquireCommitLockAsync(token).ConfigureAwait(false);
-        try
-        {
-            count = Commit(endIndex);
-        }
-        finally
-        {
-            lockManager.ReleaseCommitLock();
-        }
+        var count = Commit(endIndex);
+        lockManager.ReleaseCommitLock();
 
         if (TNotify.Value && count > 0L)
             OnCommitted(count);
-        
+
         return count;
     }
 
