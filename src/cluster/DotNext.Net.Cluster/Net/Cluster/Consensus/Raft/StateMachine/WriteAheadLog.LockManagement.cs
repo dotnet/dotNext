@@ -134,6 +134,9 @@ partial class WriteAheadLog
         public ValueTask AcquireAppendLockAsync(CancellationToken token = default)
             => AcquireAsync(LockType.Append, token);
 
+        public bool TryAcquireAppendLock()
+            => TryAcquire(LockType.Append);
+
         public void ReleaseAppendLock() => Release(LockType.Append);
 
         public ValueTask AcquireCommitLockAsync(CancellationToken token = default)

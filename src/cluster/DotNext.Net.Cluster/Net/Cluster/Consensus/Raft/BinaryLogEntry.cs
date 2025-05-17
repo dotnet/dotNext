@@ -88,6 +88,8 @@ public readonly struct BinaryLogEntry() : IBufferedLogEntry, ISupplier<MemoryAll
         init => content = value;
     }
 
+    ReadOnlySpan<byte> IBufferedLogEntry.Content => content.Span;
+
     /// <summary>
     /// Gets the command identifier.
     /// </summary>

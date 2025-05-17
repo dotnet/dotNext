@@ -56,7 +56,7 @@ public readonly struct EmptyLogEntry() : ISupplier<MemoryAllocator<byte>, Memory
         => default;
 
     /// <inheritdoc/>
-    ReadOnlyMemory<byte> IBufferedLogEntry.Content => ReadOnlyMemory<byte>.Empty;
+    ReadOnlySpan<byte> IBufferedLogEntry.Content => ReadOnlySpan<byte>.Empty;
 
     /// <inheritdoc/>
     public object? Context

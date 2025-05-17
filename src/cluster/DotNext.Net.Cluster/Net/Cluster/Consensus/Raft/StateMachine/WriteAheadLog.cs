@@ -134,20 +134,15 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
 
         return currentIndex;
     }
-
+    
     private async ValueTask<long> AppendBufferedAsync<TEntry>(TEntry entry, CancellationToken token)
         where TEntry : struct, IBufferedLogEntry
     {
-        long currentIndex;
         lockManager.SetCallerInformation("Append Single Buffered Entry");
         await lockManager.AcquireAppendLockAsync(token).ConfigureAwait(false);
         try
         {
-            currentIndex = LastEntryIndex + 1L;
-
-            var startAddress = dataPages.LastWrittenAddress;
-            dataPages.Write(entry.Content.Span);
-            WriteMetadata(entry, currentIndex, startAddress);
+            return AppendBuffered(entry);
         }
         finally
         {
@@ -155,7 +150,15 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             if (entry is IDisposable)
                 ((IDisposable)entry).Dispose();
         }
+    }
 
+    private long AppendBuffered<TEntry>(TEntry entry)
+        where TEntry : struct, IBufferedLogEntry
+    {
+        var currentIndex = LastEntryIndex + 1L;
+        var startAddress = dataPages.LastWrittenAddress;
+        dataPages.Write(entry.Content);
+        WriteMetadata(entry, currentIndex, startAddress);
         return currentIndex;
     }
 

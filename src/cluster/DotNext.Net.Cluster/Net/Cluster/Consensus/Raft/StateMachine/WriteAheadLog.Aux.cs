@@ -46,7 +46,7 @@ partial class WriteAheadLog
 
         bool ILogEntry.IsSnapshot => false;
 
-        readonly ReadOnlyMemory<byte> IBufferedLogEntry.Content => buffer.Memory;
+        readonly ReadOnlySpan<byte> IBufferedLogEntry.Content => buffer.Span;
 
         readonly ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => writer.Invoke(buffer.Memory, token);
