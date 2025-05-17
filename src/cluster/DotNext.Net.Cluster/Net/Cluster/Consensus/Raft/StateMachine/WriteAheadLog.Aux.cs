@@ -5,6 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers;
 using IO;
+using IO.Log;
 
 partial class WriteAheadLog
 {
@@ -24,11 +25,14 @@ partial class WriteAheadLog
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct BufferedLogEntry(MemoryOwner<byte> buffer) : IInputLogEntry, IDisposable
+    private struct BufferedLogEntry(MemoryOwner<byte> buffer) : IBufferedLogEntry, IDisposable
     {
+        private MemoryOwner<byte> buffer = buffer;
+        
         public readonly required DateTimeOffset Timestamp { get; init; }
         public readonly required long Term { get; init; }
         public readonly required object? Context { get; init; }
+        public readonly required int? CommandId { get; init; }
 
         readonly long? IDataTransferObject.Length => buffer.Length;
 
@@ -39,6 +43,10 @@ partial class WriteAheadLog
             memory = buffer.Memory;
             return true;
         }
+
+        bool ILogEntry.IsSnapshot => false;
+
+        readonly ReadOnlyMemory<byte> IBufferedLogEntry.Content => buffer.Memory;
 
         readonly ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => writer.Invoke(buffer.Memory, token);

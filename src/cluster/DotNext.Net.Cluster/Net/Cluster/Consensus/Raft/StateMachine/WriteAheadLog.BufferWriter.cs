@@ -13,23 +13,40 @@ public partial class WriteAheadLog
     {
         public required ulong LastWrittenAddress;
 
-        public int? TryEnsureCapacity(long? length)
+        public bool TryEnsureCapacity(long? length)
         {
-            if (length is not { } len || (ulong)len > (uint)PageSize)
-                return null;
-
-            var result = (int)len;
-            EnsureCapacity(result);
-            return result;
-        }
-
-        private void EnsureCapacity(int length)
-        {
-            Debug.Assert(length <= PageSize);
+            if (length is not { } len || len > (uint)PageSize)
+                return false;
 
             var remainingSpace = PageSize - GetPageOffset(LastWrittenAddress, PageSize);
-            if (remainingSpace < length)
+            if (remainingSpace < len)
+            {
                 LastWrittenAddress += (uint)remainingSpace;
+            }
+
+            return true;
+        }
+
+        public void Write(ReadOnlySpan<byte> buffer)
+        {
+            if (buffer.Length <= PageSize)
+            {
+                var pageIndex = GetPageIndex(LastWrittenAddress, out var offset);
+                if (PageSize - offset < buffer.Length)
+                {
+                    LastWrittenAddress += (uint)offset;
+                    pageIndex += 1U;
+                    offset = 0;
+                }
+
+                var page = GetOrAdd(pageIndex);
+                buffer.CopyTo(page.GetSpan().Slice(offset));
+                LastWrittenAddress += (uint)buffer.Length;
+            }
+            else
+            {
+                BuffersExtensions.Write(this, buffer);
+            }
         }
 
         public void Advance(int count)

@@ -12,7 +12,7 @@ using StateMachine;
 /// Represents No-OP entry.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct EmptyLogEntry() : ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>, IBinaryLogEntry, IInputLogEntry
+public readonly struct EmptyLogEntry() : ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>, IBufferedLogEntry
 {
     /// <inheritdoc/>
     int? IRaftLogEntry.CommandId => null;
@@ -22,9 +22,6 @@ public readonly struct EmptyLogEntry() : ISupplier<MemoryAllocator<byte>, Memory
 
     /// <inheritdoc cref="IDataTransferObject.Length"/>
     long? IDataTransferObject.Length => 0L;
-
-    /// <inheritdoc cref="IBinaryLogEntry.Length"/>
-    int IBinaryLogEntry.Length => 0;
 
     /// <inheritdoc/>
     bool IDataTransferObject.IsReusable => true;
@@ -59,9 +56,7 @@ public readonly struct EmptyLogEntry() : ISupplier<MemoryAllocator<byte>, Memory
         => default;
 
     /// <inheritdoc/>
-    void IBinaryLogEntry.WriteTo(Span<byte> buffer)
-    {
-    }
+    ReadOnlyMemory<byte> IBufferedLogEntry.Content => ReadOnlyMemory<byte>.Empty;
 
     /// <inheritdoc/>
     public object? Context
