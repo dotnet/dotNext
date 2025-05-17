@@ -14,11 +14,17 @@ using Collections.Generic;
 
 partial class WriteAheadLog
 {
+    private static int GetPageOffset(ulong address, int pageSize)
+    {
+        Debug.Assert(int.IsPow2(pageSize));
+        return (int)(address & ((uint)pageSize - 1U));
+    }
+    
     private static uint GetPageIndex(ulong address, int pageSize, out int offset)
     {
         Debug.Assert(int.IsPow2(pageSize));
 
-        offset = (int)(address & ((uint)pageSize - 1U));
+        offset = GetPageOffset(address, pageSize);
         return (uint)(address >> BitOperations.TrailingZeroCount(pageSize));
     }
     

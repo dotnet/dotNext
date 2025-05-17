@@ -27,9 +27,7 @@ public partial class WriteAheadLog
         {
             Debug.Assert(length <= PageSize);
 
-            GetPageIndex(LastWrittenAddress, out var offset);
-
-            var remainingSpace = PageSize - offset;
+            var remainingSpace = PageSize - GetPageOffset(LastWrittenAddress, PageSize);
             if (remainingSpace < length)
                 LastWrittenAddress += (uint)remainingSpace;
         }
