@@ -10,7 +10,7 @@ partial class WriteAheadLog
 
     private sealed class MetadataPageManager : PageManager
     {
-        public new const int PageSize = 4096;
+        public new const int PageSize = Page.MinPageSize;
 
         public MetadataPageManager(DirectoryInfo location)
             : base(location, PageSize)

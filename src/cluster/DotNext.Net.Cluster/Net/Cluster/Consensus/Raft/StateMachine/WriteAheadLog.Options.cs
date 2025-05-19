@@ -1,10 +1,10 @@
 using System.Diagnostics;
-using System.Numerics;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers;
+using Numerics;
 
 partial class WriteAheadLog
 {
@@ -37,9 +37,18 @@ partial class WriteAheadLog
         public int ChunkMaxSize
         {
             get => chunkMaxSize;
-            init => chunkMaxSize = value > 0
-                ? (int)BitOperations.RoundUpToPowerOf2((uint)value)
-                : throw new ArgumentOutOfRangeException(nameof(value));
+            init
+            {
+                chunkMaxSize = value > 0
+                    ? RoundUpToPageSize(value)
+                    : throw new ArgumentOutOfRangeException(nameof(value));
+                
+                static int RoundUpToPageSize(int value)
+                {
+                    var result = ((uint)value).RoundUp((uint)Page.MinPageSize);
+                    return checked((int)result);
+                }
+            }
         }
 
         /// <summary>

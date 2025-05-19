@@ -15,6 +15,7 @@ partial class WriteAheadLog
     /// </summary>
     private sealed class Page : MemoryManager<byte>, IFlushable
     {
+        public const int MinPageSize = 4096;
         private readonly string fileName;
         private readonly SafeFileHandle fileHandle;
         private readonly IDisposable viewHandle;
@@ -22,7 +23,7 @@ partial class WriteAheadLog
 
         public Page(DirectoryInfo directory, uint pageIndex, int pageSize)
         {
-            Debug.Assert(pageSize % Environment.SystemPageSize is 0);
+            Debug.Assert(pageSize % MinPageSize is 0);
 
             fileName = GetPageFileName(directory, pageIndex);
             long preallocationSize;
