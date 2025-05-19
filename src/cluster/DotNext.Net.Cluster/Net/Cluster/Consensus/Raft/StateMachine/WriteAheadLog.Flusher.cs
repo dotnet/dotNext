@@ -88,8 +88,8 @@ partial class WriteAheadLog
 
     private static void FlushDataPages(PageManager dataPages, ulong fromAddress, ulong toAddress)
     {
-        var fromPage = GetPageIndex(fromAddress, dataPages.PageSize, out _);
-        var toPage = GetPageIndex(toAddress, dataPages.PageSize, out _);
+        var fromPage = dataPages.GetPageIndex(fromAddress, out _);
+        var toPage = dataPages.GetPageIndex(toAddress, out _);
 
         for (var pageIndex = fromPage; pageIndex <= toPage; pageIndex++)
         {
