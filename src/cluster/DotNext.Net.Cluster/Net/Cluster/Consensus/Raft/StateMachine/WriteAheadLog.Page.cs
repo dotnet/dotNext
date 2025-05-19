@@ -26,22 +26,10 @@ partial class WriteAheadLog
             Debug.Assert(pageSize % MinPageSize is 0);
 
             fileName = GetPageFileName(directory, pageIndex);
-            long preallocationSize;
-            FileMode mode;
-            if (File.Exists(fileName))
-            {
-                preallocationSize = 0L;
-                mode = FileMode.Open;
-            }
-            else
-            {
-                preallocationSize = pageSize;
-                mode = FileMode.CreateNew;
-            }
 
-            fileHandle = File.OpenHandle(fileName, mode, FileAccess.ReadWrite, preallocationSize: preallocationSize);
-            File.SetAttributes(fileHandle, FileAttributes.NotContentIndexed);
-            
+            const FileAccess fileAccess = FileAccess.ReadWrite;
+            fileHandle = TryCreateNew(fileName, pageSize) ?? File.OpenHandle(fileName, FileMode.Open, fileAccess);
+
             var mappedHandle = MemoryMappedFile.CreateFromFile(fileHandle, mapName: null, pageSize, MemoryMappedFileAccess.ReadWrite,
                 HandleInheritability.None, leaveOpen: true);
             accessor = mappedHandle.CreateViewAccessor(0L, pageSize, MemoryMappedFileAccess.ReadWrite);
@@ -49,6 +37,44 @@ partial class WriteAheadLog
             
             static string GetPageFileName(DirectoryInfo directory, uint pageIndex)
                 => Path.Combine(directory.FullName, pageIndex.ToString(InvariantCulture));
+
+            static bool AlreadyExists(int hresult, string fileName)
+            {
+                // EEXIST errno-base.h
+                const int EEXIST = 17;
+                if (OperatingSystem.IsLinux())
+                    return hresult is EEXIST;
+
+                // https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-
+                const int ERROR_ALREADY_EXISTS = unchecked((int)0x80070000 | 0xB7);
+                if (OperatingSystem.IsWindows())
+                    return hresult is ERROR_ALREADY_EXISTS;
+
+                return File.Exists(fileName);
+            }
+
+            static SafeFileHandle? TryCreateNew(string fileName, int pageSize)
+            {
+                SafeFileHandle? handle;
+                if (File.Exists(fileName))
+                {
+                    handle = null;
+                }
+                else
+                {
+                    try
+                    {
+                        handle = File.OpenHandle(fileName, FileMode.CreateNew, fileAccess, preallocationSize: pageSize);
+                        File.SetAttributes(handle, FileAttributes.NotContentIndexed);
+                    }
+                    catch (IOException e) when (AlreadyExists(e.HResult, fileName))
+                    {
+                        handle = null;
+                    }
+                }
+
+                return handle;
+            }
         }
 
         private nint Pointer
