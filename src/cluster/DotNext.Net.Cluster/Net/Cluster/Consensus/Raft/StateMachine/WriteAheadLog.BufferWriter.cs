@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
@@ -29,24 +28,20 @@ public partial class WriteAheadLog
 
         public void Write(ReadOnlySpan<byte> buffer)
         {
-            if (buffer.Length <= PageSize)
-            {
-                var pageIndex = GetPageIndex(LastWrittenAddress, out var offset);
-                if (PageSize - offset < buffer.Length)
-                {
-                    LastWrittenAddress += (uint)offset;
-                    pageIndex += 1U;
-                    offset = 0;
-                }
+            var length = (uint)buffer.Length;
+            var pageIndex = GetPageIndex(LastWrittenAddress, out var offset);
+            var page = GetOrAdd(pageIndex).GetSpan();
+            buffer.CopyTo(page.Slice(offset), out var bytesWritten);
+            buffer = buffer.Slice(bytesWritten);
 
-                var page = GetOrAdd(pageIndex);
-                buffer.CopyTo(page.GetSpan().Slice(offset));
-                LastWrittenAddress += (uint)buffer.Length;
-            }
-            else
+            while (!buffer.IsEmpty)
             {
-                BuffersExtensions.Write(this, buffer);
+                page = GetOrAdd(++pageIndex).GetSpan();
+                buffer.CopyTo(page, out bytesWritten);
+                buffer = buffer.Slice(bytesWritten);
             }
+
+            LastWrittenAddress += length;
         }
 
         public void Advance(int count)
