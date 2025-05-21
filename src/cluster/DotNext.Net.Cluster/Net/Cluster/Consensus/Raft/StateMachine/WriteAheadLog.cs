@@ -6,7 +6,6 @@ using System.Runtime.ExceptionServices;
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers;
-using Collections.Generic;
 using IO;
 using IO.Log;
 using Threading;
@@ -525,58 +524,6 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         => backgroundTaskFailure?.SourceException is { } exception
             ? ValueTask.FromException(exception)
             : appliedEvent.SpinWaitAsync<CommitChecker>(new(this, index), token);
-
-    /// <summary>
-    /// Reads the log entries.
-    /// </summary>
-    /// <param name="startIndex">The index of the first requested log entry.</param>
-    /// <param name="endIndex">The index of the last requested log entry.</param>
-    /// <param name="token">The token that can be used to cancel the enumeration.</param>
-    /// <returns>Lazy collection of log entries.</returns>
-    public IAsyncEnumerable<LogEntry> ReadAsync(long startIndex, long endIndex, CancellationToken token = default)
-    {
-        IAsyncEnumerable<LogEntry> result;
-        if (IsDisposingOrDisposed)
-            result = AsyncEnumerable.Throw<LogEntry>(new ObjectDisposedException(GetType().Name));
-        else if (startIndex < 0L)
-            result = AsyncEnumerable.Throw<LogEntry>(new ArgumentOutOfRangeException(nameof(startIndex)));
-        else if (endIndex < 0L || endIndex > LastEntryIndex)
-            result = AsyncEnumerable.Throw<LogEntry>(new ArgumentOutOfRangeException(nameof(endIndex)));
-        else if (backgroundTaskFailure?.SourceException is { } exception)
-            result = AsyncEnumerable.Throw<LogEntry>(exception);
-        else if (startIndex > endIndex)
-            result = AsyncEnumerable.Empty<LogEntry>();
-        else
-            result = ReadCoreAsync(startIndex, endIndex, token);
-
-        return result;
-    }
-
-    private async IAsyncEnumerable<LogEntry> ReadCoreAsync(long startIndex, long endIndex, [EnumeratorCancellation] CancellationToken token)
-    {
-        lockManager.SetCallerInformation("Enumerate Entries");
-        await lockManager.AcquireReadLockAsync(token).ConfigureAwait(false);
-        try
-        {
-            if (stateMachine.Snapshot is { } snapshot && snapshot.Index >= startIndex)
-            {
-                yield return new(snapshot);
-                startIndex = snapshot.Index;
-                endIndex = Math.Max(endIndex, startIndex);
-                startIndex++;
-            }
-
-            for (LogEntryMetadata metadata; startIndex <= endIndex; token.ThrowIfCancellationRequested(), startIndex++)
-            {
-                metadata = metadataPages[startIndex];
-                yield return new LogEntry(in metadata, startIndex, dataPages);
-            }
-        }
-        finally
-        {
-            lockManager.ReleaseReadLock();
-        }
-    }
 
     /// <inheritdoc cref="IAuditTrail{TEntryImpl}.ReadAsync{TResult}(ILogEntryConsumer{TEntryImpl, TResult}, long, long, CancellationToken)"/>
     public ValueTask<TResult> ReadAsync<TResult>(ILogEntryConsumer<IRaftLogEntry, TResult> reader, long startIndex, long endIndex,

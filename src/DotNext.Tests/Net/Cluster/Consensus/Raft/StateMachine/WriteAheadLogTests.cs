@@ -278,18 +278,11 @@ public sealed class WriteAheadLogTests : Test
             Equal(3L, wal.LastCommittedEntryIndex);
             Equal(3L, wal.LastEntryIndex);
 
-            await using var enumerator = wal.ReadAsync(1L, wal.LastEntryIndex).GetAsyncEnumerator();
-            
-            True(await enumerator.MoveNextAsync());
-            Equal(entry1.Content, await enumerator.Current.ToStringAsync(Encoding.UTF8));
-            
-            True(await enumerator.MoveNextAsync());
-            Equal(entry2.Content, await enumerator.Current.ToStringAsync(Encoding.UTF8));
-            
-            True(await enumerator.MoveNextAsync());
-            Equal(entry3.Content, await enumerator.Current.ToStringAsync(Encoding.UTF8));
-
-            False(await enumerator.MoveNextAsync());
+            using var reader = await wal.ReadAsync(1L, wal.LastEntryIndex);
+            False(reader[0].IsSnapshot);
+            Equal(entry1.Content, await reader[0].ToStringAsync(Encoding.UTF8));
+            Equal(entry2.Content, await reader[1].ToStringAsync(Encoding.UTF8));
+            Equal(entry3.Content, await reader[2].ToStringAsync(Encoding.UTF8));
         }
     }
 
@@ -345,5 +338,12 @@ public sealed class WriteAheadLogTests : Test
 
             Equal(count * (0L + count - 1L) / 2L, stateMachine.Value);
         }
+    }
+
+    [Fact]
+    public static void EmptyReader()
+    {
+        var reader = new WriteAheadLog.LogEntryReader();
+        Empty(reader);
     }
 }

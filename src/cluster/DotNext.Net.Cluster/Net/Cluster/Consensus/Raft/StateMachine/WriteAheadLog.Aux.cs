@@ -58,7 +58,6 @@ partial class WriteAheadLog
     private readonly struct LogEntryList : IReadOnlyList<LogEntry>
     {
         private readonly long StartIndex;
-        private readonly int count;
         private readonly MetadataPageManager metadataPages;
         private readonly IMemoryView? dataPages; // if null, then take the metadata only
         private readonly ISnapshot? snapshot;
@@ -85,18 +84,18 @@ partial class WriteAheadLog
             if (length > int.MaxValue)
                 throw new InternalBufferOverflowException(ExceptionMessages.RangeTooBig);
 
-            count = (int)length;
+            Count = (int)length;
             this.metadataPages = metadataPages;
             this.dataPages = dataPages;
         }
 
-        int IReadOnlyCollection<LogEntry>.Count => count;
+        public int Count { get; }
 
-        LogEntry IReadOnlyList<LogEntry>.this[int index]
+        public LogEntry this[int index]
         {
             get
             {
-                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)count, nameof(index));
+                ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)Count, nameof(index));
 
                 return index is 0 && snapshot is not null
                     ? new(snapshot)
@@ -123,7 +122,7 @@ partial class WriteAheadLog
                 yield return new(snapshot);
             }
 
-            while (index < count)
+            while (index < Count)
                 yield return Read(index++);
         }
 
