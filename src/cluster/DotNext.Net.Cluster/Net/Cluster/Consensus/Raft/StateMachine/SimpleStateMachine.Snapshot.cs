@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
 using static System.Globalization.CultureInfo;
 
@@ -15,30 +14,44 @@ partial class SimpleStateMachine
             .Select(static info => new Snapshot(info));
     }
     
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct SnapshotWriter : IDisposable
+    private sealed class SnapshotWriter : FileWriter
     {
-        private readonly SafeFileHandle handle;
         private readonly string sourceFileName;
-        private readonly FileInfo destination;
-        internal readonly FileWriter Output;
+        internal readonly FileInfo Destination;
 
-        internal SnapshotWriter(long preallocationSize, DateTime creationTime, FileInfo destination)
+        public SnapshotWriter(long preallocationSize, DateTime creationTime, FileInfo destination)
+            : base(CreateTempSnapshot(preallocationSize, creationTime, out var sourceFileName))
         {
-            sourceFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            handle = File.OpenHandle(sourceFileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, preallocationSize: preallocationSize);
-            File.SetAttributes(handle, FileAttributes.NotContentIndexed);
-            File.SetCreationTimeUtc(handle, creationTime);
-            Output = new(handle) { MaxBufferSize = Environment.SystemPageSize };
-            this.destination = destination;
+            this.sourceFileName = sourceFileName;
+            this.Destination = destination;
         }
 
-        public void Dispose()
+        private static SafeFileHandle CreateTempSnapshot(long preallocationSize, DateTime creationTime, out string sourceFileName)
         {
-            Output.Dispose();
-            handle.Dispose();
-            File.Move(sourceFileName, destination.FullName, overwrite: true);
-            destination.Refresh();
+            sourceFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var handle = File.OpenHandle(sourceFileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
+                preallocationSize: preallocationSize);
+            File.SetAttributes(handle, FileAttributes.NotContentIndexed);
+            File.SetCreationTimeUtc(handle, creationTime);
+            return handle;
+        }
+
+        public void Commit()
+        {
+            File.Move(sourceFileName, Destination.FullName, overwrite: true);
+            Destination.Refresh();
+        }
+
+        public void Rollback() => File.Delete(sourceFileName);
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                handle.Dispose();
+            }
+            
+            base.Dispose(disposing);
         }
     }
 
@@ -50,7 +63,7 @@ partial class SimpleStateMachine
 
         public Snapshot(DirectoryInfo location, long index, long term)
         {
-            File = new(Path.Combine(location.FullName, $"{index}{FileNameDelimiter}{term}"));
+            File = CreateSnapshotFile(location, index, term);
             Index = index;
             Term = term;
         }
@@ -64,6 +77,9 @@ partial class SimpleStateMachine
             Term = long.Parse(term, InvariantCulture);
             File = file;
         }
+
+        public static FileInfo CreateSnapshotFile(DirectoryInfo location, long index, long term)
+            => new(Path.Combine(location.FullName, $"{index}{FileNameDelimiter}{term}"));
 
         long? IDataTransferObject.Length => File.Length;
 
@@ -84,14 +100,14 @@ partial class SimpleStateMachine
             var writer = CreateWriter(entry.Length.GetValueOrDefault(), entry.Timestamp.UtcDateTime);
             try
             {
-                await entry.WriteToAsync(writer.Output, token).ConfigureAwait(false);
-                await writer.Output.WriteAsync(token).ConfigureAwait(false);
-                writer.Output.FlushToDisk();
+                await entry.WriteToAsync(writer, token).ConfigureAwait(false);
+                await writer.WriteAsync(token).ConfigureAwait(false);
+                writer.FlushToDisk();
             }
             finally
             {
                 writer.Dispose();
-                File.Refresh();
+                writer.Commit();
             }
         }
         

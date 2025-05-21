@@ -66,17 +66,18 @@ partial class WriteAheadLog
         internal LogEntryList(ISnapshotManager manager, long startIndex, long endIndex, IMemoryView? dataPages, MetadataPageManager metadataPages,
             out long? snapshotIndex)
         {
-            snapshot = manager.TakeSnapshot();
+            snapshot = manager.Snapshot;
 
-            if (snapshot is not null)
+            if (snapshot?.Index is { } si && si >= startIndex)
             {
-                startIndex = long.Max(startIndex, snapshot.Index);
-                endIndex = long.Max(endIndex, startIndex);
-                snapshotIndex = snapshot.Index;
+                startIndex = si;
+                endIndex = long.Max(endIndex, si);
+                snapshotIndex = si;
             }
             else
             {
                 snapshotIndex = null;
+                snapshot = null;
             }
 
             StartIndex = startIndex;

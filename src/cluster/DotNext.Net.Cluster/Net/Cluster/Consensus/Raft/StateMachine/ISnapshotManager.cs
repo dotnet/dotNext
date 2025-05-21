@@ -15,7 +15,7 @@ public interface ISnapshotManager
     /// This method should be idempotent.
     /// </remarks>
     /// <returns>The currently maintaining snapshot; or <see langowrd="null"/> if there is no snapshot.</returns>
-    ISnapshot? TakeSnapshot();
+    ISnapshot? Snapshot { get; }
 
     /// <summary>
     /// Removes old snapshot versions stored on the disk.

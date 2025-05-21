@@ -313,7 +313,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <summary>
     /// Starts serving local member.
     /// </summary>
-    /// <param name="token">The token that can be used to cancel initialization process.</param>
+    /// <param name="token">The token that can be used to cancel the initialization process.</param>
     /// <returns>The task representing asynchronous execution of the method.</returns>
     /// <seealso cref="StartFollowing"/>
     public virtual async Task StartAsync(CancellationToken token)

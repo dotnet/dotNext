@@ -12,7 +12,7 @@ partial class WriteAheadLog
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task CleanUpAsync(CancellationToken token)
     {
-        var nextIndex = stateMachine.TakeSnapshot()?.Index ?? 0L;
+        var nextIndex = stateMachine.Snapshot?.Index ?? 0L;
 
         // After the barrier, we know that there is no competing reader that reads the old snapshot version
         lockManager.SetCallerInformation("Remove Pages");

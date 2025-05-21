@@ -296,7 +296,7 @@ public sealed class WriteAheadLogTests : Test
     public static async Task IncrementalState()
     {
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        var stateMachine = new SumStateMachine(new(dir));
+        await using var stateMachine = new SumStateMachine(new(dir));
         await using var wal = new WriteAheadLog(new() { Location = dir }, stateMachine);
 
         Memory<byte> buffer = new byte[sizeof(long)];
@@ -336,7 +336,7 @@ public sealed class WriteAheadLogTests : Test
             await wal.WaitForApplyAsync(index);
         }
         
-        var stateMachine = new SumStateMachine(new(dir));
+        await using var stateMachine = new SumStateMachine(new(dir));
         await using (var wal = new WriteAheadLog(new() { Location = dir }, stateMachine))
         {
             await stateMachine.RestoreAsync();

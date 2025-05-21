@@ -40,18 +40,21 @@ partial class WriteAheadLog
             return false;
         }
 
-        private Span<byte> GetMetadata(long index)
-        {
-            var pageIndex = GetStartPageIndex(index, out var offset);
-            return TryGetValue(pageIndex, out var page)
-                ? page.GetSpan().Slice(offset)
-                : throw new ArgumentOutOfRangeException(nameof(index));
-        }
-
         public LogEntryMetadata this[long index]
         {
-            get => new(GetMetadata(index));
-            set => value.Format(GetMetadata(index));
+            get
+            {
+                var pageIndex = GetStartPageIndex(index, out var offset);
+                return TryGetValue(pageIndex, out var page)
+                    ? new(page.GetSpan().Slice(offset))
+                    : throw new ArgumentOutOfRangeException(nameof(index));
+            }
+
+            set
+            {
+                var page = GetOrAdd(GetStartPageIndex(index, out var offset));
+                value.Format(page.GetSpan().Slice(offset));
+            }
         }
     }
 }

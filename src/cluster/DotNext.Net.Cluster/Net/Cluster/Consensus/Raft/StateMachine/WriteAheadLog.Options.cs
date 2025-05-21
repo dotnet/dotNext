@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -22,11 +23,12 @@ partial class WriteAheadLog
         /// Gets or sets the path to the root folder to be used by the log to persist log entries.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
+        [Required]
         public required string Location
         {
             get => location;
-            init => location = value is { Length: > 0 } && Path.IsPathFullyQualified(value)
-                ? value
+            init => location = value is { Length: > 0 }
+                ? Path.GetFullPath(value)
                 : throw new ArgumentOutOfRangeException(nameof(value));
         }
 

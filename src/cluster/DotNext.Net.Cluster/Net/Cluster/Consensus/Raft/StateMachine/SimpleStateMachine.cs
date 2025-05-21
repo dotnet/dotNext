@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using DotNext.IO;
+using DotNext.Runtime.CompilerServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
@@ -10,12 +12,17 @@ using Commands;
 /// creates a persistent snapshot for recovery.
 /// </summary>
 [Experimental("DOTNEXT001")]
-public abstract partial class SimpleStateMachine : IStateMachine
+public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachine
 {
+    private readonly CancellationToken lifetimeToken;
     private readonly DirectoryInfo location;
-    
+    private readonly Task<SnapshotWriter> sentinel;
+
+    [SuppressMessage("Usage", "CA2213", Justification = "See DisposeAsync() implementation")]
+    private CancellationTokenSource? lifetimeSource;
     private long appliedIndex;
     private volatile Snapshot? snapshot;
+    private volatile Task<SnapshotWriter>? snapshottingProcess;
 
     /// <summary>
     /// Initializes a new simple state machine.
@@ -27,6 +34,8 @@ public abstract partial class SimpleStateMachine : IStateMachine
             location.Create();
 
         this.location = location;
+        lifetimeToken = (lifetimeSource = new()).Token;
+        sentinel = Task.FromException<SnapshotWriter>(new ObjectDisposedException(GetType().Name));
     }
 
     /// <summary>
@@ -85,7 +94,7 @@ public abstract partial class SimpleStateMachine : IStateMachine
     }
 
     /// <inheritdoc/>
-    ISnapshot? ISnapshotManager.TakeSnapshot() => snapshot;
+    ISnapshot? ISnapshotManager.Snapshot => snapshot;
 
     /// <inheritdoc/>
     ValueTask ISnapshotManager.ReclaimGarbageAsync(long watermark, CancellationToken token)
@@ -124,25 +133,67 @@ public abstract partial class SimpleStateMachine : IStateMachine
 
     private async ValueTask<long> ApplyCoreAsync(LogEntry entry, CancellationToken token)
     {
+        await EndSnapshottingAsync(commit: true).ConfigureAwait(false);
+
         if (await ApplyAsync(entry, token).ConfigureAwait(false))
         {
-            await PersistAsync(entry.Index, entry.Term, token).ConfigureAwait(false);
+            var newTask = BeginSnapshottingAsync(entry.Index, entry.Term, lifetimeToken);
+
+            if (Interlocked.CompareExchange(ref snapshottingProcess, newTask, null) is not null)
+            {
+                await newTask.ConfigureAwait(false);
+            }
         }
-        
+
         return appliedIndex = entry.Index;
     }
 
-    private async ValueTask PersistAsync(long index, long term, CancellationToken token)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private Task EndSnapshottingAsync([ConstantExpected] bool commit)
+        => snapshottingProcess is not { } task
+            ? Task.CompletedTask
+            : commit
+                ? InstallSnapshotAsync(task)
+                : RollbackSnapshotAsync(task);
+
+    private async Task InstallSnapshotAsync(Task<SnapshotWriter> task)
     {
-        var newSnapshot = new Snapshot(location, index, term);
-        using (var writer = newSnapshot.CreateWriter(preallocationSize: 0L, DateTime.UtcNow))
+        var writer = await task.ConfigureAwait(false);
+        writer.Dispose();
+
+        if (ReferenceEquals(Interlocked.CompareExchange(ref snapshottingProcess, null, task), task))
         {
-            await PersistAsync(writer.Output, token).ConfigureAwait(false);
-            await writer.Output.WriteAsync(token).ConfigureAwait(false);
-            writer.Output.FlushToDisk();
+            writer.Commit();
+            snapshot = new Snapshot(writer.Destination);
+        }
+    }
+
+    private async Task RollbackSnapshotAsync(Task<SnapshotWriter> task)
+    {
+        var writer = await task.ConfigureAwait(false);
+        writer.Dispose();
+        writer.Rollback();
+        Interlocked.CompareExchange(ref snapshottingProcess, null, task);
+    }
+
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
+    private async Task<SnapshotWriter> BeginSnapshottingAsync(long index, long term, CancellationToken token)
+    {
+        var writer = new SnapshotWriter(preallocationSize: 0L, DateTime.UtcNow, Snapshot.CreateSnapshotFile(location, index, term));
+        try
+        {
+            await PersistAsync(writer, token).ConfigureAwait(false);
+            await writer.WriteAsync(token).ConfigureAwait(false);
+            writer.FlushToDisk();
+        }
+        catch
+        {
+            writer.Dispose();
+            writer.Rollback();
+            throw;
         }
 
-        snapshot = newSnapshot;
+        return writer;
     }
 
     /// <summary>
@@ -156,6 +207,8 @@ public abstract partial class SimpleStateMachine : IStateMachine
 
     private async ValueTask<long> InstallSnapshotAsync(LogEntry entry, CancellationToken token)
     {
+        await EndSnapshottingAsync(commit: false).ConfigureAwait(false);
+        
         var newSnapshot = new Snapshot(location, entry.Index, entry.Term);
         await newSnapshot.ReadFromAsync(entry, token).ConfigureAwait(false);
         await RestoreAsync(newSnapshot.File, token).ConfigureAwait(false);
@@ -163,4 +216,22 @@ public abstract partial class SimpleStateMachine : IStateMachine
         snapshot = newSnapshot;
         return appliedIndex = entry.Index;
     }
+
+    private async ValueTask DisposeImplAsync(CancellationTokenSource cts)
+    {
+        using (cts)
+        {
+            cts.Cancel();
+        }
+
+        var task = Interlocked.Exchange(ref snapshottingProcess, sentinel);
+        if (task is not null && !ReferenceEquals(task, sentinel))
+        {
+            await task.As<Task>().ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+        }
+    }
+
+    /// <inheritdoc/>
+    public virtual ValueTask DisposeAsync()
+        => Interlocked.Exchange(ref lifetimeSource, null) is { } cts ? DisposeImplAsync(cts) : ValueTask.CompletedTask;
 }

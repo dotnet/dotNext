@@ -145,8 +145,8 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
                 {
                     // Perf: the code in this block is inlined instead of moved to separated method because
                     // we want to prevent allocation of state machine on every call
-                    int quorum = 0, commitQuorum = 0, majority;
-                    (long currentIndex, long commitIndex, majority) = ForkHeartbeats(responsePipe, auditTrail, configurationStorage, enumerator);
+                    int quorum = 0, commitQuorum = 0;
+                    (long currentIndex, long commitIndex, var majority) = ForkHeartbeats(responsePipe, auditTrail, configurationStorage, enumerator);
 
                     while (await responsePipe.WaitToReadAsync().ConfigureAwait(false))
                     {

@@ -107,9 +107,6 @@ partial class WriteAheadLog
 
             return page;
         }
-        
-        protected Page GetOrAdd(ulong address, out int offset)
-            => GetOrAdd(GetPageIndex(address, out offset));
 
         public MemoryRange GetRange(ulong offset, long length) => new(this, offset, length);
 

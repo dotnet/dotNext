@@ -72,7 +72,7 @@ public partial class WriteAheadLog
         }
 
         private Page GetOrAdd(out int offset)
-            => GetOrAdd(LastWrittenAddress, out offset);
+            => GetOrAdd(GetPageIndex(LastWrittenAddress, out offset));
 
         ReadOnlySequence<byte> IMemoryView.GetSequence(ulong address, long length)
             => GetRange(address, length);

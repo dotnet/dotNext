@@ -72,7 +72,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             };
         }
 
-        var snapshotIndex = stateMachine.TakeSnapshot()?.Index ?? 0L;
+        var snapshotIndex = stateMachine.Snapshot?.Index ?? 0L;
         LastEntryIndex = LastCommittedEntryIndex = long.Max(lastReliablyWrittenEntryIndex, snapshotIndex);
         
         // flusher
@@ -237,7 +237,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
                 
                 await stateMachine.ApplyAsync(new LogEntry(entry, startIndex), token).ConfigureAwait(false);
-                var snapshotIndex = stateMachine.TakeSnapshot()?.Index ?? startIndex;
+                var snapshotIndex = stateMachine.Snapshot?.Index ?? startIndex;
                 LastEntryIndex = long.Max(tailIndex, LastCommittedEntryIndex = snapshotIndex);
             }
             else
