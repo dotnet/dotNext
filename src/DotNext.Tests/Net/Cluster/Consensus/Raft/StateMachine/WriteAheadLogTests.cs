@@ -277,18 +277,19 @@ public sealed class WriteAheadLogTests : Test
         {
             Equal(3L, wal.LastCommittedEntryIndex);
             Equal(3L, wal.LastEntryIndex);
+
+            await using var enumerator = wal.ReadAsync(1L, wal.LastEntryIndex).GetAsyncEnumerator();
             
-            Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = async (entries, snapshotIndex, token) =>
-            {
-                Null(snapshotIndex);
-                
-                Equal(entry1.Content, await entries[0].ToStringAsync(Encoding.UTF8, token: token));
-                Equal(entry2.Content, await entries[1].ToStringAsync(Encoding.UTF8, token: token));
-                Equal(entry3.Content, await entries[2].ToStringAsync(Encoding.UTF8, token: token));
-                return Missing.Value;
-            };
+            True(await enumerator.MoveNextAsync());
+            Equal(entry1.Content, await enumerator.Current.ToStringAsync(Encoding.UTF8));
             
-            await wal.ReadAsync(new LogEntryConsumer(checker), 1L, wal.LastEntryIndex);
+            True(await enumerator.MoveNextAsync());
+            Equal(entry2.Content, await enumerator.Current.ToStringAsync(Encoding.UTF8));
+            
+            True(await enumerator.MoveNextAsync());
+            Equal(entry3.Content, await enumerator.Current.ToStringAsync(Encoding.UTF8));
+
+            False(await enumerator.MoveNextAsync());
         }
     }
 
