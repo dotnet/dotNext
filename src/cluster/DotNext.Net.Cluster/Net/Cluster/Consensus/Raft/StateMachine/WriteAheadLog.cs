@@ -175,13 +175,13 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         {
             task = ValueTask.FromException<long>(exception);
         }
+        else if (typeof(TEntry) == typeof(BinaryLogEntry))
+        {
+            task = AppendBufferedAsync(Unsafe.As<TEntry, BinaryLogEntry>(ref entry), token);
+        }
         else if (entry.IsSnapshot)
         {
             task = ValueTask.FromException<long>(new InvalidOperationException(ExceptionMessages.SnapshotDetected));
-        }
-        else if (entry is BinaryLogEntry)
-        {
-            task = AppendBufferedAsync(Unsafe.As<TEntry, BinaryLogEntry>(ref entry), token);
         }
         else if (entry.TryGetMemory(out var payload))
         {
