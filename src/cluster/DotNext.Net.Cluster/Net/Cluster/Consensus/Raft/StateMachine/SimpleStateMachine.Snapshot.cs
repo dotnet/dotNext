@@ -23,7 +23,7 @@ partial class SimpleStateMachine
             : base(CreateTempSnapshot(preallocationSize, creationTime, out var sourceFileName))
         {
             this.sourceFileName = sourceFileName;
-            this.Destination = destination;
+            Destination = destination;
         }
 
         private static SafeFileHandle CreateTempSnapshot(long preallocationSize, DateTime creationTime, out string sourceFileName)
