@@ -88,7 +88,12 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
 
     static int IBinaryFormattable<LogEntryMetadata>.Size => Size;
 
-    internal int? Id => (flags & LogEntryFlags.HasIdentifier) is not 0U ? identifier : null;
+    internal int? Id => HasIdentifier ? identifier : null;
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private bool HasIdentifier => (flags & LogEntryFlags.HasIdentifier) is not 0U;
+
+    internal bool HasPayload => Length > 0L || HasIdentifier;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static LogEntryMetadata Create<TLogEntry>(TLogEntry entry, ulong offset, long length)

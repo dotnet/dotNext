@@ -67,12 +67,20 @@ partial class WriteAheadLog
         var ts = new Timestamp();
         for (long index = fromIndex, appliedIndex; index <= toIndex; index = long.Max(appliedIndex + 1L, index + 1L))
         {
-            var entry = new LogEntry(metadataPages[index], index, dataPages)
+            if (metadataPages[index] is { HasPayload: true } metadata)
             {
-                Context = context.Remove(index, out var ctx) ? ctx : null,
-            };
+                var entry = new LogEntry(metadata, index, dataPages)
+                {
+                    Context = context.Remove(index, out var ctx) ? ctx : null,
+                };
 
-            appliedIndex = await stateMachine.ApplyAsync(entry, token).ConfigureAwait(false);
+                appliedIndex = await stateMachine.ApplyAsync(entry, token).ConfigureAwait(false);
+            }
+            else
+            {
+                appliedIndex = index;
+            }
+
             Debug.Assert(appliedIndex <= toIndex);
             
             ApplyRateMeter.Add(1L, measurementTags);
