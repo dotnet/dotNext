@@ -250,7 +250,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                 if (startIndex <= LastCommittedEntryIndex)
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
                 
-                await stateMachine.ApplyAsync(new LogEntry(entry, startIndex), token).ConfigureAwait(false);
+                appliedIndex = await stateMachine.ApplyAsync(new LogEntry(entry, startIndex), token).ConfigureAwait(false);
                 var snapshotIndex = stateMachine.Snapshot?.Index ?? startIndex;
                 LastEntryIndex = long.Max(tailIndex, LastCommittedEntryIndex = snapshotIndex);
             }
