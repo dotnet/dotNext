@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
+using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
@@ -51,6 +52,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         stateLock = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
         state = new(rootPath);
         measurementTags = configuration.MeasurementTags;
+        manualFlushQueue = new();
         
         checkpoint = new(rootPath);
         var lastReliablyWrittenEntryIndex = checkpoint.Value;
@@ -78,7 +80,19 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         // flusher
         {
             flushTrigger = new(initialState: false) { MeasurementTags = configuration.MeasurementTags };
-            flusherTask = FlushAsync(commitIndex, lifetimeTokenSource.Token);
+
+            var interval = configuration.FlushInterval;
+            if (interval == TimeSpan.Zero)
+            {
+                flushOnCommit = true;
+                interval = InfiniteTimeSpan;
+            }
+            else
+            {
+                flushOnCommit = false;
+            }
+            
+            flusherTask = FlushAsync(commitIndex, interval, lifetimeTokenSource.Token);
         }
         
         // applier
@@ -571,7 +585,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     private void CleanUp()
     {
         Dispose<PageManager>([dataPages, metadataPages]);
-        Dispose<QueuedSynchronizer>([lockManager, appliedEvent, flushTrigger, applyTrigger, stateLock]);
+        Dispose<QueuedSynchronizer>([lockManager, appliedEvent, flushTrigger, applyTrigger, stateLock, manualFlushQueue]);
         checkpoint.Dispose();
         state.Dispose();
         context.Clear();

@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
@@ -247,7 +248,7 @@ public sealed class WriteAheadLogTests : Test
         
         await wal.ReadAsync(new LogEntryConsumer(checker), 1L, wal.LastEntryIndex);
     }
-    
+
     [Fact]
     public static async Task Commit()
     {
@@ -258,7 +259,7 @@ public sealed class WriteAheadLogTests : Test
         var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
 
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        await using (var wal = new WriteAheadLog(new() { Location = dir }, new NoOpStateMachine()))
+        await using (var wal = new WriteAheadLog(new() { Location = dir, FlushInterval = InfiniteTimeSpan }, new NoOpStateMachine()))
         {
             Equal(1L, await wal.AppendAsync(entry1));
             await wal.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5), 2L);
@@ -270,6 +271,7 @@ public sealed class WriteAheadLogTests : Test
             Equal(5L, wal.LastEntryIndex);
 
             await ThrowsAsync<InvalidOperationException>(wal.AppendAsync(entry1, 1L).AsTask);
+            await wal.FlushAsync();
         }
 
         //read again

@@ -16,16 +16,21 @@ partial class WriteAheadLog
 {
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private readonly AsyncAutoResetEvent flushTrigger;
+
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
+    private readonly SingleProducerMultipleConsumersCoordinator manualFlushQueue;
     private readonly Task flusherTask;
-    private readonly Checkpoint checkpoint;
+    private readonly bool flushOnCommit;
+    private Checkpoint checkpoint;
     
     private long commitIndex; // Commit lock protects modification of this field
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
-    private async Task FlushAsync(long previousIndex, CancellationToken token)
+    private async Task FlushAsync(long previousIndex, TimeSpan timeout, CancellationToken token)
     {
         for (long newIndex; !IsDisposingOrDisposed && backgroundTaskFailure is null; previousIndex = newIndex)
         {
+            manualFlushQueue.SwitchValve();
             newIndex = LastCommittedEntryIndex;
 
             if (newIndex > previousIndex)
@@ -52,7 +57,8 @@ partial class WriteAheadLog
             if (cleanupTask.IsCompleted)
                 cleanupTask = CleanUpAsync(token);
             
-            await flushTrigger.WaitAsync(token).ConfigureAwait(false);
+            manualFlushQueue.Drain();
+            await flushTrigger.WaitAsync(timeout, token).ConfigureAwait(false);
         }
     }
 
@@ -99,7 +105,30 @@ partial class WriteAheadLog
             }
         }
     }
-    
+
+    /// <summary>
+    /// Flushes and writes the checkpoint.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous state of the operation.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public ValueTask FlushAsync(CancellationToken token = default)
+    {
+        ValueTask task;
+
+        if (IsDisposingOrDisposed)
+        {
+            task = new(DisposedTask);
+        }
+        else
+        {
+            task = manualFlushQueue.WaitAsync(token);
+            flushTrigger.Set();
+        }
+
+        return task;
+    }
+
     /// <inheritdoc cref="IAuditTrail.LastCommittedEntryIndex"/>
     public long LastCommittedEntryIndex
     {
@@ -125,17 +154,20 @@ partial class WriteAheadLog
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void OnCommitted(long count)
     {
-        flushTrigger.Set();
+        if (flushOnCommit)
+            flushTrigger.Set();
+
         applyTrigger.Set();
         CommitRateMeter.Add(count, measurementTags);
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct Checkpoint : IDisposable
+    private struct Checkpoint : IDisposable
     {
         private const string FileName = "checkpoint";
 
         private readonly SafeFileHandle handle;
+        private long checkpoint;
 
         internal Checkpoint(DirectoryInfo location)
         {
@@ -155,28 +187,30 @@ partial class WriteAheadLog
             }
 
             handle = File.OpenHandle(path, mode, FileAccess.ReadWrite, FileShare.Read, FileOptions.WriteThrough, preallocationSize);
+
+            Span<byte> buffer = stackalloc byte[sizeof(long)];
+            checkpoint = RandomAccess.Read(handle, buffer, 0L) >= sizeof(long)
+                ? BinaryPrimitives.ReadInt64LittleEndian(buffer)
+                : 0L;
         }
 
         internal long Value
         {
-            [SkipLocalsInit]
-            get
-            {
-                Span<byte> buffer = stackalloc byte[sizeof(long)];
-                return RandomAccess.Read(handle, buffer, fileOffset: 0L) == buffer.Length
-                    ? BinaryPrimitives.ReadInt64LittleEndian(buffer)
-                    : 0L;
-            }
-            
+            readonly get => checkpoint;
+
             [SkipLocalsInit]
             set
             {
                 Span<byte> buffer = stackalloc byte[sizeof(long)];
-                BinaryPrimitives.WriteInt64LittleEndian(buffer, value);
+                BinaryPrimitives.WriteInt64LittleEndian(buffer, checkpoint = value);
                 RandomAccess.Write(handle, buffer, fileOffset: 0L);
             }
         }
 
-        public void Dispose() => handle?.Dispose();
+        public void Dispose()
+        {
+            handle?.Dispose();
+            this = default;
+        }
     }
 }

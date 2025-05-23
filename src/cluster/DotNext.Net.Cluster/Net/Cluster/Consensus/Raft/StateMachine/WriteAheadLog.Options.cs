@@ -6,6 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers;
 using Numerics;
+using Threading;
 
 partial class WriteAheadLog
 {
@@ -18,6 +19,7 @@ partial class WriteAheadLog
         private readonly int chunkMaxSize = Environment.SystemPageSize;
         private readonly int concurrencyLevel = Environment.ProcessorCount * 2 + 1;
         private readonly string location = string.Empty;
+        private readonly TimeSpan flushInterval;
 
         /// <summary>
         /// Gets or sets the path to the root folder to be used by the log to persist log entries.
@@ -30,6 +32,26 @@ partial class WriteAheadLog
             init => location = value is { Length: > 0 }
                 ? Path.GetFullPath(value)
                 : throw new ArgumentOutOfRangeException(nameof(value));
+        }
+
+        /// <summary>
+        /// Gets or sets the interval of the checkpoint.
+        /// </summary>
+        /// <value>
+        /// Use <see cref="System.Threading.Timeout.InfiniteTimeSpan"/> to disable automatic
+        /// checkpoints. The checkpoint must be triggered manually by calling <see cref="FlushAsync(CancellationToken)"/>
+        /// method. Use <see cref="TimeSpan.Zero"/> to enable automatic checkpoint on every commit.
+        /// Otherwise, the checkpoint is produced every specified time interval.
+        /// </value>
+        public TimeSpan FlushInterval
+        {
+            get => flushInterval;
+            init
+            {
+                Timeout.Validate(value);
+                
+                flushInterval = value;
+            }
         }
 
         /// <summary>
