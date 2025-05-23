@@ -161,8 +161,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         finally
         {
             lockManager.ReleaseAppendLock();
-            if (entry is IDisposable)
-                ((IDisposable)entry).Dispose();
+            if (typeof(TEntry) == typeof(BufferedLogEntry))
+                Unsafe.As<TEntry, BufferedLogEntry>(ref entry).Dispose();
         }
     }
 
