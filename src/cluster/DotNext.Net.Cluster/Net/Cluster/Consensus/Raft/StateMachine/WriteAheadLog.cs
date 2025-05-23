@@ -52,7 +52,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         stateLock = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
         state = new(rootPath);
         measurementTags = configuration.MeasurementTags;
-        manualFlushQueue = new();
+        manualFlushQueue = new() { MeasurementTags = configuration.MeasurementTags };
         
         checkpoint = new(rootPath);
         var lastReliablyWrittenEntryIndex = checkpoint.Value;
