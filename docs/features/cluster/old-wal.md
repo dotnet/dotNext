@@ -296,7 +296,7 @@ public class MyInterpreter : CommandInterpreter
 	}
 }
 ```
-Command types must be associated with their identifiers using `Id` static property required by [ICommand&lt;T&gt;](xref:DotNext.Net.Cluster.Consensus.Raft.Commands.ICommand-1) interface.
+Command types must be associated with their identifiers using `Id` static property required by [ICommand&lt;T&gt;](xref:DotNext.Net.Cluster.Consensus.Raft.Commands.ICommand`1) interface.
 
 Each command handler must be decorated with `CommandHandlerAttribute` attribute and have the following signature:
 * Return type is [ValueTask](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask)
