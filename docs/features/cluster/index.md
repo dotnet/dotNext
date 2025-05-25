@@ -79,7 +79,7 @@ public sealed class AddMessage : ISerializable<AddMessage>
 
 [ISerializable&lt;TSelf&gt;](xref:DotNext.Runtime.Serialization.ISerializable`1) interface is needed to provide serialization/deserialization logic. Thanks to static abstract methods in C#, the interface requires that the implementing type must provide deserialization logic in the form of static factory method.
 
-DTO models can be shared between the client and the listener. The message type must be registered in the client. After that, sending messages via typed client is trivial:
+DTO models can be shared between the client and the listener. The message type must be registered in the client. After that, sending messages via the typed client is trivial:
 ```csharp
 ISubscriber clusterMember;
 var client = new MessagingClient(clusterMember).RegisterMessage<AddMessage>(AddMessage.Name);
@@ -88,7 +88,7 @@ await client.SendSignal(new AddMessage { X = 40, Y = 2 }); // send one-way messa
 
 Typed listener must inherit from [MessageHandler](xref:DotNext.Net.Cluster.Messaging.MessageHandler) type or instantiated using [builder](xref:DotNext.Net.Cluster.Messaging.MessageHandler.Builder). Message handling logic is represented by the public instance methods.
 
-For duplex (request-reply) message handler the method must follow to one of the allowed signatures:
+For duplex (request-reply) message handler, the method must follow to one of the allowed signatures:
 ```csharp
 Task<OutputMessage> MethodName(InputMessage input, CancellationToken token);
 
@@ -110,9 +110,9 @@ Task MethodName(InputMessage input, object? context, CancellationToken token);
 Task MethodName(ISubscriber sender, InputMessage input, object? context, CancellationToken token);
 ```
 
-`InputMessage` is DTO model for the message. _sender_ parameter allows to obtained information about message sender. _context_ parameter supplies extra information about underlying transport for the message.
+`InputMessage` is DTO model for the message. _sender_ parameter allows obtaining information about message sender. _context_ parameter supplies extra information about underlying transport for the message.
 
-The following example demonstrates declaration of typed message listener:
+The following example demonstrates the declaration of typed message listener:
 ```csharp
 using DotNext.Net.Cluster.Messaging;
 using System.Threading;
@@ -128,7 +128,7 @@ public class TestMessageHandler : MessageHandler
 }
 ```
 
-In contrast to `MessagingClient`, all message types must be registered using [MessageAttribute&lt;TMessage&gt;](xref:DotNext.Net.Cluster.Messaging.MessageAttribute`1) attribute declaratively. However, this is not applicable when you constructing the handle using [builder](xref:DotNext.Net.Cluster.Messaging.MessageHandler.Builder).
+In contrast to `MessagingClient`, all message types must be registered using [MessageAttribute&lt;TMessage&gt;](xref:DotNext.Net.Cluster.Messaging.MessageAttribute`1) attribute declaratively. However, this is not applicable when you construct the handle using [builder](xref:DotNext.Net.Cluster.Messaging.MessageHandler.Builder).
 
 # Rumor Spreading
 Gossip-based messaging provides scalable way to broadcast messages across all cluster nodes. [IPeerMesh](xref:DotNext.Net.IPeerMesh) exposes the basic functionality to discover the peers visible from the local node. The key aspect of gossiping is ability to discover neighbors. This capability is usually called _membership protocol_ for Gossip-based communication. There are few approaches to achieve that:
@@ -161,7 +161,7 @@ The consensus algorithm allows to choose exactly one leader node in the cluster.
 * [Dissertation](https://github.com/ongardie/dissertation)
 
 # Replication
-Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of [IAuditTrail&lt;T&gt;](xref:DotNext.IO.Log.IAuditTrail`1) interface or use [PersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState) subclasses.
+Replication allows sharing the information between nodes to ensure consistency between them. Usually, consensus algorithm covers the replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log, which is suitable in situations when your distributed application requires distributed consensus only and doesn't have distributed state that should be synchronized across cluster. If you need reliable replication, then provide your own implementation of [IAuditTrail&lt;T&gt;](xref:DotNext.IO.Log.IAuditTrail`1) interface or use [WriteAheadLog](xref:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog) class.
 
 [IReplicationCluster](xref:DotNext.Net.Cluster.Replication.IReplicationCluster) interface indicates that the specific cluster implementation supports state replication across cluster nodes. It exposed access to the audit trail used to track local changes and commits on other cluster nodes.
 

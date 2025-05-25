@@ -16,9 +16,9 @@ The core of Raft implementation is [RaftCluster&lt;TMember&gt;](xref:DotNext.Net
 Correctness of consensus algorithm is tightly coupled with Write-Ahead Log defined via `AuditTrail` property of [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface or via Dependency Injection. If your application requires only consensus without replication of real data then [ConsensusOnlyState](xref:DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState) implementation is used. Note that this implementation is used by default as well. It is lighweight and fast. However it doesn't store state on disk. Consider to use [persistent WAL](./wal.md) as fully-featured persistent log for Raft.
 
 # State Recovery
-The underlying state machine can be reconstruced at application startup using `InitializeAsync` method provided by implementation of [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface. Usually, this method is called by .NEXT infrastructure automatically.
+The underlying state machine can be reconstructed at application startup using `InitializeAsync` method provided by implementation of [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface. Usually, this method is called by .NEXT infrastructure automatically.
 
-[MemoryBasedStateMachine](xref:DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine) class exposes `ReplayAsync` method to do this manually. Read more about persistent Write-Ahead Log for Raft [here](./wal.md).
+Read more about persistent Write-Ahead Log for Raft [here](./wal.md).
 
 # Client Interaction
 [Chapter 6](https://github.com/ongardie/dissertation/tree/master/clients) of Diego's dissertation contains recommendations about interaction between external client and cluster nodes. Raft implementation provided by .NEXT doesn't implement client session control as described in the paper. However, it offers all necessary tools for that:
@@ -27,25 +27,24 @@ The underlying state machine can be reconstruced at application startup using `I
 1. `IRaftCluster.Lease` property to gets the lease that can be used for linearizable read
 1. `IRaftCluster.ReplicateAsync` method to append, replicate and commit the log entry. Useful for implementing _write_ operations
 1. `IRaftCluster.ApplyReadBarrierAsync` method to insert a barrier to achieve linearizable read
-1. `IRaftCluster.LeadershipToken` property provides [CancellationToken](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken) that represents a leadership state. If the local node is a leader then the token is in non-signaled state. If the local node is a follower node then the token is in canceled state. If local node is downgrading from the leader to the follower state then the token will be moved to the canceled state. This token is useful when implementing _write_ operations and allow to abort asynchronous operation in case of downgrade
+1. `IRaftCluster.LeadershipToken` property provides [CancellationToken](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken) that represents a leadership state. If the local node is a leader, then the token is in non-signaled state. If the local node is a follower node then the token is in canceled state. If local node is downgrading from the leader to the follower state, then the token will be moved to the canceled state. This token is useful when implementing _write_ operations and allow to abort asynchronous operation in case of downgrade
 
-Elimination of duplicate commands received from clients should be implemented manually because basic framework is not aware about underlying network transport.
+Elimination of duplicate commands received from clients should be implemented manually because the basic framework is not aware about underlying network transport.
 
 ## Linearizability
-[Linearizability](https://en.wikipedia.org/wiki/Linearizability) requires the results of a read to reflect
-a state of the system sometime after the read was initiated; each read must at least return the results
+[Linearizability](https://en.wikipedia.org/wiki/Linearizability) requires the results of a read to reflect the state of the system sometime after the read was initiated; each read must at least return the results
 of the latest committed write. For instance, if the client performs _Write_ operation on variable _A_ and immediately requests variable _A_ back then _A_ must have the value which is equal to the value provided by _Write_ operation or more recent value. Without the linearizability, the client can see stale value of _A_. In other words, there is no guarantee that the client will able to see the result of its own _Write_ operation. A system that allowed stale reads would only provide serializability, which is a weaker form of consistency.
 
 Linearizable read can be achieved in Raft naturally. _Read_ operation can be performed on leader or follower nodes.
 
-`IRaftCluster.Lease` property exposes leadership lease than quarantees that the leader cannot be changed during that lease. This method of provoding linearizability doesn't require extra round of heartbeats. As a result, this is the most performant way to process read-only queries. However, the duration of the lease depends on _clockDriftBound_. Here's the citation from Raft paper:
+`IRaftCluster.Lease` property exposes leadership lease than guarantees that the leader cannot be changed during that lease. This method of providing linearizability doesn't require extra round of heartbeats. As a result, this is the most performant way to process read-only queries. However, the duration of the lease depends on _clockDriftBound_. Here's the citation from Raft paper:
 > The lease approach assumes a bound on clock drift across servers (over a given time period, no server’s clock increases more than this bound times any other). Discovering and maintaining this bound might present operational challenges (e.g., due to scheduling and garbage collection pauses, virtual machine migrations, or clock rate adjustments for time synchronization). If the assumptions are violated, the system could return arbitrarily stale information.
 
-Lease approach can be used only if processing of all read-only queries performing by the leader node.
+Lease approach can be used only if processing of all read-only queries performed by the leader node.
 
 Another approach is to use _read barrier_. The barrier is provided by `IRaftCluster.ApplyReadBarrierAsync` method. It allows to process read-only queries by follower nodes. In case of follower node, the method instructs leader node to execute a new round of heartbeats (with help of `ForceReplicationAsync` method). The follower waits for its state machine to advance at least as far as the index of the last committed log entry on the leader node. These actions are enough to satisfy linearizability. As you can see, this approach leads to extra overhead caused by network communication.
 
-Lease and read barrier are mechanisms for linearizable reads provided out-of-the-box. However, it's possible to use any other approach. For instance, the server respond with the commit index for each _Write_ request. The client can update and remember this value locally and provide it with read-only query. When _Read_ request is received, the server may call `IPersistentState.WaitForCommitAsync` to ensure that the log contains the index of the last committed log entry by the client.
+Lease and read barrier are mechanisms for linearizable reads provided out-of-the-box. However, it's possible to use any other approach. For instance, the server respond with the commit index for each _Write_ request. The client can update and remember this value locally and provide it with the read-only query. When _Read_ request is received, the server may call `IPersistentState.WaitForCommitAsync` to ensure that the log contains the index of the last committed log entry by the client.
 
 # Node Bootstrapping
 The node can be started in two modes:
@@ -63,7 +62,7 @@ The configuration can be in two states:
 * _Active_ configuration which is used by the leader node for sending heartbeats. This type of configuration is always acknowledged by the majority of nodes and, as a result, the same on every node in the cluster
 * _Proposed_ configuration which is created by leader node as a response to configuration change. This type of configuration must be replicated and confirmed by the majority of nodes to be transformed into _Active_ configuration.
 
-Proposed configuration is similar to uncommitted log entries in Raft log. Due to simplicity, the proposed configuration can be created using the following operations:
+The proposed configuration is similar to uncommitted log entries in Raft log. Due to simplicity, the proposed configuration can be created using the following operations:
 * Add a new member
 * Remove the existing member
 
@@ -76,7 +75,7 @@ It's not possible to remove or add multiple members at a time. Instead, you need
 > [!WARNING]
 > In-memory configuration storage is not recommended for production use. In case of node failures, the configuration will not survive the node restart.
 
-When a new node is added, it passes through warmup procedure. The leader node attempts to replicate as much as possible log entries to the added node. The number of rounds for catch up can be configured by `WarmupRounds` configuration property. When the leader node decided that the new node is in sync then it adds the address of that node to the proposed configuration. When the proposed configuration becomes the active configuration, readiness probe of the added node turning into the signaled state.
+When a new node is added, it passes through warmup procedure. The leader node attempts to replicate as much as possible log entries to the added node. The number of rounds to catch up the node can be configured by `WarmupRounds` configuration property. When the leader node is decided that the new node is in the sync then it adds the address of that node to the proposed configuration. When the proposed configuration becomes the active configuration, the readiness probe of the added node turning into the signaled state.
 
 A new member can be proposed using [IRaftHttpCluster.AddMemberAsync](xref:DotNext.Net.Cluster.Consensus.Raft.Http.IRaftHttpCluster) method for ASP.NET Core application or [RaftCluster.AddMemberAsync](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster) method for application without DI support.
 
@@ -275,7 +274,7 @@ HTTP binding for Raft uses [HttpClient](https://docs.microsoft.com/en-us/dotnet/
 * On Windows the leader will not be elected even though the majority is present - 2 of 3 nodes are available. This is happening because Connection Timeout is equal to Response Timeout, which is equal to `upperElectionTimeout`.
 * On Linux everything is fine because Connection Timeout less than Response Timeout
 
-By default, Raft implementation uses [SocketsHttpHandler](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.socketshttphandler). However, the handler can be overridden using [IHttpMessageHandlerFactory](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.ihttpmessagehandlerfactory). You can implement this interface manually and register that implementation as a singleton. .NEXT tries to use this interface if it is registered as a factory of custom [HttpMessageHandler](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessagehandler). The following example demonstrates how to implement this interface and create platform-independent version of message invoker:
+By default, Raft implementation uses [SocketsHttpHandler](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.socketshttphandler). However, the handler can be overridden using [IHttpMessageHandlerFactory](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.ihttpmessagehandlerfactory). You can implement this interface manually and register that implementation as a singleton. .NEXT tries to use this interface if it is registered as a factory of custom [HttpMessageHandler](https://docs.microsoft.com/en-us/dotnet/api/system.net.http.httpmessagehandler). The following example demonstrates how to implement this interface and create the platform-independent version of message invoker:
 
 ```csharp
 using System;
@@ -320,7 +319,7 @@ sealed class Startup
 }
 ```
 
-This redirection can be transparent to actual client if you use reverse proxy server such as NGINX. Reverse proxy can automatically handle the redirection without returning control to the client.
+This redirection can be transparent to the actual client if you use reverse proxy server such as NGINX. Reverse proxy can automatically handle the redirection without returning control to the client.
 
 It is possible to change default behavior of redirection where _307 Temporary Redirect_ status code is used. You can pass custom implementation into the optional parameter of `RedirectToLeader` method.
 
@@ -343,7 +342,7 @@ public void Configure(IApplicationBuilder app)
 The customized redirection should be as fast as possible and don't block the caller.
 
 ### Port mapping
-Redirection mechanism trying to construct valid URI of the leader node based on its actual IP address. Identification of the address is not a problem unlike port number. The infrastructure cannot use the port if its [WebHost](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webhost) because of Hosted Mode or the port from the incoming `Host` header because it can be rewritten by reverse proxy. The only way is to use the inbound port of the TCP listener responsible for handling all incoming HTTP requests. It is valid for the non-containerized environment. Inside of the container the ASP.NET Core application port is mapped to the externally visible port which not always the same. In this case you can specify port for redirections explicitly as follows:
+Redirection mechanism trying to construct valid URI of the leader node based on its actual IP address. Identification of the address is not a problem unlike port number. The infrastructure cannot use the port if its [WebHost](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webhost) because of Hosted Mode or the port from the incoming `Host` header because it can be rewritten by reverse proxy. The only way is to use the inbound port of the TCP listener responsible for handling all incoming HTTP requests. It is valid for the non-containerized environment. Inside the container, the ASP.NET Core application port is mapped to the externally visible port, which not always the same. In this case you can specify port for redirections explicitly as follows:
 
 ```csharp
 public void Configure(IApplicationBuilder app)
@@ -354,9 +353,9 @@ public void Configure(IApplicationBuilder app)
 ```
 
 ### Messaging
-Cluster Programming Suite supports messaging beween nodes through HTTP out-of-the-box. However, the infrastructure don't know how to handle custom messages. Therefore, if you want to utilize this functionality then you need to implement [IInputChannel](xref:DotNext.Net.Cluster.Messaging.IInputChannel) interface.
+Cluster Programming Suite supports messaging between nodes through HTTP out-of-the-box. However, the infrastructure doesn't know how to handle custom messages. Therefore, if you want to utilize this functionality, then you need to implement [IInputChannel](xref:DotNext.Net.Cluster.Messaging.IInputChannel) interface.
 
-Messaging inside of cluster supports redirection to the leader as well as for external client. But this mechanism implemented differently and exposed as `IInputChannel` interface via `LeaderRouter` property of [IMessageBus](xref:DotNext.Net.Cluster.Messaging.IMessageBus) interface.
+Messaging inside the cluster supports redirection to the leader as well as for external client. But this mechanism implemented differently and exposed as `IInputChannel` interface via `LeaderRouter` property of [IMessageBus](xref:DotNext.Net.Cluster.Messaging.IMessageBus) interface.
 
 ### Replication
 Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface. By default, it is implemented as [ConsensusOnlyState](xref:DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState) which is suitable only for applications that doesn't have replicated state. If your application has it, then use [MemoryBasedStateMachine](xref:DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine) class or implement the interface from scratch. The implementation can be injected explicitly via `AuditTrail` property of [IRaftCluster](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster) interface or implicitly via Dependency Injection. The explicit registration should be done inside of the user-defined implementation of [IClusterMemberLifetime](xref:DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime) interface registered as a singleton service in ASP.NET Core application. The implicit injection requires registration of a singleton service implementing [IPersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.IPersistentState) interface. `UsePersistenceEngine` extension method of [RaftClusterConfiguration](xref:DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration) class can be used for that purpose.
@@ -365,11 +364,11 @@ Information about reliable persistent state that uses non-volatile storage is lo
 
 ### Metrics
 Raft node internals can be measured using any OpenTelemetry-compliant tool or [dotnet-counters](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics-collection). .NEXT instrumented with modern [System.Diagnostics.Metrics](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/metrics-instrumentation) API so you can use the following counters:
-* DotNext.Net.Cluster.Consensus.Raft.Server - for server-side metrics
-* DotNext.Net.Cluster.Consensus.Raft.Client - for client-side metrics
+* DotNext.Net.Cluster.Consensus.Raft.Server — for server-side metrics
+* DotNext.Net.Cluster.Consensus.Raft.Client — for client-side metrics
 
 ## TCP Transport
-TCP transport used as bottom layer for specialized application protocol aimed to efficient transmission of Raft messages. This transport can be configured using [TcpConfiguration](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration) class:
+TCP transport is used as a bottom layer for specialized application protocol aimed at efficient transmission of Raft messages. This transport can be configured using [TcpConfiguration](xref:DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration) class:
 ```csharp
 using DotNext.Net.Cluster.Consensus.Raft;
 
@@ -400,9 +399,9 @@ TCP transport is WAN friendly and support transport-level encryption. However, t
 The recommended relationship between timeouts: `ConnectTimeout < RequestTimeout < LowerElectionTimeout`. In practice, _ConnectTimeout_ should be as small as possible to avoid impact on the cluster by disconnected nodes.
 
 # Example
-There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/dotnet/dotNext/tree/master/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world using one of the supported transports: `http`, `tcp`, `tcp+ssl`.
+There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/dotnet/dotNext/tree/master/src/examples/RaftNode). This playground allows testing the Raft consensus protocol in the real world using one of the supported transports: `http`, `tcp`, `tcp+ssl`.
 
-Each instance of launched application represents cluster node. All nodes can be started using the following script:
+Each instance of the launched application represents the cluster node. All nodes can be started using the following script:
 ```bash
 cd <dotnext>/src/examples/RaftNode
 dotnet run -- http 3262
@@ -410,7 +409,7 @@ dotnet run -- http 3263
 dotnet run -- http 3264
 ```
 
-Every instance should be launched in separated Terminal session. After that, you will see diagnostics messages in `stdout` about election process. Press _Ctrl+C_ in the window related to the leader node and ensure that new leader will be elected.
+Every instance should be launched in separated Terminal session. After that, you will see diagnostics messages in `stdout` about the election process. Press _Ctrl+C_ in the window related to the leader node and ensure that new leader will be elected.
 
 Optionally, you can test replication powered by persistent WAL. To do that, you need to specify the name of folder which is used to store Write Ahead Log files
 ```bash
@@ -425,7 +424,7 @@ Now you can see replication messages in each Terminal window. The replicated sta
 Raft implementation provided by .NEXT library contains some extensions of the original algorithm. For instance, _Standby_ extra state is added in addition to _Follower_, _Candidate_, and _Leader_ states. All those extensions are grouped into interfaces that can be found in [separated namespace](xref:DotNext.Net.Cluster.Consensus.Raft.Extensions).
 
 ## Automatic failure detection
-Automatic Failure Detection is another extension to original Raft algorithm that allows cluster leader to detect unresponsive followers and remove those from the cluster configuration. This behavior allows to detect and tolerate permanent failures of a particular cluster node and remove it from the majority calculation to remain cluster available for writes. For instance, we have 7 nodes in the cluster. The cluster remains available if at least 4 nodes are alive. With failure detector, we can remove 3 faulty nodes and reconfigure the cluster dynamically to indicate that the cluster has 4 nodes only. In that case, the cluster remains available even with 3 nodes.
+Automatic Failure Detection is another extension to the original Raft algorithm that allows cluster leader to detect unresponsive followers and remove those from the cluster configuration. This behavior detects and tolerates permanent failures of a particular cluster node and removes it from the majority calculation to remain cluster available for writes. For instance, we have 7 nodes in the cluster. The cluster remains available if at least 4 nodes are alive. With failure detector, we can remove 3 faulty nodes and reconfigure the cluster dynamically to indicate that the cluster has 4 nodes only. In that case, the cluster remains available even with 3 nodes.
 
 However, the current implementation needs to inform the rest of the cluster about faulty node. In other words, the cluster must be available for writes. If 4 of 7 nodes are detected as faulty in the same time, it is not possible to reconfigure the cluster because there is no majority to keep the leader working as expected.
 
@@ -454,12 +453,12 @@ For memory-based state machine:
 1. Declare class that is responsible for communication with leader node using custom messages
     1. This class aggregates reference to `IDataEngine`
     1. This class encapsulates logic for messaging with leader node
-    1. This class acting as controller for API exposed to external clients
+    1. This class acting as a controller for API exposed to external clients
     1. Use `IRaftCluster.ApplyReadBarrierAsync` to ensure that the node is fully synchronized with the leader node
     1. Use `IRaftCluster.ReplicateAsync` for write operations
 1. Expose data manipulation methods from class described above to clients using selected network transport
 1. Implement duplicates elimination logic for write requests from clients
-1. Call `ReplayAsync` method which is inherited from `MemoryBasedStateMachine` class at application startup. This step is not need if you're using Raft implementation for ASP.NET Core.
+1. Call `ReplayAsync` method which is inherited from `MemoryBasedStateMachine` class at application startup. This step is not needed if you're using Raft implementation for ASP.NET Core.
 
 `ForceReplicationAsync` method doesn't provide strong guarantees that the log entry at the specified index will be replicated and committed on return. A typical code for processing a new log entry from the client might be look like this:
 ```csharp
@@ -486,9 +485,9 @@ Transport- and serialization-agnostic implementation of Raft is represented by [
 All these implementations can be used as examples of transport for Raft messages.
 
 ## Architecture
-`RaftCluster` contains implementation of consensus and replication logic so your focus is network-specific programming. First of all, you need to derive from this class. There are two main extensibility points when network-specific programing needed:
-* `TMember` generic parameter which should be replaced with actual type argument by the derived class. Actual type argument should be a class implementing [IRaftClusterMember](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember) interface and other generic constraints. This part of implementation contains code necessary for sending Raft-specific messages over the wire.
-* Body of derived class itself. This part of implementation contains code necessary for receiving Raft-specific messages over the wire.
+`RaftCluster` contains implementation of consensus and replication logic so your focus is network-specific programming. First, you need to derive from this class. There are two main extensibility points when network-specific programing needed:
+* `TMember` generic parameter which should be replaced with actual type argument by the derived class. Actual type argument should be a class implementing [IRaftClusterMember](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember) interface and other generic constraints. This part of the implementation contains code necessary for sending Raft-specific messages over the wire.
+* Body of derived class itself. This part of the implementation contains code necessary for receiving Raft-specific messages over the wire.
 
 From architecture point of view, these two parts are separated. However, the actual implementation may require a bridge between them.
 
@@ -510,8 +509,8 @@ sealed class ClusterMember : Disposable, IRaftClusterMember
 
 `VoteAsync`, `PreVoteAsync`, `AppendEntriesAsync`, `InstallSnapshotAsync` are methods for sending Raft-specific messages over the wire. They are called automatically by core logic located in `RaftCluster` class. Implementation of these methods should throw [MemberUnavailableException](xref:DotNext.Net.Cluster.MemberUnavailableException) if any network-related problem occurred.
 
-The last two methods responsible for serializing log entries to the underlying network connection. [IRaftLogEntry](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry) is inherited from [IDataTransferObject](xref:DotNext.IO.IDataTransferObject) which represents abstraction for Data Transfer Object. DTO is an object that can be serialized to or deserialized from binary form. However, serialization/deserialization process and binary layout are fully controlled by DTO itself in contrast to classic .NET serialization. You need to wrap underlying network stream to [IAsyncBinaryWriter](xref:DotNext.IO.IAsyncBinaryWriter) and pass it to `IDataTransferObject.WriteAsync` method for each log entry. `IAsyncBinaryWriter` interface has built-in static factory methods for wrapping [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) and [pipes](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipewriter). Note that `IDataTransferObject.Length` may return **null** and you will not be able to identify log record size (in bytes) during serialization. This behavior depends on underlying implementation of Write-Ahead Log. You can examine value of `IAuditTrail.IsLogEntryLengthAlwaysPresented` property to apply necessary optimizations to the transmission process:
-* If it's **true** then all log entries retrieved from such log has known size in bytes and `IDataTransferObject.Length` is not **null**. 
+The last two methods responsible for serializing log entries to the underlying network connection. [IRaftLogEntry](xref:DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry) is inherited from [IDataTransferObject](xref:DotNext.IO.IDataTransferObject) interface, which represents abstraction for Data Transfer Object. DTO is an object that can be serialized to or deserialized from binary form. However, the serialization/deserialization process and binary layout are fully controlled by DTO itself in contrast to classic .NET serialization. You need to wrap underlying network stream to [IAsyncBinaryWriter](xref:DotNext.IO.IAsyncBinaryWriter) and pass it to `IDataTransferObject.WriteAsync` method for each log entry. `IAsyncBinaryWriter` interface has built-in static factory methods for wrapping [streams](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream) and [pipes](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipewriter). Note that `IDataTransferObject.Length` may return **null**, and you will not be able to identify log record size (in bytes) during serialization. This behavior depends on the underlying implementation of the Write-Ahead Log. You can examine value of `IAuditTrail.IsLogEntryLengthAlwaysPresented` property to apply necessary optimizations to the transmission process:
+* If it's **true** then all log entries retrieved from such the log has known size in bytes and `IDataTransferObject.Length` is not **null**. 
 * If it's **false** then some or all log entries retrieved from such log has unknown size in bytes and `IDataTransferObject.Length` may be **null**. Thus, you need to provide special logic which allows to write binary data of undefined size to the underlying connection.
 
 The default implementation for ASP.NET Core covers both cases. It uses multipart content type where log records separated by the special boundary from each other if `IAuditTrail.IsLogEntryLengthAlwaysPresented` returns **false**. Otherwise, more optimized transfer over the wire is applied. In this case, the overhead is comparable to the raw TCP connection.
@@ -523,7 +522,7 @@ You can use [this](https://github.com/dotnet/dotNext/blob/master/src/cluster/Dot
 ## Derivation from RaftCluster
 `RaftCluster` class contains all necessary methods for handling deserialized Raft messages:
 * `AppendEntriesAsync` method allows to handle _AppendEntries_ Raft message type that was sent by another node
-* `ResignAsync` method allows to handle leadership revocation procedure
+* `ResignAsync` method allows handling of the leadership revocation procedure
 * `InstallSnapshotAsync` method allows to handle _InstallSnapshot_ Raft message type that was sent by another node
 * `VoteAsync` method allows to handle _Vote_ Raft message type that was sent by another node
 * `PreVoteAsync` method allows to handle _PreVote_ message introduced as extension to original Raft model to avoid inflation of _Term_ value
@@ -539,9 +538,9 @@ It is recommended to use **partial class** feature of C# language to separate di
 
 Another important extensibility points are `StartAsync` and `StopAsync` virtual methods. They are responsible for lifecycle management of `RaftCluster` instance. You can override them for the following reasons:
 * Opening and closing sockets
-* Sending announcement to other nodes
+* Sending the announcement to other nodes
 * Detection of local cluster member
-* Initialization of a list of cluster members
+* Initialization of the cluster members list
 * Enforcement of configuration
 
 ## Input/Output
@@ -557,9 +556,9 @@ Pipe is more preferred way because of its asynchronous nature and shared memory 
 * Various [I/O enhancements](../io/index.md) aimed to simplify programming using pipes
 
 ## Network programming
-The most important configuration of Raft cluster member is election timeout. Your transport-specific implementation should align socket timeouts correctly with it. For instance, connection timeout should not be greater than lower election timeout. Otherwise, you will have unstable cluster with frequent re-elections.
+The most important configuration of Raft cluster member is election timeout. Your transport-specific implementation should align socket timeouts correctly with it. For instance, connection timeout should not be greater than lower election timeout. Otherwise, you will have the unstable cluster with frequent re-elections.
 
-Another important aspect is a deduplication of Raft messages which is normal situation for TCP protocol. _Vote_, _PreVote_ and _InstallSnapshot_ are idempotent messages and can be handled twice by receiver. However, _AppendEntries_ is not.
+Another important aspect is a deduplication of Raft messages which is the normal situation for TCP protocol. _Vote_, _PreVote_ and _InstallSnapshot_ are idempotent messages and can be handled twice by receiver. However, _AppendEntries_ is not.
 
 ## Hosting Model
 The shape of your API for transport-specific Raft implementation depends on how the potential users will host it. There are few possible situations:
@@ -569,7 +568,7 @@ The shape of your API for transport-specific Raft implementation depends on how 
     * Third-party Dependency Injection container
 * Standalone application without DI container
 
-In case of DI container from Microsoft you need to implement [IHostedService](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.hosting.ihostedservice) in your derived class. The signatures of `StartAsync` and `StopAsync` methods from `RaftCluster` class are fully compatible with this interface so you don't need implement interface methods manually. As a result, you will have automatic lifecycle management and configuration infrastructure at low cost. The instance of your class which is derived from `RaftCluster` should be registered as singleton service. All its interfaces should be registered separately.
+In the case of DI container from Microsoft, you need to implement [IHostedService](https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.hosting.ihostedservice) in your derived class. The signatures of `StartAsync` and `StopAsync` methods from `RaftCluster` class are fully compatible with this interface, so you don't need to implement interface methods manually. As a result, you will have automatic lifecycle management and configuration infrastructure at low cost. The instance of your class which is derived from `RaftCluster` should be registered as singleton service. All its interfaces should be registered separately.
 
 Different DI container requires correct adoption of your implementation.
 
