@@ -7,8 +7,6 @@ using Runtime.CompilerServices;
 
 partial class WriteAheadLog
 {
-    private Task cleanupTask = Task.CompletedTask;
-
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task CleanUpAsync(CancellationToken token)
     {

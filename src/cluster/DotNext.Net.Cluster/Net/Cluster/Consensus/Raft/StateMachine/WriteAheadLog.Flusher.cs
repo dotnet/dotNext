@@ -28,37 +28,45 @@ partial class WriteAheadLog
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task FlushAsync(long previousIndex, TimeSpan timeout, CancellationToken token)
     {
-        for (long newIndex; !IsDisposingOrDisposed && backgroundTaskFailure is null; previousIndex = newIndex)
+        var cleanupTask = Task.CompletedTask;
+        try
         {
-            manualFlushQueue.SwitchValve();
-            newIndex = LastCommittedEntryIndex;
-
-            if (newIndex > previousIndex)
+            for (long newIndex; !token.IsCancellationRequested && backgroundTaskFailure is null; previousIndex = newIndex)
             {
-                // Ensure that the flusher is not running with the snapshot installation process concurrently
-                lockManager.SetCallerInformation("Flush Pages");
-                await lockManager.AcquireReadLockAsync(token).ConfigureAwait(false);
-                try
-                {
-                    Flush(previousIndex, newIndex);
-                }
-                catch (Exception e)
-                {
-                    backgroundTaskFailure = ExceptionDispatchInfo.Capture(e);
-                    appliedEvent.Interrupt(e);
-                    break;
-                }
-                finally
-                {
-                    lockManager.ReleaseReadLock();
-                }
-            }
+                manualFlushQueue.SwitchValve();
+                newIndex = LastCommittedEntryIndex;
 
-            if (cleanupTask.IsCompleted)
-                cleanupTask = CleanUpAsync(token);
-            
-            manualFlushQueue.Drain();
-            await flushTrigger.WaitAsync(timeout, token).ConfigureAwait(false);
+                if (newIndex > previousIndex)
+                {
+                    // Ensure that the flusher is not running with the snapshot installation process concurrently
+                    lockManager.SetCallerInformation("Flush Pages");
+                    await lockManager.AcquireReadLockAsync(token).ConfigureAwait(false);
+                    try
+                    {
+                        Flush(previousIndex, newIndex);
+                    }
+                    catch (Exception e)
+                    {
+                        backgroundTaskFailure = ExceptionDispatchInfo.Capture(e);
+                        appliedEvent.Interrupt(e);
+                        break;
+                    }
+                    finally
+                    {
+                        lockManager.ReleaseReadLock();
+                    }
+                    
+                    if (cleanupTask.IsCompleted)
+                        cleanupTask = CleanUpAsync(token);
+                }
+
+                manualFlushQueue.Drain();
+                await flushTrigger.WaitAsync(timeout, token).ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == token)
+        {
+            await cleanupTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
         }
     }
 

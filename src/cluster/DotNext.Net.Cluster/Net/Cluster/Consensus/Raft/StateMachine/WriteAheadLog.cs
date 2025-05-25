@@ -610,7 +610,6 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         
         await flusherTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
         await appenderTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
-        await cleanupTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
 
         CleanUp();
     }

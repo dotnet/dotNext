@@ -23,7 +23,7 @@ partial class WriteAheadLog
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task ApplyAsync(CancellationToken token)
     {
-        for (long newIndex; !IsDisposingOrDisposed && backgroundTaskFailure is null; await applyTrigger.WaitAsync(token).ConfigureAwait(false))
+        for (long newIndex; !token.IsCancellationRequested && backgroundTaskFailure is null; await applyTrigger.WaitAsync(token).ConfigureAwait(false))
         {
             newIndex = LastCommittedEntryIndex;
 
