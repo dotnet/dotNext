@@ -2,6 +2,7 @@
 
 using Buffers.Binary;
 using IO.Log;
+using Text.Json;
 
 /// <summary>
 /// Provides various extension methods for <see cref="IPersistentState"/> interface.
@@ -62,4 +63,18 @@ public static class PersistentStateExtensions
         CancellationToken token = default)
         where T : IBinaryFormattable<T>
         => state.AppendAsync<BinaryLogEntry<T>>(new() { Content = payload, Term = state.Term, Context = context }, token);
+
+    /// <summary>
+    /// Appends JSON objec to the log tail.
+    /// </summary>
+    /// <param name="state">The log.</param>
+    /// <param name="payload">The log entry payload.</param>
+    /// <param name="context">The optional context to be passed to the state machine.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <typeparam name="T">The type of the binary object.</typeparam>
+    /// <returns>The index of the added command within the log.</returns>
+    public static ValueTask<long> AppendJsonAsync<T>(this IPersistentState state, T payload, object? context = null,
+        CancellationToken token = default)
+        where T : IJsonSerializable<T>
+        => state.AppendAsync<JsonLogEntry<T>>(new() { Content = payload, Term = state.Term, Context = context }, token);
 }

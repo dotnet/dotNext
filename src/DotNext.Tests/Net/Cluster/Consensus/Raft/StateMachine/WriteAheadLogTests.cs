@@ -8,6 +8,7 @@ using static System.Threading.Timeout;
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers.Binary;
+using Text.Json;
 using static IO.DataTransferObject;
 using LogEntryConsumer = IO.Log.LogEntryConsumer<IRaftLogEntry, Missing>;
 using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
@@ -347,5 +348,25 @@ public sealed class WriteAheadLogTests : Test
     {
         var reader = new WriteAheadLog.LogEntryReader();
         Empty(reader);
+    }
+    
+    [Fact]
+    public static async Task JsonSerialization()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        await using var stateMachine = new JsonStateMachine(new(dir));
+        await using var wal = new WriteAheadLog(new() { Location = dir }, stateMachine);
+        
+        await wal.AppendJsonAsync(new TestJsonObject { StringField = "Entry1" });
+        var index = await wal.AppendJsonAsync(new TestJsonObject { StringField = "Entry2" });
+        await wal.CommitAsync(index);
+        await wal.WaitForApplyAsync(index);
+        Equal(2, stateMachine.Entries.Count);
+
+        var payload = stateMachine.Entries[0];
+        Equal("Entry1", payload.StringField.Value);
+
+        payload = stateMachine.Entries[1];
+        Equal("Entry2", payload.StringField.Value);
     }
 }
