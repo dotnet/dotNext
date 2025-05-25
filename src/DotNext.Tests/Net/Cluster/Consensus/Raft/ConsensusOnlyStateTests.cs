@@ -34,7 +34,7 @@ public sealed class ConsensusOnlyStateTests : Test
             True(entries[0].IsSnapshot);
             return default;
         };
-        await auditTrail.ReadAsync(new LogEntryConsumer(checker), 1L);
+        await auditTrail.ReadAsync(new LogEntryConsumer(checker), 1L, auditTrail.LastEntryIndex);
     }
 
     [Fact]
@@ -45,7 +45,8 @@ public sealed class ConsensusOnlyStateTests : Test
         Equal(0, auditTrail.LastCommittedEntryIndex);
         var entry1 = new EmptyLogEntry { Term = 41 };
         var entry2 = new EmptyLogEntry { Term = 42 };
-        Equal(1, await auditTrail.AppendAsync(new LogEntryList(entry1, entry2)));
+        Equal(1L, await auditTrail.AppendAsync(entry1));
+        Equal(2L, await auditTrail.AppendAsync(entry2));
         Equal(0, auditTrail.LastCommittedEntryIndex);
         Equal(2, auditTrail.LastEntryIndex);
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = static (entries, snapshotIndex, token) =>
@@ -76,8 +77,8 @@ public sealed class ConsensusOnlyStateTests : Test
         Equal(2, auditTrail.LastEntryIndex);
         Equal(0, auditTrail.LastCommittedEntryIndex);
         //commit all entries
-        Equal(2, await auditTrail.CommitAsync(CancellationToken.None));
-        await auditTrail.WaitForCommitAsync(2);
+        Equal(2, await auditTrail.CommitAsync(auditTrail.LastEntryIndex, CancellationToken.None));
+        await auditTrail.WaitForApplyAsync(2);
         Equal(2, auditTrail.LastCommittedEntryIndex);
         //check overlapping with committed entries
         await ThrowsAsync<InvalidOperationException>(() => auditTrail.AppendAsync(new LogEntryList(entry1, entry2), 2).AsTask());
@@ -97,22 +98,5 @@ public sealed class ConsensusOnlyStateTests : Test
             return default;
         };
         await auditTrail.ReadAsync(new LogEntryConsumer(checker), 1, 3, CancellationToken.None);
-    }
-
-    [Fact]
-    public static async Task DropRecords()
-    {
-        IPersistentState auditTrail = new ConsensusOnlyState();
-        Equal(1, await auditTrail.AppendAsync(new LogEntryList(new EmptyLogEntry { Term = 42 }, new EmptyLogEntry { Term = 43 }, new EmptyLogEntry { Term = 44 })));
-        Equal(2, await auditTrail.DropAsync(2L));
-        Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = static (entries, snapshotIndex, token) =>
-        {
-            Null(snapshotIndex);
-            Single(entries);
-            Equal(42, entries[0].Term);
-            False(entries[0].IsSnapshot);
-            return default;
-        };
-        await auditTrail.ReadAsync(new LogEntryConsumer(checker), 1, CancellationToken.None);
     }
 }

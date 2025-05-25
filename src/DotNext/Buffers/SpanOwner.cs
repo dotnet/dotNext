@@ -96,7 +96,7 @@ public ref struct SpanOwner<T>
 
     /// <summary>
     /// Rents the memory from <see cref="ArrayPool{T}.Shared"/>, if <typeparamref name="T"/>
-    /// contains at least one field of reference type; or use <see cref="NativeMemory"/>.
+    /// contains at least one field of the reference type; or use <see cref="NativeMemory"/>.
     /// </summary>
     /// <param name="minBufferSize">The minimum size of the memory to rent.</param>
     /// <param name="exactSize"><see langword="true"/> to return the buffer of <paramref name="minBufferSize"/> length; otherwise, the returned buffer is at least of <paramref name="minBufferSize"/>.</param>
@@ -174,7 +174,7 @@ public ref struct SpanOwner<T>
     public readonly ref T this[int index] => ref memory[index];
 
     /// <summary>
-    /// Obtains managed pointer to the first element of the rented array.
+    /// Gets managed pointer to the first element of the rented array.
     /// </summary>
     /// <returns>The managed pointer to the first element of the rented array.</returns>
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -188,7 +188,7 @@ public ref struct SpanOwner<T>
     public readonly override string ToString() => memory.ToString();
 
     /// <summary>
-    /// Returns the memory back to the pool.
+    /// Returns the memory to the pool.
     /// </summary>
     public void Dispose()
     {

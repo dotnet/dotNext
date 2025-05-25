@@ -114,7 +114,9 @@ internal partial class Server
             Debug.Assert(!consumed);
 
             consumed = true;
-            return writer.CopyFromAsync(stream, count: null, token);
+            return metadata.Length is { } length and <= int.MaxValue && stream.TryReadFrameData((int)length, out var payload)
+                ? writer.Invoke(payload, token)
+                : writer.CopyFromAsync(stream, count: null, token);
         }
 
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)

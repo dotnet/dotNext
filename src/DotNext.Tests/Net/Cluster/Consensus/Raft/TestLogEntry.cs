@@ -6,17 +6,11 @@ using ILogEntry = IO.Log.ILogEntry;
 using TextMessage = Messaging.TextMessage;
 
 [ExcludeFromCodeCoverage]
-internal sealed class TestLogEntry : TextMessage, IInputLogEntry
+internal sealed class TestLogEntry(string command) : TextMessage(command, "Entry"), IInputLogEntry
 {
-    public TestLogEntry(string command)
-        : base(command, "Entry")
-    {
-        Timestamp = DateTimeOffset.UtcNow;
-    }
+    public DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
 
-    public DateTimeOffset Timestamp { get; }
-
-    public long Term { get; set; }
+    public long Term { get; init; }
 
     bool ILogEntry.IsSnapshot => false;
 

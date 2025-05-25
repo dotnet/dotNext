@@ -18,15 +18,15 @@ public sealed class SetTests : Test
         True(set.IsSupersetOf(ImmutableHashSet<int>.Empty));
         True(set.IsProperSupersetOf(ImmutableHashSet<int>.Empty));
 
-        var superset = new int[] { 10, 20 };
+        var superset = new[] { 10, 20 };
         True(set.IsSubsetOf(superset));
         True(set.IsProperSubsetOf(superset));
 
         True(set.Overlaps(superset));
-        False(set.Overlaps(new int[] { 30, 40 }));
+        False(set.Overlaps([30, 40]));
 
         True(set.SetEquals(ImmutableHashSet.Create(10)));
-        False(set.SetEquals(ImmutableHashSet.Create<int>(stackalloc int[] { 10, 20 })));
+        False(set.SetEquals(ImmutableHashSet.Create([10, 20])));
     }
 
     [Fact]
@@ -66,10 +66,10 @@ public sealed class SetTests : Test
         True(set.IsSupersetOf(ImmutableHashSet<long>.Empty));
         True(set.IsProperSupersetOf(ImmutableHashSet<long>.Empty));
 
-        True(set.Overlaps(ImmutableHashSet.Create<long>(stackalloc long[] { -1L, 0L })));
+        True(set.Overlaps(ImmutableHashSet.Create([-1L, 0L])));
 
-        False(set.IsProperSubsetOf(ImmutableHashSet.Create<long>(stackalloc long[] { -1L, 0L })));
-        True(set.IsSubsetOf(ImmutableHashSet.Create<long>(stackalloc long[] { 0L, 1L, 2L, 3L })));
-        True(set.IsProperSubsetOf(ImmutableHashSet.Create<long>(stackalloc long[] { 0L, 1L, 2L, 3L })));
+        False(set.IsProperSubsetOf(ImmutableHashSet.Create([-1L, 0L])));
+        True(set.IsSubsetOf(ImmutableHashSet.Create([0L, 1L, 2L, 3L])));
+        True(set.IsProperSubsetOf(ImmutableHashSet.Create([0L, 1L, 2L, 3L])));
     }
 }

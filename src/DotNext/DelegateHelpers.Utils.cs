@@ -25,10 +25,12 @@ public static partial class DelegateHelpers
         where TRewriter : struct, ISupplier<Delegate, object?>
     {
         var list = d.GetInvocationList();
-        if (list.LongLength == 1L)
-            return ReferenceEquals(list[0], d) ? d.Method.CreateDelegate<TDelegate>(rewriter.Invoke(d)) : ChangeType<TDelegate, TRewriter>(list[0], rewriter);
+        if (list is [var singleDelegate])
+            return ReferenceEquals(singleDelegate, d)
+                ? d.Method.CreateDelegate<TDelegate>(rewriter.Invoke(d))
+                : ChangeType<TDelegate, TRewriter>(singleDelegate, rewriter);
 
-        // We use untyped CreateDelegate to avoid typecast inside of the loop.
+        // We use untyped CreateDelegate to avoid typecast inside the loop.
         // Also, it's reasonable to reuse already allocated invocation list to store
         // newly created delegates because Delegate.Combine accepts array only
         var delegateType = typeof(TDelegate);

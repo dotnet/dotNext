@@ -91,7 +91,7 @@ public ref struct SpanReader<T>
     public readonly ReadOnlySpan<T> Span => MemoryMarshal.CreateReadOnlySpan(ref reference, length);
 
     /// <summary>
-    /// Gets the span over consumed elements.
+    /// Gets the span over the consumed elements.
     /// </summary>
     public readonly ReadOnlySpan<T> ConsumedSpan => MemoryMarshal.CreateReadOnlySpan(ref reference, position);
 

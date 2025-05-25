@@ -352,14 +352,21 @@ public static partial class Collection
         => collection.Concat(items);
 
     /// <summary>
-    /// Converts synchronous collection of elements to asynchronous.
+    /// Converts the synchronous collection of elements to asynchronous.
     /// </summary>
     /// <param name="enumerable">The collection of elements.</param>
+    /// <param name="yieldIteration"><see langword="true"/> to execute every iteration asynchronously; otherwise, <see langword="false"/>.</param>
     /// <typeparam name="T">The type of the elements in the collection.</typeparam>
-    /// <returns>The asynchronous wrapper over synchronous collection of elements.</returns>
+    /// <returns>The asynchronous wrapper over the synchronous collection of elements.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="enumerable"/> is <see langword="null"/>.</exception>
-    public static IAsyncEnumerable<T> ToAsyncEnumerable<T>(this IEnumerable<T> enumerable)
-        => new AsyncEnumerable.Proxy<T>(enumerable ?? throw new ArgumentNullException(nameof(enumerable)));
+    public static IAsyncEnumerable<T> ToAsyncEnumerable<T>(this IEnumerable<T> enumerable, bool yieldIteration = false)
+    {
+        ArgumentNullException.ThrowIfNull(enumerable);
+
+        return yieldIteration
+            ? new AsyncEnumerable.Proxy<T, AsyncEnumerable.YieldingEnumerator<T>>(enumerable)
+            : new AsyncEnumerable.Proxy<T, AsyncEnumerable.Enumerator<T>>(enumerable);
+    }
 
     /// <summary>
     /// Converts ad-hoc enumerator to a generic enumerator.

@@ -659,4 +659,23 @@ public sealed class StreamSourceTests : Test
             Equal(expected, actual);
         }
     }
+
+    [Fact]
+    public static void SyncOverAsyncRead()
+    {
+        var expected = RandomBytes(512);
+        using var source = new MemoryStream();
+        source.Write(expected);
+        source.Seek(0L, SeekOrigin.Begin);
+
+        using var destination = StreamSource.AsStream(ReadAsync, source);
+        True(destination.CanTimeout);
+        destination.ReadTimeout = (int)DefaultTimeout.TotalMilliseconds;
+        var actual = new byte[512];
+        Equal(expected.Length, destination.Read(actual, 0, actual.Length));
+        Equal(expected, actual);
+
+        static ValueTask<int> ReadAsync(Memory<byte> buffer, MemoryStream ms, CancellationToken token)
+            => ms.ReadAsync(buffer, token);
+    }
 }

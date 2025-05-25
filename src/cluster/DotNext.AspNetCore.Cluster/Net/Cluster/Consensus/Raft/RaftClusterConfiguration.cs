@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -6,9 +7,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Membership;
+using StateMachine;
 
 /// <summary>
-/// Allows to setup special service used for configuration of <see cref="IRaftCluster"/> instance.
+/// Allows setting up the special service used for configuration of <see cref="IRaftCluster"/> instance.
 /// </summary>
 [CLSCompliant(false)]
 public static class RaftClusterConfiguration
@@ -44,6 +46,42 @@ public static class RaftClusterConfiguration
             .AddSingleton<PersistentState>(engineCast)
             .AddSingleton<IAuditTrail<IRaftLogEntry>>(engineCast)
             .AddHostedService<BackgroundCompactionService>();
+    }
+
+    /// <summary>
+    /// Registers the state machine and the write-ahead log for it.
+    /// </summary>
+    /// <param name="services">A collection of services provided by DI container.</param>
+    /// <typeparam name="TStateMachine">The type of the state machine.</typeparam>
+    /// <returns>A modified collection of services.</returns>
+    [Experimental("DOTNEXT001")]
+    public static IServiceCollection UseStateMachine<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TStateMachine>(
+        this IServiceCollection services)
+        where TStateMachine : class, IStateMachine
+    {
+        Func<IServiceProvider, TStateMachine> stateMachineCast = ServiceProviderServiceExtensions.GetRequiredService<TStateMachine>;
+        
+        return services.AddSingleton<TStateMachine>()
+            .AddSingleton<IStateMachine, TStateMachine>(stateMachineCast)
+            .AddSingleton<IPersistentState, WriteAheadLog>();
+    }
+
+    /// <summary>
+    /// Restores the state machine.
+    /// </summary>
+    /// <remarks>
+    /// The state machine must be registered previously with <see cref="UseStateMachine{TStateMachine}"/> method.
+    /// </remarks>
+    /// <param name="app">The application builder.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <typeparam name="TStateMachine">The type of the state machine.</typeparam>
+    /// <returns>The task representing the state of the asynchronous operation.</returns>
+    [Experimental("DOTNEXT001")]
+    public static ValueTask RestoreStateAsync<TStateMachine>(this IApplicationBuilder app, CancellationToken token = default)
+        where TStateMachine : SimpleStateMachine
+    {
+        var stateMachine = app.ApplicationServices.GetRequiredService<TStateMachine>();
+        return stateMachine.RestoreAsync(token);
     }
 
     /// <summary>

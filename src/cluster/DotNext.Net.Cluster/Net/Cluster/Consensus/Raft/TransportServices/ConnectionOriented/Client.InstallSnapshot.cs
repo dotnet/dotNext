@@ -5,7 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriente
 using IO;
 using static Buffers.ByteBuffer;
 
-internal partial class Client : RaftClusterMember
+internal partial class Client
 {
     private sealed class InstallSnapshotExchange(long term, IRaftLogEntry snapshot, long snapshotIndex) : IClientExchange<Result<HeartbeatResult>>
     {

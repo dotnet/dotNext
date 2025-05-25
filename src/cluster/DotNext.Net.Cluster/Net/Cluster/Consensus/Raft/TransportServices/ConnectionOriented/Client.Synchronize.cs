@@ -4,7 +4,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriente
 
 using Buffers;
 
-internal partial class Client : RaftClusterMember
+internal partial class Client
 {
     [StructLayout(LayoutKind.Auto)]
     private readonly struct SynchronizeExchange : IClientExchange<long?>

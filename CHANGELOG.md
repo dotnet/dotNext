@@ -1,6 +1,28 @@
 Release Notes
 ====
 
+# 05-25-2025
+<a href="https://www.nuget.org/packages/dotnext/5.22.0">DotNext 5.22.0</a>
+* Added `!` operator overloading for the result and optional types: [261](https://github.com/dotnet/dotNext/pull/261)
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.22.0">DotNext.Metaprogramming 5.22.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.22.0">DotNext.Unsafe 5.22.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.22.0">DotNext.Threading 5.22.0</a>
+* Added `Interrupt` method to `AsyncTrigger` class
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.22.0">DotNext.IO 5.22.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.22.0">DotNext.Net.Cluster 5.22.0</a>
+* Introduced a new `WriteAheadLog` experimental class as long-term replacement of `MemoryBasedStateMachine` and `DiskBasedStateMachine`. Both classes remain available in the current major version. However, they are subject to removal in the next major version. A new write-ahead log provides much better performance, simpler configuration and simpler API
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.22.0">DotNext.AspNetCore.Cluster 5.22.0</a>
+* Added new configuration helper methods to support new write-ahead log
+
 # 04-08-2025
 <a href="https://www.nuget.org/packages/dotnext/5.21.0">DotNext 5.21.0</a>
 * Added `Disposable.CreateException()` protected method

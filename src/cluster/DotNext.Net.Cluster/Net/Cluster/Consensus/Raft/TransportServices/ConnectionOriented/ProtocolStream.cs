@@ -3,6 +3,7 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 using Buffers;
+using static Threading.Tasks.Synchronization;
 
 /// <summary>
 /// Provides encoding/decoding routines for transmitting Raft-specific
@@ -33,7 +34,7 @@ internal abstract partial class ProtocolStream : Stream, IResettable
     {
         var localBuffer = buffer.Copy(allocator);
         var timeoutTracker = new CancellationTokenSource(WriteTimeout);
-        var task = WriteToTransportAsync(localBuffer.Memory, timeoutTracker.Token).AsTask();
+        var task = WriteToTransportAsync(localBuffer.Memory, timeoutTracker.Token);
         try
         {
             task.Wait();
@@ -46,7 +47,6 @@ internal abstract partial class ProtocolStream : Stream, IResettable
         {
             localBuffer.Dispose();
             timeoutTracker.Dispose();
-            task.Dispose();
         }
     }
 
@@ -57,7 +57,7 @@ internal abstract partial class ProtocolStream : Stream, IResettable
         int result;
         var localBuffer = allocator.AllocateExactly(buffer.Length);
         var timeoutTracker = new CancellationTokenSource(ReadTimeout);
-        var task = ReadFromTransportAsync(localBuffer.Memory, timeoutTracker.Token).AsTask();
+        var task = ReadFromTransportAsync(localBuffer.Memory, timeoutTracker.Token);
         try
         {
             task.Wait();
@@ -72,7 +72,6 @@ internal abstract partial class ProtocolStream : Stream, IResettable
         {
             localBuffer.Dispose();
             timeoutTracker.Dispose();
-            task.Dispose();
         }
 
         return result;
@@ -85,7 +84,7 @@ internal abstract partial class ProtocolStream : Stream, IResettable
         int result;
         var localBuffer = allocator.AllocateExactly(buffer.Length);
         var timeoutTracker = new CancellationTokenSource(ReadTimeout);
-        var task = ReadFromTransportAsync(localBuffer.Memory, minimumSize, timeoutTracker.Token).AsTask();
+        var task = ReadFromTransportAsync(localBuffer.Memory, minimumSize, timeoutTracker.Token);
         try
         {
             task.Wait();
@@ -100,7 +99,6 @@ internal abstract partial class ProtocolStream : Stream, IResettable
         {
             localBuffer.Dispose();
             timeoutTracker.Dispose();
-            task.Dispose();
         }
 
         return result;
@@ -111,6 +109,8 @@ internal abstract partial class ProtocolStream : Stream, IResettable
     internal Span<byte> RemainingBufferSpan => buffer.Span.Slice(bufferEnd);
 
     internal ReadOnlySpan<byte> WrittenBufferSpan => buffer.Span[bufferStart..bufferEnd];
+
+    private ReadOnlyMemory<byte> WrittenBuffer => buffer.Memory[bufferStart..bufferEnd];
 
     public void Reset()
     {

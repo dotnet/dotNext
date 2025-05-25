@@ -51,7 +51,7 @@ public static class Optional
     /// non-null, return an Optional describing the result. Otherwise, returns <see cref="Optional{T}.None"/>.
     /// </summary>
     /// <typeparam name="TInput">The type of stored in the Optional container.</typeparam>
-    /// <typeparam name="TOutput">The type of the result of the mapping function.</typeparam>
+    /// <typeparam name="TOutput">The type of the mapping function result.</typeparam>
     /// <param name="task">The task containing Optional value.</param>
     /// <param name="converter">A mapping function to be applied to the value, if present.</param>
     /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Optional{T}.None"/>.</returns>
@@ -63,7 +63,7 @@ public static class Optional
     /// non-null, return an Optional describing the result. Otherwise, returns <see cref="Optional{T}.None"/>.
     /// </summary>
     /// <typeparam name="TInput">The type of stored in the Optional container.</typeparam>
-    /// <typeparam name="TOutput">The type of the result of the mapping function.</typeparam>
+    /// <typeparam name="TOutput">The type of the mapping function result.</typeparam>
     /// <param name="task">The task containing Optional value.</param>
     /// <param name="converter">A mapping function to be applied to the value, if present.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -117,7 +117,7 @@ public static class Optional
     /// </summary>
     /// <typeparam name="T">Type of the value.</typeparam>
     /// <param name="task">The task returning optional value.</param>
-    /// <returns>The value, if present, otherwise default.</returns>
+    /// <returns>The value stored in the container, if present, otherwise default value.</returns>
     public static async Task<T?> OrDefault<T>(this Task<Optional<T>> task)
         => (await task.ConfigureAwait(false)).ValueOrDefault;
 
@@ -143,7 +143,7 @@ public static class Optional
     /// Returns the underlying type argument of the specified optional type.
     /// </summary>
     /// <param name="optionalType">Optional type.</param>
-    /// <returns>Underlying type argument of optional type; otherwise, <see langword="null"/>.</returns>
+    /// <returns>Underlying type argument of the optional type; otherwise, <see langword="null"/>.</returns>
     public static Type? GetUnderlyingType(Type optionalType) => IsOptional(optionalType) ? optionalType.GetGenericArguments()[0] : null;
 
     /// <summary>
@@ -234,7 +234,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// <summary>
     /// Constructs non-empty container.
     /// </summary>
-    /// <param name="value">A value to be placed into container.</param>
+    /// <param name="value">A value to be placed into the container.</param>
     /// <remarks>
     /// The property <see langword="IsNull"/> of the constructed object may be <see langword="true"/>
     /// if <paramref name="value"/> is <see langword="null"/>.
@@ -271,7 +271,11 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// <returns>The value represented as <see cref="Optional{T}"/> or <see cref="Optional{T}.None"/> if there is no value.</returns>
     public static Optional<T> Create<TMonad>(TMonad value)
         where TMonad : struct, IOptionMonad<T>
-        => value.TryGet(out var result) ? new(result) : None;
+        => value is Optional<T>
+            ? Unsafe.BitCast<TMonad, Optional<T>>(value)
+            : value.TryGet(out var result)
+                ? new(result)
+                : None;
 
     /// <summary>
     /// Determines whether the object represents meaningful value.
@@ -328,23 +332,23 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     public Optional<object> Box() => IsUndefined ? default : new(value);
 
     /// <summary>
-    /// Attempts to extract value from container if it is present.
+    /// Attempts to extract value from this container if it is present.
     /// </summary>
     /// <param name="value">Extracted value.</param>
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-    public bool TryGet([MaybeNullWhen(false)] out T value)
+    public bool TryGet([NotNullWhen(true)] out T? value)
     {
         value = this.value;
         return HasValue;
     }
 
     /// <summary>
-    /// Attempts to extract value from container if it is present.
+    /// Attempts to extract value from this container if it is present.
     /// </summary>
     /// <param name="value">Extracted value.</param>
     /// <param name="isNull"><see langword="true"/> if underlying value is <see langword="null"/>; otherwise, <see langword="false"/>.</param>
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-    public bool TryGet([MaybeNullWhen(false)] out T value, out bool isNull)
+    public bool TryGet([NotNullWhen(true)] out T? value, out bool isNull)
     {
         value = this.value!;
         switch (kind)
@@ -475,7 +479,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     }
 
     /// <summary>
-    /// Obtains immutable reference to the value in the container.
+    /// Gets an immutable reference to the value in the container.
     /// </summary>
     /// <exception cref="InvalidOperationException">No value is present.</exception>
     [UnscopedRef]
@@ -499,7 +503,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     }
 
     /// <summary>
-    /// Obtains immutable reference to the value in the container.
+    /// Gets an immutable reference to the value in the container.
     /// </summary>
     /// <typeparam name="TException">The type of the exception to throw if the optional container has no value.</typeparam>
     /// <returns>The immutable reference to the value in the container.</returns>
@@ -510,7 +514,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         => ref GetReference(new Activator<TException>());
 
     /// <summary>
-    /// Obtains immutable reference to the value in the container.
+    /// Gets an immutable reference to the value in the container.
     /// </summary>
     /// <param name="exceptionFactory">The factory used to produce exception if the container has no value.</param>
     /// <returns>The immutable reference to the value in the container.</returns>
@@ -520,7 +524,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         => ref GetReference<DelegatingSupplier<Exception>>(exceptionFactory);
 
     /// <summary>
-    /// Obtains immutable reference to the value in the container.
+    /// Gets an immutable reference to the value in the container.
     /// </summary>
     /// <param name="exceptionFactory">The factory used to produce exception if the container has no value.</param>
     /// <returns>The immutable reference to the value in the container.</returns>
@@ -562,7 +566,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// If a value is present, apply the provided mapping function to it, and if the result is
     /// non-null, return an Optional describing the result. Otherwise, returns <see cref="None"/>.
     /// </summary>
-    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <typeparam name="TResult">The type of the mapping function result.</typeparam>
     /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
     /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
     public Optional<TResult> Convert<TResult>(Converter<T, TResult> mapper)
@@ -572,7 +576,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// If a value is present, apply the provided mapping function to it, and if the result is
     /// non-null, return an Optional describing the result. Otherwise, returns <see cref="None"/>.
     /// </summary>
-    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <typeparam name="TResult">The type of the mapping function result.</typeparam>
     /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
     /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="None"/>.</returns>
     [CLSCompliant(false)]
@@ -666,7 +670,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// Determines whether this container stores
     /// the same value as the specified one.
     /// </summary>
-    /// <param name="other">Other container to compare.</param>
+    /// <param name="other">The container to compare.</param>
     /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
     public bool Equals(Optional<T> other) => Equals(in other);
 
@@ -674,7 +678,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     /// Determines whether this container stores
     /// the same value as the specified one.
     /// </summary>
-    /// <param name="other">Other container to compare.</param>
+    /// <param name="other">The container to compare.</param>
     /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
     public override bool Equals(object? other) => other switch
     {
@@ -767,21 +771,12 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         _ => None
     };
 
-    /// <summary>
-    /// Checks whether the container has value.
-    /// </summary>
-    /// <param name="optional">The container to check.</param>
-    /// <returns><see langword="true"/> if this container has value; otherwise, <see langword="false"/>.</returns>
-    /// <see cref="HasValue"/>
-    [MemberNotNullWhen(true, nameof(ValueOrDefault))]
+    /// <inheritdoc cref="IOptionMonad{T,TSelf}.op_True"/>
     public static bool operator true(in Optional<T> optional) => optional.HasValue;
 
-    /// <summary>
-    /// Checks whether the container has no value.
-    /// </summary>
-    /// <param name="optional">The container to check.</param>
-    /// <returns><see langword="true"/> if this container has no value; otherwise, <see langword="false"/>.</returns>
-    /// <see cref="HasValue"/>
-    [MemberNotNullWhen(false, nameof(ValueOrDefault))]
-    public static bool operator false(in Optional<T> optional) => optional.kind < NotEmptyValue;
+    /// <inheritdoc cref="IOptionMonad{T,TSelf}.op_False"/>
+    public static bool operator false(in Optional<T> optional) => !optional;
+
+    /// <inheritdoc cref="IOptionMonad{T,TSelf}.op_LogicalNot"/>
+    public static bool operator !(in Optional<T> optional) => optional.kind < NotEmptyValue;
 }

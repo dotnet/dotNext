@@ -124,7 +124,7 @@ public readonly struct ReadOnlyDictionaryView<TKey, TInput, TOutput>(IReadOnlyDi
         => Equals(in other);
 
     /// <summary>
-    /// Returns hash code for the this view.
+    /// Returns hash code for this view.
     /// </summary>
     /// <returns>The hash code of this view.</returns>
     public override int GetHashCode() => RuntimeHelpers.GetHashCode(source) ^ mapper.GetHashCode();

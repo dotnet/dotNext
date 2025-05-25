@@ -14,16 +14,11 @@ public partial class CommandInterpreter
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct InterpretingTransformation : IDataTransferObject.ITransformation<int>
+    private readonly struct InterpretingTransformation(int id, IHandlerRegistry registry) : IDataTransferObject.ITransformation<int>
     {
-        private readonly int id;
-        private readonly CommandHandler handler;
-
-        internal InterpretingTransformation(int id, IHandlerRegistry registry)
-        {
-            this.handler = registry.TryGetValue(id, out var handler) ? handler : throw new UnknownCommandException(id);
-            this.id = id;
-        }
+        private readonly CommandHandler handler = registry.TryGetValue(id, out var hnd)
+            ? hnd
+            : throw new UnknownCommandException(id);
 
         internal object? Context
         {
