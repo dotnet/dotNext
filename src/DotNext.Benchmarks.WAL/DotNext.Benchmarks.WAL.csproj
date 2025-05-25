@@ -5,8 +5,13 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <Authors>.NET Foundation and Contributors</Authors>
+        <Product>.NEXT Family of Libraries</Product>
+        <Copyright>Copyright © .NET Foundation and Contributors</Copyright>
         <RootNamespace>DotNext.Benchmarks.WAL</RootNamespace>
         <NoWarn>$(NoWarn);DOTNEXT001</NoWarn>
+        <Version>5.22.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
