@@ -196,7 +196,7 @@ var entry = state.CreateJsonLogEntry(new SubtractCommand { X = 10, Y = 20 });
 await state.AppendAsync(entry);
 ```
 
-`SubtractCommand` must be JSON-serializable type. Its content will be serialialized to JSON and written as log entry. It's recommended to use [JSON polymorphic serialization](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/polymorphism).
+`SubtractCommand` must be JSON-serializable type. Its content will be serialized to JSON and written as log entry. It's recommended to use [JSON polymorphic serialization](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/polymorphism).
 
 Now the written log entry can be deserialized and interpreted easily inside of `AppendAsync` method:
 ```csharp
@@ -361,7 +361,7 @@ In the same time, [Disk-based State Machine](xref:DotNext.Net.Cluster.Consensus.
 
 ## LSM Trees
 [Log-structured merge tree](https://en.wikipedia.org/wiki/Log-structured_merge-tree) is a perfect data structure to implement write-heavy K/V database. Here you can find some tips about the architecture of custom WAL and state machine on top of LSM Trees. Most LSM trees used in practice employ multiple levels:
-* **Level 0**. With help of [DiskBasedStateMachine](xref:DotNext.Net.Cluster.Consensus.Raft.DiskBasedStateMachine), you can organize the segments of log entries at this level. Each segment stores the log entries. When the log entry is committed, you can update in-memory state machine at this level with the committed entry. When all log entires in the segment are committed, you can persist in-memory state to the segment at Level 1. This approach allows to keep recent changes in the memory and easily recover in case of failure. When the state is persisted and moved to the Level 1, all committed entries can be discarded from the log.
+* **Level 0**. With help of [DiskBasedStateMachine](xref:DotNext.Net.Cluster.Consensus.Raft.DiskBasedStateMachine), you can organize the segments of log entries at this level. Each segment stores the log entries. When the log entry is committed, you can update in-memory state machine at this level with the committed entry. When all log entries in the segment are committed, you can persist in-memory state to the segment at Level 1. This approach allows to keep recent changes in the memory and easily recover in case of failure. When the state is persisted and moved to the Level 1, all committed entries can be discarded from the log.
 * **Level 1**. At this level the implementation maintains the segments (or _runs_) persisted on the disk. New segments arrive from Level 0. The segment can be persisted using [SSTable](https://yetanotherdevblog.com/lsm/) format.
 * **Level 2**. Growing number of segments at Level 1 may consume a lot of space on the disk. Most of segments may contain outdated data so they can be discarded. The actual implementation must merge multiple segments from Level 1 into a single segment. This process is called _compaction_. Compaction can be implemented as a background process. Here you need a global lock only for two things: delete merged segments and replace the existing snapshot with a new one.
 
