@@ -146,13 +146,13 @@ public sealed class AddMessage : ISerializable&lt;AddMessage&gt;
 }
 </code></pre>
 <p><a class="xref" href="../../api/DotNext.Runtime.Serialization.ISerializable-1.html">ISerializable&lt;TSelf&gt;</a> interface is needed to provide serialization/deserialization logic. Thanks to static abstract methods in C#, the interface requires that the implementing type must provide deserialization logic in the form of static factory method.</p>
-<p>DTO models can be shared between the client and the listener. The message type must be registered in the client. After that, sending messages via typed client is trivial:</p>
+<p>DTO models can be shared between the client and the listener. The message type must be registered in the client. After that, sending messages via the typed client is trivial:</p>
 <pre><code class="lang-csharp">ISubscriber clusterMember;
 var client = new MessagingClient(clusterMember).RegisterMessage&lt;AddMessage&gt;(AddMessage.Name);
 await client.SendSignal(new AddMessage { X = 40, Y = 2 }); // send one-way message
 </code></pre>
 <p>Typed listener must inherit from <a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.MessageHandler.html">MessageHandler</a> type or instantiated using <a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.MessageHandler.Builder.html">builder</a>. Message handling logic is represented by the public instance methods.</p>
-<p>For duplex (request-reply) message handler the method must follow to one of the allowed signatures:</p>
+<p>For duplex (request-reply) message handler, the method must follow to one of the allowed signatures:</p>
 <pre><code class="lang-csharp">Task&lt;OutputMessage&gt; MethodName(InputMessage input, CancellationToken token);
 
 Task&lt;OutputMessage&gt; MethodName(ISubscriber sender, InputMessage input, CancellationToken token);
@@ -170,8 +170,8 @@ Task MethodName(InputMessage input, object? context, CancellationToken token);
 
 Task MethodName(ISubscriber sender, InputMessage input, object? context, CancellationToken token);
 </code></pre>
-<p><code>InputMessage</code> is DTO model for the message. <em>sender</em> parameter allows to obtained information about message sender. <em>context</em> parameter supplies extra information about underlying transport for the message.</p>
-<p>The following example demonstrates declaration of typed message listener:</p>
+<p><code>InputMessage</code> is DTO model for the message. <em>sender</em> parameter allows obtaining information about message sender. <em>context</em> parameter supplies extra information about underlying transport for the message.</p>
+<p>The following example demonstrates the declaration of typed message listener:</p>
 <pre><code class="lang-csharp">using DotNext.Net.Cluster.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
@@ -185,7 +185,7 @@ public class TestMessageHandler : MessageHandler
     }
 }
 </code></pre>
-<p>In contrast to <code>MessagingClient</code>, all message types must be registered using <a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.MessageAttribute-1.html">MessageAttribute&lt;TMessage&gt;</a> attribute declaratively. However, this is not applicable when you constructing the handle using <a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.MessageHandler.Builder.html">builder</a>.</p>
+<p>In contrast to <code>MessagingClient</code>, all message types must be registered using <a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.MessageAttribute-1.html">MessageAttribute&lt;TMessage&gt;</a> attribute declaratively. However, this is not applicable when you construct the handle using <a class="xref" href="../../api/DotNext.Net.Cluster.Messaging.MessageHandler.Builder.html">builder</a>.</p>
 <h1 id="rumor-spreading">Rumor Spreading</h1>
 <p>Gossip-based messaging provides scalable way to broadcast messages across all cluster nodes. <a class="xref" href="../../api/DotNext.Net.IPeerMesh.html">IPeerMesh</a> exposes the basic functionality to discover the peers visible from the local node. The key aspect of gossiping is ability to discover neighbors. This capability is usually called <em>membership protocol</em> for Gossip-based communication. There are few approaches to achieve that:</p>
 <ul>
@@ -218,7 +218,7 @@ public class TestMessageHandler : MessageHandler
 <li><a href="https://github.com/ongardie/dissertation">Dissertation</a></li>
 </ul>
 <h1 id="replication">Replication</h1>
-<p>Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of <a class="xref" href="../../api/DotNext.IO.Log.IAuditTrail-1.html">IAuditTrail&lt;T&gt;</a> interface or use <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a> subclasses.</p>
+<p>Replication allows sharing the information between nodes to ensure consistency between them. Usually, consensus algorithm covers the replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log, which is suitable in situations when your distributed application requires distributed consensus only and doesn't have distributed state that should be synchronized across cluster. If you need reliable replication, then provide your own implementation of <a class="xref" href="../../api/DotNext.IO.Log.IAuditTrail-1.html">IAuditTrail&lt;T&gt;</a> interface or use <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.html">WriteAheadLog</a> class.</p>
 <p><a class="xref" href="../../api/DotNext.Net.Cluster.Replication.IReplicationCluster.html">IReplicationCluster</a> interface indicates that the specific cluster implementation supports state replication across cluster nodes. It exposed access to the audit trail used to track local changes and commits on other cluster nodes.</p>
 <h1 id="implementations">Implementations</h1>
 <ul>

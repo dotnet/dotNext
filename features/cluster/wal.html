@@ -68,171 +68,61 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="persistent-write-ahead-log">Persistent Write Ahead Log</h1>
 
-<p>.NEXT Cluster Programming Suite ships general-purpose high-performance <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html">persistent Write-Ahead Log</a> with the following features:</p>
+<p>.NEXT Cluster Programming Suite ships general-purpose high-performance <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.html">persistent Write-Ahead Log</a> with the following features:</p>
 <ul>
 <li>Log compaction based on snapshotting</li>
 <li>File-based persistent storage for the log entries</li>
-<li>Caching</li>
-<li>Fast writes in parallel with compaction</li>
+<li>Fast writes</li>
 <li>Parallel reads</li>
 <li>Automatic replays</li>
 </ul>
-<p>However, it is not used as default audit trail by Raft implementation. You need to register it explicitly.</p>
-<p>Typically, <code>MemoryBasedStateMachine</code> class is not used directly because it is not aware how to interpret commands contained in the log entries. This is the responsibility of the data state machine. It can be defined through overriding of the two methods:</p>
+<div class="IMPORTANT">
+<h5>Important</h5>
+<p><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.html">WriteAheadLog</a> is a long-term replacement of the <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a> class, which accepts only bug fixes. In the next major version of .NEXT, it will be removed. Its documentation is available <a href="old-wal.html">here</a>.</p>
+</div>
+<p>Persistent WAL is not used as default audit trail by Raft implementation. You need to register it explicitly.</p>
+<h1 id="basics">Basics</h1>
+<p>Persistent WAL is the append-only structure that sits between the client and the state machine. When the client needs to modify the state, it needs to represent the modification as command in the form of the log entry and place that entry to the WAL. The log entry passes through the following states (in the order of transition):</p>
 <ol>
-<li><code>ValueTask ApplyAsync(LogEntry entry)</code> method is responsible for interpreting committed log entries and applying them to the underlying persistent data storage.</li>
-<li><code>SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext)</code> method is required if you want to enable log compaction. The returned builder squashes the series of log entries into the single log entry called <strong>snapshot</strong>. Then the snapshot can be persisted by the infrastructure automatically. By default, this method always returns <strong>null</strong> which means that compaction is not supported.</li>
+<li><strong>Appended</strong> — the log entry is added to the WAL, but it's not yet replicated, and the consensus for it is not achieved. The effect of the log entry is not visible to the client;</li>
+<li><strong>Committed</strong> — the cluster achieves the consensus for that log entry, so it's replicated and can be executed to modify the state through state machine. The effect of the log entry is not visible to the client;</li>
+<li><strong>Applied</strong> — the log entry is executed by the state machine, so the state is modified. The effect of the log entry is visible to the client. At this point, the client can get the response that its modification request is processed successfully, and the node can send the ACK reply;</li>
+<li><strong>Merged</strong> — the log entry is a subject for removal from the WAL, because it's merged with the snapshot of the state, and the snapshot is saved to the disk.</li>
 </ol>
-<div class="NOTE">
-<h5>Note</h5>
-<p>.NEXT library doesn't provide default implementation of the database or persistent data storage based on Raft replication</p>
-</div>
-<p>Internally, persistent WAL uses files to store the state of cluster member and log entries. The journal with log entries is not continuous. Each file represents the partition of the entire journal. Each partition is a chunk of sequential log entries. The maximum number of log entries per partition depends on the settings.</p>
-<p><code>MemoryBasedStateMachine</code> has a rich set of tunable configuration parameters and overridable methods to achieve the best performance according with application needs:</p>
+<p>The WAL uses memory-mapped files as a way to store the log entries. However, the WAL doesn't flush the mapped memory pages immediately on every append operation.</p>
+<h1 id="state-machine">State Machine</h1>
+<p>The state machine is represented by <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.IStateMachine.html">IStateMachine</a> interface. The WAL requires its implementation.</p>
+<p>Once the log entry is marked as <strong>committed</strong>, it can be executed to modify the underlying state. After that, the log entry is considered as <strong>applied</strong>. The process of applying committed log entries doesn't interfere with the process of committing of a new log entries. The Raft replication process is only interested in the committed log entries, while the client is interested in the applied log entries. According to the <em>linearizability</em> property, the client must receive the ACK reply only when its request is turned into <strong>applied</strong> state. Thus, applying operation is always running in the background. This process is called <em>applier</em>. The process calls <code>ApplyAsync</code> method of the state machine.</p>
+<p>Once the log entry is applied, the state reflects its effect. From time to time, the current state can be persisted in the form of the <strong>snapshot</strong>. When it happens, all the log entries up to the snapshot index can be marked as <strong>merged</strong>. It means that these log entries are no longer needed. They are not needed for any of the durability or other guarantees provided by the WAL. Thus, another background task called <em>cleaner</em> can remove these log entries from the head of the WAL.</p>
+<p>The state machine implementation produces snapshots incrementally. Each snapshot if one or more files on the disk. It's good to know when the outdated snapshot can be removed. The WAL invokes <code>ReclaimGarbageAsync</code> method to tell the state machine that it's the safe moment to remove outdated snapshots. The WAL considers the snapshot as outdated, when:</p>
+<ol>
+<li>There is a snapshot that contains higher index of the <strong>merged</strong> log entry</li>
+<li>There are no active readers of the outdated snapshot</li>
+</ol>
+<p>Let's assume that we have two snapshots on the disk:</p>
 <ul>
-<li><code>recordsPerPartition</code> allows to define maximum number of log entries that can be stored continuously in the single partition. Log compaction algorithm depends on this value directly. When all records from the partition are committed and applied to the underlying state machine the infrastructure calls the snapshot builder and squashed all the entries in such partition. After that, the log writes the snapshot into the separated file and removes the partition files from the file system. Exact behavior of this procedure as well as its performance depends on chosen compaction mode.</li>
-<li><code>BufferSize</code> is the number of bytes that is allocated by persistent WAL to perform I/O operations. Set it to the maximum expected log entry size to achieve the best performance.</li>
-<li><code>SnapshotBufferSize</code> is the number of bytes that is allocated by persistent WAL to perform I/O operations related to log snapshot. By default it is equal to <code>BufferSize</code>. You can set it explicitly to the maximum expected size of the log entry to achieve the best performance.</li>
-<li><code>InitialPartitionSize</code> represents the initial pre-allocated size, in bytes, of the empty partition file. This parameter allows to avoid fragmentation of the partition file at file-system level.</li>
-<li><code>UseCaching</code> is <code>bool</code> flag that allows to enable or disable in-memory caching of log entries. <code>true</code> value allows to improve the performance or read/write operations by the cost of additional heap memory. <code>false</code> reduces the memory footprint by the cost of the read/write performance.</li>
-<li><code>GetMemoryAllocator</code> generic method used for renting the memory and can be overridden</li>
-<li><code>MaxConcurrentReads</code> is a number of concurrent asynchronous operations which can perform reads in parallel. Write operations are always sequential. Ideally, the value should be equal to the number of nodes. However, the larger value consumes more system resources (e.g. file handles) and heap memory.</li>
-<li><code>ReplayOnInitialize</code> is a flag indicating that state of underlying database engine should be reconstructed when <code>InitializeAsync</code> is called by infrastructure. It can be done manually using <code>ReplayAsync</code> method.</li>
-<li><code>WriteMode</code> indicates how WAL must manage intermediate buffers when performing disk I/O</li>
-<li><code>IntegrityCheck</code> allows to verify internal WAL at initialization phase to ensure that the log was not damaged by hard shutdown</li>
-<li><code>ParallelIO</code> indicates that the underlying storage device can perform read/write operations simultaneously. This parameter makes no sense if <code>UseCaching</code> is <strong>true</strong>. Otherwise, this option can be enabled only if the underlying storage is attached using parallel interface such as NVMe (via PCIe bus)</li>
-<li><code>BackupCompression</code> represents compression level used by <code>CreateBackupAsync</code> method.</li>
-<li><code>CompactionMode</code> represents log compaction mode. The default is <em>Sequential</em></li>
-<li><code>CopyOnReadOptions</code> allows to enable <em>copy-on-read</em> behavior which allows to avoid lock contention between log compaction and replication processes</li>
-<li><code>CacheEvictionPolicy</code> represents eviction policy of the cached log entries.</li>
+<li>Snapshot <em>A</em> represents the state up to index 10</li>
+<li>Snapshot <em>B</em> represents the state up to index 20</li>
 </ul>
-<p>Choose <code>recordsPerPartition</code> value with care because it cannot be changed for the existing persistent WAL.</p>
-<p>Let's write a simple custom audit trail based on the <code>MemoryBasedStateMachine</code> to demonstrate basics of Write Ahead Log. Our state machine stores only the single <strong>long</strong> value as the only possible persistent state.</p>
-<p>The example below additionally requires <strong>DotNext.IO</strong> library to simplify I/O work.</p>
-<pre><code class="lang-csharp">using DotNext.Buffers;
-using DotNext.IO;
-using DotNext.Net.Cluster.Consensus.Raft;
-using System.Threading.Tasks;
-using static System.Buffers.Binary.BinaryPrimitives;
-
-sealed class SimpleAuditTrail : MemoryBasedStateMachine
-{
-	internal long Value;	//the current int64 value synchronized across all cluster nodes
-
-	//snapshot builder
-	private sealed class SimpleSnapshotBuilder : IncrementalSnapshotBuilder
-	{
-		private long currentValue;
-		private MemoryOwner&lt;byte&gt; sharedBuffer;
-
-		internal SimpleSnapshotBuilder(in SnapshotBuilderContext context)
-			: base(context)
-		{
-			sharedBuffer = context.Allocator.Invoke(2048, false);
-		}
-
-		// 1
-		protected override async ValueTask ApplyAsync(LogEntry entry) =&gt; currentValue = await Decode(entry);
-
-		// 2
-		public override ValueTask WriteToAsync&lt;TWriter&gt;(TWriter writer, CancellationToken token)
-			=&gt; writer.WriteInt64Async(currentValue, true, token);
-
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing)
-			{
-				sharedBuffer.Dispose();
-				sharedBuffer = default;
-			}
-
-			base.Dispose(disposing);
-		}
-	}
-
-	public SimpleAuditTrail(Options options)
-		: base(options)
-	{
-	}
-
-	// 3
-	private static ValueTask&lt;long&gt; Decode(LogEntry entry) =&gt; entry.ToTypeAsync&lt;long, LogEntry&gt;();
-
-	// 4
-    protected override async ValueTask ApplyAsync(LogEntry entry) =&gt; Value = await Decode(entry);
-	
-	// 5
-    protected override SnapshotBuilder CreateSnapshotBuilder(in SnapshotBuilderContext context) =&gt; new SimpleSnapshotBuilder(context);
-}
-</code></pre>
-<p>1)Aggregates the commited entry with the existing state; 2)called by infrastructure to serialize the aggregated state into stream; 3)Decodes the command from the log entry; 4) Applies the log entry to the state machine; 5)Creates snapshot builder</p>
-<h1 id="api-surface">API Surface</h1>
-<p><code>MemoryBasedStateMachine</code> can be used as general purpose Write Ahead Log. Any changes in the cluster node state can be represented as a series for log entries that can be appended to the log. Newly added entries are not committed. It means that there is no confirmation from other cluster nodes about consistent state of the log. When the consistency is reached across cluster then the all appended entries marked as committed and the commands contained in the committed log entries can be applied to the underlying database engine.</p>
-<p>The following methods allows to implement this scenario:</p>
+<p>If the conditions for the outdated snapshot described above are met, <code>ReclaimGarbageAsync</code> implementation can safely remove the snapshot <em>A</em>. In other words, the method acts as a barrier.</p>
+<h2 id="simple-state-machine">Simple state machine</h2>
+<p><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.SimpleStateMachine.html">SimpleStateMachine</a> is the base implementation of the state machine that maintains the entire state in the memory, but periodically creates a persistent snapshot. This type of the state machine is applicable for simple K/V or configuration databases. This type of the state machine requires the implementation of the following members:</p>
 <ul>
-<li><code>AppendAsync</code> adds a series of log entries to the log. All appended entries are in uncommitted state. Additionally, it can be used to replace entries with another entries</li>
-<li><code>DropAsync</code> removes the uncommitted entries from the log</li>
-<li><code>CommitAsync</code> marks appended entries as committed. Optionally, it can force log compaction</li>
-<li><code>WaitForCommitAsync</code> waits for the specific or any commit</li>
-<li><code>CreateBackupAsync</code> creates backup of the log packed into ZIP archive</li>
-<li><code>ForceCompactionAsync</code> manually triggers log compaction. Has no effect if compaction mode other than <em>Background</em></li>
+<li><code>RestoreAsync</code> — called by the infrastructure to restore in-memory state from the most up-to-date snapshot persisted on the disk;</li>
+<li><code>PersistAsync</code> — called by the infrastructure to serialize the current in-memory state. Then, the state will be persisted to the disk as a snapshot;</li>
+<li><code>ApplyAsync</code> — called by the infrastructure to apply the committed log entry to the current state. The method returns <strong>bool</strong> value indicating whether the snapshot must be created. Typically, the decision is based on the fact how fresh state will be on the disk in the case of failure recovery. Too infrequent snapshots can cause the node to request more up-to-date snapshot from another node in the cluster. It increases the recovery time of the node because the snapshot can be huge, and it needs to be transferred over the wire. Too frequent snapshots increase the number of the disk writes.</li>
 </ul>
-<p><code>ReadAsync</code> method can be used to obtain committed or uncommitted entries in stream-like manner.</p>
-<h1 id="state-reconstruction">State Reconstruction</h1>
-<p><code>MemoryBasedStateMachine</code> is designed with assumption that underlying state machine can be reconstructed through sequential interpretation of each committed log entry stored in the log. When persistent WAL used in combination with other Raft infrastructure such as extensions for ASP.NET Core provided by <strong>DotNext.AspNetCore.Cluster</strong> library then this action performed automatically in host initialization code. However, if WAL used separately then reconstruction process should be initiated manually. To do that you need to call <code>ReplayAsync</code> method which reads all committed log entry and pass each entry to <code>ApplyAsync</code> protected method. Usually, <code>ApplyAsync</code> method implementation implements data state machine logic so sequential processing of all committed entries can restore its state correctly.</p>
-<h1 id="performance">Performance</h1>
-<p>Raft implementation must deal with the following bottlenecks: <em>network</em>, <em>disk I/O</em> and synchronization when accessing WAL concurrently. The current implementation of persistent WAL provides many configuration options that allows to reduce the overhead caused by the last two aspects.</p>
-<h2 id="durable-disk-io">Durable disk I/O</h2>
-<p>By default, <code>WriteMode</code> option is <code>NoFlush</code>. It means that OS is responsible to decide when to do <a href="https://man7.org/linux/man-pages/man2/fsync.2.html">fsync</a>. The default behavior provides the best read/write throughput when accessing disk but may lead to corrupted WAL in case of server failures. All cached data in internal buffers will be lost. To increase durability you can set this property to <code>AutoFlush</code> or even <code>WriteThrough</code> by the cost of I/O performance.</p>
-<h2 id="caching">Caching</h2>
-<p><code>UseCaching</code> allows to enable caching of the log entries and their metadata. In this case, the log entry will be copied to the memory outside of the internal lock and placed to the internal cache. Of course, write operation still requires persistence on the disk. However, any subsequent reads of the cached log entry doesn't require access to the disk.</p>
-<p>Caching has a positive effect on the following operations:</p>
-<ul>
-<li>All reads including replication process</li>
-<li>Commit process, because state machine interprets a series of log entries cached in the memory</li>
-<li>Snapshotting process, because snapshot builder deals with the log entries cached in the memory</li>
-</ul>
-<h2 id="lock-contention">Lock contention</h2>
-<p><em>Copy-on-read</em> optimization allows to reduce lock contention between the compaction process that requires <em>compaction lock</em> and readers. Multiple readers in parallel are allowed. Appending new log entries to the end of the log is also allowed in parallel with reading. However, log compaction is mutually exclusive with <em>read lock</em>. To avoid this contention, you can configure WAL using <code>CopyOnReadOptions</code> property. In this case, the replication process will be moved out of the lock. <em>Read lock</em> still requires to create a range of log entries to be replicated.</p>
-<h2 id="log-compaction">Log Compaction</h2>
-<p>WAL needs to squash old committed log entries to prevent growth of disk space usage. This procedure is called <em>log compaction</em>. As a result, the snapshot is produced. <em>Snapshot</em> is a special kind of log entry that represents all squashed log entries up to the specified index calculated by WAL automatically. Log compaction is a heavy operation that may interfere with appending and reading operations due to lock contention.</p>
-<p><code>MemoryBasedStateMachine</code> offers the following compaction modes:</p>
-<ul>
-<li><em>Sequential</em> offers the best optimization of disk space by the cost of read/write performance. During the sequential compaction, readers and appenders should wait until the end of the compaction procedure. In this case, wait time is proportional to the partition size (the number of entries per partition). Therefore, partition size should not be large. In this mode, the compaction algorithm trying to squash as much committed entries as possible during commit process. Even if you're committing the single entry, the compaction can be started for a entire partition. However, if the current partition is not full then compaction can be omitted.</li>
-<li><em>Background</em> doesn't block the appending of new entries. It means that appending of new entries can be done in parallel with the log compaction. Moreover, you can specify compaction factor explicitly. In this case, WAL itself is not responsible for starting the compaction. You need to do this manually using <code>ForceCompactionAsync</code> method. Disk space may grow unexpectedly if the rate of the appending of new entries is much higher than the speed of the compaction. However, this compaction mode allows to control the performance precisely. Read operations still blocked if there is an active compaction.</li>
-<li><em>Foreground</em> is forced automatically by WAL in parallel with the commit. In contrast to sequential compaction, the snapshot is created for the number of previously committed log entries equal to the number of currently committing entries. For instance, if you're trying to commit 4 log entries then the snapshot will be constructed for the last 4 log entries. In other words, this mode offers aggressive compaction forced on every commit but has low performance overhead. Moreover, the performance doesn't depend on partition size. This is the recommended compaction mode.</li>
-<li><em>Incremental</em> is a mix of <em>Foreground</em> and <em>Sequential</em> compaction modes. The snapshot is permanently located in the memory during entire WAL lifetime. A new log entry is applied to the underlying state machine and the snapshot builder on each commit. When the time for compaction comes, WAL just saves the snapshot to the disk from the memory.</li>
-</ul>
-<p><em>Foreground</em> and <em>Background</em> compaction modes demonstrate the best I/O performance on SSD (because of parallel writes to the disk) while <em>Sequential</em> is suitable for classic HDD. <em>Incremental</em> demonstrates the low overhead caused by log compaction but requires enough memory to keep the snapshot.</p>
-<h2 id="snapshot-building">Snapshot Building</h2>
-<p><code>CreateSnapshotBuilder(in SnapshotBuilderContext)</code> method of <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html">MemoryBasedStateMachine</a> class allows to provide a snapshot builder which is responsible for snapshot construction. There are two types of builders:</p>
-<ul>
-<li><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.IncrementalSnapshotBuilder.html">Incremental builder</a> constructs the snapshot incrementally. The final snapshot is represented by the builder itself. The first applied log entry is always represented by the current snapshot. After the final log entry, the current snapshot will be rewritten completely by the constructed snapshot. In other words, the incremental builder has the following lifecycle:
-<ul>
-<li>Instantiate the builder</li>
-<li>Apply the current snapshot</li>
-<li>Apply other log entries</li>
-<li>Build a new snapshot and rewrite the current snapshot with a new one</li>
-</ul>
-</li>
-<li><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.InlineSnapshotBuilder.html">Inline builder</a> allows to apply the change to the existing snapshot on-the-fly. In means that there is no temporary representation of the snapshot during build process.</li>
-</ul>
-<div class="NOTE">
-<h5>Note</h5>
-<p><em>Incremental</em> snapshot builder and <em>Incremental</em> log compaction are different things. You can choose any type of snapshot builder for <em>Incremental</em> log compaction. However, the lifetime for the snapshot for <em>Incremental</em> compaction differs from other compaction modes: it is created once per lifetime of Write-Ahead Log.</p>
-</div>
-<p><em>Incremental</em> approach is much simplier for programming. However, it is suitable for relatively simple WALs where the data in the log is of kilobytes or megabytes in size, because a whole snapshot must be interpreted at the start of build process.</p>
-<p><em>Inline</em> approach doesn't require interpretation of a whole snapshot. Instead, you can modify the current snapshot according to the data associated with the log entry included in the scope of log compaction.</p>
-<h1 id="interpreter-framework">Interpreter Framework</h1>
-<p><code>ApplyAsync</code> method and snapshot builder responsible for interpretation of custom log entries usually containing the commands and applying these commands to the underlying database engine. <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.html">LogEntry</a> is a generic representation of the log entry written to persistent WAL and it has no knowledge about semantics of the command. Therefore, you need to decode and interpret it manually.</p>
+<p>Reclamation of the outdated snapshots is implemented out of the box.</p>
+<h2 id="interpreter-framework">Interpreter Framework</h2>
+<p><code>ApplyAsync</code> method and snapshot builder responsible for interpretation of custom log entries usually containing the commands and applying these commands to the underlying database engine. <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.html">LogEntry</a> is the internal representation of the log entry maintained by the WAL, and it has no knowledge about semantics of the command. Therefore, you need to decode and interpret it manually.</p>
 <p>There are two ways to do that:</p>
 <ol>
 <li>JSON serialization</li>
 <li>Deriving from <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.html">CommandInterpreter</a> class</li>
 </ol>
-<p>The first approach is very simple but may be not optimal for real application because each log entry must be represented as JSON in the form of UTF-8 encoded characters. Moreover, decoding procedure causes heap allocation of each decoded log entry.</p>
-<h2 id="json-log-entries">JSON log entries</h2>
-<p>At the time of appending of a new log entry, it can be created as follows:</p>
+<p>The first approach is a very simple but may be not optimal for real application because each log entry must be represented as JSON in the form of UTF-8 encoded characters. Moreover, decoding procedure causes heap allocation of each decoded log entry.</p>
+<h3 id="json-log-entries">JSON log entries</h3>
+<p>At the time of appending, it can be created as follows:</p>
 <pre><code class="lang-csharp">using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 using DotNext.Net.Cluster.Consensus.Raft;
@@ -256,34 +146,35 @@ MemoryBasedStateMachine state = ...;
 var entry = state.CreateJsonLogEntry(new SubtractCommand { X = 10, Y = 20 });
 await state.AppendAsync(entry);
 </code></pre>
-<p><code>SubtractCommand</code> must be JSON-serializable type. Its content will be serialialized to JSON and written as log entry. It's recommended to use <a href="https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/polymorphism">JSON polymorphic serialization</a>.</p>
+<p><code>SubtractCommand</code> must be JSON-serializable type. Its content will be serialized to JSON and written as log entry. It's recommended to use <a href="https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/polymorphism">JSON polymorphic serialization</a>.</p>
 <p>Now the written log entry can be deserialized and interpreted easily inside of <code>AppendAsync</code> method:</p>
 <pre><code class="lang-csharp">using DotNext.Text.Json;
 using DotNext.Net.Cluster.Consensus.Raft;
-using System.Threading.Tasks;
-
-sealed class SimpleAuditTrail : MemoryBasedStateMachine
-{
-	internal long Value;
-	
-    protected override async ValueTask ApplyAsync(LogEntry entry)
-	{
-		var command = await JsonSerializable&lt;TestJsonObject&gt;.TransformAsync(entry);
-		Value = command.X - command.Y; // interpreting the command
-	}
-}
-</code></pre>
-<h2 id="command-interpreter">Command Interpreter</h2>
-<p>Interpreting of the custom log entries can be implemented with help of <a href="https://en.wikipedia.org/wiki/Command_pattern">Command Pattern</a>. <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.html">CommandInterpreter</a> is a foundation for building custom interpreters in declarative way using such pattern. Each command has command handler described as separated method in the derived class.</p>
-<p>First of all, we need to declare command types and write serialization/deserialization logic:</p>
-<pre><code class="lang-csharp">using DotNext.Runtime.Serialization;
-using DotNext.Net.Cluster.Consensus.Raft.Commands;
 using System.Threading;
 using System.Threading.Tasks;
 
-struct SubtractCommand : ISerializable&lt;SubtractCommand&gt;
+sealed class MyStateMachine : SimpleStateMachine
 {
-	public const int Id = 0;
+	internal long Value;
+	
+    protected override async ValueTask&lt;bool&gt; ApplyAsync(LogEntry entry, CancellationToken token)
+	{
+		var command = await JsonSerializable&lt;TestJsonObject&gt;.TransformAsync(entry, token);
+		Value = command.X - command.Y; // interpreting the command
+        return false;
+	}
+}
+</code></pre>
+<h3 id="command-interpreter">Command Interpreter</h3>
+<p>Interpreting of the custom log entries can be implemented with the help of <a href="https://en.wikipedia.org/wiki/Command_pattern">Command Pattern</a>. <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.Commands.CommandInterpreter.html">CommandInterpreter</a> is a foundation for building custom interpreters in declarative way using such the pattern. Each command has command handler described as separated method in the derived class.</p>
+<p>First, we need to declare command types and write serialization/deserialization logic:</p>
+<pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft.Commands;
+using System.Threading;
+using System.Threading.Tasks;
+
+struct SubtractCommand : ICommand&lt;SubtractCommand&gt;
+{
+	public static int Id =&gt; 0;
 
 	public int X { get; set; }
 	public int Y { get; set; }
@@ -306,9 +197,9 @@ struct SubtractCommand : ISerializable&lt;SubtractCommand&gt;
 	}
 }
 
-struct NegateCommand : ISerializable&lt;NegateCommand&gt;
+struct NegateCommand : ICommand&lt;NegateCommand&gt;
 {
-	public const int Id = 1;
+	public static int Id =&gt; 1;
 
 	public int X { get; set; }
 
@@ -328,12 +219,10 @@ struct NegateCommand : ISerializable&lt;NegateCommand&gt;
 	}
 }
 </code></pre>
-<p>Each command must have unique identifier which is encoded transparently as a part of the log entry in WAL. This identifier is required by interpreter to correctly identify which serializer/deserializer must be called. Encoding of this identifier as a part of the custom serialization logic is not needed.</p>
-<p>Now the commands are described with their serialization logic. However, the interpreter still doesn't know how to interpet them. Let's derive from <code>CommandInterpreter</code> and write command handler for each command described above:</p>
+<p>Each command must have the unique identifier which is encoded transparently as a part of the log entry in WAL. Interpreter requires this identifier to correctly identify which serializer/deserializer must be called. Encoding of this identifier as a part of the custom serialization logic is not needed.</p>
+<p>Now the commands are described with their serialization logic. However, the interpreter still doesn't know how to interpret them. Let's derive from <code>CommandInterpreter</code> and write command handler for each command described above:</p>
 <pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft.Commands;
 
-[Command&lt;SubtractCommand&gt;(SubtractCommand.Id)]
-[Command&lt;NegateCommand&gt;(NegateCommand.Id)]
 public class MyInterpreter : CommandInterpreter
 {
 	private long state;
@@ -351,73 +240,91 @@ public class MyInterpreter : CommandInterpreter
 	}
 }
 </code></pre>
-<p>Command types must be associated with theirs identifiers using <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.Commands.CommandAttribute-1.html">CommandAttribute&lt;TCommand&gt;</a>.</p>
+<p>Command types must be associated with their identifiers using <code>Id</code> static property required by <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.Commands.ICommand-1.html">ICommand&lt;T&gt;</a> interface.</p>
 <p>Each command handler must be decorated with <code>CommandHandlerAttribute</code> attribute and have the following signature:</p>
 <ul>
 <li>Return type is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></li>
-<li>The first parameter is of command type</li>
+<li>The first parameter is of the command type (the type that implements <code>ICommand&lt;T&gt;</code> interface)</li>
 <li>The second parameter is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></li>
-<li>Must be public instance method</li>
+<li>Must be a public instance method</li>
 </ul>
-<p>The handler of the log snapshot must be decored with <code>CommandHandlerAttribute</code> as well with <code>IsSnapshotHandler</code> property assigned to <strong>true</strong>:</p>
-<pre><code class="lang-csharp">[CommandHandler(IsSnapshotHandler = true)]
-public async ValueTask HandleSnapshotAsync(LogSnapshot command, CancellationToken token)
+<p>The snapshot command must implement <code>IsSnapshot</code> static property:</p>
+<pre><code class="lang-csharp">struct SnapshotCommand : ICommand&lt;NegateCommand&gt;
 {
+    public static bool IsSnapshot =&gt; true;
 }
 </code></pre>
-<p><code>LogSnapshot</code> here is a custom command describing a whole snapshot.</p>
-<div class="NOTE">
-<h5>Note</h5>
-<p>Snapshot command handler is applicable only if you're using <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.IncrementalSnapshotBuilder.html">incremental snapshot builder</a>.</p>
-</div>
-<p><code>CommandInterpreter</code> automatically discovers all declared command handlers and associated command types. Now the log entry can be appended easily:</p>
-<pre><code class="lang-csharp">MyInterpreter interpreter = ...;
-MemoryBasedStateMachine state = ...;
-var entry = interpreter.CreateLogEntry(new SubtractCommand { X = 10, Y = 20 }, state.Term);
-await state.AppendAsync(entry);
-</code></pre>
-<p>The last step is to combine the class derived from <code>MemoryBasedStateMachine</code> and the custom interpreter.</p>
+<p><code>CommandInterpreter</code> automatically discovers all declared command handlers and associated command types.</p>
+<p>The last step is to combine the class derived from <code>SimpleStateMachine</code> and the custom interpreter.</p>
 <pre><code class="lang-csharp">using DotNext.IO;
 using DotNext.Net.Cluster.Consensus.Raft;
 using System.Threading.Tasks;
 
-sealed class SimpleAuditTrail : MemoryBasedStateMachine
+sealed class SimpleAuditTrail : SimpleStateMachine
 {
 	private readonly MyInterpreter interpreter;
 	
-    protected override async ValueTask ApplyAsync(LogEntry entry)
+    protected override async ValueTask&lt;bool&gt; ApplyAsync(LogEntry entry, CancellationToken token)
 	{
-		await interpreter.InterpretAsync(entry);
+		await interpreter.InterpretAsync(entry, token);
+        return false;
 	}
 }
 </code></pre>
-<p><code>InterpretAsync</code> is a method declared in base class <code>CommandInterpreter</code>. It decods the command identifier and delegates interpretation to the appropriate command handler.</p>
-<p>Additionally, <code>CommandInterpreter</code> can be constructed without inheritance using Builder pattern:</p>
+<p><code>InterpretAsync</code> is a method declared in base class <code>CommandInterpreter</code>. It decodes the command identifier and delegates interpretation to the appropriate command handler.</p>
+<p>Additionally, <code>CommandInterpreter</code> can be constructed without inheritance using the Builder pattern:</p>
 <pre><code class="lang-csharp">ValueTask SubtractAsync(SubtractCommand command, CancellationToken token)
 {
 	// interpretation logic
 }
 
 var interpreter = new CommandInterpreter.Builder()
-	.Add&lt;SubtractCommand&gt;(SubtractCommand.Id, SubtractAsync)
+	.Add&lt;SubtractCommand&gt;(SubtractAsync)
 	.Build();
 </code></pre>
-<p>Builder style can be used when you don't want to derive state machine engine from <code>CommandInterpreter</code> class for some reason.</p>
-<h1 id="custom-write-ahead-log">Custom Write-Ahead Log</h1>
-<p><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html">Memory-based State Machine</a> provided out-of-the-box is not a <em>one size fits all</em> solution. Its major drawback is log compaction performance: no new entries can be committed until snapshotting is done. For small state machines, incremental snapshot is an option. For better performance, it is recommended to use inline snapshotting that allows to modify the snapshot in-place without reinterpreting it. However, if state machine represents a huge volume of data even inline snapshotting will take significant amount of time. Background compaction provides granular control over how many committed log entry your want to compact. But write-heavy workload can produce log entries faster than background compaction can collect them.</p>
-<p>Therefore, the existing implementation suitable for a limited set of scenarios. The best performance can be achieved with carefully selected underlying data structure according to the nature of the data, workload and the chosed database model: relational, K/V storage, document storage etc. Typically, memory-based state machine is suitable for implementing small K/V database, configuration storage or distributed lock.</p>
-<p><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a> is an entry point to start an implementation of custom Write-Ahead Log from scratch. For performance reasons, you can combine implementation of WAL and the state machine in the same class.</p>
-<p>In the same time, <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.DiskBasedStateMachine.html">Disk-based State Machine</a> offers basic infrastructure for writing custom WAL. It keeps only recent changes in the memory. Snapshotting must be implemented by derived class.</p>
 <h2 id="lsm-trees">LSM Trees</h2>
-<p><a href="https://en.wikipedia.org/wiki/Log-structured_merge-tree">Log-structured merge tree</a> is a perfect data structure to implement write-heavy K/V database. Here you can find some tips about the architecture of custom WAL and state machine on top of LSM Trees. Most LSM trees used in practice employ multiple levels:</p>
+<p><a href="https://en.wikipedia.org/wiki/Log-structured_merge-tree">Log-structured merge tree</a> is a perfect data structure to implement the write-heavy K/V database. Here you can find some tips about the architecture of the state machine on top of LSM Trees. Most LSM trees used in practice employ multiple levels:</p>
 <ul>
-<li><strong>Level 0</strong>. With help of <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.DiskBasedStateMachine.html">DiskBasedStateMachine</a>, you can organize the segments of log entries at this level. Each segment stores the log entries. When the log entry is committed, you can update in-memory state machine at this level with the committed entry. When all log entires in the segment are committed, you can persist in-memory state to the segment at Level 1. This approach allows to keep recent changes in the memory and easily recover in case of failure. When the state is persisted and moved to the Level 1, all committed entries can be discarded from the log.</li>
-<li><strong>Level 1</strong>. At this level the implementation maintains the segments (or <em>runs</em>) persisted on the disk. New segments arrive from Level 0. The segment can be persisted using <a href="https://yetanotherdevblog.com/lsm/">SSTable</a> format.</li>
-<li><strong>Level 2</strong>. Growing number of segments at Level 1 may consume a lot of space on the disk. Most of segments may contain outdated data so they can be discarded. The actual implementation must merge multiple segments from Level 1 into a single segment. This process is called <em>compaction</em>. Compaction can be implemented as a background process. Here you need a global lock only for two things: delete merged segments and replace the existing snapshot with a new one.</li>
+<li><strong>Level 0</strong> sits in the memory and accepts a new updates through <code>IStateMachine.ApplyAsync</code> methods. When it's time to move the current in-memory state to the next LSM run, the implementer needs to return appropriate <strong>bool</strong> value;</li>
+<li><strong>Level 1</strong>: represents LSM run persisted on the disk</li>
+<li><strong>Level N</strong>. Growing number of segments at Level 1 may consume a lot of space on the disk. Most of the segments may contain outdated data so they can be discarded. The actual implementation must merge multiple segments from Level 1 into a single segment. This process is called <em>compaction</em>. Compaction can be implemented as a background process. <code>ReclaimGarbageAsync</code> method is called at the safe point in time when the outdated runs can be merged and removed from the disk;</li>
 </ul>
-<p>The actual snapshot for replication is represented by a set of segments and the merged segment.</p>
+<p>Also, the implementation needs to keep the sparse index in the memory for fast navigation across runs.</p>
 <h2 id="b-trees">B+ Trees</h2>
-<p><a href="https://en.wikipedia.org/wiki/B%2B_tree">B+ Tree</a> is another efficient data structure for storing structured data on the disk with fast access. In contrast to LSM tree, you don't need to keep in-memory sparse index for each segment.</p>
+<p><a href="https://en.wikipedia.org/wiki/B%2B_tree">B+ Tree</a> is another efficient data structure for storing structured data on the disk with fast access. In contrast to the LSM trees, you don't need to keep in-memory sparse index for each segment.</p>
+<h1 id="durability">Durability</h1>
+<p>When the log entry is in <strong>appended</strong> state, it's written to the one or more memory pages mapped to the files. However, the WAL doesn't flush these memory pages immediately. It's safe to lose appended log entries in this state, because there is no consensus reached for that log entry, and it's not yet replicated to the majority of the node.</p>
+<p>When the log entry is replicated to the majority of the cluster, it can be committed. Only committed log entries are subject to persistence. The background job, <em>flusher</em>, flushes the memory pages to the disk. However, the disk I/O does not block the commit process. Additionally, the operating system itself can flush mapped memory pages. It's still safe, because</p>
+<ol>
+<li>In the case of system reboot or any other form of the process shutdown (even process crash due to unhandled exception), the mapped memory pages remain alive and maintained by the operating system. Eventually, the operating system flushes these pages to the disk</li>
+<li>In the case of power outage or any other form of the system hard reset, the WAL keeps the checkpoint, which helps to recover the underlying state of the node. Moreover, since the log entry is replicated to the majority, the node can replicate it back even if it was lost in the committed state locally.</li>
+</ol>
+<p>The <em>flusher</em> automatically updates the <em>checkpoint</em> when it gets the confirmation from the OS that memory pages up to the specified log entry index are written to the disk. In the case of failure, the WAL gets the checkpoint and asks the state machine to apply all the log entries, starting from the snapshot index up to the checkpoint.</p>
+<p>As a result, <em>durability</em> property is guaranteed by the liveness of the quorum.</p>
+<h1 id="configuration">Configuration</h1>
+<p>The configuration of the WAL is represented by <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html">Options</a> class. It exposes the following configuration properties:</p>
+<ul>
+<li><code>Location</code> represents the root directory to the WAL files. This property is required;</li>
+<li><code>FlushInterval</code> describes how frequently the WAL must flush the memory pages to the disk to create a checkpoint
+<ul>
+<li><code>0</code> means that the flush is triggered on every commit in the background. This is the best option for fast failure recovery, but produces a lot of I/O operations</li>
+<li><code>InfiniteTimeSpan</code> disables automatic flush and creation of the checkpoint. <code>FlushAsync</code> method must be called explicitly when needed</li>
+<li>Any other positive value represents the time interval when the WAL produces the checkpoint</li>
+</ul>
+</li>
+<li><code>ChunkMaxSize</code> represents the size of the single chunk file. The WAL uses multiple files to store the log entries. When the cleanup process decides to remove the WAL head, it deletes the old files. Depending on the size of the log entries, every chunk file may contain several log entries. The size is always rounded to internal page size, which is 4K bytes. The size should be constant and cannot be changed once the WAL is created. If the log entry size is larger than the chunk size, it gets fragmented, which slows down the following read by the state machine</li>
+<li><code>ConcurrencyLevel</code> represents the expected number of concurrent calls to the WAL. The main source of the concurrent is client requests</li>
+<li><code>MeasurementTags</code> is a collection of tags to be attached to all metrics</li>
+</ul>
+<h1 id="performance">Performance</h1>
+<p>New appends go to the mapped memory pages directly, never to the disk. The amount of occupied memory depends on the frequency of the snapshots. Once the snapshot is created, all log entries prior it can be deallocated from the memory as well as deleted on the disk. Flushed memory pages are not marked as dirty, so the OS can unmap physical memory related to these pages.</p>
+<p>In other words, the time of the transition <strong>appended</strong> =&gt; <strong>applied</strong> depends on two factors:</p>
+<ol>
+<li>Network bandwidth and latency, because the leader needs to replicate the log entry to the majority of the cluster to achieve the consensus. This is required to transit the log entry from <strong>applied</strong> state to <strong>committed</strong> state, which is needed for further transition to <strong>applied</strong> state</li>
+<li>Memory speed, which can be actually ignored, because it's an order of magnitude faster than the network</li>
+</ol>
+<h1 id="telemetry">Telemetry</h1>
+<p>The WAL exposes a group of metrics through <code>DotNext.IO.WriteAheadLog</code> meter. The metrics can be discovered with <code>dotnet-counters</code> tool from the .NET SDK.</p>
 
 </article>
           </div>

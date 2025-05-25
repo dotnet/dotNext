@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct LogEntry | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct LogEntry | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry">
+
+
+
+  <h1 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry" class="text-break">Struct LogEntry</h1>
+  <div class="markdown level0 summary"><p>Represents the log entry maintained by <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.html">WriteAheadLog</a> instance.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IInputLogEntry.html">IInputLogEntry</a></div>
+    <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html">IRaftLogEntry</a></div>
+    <div><a class="xref" href="DotNext.IO.Log.ILogEntry.html">ILogEntry</a></div>
+    <div><a class="xref" href="DotNext.IO.IDataTransferObject.html">IDataTransferObject</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals">ValueType.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Net.html">Net</a>.<a class="xref" href="DotNext.Net.Cluster.html">Cluster</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.html">Consensus</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.html">Raft</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.html">StateMachine</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly struct LogEntry : IInputLogEntry, IRaftLogEntry, ILogEntry, IDataTransferObject</code></pre>
+  </div>
+  <h3 id="properties">Properties
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_CommandId.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.CommandId%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/LogEntry.cs/#L64">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_CommandId_" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.CommandId*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_CommandId" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.CommandId">CommandId</h4>
+  <div class="markdown level1 summary"><p>Represents identifier of the command encapsulated
+by this log entry.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int? CommandId { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>?</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Context.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.Context%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/LogEntry.cs/#L48">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Context_" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.Context*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Context" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.Context">Context</h4>
+  <div class="markdown level1 summary"><p>Gets or sets runtime context associated with the log entry.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public object? Context { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Context_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The value passes through <a class="xref" href="DotNext.IO.Log.IAuditTrail-1.html#DotNext_IO_Log_IAuditTrail_1_AppendAsync__1___0_System_Threading_CancellationToken_">AppendAsync&lt;TEntryImpl&gt;(TEntryImpl, CancellationToken)</a>
+to <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html#DotNext_Net_Cluster_Consensus_Raft_MemoryBasedStateMachine_ApplyAsync_DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_">ApplyAsync(LogEntry)</a> or <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.DiskBasedStateMachine.html#DotNext_Net_Cluster_Consensus_Raft_DiskBasedStateMachine_ApplyAsync_DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_">ApplyAsync(LogEntry)</a>.
+It can be retrieved by using <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_Context">Context</a> property.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Index.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.Index%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/LogEntry.cs/#L53">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Index_" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.Index*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Index" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.Index">Index</h4>
+  <div class="markdown level1 summary"><p>Gets the index of this log entry.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long Index { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_IsSnapshot.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.IsSnapshot%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/LogEntry.cs/#L72">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_IsSnapshot_" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.IsSnapshot*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_IsSnapshot" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.IsSnapshot">IsSnapshot</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether this log entry is a snapshot.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsSnapshot { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Length.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.Length%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/LogEntry.cs/#L67">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Length_" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.Length*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Length" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.Length">Length</h4>
+  <div class="markdown level1 summary"><p>Gets length of the object payload, in bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long? Length { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>?</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Length_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>If value is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> then length of the payload cannot be determined.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Term.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.Term%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/LogEntry.cs/#L58">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Term_" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.Term*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Term" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.Term">Term</h4>
+  <div class="markdown level1 summary"><p>Gets the term of this log entry.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long Term { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Timestamp.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.Timestamp%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/LogEntry.cs/#L61">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Timestamp_" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.Timestamp*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_Timestamp" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.Timestamp">Timestamp</h4>
+  <div class="markdown level1 summary"><p>Gets UTC time of the log entry when it was created.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DateTimeOffset Timestamp { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.datetimeoffset">DateTimeOffset</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_GetPayload.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.GetPayload%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/LogEntry.cs/#L98">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_GetPayload_" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.GetPayload*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_GetPayload" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.GetPayload">GetPayload()</h4>
+  <div class="markdown level1 summary"><p>Gets the payload of this log entry in the form of a memory block sequence.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IEnumerable&lt;ReadOnlyMemory&lt;byte&gt;&gt; GetPayload()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;&gt;</td>
+        <td><p>A collection of the memory blocks; or empty collection if <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_IsSnapshot">IsSnapshot</a> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_TryGetPayload_System_Buffers_ReadOnlySequence_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.TryGetPayload(System.Buffers.ReadOnlySequence%7BSystem.Byte%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/LogEntry.cs/#L82">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_TryGetPayload_" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.TryGetPayload*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_TryGetPayload_System_Buffers_ReadOnlySequence_System_Byte___" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.TryGetPayload(System.Buffers.ReadOnlySequence{System.Byte}@)">TryGetPayload(out ReadOnlySequence&lt;byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Attempts to get log entry payload.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryGetPayload(out ReadOnlySequence&lt;byte&gt; sequence)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">sequence</span></td>
+        <td><p>A sequence of bytes representing the log entry payload.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if this log entry is not a snapshot; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_WriteToAsync__1___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.WriteToAsync%60%601(%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/LogEntry.cs/#L117">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_WriteToAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.WriteToAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry_WriteToAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry.WriteToAsync``1(``0,System.Threading.CancellationToken)">WriteToAsync&lt;TWriter&gt;(TWriter, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Transforms this object to serialized form.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask WriteToAsync&lt;TWriter&gt;(TWriter writer, CancellationToken token) where TWriter : IAsyncBinaryWriter</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TWriter</span></td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The binary writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The toke that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>The task representing state of asynchronous execution.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TWriter</span></td>
+        <td><p>The type of writer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IInputLogEntry.html">IInputLogEntry</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html">IRaftLogEntry</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.Log.ILogEntry.html">ILogEntry</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.IDataTransferObject.html">IDataTransferObject</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerator__2___0_System_Threading_CancellationToken_">Collection.ToAsyncEnumerator&lt;TEnumerator, T&gt;(TEnumerator, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToClassicEnumerator__2___0_">Collection.ToClassicEnumerator&lt;TEnumerator, T&gt;(TEnumerator)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_ToByteArrayAsync__1___0_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_">DataTransferObject.ToByteArrayAsync&lt;TObject&gt;(TObject, MemoryAllocator&lt;byte&gt;?, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_ToMemoryAsync__1___0_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_">DataTransferObject.ToMemoryAsync&lt;TObject&gt;(TObject, MemoryAllocator&lt;byte&gt;?, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_ToStringAsync__1___0_System_Text_Encoding_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_">DataTransferObject.ToStringAsync&lt;TObject&gt;(TObject, Encoding, MemoryAllocator&lt;byte&gt;?, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_TransformAsync__2___1_System_Func_DotNext_IO_IAsyncBinaryReader_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask___0___System_Threading_CancellationToken_">DataTransferObject.TransformAsync&lt;TResult, TObject&gt;(TObject, Func&lt;IAsyncBinaryReader, CancellationToken, ValueTask&lt;TResult&gt;&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_Buffers_IBufferWriter_System_Byte__System_Threading_CancellationToken_">DataTransferObject.WriteToAsync&lt;TObject&gt;(TObject, IBufferWriter&lt;byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_IO_Pipelines_PipeWriter_System_Int64_System_Threading_CancellationToken_">DataTransferObject.WriteToAsync&lt;TObject&gt;(TObject, PipeWriter, long, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_IO_Stream_System_Int32_System_Threading_CancellationToken_">DataTransferObject.WriteToAsync&lt;TObject&gt;(TObject, Stream, int, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">DataTransferObject.WriteToAsync&lt;TObject&gt;(TObject, Stream, Memory&lt;byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_StateMachine_LogEntry.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.StateMachine.LogEntry%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/LogEntry.cs/#L13" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

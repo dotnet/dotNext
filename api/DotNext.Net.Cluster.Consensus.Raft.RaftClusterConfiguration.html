@@ -70,7 +70,7 @@
 
 
   <h1 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration" class="text-break">Class RaftClusterConfiguration</h1>
-  <div class="markdown level0 summary"><p>Allows to setup special service used for configuration of <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html">IRaftCluster</a> instance.</p>
+  <div class="markdown level0 summary"><p>Allows setting up the special service used for configuration of <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html">IRaftCluster</a> instance.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -116,7 +116,7 @@ public static class RaftClusterConfiguration</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_ConfigureCluster__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.ConfigureCluster%60%601(Microsoft.Extensions.DependencyInjection.IServiceCollection)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L23">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L25">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_ConfigureCluster_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.ConfigureCluster*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_ConfigureCluster__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.ConfigureCluster``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">ConfigureCluster&lt;TConfig&gt;(IServiceCollection)</h4>
@@ -180,10 +180,85 @@ in DI container.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_RestoreStateAsync__1_Microsoft_AspNetCore_Builder_IApplicationBuilder_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.RestoreStateAsync%60%601(Microsoft.AspNetCore.Builder.IApplicationBuilder%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L79">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_RestoreStateAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.RestoreStateAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_RestoreStateAsync__1_Microsoft_AspNetCore_Builder_IApplicationBuilder_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.RestoreStateAsync``1(Microsoft.AspNetCore.Builder.IApplicationBuilder,System.Threading.CancellationToken)">RestoreStateAsync&lt;TStateMachine&gt;(IApplicationBuilder, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Restores the state machine.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask RestoreStateAsync&lt;TStateMachine&gt;(this IApplicationBuilder app, CancellationToken token = default) where TStateMachine : SimpleStateMachine</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.builder.iapplicationbuilder">IApplicationBuilder</a></td>
+        <td><span class="parametername">app</span></td>
+        <td><p>The application builder.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>The task representing the state of the asynchronous operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TStateMachine</span></td>
+        <td><p>The type of the state machine.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_RestoreStateAsync__1_Microsoft_AspNetCore_Builder_IApplicationBuilder_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The state machine must be registered previously with <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseStateMachine__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_">UseStateMachine&lt;TStateMachine&gt;(IServiceCollection)</a> method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseConfigurationStorage__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseConfigurationStorage%60%601(Microsoft.Extensions.DependencyInjection.IServiceCollection)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L80">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L118">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseConfigurationStorage_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseConfigurationStorage*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseConfigurationStorage__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseConfigurationStorage``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">UseConfigurationStorage&lt;TStorage&gt;(IServiceCollection)</h4>
@@ -249,7 +324,7 @@ in DI container.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseInMemoryConfigurationStorage_Microsoft_Extensions_DependencyInjection_IServiceCollection_System_Action_System_Collections_Generic_ICollection_Microsoft_AspNetCore_Connections_UriEndPoint___.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseInMemoryConfigurationStorage(Microsoft.Extensions.DependencyInjection.IServiceCollection%2CSystem.Action%7BSystem.Collections.Generic.ICollection%7BMicrosoft.AspNetCore.Connections.UriEndPoint%7D%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L114">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L152">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseInMemoryConfigurationStorage_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseInMemoryConfigurationStorage*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseInMemoryConfigurationStorage_Microsoft_Extensions_DependencyInjection_IServiceCollection_System_Action_System_Collections_Generic_ICollection_Microsoft_AspNetCore_Connections_UriEndPoint___" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseInMemoryConfigurationStorage(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{System.Collections.Generic.ICollection{Microsoft.AspNetCore.Connections.UriEndPoint}})">UseInMemoryConfigurationStorage(IServiceCollection, Action&lt;ICollection&lt;UriEndPoint&gt;&gt;)</h4>
@@ -308,7 +383,7 @@ in DI container.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UsePersistenceEngine__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UsePersistenceEngine%60%601(Microsoft.Extensions.DependencyInjection.IServiceCollection)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L37">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L39">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UsePersistenceEngine_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UsePersistenceEngine*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UsePersistenceEngine__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UsePersistenceEngine``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">UsePersistenceEngine&lt;TPersistentState&gt;(IServiceCollection)</h4>
@@ -378,7 +453,7 @@ in DI container.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UsePersistenceEngine__2_Microsoft_Extensions_DependencyInjection_IServiceCollection_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UsePersistenceEngine%60%602(Microsoft.Extensions.DependencyInjection.IServiceCollection)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L60">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L98">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UsePersistenceEngine_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UsePersistenceEngine*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UsePersistenceEngine__2_Microsoft_Extensions_DependencyInjection_IServiceCollection_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UsePersistenceEngine``2(Microsoft.Extensions.DependencyInjection.IServiceCollection)">UsePersistenceEngine&lt;TEngine, TImplementation&gt;(IServiceCollection)</h4>
@@ -453,7 +528,7 @@ in DI container.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UsePersistentConfigurationStorage_Microsoft_Extensions_DependencyInjection_IServiceCollection_System_String_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UsePersistentConfigurationStorage(Microsoft.Extensions.DependencyInjection.IServiceCollection%2CSystem.String)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L93">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L131">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UsePersistentConfigurationStorage_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UsePersistentConfigurationStorage*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UsePersistentConfigurationStorage_Microsoft_Extensions_DependencyInjection_IServiceCollection_System_String_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UsePersistentConfigurationStorage(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String)">UsePersistentConfigurationStorage(IServiceCollection, string)</h4>
@@ -504,6 +579,72 @@ in DI container.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseStateMachine__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseStateMachine%60%601(Microsoft.Extensions.DependencyInjection.IServiceCollection)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L57">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseStateMachine_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseStateMachine*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration_UseStateMachine__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration.UseStateMachine``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">UseStateMachine&lt;TStateMachine&gt;(IServiceCollection)</h4>
+  <div class="markdown level1 summary"><p>Registers the state machine and the write-ahead log for it.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IServiceCollection UseStateMachine&lt;TStateMachine&gt;(this IServiceCollection services) where TStateMachine : class, IStateMachine</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection">IServiceCollection</a></td>
+        <td><span class="parametername">services</span></td>
+        <td><p>A collection of services provided by DI container.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection">IServiceCollection</a></td>
+        <td><p>A modified collection of services.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TStateMachine</span></td>
+        <td><p>The type of the state machine.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 
 </article>
           </div>
@@ -516,7 +657,7 @@ in DI container.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfiguration.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfiguration%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L13" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfiguration.cs/#L15" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

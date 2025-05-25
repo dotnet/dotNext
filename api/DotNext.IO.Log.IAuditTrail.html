@@ -235,7 +235,7 @@ obtained from this audit trail is always not <a href="https://learn.microsoft.co
   </table>
   <h5 id="DotNext_IO_Log_IAuditTrail_CommitAsync_System_Int64_System_Threading_CancellationToken__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method should update cached value provided by method <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_LastCommittedEntryIndex">LastCommittedEntryIndex</a> called with argument of value <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>.
-Additionally, it may force log compaction and squash all committed entries into single entry called snapshot.</p>
+Additionally, it may force log compaction and squash all committed entries into the single entry called snapshot.</p>
 </div>
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-condensed">
@@ -246,230 +246,6 @@ Additionally, it may force log compaction and squash all committed entries into 
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been cancelled.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Log_IAuditTrail_CommitAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Log.IAuditTrail.CommitAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Log/IAuditTrail.cs/#L71">View Source</a>
-  </span>
-  <a id="DotNext_IO_Log_IAuditTrail_CommitAsync_" data-uid="DotNext.IO.Log.IAuditTrail.CommitAsync*"></a>
-  <h4 id="DotNext_IO_Log_IAuditTrail_CommitAsync_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail.CommitAsync(System.Threading.CancellationToken)">CommitAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Commits log entries into the underlying storage and marks these entries as committed.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; CommitAsync(CancellationToken token = default)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>&gt;</td>
-        <td><p>The actual number of committed entries.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_Log_IAuditTrail_CommitAsync_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method should update cached value provided by method <a class="xref" href="DotNext.IO.Log.IAuditTrail.html#DotNext_IO_Log_IAuditTrail_LastCommittedEntryIndex">LastCommittedEntryIndex</a> called with argument of value <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>.
-Additionally, it may force log compaction and squash all committed entries into single entry called snapshot.</p>
-</div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been cancelled.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Log_IAuditTrail_CreateBackupAsync_System_IO_Stream_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Log.IAuditTrail.CreateBackupAsync(System.IO.Stream%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Log/IAuditTrail.cs/#L81">View Source</a>
-  </span>
-  <a id="DotNext_IO_Log_IAuditTrail_CreateBackupAsync_" data-uid="DotNext.IO.Log.IAuditTrail.CreateBackupAsync*"></a>
-  <h4 id="DotNext_IO_Log_IAuditTrail_CreateBackupAsync_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail.CreateBackupAsync(System.IO.Stream,System.Threading.CancellationToken)">CreateBackupAsync(Stream, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Creates backup of this audit trail.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task CreateBackupAsync(Stream output, CancellationToken token = default)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The stream used to store backup.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>A task representing state of asynchronous execution.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>Backup is not supported by this implementation of audit trail.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Log_IAuditTrail_DropAsync_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Log.IAuditTrail.DropAsync(System.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Log/IAuditTrail.cs/#L104">View Source</a>
-  </span>
-  <a id="DotNext_IO_Log_IAuditTrail_DropAsync_" data-uid="DotNext.IO.Log.IAuditTrail.DropAsync*"></a>
-  <h4 id="DotNext_IO_Log_IAuditTrail_DropAsync_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail.DropAsync(System.Int64,System.Threading.CancellationToken)">DropAsync(long, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Drops the uncommitted entries starting from the specified position to the end of the log.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; DropAsync(long startIndex, CancellationToken token = default)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
-        <td><span class="parametername">startIndex</span></td>
-        <td><p>The index of the first log entry to be dropped.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a>&gt;</td>
-        <td><p>The actual number of dropped entries.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><code class="paramref">startIndex</code> represents index of the committed entry.</p>
-</td>
-      </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
         <td><p>The operation has been canceled.</p>
@@ -482,7 +258,7 @@ Additionally, it may force log compaction and squash all committed entries into 
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Log_IAuditTrail_InitializeAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Log.IAuditTrail.InitializeAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Log/IAuditTrail.cs/#L94">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Log/IAuditTrail.cs/#L71">View Source</a>
   </span>
   <a id="DotNext_IO_Log_IAuditTrail_InitializeAsync_" data-uid="DotNext.IO.Log.IAuditTrail.InitializeAsync*"></a>
   <h4 id="DotNext_IO_Log_IAuditTrail_InitializeAsync_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail.InitializeAsync(System.Threading.CancellationToken)">InitializeAsync(CancellationToken)</h4>
@@ -552,7 +328,7 @@ It can save the performance of the first modification performed to this log.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Log_IAuditTrail_ReadAsync__1_DotNext_IO_Log_ILogEntryConsumer_DotNext_IO_Log_ILogEntry___0__System_Int64_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Log.IAuditTrail.ReadAsync%60%601(DotNext.IO.Log.ILogEntryConsumer%7BDotNext.IO.Log.ILogEntry%2C%60%600%7D%2CSystem.Int64%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Log/IAuditTrail.cs/#L124">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Log/IAuditTrail.cs/#L91">View Source</a>
   </span>
   <a id="DotNext_IO_Log_IAuditTrail_ReadAsync_" data-uid="DotNext.IO.Log.IAuditTrail.ReadAsync*"></a>
   <h4 id="DotNext_IO_Log_IAuditTrail_ReadAsync__1_DotNext_IO_Log_ILogEntryConsumer_DotNext_IO_Log_ILogEntry___0__System_Int64_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail.ReadAsync``1(DotNext.IO.Log.ILogEntryConsumer{DotNext.IO.Log.ILogEntry,``0},System.Int64,System.Int64,System.Threading.CancellationToken)">ReadAsync&lt;TResult&gt;(ILogEntryConsumer&lt;ILogEntry, TResult&gt;, long, long, CancellationToken)</h4>
@@ -668,122 +444,19 @@ with the audit trail segment with entries.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Log_IAuditTrail_ReadAsync__1_DotNext_IO_Log_ILogEntryConsumer_DotNext_IO_Log_ILogEntry___0__System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Log.IAuditTrail.ReadAsync%60%601(DotNext.IO.Log.ILogEntryConsumer%7BDotNext.IO.Log.ILogEntry%2C%60%600%7D%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Log/IAuditTrail.cs/#L137">View Source</a>
-  </span>
-  <a id="DotNext_IO_Log_IAuditTrail_ReadAsync_" data-uid="DotNext.IO.Log.IAuditTrail.ReadAsync*"></a>
-  <h4 id="DotNext_IO_Log_IAuditTrail_ReadAsync__1_DotNext_IO_Log_ILogEntryConsumer_DotNext_IO_Log_ILogEntry___0__System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail.ReadAsync``1(DotNext.IO.Log.ILogEntryConsumer{DotNext.IO.Log.ILogEntry,``0},System.Int64,System.Threading.CancellationToken)">ReadAsync&lt;TResult&gt;(ILogEntryConsumer&lt;ILogEntry, TResult&gt;, long, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Gets log entries starting from the specified index to the last log entry.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; ReadAsync&lt;TResult&gt;(ILogEntryConsumer&lt;ILogEntry, TResult&gt; reader, long startIndex, CancellationToken token = default)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.IO.Log.ILogEntryConsumer-2.html">ILogEntryConsumer</a>&lt;<a class="xref" href="DotNext.IO.Log.ILogEntry.html">ILogEntry</a>, TResult&gt;</td>
-        <td><span class="parametername">reader</span></td>
-        <td><p>The reader of the log entries.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
-        <td><span class="parametername">startIndex</span></td>
-        <td><p>The index of the first requested log entry, inclusively.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
-        <td><p>The collection of log entries.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TResult</span></td>
-        <td><p>The type of the result.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">startIndex</code> is negative.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_Log_IAuditTrail_ReadAsync__1_DotNext_IO_Log_ILogEntryConsumer_DotNext_IO_Log_ILogEntry___0__System_Int64_System_Threading_CancellationToken__seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.IO.Log.ILogEntry.html#DotNext_IO_Log_ILogEntry_IsSnapshot">IsSnapshot</a></div>
-  </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Log_IAuditTrail_WaitForCommitAsync_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Log.IAuditTrail.WaitForCommitAsync(System.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Log_IAuditTrail_WaitForApplyAsync_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Log.IAuditTrail.WaitForApplyAsync(System.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Log/IAuditTrail.cs/#L32">View Source</a>
   </span>
-  <a id="DotNext_IO_Log_IAuditTrail_WaitForCommitAsync_" data-uid="DotNext.IO.Log.IAuditTrail.WaitForCommitAsync*"></a>
-  <h4 id="DotNext_IO_Log_IAuditTrail_WaitForCommitAsync_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail.WaitForCommitAsync(System.Int64,System.Threading.CancellationToken)">WaitForCommitAsync(long, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Waits for the commit.</p>
+  <a id="DotNext_IO_Log_IAuditTrail_WaitForApplyAsync_" data-uid="DotNext.IO.Log.IAuditTrail.WaitForApplyAsync*"></a>
+  <h4 id="DotNext_IO_Log_IAuditTrail_WaitForApplyAsync_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail.WaitForApplyAsync(System.Int64,System.Threading.CancellationToken)">WaitForApplyAsync(long, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Waits for the entry to be applied to the underlying state machine.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask WaitForCommitAsync(long index, CancellationToken token = default)</code></pre>
+    <pre><code class="lang-csharp hljs">ValueTask WaitForApplyAsync(long index, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -798,7 +471,7 @@ with the audit trail segment with entries.</p>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
         <td><span class="parametername">index</span></td>
-        <td><p>The index of the log record to be committed.</p>
+        <td><p>The index of the log record to be applied.</p>
 </td>
       </tr>
       <tr>
@@ -841,26 +514,26 @@ with the audit trail segment with entries.</p>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been cancelled.</p>
+        <td><p>The operation has been canceled.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Log_IAuditTrail_WaitForCommitAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Log.IAuditTrail.WaitForCommitAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Log_IAuditTrail_WaitForApplyAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Log.IAuditTrail.WaitForApplyAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Log/IAuditTrail.cs/#L46">View Source</a>
   </span>
-  <a id="DotNext_IO_Log_IAuditTrail_WaitForCommitAsync_" data-uid="DotNext.IO.Log.IAuditTrail.WaitForCommitAsync*"></a>
-  <h4 id="DotNext_IO_Log_IAuditTrail_WaitForCommitAsync_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail.WaitForCommitAsync(System.Threading.CancellationToken)">WaitForCommitAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Waits for the commit.</p>
+  <a id="DotNext_IO_Log_IAuditTrail_WaitForApplyAsync_" data-uid="DotNext.IO.Log.IAuditTrail.WaitForApplyAsync*"></a>
+  <h4 id="DotNext_IO_Log_IAuditTrail_WaitForApplyAsync_System_Threading_CancellationToken_" data-uid="DotNext.IO.Log.IAuditTrail.WaitForApplyAsync(System.Threading.CancellationToken)">WaitForApplyAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Waits for the entry to be applied to the underlying state machine.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask WaitForCommitAsync(CancellationToken token = default)</code></pre>
+    <pre><code class="lang-csharp hljs">ValueTask WaitForApplyAsync(CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -907,7 +580,7 @@ with the audit trail segment with entries.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been cancelled.</p>
+        <td><p>The operation has been canceled.</p>
 </td>
       </tr>
     </tbody>
