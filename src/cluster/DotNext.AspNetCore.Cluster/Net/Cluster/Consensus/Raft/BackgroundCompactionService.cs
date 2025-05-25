@@ -23,7 +23,7 @@ internal sealed class BackgroundCompactionService(PersistentState state) : Backg
 
         while (!token.IsCancellationRequested)
         {
-            await state.WaitForCommitAsync(token).ConfigureAwait(false);
+            await state.WaitForApplyAsync(token).ConfigureAwait(false);
             await compaction(token).ConfigureAwait(false);
         }
     }

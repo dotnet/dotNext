@@ -44,6 +44,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RandomAccessCacheBenchmark"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNext.AotTests", "DotNext.AotTests\DotNext.AotTests.csproj", "{155A8FEF-5FDD-42D3-AC31-335542FC588C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNext.Benchmarks.WAL", "DotNext.Benchmarks.WAL\DotNext.Benchmarks.WAL.csproj", "{8C17F072-3D14-44B0-88AA-E13455578184}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Bench|Any CPU = Bench|Any CPU
@@ -141,6 +143,12 @@ Global
 		{155A8FEF-5FDD-42D3-AC31-335542FC588C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{155A8FEF-5FDD-42D3-AC31-335542FC588C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{155A8FEF-5FDD-42D3-AC31-335542FC588C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C17F072-3D14-44B0-88AA-E13455578184}.Bench|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C17F072-3D14-44B0-88AA-E13455578184}.Bench|Any CPU.Build.0 = Debug|Any CPU
+		{8C17F072-3D14-44B0-88AA-E13455578184}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C17F072-3D14-44B0-88AA-E13455578184}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C17F072-3D14-44B0-88AA-E13455578184}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C17F072-3D14-44B0-88AA-E13455578184}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -155,6 +163,7 @@ Global
 		{39583DDE-E579-44AD-B7AF-5BB77D979E55} = {F8DCA620-40E7-411E-8970-85DC808B6BAF}
 		{73185946-8EFD-4153-8AC4-05AFD8BAC2E4} = {F8DCA620-40E7-411E-8970-85DC808B6BAF}
 		{155A8FEF-5FDD-42D3-AC31-335542FC588C} = {4956E982-79AA-462C-B592-E904D24EFFAE}
+		{8C17F072-3D14-44B0-88AA-E13455578184} = {4956E982-79AA-462C-B592-E904D24EFFAE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1CE24157-AFE0-4CDF-B063-2876343F0A66}

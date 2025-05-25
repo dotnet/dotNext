@@ -8,7 +8,7 @@ using IO;
 using static Collections.Specialized.ConcurrentTypeMapExtensions;
 using IClusterConfiguration = Membership.IClusterConfiguration;
 
-internal partial class Client : RaftClusterMember
+internal partial class Client
 {
     // optimized version for empty heartbeats (it has no field to store empty entries)
     private class AppendEntriesExchange : IClientExchange<Result<HeartbeatResult>>, IResettable

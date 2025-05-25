@@ -1,7 +1,5 @@
 using System.Buffers;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Buffers.Text;
 
@@ -81,8 +79,8 @@ public partial struct Base64Decoder
         bytes.Advance(writer.WrittenCount);
         return;
 
-    bad_data:
-        throw new FormatException(ExceptionMessages.MalformedBase64);
+        bad_data:
+        throw CreateFormatException();
     }
 
     /// <summary>
@@ -104,8 +102,11 @@ public partial struct Base64Decoder
         bytes.Dispose();
 
         bad_data:
-        throw new FormatException(ExceptionMessages.MalformedBase64);
+        throw CreateFormatException();
     }
+
+    /// <inheritdoc/>
+    MemoryOwner<byte> IBufferedDecoder<char>.Decode(ReadOnlySpan<char> chars, MemoryAllocator<byte>? allocator) => DecodeFromUtf16(chars, allocator);
 
     /// <summary>
     /// Decodes UTF-8 encoded base64 string.
@@ -117,7 +118,7 @@ public partial struct Base64Decoder
     public void DecodeFromUtf16(ReadOnlySpan<char> chars, ref BufferWriterSlim<byte> bytes)
     {
         if (reservedBufferSize is GotPaddingFlag || !DecodeFromUtf16Buffered(chars, ref bytes))
-            throw new FormatException(ExceptionMessages.MalformedBase64);
+            throw CreateFormatException();
     }
 
     /// <summary>
@@ -129,18 +130,7 @@ public partial struct Base64Decoder
     /// <returns>A sequence of decoded bytes.</returns>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static async IAsyncEnumerable<ReadOnlyMemory<byte>> DecodeFromUtf16Async(IAsyncEnumerable<ReadOnlyMemory<char>> chars, MemoryAllocator<byte>? allocator = null, [EnumeratorCancellation] CancellationToken token = default)
-    {
-        var decoder = new Base64Decoder();
-        MemoryOwner<byte> buffer;
-
-        await foreach (var chunk in chars.WithCancellation(token).ConfigureAwait(false))
-        {
-            using (buffer = decoder.DecodeFromUtf16(chunk.Span, allocator))
-                yield return buffer.Memory;
-        }
-
-        if (decoder.NeedMoreData)
-            throw new FormatException(ExceptionMessages.MalformedBase64);
-    }
+    public static IAsyncEnumerable<ReadOnlyMemory<byte>> DecodeFromUtf16Async(IAsyncEnumerable<ReadOnlyMemory<char>> chars,
+        MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
+        => IBufferedDecoder<char>.DecodeAsync<Base64Decoder>(chars, allocator, token);
 }

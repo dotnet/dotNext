@@ -6,6 +6,7 @@ using Buffers;
 using Buffers.Binary;
 using IO;
 using IO.Log;
+using StateMachine;
 
 /// <summary>
 /// Represents a log entry with binary payload.
@@ -18,7 +19,7 @@ public readonly struct BinaryLogEntry<T>() : IInputLogEntry, ISupplier<MemoryAll
     /// <summary>
     /// Gets or sets the log entry payload.
     /// </summary>
-    required public T Content { get; init; }
+    public required T Content { get; init; }
 
     /// <summary>
     /// Gets the timestamp of this log entry.
@@ -28,7 +29,7 @@ public readonly struct BinaryLogEntry<T>() : IInputLogEntry, ISupplier<MemoryAll
     /// <summary>
     /// Gets Term value associated with this log entry.
     /// </summary>
-    required public long Term { get; init; }
+    public required long Term { get; init; }
 
     /// <summary>
     /// Gets the command identifier.
@@ -64,28 +65,30 @@ public readonly struct BinaryLogEntry<T>() : IInputLogEntry, ISupplier<MemoryAll
 /// Represents default implementation of <see cref="IRaftLogEntry"/>.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct BinaryLogEntry() : IInputLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
+public readonly struct BinaryLogEntry() : IBufferedLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
 {
     private readonly ReadOnlyMemory<byte> content;
 
     /// <summary>
     /// Gets the timestamp of this log entry.
     /// </summary>
-    public DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset Timestamp { get; init; } = DateTimeOffset.UtcNow;
 
     /// <summary>
     /// Gets Term value associated with this log entry.
     /// </summary>
-    required public long Term { get; init; }
+    public required long Term { get; init; }
 
     /// <summary>
     /// Gets the payload of the log entry.
     /// </summary>
-    required public ReadOnlyMemory<byte> Content
+    public required ReadOnlyMemory<byte> Content
     {
         get => content;
         init => content = value;
     }
+
+    ReadOnlySpan<byte> IBufferedLogEntry.Content => content.Span;
 
     /// <summary>
     /// Gets the command identifier.

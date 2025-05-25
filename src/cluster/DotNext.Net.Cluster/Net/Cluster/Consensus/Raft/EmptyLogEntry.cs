@@ -1,16 +1,18 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Buffers;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using DotNext.Buffers;
+using Buffers;
 using IO;
 using IO.Log;
+using StateMachine;
 
 /// <summary>
 /// Represents No-OP entry.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct EmptyLogEntry() : IRaftLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
+public readonly struct EmptyLogEntry() : ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>, IBufferedLogEntry
 {
     /// <inheritdoc/>
     int? IRaftLogEntry.CommandId => null;
@@ -18,7 +20,7 @@ public readonly struct EmptyLogEntry() : IRaftLogEntry, ISupplier<MemoryAllocato
     /// <inheritdoc cref="ILogEntry.IsSnapshot"/>
     public bool IsSnapshot { get; internal init; }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IDataTransferObject.Length"/>
     long? IDataTransferObject.Length => 0L;
 
     /// <inheritdoc/>
@@ -34,7 +36,7 @@ public readonly struct EmptyLogEntry() : IRaftLogEntry, ISupplier<MemoryAllocato
     /// <summary>
     /// Gets or sets log entry term.
     /// </summary>
-    required public long Term { get; init; }
+    public required long Term { get; init; }
 
     /// <summary>
     /// Gets timestamp of this log entry.
@@ -52,4 +54,14 @@ public readonly struct EmptyLogEntry() : IRaftLogEntry, ISupplier<MemoryAllocato
     /// <inheritdoc/>
     MemoryOwner<byte> ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>.Invoke(MemoryAllocator<byte> allocator)
         => default;
+
+    /// <inheritdoc/>
+    ReadOnlySpan<byte> IBufferedLogEntry.Content => ReadOnlySpan<byte>.Empty;
+
+    /// <inheritdoc/>
+    public object? Context
+    {
+        get;
+        init;
+    }
 }

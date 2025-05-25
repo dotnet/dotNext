@@ -1,7 +1,7 @@
 namespace DotNext;
 
 /// <summary>
-/// Represents common interface for Result monad.
+/// Represents the common interface for Result monad.
 /// </summary>
 /// <typeparam name="T">The type of the result.</typeparam>
 /// <typeparam name="TError">The type that represents an error.</typeparam>
@@ -22,7 +22,7 @@ public interface IResultMonad<T, out TError> : IOptionMonad<T>
 }
 
 /// <summary>
-/// Represents common interface for Result monad.
+/// Represents the common interface for Result monad.
 /// </summary>
 /// <typeparam name="T">The type of the result.</typeparam>
 /// <typeparam name="TError">The type that represents an error.</typeparam>

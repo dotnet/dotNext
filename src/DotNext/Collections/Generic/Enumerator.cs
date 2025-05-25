@@ -108,13 +108,13 @@ public static partial class Enumerator
     }
 
     /// <summary>
-    /// Obtains asynchronous enumerator over the sequence of elements.
+    /// Returns the asynchronous enumerator over the sequence of elements.
     /// </summary>
     /// <param name="enumerable">The collection of elements.</param>
-    /// <param name="token">The token that can be used by consumer to cancel the enumeration.</param>
+    /// <param name="token">The token that caller can use to cancel the enumeration.</param>
     /// <typeparam name="T">The type of the elements in the collection.</typeparam>
     /// <returns>The asynchronous wrapper over synchronous enumerator.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="enumerable"/> is <see langword="null"/>.</exception>
     public static IAsyncEnumerator<T> GetAsyncEnumerator<T>(this IEnumerable<T> enumerable, CancellationToken token = default)
-        => new AsyncEnumerable.Proxy<T>.Enumerator(enumerable ?? throw new ArgumentNullException(nameof(enumerable)), token);
+        => new AsyncEnumerable.Enumerator<T>(enumerable ?? throw new ArgumentNullException(nameof(enumerable)), token);
 }

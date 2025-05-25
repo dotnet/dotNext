@@ -6,7 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Extensions;
 public interface IStandbyModeSupport : IRaftCluster
 {
     /// <summary>
-    /// Turns this node into regular state when the node can be elected as leader.
+    /// Turns this node into the regular state when the node can be elected as leader.
     /// </summary>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>

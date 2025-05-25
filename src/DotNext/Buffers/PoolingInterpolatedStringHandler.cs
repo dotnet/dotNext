@@ -11,7 +11,7 @@ namespace DotNext.Buffers;
 [InterpolatedStringHandler]
 [EditorBrowsable(EditorBrowsableState.Never)]
 [StructLayout(LayoutKind.Auto)]
-public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>, IDisposable
+public struct PoolingInterpolatedStringHandler : IGrowableBuffer<char>
 {
     private const int MaxBufferSize = int.MaxValue / 2;
     private const char Whitespace = ' ';

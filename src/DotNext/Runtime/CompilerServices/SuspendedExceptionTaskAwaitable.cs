@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Runtime.CompilerServices;
 
 /// <summary>
-/// Represents awaitable object that can suspend exception raised by the underlying task.
+/// Represents the awaitable object that can suspend exception raised by the underlying task.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
 public readonly struct SuspendedExceptionTaskAwaitable
@@ -78,7 +78,7 @@ public readonly struct SuspendedExceptionTaskAwaitable
         public void UnsafeOnCompleted(Action action) => awaiter.UnsafeOnCompleted(action);
 
         /// <summary>
-        /// Obtains a result of asynchronous operation, and suspends exception if needed.
+        /// Gets a result of asynchronous operation, and suspends exception if needed.
         /// </summary>
         public void GetResult()
         {
@@ -95,7 +95,7 @@ public readonly struct SuspendedExceptionTaskAwaitable
 }
 
 /// <summary>
-/// Represents awaitable object that can suspend the exception raised by the underlying task.
+/// Represents the awaitable object that can suspend the exception raised by the underlying task.
 /// </summary>
 /// <typeparam name="TArg">The type of the argument to be passed to the exception filter.</typeparam>
 [StructLayout(LayoutKind.Auto)]
@@ -171,7 +171,7 @@ public readonly struct SuspendedExceptionTaskAwaitable<TArg>
         public void UnsafeOnCompleted(Action action) => awaiter.UnsafeOnCompleted(action);
 
         /// <summary>
-        /// Obtains a result of asynchronous operation, and suspends exception if needed.
+        /// Gets a result of asynchronous operation, and suspends exception if needed.
         /// </summary>
         public void GetResult()
         {
@@ -188,7 +188,7 @@ public readonly struct SuspendedExceptionTaskAwaitable<TArg>
 }
 
 /// <summary>
-/// Represents awaitable object that can suspend the exception raised by the underlying task.
+/// Represents the awaitable object that can suspend the exception raised by the underlying task.
 /// </summary>
 /// <typeparam name="T">The type of the task.</typeparam>
 [StructLayout(LayoutKind.Auto)]
@@ -249,7 +249,7 @@ public readonly struct AwaitableResult<T>
         public void UnsafeOnCompleted(Action action) => awaiter.UnsafeOnCompleted(action);
 
         /// <summary>
-        /// Obtains a result of asynchronous operation, and suspends exception if needed.
+        /// Gets a result of asynchronous operation, and suspends exception if needed.
         /// </summary>
         public Result<T> GetResult()
         {
@@ -269,7 +269,7 @@ public readonly struct AwaitableResult<T>
 }
 
 /// <summary>
-/// Represents awaitable object that can suspend the exception raised by the underlying task.
+/// Represents the awaitable object that can suspend the exception raised by the underlying task.
 /// </summary>
 /// <typeparam name="T">The type of the task.</typeparam>
 /// <typeparam name="TError">The type of the error.</typeparam>
@@ -341,7 +341,7 @@ public readonly struct AwaitableResult<T, TError>
         public void UnsafeOnCompleted(Action action) => awaiter.UnsafeOnCompleted(action);
 
         /// <summary>
-        /// Obtains a result of asynchronous operation, and suspends exception if needed.
+        /// Gets a result of asynchronous operation, and suspends exception if needed.
         /// </summary>
         public Result<T, TError> GetResult()
         {

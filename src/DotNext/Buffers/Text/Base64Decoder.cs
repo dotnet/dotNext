@@ -21,7 +21,7 @@ using static Runtime.Intrinsics;
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay($"NeedMoreData = {{{nameof(NeedMoreData)}}}")]
-public partial struct Base64Decoder : IResettable
+public partial struct Base64Decoder : IBufferedDecoder<byte>, IBufferedDecoder<char>
 {
     private const int MaxBufferedChars = 3;
     private const int GotPaddingFlag = -1;
@@ -77,4 +77,9 @@ public partial struct Base64Decoder : IResettable
             return MemoryMarshal.CreateReadOnlySpan(in InToRef<ulong, byte>(in reservedBuffer), reservedBufferSize);
         }
     }
+
+    /// <inheritdoc/>
+    static FormatException IBufferedDecoder.CreateFormatException() => CreateFormatException();
+
+    private static FormatException CreateFormatException() => new(ExceptionMessages.MalformedBase64);
 }

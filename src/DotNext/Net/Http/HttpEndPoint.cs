@@ -66,6 +66,7 @@ public sealed class HttpEndPoint : DnsEndPoint, ISupplier<UriBuilder>, IEquatabl
     {
         UriHostNameType.IPv4 => AddressFamily.InterNetwork,
         UriHostNameType.IPv6 => AddressFamily.InterNetworkV6,
+        UriHostNameType.Unknown => AddressFamily.Unknown,
         _ => AddressFamily.Unspecified,
     };
 

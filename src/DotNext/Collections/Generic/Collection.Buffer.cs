@@ -30,8 +30,8 @@ public static partial class Collection
             T[] array => Span.Copy(array, allocator),
             string str => Unsafe.BitCast<MemoryOwner<char>, MemoryOwner<T>>(str.AsSpan().Copy(Unsafe.As<MemoryAllocator<char>>(allocator))),
             ArraySegment<T> segment => Span.Copy(segment.AsSpan(), allocator),
-            ICollection<T> collection => collection.Count == 0 ? default : allocator is null ? CopyCollection(collection) : CopySlow(collection, collection.Count, allocator),
-            IReadOnlyCollection<T> collection => collection.Count == 0 ? default : CopySlow(enumerable, collection.Count, allocator),
+            ICollection<T> collection => collection.Count is 0 ? default : allocator is null ? CopyCollection(collection) : CopySlow(collection, collection.Count, allocator),
+            IReadOnlyCollection<T> collection => collection.Count is 0 ? default : CopySlow(enumerable, collection.Count, allocator),
             _ => CopySlow(enumerable, GetSize(enumerable, sizeHint), allocator),
         };
 

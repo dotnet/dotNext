@@ -4,7 +4,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriente
 
 using static Buffers.ByteBuffer;
 
-internal partial class Client : RaftClusterMember
+internal partial class Client
 {
     [StructLayout(LayoutKind.Auto)]
     private readonly struct VoteExchange(long term, long lastLogIndex, long lastLogTerm) : IClientExchange<Result<bool>>, IClientExchange<Result<PreVoteResult>>

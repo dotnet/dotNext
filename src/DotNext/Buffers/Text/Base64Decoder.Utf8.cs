@@ -1,7 +1,6 @@
 using System.Buffers;
 using System.Buffers.Text;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Buffers.Text;
 
@@ -78,12 +77,12 @@ public partial struct Base64Decoder
         bytes.Advance(writer.WrittenCount);
         return;
 
-    bad_data:
-        throw new FormatException(ExceptionMessages.MalformedBase64);
+        bad_data:
+        throw CreateFormatException();
     }
 
     /// <summary>
-    /// Decoes UTF-8 encoded base64 string.
+    /// Decodes UTF-8 encoded base64 string.
     /// </summary>
     /// <param name="chars">UTF-8 encoded portion of base64 string.</param>
     /// <param name="allocator">The allocator of the result buffer.</param>
@@ -96,12 +95,15 @@ public partial struct Base64Decoder
         var bytes = new BufferWriterSlim<byte>(GetMaxDecodedLength(chars.Length), allocator);
         if (DecodeFromUtf8Buffered(chars, ref bytes))
             return bytes.DetachOrCopyBuffer();
-        
+
         bytes.Dispose();
 
-    bad_data:
-        throw new FormatException(ExceptionMessages.MalformedBase64);
+        bad_data:
+        throw CreateFormatException();
     }
+
+    /// <inheritdoc/>
+    MemoryOwner<byte> IBufferedDecoder<byte>.Decode(ReadOnlySpan<byte> chars, MemoryAllocator<byte>? allocator) => DecodeFromUtf8(chars, allocator);
 
     /// <summary>
     /// Decodes UTF-8 encoded base64 string.
@@ -113,7 +115,7 @@ public partial struct Base64Decoder
     public void DecodeFromUtf8(ReadOnlySpan<byte> chars, ref BufferWriterSlim<byte> bytes)
     {
         if (reservedBufferSize is GotPaddingFlag || !DecodeFromUtf8Buffered(chars, ref bytes))
-            throw new FormatException(ExceptionMessages.MalformedBase64);
+            throw CreateFormatException();
     }
 
     /// <summary>
@@ -125,18 +127,7 @@ public partial struct Base64Decoder
     /// <returns>A sequence of decoded bytes.</returns>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static async IAsyncEnumerable<ReadOnlyMemory<byte>> DecodeFromUtf8Async(IAsyncEnumerable<ReadOnlyMemory<byte>> utf8Chars, MemoryAllocator<byte>? allocator = null, [EnumeratorCancellation] CancellationToken token = default)
-    {
-        var decoder = new Base64Decoder();
-        MemoryOwner<byte> buffer;
-
-        await foreach (var chunk in utf8Chars.WithCancellation(token).ConfigureAwait(false))
-        {
-            using (buffer = decoder.DecodeFromUtf8(chunk.Span, allocator))
-                yield return buffer.Memory;
-        }
-
-        if (decoder.NeedMoreData)
-            throw new FormatException(ExceptionMessages.MalformedBase64);
-    }
+    public static IAsyncEnumerable<ReadOnlyMemory<byte>> DecodeFromUtf8Async(IAsyncEnumerable<ReadOnlyMemory<byte>> utf8Chars,
+        MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
+        => IBufferedDecoder<byte>.DecodeAsync<Base64Decoder>(utf8Chars, allocator, token);
 }

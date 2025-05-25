@@ -1,16 +1,21 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using DotNext;
 using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.Http;
 using DotNext.Net.Cluster.Consensus.Raft.Membership;
+using DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 using DotNext.Threading;
 using Microsoft.AspNetCore.Connections;
 using RaftNode;
 using static System.Globalization.CultureInfo;
 using SslOptions = DotNext.Net.Security.SslOptions;
 
+[assembly: Experimental("DOTNEXT001")]
+
+using var cts = new ConsoleLifetimeTokenSource();
 switch (args.LongLength)
 {
     case 0:
@@ -18,14 +23,14 @@ switch (args.LongLength)
         Console.WriteLine("Port number and protocol are not specified");
         break;
     case 2:
-        await StartNode(args[0], int.Parse(args[1]));
+        await StartNode(args[0], int.Parse(args[1]), null, cts.Token);
         break;
     case 3:
-        await StartNode(args[0], int.Parse(args[1]), args[2]);
+        await StartNode(args[0], int.Parse(args[1]), args[2], cts.Token);
         break;
 }
 
-static async Task UseAspNetCoreHost(int port, string? persistentStorage = null)
+static async Task UseAspNetCoreHost(int port, string? persistentStorage, CancellationToken token)
 {
     var configuration = new Dictionary<string, string?>
     {
@@ -37,7 +42,7 @@ static async Task UseAspNetCoreHost(int port, string? persistentStorage = null)
         { "coldStart", "false" },
         { "requestJournal:memoryLimit", "5" },
         { "requestJournal:expiration", "00:01:00" },
-        { SimplePersistentState.LogLocation, persistentStorage },
+        { StateMachine.LogLocation, persistentStorage },
     };
 
     var builder = WebApplication.CreateSlimBuilder();
@@ -53,17 +58,18 @@ static async Task UseAspNetCoreHost(int port, string? persistentStorage = null)
         .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
         .AddOptions()
         .AddRouting();
-    
-    if (!string.IsNullOrWhiteSpace(persistentStorage))
+
+    if (persistentStorage is { Length: > 0 })
     {
-        builder.Services.UsePersistenceEngine<ISupplier<long>, SimplePersistentState>()
-            .AddSingleton<IHostedService, DataModifier>();
+        builder.Services.AddSingleton(new WriteAheadLog.Options { Location = persistentStorage });
+        builder.Services.UseStateMachine<StateMachine>();
     }
-    
+
     ConfigureLogging(builder.Logging);
     builder.JoinCluster();
 
     await using var app = builder.Build();
+    await app.RestoreStateAsync<StateMachine>(token);
     
     const string leaderResource = "/leader";
     const string valueResource = "/value";
@@ -75,7 +81,7 @@ static async Task UseAspNetCoreHost(int port, string? persistentStorage = null)
             endpoints.MapGet(leaderResource, RedirectToLeaderAsync);
             endpoints.MapGet(valueResource, GetValueAsync);
         });
-    await app.RunAsync();
+    await app.RunAsync(token);
     
     static Task RedirectToLeaderAsync(HttpContext context)
     {
@@ -101,7 +107,7 @@ static async Task UseAspNetCoreHost(int port, string? persistentStorage = null)
     }
 }
 
-static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string? persistentStorage)
+static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string? persistentStorage, CancellationToken token)
 {
     AddMembersToCluster(config.UseInMemoryConfigurationStorage());
     var loggerFactory = LoggerFactory.Create(ConfigureLogging);
@@ -111,15 +117,16 @@ static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string?
     var modifier = default(DataModifier?);
     if (persistentStorage is { Length: > 0 })
     {
-        var state = new SimplePersistentState(persistentStorage);
+        var stateMachine = new StateMachine(persistentStorage);
+        await stateMachine.RestoreAsync(token);
+        var state = new WriteAheadLog(new WriteAheadLog.Options { Location = persistentStorage }, stateMachine);
         cluster.AuditTrail = state;
-        modifier = new DataModifier(cluster, state);
+        modifier = new DataModifier(cluster, stateMachine);
     }
-
-    using var cts = new ConsoleLifetimeTokenSource();
-    await cluster.StartAsync(cts.Token);
-    await (modifier?.StartAsync(cts.Token) ?? Task.CompletedTask);
-    await cts.Token.WaitAsync();
+    
+    await cluster.StartAsync(token);
+    await (modifier?.StartAsync(token) ?? Task.CompletedTask);
+    await token.WaitAsync();
 
     await (modifier?.StopAsync(CancellationToken.None) ?? Task.CompletedTask);
     await cluster.StopAsync(CancellationToken.None);
@@ -140,7 +147,7 @@ static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string?
 static void ConfigureLogging(ILoggingBuilder builder)
     => builder.AddConsole().SetMinimumLevel(LogLevel.Error);
 
-static Task UseTcpTransport(int port, string? persistentStorage, bool useSsl)
+static Task UseTcpTransport(int port, string? persistentStorage, bool useSsl, CancellationToken token)
 {
     var configuration = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
     {
@@ -152,7 +159,7 @@ static Task UseTcpTransport(int port, string? persistentStorage, bool useSsl)
         SslOptions = useSsl ? CreateSslOptions() : null
     };
 
-    return UseConfiguration(configuration, persistentStorage);
+    return UseConfiguration(configuration, persistentStorage, token);
 
     static SslOptions CreateSslOptions() => new()
     {
@@ -168,17 +175,17 @@ static Task UseTcpTransport(int port, string? persistentStorage, bool useSsl)
     };
 }
 
-static Task StartNode(string protocol, int port, string? persistentStorage = null)
+static Task StartNode(string protocol, int port, string? persistentStorage, CancellationToken token)
 {
     switch (protocol.ToLowerInvariant())
     {
         case "http":
         case "https":
-            return UseAspNetCoreHost(port, persistentStorage);
+            return UseAspNetCoreHost(port, persistentStorage, token);
         case "tcp":
-            return UseTcpTransport(port, persistentStorage, false);
+            return UseTcpTransport(port, persistentStorage, false, token);
         case "tcp+ssl":
-            return UseTcpTransport(port, persistentStorage, true);
+            return UseTcpTransport(port, persistentStorage, true, token);
         default:
             Console.Error.WriteLine("Unsupported protocol type");
             Environment.ExitCode = 1;

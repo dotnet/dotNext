@@ -3,7 +3,7 @@ using System.Buffers;
 namespace DotNext.Buffers;
 
 /// <summary>
-/// Represents buffered writer.
+/// Represents the buffered writer.
 /// </summary>
 public interface IBufferedWriter : IBufferedChannel, IBufferWriter<byte>
 {

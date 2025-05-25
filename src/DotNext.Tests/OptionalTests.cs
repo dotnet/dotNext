@@ -359,4 +359,27 @@ public sealed class OptionalTest : Test
         await ThrowsAsync<InvalidOperationException>(static () => Task.FromResult(Optional.None<int>()).Flatten());
         Equal(42, await Task.FromResult(Optional.Some(42)).Flatten());
     }
+
+    [Fact]
+    public static void MiscOperators()
+    {
+        Optional<int> result = 20;
+        False(!result);
+
+        if (result)
+        {
+        }
+        else
+        {
+            Fail("Optional has no value");
+        }
+        
+        result = Optional<int>.None;
+        True(!result);
+
+        if (result)
+        {
+            Fail("Optional has value");
+        }
+    }
 }

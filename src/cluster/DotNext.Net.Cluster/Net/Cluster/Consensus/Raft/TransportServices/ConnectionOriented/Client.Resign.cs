@@ -2,7 +2,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriente
 
 using Patterns;
 
-internal partial class Client : RaftClusterMember
+internal partial class Client
 {
     private sealed class ResignExchange : IClientExchange<bool>, ISingleton<ResignExchange>
     {

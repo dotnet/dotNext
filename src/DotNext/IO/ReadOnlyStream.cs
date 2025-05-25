@@ -11,7 +11,7 @@ internal abstract class ReadOnlyStream : Stream
 
     public sealed override bool CanWrite => false;
 
-    public sealed override bool CanTimeout => false;
+    public override bool CanTimeout => false;
 
     public override void Flush()
     {
@@ -94,6 +94,8 @@ internal sealed class ReadOnlyStream<TArg>(Func<Memory<byte>, TArg, Cancellation
         get => timeout;
         set => timeout = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
+
+    public override bool CanTimeout => true;
 
     public override long Position
     {

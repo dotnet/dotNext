@@ -6,7 +6,7 @@ namespace DotNext.IO;
 using Buffers;
 
 /// <summary>
-/// Represents structured data unit that can be transferred over wire.
+/// Represents the structured data unit that can be transferred over wire.
 /// </summary>
 /// <remarks>
 /// Typically, this interface is used for variable-length data units while
@@ -189,7 +189,7 @@ public interface IDataTransferObject
         }
     }
 
-    // use disk I/O for large-size object
+    // use disk I/O for large-sized object
     private async ValueTask<TResult> GetLargeObjectDataAsync<TResult, TTransformation>(TTransformation parser, long length, CancellationToken token)
         where TTransformation : ITransformation<TResult>
     {
@@ -220,7 +220,7 @@ public interface IDataTransferObject
     }
 
     /// <summary>
-    /// Converts data transfer object to another type.
+    /// Converts the data transfer object to another type.
     /// </summary>
     /// <remarks>
     /// The default implementation copies the content into memory
@@ -248,9 +248,9 @@ public interface IDataTransferObject
     }
 
     /// <summary>
-    /// Attempts to retrieve contents of this object as a memory block synchronously.
+    /// Attempts to retrieve the contents of this object as a memory block synchronously.
     /// </summary>
-    /// <param name="memory">The memory block containing contents of this object.</param>
+    /// <param name="memory">The memory block containing the contents of this object.</param>
     /// <returns><see langword="true"/> if this object is representable as a memory block; otherwise, <see langword="false"/>.</returns>
     bool TryGetMemory(out ReadOnlyMemory<byte> memory)
     {

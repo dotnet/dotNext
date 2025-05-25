@@ -73,7 +73,7 @@ public readonly struct ReadOnlyListView<TInput, TOutput>(IReadOnlyList<TInput> l
     public bool Equals(ReadOnlyListView<TInput, TOutput> other) => Equals(in other);
 
     /// <summary>
-    /// Returns hash code for the this list.
+    /// Returns hash code for this list.
     /// </summary>
     /// <returns>The hash code of this list.</returns>
     public override int GetHashCode() => RuntimeHelpers.GetHashCode(source) ^ mapper.GetHashCode();

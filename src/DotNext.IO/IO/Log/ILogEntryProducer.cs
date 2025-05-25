@@ -12,14 +12,4 @@ public interface ILogEntryProducer<out TEntry> : IAsyncEnumerator<TEntry>
     /// </summary>
     /// <value>The remaining count of log entries.</value>
     long RemainingCount { get; }
-
-    /// <summary>
-    /// The payload of log entries provided by the producer are ready for consumption
-    /// synchronously.
-    /// </summary>
-    /// <remarks>
-    /// This flag means that <see cref="IDataTransferObject.WriteToAsync{TWriter}(TWriter, CancellationToken)"/>
-    /// is likely to be completed synchronously.
-    /// </remarks>
-    bool LogEntryPayloadAvailableImmediately => false;
 }
