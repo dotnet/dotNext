@@ -28,7 +28,10 @@ partial class WriteAheadLog
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task FlushAsync(long previousIndex, TimeSpan timeout, CancellationToken token)
     {
-        var cleanupTask = Task.CompletedTask;
+        // Weak ref tracks the task, but allows GC to collect associated state machine
+        // as soon as possible. While the task is running, it cannot be collected, because it's referenced
+        // by the async state machine.
+        var cleanupTask = GCHandle.Alloc(Task.CompletedTask, GCHandleType.Weak);
         try
         {
             for (long newIndex, oldSnapshot = SnapshotIndex, newSnapshot;
@@ -59,17 +62,21 @@ partial class WriteAheadLog
                         lockManager.ReleaseReadLock();
                     }
                 }
-                
-                if (cleanupTask.IsCompleted && oldSnapshot < newSnapshot)
-                    cleanupTask = CleanUpAsync(newSnapshot, token);
+
+                if (cleanupTask.Target is null or Task { IsCompletedSuccessfully: true } && oldSnapshot < newSnapshot)
+                    cleanupTask.Target = CleanUpAsync(newSnapshot, token);
 
                 manualFlushQueue.Drain();
                 await flushTrigger.WaitAsync(timeout, token).ConfigureAwait(false);
             }
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == token)
+        catch (OperationCanceledException e) when (e.CancellationToken == token && cleanupTask.Target is Task target)
         {
-            await cleanupTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+            await target.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+        }
+        finally
+        {
+            cleanupTask.Free();
         }
     }
 
