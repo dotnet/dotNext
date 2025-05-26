@@ -43,6 +43,7 @@ partial class WriteAheadLog
         toPage = metadataPages.GetEndPageIndex(toIndex);
         removedBytes += metadataPages.Delete(toPage) * (long)MetadataPageManager.PageSize;
 
-        BytesDeletedMeter.Record(removedBytes, measurementTags);
+        if (removedBytes > 0L)
+            BytesDeletedMeter.Record(removedBytes, measurementTags);
     }
 }
