@@ -31,12 +31,15 @@ partial class WriteAheadLog
         var cleanupTask = Task.CompletedTask;
         try
         {
-            for (long newIndex; !token.IsCancellationRequested && backgroundTaskFailure is null; previousIndex = newIndex)
+            for (long newIndex, snapshotIndex;
+                 !token.IsCancellationRequested && backgroundTaskFailure is null;
+                 previousIndex = long.Max(snapshotIndex, newIndex) + 1L)
             {
-                manualFlushQueue.SwitchValve();
+                snapshotIndex = stateMachine.Snapshot?.Index ?? 0L;
                 newIndex = LastCommittedEntryIndex;
+                manualFlushQueue.SwitchValve();
 
-                if (newIndex > previousIndex)
+                if (newIndex >= previousIndex)
                 {
                     // Ensure that the flusher is not running with the snapshot installation process concurrently
                     lockManager.SetCallerInformation("Flush Pages");
@@ -55,9 +58,9 @@ partial class WriteAheadLog
                     {
                         lockManager.ReleaseReadLock();
                     }
-                    
+
                     if (cleanupTask.IsCompleted)
-                        cleanupTask = CleanUpAsync(token);
+                        cleanupTask = CleanUpAsync(snapshotIndex, token);
                 }
 
                 manualFlushQueue.Drain();

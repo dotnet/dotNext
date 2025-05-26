@@ -92,7 +92,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                 flushOnCommit = false;
             }
             
-            flusherTask = FlushAsync(commitIndex, interval, lifetimeTokenSource.Token);
+            flusherTask = FlushAsync(commitIndex + 1L, interval, lifetimeTokenSource.Token);
         }
         
         // applier

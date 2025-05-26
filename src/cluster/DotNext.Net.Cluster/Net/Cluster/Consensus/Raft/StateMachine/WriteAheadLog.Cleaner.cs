@@ -8,20 +8,18 @@ using Runtime.CompilerServices;
 partial class WriteAheadLog
 {
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
-    private async Task CleanUpAsync(CancellationToken token)
+    private async Task CleanUpAsync(long upToIndex, CancellationToken token)
     {
-        var nextIndex = stateMachine.Snapshot?.Index ?? 0L;
-
         // After the barrier, we know that there is no competing reader that reads the old snapshot version
         lockManager.SetCallerInformation("Remove Pages");
         await lockManager.AcquireReadBarrierAsync(token).ConfigureAwait(false);
         try
         {
             // The barrier can suspend this async flow. However, the OS flushes the pages in the background
-            RemoveSquashedPages(nextIndex);
+            RemoveSquashedPages(upToIndex);
 
             // ensure that garbage reclamation is not running concurrently with the snapshot installation process
-            await stateMachine.ReclaimGarbageAsync(nextIndex, token).ConfigureAwait(false);
+            await stateMachine.ReclaimGarbageAsync(upToIndex, token).ConfigureAwait(false);
         }
         catch (Exception e) when (e is not OperationCanceledException canceledEx || canceledEx.CancellationToken != token)
         {
