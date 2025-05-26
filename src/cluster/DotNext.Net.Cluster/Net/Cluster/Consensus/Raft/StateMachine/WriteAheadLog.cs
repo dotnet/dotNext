@@ -110,6 +110,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         }
     }
 
+    private long SnapshotIndex => stateMachine.Snapshot?.Index ?? 0L;
+
     /// <summary>
     /// Initializes the log asynchronously.
     /// </summary>

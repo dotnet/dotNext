@@ -31,11 +31,11 @@ partial class WriteAheadLog
         var cleanupTask = Task.CompletedTask;
         try
         {
-            for (long newIndex, snapshotIndex;
+            for (long newIndex, oldSnapshot = SnapshotIndex, newSnapshot;
                  !token.IsCancellationRequested && backgroundTaskFailure is null;
-                 previousIndex = long.Max(snapshotIndex, newIndex) + 1L)
+                 previousIndex = long.Max(oldSnapshot = newSnapshot, newIndex) + 1L)
             {
-                snapshotIndex = stateMachine.Snapshot?.Index ?? 0L;
+                newSnapshot = SnapshotIndex;
                 newIndex = LastCommittedEntryIndex;
                 manualFlushQueue.SwitchValve();
 
@@ -58,10 +58,10 @@ partial class WriteAheadLog
                     {
                         lockManager.ReleaseReadLock();
                     }
-
-                    if (cleanupTask.IsCompleted)
-                        cleanupTask = CleanUpAsync(snapshotIndex, token);
                 }
+                
+                if (cleanupTask.IsCompleted && oldSnapshot < newSnapshot)
+                    cleanupTask = CleanUpAsync(newSnapshot, token);
 
                 manualFlushQueue.Drain();
                 await flushTrigger.WaitAsync(timeout, token).ConfigureAwait(false);
