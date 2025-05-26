@@ -92,7 +92,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                 flushOnCommit = false;
             }
             
-            flusherTask = FlushAsync(commitIndex, interval, lifetimeTokenSource.Token);
+            flusherTask = FlushAsync(commitIndex + 1L, interval, lifetimeTokenSource.Token);
         }
         
         // applier
@@ -109,6 +109,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                 directory.Create();
         }
     }
+
+    private long SnapshotIndex => stateMachine.Snapshot?.Index ?? 0L;
 
     /// <summary>
     /// Initializes the log asynchronously.
