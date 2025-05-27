@@ -136,7 +136,7 @@ stages:
             inputs:
               command: custom
               custom: tool
-              arguments: install --tool-path . sign --version 0.9.1-beta.25264.1
+              arguments: install --tool-path . sign --prerelease
           - download: current
             displayName: Download packages
             artifact: packages
