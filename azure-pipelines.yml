@@ -143,7 +143,11 @@ stages:
           - download: current
             displayName: Download signing file list
             artifact: config
-          - pwsh: |
+          - task: AzureCLI@2
+            azureSubscription: '.NEXT Code Signing'
+            scriptType: pscore
+            scriptLocation: inlineScript
+            inlineScript:
               .\sign code azure-key-vault `
               "**/*.nupkg" `
               --base-directory "$(Pipeline.Workspace)\packages" `
@@ -151,7 +155,6 @@ stages:
               --publisher-name ".NEXT Contributors" `
               --description ".NEXT Family of Libraries" `
               --description-url "https://github.com/dotnet/dotNext" `
-              --managed-identity-client-id "$(SignClientId)" `
               --azure-key-vault-certificate "$(SignKeyVaultCertificate)" `
               --azure-key-vault-url "$(SignKeyVaultUrl)"
             displayName: Sign packages
