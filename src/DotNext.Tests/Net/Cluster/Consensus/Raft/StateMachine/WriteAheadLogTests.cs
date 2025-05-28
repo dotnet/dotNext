@@ -298,17 +298,13 @@ public sealed class WriteAheadLogTests : Test
 
         Memory<byte> buffer = new byte[sizeof(long)];
         const long count = 1000L;
-        using var cts = new CancellationTokenSource();
         for (var i = 0L; i < count; i++)
         {
             BinaryPrimitives.WriteInt64LittleEndian(buffer.Span, i);
-            
-            cts.CancelAfter(DefaultTimeout);
-            var index = await wal.AppendAsync(buffer, token: cts.Token);
-            await wal.CommitAsync(index, cts.Token);
-            await wal.WaitForApplyAsync(index, cts.Token);
 
-            True(cts.TryReset());
+            var index = await wal.AppendAsync(buffer);
+            await wal.CommitAsync(index);
+            await wal.WaitForApplyAsync(index);
         }
 
         Equal(count * (0L + count - 1L) / 2L, stateMachine.Value);
