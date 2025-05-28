@@ -54,11 +54,12 @@ partial class WriteAheadLog
     public long LastAppliedIndex
     {
         get => Volatile.Read(in appliedIndex);
-        [MethodImpl(MethodImplOptions.NoInlining)]
+        
         private set
         {
-            appliedIndex = value;
-            Interlocked.MemoryBarrier();
+            // Full memory barrier to ensure that the index cannot be changed later, somewhere
+            // within Signal due to inlining
+            Interlocked.Exchange(ref appliedIndex, value);
             appliedEvent.Signal(resumeAll: true);
         }
     }
