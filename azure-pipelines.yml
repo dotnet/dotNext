@@ -145,10 +145,10 @@ stages:
             artifact: config
           - task: AzureCLI@2
             inputs:
-              azureSubscription: .NEXT Code Signing
+              azureSubscription: '.NEXT Code Signing'
               scriptType: pscore
               scriptLocation: inlineScript
-              inlineScript:
+              inlineScript: |
                 .\sign code azure-key-vault `
                 "**/*.nupkg" `
                 --base-directory "$(Pipeline.Workspace)\packages" `
