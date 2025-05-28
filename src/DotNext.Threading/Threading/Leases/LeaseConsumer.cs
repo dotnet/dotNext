@@ -184,18 +184,14 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
         ArgumentNullException.ThrowIfNull(worker);
 
         var exception = default(Exception?);
-        var leaseToken = Token;
-        var operationToken = token;
-        var cts = operationToken.LinkTo(leaseToken);
-
-        var task = Fork(worker, operationToken);
+        var task = Fork(worker, out var cts, out var leaseToken, token);
+        var timerToken = task.AsCancellationToken();
         try
         {
-            Task completedTask;
             do
             {
-                completedTask = await Task.WhenAny(Task.Delay(Expiration.Value / 2, operationToken), task).ConfigureAwait(false);
-            } while (!ReferenceEquals(completedTask, task) && await TryRenewAsync(token).ConfigureAwait(false));
+                await Task.Delay(Expiration.Value / 2, timerToken).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+            } while (!task.IsCompleted && await TryRenewAsync(token).ConfigureAwait(false));
         }
         catch (Exception e)
         {
@@ -222,6 +218,14 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
         {
             cts?.Dispose();
         }
+    }
+
+    private Task<TResult> Fork<TResult>(Func<CancellationToken, Task<TResult>> worker, out LinkedCancellationTokenSource? cts,
+        out CancellationToken leaseToken,
+        CancellationToken token)
+    {
+        cts = token.LinkTo(leaseToken = Token);
+        return Fork(worker, token);
 
         static Task<TResult> Fork(Func<CancellationToken, Task<TResult>> function, CancellationToken token)
             => Task.Run(() => function(token), token);

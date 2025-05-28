@@ -169,7 +169,7 @@ partial class WriteAheadLog
         return index - oldCommitIndex;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.NoInlining)]
     private void OnCommitted(long count)
     {
         if (flushOnCommit)

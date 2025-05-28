@@ -31,7 +31,7 @@ partial class WriteAheadLog
             await lockManager.AcquireReadLockAsync(token).ConfigureAwait(false);
             try
             {
-                await ApplyAsync(appliedIndex + 1L, newIndex, token).ConfigureAwait(false);
+                await ApplyAsync(LastAppliedIndex + 1L, newIndex, token).ConfigureAwait(false);
             }
             catch (Exception e) when (e is not OperationCanceledException canceledEx || canceledEx.CancellationToken != token)
             {
@@ -54,9 +54,12 @@ partial class WriteAheadLog
     public long LastAppliedIndex
     {
         get => Volatile.Read(in appliedIndex);
+        
         private set
         {
-            Volatile.Write(ref appliedIndex, value);
+            // Full memory barrier to ensure that the index cannot be changed later, somewhere
+            // within Signal due to inlining
+            Interlocked.Exchange(ref appliedIndex, value);
             appliedEvent.Signal(resumeAll: true);
         }
     }

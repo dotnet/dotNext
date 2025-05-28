@@ -145,7 +145,7 @@ stages:
             artifact: config
           - task: AzureCLI@2
             inputs:
-              azureSubscription: '.NEXT Code Signing'
+              azureSubscription: .NEXT Code Signing
               scriptType: pscore
               scriptLocation: inlineScript
               inlineScript:

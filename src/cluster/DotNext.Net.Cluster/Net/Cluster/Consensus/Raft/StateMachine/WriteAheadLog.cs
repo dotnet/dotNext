@@ -41,6 +41,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(stateMachine);
 
+        if (nuint.Size < sizeof(ulong))
+            throw new PlatformNotSupportedException();
+
         lifetimeTokenSource = new();
         var rootPath = new DirectoryInfo(configuration.Location);
         CreateIfNeeded(rootPath);
@@ -252,7 +255,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                 if (startIndex <= LastCommittedEntryIndex)
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
                 
-                appliedIndex = await stateMachine.ApplyAsync(new LogEntry(entry, startIndex), token).ConfigureAwait(false);
+                LastAppliedIndex = await stateMachine.ApplyAsync(new LogEntry(entry, startIndex), token).ConfigureAwait(false);
                 var snapshotIndex = stateMachine.Snapshot?.Index ?? startIndex;
                 LastEntryIndex = long.Max(tailIndex, LastCommittedEntryIndex = snapshotIndex);
             }
