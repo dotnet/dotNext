@@ -41,6 +41,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(stateMachine);
 
+        if (nuint.Size < sizeof(ulong))
+            throw new PlatformNotSupportedException();
+
         lifetimeTokenSource = new();
         var rootPath = new DirectoryInfo(configuration.Location);
         CreateIfNeeded(rootPath);
