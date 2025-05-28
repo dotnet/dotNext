@@ -136,7 +136,7 @@ stages:
             inputs:
               command: custom
               custom: tool
-              arguments: install --tool-path . sign --version 0.9.0-beta.23127.3
+              arguments: install --tool-path . sign --prerelease
           - download: current
             displayName: Download packages
             artifact: packages
@@ -151,9 +151,7 @@ stages:
               --publisher-name ".NEXT Contributors" `
               --description ".NEXT Family of Libraries" `
               --description-url "https://github.com/dotnet/dotNext" `
-              --azure-key-vault-tenant-id "$(SignTenantId)" `
-              --azure-key-vault-client-id "$(SignClientId)" `
-              --azure-key-vault-client-secret '$(SignClientSecret)' `
+              --managed-identity-client-id "$(SignClientId)" `
               --azure-key-vault-certificate "$(SignKeyVaultCertificate)" `
               --azure-key-vault-url "$(SignKeyVaultUrl)"
             displayName: Sign packages
