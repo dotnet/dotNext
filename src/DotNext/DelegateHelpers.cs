@@ -14,10 +14,10 @@ public static partial class DelegateHelpers
         => expression.Body switch
         {
             MethodCallExpression expr => expr.Method,
-            MemberExpression { Member: PropertyInfo { CanRead: true } property } => property.GetMethod!,
-            BinaryExpression { Method: not null } expr => expr.Method,
-            IndexExpression { Indexer.CanRead: true } expr => expr.Indexer.GetMethod!,
-            UnaryExpression { Method: not null } expr => expr.Method,
+            MemberExpression { Member: PropertyInfo { GetMethod: { } getter } } => getter,
+            BinaryExpression { Method: { } method } => method,
+            IndexExpression { Indexer.GetMethod: { } getter } => getter,
+            UnaryExpression { Method: { } method } => method,
             _ => throw new ArgumentException(ExceptionMessages.InvalidExpressionTree, nameof(expression))
         };
 
