@@ -36,7 +36,7 @@ public static class Span
                 var sizeInBytes = size * sizeof(T);
                 var partX = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)), sizeInBytes);
                 var partY = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(y)), sizeInBytes);
-                if (MemoryExtensions.SequenceEqual(partX, partY) is false)
+                if (partX.SequenceEqual(partY) is false)
                     return false;
             }
 
