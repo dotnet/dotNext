@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 05-26-2025
+Release Date: 05-30-2025
 
 <a href="https://www.nuget.org/packages/dotnext/5.22.0">DotNext 5.22.0</a>
 * Added `!` operator overloading for the result and optional types: [261](https://github.com/dotnet/dotNext/pull/261)
