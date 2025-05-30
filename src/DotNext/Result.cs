@@ -7,6 +7,8 @@ using System.Text.Json.Serialization;
 
 namespace DotNext;
 
+using System;
+using DotNext.Threading.Tasks;
 using Runtime.CompilerServices;
 using Intrinsics = Runtime.Intrinsics;
 
@@ -75,6 +77,98 @@ public static class Result
     /// <param name="e">The exception to be placed to the container.</param>
     /// <returns>The exception encapsulated by <see cref="Result{T}"/>.</returns>
     public static Result<T> FromException<T>(Exception e) => new(e);
+
+    /// <summary>
+    /// Creates a new instance of <see cref="Result{T, TError}"/> from the specified exception.
+    /// </summary>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TError">The type of the error code. Default value must represent the successful result.</typeparam>
+    /// <param name="e">The error to be placed to the container.</param>
+    /// <returns>The exception encapsulated by <see cref="Result{T}"/>.</returns>
+    public static Result<T, TError> FromError<T, TError>(TError e)
+        where TError : struct, Enum
+        => new(e);
+
+    /// <summary>
+    /// If successful result is present, apply the provided mapping function hiding any exception
+    /// caused by the converter.
+    /// </summary>
+    /// <param name="task">The task containing Result value.</param>
+    /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <returns>The conversion result.</returns>
+    public static AwaitableResult<TResult> Convert<T, TResult>(this AwaitableResult<T> task, Converter<T, TResult> converter)
+    {
+        async Task<TResult> ConvertInternal()
+        {
+            var result = await task.ConfigureAwait(false);
+            var conversionResult = result.Convert(converter);
+            return conversionResult.IsSuccessful ? conversionResult.Value : throw conversionResult.Error;
+        }
+
+        return ConvertInternal().SuspendException();
+    }
+
+    /// <summary>
+    /// If successful result is present, apply the provided mapping function. If not,
+    /// forward the exception.
+    /// </summary>
+    /// <param name="task">The task containing Result value.</param>
+    /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <returns>The conversion result.</returns>
+    public static AwaitableResult<TResult> Convert<T, TResult>(this AwaitableResult<T> task, Converter<T, Result<TResult>> converter)
+    {
+        async Task<TResult> ConvertInternal()
+        {
+            var result = await task.ConfigureAwait(false);
+            var conversionResult = result.Convert(converter);
+            return conversionResult.IsSuccessful ? conversionResult.Value : throw conversionResult.Error;
+        }
+
+        return ConvertInternal().SuspendException();
+    }
+
+    /// <summary>
+    /// If successful result is present, apply the provided mapping function. If not,
+    /// forward the exception.
+    /// </summary>
+    /// <param name="task">The task containing Result value.</param>
+    /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <returns>The conversion result.</returns>
+    public static AwaitableResult<TResult> Convert<T, TResult>(this AwaitableResult<T> task,
+        Func<T, CancellationToken, Task<TResult>> converter, CancellationToken token = default)
+    {
+        async Task<TResult> ConvertInternal()
+        {
+            var result = await task.ConfigureAwait(false);
+            return result.IsSuccessful
+                ? await converter.Invoke(result.ValueOrDefault!, token).ConfigureAwait(false)
+                : throw result.Error;
+        }
+
+        return ConvertInternal().SuspendException();
+    }
+
+    /// <summary>
+    /// Converts the awaitable Result into a task holding <see cref="Optional{T}"/>.
+    /// </summary>
+    /// <returns>A task holding an Option monad representing value in this monad.</returns>
+    public static async Task<Optional<T>> TryGet<T>(this AwaitableResult<T> awaitableResult)
+        => (await awaitableResult.ConfigureAwait(false)).TryGet();
+
+    /// <summary>
+    /// Converts the awaitable Result into a task holding <see cref="Optional{T}"/>.
+    /// </summary>
+    /// <returns>A task holding an Option monad representing value in this monad.</returns>
+    public static async Task<Optional<T>> TryGet<T, TError>(this AwaitableResult<T, TError> awaitableResult)
+        where TError: struct, Enum
+        => (await awaitableResult.ConfigureAwait(false)).TryGet();
 }
 
 /// <summary>
@@ -202,6 +296,77 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
         return result;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private Result<TResult> ConvertResult<TResult, TConverter>(TConverter converter)
+        where TConverter : struct, ISupplier<T, Result<TResult>>
+    {
+        Result<TResult> result;
+        if (exception is null)
+        {
+            try
+            {
+                result = converter.Invoke(value);
+            }
+            catch (Exception e)
+            {
+                result = new(e);
+            }
+        }
+        else
+        {
+            result = new(exception);
+        }
+
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private AwaitableResult<TResult> ConvertTask<TResult>(Func<T, CancellationToken, Task<TResult>> converter, CancellationToken token = default)
+    {
+        AwaitableResult<TResult> result;
+        if (exception is null)
+        {
+            try
+            {
+                result = converter.Invoke(value, token).SuspendException();
+            }
+            catch (Exception e)
+            {
+                result = new(Task.FromException<TResult>(e));
+            }
+        }
+        else
+        {
+            result = new(Task.FromException<TResult>(exception.SourceException));
+        }
+
+        return result;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private AwaitableResult<TResult> ConvertAwaitableResult<TResult, TConverter>(TConverter converter)
+        where TConverter : struct, ISupplier<T, AwaitableResult<TResult>>
+    {
+        AwaitableResult<TResult> result;
+        if (exception is null)
+        {
+            var valueCopy = value;
+            async Task<TResult> GetConversionResult()
+            {
+                var conversionResult = await converter.Invoke(valueCopy).ConfigureAwait(false);
+                return conversionResult.IsSuccessful ? conversionResult.Value : throw conversionResult.Error;
+            }
+
+            result = new(GetConversionResult());
+        }
+        else
+        {
+            result = new(Task.FromException<TResult>(exception.SourceException));
+        }
+
+        return result;
+    }
+
     /// <summary>
     /// If the successful result is present, apply the provided mapping function hiding any exception
     /// caused by the converter.
@@ -213,6 +378,37 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
         => Convert<TResult, DelegatingConverter<T, TResult>>(converter);
 
     /// <summary>
+    /// If successful result is present, apply the provided mapping function. If not,
+    /// forward the exception.
+    /// </summary>
+    /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <returns>The conversion result.</returns>
+    public Result<TResult> Convert<TResult>(Converter<T, Result<TResult>> converter)
+        => ConvertResult<TResult, DelegatingConverter<T, Result<TResult>>>(converter);
+
+    /// <summary>
+    /// If successful result is present, apply the provided mapping function. If not,
+    /// forward the exception.
+    /// </summary>
+    /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The conversion result.</returns>
+    public AwaitableResult<TResult> Convert<TResult>(Func<T, CancellationToken, Task<TResult>> converter, CancellationToken token = default)
+        => ConvertTask(converter, token);
+
+    /// <summary>
+    /// If successful result is present, apply the provided mapping function. If not,
+    /// forward the exception.
+    /// </summary>
+    /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <returns>The conversion result.</returns>
+    public AwaitableResult<TResult> Convert<TResult>(Converter<T, AwaitableResult<TResult>> converter)
+        => ConvertAwaitableResult<TResult, DelegatingConverter<T, AwaitableResult<TResult>>>(converter);
+
+    /// <summary>
     /// If the successful result is present, apply the provided mapping function hiding any exception
     /// caused by the converter.
     /// </summary>
@@ -222,6 +418,28 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     [CLSCompliant(false)]
     public unsafe Result<TResult> Convert<TResult>(delegate*<T, TResult> converter)
         => Convert<TResult, Supplier<T, TResult>>(converter);
+
+    /// <summary>
+    /// If successful result is present, apply the provided mapping function. If not,
+    /// forward the exception.
+    /// </summary>
+    /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <returns>The conversion result.</returns>
+    [CLSCompliant(false)]
+    public unsafe Result<TResult> Convert<TResult>(delegate*<T, Result<TResult>> converter)
+        => ConvertResult<TResult, Supplier<T, Result<TResult>>>(converter);
+
+    /// <summary>
+    /// If successful result is present, apply the provided mapping function. If not,
+    /// forward the exception.
+    /// </summary>
+    /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <returns>The conversion result.</returns>
+    [CLSCompliant(false)]
+    public unsafe AwaitableResult<TResult> Convert<TResult>(delegate*<T, AwaitableResult<TResult>> converter)
+        => ConvertAwaitableResult<TResult, Supplier<T, AwaitableResult<TResult>>>(converter);
 
     /// <summary>
     /// Attempts to extract value from the container if it is present.
@@ -322,6 +540,13 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
             OperationCanceledException canceledEx => ValueTask.FromCanceled<T>(canceledEx.CancellationToken),
             { } error => ValueTask.FromException<T>(error),
         };
+
+    /// <summary>
+    /// Converts this result to <see cref="AwaitableResult{TResult}"/>.
+    /// </summary>
+    /// <returns>The awaitable Result representing the result.</returns>
+    public AwaitableResult<T> ToAwaitable()
+        => IsSuccessful ? new(Task.FromResult(value)) : new(Task.FromException<T>(Error));
 
     /// <summary>
     /// Converts the result to <see cref="Task{TResult}"/>.
@@ -534,6 +759,11 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
         where TConverter : struct, ISupplier<T, TResult>
         => IsSuccessful ? new(converter.Invoke(value)) : new(Error);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private Result<TResult, TError> ConvertResult<TResult, TConverter>(TConverter converter)
+        where TConverter : struct, ISupplier<T, Result<TResult, TError>>
+        => IsSuccessful ? converter.Invoke(value) : new(Error);
+
     /// <summary>
     /// If the successful result is present, apply the provided mapping function hiding any exception
     /// caused by the converter.
@@ -545,6 +775,16 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
         => Convert<TResult, DelegatingConverter<T, TResult>>(converter);
 
     /// <summary>
+    /// If successful result is present, apply the provided mapping function. If not,
+    /// forward the error.
+    /// </summary>
+    /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <returns>The conversion result.</returns>
+    public Result<TResult, TError> Convert<TResult>(Converter<T, Result<TResult, TError>> converter)
+        => ConvertResult<TResult, DelegatingConverter<T, Result<TResult, TError>>>(converter);
+
+    /// <summary>
     /// If the successful result is present, apply the provided mapping function hiding any exception
     /// caused by the converter.
     /// </summary>
@@ -554,6 +794,17 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     [CLSCompliant(false)]
     public unsafe Result<TResult, TError> Convert<TResult>(delegate*<T, TResult> converter)
         => Convert<TResult, Supplier<T, TResult>>(converter);
+
+    /// <summary>
+    /// If successful result is present, apply the provided mapping function. If not,
+    /// forward the error.
+    /// </summary>
+    /// <param name="converter">A mapping function to be applied to the value, if present.</param>
+    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
+    /// <returns>The conversion result.</returns>
+    [CLSCompliant(false)]
+    public unsafe Result<TResult, TError> Convert<TResult>(delegate*<T, Result<TResult, TError>> converter)
+        => ConvertResult<TResult, Supplier<T, Result<TResult, TError>>>(converter);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private T OrInvoke<TSupplier>(TSupplier defaultFunc)
