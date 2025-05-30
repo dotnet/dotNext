@@ -70,7 +70,7 @@ public static class Span
                 var sizeInBytes = size * sizeof(T);
                 var partX = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(x)), sizeInBytes);
                 var partY = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<T, byte>(ref MemoryMarshal.GetReference(y)), sizeInBytes);
-                result = MemoryExtensions.SequenceCompareTo(partX, partY);
+                result = partX.SequenceCompareTo(partY);
                 if (result is not 0)
                     break;
             }
@@ -87,7 +87,7 @@ public static class Span
     /// <typeparam name="T">The type of the elements.</typeparam>
     [CLSCompliant(false)]
     public static unsafe void Sort<T>(this Span<T> span, delegate*<T?, T?, int> comparison)
-        => MemoryExtensions.Sort<T, ComparerWrapper<T>>(span, comparison);
+        => span.Sort<T, ComparerWrapper<T>>(comparison);
 
     /// <summary>
     /// Trims the span to specified length if it exceeds it.
@@ -305,9 +305,7 @@ public static class Span
             case < 0:
                 throw new OutOfMemoryException();
             default:
-                result = allocator is null
-                    ? new(ArrayPool<T>.Shared, length)
-                    : allocator(length);
+                result = allocator?.Invoke(length) ?? new(ArrayPool<T>.Shared, length);
 
                 var output = result.Span;
                 first.CopyTo(output);
@@ -350,9 +348,7 @@ public static class Span
             return default;
 
         var length = checked(first.Length + second.Length + third.Length);
-        var result = allocator is null ?
-            new MemoryOwner<T>(ArrayPool<T>.Shared, length) :
-            allocator(length);
+        var result = allocator?.Invoke(length) ?? new MemoryOwner<T>(ArrayPool<T>.Shared, length);
 
         var output = result.Span;
         first.CopyTo(output);
@@ -374,10 +370,7 @@ public static class Span
         if (span.IsEmpty)
             return default;
 
-        var result = allocator is null ?
-            new MemoryOwner<T>(ArrayPool<T>.Shared, span.Length) :
-            allocator(span.Length);
-
+        var result = allocator?.Invoke(span.Length) ?? new MemoryOwner<T>(ArrayPool<T>.Shared, span.Length);
         span.CopyTo(result.Span);
         return result;
     }
@@ -500,10 +493,7 @@ public static class Span
                 if (totalLength > Array.MaxLength)
                     throw new OutOfMemoryException();
 
-                result = allocator is null
-                            ? new(ArrayPool<char>.Shared, (int)totalLength)
-                            : allocator((int)totalLength);
-
+                result = allocator?.Invoke((int)totalLength) ?? new(ArrayPool<char>.Shared, (int)totalLength);
                 var output = result.Span;
                 foreach (ReadOnlySpan<char> str in values)
                 {
