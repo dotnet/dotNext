@@ -44,7 +44,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
         if ((uint)maxValue > (uint)MaxValue)
             throw new ArgumentOutOfRangeException(nameof(maxValue));
 
-        bitmask = ulong.MaxValue;
+        bitmask = ulong.MaxValue >>> (MaxValue - maxValue);
         this.maxValue = maxValue;
     }
 
