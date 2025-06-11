@@ -22,4 +22,6 @@ internal static class ExceptionMessages
     internal static string StreamNotWritable => (string)Resources.Get();
 
     internal static string SegmentVeryLarge => (string)Resources.Get();
+
+    internal static string UnableToDiscardMemory => (string)Resources.Get();
 }

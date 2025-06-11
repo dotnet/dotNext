@@ -4,3 +4,4 @@ NullPtr=Zero pointer detected
 StreamNotReadable=Stream is not readable
 StreamNotWritable=Stream is not writable
 SegmentVeryLarge=Memory-mapped file segment is greater than 2 Gb
+UnableToDiscardMemory=Unable to discard physical memory
