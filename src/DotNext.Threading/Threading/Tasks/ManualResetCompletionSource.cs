@@ -477,7 +477,7 @@ public abstract partial class ManualResetCompletionSource
     [StructLayout(LayoutKind.Auto)]
     private protected struct VersionAndStatus
     {
-        private ulong value;
+        private uint value;
 
         public VersionAndStatus()
             : this(InitialCompletionToken, ManualResetCompletionSourceStatus.WaitForActivation)
@@ -486,7 +486,7 @@ public abstract partial class ManualResetCompletionSource
 
         private VersionAndStatus(short version, ManualResetCompletionSourceStatus status)
         {
-            Debug.Assert(Enum.GetUnderlyingType(typeof(ManualResetCompletionSourceStatus)) == typeof(int));
+            Debug.Assert(Enum.GetUnderlyingType(typeof(ManualResetCompletionSourceStatus)) == typeof(short));
 
             value = Combine(version, status);
         }
@@ -547,17 +547,17 @@ public abstract partial class ManualResetCompletionSource
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ref short GetVersion(ref ulong value)
-            => ref Unsafe.As<ulong, short>(ref value);
+        private static ref short GetVersion(ref uint value)
+            => ref Unsafe.As<uint, short>(ref value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ref ManualResetCompletionSourceStatus GetStatus(ref ulong value)
-            => ref Unsafe.As<int, ManualResetCompletionSourceStatus>(ref Unsafe.Add(ref Unsafe.As<ulong, int>(ref value), 1));
+        private static ref ManualResetCompletionSourceStatus GetStatus(ref uint value)
+            => ref Unsafe.As<short, ManualResetCompletionSourceStatus>(ref Unsafe.Add(ref Unsafe.As<uint, short>(ref value), 1));
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ulong Combine(short version, ManualResetCompletionSourceStatus status)
+        private static uint Combine(short version, ManualResetCompletionSourceStatus status)
         {
-            Unsafe.SkipInit(out ulong result);
+            Unsafe.SkipInit(out uint result);
             GetVersion(ref result) = version;
             GetStatus(ref result) = status;
 
