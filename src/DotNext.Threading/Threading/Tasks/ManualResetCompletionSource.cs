@@ -399,7 +399,7 @@ public abstract partial class ManualResetCompletionSource
             }
             else
             {
-                switch ((runAsynchronously, context is not null))
+                switch (runAsynchronously, context is not null)
                 {
                     case (true, true):
                         ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: true);
