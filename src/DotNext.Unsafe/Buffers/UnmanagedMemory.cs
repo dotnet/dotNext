@@ -119,12 +119,12 @@ public static class UnmanagedMemory
     /// <param name="memory">The memory block.</param>
     /// <param name="offset">The offset to the page-aligned element.</param>
     /// <returns><see langword="true"/> if the <paramref name="offset"/> within the memory range; otherwise, <see langword="false"/>.</returns>
-    public static unsafe bool GetPageAlignedOffset(ReadOnlyMemory<byte> memory, out int offset)
+    public static unsafe bool GetPageAlignedOffset(ReadOnlySpan<byte> memory, out int offset)
     {
         nuint pageSize = (uint)Environment.SystemPageSize;
-        using (var handle = memory.Pin())
+        fixed (void* ptr = memory)
         {
-            var address = (nuint)handle.Pointer;
+            var address = (nuint)ptr;
             var alignedAddress = address - (address & ((uint)Environment.SystemPageSize - 1));
             alignedAddress = address == alignedAddress ? alignedAddress : alignedAddress + pageSize;
 
@@ -139,23 +139,15 @@ public static class UnmanagedMemory
     /// </summary>
     /// <param name="memoryBlock">A region of the virtual memory.</param>
     /// <exception cref="ArgumentOutOfRangeException">
-    /// <paramref name="memoryBlock"/> was not allocated by <see cref="AllocatePageAlignedMemory"/> or <see cref="AllocateSystemPages"/>;
-    /// or its length or the offset is not page-aligned.
+    /// The length or the offset of <paramref name="memoryBlock"/> is not page-aligned.
     /// </exception>
-    public static void Discard(Memory<byte> memoryBlock)
+    /// <seealso cref="AllocateSystemPages"/>
+    public static unsafe void Discard<T>(Span<T> memoryBlock)
+        where T : unmanaged
     {
-        if (MemoryMarshal.TryGetMemoryManager<byte, SystemPageManager>(memoryBlock, out var manager, out var offset, out var length))
+        fixed (void* ptr = memoryBlock)
         {
-            manager.Discard(offset, length);
-        }
-        else
-        {
-            using var handle = memoryBlock.Pin();
-
-            unsafe
-            {
-                SystemPageManager.Discard((nint)handle.Pointer, memoryBlock.Length);
-            }
+            SystemPageManager.Discard((nint)ptr, memoryBlock.Length);
         }
     }
 }
@@ -326,9 +318,6 @@ file sealed unsafe class SystemPageManager : UnmanagedMemory<byte>
                 throw new Win32Exception(errorCode, ExceptionMessages.UnableToDiscardMemory);
         }
     }
-
-    internal void Discard(int offset, int length)
-        => Discard((nint)address + offset, length);
 
     protected override void Dispose(bool disposing)
     {
