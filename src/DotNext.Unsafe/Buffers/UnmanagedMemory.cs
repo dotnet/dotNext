@@ -262,7 +262,9 @@ file sealed unsafe class SystemPageManager : UnmanagedMemory<byte>
     {
         if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
         {
-            NativeLibrary.TryGetExport(NativeLibrary.GetMainProgramHandle(), "posix_madvise", out VirtualMemoryManagementFunc);
+            // Since glibc 2.6, POSIX_MADV_DONTNEED is treated as a no-op due to destructive semantics of the flag.
+            // Therefore, madvise is used instead.
+            NativeLibrary.TryGetExport(NativeLibrary.GetMainProgramHandle(), "madvise", out VirtualMemoryManagementFunc);
         }
         else if (OperatingSystem.IsWindows())
         {

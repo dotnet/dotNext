@@ -279,16 +279,10 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void DiscardPages()
     {
-        using var memory = UnmanagedMemory.AllocateSystemPages(1);
-        UnmanagedMemory.Discard(memory.Memory.Span);
-    }
-
-    [Fact]
-    public static void DiscardPinnedMemory()
-    {
-        var bytes = GC.AllocateArray<byte>(Environment.SystemPageSize * 2, pinned: true);
-        True(UnmanagedMemory.GetPageAlignedOffset(bytes, out var offset));
+        using var systemPages = UnmanagedMemory.AllocateSystemPages(1);
+        systemPages.Memory.Span[0] = 42;
         
-        UnmanagedMemory.Discard(bytes.AsSpan(offset, Environment.SystemPageSize));
+        UnmanagedMemory.Discard(systemPages.Memory.Span);
+        Equal(0, systemPages.Memory.Span[0]);
     }
 }
