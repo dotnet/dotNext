@@ -1,5 +1,4 @@
 using System.Buffers.Binary;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
@@ -14,42 +13,39 @@ using Threading;
 
 partial class WriteAheadLog
 {
-    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
-    private readonly AsyncAutoResetEvent flushTrigger;
-
-    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
-    private readonly SingleProducerMultipleConsumersCoordinator manualFlushQueue;
+    private readonly AsyncAutoResetEventSlim? flushTrigger;
     private readonly Task flusherTask;
-    private readonly bool flushOnCommit;
-    private Checkpoint checkpoint;
+    private readonly WeakReference<Task?> cleanupTask = new(target: null, trackResurrection: false);
     
+    private Checkpoint checkpoint;
     private long commitIndex; // Commit lock protects modification of this field
+    private long flusherPreviousIndex, flusherOldSnapshotIndex;
 
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
-    private async Task FlushAsync(long previousIndex, TimeSpan timeout, CancellationToken token)
+    private async Task FlushAsync<T>(T flushTrigger, CancellationToken token)
+        where T : struct, IFlushTrigger
     {
         // Weak ref tracks the task, but allows GC to collect associated state machine
         // as soon as possible. While the task is running, it cannot be collected, because it's referenced
         // by the async state machine.
-        var cleanupTask = GCHandle.Alloc(Task.CompletedTask, GCHandleType.Weak);
         try
         {
-            for (long newIndex, oldSnapshot = SnapshotIndex, newSnapshot;
+            flusherOldSnapshotIndex = SnapshotIndex;
+            for (long newIndex, newSnapshot;
                  !token.IsCancellationRequested && backgroundTaskFailure is null;
-                 previousIndex = long.Max(oldSnapshot = newSnapshot, newIndex) + 1L)
+                 flusherPreviousIndex = long.Max(flusherOldSnapshotIndex = newSnapshot, newIndex) + 1L)
             {
                 newSnapshot = SnapshotIndex;
                 newIndex = LastCommittedEntryIndex;
-                manualFlushQueue.SwitchValve();
 
-                if (newIndex >= previousIndex)
+                if (newIndex >= flusherPreviousIndex)
                 {
                     // Ensure that the flusher is not running with the snapshot installation process concurrently
                     lockManager.SetCallerInformation("Flush Pages");
                     await lockManager.AcquireReadLockAsync(token).ConfigureAwait(false);
                     try
                     {
-                        Flush(previousIndex, newIndex);
+                        Flush(flusherPreviousIndex, newIndex);
                     }
                     catch (Exception e)
                     {
@@ -63,20 +59,22 @@ partial class WriteAheadLog
                     }
                 }
 
-                if (cleanupTask.Target is null or Task { IsCompletedSuccessfully: true } && oldSnapshot < newSnapshot)
-                    cleanupTask.Target = CleanUpAsync(newSnapshot, token);
+                if ((!cleanupTask.TryGetTarget(out var task) || task.IsCompletedSuccessfully) && flusherOldSnapshotIndex < newSnapshot)
+                    cleanupTask.SetTarget(CleanUpAsync(newSnapshot, token));
 
-                manualFlushQueue.Drain();
-                await flushTrigger.WaitAsync(timeout, token).ConfigureAwait(false);
+                await flushTrigger.WaitAsync(token).ConfigureAwait(false);
             }
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == token && cleanupTask.Target is Task target)
+        catch (OperationCanceledException e) when (e.CancellationToken == token && cleanupTask.TryGetTarget(out var task))
         {
-            await target.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+            await task.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
         }
         finally
         {
-            cleanupTask.Free();
+            cleanupTask.SetTarget(null);
+            
+            if (flushTrigger is IDisposable)
+                ((IDisposable)flushTrigger).Dispose();
         }
     }
 
@@ -130,21 +128,34 @@ partial class WriteAheadLog
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous state of the operation.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public ValueTask FlushAsync(CancellationToken token = default)
+    /// <exception cref="NotSupportedException">The flush operation is provided in the background.</exception>
+    public async ValueTask FlushAsync(CancellationToken token = default)
     {
-        ValueTask task;
+        if (flushTrigger is not null)
+            throw new NotSupportedException();
 
-        if (IsDisposingOrDisposed)
+        var newSnapshot = SnapshotIndex;
+        var newIndex = LastCommittedEntryIndex;
+
+        if (newIndex >= flusherPreviousIndex)
         {
-            task = new(DisposedTask);
-        }
-        else
-        {
-            task = manualFlushQueue.WaitAsync(token);
-            flushTrigger.Set();
+            // Ensure that the flusher is not running with the snapshot installation process concurrently
+            lockManager.SetCallerInformation("Flush Pages");
+            await lockManager.AcquireReadLockAsync(token).ConfigureAwait(false);
+            try
+            {
+                Flush(flusherPreviousIndex, newIndex);
+            }
+            finally
+            {
+                lockManager.ReleaseReadLock();
+            }
         }
 
-        return task;
+        if ((!cleanupTask.TryGetTarget(out var task) || task.IsCompletedSuccessfully) && flusherOldSnapshotIndex < newSnapshot)
+            cleanupTask.SetTarget(CleanUpAsync(newSnapshot, token));
+
+        flusherPreviousIndex = long.Max(flusherOldSnapshotIndex = newSnapshot, newIndex) + 1L;
     }
 
     /// <inheritdoc cref="IAuditTrail.LastCommittedEntryIndex"/>
@@ -172,11 +183,32 @@ partial class WriteAheadLog
     [MethodImpl(MethodImplOptions.NoInlining)]
     private void OnCommitted(long count)
     {
-        if (flushOnCommit)
-            flushTrigger.Set();
-
         applyTrigger.Set();
+        flushTrigger?.Set();
         CommitRateMeter.Add(count, measurementTags);
+    }
+    
+    private interface IFlushTrigger
+    {
+        ValueTask<bool> WaitAsync(CancellationToken token);
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct ManualTrigger(AsyncAutoResetEventSlim resetEvent) : IFlushTrigger
+    {
+        ValueTask<bool> IFlushTrigger.WaitAsync(CancellationToken token)
+            => resetEvent.WaitAsync();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct TimeoutTrigger(TimeSpan timeout) : IFlushTrigger, IDisposable
+    {
+        private readonly PeriodicTimer timer = new(timeout);
+        
+        ValueTask<bool> IFlushTrigger.WaitAsync(CancellationToken token)
+            => timer.WaitForNextTickAsync(token);
+
+        void IDisposable.Dispose() => timer.Dispose();
     }
 
     [StructLayout(LayoutKind.Auto)]

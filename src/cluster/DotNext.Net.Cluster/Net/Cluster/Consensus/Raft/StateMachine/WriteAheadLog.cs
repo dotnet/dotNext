@@ -10,6 +10,7 @@ using Buffers;
 using IO;
 using IO.Log;
 using Threading;
+using Threading.Tasks;
 
 /// <summary>
 /// Represents the general-purpose Raft WAL.
@@ -55,7 +56,6 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         stateLock = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
         state = new(rootPath);
         measurementTags = configuration.MeasurementTags;
-        manualFlushQueue = new() { MeasurementTags = configuration.MeasurementTags };
         
         checkpoint = new(rootPath);
         var lastReliablyWrittenEntryIndex = checkpoint.Value;
@@ -82,26 +82,27 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         
         // flusher
         {
-            flushTrigger = new(initialState: false) { MeasurementTags = configuration.MeasurementTags };
-
             var interval = configuration.FlushInterval;
+            flusherPreviousIndex = commitIndex + 1L;
             if (interval == TimeSpan.Zero)
             {
-                flushOnCommit = true;
-                interval = InfiniteTimeSpan;
+                flushTrigger = new(initialState: false);
+                flusherTask = FlushAsync(new ManualTrigger(flushTrigger), lifetimeTokenSource.Token);
+            }
+            else if (interval == InfiniteTimeSpan)
+            {
+                flusherTask = Task.CompletedTask;
             }
             else
             {
-                flushOnCommit = false;
+                flusherTask = FlushAsync(new TimeoutTrigger(interval), lifetimeTokenSource.Token);
             }
-            
-            flusherTask = FlushAsync(commitIndex + 1L, interval, lifetimeTokenSource.Token);
         }
-        
+
         // applier
         {
             appliedIndex = snapshotIndex;
-            applyTrigger = new(initialState: false) { MeasurementTags = configuration.MeasurementTags };
+            applyTrigger = new();
             appenderTask = ApplyAsync(lifetimeTokenSource.Token);
             appliedEvent = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
         }
@@ -590,7 +591,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     private void CleanUp()
     {
         Dispose<PageManager>([dataPages, metadataPages]);
-        Dispose<QueuedSynchronizer>([lockManager, appliedEvent, flushTrigger, applyTrigger, stateLock, manualFlushQueue]);
+        Dispose<QueuedSynchronizer>([lockManager, appliedEvent, stateLock]);
         checkpoint.Dispose();
         state.Dispose();
         context.Clear();
@@ -606,6 +607,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                 cts.Cancel();
             }
         }
+        
+        flushTrigger?.Set();
+        applyTrigger.Set();
     }
 
     /// <inheritdoc/>
@@ -616,6 +620,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         await flusherTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
         await appenderTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
 
+        if (cleanupTask.TryGetTarget(out var task))
+            await task.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+        
         CleanUp();
     }
 
@@ -624,10 +631,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     {
         if (disposing)
         {
-            CancelBackgroundJobs();
-            CleanUp();
+            DisposeAsyncCore().Wait();
         }
-        
+
         base.Dispose(disposing);
     }
 
