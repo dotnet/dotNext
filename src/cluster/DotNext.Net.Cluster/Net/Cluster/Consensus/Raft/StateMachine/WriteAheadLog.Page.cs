@@ -28,7 +28,7 @@ partial class WriteAheadLog
             fileName = GetPageFileName(directory, pageIndex);
 
             const FileAccess fileAccess = FileAccess.ReadWrite;
-            fileHandle = TryCreateNew(fileName, pageSize) ?? File.OpenHandle(fileName, FileMode.Open, fileAccess);
+            fileHandle = File.OpenHandle(fileName, FileMode.OpenOrCreate, fileAccess);
 
             var mappedHandle = MemoryMappedFile.CreateFromFile(fileHandle, mapName: null, pageSize, MemoryMappedFileAccess.ReadWrite,
                 HandleInheritability.None, leaveOpen: true);
@@ -51,29 +51,6 @@ partial class WriteAheadLog
                     return hresult is ERROR_ALREADY_EXISTS;
 
                 return File.Exists(fileName);
-            }
-
-            static SafeFileHandle? TryCreateNew(string fileName, int pageSize)
-            {
-                SafeFileHandle? handle;
-                if (File.Exists(fileName))
-                {
-                    handle = null;
-                }
-                else
-                {
-                    try
-                    {
-                        handle = File.OpenHandle(fileName, FileMode.CreateNew, fileAccess, preallocationSize: pageSize);
-                        File.SetAttributes(handle, FileAttributes.NotContentIndexed);
-                    }
-                    catch (IOException e) when (AlreadyExists(e.HResult, fileName))
-                    {
-                        handle = null;
-                    }
-                }
-
-                return handle;
             }
         }
 
