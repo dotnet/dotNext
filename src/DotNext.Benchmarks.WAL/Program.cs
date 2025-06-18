@@ -8,6 +8,7 @@ using DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 using FASTER.core;
 
 const int count = 2000;
+const int entrySize = 1024;
 using var cts = new ConsoleLifetimeTokenSource();
 
 Console.WriteLine("Starting DotNext WAL Performance Test...");
@@ -25,7 +26,7 @@ static async Task DotNextWalPerformanceTest(CancellationToken token)
 
     try
     {
-        Memory<byte> buffer = new byte[1024];
+        Memory<byte> buffer = new byte[entrySize];
         Random.Shared.NextBytes(buffer.Span);
 
         var index = 0L;
@@ -52,7 +53,7 @@ static async Task FasterLogPerformanceTest(CancellationToken token)
     var root = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
     
     // page size is 512 KB
-    using var fasterLog = new FasterLog(new FasterLogSettings(root) { PageSize = 1L << 22 });
+    using var fasterLog = new FasterLog(new FasterLogSettings(root) { SegmentSize = 1L << 22 });
     var committer = Task.Run(async () =>
     {
         while (await fasterLog.WaitUncommittedAsync(fasterLog.TailAddress, linkedToken.Token).ConfigureAwait(false))
@@ -61,7 +62,7 @@ static async Task FasterLogPerformanceTest(CancellationToken token)
         }
     }, linkedToken.Token);
 
-    Memory<byte> buffer = new byte[1024];
+    Memory<byte> buffer = new byte[entrySize];
     Random.Shared.NextBytes(buffer.Span);
 
     var ts = new Timestamp();
