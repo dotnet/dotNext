@@ -287,7 +287,7 @@ file sealed unsafe class SystemPageManager : UnmanagedMemory<byte>
     {
     }
     
-    internal static bool IsPageAligned(nint value)
+    private static bool IsPageAligned(nint value)
         => (value & (Environment.SystemPageSize - 1)) is 0;
 
     internal static void Discard(nint address, nint length)
@@ -306,9 +306,9 @@ file sealed unsafe class SystemPageManager : UnmanagedMemory<byte>
         {
             const int MADV_DONTNEED = 4;
 
-            var posix_madvise = (delegate*unmanaged<nint, nint, int, int>)VirtualMemoryManagementFunc;
+            var madvise = (delegate*unmanaged<nint, nint, int, int>)VirtualMemoryManagementFunc;
 
-            errorCode = posix_madvise(address, length, MADV_DONTNEED);
+            errorCode = madvise(address, length, MADV_DONTNEED);
             if (errorCode is not 0)
                 throw new ExternalException(ExceptionMessages.UnableToDiscardMemory, errorCode);
         }
