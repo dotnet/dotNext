@@ -37,21 +37,6 @@ partial class WriteAheadLog
             
             static string GetPageFileName(DirectoryInfo directory, uint pageIndex)
                 => Path.Combine(directory.FullName, pageIndex.ToString(InvariantCulture));
-
-            static bool AlreadyExists(int hresult, string fileName)
-            {
-                // EEXIST errno-base.h
-                const int EEXIST = 17;
-                if (OperatingSystem.IsLinux())
-                    return hresult is EEXIST;
-
-                // https://learn.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-
-                const int ERROR_ALREADY_EXISTS = unchecked((int)0x80070000 | 0xB7);
-                if (OperatingSystem.IsWindows())
-                    return hresult is ERROR_ALREADY_EXISTS;
-
-                return File.Exists(fileName);
-            }
         }
 
         private nint Pointer
