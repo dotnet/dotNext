@@ -81,45 +81,17 @@ partial class WriteAheadLog
     private void Flush(long fromIndex, long toIndex)
     {
         var ts = new Timestamp();
-        FlushMetadataPages(metadataPages, fromIndex, toIndex);
+        metadataPages.Flush(fromIndex, toIndex);
 
         var toMetadata = metadataPages[toIndex];
         var fromMetadata = metadataPages[fromIndex];
-        FlushDataPages(dataPages, fromMetadata.Offset, toMetadata.End);
+        dataPages.Flush(fromMetadata.Offset, toMetadata.End);
         FlushDurationMeter.Record(ts.ElapsedMilliseconds);
 
         // everything up to toIndex is flushed, save the commit index
         checkpoint.Value = toIndex;
 
         FlushRateMeter.Add(toIndex - fromIndex, measurementTags);
-    }
-
-    private static void FlushMetadataPages(MetadataPageManager metadataPages, long fromIndex, long toIndex)
-    {
-        var fromPage = metadataPages.GetStartPageIndex(fromIndex);
-        var toPage = metadataPages.GetEndPageIndex(toIndex);
-
-        for (var pageIndex = fromPage; pageIndex <= toPage; pageIndex++)
-        {
-            if (metadataPages.TryGetValue(pageIndex, out var page))
-            {
-                page.Flush();
-            }
-        }
-    }
-
-    private static void FlushDataPages(PageManager dataPages, ulong fromAddress, ulong toAddress)
-    {
-        var fromPage = dataPages.GetPageIndex(fromAddress, out _);
-        var toPage = dataPages.GetPageIndex(toAddress, out _);
-
-        for (var pageIndex = fromPage; pageIndex <= toPage; pageIndex++)
-        {
-            if (dataPages.TryGetValue(pageIndex, out var page))
-            {
-                page.Flush();
-            }
-        }
     }
 
     /// <summary>

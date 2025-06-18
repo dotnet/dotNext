@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using DotNext.Collections.Concurrent;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
@@ -30,47 +31,107 @@ partial class WriteAheadLog
     
     private class PageManager : ConcurrentDictionary<uint, Page>, IDisposable
     {
+        private const int PageCacheSize = sizeof(ulong) * 8;
+        
+        
         private readonly DirectoryInfo location;
         internal readonly int PageSize;
 
+        private IndexPool indices;
+        private PageCache cache;
+
         protected PageManager(DirectoryInfo location, int pageSize)
-            : base(DictionaryConcurrencyLevel, GetPageFiles(location, pageSize, out var pages))
+            : base(DictionaryConcurrencyLevel, GetPages(location, out var pages))
         {
             Debug.Assert(int.IsPow2(pageSize));
 
             PageSize = pageSize;
             this.location = location;
+            indices = new(PageCacheSize - 1);
+            cache = new();
 
             // populate pages
+            Page page;
             if (pages.IsEmpty)
             {
-                TryAdd(0U, new Page(location, 0U, pageSize));
+                page = RentPage();
+                page.Clear();
+                TryAdd(0U, page);
             }
             else
             {
-                foreach (var pageFile in pages)
+                foreach (var pageIndex in pages)
                 {
-                    TryAdd(pageFile.Key, pageFile.Value);
+                    page = RentPage();
+                    page.Populate(location, pageIndex);
+                    TryAdd(pageIndex, page);
                 }
+            }
+
+            // place at least one page to the cache
+            if (indices.TryPeek(out var poolIndex))
+            {
+                cache[poolIndex] = new(PageSize);
             }
         }
 
-        private static int GetPageFiles(DirectoryInfo location, int pageSize, out ReadOnlySpan<KeyValuePair<uint, Page>> pageFiles)
+        private Page RentPage()
         {
-            pageFiles = GetPages(location)
-                .Select<uint, KeyValuePair<uint, Page>>(pageIndex =>
-                    new(pageIndex, new Page(location, pageIndex, pageSize)))
-                .ToArray();
+            Page page;
+            if (indices.TryTake(out var poolIndex))
+            {
+                ref var slot = ref cache[poolIndex];
+                if (slot is null)
+                {
+                    try
+                    {
+                        slot = new(PageSize) { PoolIndex = poolIndex };
+                    }
+                    catch
+                    {
+                        indices.Return(poolIndex);
+                        throw;
+                    }
+                }
 
-            return Math.Min(pageFiles.Length, 11);
+                page = slot;
+            }
+            else
+            {
+                page = new(PageSize);
+            }
+
+            return page;
         }
 
+        private void ReturnPage(Page page)
+        {
+            var poolIndex = page.PoolIndex;
+            if (poolIndex >= 0)
+            {
+                page.Discard();
+                indices.Return(poolIndex);
+            }
+            else
+            {
+                page.As<IDisposable>().Dispose();
+            }
+        }
+        
         private static IEnumerable<uint> GetPages(DirectoryInfo location)
         {
             return location.EnumerateFiles()
                 .Select(static info => uint.TryParse(info.Name, provider: null, out var pageIndex) ? new uint?(pageIndex) : null)
                 .Where(static pageIndex => pageIndex.HasValue)
-                .Select(static pageIndex => pageIndex.GetValueOrDefault());
+                .Select(static pageIndex => pageIndex.GetValueOrDefault())
+                .ToArray();
+        }
+
+        private static int GetPages(DirectoryInfo location, out ReadOnlySpan<uint> pages)
+        {
+            const int minimumDictionaryCapacity = 11;
+            pages = GetPages(location).ToArray();
+            return pages.Length;
         }
 
         public uint GetPageIndex(ulong address, out int offset)
@@ -84,7 +145,8 @@ partial class WriteAheadLog
             {
                 if (pageIndex < toPage && TryRemove(pageIndex, out var page))
                 {
-                    page.DisposeAndDelete();
+                    Page.Delete(location, pageIndex);
+                    ReturnPage(page);
                     count++;
                 }
             }
@@ -92,20 +154,47 @@ partial class WriteAheadLog
             return count;
         }
 
-        protected Page GetOrAdd(uint pageIndex)
+        protected MemoryManager<byte> GetOrAdd(uint pageIndex)
         {
             Page? page;
             while (!TryGetValue(pageIndex, out page))
             {
-                page = new Page(location, pageIndex, PageSize);
+                page = RentPage();
 
                 if (TryAdd(pageIndex, page))
                     break;
 
-                page.As<IDisposable>().Dispose();
+                ReturnPage(page);
             }
 
             return page;
+        }
+
+        private void Flush(uint pageIndex, Range range)
+        {
+            if (TryGetValue(pageIndex, out var page))
+            {
+                page.Flush(location, pageIndex, range);
+            }
+        }
+        
+        protected void Flush(uint startPage, int startOffset, uint endPage, int endOffset)
+        {
+            if (startPage == endPage)
+            {
+                Flush(startPage, startOffset..endOffset);
+            }
+            else
+            {
+                Flush(startPage, startOffset..);
+                
+                for (var pageIndex = startPage + 1; pageIndex < endPage; pageIndex++)
+                {
+                    Flush(pageIndex, ..);
+                }
+
+                Flush(endPage, ..endOffset);
+            }
         }
 
         public MemoryRange GetRange(ulong offset, long length) => new(this, offset, length);
@@ -115,6 +204,26 @@ partial class WriteAheadLog
             foreach (var page in Values)
             {
                 page.As<IDisposable>().Dispose();
+            }
+            
+            cache.Clear();
+        }
+        
+        [InlineArray(PageCacheSize)]
+        private struct PageCache
+        {
+            private Page? page0;
+
+            public void Clear()
+            {
+                foreach (ref var pageRef in this)
+                {
+                    if (pageRef is { } page)
+                    {
+                        page.As<IDisposable>().Dispose();
+                        pageRef = null;
+                    }
+                }
             }
         }
         

@@ -40,7 +40,7 @@ partial class WriteAheadLog
         var toPage = dataPages.GetPageIndex(metadata.End, out _);
         var removedBytes = dataPages.Delete(toPage) * (long)dataPages.PageSize;
 
-        toPage = metadataPages.GetEndPageIndex(toIndex);
+        toPage = metadataPages.GetEndPageIndex(toIndex, out _);
         removedBytes += metadataPages.Delete(toPage) * (long)MetadataPageManager.PageSize;
 
         if (removedBytes > 0L)

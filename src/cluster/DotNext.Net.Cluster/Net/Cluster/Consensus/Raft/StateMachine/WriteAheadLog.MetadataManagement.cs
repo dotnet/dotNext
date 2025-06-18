@@ -17,15 +17,19 @@ partial class WriteAheadLog
         {
             Debug.Assert(PageSize % LogEntryMetadata.AlignedSize is 0);
         }
-
-        public uint GetStartPageIndex(long index)
-            => GetStartPageIndex(index, out _);
+        
+        public void Flush(long fromIndex, long toIndex)
+        {
+            var startPage = GetStartPageIndex(fromIndex, out var startOffset);
+            var endPage = GetEndPageIndex(toIndex, out var endOffset);
+            Flush(startPage, startOffset, endPage, endOffset);
+        }
 
         private uint GetStartPageIndex(long index, out int offset)
             => GetPageIndex((ulong)index * LogEntryMetadata.AlignedSize, out offset);
 
-        public uint GetEndPageIndex(long index)
-            => GetPageIndex((ulong)index * LogEntryMetadata.AlignedSize + LogEntryMetadata.AlignedSize, out _);
+        public uint GetEndPageIndex(long index, out int offset)
+            => GetPageIndex((ulong)index * LogEntryMetadata.AlignedSize + LogEntryMetadata.AlignedSize, out offset);
 
         internal bool TryGetMetadata(long index, out LogEntryMetadata metadata)
         {

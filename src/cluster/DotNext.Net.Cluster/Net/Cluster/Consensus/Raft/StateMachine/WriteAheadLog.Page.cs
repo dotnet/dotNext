@@ -1,84 +1,102 @@
 using System.Buffers;
 using System.Diagnostics;
-using System.IO.MemoryMappedFiles;
-using Microsoft.Win32.SafeHandles;
+using System.Runtime.InteropServices;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
-using IO;
+using Buffers;
 
 partial class WriteAheadLog
 {
     /// <summary>
     /// Represents memory-mapped page of memory.
     /// </summary>
-    private sealed class Page : MemoryManager<byte>, IFlushable
+    private sealed unsafe class Page : MemoryManager<byte>
     {
         public const int MinPageSize = 4096;
-        private readonly string fileName;
-        private readonly SafeFileHandle fileHandle;
-        private readonly IDisposable viewHandle;
-        private readonly MemoryMappedViewAccessor accessor;
+        private readonly int pageSize, poolIndex;
+        private void* address;
 
-        public Page(DirectoryInfo directory, uint pageIndex, int pageSize)
+        public Page(int pageSize)
         {
             Debug.Assert(pageSize % MinPageSize is 0);
 
-            fileName = GetPageFileName(directory, pageIndex);
-
-            const FileAccess fileAccess = FileAccess.ReadWrite;
-            fileHandle = File.OpenHandle(fileName, FileMode.OpenOrCreate, fileAccess);
-
-            var mappedHandle = MemoryMappedFile.CreateFromFile(fileHandle, mapName: null, pageSize, MemoryMappedFileAccess.ReadWrite,
-                HandleInheritability.None, leaveOpen: true);
-            accessor = mappedHandle.CreateViewAccessor(0L, pageSize, MemoryMappedFileAccess.ReadWrite);
-            viewHandle = mappedHandle;
+            address = NativeMemory.AlignedAlloc((uint)pageSize, (uint)Environment.SystemPageSize);
             
-            static string GetPageFileName(DirectoryInfo directory, uint pageIndex)
-                => Path.Combine(directory.FullName, pageIndex.ToString(InvariantCulture));
+            this.pageSize = pageSize;
+            poolIndex = -1;
         }
 
-        private nint Pointer
-            => accessor.SafeMemoryMappedViewHandle.DangerousGetHandle() + (nint)accessor.PointerOffset;
+        public void Clear() => NativeMemory.Clear(address, (uint)pageSize);
 
-        public void DisposeAndDelete()
+        public void Discard()
         {
-            Dispose(disposing: true);
-            File.Delete(fileName);
-        }
-
-        public void Flush()
-        {
-            accessor.Flush();
-
-            if (OperatingSystem.IsWindows())
+            if ((pageSize & (Environment.SystemPageSize - 1)) is 0)
             {
-                File.SetLastWriteTimeUtc(fileHandle, DateTime.UtcNow);
-                RandomAccess.FlushToDisk(fileHandle); // update file metadata and size
+                UnmanagedMemory.Discard(GetSpan());
             }
         }
 
-        public override unsafe Span<byte> GetSpan() =>
-            new(Pointer.ToPointer(), (int)accessor.Capacity);
+        public int PoolIndex
+        {
+            get => poolIndex;
+            init => poolIndex = value;
+        }
 
-        public override unsafe MemoryHandle Pin(int elementIndex = 0)
-            => new((Pointer + elementIndex).ToPointer());
+        public void Populate(DirectoryInfo location, uint pageIndex)
+        {
+            using var handle = File.OpenHandle(GetPageFileName(location, pageIndex), options: FileOptions.SequentialScan);
+            RandomAccess.Read(handle, GetSpan(), fileOffset: 0L);
+        }
+        
+        static string GetPageFileName(DirectoryInfo directory, uint pageIndex)
+            => Path.Combine(directory.FullName, pageIndex.ToString(InvariantCulture));
+
+        public static void Delete(DirectoryInfo directory, uint pageIndex)
+            => File.Delete(GetPageFileName(directory, pageIndex));
+
+        private void Flush(DirectoryInfo directory, uint pageIndex, int offset, int length)
+        {
+            using var handle = File.OpenHandle(GetPageFileName(directory, pageIndex), FileMode.OpenOrCreate, FileAccess.Write,
+                options: FileOptions.WriteThrough);
+
+            if (RandomAccess.GetLength(handle) is 0U)
+                RandomAccess.SetLength(handle, pageSize);
+
+            var buffer = GetSpan().Slice(offset, length);
+            RandomAccess.Write(handle, buffer, offset);
+        }
+
+        public void Flush(DirectoryInfo directory, uint pageIndex, Range range)
+        {
+            var (offset, length) = range.GetOffsetAndLength(pageSize);
+            Flush(directory, pageIndex, offset, length);
+        }
+
+        public override Span<byte> GetSpan() => new(address, pageSize);
+
+        public override MemoryHandle Pin(int elementIndex = 0)
+        {
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)elementIndex, (uint)pageSize, nameof(elementIndex));
+
+            var pointer = (nuint)address + (uint)elementIndex;
+            return new(pointer.ToPointer());
+        }
 
         public override void Unpin()
         {
             // nothing to do
         }
 
-        public override Memory<byte> Memory => CreateMemory((int)accessor.Capacity);
+        public override Memory<byte> Memory => CreateMemory(pageSize);
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
+            if (address is not null)
             {
-                accessor.Dispose();
-                viewHandle.Dispose();
-                fileHandle.Dispose();
+                NativeMemory.AlignedFree(address);
+                address = null;
             }
         }
     }

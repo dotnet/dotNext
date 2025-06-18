@@ -64,6 +64,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
     <ProjectReference Include="..\..\DotNext.Threading\DotNext.Threading.csproj" />
     <ProjectReference Include="..\..\DotNext.IO\DotNext.IO.csproj" />
+    <ProjectReference Include="..\..\DotNext.Unsafe\DotNext.Unsafe.csproj" />
   </ItemGroup>
 
   <ItemGroup>

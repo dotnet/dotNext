@@ -12,6 +12,13 @@ public partial class WriteAheadLog
     {
         public required ulong LastWrittenAddress;
 
+        public void Flush(ulong startAddress, ulong endAddress)
+        {
+            var startPage = GetPageIndex(startAddress, out var startOffset);
+            var endPage = GetPageIndex(endAddress, out var endOffset);
+            Flush(startPage, startOffset, endPage, endOffset);
+        }
+
         public bool TryEnsureCapacity(long? length)
         {
             if (length is not { } len || len > (uint)PageSize)
@@ -71,7 +78,7 @@ public partial class WriteAheadLog
                 : throw new InsufficientMemoryException();
         }
 
-        private Page GetOrAdd(out int offset)
+        private MemoryManager<byte> GetOrAdd(out int offset)
             => GetOrAdd(GetPageIndex(LastWrittenAddress, out offset));
 
         ReadOnlySequence<byte> IMemoryView.GetSequence(ulong address, long length)
