@@ -44,9 +44,10 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
         if ((uint)maxValue > (uint)MaxValue)
             throw new ArgumentOutOfRangeException(nameof(maxValue));
 
-        bitmask = ulong.MaxValue >>> (MaxValue - maxValue);
-        this.maxValue = maxValue;
+        bitmask = GetBitMask(this.maxValue = maxValue);
     }
+
+    private static ulong GetBitMask(int maxValue) => ulong.MaxValue >>> (MaxValue - maxValue);
 
     /// <summary>
     /// Gets or sets a value indicating that the pool is empty.
@@ -54,7 +55,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     public bool IsEmpty
     {
         readonly get => Count is 0;
-        init => bitmask = value ? 0UL : ulong.MaxValue;
+        init => bitmask = value ? 0UL : GetBitMask(maxValue);
     }
 
     /// <summary>
