@@ -45,7 +45,7 @@ partial class WriteAheadLog
                     await lockManager.AcquireReadLockAsync(token).ConfigureAwait(false);
                     try
                     {
-                        Flush(flusherPreviousIndex, newIndex);
+                        await Flush(flusherPreviousIndex, newIndex, token).ConfigureAwait(false);
                     }
                     catch (Exception e)
                     {
@@ -78,14 +78,15 @@ partial class WriteAheadLog
         }
     }
 
-    private void Flush(long fromIndex, long toIndex)
+    private async ValueTask Flush(long fromIndex, long toIndex, CancellationToken token)
     {
         var ts = new Timestamp();
-        metadataPages.Flush(fromIndex, toIndex);
+        await metadataPages.Flush(fromIndex, toIndex, token).ConfigureAwait(false);
 
         var toMetadata = metadataPages[toIndex];
         var fromMetadata = metadataPages[fromIndex];
-        dataPages.Flush(fromMetadata.Offset, toMetadata.End);
+        await dataPages.Flush(fromMetadata.Offset, toMetadata.End, token).ConfigureAwait(false);
+        
         FlushDurationMeter.Record(ts.ElapsedMilliseconds);
 
         // everything up to toIndex is flushed, save the commit index
@@ -116,7 +117,7 @@ partial class WriteAheadLog
             await lockManager.AcquireReadLockAsync(token).ConfigureAwait(false);
             try
             {
-                Flush(flusherPreviousIndex, newIndex);
+                await Flush(flusherPreviousIndex, newIndex, token).ConfigureAwait(false);
             }
             finally
             {

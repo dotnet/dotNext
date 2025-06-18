@@ -12,11 +12,11 @@ public partial class WriteAheadLog
     {
         public required ulong LastWrittenAddress;
 
-        public void Flush(ulong startAddress, ulong endAddress)
+        public ValueTask Flush(ulong startAddress, ulong endAddress, CancellationToken token)
         {
             var startPage = GetPageIndex(startAddress, out var startOffset);
             var endPage = GetPageIndex(endAddress, out var endOffset);
-            Flush(startPage, startOffset, endPage, endOffset);
+            return Flush(startPage, startOffset, endPage, endOffset, token);
         }
 
         public bool TryEnsureCapacity(long? length)

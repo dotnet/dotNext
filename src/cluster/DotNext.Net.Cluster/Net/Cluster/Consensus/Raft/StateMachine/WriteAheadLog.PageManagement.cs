@@ -33,7 +33,6 @@ partial class WriteAheadLog
     {
         private const int PageCacheSize = sizeof(ulong) * 8;
         
-        
         private readonly DirectoryInfo location;
         internal readonly int PageSize;
 
@@ -170,31 +169,34 @@ partial class WriteAheadLog
             return page;
         }
 
-        private void Flush(uint pageIndex, Range range)
+        private async ValueTask Flush(uint pageIndex, Range range, CancellationToken token)
         {
             if (TryGetValue(pageIndex, out var page))
             {
-                page.Flush(location, pageIndex, range);
+                await page.Flush(location, pageIndex, range, token).ConfigureAwait(false);
             }
         }
         
-        protected void Flush(uint startPage, int startOffset, uint endPage, int endOffset)
+        protected ValueTask Flush(uint startPage, int startOffset, uint endPage, int endOffset, CancellationToken token)
         {
             if (startPage == endPage)
             {
-                Flush(startPage, startOffset..endOffset);
+                return Flush(startPage, startOffset..endOffset, token);
             }
-            else
-            {
-                Flush(startPage, startOffset..);
-                
-                for (var pageIndex = startPage + 1; pageIndex < endPage; pageIndex++)
-                {
-                    Flush(pageIndex, ..);
-                }
 
-                Flush(endPage, ..endOffset);
+            return FlushSlow(startPage, startOffset, endPage, endOffset, token);
+        }
+
+        private async ValueTask FlushSlow(uint startPage, int startOffset, uint endPage, int endOffset, CancellationToken token)
+        {
+            await Flush(startPage, startOffset.., token).ConfigureAwait(false);
+                
+            for (var pageIndex = startPage + 1; pageIndex < endPage; pageIndex++)
+            {
+                await Flush(pageIndex, .., token).ConfigureAwait(false);
             }
+
+            await Flush(endPage, ..endOffset, token).ConfigureAwait(false);
         }
 
         public MemoryRange GetRange(ulong offset, long length) => new(this, offset, length);

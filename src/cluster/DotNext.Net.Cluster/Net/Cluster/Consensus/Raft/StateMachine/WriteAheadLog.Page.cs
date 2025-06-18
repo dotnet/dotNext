@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
@@ -12,23 +13,23 @@ partial class WriteAheadLog
     /// <summary>
     /// Represents memory-mapped page of memory.
     /// </summary>
-    private sealed unsafe class Page : MemoryManager<byte>
+    private sealed class Page : MemoryManager<byte>
     {
         public const int MinPageSize = 4096;
-        private readonly int pageSize, poolIndex;
-        private void* address;
+        private readonly int pageSize;
+        private unsafe void* address;
 
-        public Page(int pageSize)
+        public unsafe Page(int pageSize)
         {
             Debug.Assert(pageSize % MinPageSize is 0);
 
             address = NativeMemory.AlignedAlloc((uint)pageSize, (uint)Environment.SystemPageSize);
             
             this.pageSize = pageSize;
-            poolIndex = -1;
+            PoolIndex = -1;
         }
 
-        public void Clear() => NativeMemory.Clear(address, (uint)pageSize);
+        public unsafe void Clear() => NativeMemory.Clear(address, (uint)pageSize);
 
         public void Discard()
         {
@@ -38,11 +39,7 @@ partial class WriteAheadLog
             }
         }
 
-        public int PoolIndex
-        {
-            get => poolIndex;
-            init => poolIndex = value;
-        }
+        public int PoolIndex { get; init; }
 
         public void Populate(DirectoryInfo location, uint pageIndex)
         {
@@ -56,27 +53,29 @@ partial class WriteAheadLog
         public static void Delete(DirectoryInfo directory, uint pageIndex)
             => File.Delete(GetPageFileName(directory, pageIndex));
 
-        private void Flush(DirectoryInfo directory, uint pageIndex, int offset, int length)
+        private async ValueTask Flush(DirectoryInfo directory, uint pageIndex, int offset, int length, CancellationToken token)
         {
-            using var handle = File.OpenHandle(GetPageFileName(directory, pageIndex), FileMode.OpenOrCreate, FileAccess.Write,
-                options: FileOptions.WriteThrough);
+            using var handle = File.OpenHandle(GetPageFileName(directory, pageIndex),
+                FileMode.OpenOrCreate,
+                FileAccess.Write,
+                options: FileOptions.WriteThrough | FileOptions.Asynchronous);
 
             if (RandomAccess.GetLength(handle) is 0U)
                 RandomAccess.SetLength(handle, pageSize);
 
-            var buffer = GetSpan().Slice(offset, length);
-            RandomAccess.Write(handle, buffer, offset);
+            var buffer = Memory.Slice(offset, length);
+            await RandomAccess.WriteAsync(handle, buffer, offset, token).ConfigureAwait(false);
         }
 
-        public void Flush(DirectoryInfo directory, uint pageIndex, Range range)
+        public ValueTask Flush(DirectoryInfo directory, uint pageIndex, Range range, CancellationToken token)
         {
             var (offset, length) = range.GetOffsetAndLength(pageSize);
-            Flush(directory, pageIndex, offset, length);
+            return Flush(directory, pageIndex, offset, length, token);
         }
 
-        public override Span<byte> GetSpan() => new(address, pageSize);
+        public override unsafe Span<byte> GetSpan() => new(address, pageSize);
 
-        public override MemoryHandle Pin(int elementIndex = 0)
+        public override unsafe MemoryHandle Pin(int elementIndex = 0)
         {
             ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)elementIndex, (uint)pageSize, nameof(elementIndex));
 
@@ -91,7 +90,7 @@ partial class WriteAheadLog
 
         public override Memory<byte> Memory => CreateMemory(pageSize);
 
-        protected override void Dispose(bool disposing)
+        protected override unsafe void Dispose(bool disposing)
         {
             if (address is not null)
             {

@@ -18,11 +18,11 @@ partial class WriteAheadLog
             Debug.Assert(PageSize % LogEntryMetadata.AlignedSize is 0);
         }
         
-        public void Flush(long fromIndex, long toIndex)
+        public ValueTask Flush(long fromIndex, long toIndex, CancellationToken token)
         {
             var startPage = GetStartPageIndex(fromIndex, out var startOffset);
             var endPage = GetEndPageIndex(toIndex, out var endOffset);
-            Flush(startPage, startOffset, endPage, endOffset);
+            return Flush(startPage, startOffset, endPage, endOffset, token);
         }
 
         private uint GetStartPageIndex(long index, out int offset)
