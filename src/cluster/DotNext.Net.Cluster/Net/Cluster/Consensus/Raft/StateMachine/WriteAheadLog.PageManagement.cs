@@ -318,11 +318,12 @@ partial class WriteAheadLog
         {
             await FlushAsync(startPage, startOffset.., token).ConfigureAwait(false);
 
-            for (var pageIndex = startPage + 1; pageIndex < endPage; pageIndex++)
+            while (++startPage < endPage)
             {
-                await FlushAsync(pageIndex, .., token).ConfigureAwait(false);
+                await FlushAsync(startPage, .., token).ConfigureAwait(false);
             }
 
+            Debug.Assert(startPage == endPage);
             await FlushAsync(endPage, ..endOffset, token).ConfigureAwait(false);
         }
 
