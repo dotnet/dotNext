@@ -33,18 +33,16 @@ static async Task DotNextWalPerformanceTest(CancellationToken token)
     {
         Memory<byte> buffer = new byte[entrySize];
         Random.Shared.NextBytes(buffer.Span);
-
-        var index = 0L;
+        
         var ts = new Timestamp();
         for (var i = 0; i < count; i++)
         {
-            index = await wal.AppendAsync(buffer, token: token).ConfigureAwait(false);
+            var index = await wal.AppendAsync(buffer, token: token).ConfigureAwait(false);
             await wal.CommitAsync(index, token).ConfigureAwait(false);
         }
 
-        await wal.WaitForApplyAsync(index, token).ConfigureAwait(false);
-
         Console.WriteLine($"Finished. Elapsed time: {ts.Elapsed}");
+        await wal.FlushAsync(token).ConfigureAwait(false);
     }
     finally
     {
