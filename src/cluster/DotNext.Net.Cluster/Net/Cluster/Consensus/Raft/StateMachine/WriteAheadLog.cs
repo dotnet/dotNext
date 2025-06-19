@@ -18,8 +18,6 @@ using Threading.Tasks;
 [Experimental("DOTNEXT001")]
 public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentState
 {
-    private const string DataPagesLocationPrefix = "data";
-    private const string MetadataPagesLocationPrefix = "metadata";
     private const int DictionaryConcurrencyLevel = 3; // append flow and cleaner and applier
 
     private readonly MemoryAllocator<byte> bufferAllocator;
@@ -47,7 +45,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
 
         lifetimeTokenSource = new();
         var rootPath = new DirectoryInfo(configuration.Location);
-        CreateIfNeeded(rootPath);
+        rootPath.CreateIfNeeded();
 
         context = new(DictionaryConcurrencyLevel, configuration.ConcurrencyLevel);
         lockManager = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
@@ -62,14 +60,28 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         
         // page management
         {
-            var pagesLocation = new DirectoryInfo(Path.Combine(rootPath.FullName, MetadataPagesLocationPrefix));
-            CreateIfNeeded(pagesLocation);
-            metadataPages = new(new AnonymousPageManager(pagesLocation, MinPageSize));
+            var metadataLocation = rootPath.GetSubdirectory(MetadataPageManager.LocationPrefix);
+            metadataLocation.CreateIfNeeded();
 
-            pagesLocation = new(Path.Combine(rootPath.FullName, DataPagesLocationPrefix));
-            CreateIfNeeded(pagesLocation);
+            var dataLocation = rootPath.GetSubdirectory(PagedBufferWriter.LocationPrefix);
+            dataLocation.CreateIfNeeded();
 
-            dataPages = new(new AnonymousPageManager(pagesLocation, configuration.ChunkMaxSize))
+            PageManager m, d;
+            switch (configuration.MemoryManagement)
+            {
+                case MemoryManagementStrategy.PrivateMemory:
+                    m = new AnonymousPageManager(metadataLocation, Page.MinSize);
+                    d = new AnonymousPageManager(dataLocation, configuration.ChunkMaxSize);
+                    break;
+                case MemoryManagementStrategy.SharedMemory:
+                default:
+                    m = new MemoryMappedPageManager(metadataLocation, Page.MinSize);
+                    d = new MemoryMappedPageManager(dataLocation, configuration.ChunkMaxSize);
+                    break;
+            }
+
+            metadataPages = new(m);
+            dataPages = new(d)
             {
                 LastWrittenAddress = metadataPages.TryGetMetadata(lastReliablyWrittenEntryIndex, out var metadata)
                     ? metadata.End
@@ -105,12 +117,6 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             applyTrigger = new();
             appenderTask = ApplyAsync(lifetimeTokenSource.Token);
             appliedEvent = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
-        }
-
-        static void CreateIfNeeded(DirectoryInfo directory)
-        {
-            if (!directory.Exists)
-                directory.Create();
         }
     }
 
@@ -640,4 +646,16 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
 
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync()"/>
     public new ValueTask DisposeAsync() => base.DisposeAsync();
+}
+
+file static class DirectoryInfoExtensions
+{
+    public static void CreateIfNeeded(this DirectoryInfo directory)
+    {
+        if (!directory.Exists)
+            directory.Create();
+    }
+
+    public static DirectoryInfo GetSubdirectory(this DirectoryInfo root, string prefix)
+        => new(Path.Combine(root.FullName, prefix));
 }

@@ -10,6 +10,8 @@ public partial class WriteAheadLog
     
     private sealed class PagedBufferWriter(PageManager manager) : Disposable, IBufferWriter<byte>, IMemoryView
     {
+        public const string LocationPrefix = "data";
+        
         internal required ulong LastWrittenAddress;
 
         public long DeletePages(ulong toAddress)

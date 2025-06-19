@@ -53,6 +53,13 @@ partial class WriteAheadLog
                 .Select(static pageIndex => pageIndex.GetValueOrDefault())
                 .ToArray();
         }
+        
+        protected static int GetPages(DirectoryInfo location, out ReadOnlySpan<uint> pages)
+        {
+            const int minimumDictionaryCapacity = 11;
+            pages = GetPages(location).ToArray();
+            return Math.Min(pages.Length, minimumDictionaryCapacity);
+        }
 
         public abstract int DeletePages(uint toPage);
 
@@ -158,7 +165,7 @@ partial class WriteAheadLog
     }
 
     private abstract class PageManager<TPage>(DirectoryInfo location, int pageSize, int capacity) : PageManager(location, pageSize)
-        where TPage : MemoryManager<byte>
+        where TPage : Page
     {
         protected readonly ConcurrentDictionary<uint, TPage> Pages = new(DictionaryConcurrencyLevel, capacity);
 
@@ -288,13 +295,6 @@ partial class WriteAheadLog
             }
         }
 
-        private static int GetPages(DirectoryInfo location, out ReadOnlySpan<uint> pages)
-        {
-            const int minimumDictionaryCapacity = 11;
-            pages = GetPages(location).ToArray();
-            return Math.Min(pages.Length, minimumDictionaryCapacity);
-        }
-
         protected override void DeletePage(uint pageIndex, AnonymousPage page)
         {
             AnonymousPage.Delete(Location, pageIndex);
@@ -363,5 +363,58 @@ partial class WriteAheadLog
                 }
             }
         }
+    }
+    
+    private sealed class MemoryMappedPageManager : PageManager<MemoryMappedPage>
+    {
+        public MemoryMappedPageManager(DirectoryInfo location, int pageSize)
+            : base(location, pageSize, GetPages(location, out var pages))
+        {
+            // populate pages
+            if (pages.IsEmpty)
+            {
+                Pages.TryAdd(0U, new MemoryMappedPage(location, 0U, pageSize));
+            }
+            else
+            {
+                foreach (var pageIndex in pages)
+                {
+                    Pages.TryAdd(pageIndex, new MemoryMappedPage(location, pageIndex, pageSize));
+                }
+            }
+        }
+
+        private void Flush(uint startPage, uint endPage)
+        {
+            for (var pageIndex = startPage; pageIndex <= endPage; pageIndex++)
+            {
+                if (Pages.TryGetValue(pageIndex, out var page))
+                    page.Flush();
+            }
+        }
+
+        public override ValueTask FlushAsync(uint startPage, int startOffset, uint endPage, int endOffset, CancellationToken token)
+        {
+            var task = ValueTask.CompletedTask;
+            try
+            {
+                Flush(startPage, endPage);
+            }
+            catch (Exception e)
+            {
+                task = ValueTask.FromException(e);
+            }
+
+            return task;
+        }
+
+        protected override void DeletePage(uint pageIndex, MemoryMappedPage page)
+            => page.DisposeAndDelete();
+
+        protected override MemoryMappedPage CreatePage(uint pageIndex)
+            => new(Location, pageIndex, PageSize);
+
+        protected override void ReleasePage(MemoryMappedPage page)
+            => page.As<IDisposable>().Dispose();
     }
 }

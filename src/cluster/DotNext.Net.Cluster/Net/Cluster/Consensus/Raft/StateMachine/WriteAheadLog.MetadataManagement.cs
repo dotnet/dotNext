@@ -11,6 +11,8 @@ partial class WriteAheadLog
     [StructLayout(LayoutKind.Auto)]
     private readonly struct MetadataPageManager(PageManager manager) : IDisposable
     {
+        public const string LocationPrefix = "metadata";
+        
         public long DeletePages(long toIndex)
         {
             var toPage = GetEndPageIndex(toIndex, out _);
