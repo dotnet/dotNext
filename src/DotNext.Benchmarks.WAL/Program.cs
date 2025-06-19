@@ -19,10 +19,15 @@ await FasterLogPerformanceTest(cts.Token).ConfigureAwait(false);
 
 static async Task DotNextWalPerformanceTest(CancellationToken token)
 {
-    var root = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-    
     // page size is 512 KB
-    var wal = new WriteAheadLog(new() { Location = root, ChunkMaxSize = 512 * 1024 }, new NoOpStateMachine());
+    var options = new WriteAheadLog.Options
+    {
+        Location =Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
+        ChunkMaxSize = 512 * 1024,
+        MemoryManagement = WriteAheadLog.MemoryManagementStrategy.PrivateMemory,
+    };
+
+    var wal = new WriteAheadLog(options, new NoOpStateMachine());
 
     try
     {
