@@ -42,7 +42,7 @@ partial class WriteAheadLog
     [StructLayout(LayoutKind.Auto)]
     public class Options
     {
-        private readonly int chunkMaxSize = Environment.SystemPageSize;
+        private readonly int chunkSize = Environment.SystemPageSize;
         private readonly int concurrencyLevel = Environment.ProcessorCount * 2 + 1;
         private readonly string location = string.Empty;
         private readonly TimeSpan flushInterval;
@@ -84,12 +84,12 @@ partial class WriteAheadLog
         /// Gets or sets the maximum size of the single chunk file, in bytes.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
-        public int ChunkMaxSize
+        public int ChunkSize
         {
-            get => chunkMaxSize;
+            get => chunkSize;
             init
             {
-                chunkMaxSize = value > 0
+                chunkSize = value > 0
                     ? RoundUpToPageSize(value)
                     : throw new ArgumentOutOfRangeException(nameof(value));
                 

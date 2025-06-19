@@ -71,12 +71,12 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             {
                 case MemoryManagementStrategy.PrivateMemory:
                     m = new AnonymousPageManager(metadataLocation, Page.MinSize);
-                    d = new AnonymousPageManager(dataLocation, configuration.ChunkMaxSize);
+                    d = new AnonymousPageManager(dataLocation, configuration.ChunkSize);
                     break;
                 case MemoryManagementStrategy.SharedMemory:
                 default:
                     m = new MemoryMappedPageManager(metadataLocation, Page.MinSize);
-                    d = new MemoryMappedPageManager(dataLocation, configuration.ChunkMaxSize);
+                    d = new MemoryMappedPageManager(dataLocation, configuration.ChunkSize);
                     break;
             }
 

@@ -209,7 +209,7 @@ public sealed class WriteAheadLogTests : Test
         var options = new WriteAheadLog.Options { Location = dir };
         await using var wal = new WriteAheadLog(options, new NoOpStateMachine());
 
-        var payload = new TestLogEntry(Random.Shared.NextString(Alphabet, options.ChunkMaxSize * 2));
+        var payload = new TestLogEntry(Random.Shared.NextString(Alphabet, options.ChunkSize * 2));
         Equal(1L, await wal.AppendAsync(payload));
 
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = async (entries, snapshotIndex, token) =>

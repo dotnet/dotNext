@@ -19,16 +19,14 @@ await FasterLogPerformanceTest(cts.Token).ConfigureAwait(false);
 
 static async Task DotNextWalPerformanceTest(CancellationToken token)
 {
-    // page size is 512 KB
     var options = new WriteAheadLog.Options
     {
-        Location =Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
-        ChunkMaxSize = 512 * 1024,
+        Location = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
+        ChunkSize = 512 * 1024, // page size is 512 KB
         MemoryManagement = WriteAheadLog.MemoryManagementStrategy.PrivateMemory,
     };
 
     var wal = new WriteAheadLog(options, new NoOpStateMachine());
-
     try
     {
         Memory<byte> buffer = new byte[entrySize];
@@ -55,7 +53,7 @@ static async Task FasterLogPerformanceTest(CancellationToken token)
     using var linkedToken = CancellationTokenSource.CreateLinkedTokenSource(token);
     var root = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
     
-    // page size is 512 KB
+    // file size is 512 KB
     using var fasterLog = new FasterLog(new FasterLogSettings(root) { SegmentSize = 1L << 22 });
     var committer = Task.Run(async () =>
     {
