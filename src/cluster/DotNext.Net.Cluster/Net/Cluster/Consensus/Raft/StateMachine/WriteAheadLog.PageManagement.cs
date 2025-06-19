@@ -310,13 +310,11 @@ partial class WriteAheadLog
         }
 
         public override ValueTask FlushAsync(uint startPage, int startOffset, uint endPage, int endOffset, CancellationToken token)
-        {
-            return startPage == endPage
+            => startPage == endPage
                 ? FlushAsync(startPage, startOffset..endOffset, token)
-                : FlushSlow(startPage, startOffset, endPage, endOffset, token);
-        }
+                : FlushMultiplePagesAsync(startPage, startOffset, endPage, endOffset, token);
 
-        private async ValueTask FlushSlow(uint startPage, int startOffset, uint endPage, int endOffset, CancellationToken token)
+        private async ValueTask FlushMultiplePagesAsync(uint startPage, int startOffset, uint endPage, int endOffset, CancellationToken token)
         {
             await FlushAsync(startPage, startOffset.., token).ConfigureAwait(false);
 
