@@ -22,6 +22,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
 
     private readonly MemoryAllocator<byte> bufferAllocator;
     private readonly IStateMachine stateMachine;
+    private readonly CancellationToken lifetimeToken;
     
     private volatile ExceptionDispatchInfo? backgroundTaskFailure;
     private long lastEntryIndex; // Append lock protects modification of this field
@@ -43,7 +44,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         if (nuint.Size < sizeof(ulong))
             throw new PlatformNotSupportedException();
 
-        lifetimeTokenSource = new();
+        lifetimeToken = (lifetimeTokenSource = new()).Token;
         var rootPath = new DirectoryInfo(configuration.Location);
         rootPath.CreateIfNeeded();
 
@@ -98,7 +99,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             if (interval == TimeSpan.Zero)
             {
                 flushTrigger = new(initialState: false);
-                flusherTask = FlushAsync(new ManualTrigger(flushTrigger), lifetimeTokenSource.Token);
+                flusherTask = FlushAsync(new BackgroundTrigger(flushTrigger, out flushCompleted), lifetimeToken);
             }
             else if (interval == InfiniteTimeSpan)
             {
@@ -106,7 +107,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             }
             else
             {
-                flusherTask = FlushAsync(new TimeoutTrigger(interval), lifetimeTokenSource.Token);
+                flusherTask = FlushAsync(new TimeoutTrigger(interval, out flushCompleted), lifetimeToken);
             }
         }
 

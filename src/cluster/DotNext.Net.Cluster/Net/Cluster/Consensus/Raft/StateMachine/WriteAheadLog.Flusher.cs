@@ -1,4 +1,6 @@
 using System.Buffers.Binary;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
@@ -8,35 +10,38 @@ namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Diagnostics;
 using IO.Log;
-using Runtime.CompilerServices;
 using Threading;
 
 partial class WriteAheadLog
 {
-    private readonly AsyncAutoResetEventSlim? flushTrigger;
+    private readonly AsyncAutoResetEventSlim? flushTrigger, flushCompleted;
     private readonly Task flusherTask;
     private readonly WeakReference<Task?> cleanupTask = new(target: null, trackResurrection: false);
     
     private Checkpoint checkpoint;
     private long commitIndex; // Commit lock protects modification of this field
-    private long flusherPreviousIndex, flusherOldSnapshotIndex;
+    private long flusherPreviousIndex, flusherOldSnapshot;
 
-    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task FlushAsync<T>(T flushTrigger, CancellationToken token)
         where T : struct, IFlushTrigger
     {
+        if (T.IsBackground)
+            await Task.Yield();
+        
         // Weak ref tracks the task, but allows GC to collect associated state machine
         // as soon as possible. While the task is running, it cannot be collected, because it's referenced
         // by the async state machine.
         try
         {
-            flusherOldSnapshotIndex = SnapshotIndex;
-            for (long newIndex, newSnapshot;
-                 !token.IsCancellationRequested && backgroundTaskFailure is null;
-                 flusherPreviousIndex = long.Max(flusherOldSnapshotIndex = newSnapshot, newIndex) + 1L)
+            if (T.IsBackground)
             {
-                newSnapshot = SnapshotIndex;
-                newIndex = LastCommittedEntryIndex;
+                flusherOldSnapshot = SnapshotIndex;
+            }
+
+            while (!token.IsCancellationRequested && backgroundTaskFailure is null)
+            {
+                var newSnapshot = SnapshotIndex;
+                var newIndex = LastCommittedEntryIndex;
 
                 if (newIndex >= flusherPreviousIndex)
                 {
@@ -45,13 +50,12 @@ partial class WriteAheadLog
                     await lockManager.AcquireReadLockAsync(token).ConfigureAwait(false);
                     try
                     {
+                        var ts = new Timestamp();
                         await Flush(flusherPreviousIndex, newIndex, token).ConfigureAwait(false);
-                    }
-                    catch (Exception e)
-                    {
-                        backgroundTaskFailure = ExceptionDispatchInfo.Capture(e);
-                        appliedEvent.Interrupt(e);
-                        break;
+
+                        // everything up to toIndex is flushed, save the commit index
+                        await checkpoint.UpdateAsync(newIndex, token).ConfigureAwait(false);
+                        FlushDurationMeter.Record(ts.ElapsedMilliseconds);
                     }
                     finally
                     {
@@ -59,40 +63,89 @@ partial class WriteAheadLog
                     }
                 }
 
-                if ((!cleanupTask.TryGetTarget(out var task) || task.IsCompletedSuccessfully) && flusherOldSnapshotIndex < newSnapshot)
-                    cleanupTask.SetTarget(CleanUpAsync(newSnapshot, token));
+                if ((!cleanupTask.TryGetTarget(out var task) || task.IsCompletedSuccessfully) && flusherOldSnapshot < newSnapshot)
+                    cleanupTask.SetTarget(CleanUpAsync(newSnapshot, lifetimeToken));
 
-                await flushTrigger.WaitAsync(token).ConfigureAwait(false);
+                flushTrigger.NotifyCompleted();
+                Volatile.Write(ref flusherPreviousIndex, long.Max(flusherOldSnapshot = newSnapshot, newIndex) + 1L);
+                if (!await flushTrigger.WaitAsync(token).ConfigureAwait(false))
+                    break;
             }
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == token && cleanupTask.TryGetTarget(out var task))
+        catch (OperationCanceledException e) when (T.IsBackground && e.CancellationToken == token)
         {
-            await task.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+            // suspend
+        }
+        catch (Exception e) when (T.IsBackground)
+        {
+            backgroundTaskFailure = ExceptionDispatchInfo.Capture(e);
+            appliedEvent.Interrupt(e);
         }
         finally
         {
-            cleanupTask.SetTarget(null);
-            
-            if (flushTrigger is IDisposable)
-                ((IDisposable)flushTrigger).Dispose();
+            (flushTrigger as IDisposable)?.Dispose();
         }
     }
 
-    private async ValueTask Flush(long fromIndex, long toIndex, CancellationToken token)
+    private Task Flush(long fromIndex, long toIndex, CancellationToken token)
     {
-        var ts = new Timestamp();
-        await metadataPages.FlushAsync(fromIndex, toIndex, token).ConfigureAwait(false);
+        var metadataTask = metadataPages.FlushAsync(fromIndex, toIndex, token).AsTask();
 
         var toMetadata = metadataPages[toIndex];
         var fromMetadata = metadataPages[fromIndex];
-        await dataPages.FlushAsync(fromMetadata.Offset, toMetadata.End, token).ConfigureAwait(false);
-        
-        FlushDurationMeter.Record(ts.ElapsedMilliseconds);
-
-        // everything up to toIndex is flushed, save the commit index
-        await checkpoint.UpdateAsync(toIndex, token).ConfigureAwait(false);
+        var dataTask = dataPages.FlushAsync(fromMetadata.Offset, toMetadata.End, token).AsTask();
 
         FlushRateMeter.Add(toIndex - fromIndex, measurementTags);
+        return Task.WhenAll(metadataTask, dataTask);
+    }
+
+    private async Task EnsureFlushedAsync(CancellationToken token)
+    {
+        Debug.Assert(flushCompleted is not null);
+
+        var linkedTokenSource = token.LinkTo(lifetimeToken);
+        var registration = token.UnsafeRegister(Signal, flushCompleted);
+        try
+        {
+            while (Volatile.Read(in flusherPreviousIndex) < LastCommittedEntryIndex)
+            {
+                await flushCompleted.WaitAsync().ConfigureAwait(false);
+                if (token.IsCancellationRequested)
+                    ThrowWhenCanceled(linkedTokenSource, token);
+            }
+        }
+        finally
+        {
+            await registration.DisposeAsync().ConfigureAwait(false);
+            linkedTokenSource?.Dispose();
+        }
+
+        static void Signal(object? state)
+        {
+            Debug.Assert(state is AsyncAutoResetEventSlim);
+
+            Unsafe.As<AsyncAutoResetEventSlim>(state).Set();
+        }
+    }
+    
+    [DoesNotReturn]
+    private void ThrowWhenCanceled(LinkedCancellationTokenSource? cts, CancellationToken token)
+    {
+        CancellationToken sourceToken;
+        if (cts is null)
+        {
+            sourceToken = token;
+        }
+        else if (cts.CancellationOrigin == lifetimeToken)
+        {
+            throw new ObjectDisposedException(GetType().Name);
+        }
+        else
+        {
+            sourceToken = cts.CancellationOrigin;
+        }
+
+        throw new OperationCanceledException(sourceToken);
     }
 
     /// <summary>
@@ -101,35 +154,10 @@ partial class WriteAheadLog
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous state of the operation.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    /// <exception cref="NotSupportedException">The flush operation is provided in the background.</exception>
-    public async ValueTask FlushAsync(CancellationToken token = default)
-    {
-        if (flushTrigger is not null)
-            throw new NotSupportedException();
-
-        var newSnapshot = SnapshotIndex;
-        var newIndex = LastCommittedEntryIndex;
-
-        if (newIndex >= flusherPreviousIndex)
-        {
-            // Ensure that the flusher is not running with the snapshot installation process concurrently
-            lockManager.SetCallerInformation("Flush Pages");
-            await lockManager.AcquireReadLockAsync(token).ConfigureAwait(false);
-            try
-            {
-                await Flush(flusherPreviousIndex, newIndex, token).ConfigureAwait(false);
-            }
-            finally
-            {
-                lockManager.ReleaseReadLock();
-            }
-        }
-
-        if ((!cleanupTask.TryGetTarget(out var task) || task.IsCompletedSuccessfully) && flusherOldSnapshotIndex < newSnapshot)
-            cleanupTask.SetTarget(CleanUpAsync(newSnapshot, token));
-
-        flusherPreviousIndex = long.Max(flusherOldSnapshotIndex = newSnapshot, newIndex) + 1L;
-    }
+    public Task FlushAsync(CancellationToken token = default)
+        => flushCompleted is null
+            ? FlushAsync<ForegroundTrigger>(new(), token)
+            : EnsureFlushedAsync(token);
 
     /// <inheritdoc cref="IAuditTrail.LastCommittedEntryIndex"/>
     public long LastCommittedEntryIndex
@@ -164,24 +192,61 @@ partial class WriteAheadLog
     private interface IFlushTrigger
     {
         ValueTask<bool> WaitAsync(CancellationToken token);
+
+        void NotifyCompleted();
+
+        static virtual bool IsBackground => true;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct ManualTrigger(AsyncAutoResetEventSlim resetEvent) : IFlushTrigger
+    private readonly struct BackgroundTrigger : IFlushTrigger
     {
+        private readonly AsyncAutoResetEventSlim flushTrigger, flushNotification;
+        
+        public BackgroundTrigger(AsyncAutoResetEventSlim resetEvent, out AsyncAutoResetEventSlim notification)
+        {
+            flushTrigger = resetEvent;
+            notification = flushNotification = new();
+        }
+        
         ValueTask<bool> IFlushTrigger.WaitAsync(CancellationToken token)
-            => resetEvent.WaitAsync();
+            => flushTrigger.WaitAsync();
+
+        void IFlushTrigger.NotifyCompleted() => flushNotification.Set();
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct TimeoutTrigger(TimeSpan timeout) : IFlushTrigger, IDisposable
+    [SuppressMessage("Usage", "CA1001", Justification = "False positive")]
+    private readonly struct TimeoutTrigger : IFlushTrigger, IDisposable
     {
-        private readonly PeriodicTimer timer = new(timeout);
+        private readonly PeriodicTimer timer;
+        private readonly AsyncAutoResetEventSlim flushNotification;
+
+        public TimeoutTrigger(TimeSpan timeout, out AsyncAutoResetEventSlim notification)
+        {
+            timer = new(timeout);
+            notification = flushNotification = new();
+        }
         
         ValueTask<bool> IFlushTrigger.WaitAsync(CancellationToken token)
             => timer.WaitForNextTickAsync(token);
 
+        void IFlushTrigger.NotifyCompleted() => flushNotification.Set();
+
         void IDisposable.Dispose() => timer.Dispose();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct ForegroundTrigger : IFlushTrigger
+    {
+        ValueTask<bool> IFlushTrigger.WaitAsync(CancellationToken token)
+            => ValueTask.FromResult(false);
+
+        void IFlushTrigger.NotifyCompleted()
+        {
+        }
+
+        static bool IFlushTrigger.IsBackground => false;
     }
 
     [StructLayout(LayoutKind.Auto)]

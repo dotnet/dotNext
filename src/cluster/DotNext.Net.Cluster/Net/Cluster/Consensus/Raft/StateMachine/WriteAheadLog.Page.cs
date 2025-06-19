@@ -140,7 +140,7 @@ partial class WriteAheadLog
             await RandomAccess.WriteAsync(handle, buffer, offset, token).ConfigureAwait(false);
         }
 
-        public ValueTask Flush(DirectoryInfo directory, uint pageIndex, Range range, CancellationToken token)
+        public ValueTask FlushAsync(DirectoryInfo directory, uint pageIndex, Range range, CancellationToken token)
         {
             var (offset, length) = range.GetOffsetAndLength(pageSize);
             return Flush(directory, pageIndex, offset, length, token);

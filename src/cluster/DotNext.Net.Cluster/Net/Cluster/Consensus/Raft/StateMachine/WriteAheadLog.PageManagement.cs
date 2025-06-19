@@ -301,13 +301,8 @@ partial class WriteAheadLog
             ReleasePage(page);
         }
 
-        private async ValueTask FlushAsync(uint pageIndex, Range range, CancellationToken token)
-        {
-            if (Pages.TryGetValue(pageIndex, out var page))
-            {
-                await page.Flush(Location, pageIndex, range, token).ConfigureAwait(false);
-            }
-        }
+        private ValueTask FlushAsync(uint pageIndex, Range range, CancellationToken token)
+            => Pages.TryGetValue(pageIndex, out var page) ? page.FlushAsync(Location, pageIndex, range, token) : ValueTask.CompletedTask;
 
         public override ValueTask FlushAsync(uint startPage, int startOffset, uint endPage, int endOffset, CancellationToken token)
             => startPage == endPage
