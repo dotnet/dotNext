@@ -90,7 +90,7 @@ partial class WriteAheadLog
         FlushDurationMeter.Record(ts.ElapsedMilliseconds);
 
         // everything up to toIndex is flushed, save the commit index
-        checkpoint.Value = toIndex;
+        await checkpoint.UpdateAsync(toIndex, token).ConfigureAwait(false);
 
         FlushRateMeter.Add(toIndex - fromIndex, measurementTags);
     }
@@ -190,44 +190,29 @@ partial class WriteAheadLog
         private const string FileName = "checkpoint";
 
         private readonly SafeFileHandle handle;
-        private long checkpoint;
+        private readonly byte[] buffer;
 
-        internal Checkpoint(DirectoryInfo location)
+        internal Checkpoint(DirectoryInfo location, out long value)
         {
             var path = Path.Combine(location.FullName, FileName);
-            long preallocationSize;
-            FileMode mode;
 
-            if (File.Exists(path))
+            // read the checkpoint
+            using (var readHandle = File.OpenHandle(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
-                preallocationSize = 0L;
-                mode = FileMode.Open;
-            }
-            else
-            {
-                preallocationSize = sizeof(long);
-                mode = FileMode.CreateNew;
+                Span<byte> readBuf = stackalloc byte[sizeof(long)];
+                value = RandomAccess.Read(readHandle, readBuf, 0L) >= sizeof(long)
+                    ? BinaryPrimitives.ReadInt64LittleEndian(readBuf)
+                    : 0L;
             }
 
-            handle = File.OpenHandle(path, mode, FileAccess.ReadWrite, FileShare.Read, FileOptions.WriteThrough, preallocationSize);
-
-            Span<byte> buffer = stackalloc byte[sizeof(long)];
-            checkpoint = RandomAccess.Read(handle, buffer, 0L) >= sizeof(long)
-                ? BinaryPrimitives.ReadInt64LittleEndian(buffer)
-                : 0L;
+            handle = File.OpenHandle(path, FileMode.Open, FileAccess.Write, options: FileOptions.Asynchronous | FileOptions.WriteThrough);
+            buffer = GC.AllocateArray<byte>(sizeof(long), pinned: true);
         }
 
-        internal long Value
+        public ValueTask UpdateAsync(long value, CancellationToken token)
         {
-            readonly get => checkpoint;
-
-            [SkipLocalsInit]
-            set
-            {
-                Span<byte> buffer = stackalloc byte[sizeof(long)];
-                BinaryPrimitives.WriteInt64LittleEndian(buffer, checkpoint = value);
-                RandomAccess.Write(handle, buffer, fileOffset: 0L);
-            }
+            BinaryPrimitives.WriteInt64LittleEndian(buffer, value);
+            return RandomAccess.WriteAsync(handle, buffer, fileOffset: 0L, token);
         }
 
         public void Dispose()
