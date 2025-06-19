@@ -81,11 +81,11 @@ partial class WriteAheadLog
     private async ValueTask Flush(long fromIndex, long toIndex, CancellationToken token)
     {
         var ts = new Timestamp();
-        await metadataPages.Flush(fromIndex, toIndex, token).ConfigureAwait(false);
+        await metadataPages.FlushAsync(fromIndex, toIndex, token).ConfigureAwait(false);
 
         var toMetadata = metadataPages[toIndex];
         var fromMetadata = metadataPages[fromIndex];
-        await dataPages.Flush(fromMetadata.Offset, toMetadata.End, token).ConfigureAwait(false);
+        await dataPages.FlushAsync(fromMetadata.Offset, toMetadata.End, token).ConfigureAwait(false);
         
         FlushDurationMeter.Record(ts.ElapsedMilliseconds);
 

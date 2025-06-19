@@ -64,12 +64,12 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         {
             var pagesLocation = new DirectoryInfo(Path.Combine(rootPath.FullName, MetadataPagesLocationPrefix));
             CreateIfNeeded(pagesLocation);
-            metadataPages = new(pagesLocation);
-            
+            metadataPages = new(new AnonymousPageManager(pagesLocation, MinPageSize));
+
             pagesLocation = new(Path.Combine(rootPath.FullName, DataPagesLocationPrefix));
             CreateIfNeeded(pagesLocation);
 
-            dataPages = new(pagesLocation, configuration.ChunkMaxSize)
+            dataPages = new(new AnonymousPageManager(pagesLocation, configuration.ChunkMaxSize))
             {
                 LastWrittenAddress = metadataPages.TryGetMetadata(lastReliablyWrittenEntryIndex, out var metadata)
                     ? metadata.End
@@ -590,7 +590,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
 
     private void CleanUp()
     {
-        Dispose<PageManager>([dataPages, metadataPages]);
+        metadataPages.Dispose();
+        dataPages.Dispose();
         Dispose<QueuedSynchronizer>([lockManager, appliedEvent, stateLock]);
         checkpoint.Dispose();
         state.Dispose();

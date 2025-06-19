@@ -69,7 +69,7 @@ partial class WriteAheadLog
                 
                 static int RoundUpToPageSize(int value)
                 {
-                    var result = ((uint)value).RoundUp((uint)Page.MinPageSize);
+                    var result = ((uint)value).RoundUp((uint)MinPageSize);
                     return checked((int)result);
                 }
             }

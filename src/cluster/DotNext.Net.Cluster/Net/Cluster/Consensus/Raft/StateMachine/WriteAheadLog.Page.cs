@@ -1,7 +1,7 @@
 using System.Buffers;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
-using Microsoft.Win32.SafeHandles;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
@@ -10,16 +10,17 @@ using Buffers;
 
 partial class WriteAheadLog
 {
+    private const int MinPageSize = 4096;
+    
     /// <summary>
     /// Represents memory-mapped page of memory.
     /// </summary>
-    private sealed class Page : MemoryManager<byte>
+    private sealed class AnonymousPage : MemoryManager<byte>
     {
-        public const int MinPageSize = 4096;
         private readonly int pageSize;
         private unsafe void* address;
 
-        public unsafe Page(int pageSize)
+        public unsafe AnonymousPage(int pageSize)
         {
             Debug.Assert(pageSize % MinPageSize is 0);
 
@@ -98,5 +99,8 @@ partial class WriteAheadLog
                 address = null;
             }
         }
+
+        [SuppressMessage("Reliability", "CA2015", Justification = "The caller must hold the reference to the memory object.")]
+        ~AnonymousPage() => Dispose(disposing: false);
     }
 }
