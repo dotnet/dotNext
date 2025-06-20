@@ -213,8 +213,11 @@ partial class WriteAheadLog
 
     private class AnonymousPageManager : PageManager<AnonymousPage>
     {
+        private const int HugePage2MB = 2 * 1024 * 1024;
         private const int PageCacheSize = sizeof(ulong) * 8;
 
+        private readonly nuint alignment;
+        private readonly nint madvise;
         private IndexPool indices;
         private PageCache cache;
 
@@ -223,6 +226,10 @@ partial class WriteAheadLog
         {
             indices = new(PageCacheSize - 1);
             cache = new();
+
+            alignment = IsHugePage2MBSupported(pageSize, out madvise)
+                ? HugePage2MB
+                : (uint)Environment.SystemPageSize;
 
             // populate pages
             AnonymousPage page;
@@ -245,8 +252,33 @@ partial class WriteAheadLog
             // place at least one page to the cache
             if (indices.TryPeek(out var poolIndex))
             {
-                cache[poolIndex] = new(PageSize);
+                MarkAsHugePageIfSupported(page = new(PageSize, alignment));
+                cache[poolIndex] = page;
             }
+        }
+
+        private unsafe void MarkAsHugePageIfSupported(AnonymousPage page)
+        {
+            if (madvise is not 0)
+            {
+                page.ConvertToHugePage((delegate*unmanaged<nint, nint, int, int>)madvise);
+            }
+        }
+
+        private static bool IsHugePage2MBSupported(int pageSize, out nint madvise)
+        {
+            madvise = 0;
+            if (OperatingSystem.IsLinux())
+            {
+                return Directory.Exists("/sys/kernel/mm/hugepages/hugepages-2048kB")
+                       && IsMultiple(pageSize)
+                       && NativeLibrary.TryGetExport(NativeLibrary.GetMainProgramHandle(), "madvise", out madvise);
+            }
+            
+            return false;
+
+            static bool IsMultiple(int pageSize)
+                => (pageSize & (HugePage2MB - 1)) is 0;
         }
 
         protected override AnonymousPage CreatePage(uint pageIndex)
@@ -262,7 +294,7 @@ partial class WriteAheadLog
                 {
                     try
                     {
-                        slot = new(PageSize) { PoolIndex = poolIndex };
+                        MarkAsHugePageIfSupported(slot = new(PageSize, alignment) { PoolIndex = poolIndex });
                     }
                     catch
                     {
@@ -275,7 +307,8 @@ partial class WriteAheadLog
             }
             else
             {
-                page = new(PageSize);
+                // do not enable HugePages for the pages out of the pool
+                page = new(PageSize, alignment);
             }
 
             return page;

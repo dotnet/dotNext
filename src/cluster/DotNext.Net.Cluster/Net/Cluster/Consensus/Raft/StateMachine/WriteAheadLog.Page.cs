@@ -95,11 +95,12 @@ partial class WriteAheadLog
         private readonly int pageSize;
         private unsafe void* address;
 
-        public unsafe AnonymousPage(int pageSize)
+        public unsafe AnonymousPage(int pageSize, nuint alignment)
         {
             Debug.Assert(pageSize % MinSize is 0);
+            Debug.Assert((uint)pageSize % alignment is 0);
 
-            address = NativeMemory.AlignedAlloc((uint)pageSize, (uint)Environment.SystemPageSize);
+            address = NativeMemory.AlignedAlloc((uint)pageSize, alignment);
             
             this.pageSize = pageSize;
             PoolIndex = -1;
@@ -144,6 +145,18 @@ partial class WriteAheadLog
         {
             var (offset, length) = range.GetOffsetAndLength(pageSize);
             return Flush(directory, pageIndex, offset, length, token);
+        }
+
+        internal unsafe void ConvertToHugePage(delegate*unmanaged<nint, nint, int, int> madise)
+        {
+            const int MADV_HUGEPAGE = 14;
+            const int Flags = MADV_HUGEPAGE;
+#if DEBUG
+            var errorCode = madise((nint)address, pageSize, Flags);
+            Debug.Assert(errorCode is 0);
+#else
+            madise((nint)address, pageSize, Flags);
+#endif
         }
 
         public override unsafe Span<byte> GetSpan() => new(address, pageSize);
