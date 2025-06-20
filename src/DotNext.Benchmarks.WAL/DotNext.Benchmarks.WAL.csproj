@@ -11,7 +11,6 @@
         <Copyright>Copyright © .NET Foundation and Contributors</Copyright>
         <RootNamespace>DotNext.Benchmarks.WAL</RootNamespace>
         <NoWarn>$(NoWarn);DOTNEXT001</NoWarn>
-        <Version>5.22.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
