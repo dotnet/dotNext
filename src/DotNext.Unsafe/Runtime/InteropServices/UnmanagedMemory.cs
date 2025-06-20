@@ -53,6 +53,9 @@ public unsafe struct UnmanagedMemory<T> : IUnmanagedMemory
     /// <inheritdoc/>
     public readonly Span<byte> Bytes => address is not null ? new(address, sizeof(T)) : Span<byte>.Empty;
 
+    /// <inheritdoc/>
+    public override string? ToString() => IsAllocated ? Value.ToString() : null;
+
     /// <summary>
     /// Gets the span over the unmanaged memory block of type <typeparamref name="T"/>.
     /// </summary>
