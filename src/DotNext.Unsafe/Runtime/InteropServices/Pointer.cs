@@ -369,7 +369,7 @@ public readonly struct Pointer<T> :
             for (int count; length > 0; length -= count, source += count)
             {
                 count = int.CreateSaturating(length);
-                var memory = new UnmanagedMemory<byte>(source, count).Memory;
+                var memory = new Buffers.UnmanagedMemory<byte>(source, count).Memory;
                 await destination.WriteAsync(memory, token).ConfigureAwait(false);
             }
         }
@@ -454,7 +454,7 @@ public readonly struct Pointer<T> :
             var total = 0L;
             for (int bytesRead; length > 0L; length -= bytesRead, destination += bytesRead, total += bytesRead)
             {
-                var memory = new UnmanagedMemory<byte>(destination, int.CreateSaturating(length)).Memory;
+                var memory = new Buffers.UnmanagedMemory<byte>(destination, int.CreateSaturating(length)).Memory;
                 if ((bytesRead = await source.ReadAsync(memory, token).ConfigureAwait(false)) is 0)
                     break;
             }
@@ -1038,7 +1038,7 @@ public readonly struct Pointer<T> :
     /// <param name="length">The number of elements in the memory.</param>
     /// <returns>The instance of memory owner.</returns>
     public unsafe IMemoryOwner<T> ToMemoryOwner(int length)
-        => IsNull || length is 0 ? UnmanagedMemory<T>.Empty() : new UnmanagedMemory<T>(value, length);
+        => IsNull || length is 0 ? Buffers.UnmanagedMemory<T>.Empty() : new Buffers.UnmanagedMemory<T>(value, length);
 
     /// <summary>
     /// Obtains pointer to the memory represented by given memory handle.
