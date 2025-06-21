@@ -41,9 +41,6 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(stateMachine);
 
-        if (nuint.Size < sizeof(ulong))
-            throw new PlatformNotSupportedException();
-
         lifetimeToken = (lifetimeTokenSource = new()).Token;
         var rootPath = new DirectoryInfo(configuration.Location);
         rootPath.CreateIfNeeded();
@@ -136,8 +133,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     /// <inheritdoc cref="IAuditTrail.LastEntryIndex"/>
     public long LastEntryIndex
     {
-        get => Volatile.Read(ref lastEntryIndex);
-        private set => Volatile.Write(ref lastEntryIndex, value);
+        get => Atomic.Read(ref lastEntryIndex);
+        private set => Atomic.Write(ref lastEntryIndex, value);
     }
 
     private async ValueTask<long> AppendUnbufferedAsync<TEntry>(TEntry entry, CancellationToken token)

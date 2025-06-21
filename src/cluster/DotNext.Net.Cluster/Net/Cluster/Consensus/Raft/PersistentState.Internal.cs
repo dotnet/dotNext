@@ -10,6 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using Buffers;
 using Buffers.Binary;
 using IO;
+using Threading;
 using Intrinsics = Runtime.Intrinsics;
 
 public partial class PersistentState
@@ -319,7 +320,7 @@ public partial class PersistentState
 
             ref var result = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(readers), sessionId);
 
-            var version = Volatile.Read(in this.version);
+            var version = Atomic.Read(in this.version);
             if (result is null)
             {
                 result = new(Handle, version)

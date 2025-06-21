@@ -67,7 +67,7 @@ partial class WriteAheadLog
                     cleanupTask.SetTarget(CleanUpAsync(newSnapshot, lifetimeToken));
 
                 flushTrigger.NotifyCompleted();
-                Volatile.Write(ref flusherPreviousIndex, long.Max(flusherOldSnapshot = newSnapshot, newIndex) + 1L);
+                Atomic.Write(ref flusherPreviousIndex, long.Max(flusherOldSnapshot = newSnapshot, newIndex) + 1L);
                 if (!await flushTrigger.WaitAsync(token).ConfigureAwait(false))
                     break;
             }
@@ -107,7 +107,7 @@ partial class WriteAheadLog
         var registration = token.UnsafeRegister(Signal, flushCompleted);
         try
         {
-            while (Volatile.Read(in flusherPreviousIndex) < LastCommittedEntryIndex)
+            while (Atomic.Read(in flusherPreviousIndex) < LastCommittedEntryIndex)
             {
                 await flushCompleted.WaitAsync().ConfigureAwait(false);
                 if (token.IsCancellationRequested)
@@ -162,8 +162,8 @@ partial class WriteAheadLog
     /// <inheritdoc cref="IAuditTrail.LastCommittedEntryIndex"/>
     public long LastCommittedEntryIndex
     {
-        get => Volatile.Read(in commitIndex);
-        private set => Volatile.Write(ref commitIndex, value);
+        get => Atomic.Read(in commitIndex);
+        private set => Atomic.Write(ref commitIndex, value);
     }
     
     private long Commit(long index)

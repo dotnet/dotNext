@@ -101,7 +101,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// using <see cref="WaitAsync(TimeSpan, CancellationToken)"/> without
     /// blocking.
     /// </remarks>
-    public long Value => Volatile.Read(in manager.Value);
+    public long Value => Atomic.Read(in manager.Value);
 
     /// <inheritdoc/>
     bool IAsyncEvent.Reset()

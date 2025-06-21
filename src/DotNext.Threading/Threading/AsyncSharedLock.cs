@@ -38,7 +38,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
         internal State(long concurrencyLevel) => ConcurrencyLevel = remainingLocks = concurrencyLevel;
 
-        internal readonly long RemainingLocks => Volatile.Read(in remainingLocks);
+        internal readonly long RemainingLocks => Atomic.Read(in remainingLocks);
 
         internal readonly bool IsWeakLockAllowed => remainingLocks > 0L;
 

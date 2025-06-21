@@ -463,13 +463,22 @@ public static partial class Atomic
         static uint IInterlockedOperations<uint>.CompareExchange(ref uint location, uint value, uint comparand)
             => Interlocked.CompareExchange(ref location, value, comparand);
 
-        private static bool Is32BitProcess => nuint.Size <= sizeof(uint);
+        private static bool Is32BitProcess => nuint.Size < sizeof(ulong);
 
         public static long VolatileRead(ref readonly long location)
             => Is32BitProcess ? Interlocked.Read(in location) : Volatile.Read(in location);
 
         public static void VolatileWrite(ref long location, long value)
-            => VolatileWrite(ref Unsafe.As<long, ulong>(ref location), Unsafe.BitCast<long, ulong>(value));
+        {
+            if (Is32BitProcess)
+            {
+                Interlocked.Exchange(ref location, value);
+            }
+            else
+            {
+                Volatile.Write(ref location, value);
+            }
+        }
 
         static long IInterlockedOperations<long>.CompareExchange(ref long location, long value, long comparand)
             => Interlocked.CompareExchange(ref location, value, comparand);
@@ -481,12 +490,7 @@ public static partial class Atomic
         {
             if (Is32BitProcess)
             {
-                for (ulong current = VolatileRead(in location), tmp;; current = tmp)
-                {
-                    tmp = Interlocked.CompareExchange(ref location, value, current);
-                    if (tmp == current)
-                        break;
-                }
+                Interlocked.Exchange(ref location, value);
             }
             else
             {
