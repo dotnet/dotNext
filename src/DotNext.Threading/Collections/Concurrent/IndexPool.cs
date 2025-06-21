@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Collections.Concurrent;
 
 using Generic;
+using Threading;
 
 /// <summary>
 /// Represents a pool of integer values.
@@ -69,18 +70,13 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// </summary>
     public static int Capacity => sizeof(ulong) * 8;
 
-    private static bool Is32BitProcess => nint.Size is sizeof(int);
-
-    private static ulong VolatileRead(ref readonly ulong location)
-        => Is32BitProcess ? Interlocked.Read(in location) : Volatile.Read(in location);
-
     /// <summary>
     /// Tries to peek the next available index from the pool, without acquiring it.
     /// </summary>
     /// <param name="result">The index which is greater than or equal to zero.</param>
     /// <returns><see langword="true"/> if the index is available for rent; otherwise, <see langword="false"/>.</returns>
     public readonly bool TryPeek(out int result)
-        => (result = BitOperations.TrailingZeroCount(VolatileRead(in bitmask))) <= maxValue;
+        => (result = BitOperations.TrailingZeroCount(Atomic.Read(in bitmask))) <= maxValue;
 
     /// <summary>
     /// Returns the available index from the pool.
@@ -94,7 +90,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
 
         static bool TryTake(ref ulong bitmask, int maxValue, out int result)
         {
-            var current = VolatileRead(in bitmask);
+            var current = Atomic.Read(in bitmask);
             for (ulong newValue; ; current = newValue)
             {
                 newValue = current & (current - 1UL); // Reset the lowest set bit, the same as BLSR instruction
@@ -195,13 +191,9 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// <summary>
     /// Returns all values to the pool.
     /// </summary>
-    /// <exception cref="PlatformNotSupportedException">This method is not supported on 32-bit platform.</exception>
     public void Reset()
     {
-        if (Is32BitProcess)
-            throw new PlatformNotSupportedException();
-        
-        Volatile.Write(ref bitmask, ulong.MaxValue);
+        Atomic.Write(ref bitmask, ulong.MaxValue);
     }
 
     /// <inheritdoc/>
@@ -213,7 +205,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// <param name="value">The value to check.</param>
     /// <returns><see langword="true"/> if <paramref name="value"/> is available for rent; otherwise, <see langword="false"/>.</returns>
     public readonly bool Contains(int value)
-        => (uint)value <= (uint)maxValue && Contains(VolatileRead(in bitmask), value);
+        => (uint)value <= (uint)maxValue && Contains(Atomic.Read(in bitmask), value);
 
     private static bool Contains(ulong bitmask, int index)
         => (bitmask & (1UL << index)) is not 0UL;
@@ -227,7 +219,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// Gets an enumerator over available indices in the pool.
     /// </summary>
     /// <returns>The enumerator over available indices in this pool.</returns>
-    public readonly Enumerator GetEnumerator() => new(VolatileRead(in bitmask), maxValue);
+    public readonly Enumerator GetEnumerator() => new(Atomic.Read(in bitmask), maxValue);
 
     /// <inheritdoc/>
     readonly IEnumerator<int> IEnumerable<int>.GetEnumerator()

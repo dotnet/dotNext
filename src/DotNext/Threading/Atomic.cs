@@ -463,20 +463,36 @@ public static partial class Atomic
         static uint IInterlockedOperations<uint>.CompareExchange(ref uint location, uint value, uint comparand)
             => Interlocked.CompareExchange(ref location, value, comparand);
 
-        static long IInterlockedOperations<long>.VolatileRead(ref readonly long location)
-            => Volatile.Read(in location);
+        private static bool Is32BitProcess => nuint.Size <= sizeof(uint);
 
-        static void IInterlockedOperations<long>.VolatileWrite(ref long location, long value)
-            => Volatile.Write(ref location, value);
+        public static long VolatileRead(ref readonly long location)
+            => Is32BitProcess ? Interlocked.Read(in location) : Volatile.Read(in location);
+
+        public static void VolatileWrite(ref long location, long value)
+            => VolatileWrite(ref Unsafe.As<long, ulong>(ref location), Unsafe.BitCast<long, ulong>(value));
 
         static long IInterlockedOperations<long>.CompareExchange(ref long location, long value, long comparand)
             => Interlocked.CompareExchange(ref location, value, comparand);
 
-        static ulong IInterlockedOperations<ulong>.VolatileRead(ref readonly ulong location)
-            => Volatile.Read(in location);
+        public static ulong VolatileRead(ref readonly ulong location)
+            => Is32BitProcess ? Interlocked.Read(in location) : Volatile.Read(in location);
 
-        static void IInterlockedOperations<ulong>.VolatileWrite(ref ulong location, ulong value)
-            => Volatile.Write(ref location, value);
+        public static void VolatileWrite(ref ulong location, ulong value)
+        {
+            if (Is32BitProcess)
+            {
+                for (ulong current = VolatileRead(in location), tmp;; current = tmp)
+                {
+                    tmp = Interlocked.CompareExchange(ref location, value, current);
+                    if (tmp == current)
+                        break;
+                }
+            }
+            else
+            {
+                Volatile.Write(ref location, value);
+            }
+        }
 
         static ulong IInterlockedOperations<ulong>.CompareExchange(ref ulong location, ulong value, ulong comparand)
             => Interlocked.CompareExchange(ref location, value, comparand);

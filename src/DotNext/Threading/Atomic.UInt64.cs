@@ -123,4 +123,24 @@ public static partial class Atomic
     [CLSCompliant(false)]
     public static ulong GetAndUpdate(ref ulong value, Func<ulong, ulong> updater)
         => GetAndUpdate<DelegatingSupplier<ulong, ulong>>(ref value, updater);
+    
+    /// <summary>
+    /// Reads atomically the value from the specified location in the memory.
+    /// </summary>
+    /// <remarks>
+    /// This method works correctly on 32-bit and 64-bit architectures.
+    /// </remarks>
+    /// <param name="location">The location of the value.</param>
+    /// <returns>The value at the specified location.</returns>
+    public static ulong Read(ref readonly ulong location) => InterlockedOperations.VolatileRead(in location);
+
+    /// <summary>
+    /// Writes atomically the value at the specified location in the memory.
+    /// </summary>
+    /// <remarks>
+    /// This method works correctly on 32-bit and 64-bit architectures.
+    /// </remarks>
+    /// <param name="location">The location of the value.</param>
+    /// <param name="value">The desired value at the specified location.</param>
+    public static void Write(ref ulong location, ulong value) => InterlockedOperations.VolatileWrite(ref location, value);
 }
