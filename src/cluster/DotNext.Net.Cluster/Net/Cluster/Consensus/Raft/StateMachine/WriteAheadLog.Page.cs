@@ -150,12 +150,11 @@ partial class WriteAheadLog
         internal unsafe void ConvertToHugePage(delegate*unmanaged<nint, nint, int, int> madise)
         {
             const int MADV_HUGEPAGE = 14;
-            const int Flags = MADV_HUGEPAGE;
 #if DEBUG
-            var errorCode = madise((nint)address, pageSize, Flags);
+            var errorCode = madise((nint)address, pageSize, MADV_HUGEPAGE);
             Debug.Assert(errorCode is 0);
 #else
-            madise((nint)address, pageSize, Flags);
+            madise((nint)address, pageSize, MADV_HUGEPAGE);
 #endif
         }
 
