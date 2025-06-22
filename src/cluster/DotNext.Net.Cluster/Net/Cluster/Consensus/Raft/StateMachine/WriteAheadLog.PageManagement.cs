@@ -213,7 +213,6 @@ partial class WriteAheadLog
 
     private class AnonymousPageManager : PageManager<AnonymousPage>
     {
-        private const int HugePage2MB = 2 * 1024 * 1024;
         private const int PageCacheSize = sizeof(ulong) * 8;
 
         private readonly nuint alignment;
@@ -227,9 +226,7 @@ partial class WriteAheadLog
             indices = new(PageCacheSize - 1);
             cache = new();
 
-            alignment = IsHugePage2MBSupported(pageSize, out madvise)
-                ? HugePage2MB
-                : (uint)Environment.SystemPageSize;
+            alignment = GetPageAlignment(pageSize, out madvise);
 
             // populate pages
             AnonymousPage page;
@@ -265,20 +262,33 @@ partial class WriteAheadLog
             }
         }
 
-        private static bool IsHugePage2MBSupported(int pageSize, out nint madvise)
+        private static nuint GetPageAlignment(int pageSize, out nint madvise)
         {
+            nuint alignment;
+
             madvise = 0;
             if (OperatingSystem.IsLinux())
             {
-                return Directory.Exists("/sys/kernel/mm/hugepages/hugepages-2048kB")
-                       && IsMultiple(pageSize)
-                       && NativeLibrary.TryGetExport(NativeLibrary.GetMainProgramHandle(), "madvise", out madvise);
-            }
-            
-            return false;
+                const string hpage_pmd_size = "/sys/kernel/mm/transparent_hugepage/hpage_pmd_size";
 
-            static bool IsMultiple(int pageSize)
-                => (pageSize & (HugePage2MB - 1)) is 0;
+                if (File.Exists(hpage_pmd_size))
+                {
+                    ReadOnlySpan<char> transparentHugePageSize = File.ReadAllText(hpage_pmd_size);
+                    if (nuint.TryParse(transparentHugePageSize, out alignment)
+                        && IsAligned((uint)pageSize, alignment)
+                        && NativeLibrary.TryGetExport(NativeLibrary.GetMainProgramHandle(), "madvise", out madvise))
+                        goto exit;
+                }
+            }
+
+            // fallback - no THP/LP support
+            alignment = (uint)Environment.SystemPageSize;
+
+            exit:
+            return alignment;
+
+            static bool IsAligned(nuint pageSize, nuint alignment)
+                => (pageSize & (alignment - 1U)) is 0;
         }
 
         protected override AnonymousPage CreatePage(uint pageIndex)
