@@ -266,7 +266,6 @@ partial class WriteAheadLog
         {
             nuint alignment;
 
-            madvise = 0;
             if (OperatingSystem.IsLinux())
             {
                 const string hpage_pmd_size = "/sys/kernel/mm/transparent_hugepage/hpage_pmd_size";
@@ -282,6 +281,7 @@ partial class WriteAheadLog
             }
 
             // fallback - no THP/LP support
+            madvise = 0;
             alignment = (uint)Environment.SystemPageSize;
 
             exit:
