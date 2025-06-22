@@ -317,14 +317,17 @@ partial class WriteAheadLog
         protected override void ReleasePage(AnonymousPage page)
         {
             var poolIndex = page.PoolIndex;
-            if (poolIndex >= 0)
+            if (poolIndex < 0)
             {
-                page.Discard();
-                indices.Return(poolIndex);
+                page.As<IDisposable>().Dispose();
             }
             else
             {
-                page.As<IDisposable>().Dispose();
+                // THP splits the page on discard, skip this behavior for HugePages
+                if (madvise is 0)
+                    page.Discard();
+                
+                indices.Return(poolIndex);
             }
         }
 
