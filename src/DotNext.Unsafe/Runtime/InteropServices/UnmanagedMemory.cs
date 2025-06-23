@@ -53,6 +53,13 @@ public unsafe struct UnmanagedMemory<T> : IUnmanagedMemory
     /// <inheritdoc/>
     public readonly Span<byte> Bytes => address is not null ? new(address, sizeof(T)) : Span<byte>.Empty;
 
+    /// <summary>
+    /// Gets the pointer to the unmanaged memory.
+    /// </summary>
+    /// <param name="handle">The handle of the unmanaged memory.</param>
+    /// <returns>The pointer to the value allocated in the unmanaged memory.</returns>
+    public static implicit operator T*(UnmanagedMemory<T> handle) => handle.address;
+
     /// <inheritdoc/>
     public override string? ToString() => IsAllocated ? Value.ToString() : null;
 
