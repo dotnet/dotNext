@@ -15,8 +15,9 @@ public unsafe struct UnmanagedMemory<T> : IUnmanagedMemory
     private T* address;
 
     /// <summary>
-    /// Initializes a new handle.
+    /// Allocates a memory for the value of type <typeparamref name="T"/> with proper alignment.
     /// </summary>
+    /// <exception cref="OutOfMemoryException">The process has not enough memory space to allocate the value.</exception>
     public UnmanagedMemory()
     {
         address = (T*)NativeMemory.AlignedAlloc((uint)sizeof(T), (uint)Intrinsics.AlignOf<T>());
@@ -53,13 +54,6 @@ public unsafe struct UnmanagedMemory<T> : IUnmanagedMemory
     /// <inheritdoc/>
     public readonly Span<byte> Bytes => address is not null ? new(address, sizeof(T)) : Span<byte>.Empty;
 
-    /// <summary>
-    /// Gets the pointer to the unmanaged memory.
-    /// </summary>
-    /// <param name="handle">The handle of the unmanaged memory.</param>
-    /// <returns>The pointer to the value allocated in the unmanaged memory.</returns>
-    public static implicit operator T*(UnmanagedMemory<T> handle) => handle.address;
-
     /// <inheritdoc/>
     public override string? ToString() => IsAllocated ? Value.ToString() : null;
 
@@ -77,4 +71,11 @@ public unsafe struct UnmanagedMemory<T> : IUnmanagedMemory
     /// <returns>The reference to the unmanaged memory.</returns>
     public static implicit operator ValueReference<T>(UnmanagedMemory<T> memory)
         => memory.IsAllocated ? new(ref memory.Value) : default;
+    
+    /// <summary>
+    /// Gets the pointer to the unmanaged memory.
+    /// </summary>
+    /// <param name="handle">The handle of the unmanaged memory.</param>
+    /// <returns>The pointer to the value allocated in the unmanaged memory.</returns>
+    public static implicit operator T*(UnmanagedMemory<T> handle) => handle.address;
 }
