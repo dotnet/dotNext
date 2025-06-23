@@ -282,7 +282,7 @@ public static class Span
     [CLSCompliant(false)]
     public static unsafe Span<byte> AsBytes<T>(T* pointer)
         where T : unmanaged
-        => AsBytes(ref pointer[0]);
+        => AsBytes(ref *pointer);
 
     /// <summary>
     /// Concatenates memory blocks.
