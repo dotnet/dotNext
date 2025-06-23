@@ -1,5 +1,4 @@
-﻿NullDestination=Destination pointer is null
-WrongTargetTypeSize=Target type should be the same size or less than original type
+﻿WrongTargetTypeSize=Target type should be the same size or less than original type
 NullPtr=Zero pointer detected
 StreamNotReadable=Stream is not readable
 StreamNotWritable=Stream is not writable
