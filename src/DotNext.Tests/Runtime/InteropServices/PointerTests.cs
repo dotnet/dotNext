@@ -136,7 +136,7 @@ public sealed class PointerTests : Test
     {
         var ptr = default(Pointer<int>);
         Throws<NullPointerException>(() => ptr[0] = 10);
-        Throws<NullPointerException>(() => ptr.Value = 10);
+        Throws<NullReferenceException>(() => ptr.Value = 10);
         Empty(ptr.ToByteArray(10));
         True(ptr.Bytes.IsEmpty);
         Equal(Pointer<int>.Null, ptr);
