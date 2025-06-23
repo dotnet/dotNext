@@ -27,11 +27,7 @@ public static class Intrinsics
     /// <typeparam name="T">The type to check.</typeparam>
     /// <returns><see langword="true"/> if <typeparamref name="T"/> is nullable type; otherwise, <see langword="false"/>.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsNullable<T>()
-    {
-        Unsafe.SkipInit(out T value);
-        return value is null;
-    }
+    public static bool IsNullable<T>() => default(T) is null;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static ref TTo InToRef<TFrom, TTo>(scoped ref readonly TFrom source)
