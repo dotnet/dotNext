@@ -163,34 +163,37 @@ public sealed class PointerTests : Test
     [Fact]
     public static unsafe void Operators()
     {
-        var ptr1 = new Pointer<int>(new IntPtr(42));
-        var ptr2 = new Pointer<int>(new IntPtr(46));
+        var ptr1 = new Pointer<int>(new nint(42));
+        var ptr2 = new Pointer<int>(new nint(46));
         True(ptr1 != ptr2);
         False(ptr1 == ptr2);
-        ptr2 -= new IntPtr(1);
-        Equal(new IntPtr(42), ptr2);
+        
+        ptr2 -= new nint(1);
+        Equal(new nint(42), ptr2);
         False(ptr1 != ptr2);
-        Equal(new IntPtr(42), ptr1);
-        True(new IntPtr(42).ToPointer() == ptr1);
+        Equal(new nint(42), ptr1);
+        True(new nint(42).ToPointer() == ptr1);
         if (ptr1) { }
         else Fail("Unexpected zero pointer");
+        
         ptr2 = default;
         if (ptr2) Fail("Unexpected non-zero pointer");
+        True(!ptr2);
 
         ptr1 += 2U;
-        Equal(new IntPtr(50), ptr1);
+        Equal(new nint(50), ptr1);
         ptr1 += 1L;
-        Equal(new IntPtr(54), ptr1);
-        ptr1 += new IntPtr(2);
-        Equal(new IntPtr(62), ptr1);
+        Equal(new nint(54), ptr1);
+        ptr1 += new nint(2);
+        Equal(new nint(62), ptr1);
 
-        ptr1 = new Pointer<int>(new UIntPtr(56U));
-        Equal(new UIntPtr(56U), ptr1);
+        ptr1 = new Pointer<int>(new nuint(56U));
+        Equal(new nuint(56U), ptr1);
 
         ptr1 += (nint)1;
-        Equal(new IntPtr(60), ptr1);
+        Equal(new nint(60), ptr1);
         ptr1 -= (nint)1;
-        Equal(new IntPtr(56), ptr1);
+        Equal(new nint(56), ptr1);
 
         True(ptr1 > ptr2);
         True(ptr1 >= ptr2);
