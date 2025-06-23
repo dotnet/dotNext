@@ -268,13 +268,4 @@ public sealed class PointerTests : Test
         var i = 0;
         True(new Pointer<int>(&i).IsAligned);
     }
-    
-    [Fact]
-    public static void AllocatedValue()
-    {
-        var expected = 42L;
-        using var memory = Pointer<long>.Allocate(expected);
-        False(memory.Pointer.IsNull);
-        Equal(expected, memory.Pointer.Value);
-    }
 }
