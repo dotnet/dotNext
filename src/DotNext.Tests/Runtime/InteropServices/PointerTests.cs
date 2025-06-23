@@ -66,7 +66,7 @@ public sealed class PointerTests : Test
         fixed (ushort* p = array)
         {
             var ptr = new Pointer<ushort>(p);
-            Equal(new IntPtr(p), (IntPtr)ptr.Address);
+            Equal(new IntPtr(p), ptr.Address);
             ptr.Value = 20;
             Equal(20, array[0]);
             Equal(20, ptr.Value);
@@ -250,16 +250,16 @@ public sealed class PointerTests : Test
         ptr.Value = 42;
         var obj = ptr.GetBoxedPointer();
         IsType<Pointer>(obj);
-        Equal((IntPtr)ptr.Address, new IntPtr(Pointer.Unbox(obj)));
+        Equal(ptr.Address, new IntPtr(Pointer.Unbox(obj)));
     }
 
     [Fact]
     public static void CompareToMethod()
     {
-        IComparable<Pointer<int>> x = new Pointer<int>((nint)9);
+        IComparable<Pointer<int>> x = new Pointer<int>(9);
         Equal(1, x.CompareTo(Pointer<int>.Null));
-        Equal(-1, x.CompareTo(new((nint)10)));
-        Equal(0, x.CompareTo(new((nint)9)));
+        Equal(-1, x.CompareTo(new(10)));
+        Equal(0, x.CompareTo(new(9)));
     }
 
     [Fact]
@@ -267,5 +267,14 @@ public sealed class PointerTests : Test
     {
         var i = 0;
         True(new Pointer<int>(&i).IsAligned);
+    }
+    
+    [Fact]
+    public static void AllocatedValue()
+    {
+        var expected = 42L;
+        using var memory = Pointer<long>.Allocate(expected);
+        False(memory.Pointer.IsNull);
+        Equal(expected, memory.Pointer.Value);
     }
 }

@@ -322,7 +322,6 @@ public readonly partial struct Pointer<T> :
     /// Gets the value stored in the memory identified by this pointer.
     /// </summary>
     /// <value>The reference to the memory location.</value>
-    /// <exception cref="NullPointerException">The pointer is 0.</exception>
     public unsafe ref T Value
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
