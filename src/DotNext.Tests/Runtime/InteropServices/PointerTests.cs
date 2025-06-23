@@ -268,4 +268,27 @@ public sealed class PointerTests : Test
         var i = 0;
         True(new Pointer<int>(&i).IsAligned);
     }
+
+    [Fact]
+    public static void BitwiseComparison()
+    {
+        using var mem1 = new UnmanagedMemory<UInt128>(UInt128.MaxValue);
+        using var mem2 = new UnmanagedMemory<UInt128>(UInt128.MaxValue);
+        True(mem1.Pointer.BitwiseCompare(mem2.Pointer, 1U) is 0);
+
+        mem2.Pointer.Value--;
+
+        True(mem1.Pointer.BitwiseCompare(mem2.Pointer, 1U) > 0);
+    }
+
+    [Fact]
+    public static unsafe void ClearValue()
+    {
+        var i = 42;
+
+        Pointer<int> ptr = &i;
+        ptr.Clear();
+
+        Equal(0, i);
+    }
 }
