@@ -210,14 +210,14 @@ public static class Intrinsics
     [CLSCompliant(false)]
     public static unsafe void Copy<T>([In] T* input, [Out] T* output)
         where T : unmanaged
-        => Copy(in input[0], out output[0]);
+        => Copy(in *input, out *output);
 
     private static void Copy([In] ref byte source, [In] ref byte destination, nuint length)
     {
-        for (nuint count; length > 0; length -= count, source = ref Unsafe.Add(ref source, count), destination = ref Unsafe.Add(ref destination, count))
+        for (uint count; length > 0; length -= count, source = ref Unsafe.Add(ref source, count), destination = ref Unsafe.Add(ref destination, count))
         {
-            count = length > uint.MaxValue ? uint.MaxValue : length;
-            Unsafe.CopyBlockUnaligned(ref destination, ref source, (uint)count);
+            count = uint.CreateSaturating(length);
+            Unsafe.CopyBlockUnaligned(ref destination, ref source, count);
         }
     }
 
@@ -256,7 +256,7 @@ public static class Intrinsics
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe void Swap<T>(T* first, T* second)
         where T : unmanaged
-        => Swap(ref first[0], ref second[0]);
+        => Swap(ref *first, ref *second);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe ref byte Advance<T>(this ref byte ptr)
