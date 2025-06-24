@@ -132,6 +132,7 @@ public static partial class Atomic
     /// </remarks>
     /// <param name="location">The location of the value.</param>
     /// <returns>The value at the specified location.</returns>
+    [CLSCompliant(false)]
     public static ulong Read(ref readonly ulong location) => InterlockedOperations.VolatileRead(in location);
 
     /// <summary>
@@ -142,5 +143,6 @@ public static partial class Atomic
     /// </remarks>
     /// <param name="location">The location of the value.</param>
     /// <param name="value">The desired value at the specified location.</param>
+    [CLSCompliant(false)]
     public static void Write(ref ulong location, ulong value) => InterlockedOperations.VolatileWrite(ref location, value);
 }
