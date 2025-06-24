@@ -276,13 +276,15 @@ public sealed class UnmanagedMemoryPoolTests : Test
         Equal(Memory<byte>.Empty, owner.Memory);
     }
 
-    [Fact]
+    [PlatformSpecificFact("linux", "windows")]
     public static void DiscardPages()
     {
         using var systemPages = UnmanagedMemory.AllocateSystemPages(1);
         systemPages.Memory.Span[0] = 42;
         
+        // On FreeBSD and MacOS, the method doesn't clear the memory
         UnmanagedMemory.Discard(systemPages.Memory.Span);
+        
         Equal(0, systemPages.Memory.Span[0]);
     }
     

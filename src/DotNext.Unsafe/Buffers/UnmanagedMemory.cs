@@ -302,7 +302,7 @@ file sealed unsafe class SystemPageManager : UnmanagedMemory<byte>
             return;
 
         int errorCode;
-        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS() || OperatingSystem.IsFreeBSD())
         {
             const int MADV_DONTNEED = 4;
 
