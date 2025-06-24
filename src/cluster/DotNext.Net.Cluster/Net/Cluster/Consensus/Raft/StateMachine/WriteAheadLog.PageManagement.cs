@@ -209,6 +209,19 @@ partial class WriteAheadLog
 
         public sealed override MemoryManager<byte>? TryGetPage(uint pageIndex)
             => Pages.GetValueOrDefault(pageIndex);
+        
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                foreach (var page in Pages.Values)
+                {
+                    page.As<IDisposable>().Dispose();
+                }
+            }
+
+            base.Dispose(disposing);
+        }
     }
 
     private class AnonymousPageManager : PageManager<AnonymousPage>
@@ -372,11 +385,6 @@ partial class WriteAheadLog
         {
             if (disposing)
             {
-                foreach (var page in Pages.Values)
-                {
-                    page.As<IDisposable>().Dispose();
-                }
-
                 cache.Clear();
             }
 
