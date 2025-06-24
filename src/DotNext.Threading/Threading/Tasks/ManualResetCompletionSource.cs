@@ -47,8 +47,7 @@ public abstract partial class ManualResetCompletionSource
         if (versionAndStatus.Status is not ManualResetCompletionSourceStatus.Activated)
             goto exit;
 
-        EnterLock();
-        try
+        lock (SyncRoot)
         {
             if (versionAndStatus.Status is not ManualResetCompletionSourceStatus.Activated
                 || versionAndStatus.Version != (short)expectedVersion
@@ -58,14 +57,10 @@ public abstract partial class ManualResetCompletionSource
             // ensure that timeout or cancellation handler sets the status correctly
             Debug.Assert(versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
         }
-        finally
-        {
-            ExitLock();
-        }
 
         Resume();
 
-    exit:
+        exit:
         return;
     }
 
@@ -100,9 +95,9 @@ public abstract partial class ManualResetCompletionSource
     /// <returns>The version of the uncompleted task.</returns>
     public short Reset()
     {
-        EnterLock();
+        Monitor.Enter(SyncRoot);
         var stateCopy = ResetCore(out var token);
-        ExitLock();
+        Monitor.Exit(SyncRoot);
 
         stateCopy.Dispose();
         CleanUp();
@@ -119,10 +114,10 @@ public abstract partial class ManualResetCompletionSource
     {
         bool result;
 
-        if (result = TryEnterLock())
+        if (result = Monitor.TryEnter(SyncRoot))
         {
             var stateCopy = ResetCore(out token);
-            ExitLock();
+            Monitor.Exit(SyncRoot);
 
             stateCopy.Dispose();
             CleanUp();
@@ -190,11 +185,11 @@ public abstract partial class ManualResetCompletionSource
 
         // code block doesn't have any calls leading to exceptions
         // so replace try-finally with manually cloned code
-        EnterLock();
+        Monitor.Enter(SyncRoot);
         if (token != versionAndStatus.Version)
         {
             errorMessage = ExceptionMessages.InvalidSourceToken;
-            ExitLock();
+            Monitor.Exit(SyncRoot);
             goto invalid_state;
         }
 
@@ -202,14 +197,14 @@ public abstract partial class ManualResetCompletionSource
         {
             default:
                 errorMessage = ExceptionMessages.InvalidSourceState;
-                ExitLock();
+                Monitor.Exit(SyncRoot);
                 goto invalid_state;
             case ManualResetCompletionSourceStatus.WaitForConsumption:
-                ExitLock();
+                Monitor.Exit(SyncRoot);
                 break;
             case ManualResetCompletionSourceStatus.Activated:
                 this.continuation = continuation;
-                ExitLock();
+                Monitor.Exit(SyncRoot);
                 goto exit;
         }
 
@@ -294,27 +289,21 @@ public abstract partial class ManualResetCompletionSource
     {
         Timeout.Validate(timeout);
 
-        // The source can be completed before the activation. Moreover, someone could try
-        // to complete the task during the activation concurrently. To avoid lock contention,
-        // use TryEnterLock(). If we can't acquire the lock, there is concurrent completion.
-        // In that case, do not activate the source and skip fast.
-        return TryEnterLock() ? ActivateSlow(timeout, token) : versionAndStatus.Version;
-    }
-
-    private short? ActivateSlow(TimeSpan timeout, CancellationToken token)
-    {
         short? result;
-        try
+        lock (SyncRoot)
         {
             switch (versionAndStatus.Status)
             {
-                case ManualResetCompletionSourceStatus.WaitForActivation when timeout == default:
-                    CompleteAsTimedOut();
-                    goto case ManualResetCompletionSourceStatus.WaitForConsumption;
                 case ManualResetCompletionSourceStatus.WaitForActivation:
-                    if (!state.Initialize(ref versionAndStatus, cancellationCallback, timeout, token))
+                    if (timeout == TimeSpan.Zero)
+                    {
+                        CompleteAsTimedOut();
+                    }
+                    else if (!state.Initialize(ref versionAndStatus, cancellationCallback, timeout, token))
+                    {
                         CompleteAsCanceled(token);
-                    
+                    }
+
                     goto case ManualResetCompletionSourceStatus.WaitForConsumption;
                 case ManualResetCompletionSourceStatus.WaitForConsumption:
                     result = versionAndStatus.Version;
@@ -323,10 +312,6 @@ public abstract partial class ManualResetCompletionSource
                     result = null;
                     break;
             }
-        }
-        finally
-        {
-            ExitLock();
         }
 
         return result;
