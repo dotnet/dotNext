@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks.Sources;
@@ -92,7 +93,7 @@ public abstract partial class ManualResetCompletionSource
     /// Resets the state of the source.
     /// </summary>
     /// <remarks>
-    /// This methods acts as a barrier for completion.
+    /// This method acts as a barrier for completion.
     /// It means that calling of this method guarantees that the task
     /// cannot be completed by the previously linked timeout or cancellation token.
     /// </remarks>
@@ -293,10 +294,16 @@ public abstract partial class ManualResetCompletionSource
     {
         Timeout.Validate(timeout);
 
-        // The task can be created for the completed (but not yet consumed) source.
-        // This workaround is needed for AsyncBridge methods
+        // The source can be completed before the activation. Moreover, someone could try
+        // to complete the task during the activation concurrently. To avoid lock contention,
+        // use TryEnterLock(). If we can't acquire the lock, there is concurrent completion.
+        // In that case, do not activate the source and skip fast.
+        return TryEnterLock() ? ActivateSlow(timeout, token) : versionAndStatus.Version;
+    }
+
+    private short? ActivateSlow(TimeSpan timeout, CancellationToken token)
+    {
         short? result;
-        EnterLock();
         try
         {
             switch (versionAndStatus.Status)
@@ -305,11 +312,9 @@ public abstract partial class ManualResetCompletionSource
                     CompleteAsTimedOut();
                     goto case ManualResetCompletionSourceStatus.WaitForConsumption;
                 case ManualResetCompletionSourceStatus.WaitForActivation:
-                    state.Initialize(ref versionAndStatus, cancellationCallback, timeout, token);
-
-                    if (token.IsCancellationRequested)
+                    if (!state.Initialize(ref versionAndStatus, cancellationCallback, timeout, token))
                         CompleteAsCanceled(token);
-
+                    
                     goto case ManualResetCompletionSourceStatus.WaitForConsumption;
                 case ManualResetCompletionSourceStatus.WaitForConsumption:
                     result = versionAndStatus.Version;
@@ -570,10 +575,10 @@ public abstract partial class ManualResetCompletionSource
         private CancellationTokenRegistration tokenTracker;
         private CancellationTokenSource? timeoutSource;
 
-        internal void Initialize(ref VersionAndStatus vs, Action<object?, CancellationToken> callback, TimeSpan timeout, CancellationToken token)
+        internal bool Initialize(ref VersionAndStatus vs, Action<object?, CancellationToken> callback, TimeSpan timeout, CancellationToken token)
         {
             // box current token once and only if needed
-            var cachedVersion = default(IEquatable<short>);
+            IBinaryInteger<short>? cachedVersion = null;
 
             if (token.CanBeCanceled)
             {
@@ -586,7 +591,10 @@ public abstract partial class ManualResetCompletionSource
             // To avoid that, change the status later and check the token after calling this method
             vs.Status = ManualResetCompletionSourceStatus.Activated;
 
-            if (timeout > default(TimeSpan) && !token.IsCancellationRequested)
+            if (token.IsCancellationRequested)
+                return false;
+            
+            if (timeout > default(TimeSpan))
             {
                 timeoutSource ??= new();
 
@@ -595,6 +603,8 @@ public abstract partial class ManualResetCompletionSource
                 timeoutSource.Token.UnsafeRegister(callback, cachedVersion ?? vs.Version);
                 timeoutSource.CancelAfter(timeout);
             }
+
+            return true;
         }
 
         internal readonly bool IsTimeoutToken(CancellationToken token)
