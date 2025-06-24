@@ -95,8 +95,7 @@ public sealed class LeaseTests : Test
         False(consumer.Token.IsCancellationRequested);
         False(consumer.Expiration.IsExpired);
 
-        await Task.Delay(400);
-        True(consumer.Token.IsCancellationRequested);
+        await consumer.Token.WaitAsync();
         False(await consumer.ReleaseAsync());
     }
 
