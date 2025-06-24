@@ -96,6 +96,8 @@ public sealed class LeaseTests : Test
         False(consumer.Expiration.IsExpired);
 
         await consumer.Token.WaitAsync();
+        await Task.Delay(provider.TimeToLive);
+        
         False(await consumer.ReleaseAsync());
     }
 
@@ -178,7 +180,7 @@ public sealed class LeaseTests : Test
         private readonly AsyncReaderWriterLock syncRoot = new();
         private State currentState;
 
-        internal CancellationToken Token => base.LifetimeToken;
+        internal CancellationToken Token => LifetimeToken;
 
         protected override async ValueTask<State> GetStateAsync(CancellationToken token)
         {
