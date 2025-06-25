@@ -9,7 +9,7 @@ public sealed class SpawningAsyncTaskMethodBuilderTests : Test
     {
         using var resetEvent = new ManualResetEventSlim(initialState: false);
         var task = Sum(40, 2, Thread.CurrentThread.ManagedThreadId);
-        resetEvent.Wait(DefaultTimeout);
+        True(resetEvent.Wait(DefaultTimeout));
 
         Equal(42, await task);
 
@@ -29,7 +29,7 @@ public sealed class SpawningAsyncTaskMethodBuilderTests : Test
     {
         using var resetEvent = new ManualResetEventSlim(initialState: false);
         var task = CheckThreadId(Thread.CurrentThread.ManagedThreadId);
-        resetEvent.Wait(DefaultTimeout);
+        True(resetEvent.Wait(DefaultTimeout));
 
         await task;
 
@@ -48,7 +48,7 @@ public sealed class SpawningAsyncTaskMethodBuilderTests : Test
     {
         using var resetEvent = new ManualResetEventSlim(initialState: false);
         var task = CheckThreadId(Thread.CurrentThread.ManagedThreadId, new(true));
-        resetEvent.Wait(DefaultTimeout);
+        True(resetEvent.Wait(DefaultTimeout));
 
         await Task.WhenAny(task);
         True(task.IsCanceled);
