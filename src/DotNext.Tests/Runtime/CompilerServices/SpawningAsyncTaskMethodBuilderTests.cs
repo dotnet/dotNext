@@ -20,7 +20,7 @@ public sealed class SpawningAsyncTaskMethodBuilderTests : Test
             resetEvent.Set();
             NotEqual(callerThreadId, Thread.CurrentThread.ManagedThreadId);
 
-            await Task.Yield();
+            await Task.CompletedTask;
             return x + y;
         }
     }
@@ -40,7 +40,7 @@ public sealed class SpawningAsyncTaskMethodBuilderTests : Test
             resetEvent.Set();
             NotEqual(callerThreadId, Thread.CurrentThread.ManagedThreadId);
 
-            await Task.Yield();
+            await Task.CompletedTask;
         }
     }
 
@@ -51,7 +51,7 @@ public sealed class SpawningAsyncTaskMethodBuilderTests : Test
         var task = CheckThreadId(Thread.CurrentThread.ManagedThreadId, new(true));
         True(resetEvent.Wait(DefaultTimeout));
 
-        await Task.WhenAny(task);
+        await task.ConfigureAwait(ConfigureAwaitOptions.ContinueOnCapturedContext | ConfigureAwaitOptions.SuppressThrowing);
         True(task.IsCanceled);
 
         [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
