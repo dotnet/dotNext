@@ -1,6 +1,8 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 
+[assembly: DotNext.ReportLongRunningTests(30_000)]
+
 namespace DotNext;
 
 using static Buffers.Memory;
