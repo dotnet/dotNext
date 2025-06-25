@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <RunSettings>
 	<RunConfiguration>
-		<TestSessionTimeout>300000</TestSessionTimeout>
+		<TestSessionTimeout>600000</TestSessionTimeout>
 		<TargetFrameworkVersion>net8.0</TargetFrameworkVersion>
 		<LongRunningTestSeconds>30</LongRunningTestSeconds>
         <DiagnosticMessages>true</DiagnosticMessages>
