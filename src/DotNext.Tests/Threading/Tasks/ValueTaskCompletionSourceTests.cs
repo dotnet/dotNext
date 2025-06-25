@@ -2,6 +2,7 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks;
 
+[Collection(TestCollections.AsyncPrimitives)]
 public sealed class ValueTaskCompletionSourceTests : Test
 {
     [Theory]

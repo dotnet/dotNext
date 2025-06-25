@@ -7,6 +7,7 @@ using System.Net;
 namespace DotNext.Net.Cluster.Consensus.Raft.CustomTransport;
 
 using TransportServices;
+
 [Collection(TestCollections.Raft)]
 public sealed class CustomTransportTests : TransportTestSuite
 {

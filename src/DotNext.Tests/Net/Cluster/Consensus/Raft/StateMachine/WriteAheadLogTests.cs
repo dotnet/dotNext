@@ -14,6 +14,7 @@ using LogEntryConsumer = IO.Log.LogEntryConsumer<IRaftLogEntry, Missing>;
 using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
 [Experimental("DOTNEXT001")]
+[Collection(TestCollections.WriteAheadLog)]
 public sealed class WriteAheadLogTests : Test
 {
     [Fact]

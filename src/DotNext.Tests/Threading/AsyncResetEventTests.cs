@@ -2,6 +2,7 @@ namespace DotNext.Threading;
 
 using Diagnostics;
 
+[Collection(TestCollections.AsyncPrimitives)]
 public sealed class AsyncResetEventTests : Test
 {
     [Fact]

@@ -2,9 +2,9 @@ using System.Reflection;
 
 namespace DotNext.Threading;
 
+[Collection(TestCollections.AsyncPrimitives)]
 public sealed class ThreadPoolWorkItemFactoryTests : Test
 {
-
     private static unsafe IThreadPoolWorkItem CreateWorkItem(TaskCompletionSource<int> source)
     {
         return ThreadPoolWorkItemFactory.Create(&Complete, source);

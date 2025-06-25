@@ -10,6 +10,7 @@ using IRaftLog = IO.Log.IAuditTrail<IRaftLogEntry>;
 using LogEntryConsumer = IO.Log.LogEntryConsumer<IRaftLogEntry, Missing>;
 using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
+[Collection(TestCollections.WriteAheadLog)]
 public sealed class DiskBasedStateMachineTests : Test
 {
     private sealed class SimpleStateMachine : DiskBasedStateMachine

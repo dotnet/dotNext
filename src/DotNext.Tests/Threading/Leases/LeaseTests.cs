@@ -1,6 +1,7 @@
 
 namespace DotNext.Threading.Leases;
 
+[Collection(TestCollections.AdvancedSynchronization)]
 public sealed class LeaseTests : Test
 {
     [Fact]

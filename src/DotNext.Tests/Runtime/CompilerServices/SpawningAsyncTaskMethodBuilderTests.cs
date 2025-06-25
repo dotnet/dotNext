@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.CompilerServices;
 
+[Collection("tst")]
 public sealed class SpawningAsyncTaskMethodBuilderTests : Test
 {
     [Fact]

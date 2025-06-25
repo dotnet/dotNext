@@ -2,6 +2,7 @@ namespace DotNext.Threading.Tasks;
 
 using static Collections.Generic.AsyncEnumerable;
 
+[Collection(TestCollections.AdvancedSynchronization)]
 public class TaskCompletionPipeTests : Test
 {
     [Fact]

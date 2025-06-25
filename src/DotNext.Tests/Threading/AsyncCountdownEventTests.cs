@@ -1,5 +1,6 @@
 namespace DotNext.Threading;
 
+[Collection(TestCollections.AsyncPrimitives)]
 public sealed class AsyncCountdownEventTests : Test
 {
     [Fact]
