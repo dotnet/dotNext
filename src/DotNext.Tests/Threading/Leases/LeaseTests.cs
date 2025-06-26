@@ -125,15 +125,20 @@ public sealed class LeaseTests : Test
     }
     
     [Fact]
-    public static async Task WorkerProtectedWithLease()
+    public static Task WorkerProtectedWithLease()
     {
-        var pause = TimeSpan.FromMilliseconds(500);
-        using var provider = new TestLeaseProvider(pause);
-        await using var consumer = new TestLeaseConsumer(provider);
-        True(await consumer.TryAcquireAsync());
+        return SuspendContext(TestBody);
 
-        var result = await SuspendContext(() => consumer.ExecuteAsync(Worker));
-        Equal(42, result);
+        static async Task TestBody()
+        {
+            var pause = TimeSpan.FromMilliseconds(500);
+            using var provider = new TestLeaseProvider(pause);
+            await using var consumer = new TestLeaseConsumer(provider);
+            True(await consumer.TryAcquireAsync());
+
+            var result = await consumer.ExecuteAsync(Worker);
+            Equal(42, result);
+        }
 
         static async Task<int> Worker(CancellationToken token)
         {
