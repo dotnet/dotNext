@@ -6,18 +6,13 @@ namespace DotNext.Runtime.CompilerServices;
 public sealed class SpawningAsyncTaskMethodBuilderTests : Test
 {
     [Fact]
-    public static async Task ForkAsyncMethodWithResult()
+    public static Task ForkAsyncMethodWithResult()
     {
-        var resetEvent = new TaskCompletionSource();
-        var task = Sum(40, 2, Thread.CurrentThread.ManagedThreadId);
-        await resetEvent.Task.WaitAsync(DefaultTimeout);
-
-        Equal(42, await task);
+        return Sum(40, 2, Thread.CurrentThread.ManagedThreadId);
 
         [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
-        async Task<int> Sum(int x, int y, int callerThreadId)
+        static async Task<int> Sum(int x, int y, int callerThreadId)
         {
-            resetEvent.SetResult();
             NotEqual(callerThreadId, Thread.CurrentThread.ManagedThreadId);
 
             await Task.CompletedTask;
@@ -26,18 +21,13 @@ public sealed class SpawningAsyncTaskMethodBuilderTests : Test
     }
 
     [Fact]
-    public static async Task ForkAsyncMethodWithoutResult()
+    public static Task ForkAsyncMethodWithoutResult()
     {
-        var resetEvent = new TaskCompletionSource();
-        var task = CheckThreadId(Thread.CurrentThread.ManagedThreadId);
-        await resetEvent.Task.WaitAsync(DefaultTimeout);
-
-        await task;
+        return CheckThreadId(Thread.CurrentThread.ManagedThreadId);
 
         [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
-        async Task CheckThreadId(int callerThreadId)
+        static async Task CheckThreadId(int callerThreadId)
         {
-            resetEvent.SetResult();
             NotEqual(callerThreadId, Thread.CurrentThread.ManagedThreadId);
 
             await Task.CompletedTask;
@@ -47,17 +37,14 @@ public sealed class SpawningAsyncTaskMethodBuilderTests : Test
     [Fact]
     public static async Task CancellationOfSpawnedMethod()
     {
-        var resetEvent = new TaskCompletionSource();
         var task = CheckThreadId(Thread.CurrentThread.ManagedThreadId, new(true));
-        await resetEvent.Task.WaitAsync(DefaultTimeout);
 
         await task.ConfigureAwait(ConfigureAwaitOptions.ContinueOnCapturedContext | ConfigureAwaitOptions.SuppressThrowing);
         True(task.IsCanceled);
 
         [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
-        async Task CheckThreadId(int callerThreadId, CancellationToken token)
+        static async Task CheckThreadId(int callerThreadId, CancellationToken token)
         {
-            resetEvent.SetResult();
             NotEqual(callerThreadId, Thread.CurrentThread.ManagedThreadId);
 
             await Task.Delay(DefaultTimeout, token);
