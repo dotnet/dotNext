@@ -9,7 +9,7 @@ public sealed class SpawningAsyncTaskMethodBuilderTests : Test
     public static async Task ForkAsyncMethodWithResult()
     {
         var resetEvent = new TaskCompletionSource();
-        var task = Sum(40, 2, Thread.CurrentThread.ManagedThreadId);
+        var task = SuspendContext(() => Sum(40, 2, Thread.CurrentThread.ManagedThreadId));
         await resetEvent.Task.WaitAsync(DefaultTimeout);
 
         Equal(42, await task);
@@ -29,7 +29,7 @@ public sealed class SpawningAsyncTaskMethodBuilderTests : Test
     public static async Task ForkAsyncMethodWithoutResult()
     {
         var resetEvent = new TaskCompletionSource();
-        var task = CheckThreadId(Thread.CurrentThread.ManagedThreadId);
+        var task = SuspendContext(() => CheckThreadId(Thread.CurrentThread.ManagedThreadId));
         await resetEvent.Task.WaitAsync(DefaultTimeout);
 
         await task;
@@ -48,7 +48,7 @@ public sealed class SpawningAsyncTaskMethodBuilderTests : Test
     public static async Task CancellationOfSpawnedMethod()
     {
         var resetEvent = new TaskCompletionSource();
-        var task = CheckThreadId(Thread.CurrentThread.ManagedThreadId, new(true));
+        var task = SuspendContext(() => CheckThreadId(Thread.CurrentThread.ManagedThreadId, new(true)));
         await resetEvent.Task.WaitAsync(DefaultTimeout);
 
         await task.ConfigureAwait(ConfigureAwaitOptions.ContinueOnCapturedContext | ConfigureAwaitOptions.SuppressThrowing);
