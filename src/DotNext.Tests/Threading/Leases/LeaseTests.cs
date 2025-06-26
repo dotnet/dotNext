@@ -132,7 +132,7 @@ public sealed class LeaseTests : Test
         await using var consumer = new TestLeaseConsumer(provider);
         True(await consumer.TryAcquireAsync());
 
-        var result = await consumer.ExecuteAsync(Worker);
+        var result = await SuspendContext(() => consumer.ExecuteAsync(Worker));
         Equal(42, result);
 
         static async Task<int> Worker(CancellationToken token)
