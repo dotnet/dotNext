@@ -45,18 +45,4 @@ public abstract class Test : Assert
     private protected static Action<T> Same<T>(T expected)
         where T : class
         => actual => Same(expected, actual);
-
-    protected static TResult SuspendContext<TResult>(Func<TResult> func)
-    {
-        var currentContext = SynchronizationContext.Current;
-        SynchronizationContext.SetSynchronizationContext(null);
-        try
-        {
-            return func();
-        }
-        finally
-        {
-            SynchronizationContext.SetSynchronizationContext(currentContext);
-        }
-    }
 }
