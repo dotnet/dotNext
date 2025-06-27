@@ -47,7 +47,7 @@ public abstract class Test : Assert
         where T : class
         => actual => Same(expected, actual);
     
-    protected static TResult Fork<TResult>(Func<TResult> func, [CallerMemberName] string threadName = "")
+    protected static TResult InvokeAsThread<TResult>(Func<TResult> func, [CallerMemberName] string threadName = "")
     {
         var state = new State<TResult>(func);
 
