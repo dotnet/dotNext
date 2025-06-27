@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 [assembly: DotNext.ReportLongRunningTests(30_000)]
 
@@ -46,17 +47,31 @@ public abstract class Test : Assert
         where T : class
         => actual => Same(expected, actual);
     
-    protected static TResult SuspendContext<TResult>(Func<TResult> func)
+    protected static TResult Fork<TResult>(Func<TResult> func, [CallerMemberName] string threadName = "")
     {
-        var currentContext = SynchronizationContext.Current;
-        SynchronizationContext.SetSynchronizationContext(null);
-        try
+        var state = new State<TResult>(func);
+
+        var thread = new Thread(Start)
         {
-            return func();
-        }
-        finally
+            IsBackground = true,
+            Name = threadName,
+        };
+        
+        thread.UnsafeStart(state);
+        True(thread.Join(DefaultTimeout));
+        return state.Result;
+
+        static void Start(object state)
         {
-            SynchronizationContext.SetSynchronizationContext(currentContext);
+            var tuple = (State<TResult>)state;
+            tuple.Invoke();
         }
+    }
+    
+    private sealed class State<T>(Func<T> func)
+    {
+        internal T Result;
+
+        internal void Invoke() => Result = func();
     }
 }
