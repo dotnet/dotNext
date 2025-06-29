@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 05-30-2025
+Release Date: 06-29-2025
 
 <a href="https://www.nuget.org/packages/dotnext/5.23.0">DotNext 5.23.0</a>
 * Added `Atomic.Read` and `Atomic.Write` methods for **long** and **ulong** data types for cross-architecture support of atomic reads/writes
@@ -59,6 +59,7 @@ Release Date: 05-30-2025
 
 <a href="https://www.nuget.org/packages/dotnext.threading/5.23.0">DotNext.Threading 5.23.0</a>
 * Fixed compatibility with 32-bit arch for asynchronous primitives and `IndexPool` data type
+* Replaced spin wait with the monitor lock for value task sources
 
 <a href="https://www.nuget.org/packages/dotnext.io/5.23.0">DotNext.IO 5.23.0</a>
 * Updated dependencies
