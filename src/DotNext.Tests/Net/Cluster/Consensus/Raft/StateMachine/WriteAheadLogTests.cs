@@ -14,6 +14,7 @@ using LogEntryConsumer = IO.Log.LogEntryConsumer<IRaftLogEntry, Missing>;
 using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
 [Experimental("DOTNEXT001")]
+[Collection(TestCollections.WriteAheadLog)]
 public sealed class WriteAheadLogTests : Test
 {
     [Fact]
@@ -31,11 +32,15 @@ public sealed class WriteAheadLogTests : Test
     [Fact]
     public static async Task StateManipulations()
     {
-        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         IPersistentState state;
         var member = ClusterMemberId.FromEndPoint(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
 
-        await using (var wal = new WriteAheadLog(new() { Location = dir }, new NoOpStateMachine()))
+        var options = new WriteAheadLog.Options()
+        {
+            Location = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
+        };
+        
+        await using (var wal = new WriteAheadLog(options, new NoOpStateMachine()))
         {
             state = wal;
             Equal(0, state.Term);
@@ -47,7 +52,7 @@ public sealed class WriteAheadLogTests : Test
         }
 
         //now open state again to check persistence
-        await using (var wal = new WriteAheadLog(new() { Location = dir }, new NoOpStateMachine()))
+        await using (var wal = new WriteAheadLog(options, new NoOpStateMachine()))
         {
             state = wal;
             Equal(1, state.Term);
@@ -166,7 +171,7 @@ public sealed class WriteAheadLogTests : Test
             Equal(0L, entries[0].Term);
             Equal(payload, await entries[1].ToByteArrayAsync(token: token));
             
-            //execute reader inside of another reader which is not possible for ConsensusOnlyState
+            //execute reader inside another reader which is not possible for ConsensusOnlyState
             return await wal.ReadAsync(new LogEntryConsumer(checker2), 0L, wal.LastEntryIndex, token);
         };
         await wal.ReadAsync(new LogEntryConsumer(checker1), 0L, wal.LastEntryIndex);
@@ -205,7 +210,7 @@ public sealed class WriteAheadLogTests : Test
         var options = new WriteAheadLog.Options { Location = dir };
         await using var wal = new WriteAheadLog(options, new NoOpStateMachine());
 
-        var payload = new TestLogEntry(Random.Shared.NextString(Alphabet, options.ChunkMaxSize * 2));
+        var payload = new TestLogEntry(Random.Shared.NextString(Alphabet, options.ChunkSize * 2));
         Equal(1L, await wal.AppendAsync(payload));
 
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = async (entries, snapshotIndex, token) =>
@@ -219,8 +224,10 @@ public sealed class WriteAheadLogTests : Test
         await wal.ReadAsync(new LogEntryConsumer(checker), 1L, 1L);
     }
 
-    [Fact]
-    public static async Task Overwrite()
+    [Theory]
+    [InlineData(WriteAheadLog.MemoryManagementStrategy.PrivateMemory)]
+    [InlineData(WriteAheadLog.MemoryManagementStrategy.SharedMemory)]
+    public static async Task Overwrite(WriteAheadLog.MemoryManagementStrategy strategy)
     {
         var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
         var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
@@ -228,7 +235,7 @@ public sealed class WriteAheadLogTests : Test
         var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
         var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        await using var wal = new WriteAheadLog(new() { Location = dir }, new NoOpStateMachine());
+        await using var wal = new WriteAheadLog(new() { Location = dir, MemoryManagement = strategy }, new NoOpStateMachine());
         
         await wal.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5), 1L);
         Equal(4L, wal.LastEntryIndex);
@@ -250,8 +257,10 @@ public sealed class WriteAheadLogTests : Test
         await wal.ReadAsync(new LogEntryConsumer(checker), 1L, wal.LastEntryIndex);
     }
 
-    [Fact]
-    public static async Task Commit()
+    [Theory]
+    [InlineData(WriteAheadLog.MemoryManagementStrategy.PrivateMemory)]
+    [InlineData(WriteAheadLog.MemoryManagementStrategy.SharedMemory)]
+    public static async Task Commit(WriteAheadLog.MemoryManagementStrategy strategy)
     {
         var entry1 = new TestLogEntry("SET X = 0") { Term = 42L, Context = 56 };
         var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
@@ -259,8 +268,14 @@ public sealed class WriteAheadLogTests : Test
         var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
         var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
 
-        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        await using (var wal = new WriteAheadLog(new() { Location = dir, FlushInterval = InfiniteTimeSpan }, new NoOpStateMachine()))
+        var options = new WriteAheadLog.Options
+        {
+            Location = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
+            FlushInterval = InfiniteTimeSpan,
+            MemoryManagement = strategy,
+        };
+
+        await using (var wal = new WriteAheadLog(options, new NoOpStateMachine()))
         {
             Equal(1L, await wal.AppendAsync(entry1));
             await wal.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5), 2L);
@@ -276,7 +291,7 @@ public sealed class WriteAheadLogTests : Test
         }
 
         //read again
-        await using (var wal = new WriteAheadLog(new() { Location = dir }, new NoOpStateMachine()))
+        await using (var wal = new WriteAheadLog(options, new NoOpStateMachine()))
         {
             Equal(3L, wal.LastCommittedEntryIndex);
             Equal(3L, wal.LastEntryIndex);
@@ -327,6 +342,7 @@ public sealed class WriteAheadLogTests : Test
 
             await wal.CommitAsync(index);
             await wal.WaitForApplyAsync(index);
+            await wal.FlushAsync();
         }
         
         await using var stateMachine = new SumStateMachine(new(dir));

@@ -2,6 +2,7 @@
 
 namespace DotNext.Threading;
 
+[Collection(TestCollections.AsyncPrimitives)]
 public sealed class AsyncExclusiveLockTests : Test
 {
     [Fact]

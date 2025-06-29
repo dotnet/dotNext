@@ -12,8 +12,7 @@ using Threading;
 
 partial class WriteAheadLog
 {
-    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
-    private readonly AsyncAutoResetEvent applyTrigger;
+    private readonly AsyncAutoResetEventSlim applyTrigger;
     private readonly Task appenderTask;
     
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
@@ -23,7 +22,7 @@ partial class WriteAheadLog
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task ApplyAsync(CancellationToken token)
     {
-        for (long newIndex; !token.IsCancellationRequested && backgroundTaskFailure is null; await applyTrigger.WaitAsync(token).ConfigureAwait(false))
+        for (long newIndex; !token.IsCancellationRequested && backgroundTaskFailure is null; await applyTrigger.WaitAsync().ConfigureAwait(false))
         {
             newIndex = LastCommittedEntryIndex;
 
@@ -53,7 +52,7 @@ partial class WriteAheadLog
     /// </summary>
     public long LastAppliedIndex
     {
-        get => Volatile.Read(in appliedIndex);
+        get => Atomic.Read(in appliedIndex);
         
         private set
         {

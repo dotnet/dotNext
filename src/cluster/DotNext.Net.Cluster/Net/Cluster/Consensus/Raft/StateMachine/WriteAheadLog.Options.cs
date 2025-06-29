@@ -11,12 +11,38 @@ using Threading;
 partial class WriteAheadLog
 {
     /// <summary>
+    /// Represents the type of the memory used by the WAL internals
+    /// to keep the written log entries.
+    /// </summary>
+    public enum MemoryManagementStrategy
+    {
+        /// <summary>
+        /// Log entries are written directly to the memory-mapped file representing
+        /// log chunk.
+        /// </summary>
+        /// <remarks>
+        /// This is balanced strategy because the OS can swap out pages automatically
+        /// in the case of the memory pressure, as well as flush written log entries
+        /// in the background.
+        /// </remarks>
+        SharedMemory = 0,
+        
+        /// <summary>
+        /// Log entries are written to the temporary private buffer.
+        /// </summary>
+        /// <remarks>
+        /// This strategy is more RAM hungry, but it provides the best write performance.
+        /// </remarks>
+        PrivateMemory,
+    }
+    
+    /// <summary>
     /// Represents configuration options.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
     public class Options
     {
-        private readonly int chunkMaxSize = Environment.SystemPageSize;
+        private readonly int chunkSize = Environment.SystemPageSize;
         private readonly int concurrencyLevel = Environment.ProcessorCount * 2 + 1;
         private readonly string location = string.Empty;
         private readonly TimeSpan flushInterval;
@@ -58,18 +84,18 @@ partial class WriteAheadLog
         /// Gets or sets the maximum size of the single chunk file, in bytes.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
-        public int ChunkMaxSize
+        public int ChunkSize
         {
-            get => chunkMaxSize;
+            get => chunkSize;
             init
             {
-                chunkMaxSize = value > 0
+                chunkSize = value > 0
                     ? RoundUpToPageSize(value)
                     : throw new ArgumentOutOfRangeException(nameof(value));
                 
                 static int RoundUpToPageSize(int value)
                 {
-                    var result = ((uint)value).RoundUp((uint)Page.MinPageSize);
+                    var result = ((uint)value).RoundUp((uint)Page.MinSize);
                     return checked((int)result);
                 }
             }
@@ -93,6 +119,11 @@ partial class WriteAheadLog
             get;
             init;
         }
+        
+        /// <summary>
+        /// Gets or sets the memory management strategy.
+        /// </summary>
+        public MemoryManagementStrategy MemoryManagement { get; init; }
         
         /// <summary>
         /// Gets or sets a list of tags to be associated with each measurement.

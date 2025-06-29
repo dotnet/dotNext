@@ -8,6 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Runtime.CompilerServices;
+using Threading;
 
 /// <summary>
 /// Represents memory-based state machine with snapshotting support.
@@ -254,7 +255,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             sessionManager.Return(session);
         }
 
-        Volatile.Write(ref lastTerm, snapshot.Term);
+        Atomic.Write(ref lastTerm, snapshot.Term);
         LastAppliedEntryIndex = snapshotIndex;
         await PersistInternalStateAsync(InternalStateScope.IndexesAndSnapshot).ConfigureAwait(false);
         OnCommit(1L);
@@ -722,7 +723,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
 
                 var entry = partition.Read(sessionId, startIndex);
                 await ApplyCoreAsync(entry).ConfigureAwait(false);
-                Volatile.Write(ref lastTerm, entry.Term);
+                Atomic.Write(ref lastTerm, entry.Term);
                 partition.ClearContext(startIndex);
 
                 if (evictOnCommit && bufferManager.IsCachingEnabled)
@@ -766,7 +767,7 @@ public abstract partial class MemoryBasedStateMachine : PersistentState
             {
                 entry = new(in SnapshotInfo) { ContentReader = snapshot[session] };
                 await ApplyCoreAsync(entry).ConfigureAwait(false);
-                Volatile.Write(ref lastTerm, entry.Term);
+                Atomic.Write(ref lastTerm, entry.Term);
                 startIndex = entry.Index;
             }
             else

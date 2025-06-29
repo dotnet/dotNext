@@ -37,12 +37,7 @@ partial class WriteAheadLog
         if (!metadataPages.TryGetMetadata(toIndex, out var metadata))
             return;
 
-        var toPage = dataPages.GetPageIndex(metadata.End, out _);
-        var removedBytes = dataPages.Delete(toPage) * (long)dataPages.PageSize;
-
-        toPage = metadataPages.GetEndPageIndex(toIndex);
-        removedBytes += metadataPages.Delete(toPage) * (long)MetadataPageManager.PageSize;
-
+        var removedBytes = dataPages.DeletePages(metadata.End) + metadataPages.DeletePages(toIndex);
         if (removedBytes > 0L)
             BytesDeletedMeter.Record(removedBytes, measurementTags);
     }

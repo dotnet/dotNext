@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -111,6 +112,44 @@ public static class UnmanagedMemory
 
         return size is 0 ? UnmanagedMemory<byte>.Empty() : new SystemPageManager(size, roundUpSize);
     }
+
+    /// <summary>
+    /// Calculates the page aligned offset for the specified memory block.
+    /// </summary>
+    /// <param name="memory">The memory block.</param>
+    /// <param name="offset">The offset to the page-aligned element.</param>
+    /// <returns><see langword="true"/> if the <paramref name="offset"/> within the memory range; otherwise, <see langword="false"/>.</returns>
+    public static unsafe bool GetPageAlignedOffset(ReadOnlySpan<byte> memory, out int offset)
+    {
+        nuint pageSize = (uint)Environment.SystemPageSize;
+        fixed (void* ptr = memory)
+        {
+            var address = (nuint)ptr;
+            var alignedAddress = address - (address & ((uint)Environment.SystemPageSize - 1));
+            alignedAddress = address == alignedAddress ? alignedAddress : alignedAddress + pageSize;
+
+            offset = (int)(alignedAddress - address);
+        }
+
+        return offset < memory.Length;
+    }
+
+    /// <summary>
+    /// Returns the backing RAM back to the OS.
+    /// </summary>
+    /// <param name="memoryBlock">A region of the virtual memory.</param>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// The length or the offset of <paramref name="memoryBlock"/> is not page-aligned.
+    /// </exception>
+    /// <seealso cref="AllocateSystemPages"/>
+    public static unsafe void Discard<T>(Span<T> memoryBlock)
+        where T : unmanaged
+    {
+        fixed (void* ptr = memoryBlock)
+        {
+            SystemPageManager.Discard((nint)ptr, memoryBlock.Length);
+        }
+    }
 }
 
 internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
@@ -220,6 +259,27 @@ internal class UnmanagedMemoryOwner<T> : UnmanagedMemory<T>, IUnmanagedMemory<T>
 
 file sealed unsafe class SystemPageManager : UnmanagedMemory<byte>
 {
+    private static readonly nint VirtualMemoryManagementFunc;
+
+    static SystemPageManager()
+    {
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
+        {
+            // Since glibc 2.6, POSIX_MADV_DONTNEED is treated as a no-op due to destructive semantics of the flag.
+            // Therefore, madvise is used instead.
+            NativeLibrary.TryGetExport(NativeLibrary.GetMainProgramHandle(), "madvise", out VirtualMemoryManagementFunc);
+        }
+        else if (OperatingSystem.IsWindows())
+        {
+            if (NativeLibrary.TryLoad("kernel32.dll", out var libraryHandle))
+                NativeLibrary.TryGetExport(libraryHandle, "DiscardVirtualMemory", out VirtualMemoryManagementFunc);
+        }
+        else
+        {
+            VirtualMemoryManagementFunc = 0;
+        }
+    }
+    
     internal SystemPageManager(int pageCount)
         : base(Allocate(pageCount, out var length), length)
     {
@@ -228,6 +288,40 @@ file sealed unsafe class SystemPageManager : UnmanagedMemory<byte>
     internal SystemPageManager(int sizeInBytes, bool roundUp)
         : base(Allocate(ref sizeInBytes, roundUp), sizeInBytes)
     {
+    }
+    
+    private static bool IsPageAligned(nint value)
+        => (value & (Environment.SystemPageSize - 1)) is 0;
+
+    internal static void Discard(nint address, nint length)
+    {
+        if (!IsPageAligned(address))
+            throw new ArgumentOutOfRangeException(nameof(address));
+
+        if (!IsPageAligned(length))
+            throw new ArgumentOutOfRangeException(nameof(length));
+        
+        if (VirtualMemoryManagementFunc is 0)
+            return;
+
+        int errorCode;
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS() || OperatingSystem.IsFreeBSD())
+        {
+            const int MADV_DONTNEED = 4;
+
+            var madvise = (delegate*unmanaged<nint, nint, int, int>)VirtualMemoryManagementFunc;
+
+            errorCode = madvise(address, length, MADV_DONTNEED);
+            if (errorCode is not 0)
+                throw new ExternalException(ExceptionMessages.UnableToDiscardMemory, errorCode);
+        }
+        else if (OperatingSystem.IsWindows())
+        {
+            var discardVirtualMemory = (delegate*unmanaged<nint, nint, int>)VirtualMemoryManagementFunc;
+            errorCode = discardVirtualMemory(address, length);
+            if (errorCode is not 0)
+                throw new Win32Exception(errorCode, ExceptionMessages.UnableToDiscardMemory);
+        }
     }
 
     protected override void Dispose(bool disposing)

@@ -9,5 +9,5 @@ internal static class Sentinel
 
     // The struct is needed to avoid false positives caused by the type check on the variable that stores singleton
     [StructLayout(LayoutKind.Auto)]
-    private struct Dummy;
+    private readonly struct Dummy;
 }

@@ -68,17 +68,12 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         where TFactory : ISupplier<Exception?>
     {
         bool result;
-        EnterLock();
-        try
+        lock (SyncRoot)
         {
             result = versionAndStatus.CanBeCompleted(completionToken);
 
             if (!result || !SetResult(factory.Invoke(), completionData))
                 goto exit;
-        }
-        finally
-        {
-            ExitLock();
         }
 
         Resume();

@@ -1,6 +1,33 @@
 Release Notes
 ====
 
+# 06-29-2025
+<a href="https://www.nuget.org/packages/dotnext/5.23.0">DotNext 5.23.0</a>
+* Added `Atomic.Read` and `Atomic.Write` methods for **long** and **ulong** data types for cross-architecture support of atomic reads/writes
+* Fixed compatibility with 32-bit arch for `Timstamp` data type
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.23.0">DotNext.Metaprogramming 5.23.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.23.0">DotNext.Unsafe 5.23.0</a>
+* Added `UnmanagedMemory<T>` data type that provides allocation of the blittable value in the unmanaged memory in CLS-compliant manner
+* Introduced `UnmanagedMemory.Discard` static method for detaching of the physical memory from the virtual memory page
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.23.0">DotNext.Threading 5.23.0</a>
+* Fixed compatibility with 32-bit arch for asynchronous primitives and `IndexPool` data type
+* Replaced spin wait with the monitor lock for value task sources
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.23.0">DotNext.IO 5.23.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.23.0">DotNext.Net.Cluster 5.23.0</a>
+* Introduced private memory allocation type for `WriteAheadLog` class
+* Added support of Linux Transparent Huge Pages for `WriteAheadLog` class when private memory allocation is enabled
+* `WriteAheadLog.FlushAsync` ensures that the background flush is completed
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.23.0">DotNext.AspNetCore.Cluster 5.23.0</a>
+* Updated dependencies
+
 # 05-30-2025
 <a href="https://www.nuget.org/packages/dotnext/5.22.0">DotNext 5.22.0</a>
 * Added `!` operator overloading for the result and optional types: [261](https://github.com/dotnet/dotNext/pull/261)

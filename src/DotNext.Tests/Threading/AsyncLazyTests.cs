@@ -1,5 +1,6 @@
 ﻿namespace DotNext.Threading;
 
+[Collection(TestCollections.AsyncPrimitives)]
 public sealed class AsyncLazyTests : Test
 {
     [Fact]

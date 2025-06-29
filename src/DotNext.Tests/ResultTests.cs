@@ -254,4 +254,15 @@ public sealed class ResultTests : Test
         result = Result.FromException<int>(new ArithmeticException());
         Throws<ArithmeticException>(() => result.ValueRef);
     }
+
+    [Fact]
+    public static void NonNullResult()
+    {
+        var result = default(Result<string>).EnsureNotNull();
+        False(result.IsSuccessful);
+        Throws<NullReferenceException>(() => result.Value);
+
+        result = Result.FromValue("").EnsureNotNull();
+        True(result.IsSuccessful);
+    }
 }

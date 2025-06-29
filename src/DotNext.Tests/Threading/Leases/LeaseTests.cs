@@ -1,6 +1,7 @@
 
 namespace DotNext.Threading.Leases;
 
+[Collection(TestCollections.AdvancedSynchronization)]
 public sealed class LeaseTests : Test
 {
     [Fact]
@@ -95,8 +96,9 @@ public sealed class LeaseTests : Test
         False(consumer.Token.IsCancellationRequested);
         False(consumer.Expiration.IsExpired);
 
-        await Task.Delay(400);
-        True(consumer.Token.IsCancellationRequested);
+        await consumer.Token.WaitAsync();
+        await Task.Delay(provider.TimeToLive);
+        
         False(await consumer.ReleaseAsync());
     }
 
@@ -130,7 +132,7 @@ public sealed class LeaseTests : Test
         await using var consumer = new TestLeaseConsumer(provider);
         True(await consumer.TryAcquireAsync());
 
-        var result = await consumer.ExecuteAsync(Worker);
+        var result = await InvokeAsThread(() => consumer.ExecuteAsync(Worker));
         Equal(42, result);
 
         static async Task<int> Worker(CancellationToken token)
@@ -179,7 +181,7 @@ public sealed class LeaseTests : Test
         private readonly AsyncReaderWriterLock syncRoot = new();
         private State currentState;
 
-        internal CancellationToken Token => base.LifetimeToken;
+        internal CancellationToken Token => LifetimeToken;
 
         protected override async ValueTask<State> GetStateAsync(CancellationToken token)
         {

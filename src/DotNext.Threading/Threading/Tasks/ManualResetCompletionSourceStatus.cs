@@ -3,7 +3,7 @@ namespace DotNext.Threading.Tasks;
 /// <summary>
 /// Represents status of <see cref="ManualResetCompletionSource"/>.
 /// </summary>
-public enum ManualResetCompletionSourceStatus
+public enum ManualResetCompletionSourceStatus : short
 {
     /// <summary>
     /// The source is ready to use.

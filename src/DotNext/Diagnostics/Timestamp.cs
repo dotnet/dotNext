@@ -251,7 +251,7 @@ public readonly record struct Timestamp :
     /// <param name="location">The managed pointer to the timestamp.</param>
     /// <returns>The value at the specified location.</returns>
     public static Timestamp VolatileRead(ref readonly Timestamp location)
-        => new(Volatile.Read(in location.ticks));
+        => new(Atomic.Read(in location.ticks));
 
     /// <summary>
     /// Writes the timestamp and prevents the processor from reordering memory operations.
@@ -259,7 +259,7 @@ public readonly record struct Timestamp :
     /// <param name="location">The managed pointer to the timestamp.</param>
     /// <param name="newValue">The value to write.</param>
     public static void VolatileWrite(ref Timestamp location, Timestamp newValue)
-        => Volatile.Write(ref Unsafe.AsRef(in location.ticks), newValue.ticks);
+        => Atomic.Write(ref Unsafe.AsRef(in location.ticks), newValue.ticks);
 
     /// <summary>
     /// Updates the timestamp to the current point in time and prevents the processor from reordering memory operations.
@@ -274,7 +274,7 @@ public readonly record struct Timestamp :
     /// <param name="location">The location of the timestamp to update.</param>
     /// <param name="provider">Time provider.</param>
     public static void Refresh(ref Timestamp location, TimeProvider provider)
-        => Volatile.Write(ref Unsafe.AsRef(in location.ticks), Math.Max(1L, provider.GetTimestamp()));
+        => Atomic.Write(ref Unsafe.AsRef(in location.ticks), Math.Max(1L, provider.GetTimestamp()));
 
     /// <inheritdoc cref="IInterlockedOperations{T}.CompareExchange(ref T, T, T)"/>
     public static Timestamp CompareExchange(ref Timestamp location, Timestamp value, Timestamp comparand)

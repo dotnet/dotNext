@@ -8,6 +8,7 @@ using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
+using Threading;
 using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 using IntegrityException = IO.Log.IntegrityException;
 
@@ -146,37 +147,37 @@ public partial class PersistentState
 
         internal long CommitIndex
         {
-            get => Volatile.Read(in commitIndex);
+            get => Atomic.Read(in commitIndex);
             set
             {
                 WriteInt64LittleEndian(buffer.Span.Slice(CommitIndexOffset), value);
-                Volatile.Write(ref commitIndex, value);
+                Atomic.Write(ref commitIndex, value);
             }
         }
 
         internal long LastApplied
         {
-            get => Volatile.Read(in lastApplied);
+            get => Atomic.Read(in lastApplied);
             set
             {
                 WriteInt64LittleEndian(buffer.Span.Slice(LastAppliedOffset), value);
-                Volatile.Write(ref lastApplied, value);
+                Atomic.Write(ref lastApplied, value);
             }
         }
 
         internal long LastIndex
         {
-            get => Volatile.Read(in lastIndex);
+            get => Atomic.Read(in lastIndex);
             set
             {
                 WriteInt64LittleEndian(buffer.Span.Slice(LastIndexOffset), value);
-                Volatile.Write(ref lastIndex, value);
+                Atomic.Write(ref lastIndex, value);
             }
         }
 
         internal long TailIndex => LastIndex + 1L;
 
-        internal long Term => Volatile.Read(in term);
+        internal long Term => Atomic.Read(in term);
 
         internal void UpdateTerm(long value, bool resetLastVote)
         {
@@ -187,7 +188,7 @@ public partial class PersistentState
                 buffer[LastVotePresenceOffset] = False;
             }
 
-            Volatile.Write(ref term, value);
+            Atomic.Write(ref term, value);
         }
 
         internal long IncrementTerm(ClusterMemberId id)

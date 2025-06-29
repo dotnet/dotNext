@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
@@ -9,53 +10,52 @@ namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Diagnostics;
 using IO.Log;
-using Runtime.CompilerServices;
 using Threading;
 
 partial class WriteAheadLog
 {
-    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
-    private readonly AsyncAutoResetEvent flushTrigger;
-
-    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
-    private readonly SingleProducerMultipleConsumersCoordinator manualFlushQueue;
+    private readonly AsyncAutoResetEventSlim? flushTrigger, flushCompleted;
     private readonly Task flusherTask;
-    private readonly bool flushOnCommit;
-    private Checkpoint checkpoint;
+    private readonly WeakReference<Task?> cleanupTask = new(target: null, trackResurrection: false);
     
+    private Checkpoint checkpoint;
     private long commitIndex; // Commit lock protects modification of this field
+    private long flusherPreviousIndex, flusherOldSnapshot;
 
-    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
-    private async Task FlushAsync(long previousIndex, TimeSpan timeout, CancellationToken token)
+    private async Task FlushAsync<T>(T flushTrigger, CancellationToken token)
+        where T : struct, IFlushTrigger
     {
+        if (T.IsBackground)
+            await Task.Yield();
+        
         // Weak ref tracks the task, but allows GC to collect associated state machine
         // as soon as possible. While the task is running, it cannot be collected, because it's referenced
         // by the async state machine.
-        var cleanupTask = GCHandle.Alloc(Task.CompletedTask, GCHandleType.Weak);
         try
         {
-            for (long newIndex, oldSnapshot = SnapshotIndex, newSnapshot;
-                 !token.IsCancellationRequested && backgroundTaskFailure is null;
-                 previousIndex = long.Max(oldSnapshot = newSnapshot, newIndex) + 1L)
+            if (T.IsBackground)
             {
-                newSnapshot = SnapshotIndex;
-                newIndex = LastCommittedEntryIndex;
-                manualFlushQueue.SwitchValve();
+                flusherOldSnapshot = SnapshotIndex;
+            }
 
-                if (newIndex >= previousIndex)
+            while (!token.IsCancellationRequested && backgroundTaskFailure is null)
+            {
+                var newSnapshot = SnapshotIndex;
+                var newIndex = LastCommittedEntryIndex;
+
+                if (newIndex >= flusherPreviousIndex)
                 {
                     // Ensure that the flusher is not running with the snapshot installation process concurrently
                     lockManager.SetCallerInformation("Flush Pages");
                     await lockManager.AcquireReadLockAsync(token).ConfigureAwait(false);
                     try
                     {
-                        Flush(previousIndex, newIndex);
-                    }
-                    catch (Exception e)
-                    {
-                        backgroundTaskFailure = ExceptionDispatchInfo.Capture(e);
-                        appliedEvent.Interrupt(e);
-                        break;
+                        var ts = new Timestamp();
+                        await Flush(flusherPreviousIndex, newIndex, token).ConfigureAwait(false);
+
+                        // everything up to toIndex is flushed, save the commit index
+                        await checkpoint.UpdateAsync(newIndex, token).ConfigureAwait(false);
+                        FlushDurationMeter.Record(ts.ElapsedMilliseconds);
                     }
                     finally
                     {
@@ -63,65 +63,89 @@ partial class WriteAheadLog
                     }
                 }
 
-                if (cleanupTask.Target is null or Task { IsCompletedSuccessfully: true } && oldSnapshot < newSnapshot)
-                    cleanupTask.Target = CleanUpAsync(newSnapshot, token);
+                if ((!cleanupTask.TryGetTarget(out var task) || task.IsCompletedSuccessfully) && flusherOldSnapshot < newSnapshot)
+                    cleanupTask.SetTarget(CleanUpAsync(newSnapshot, lifetimeToken));
 
-                manualFlushQueue.Drain();
-                await flushTrigger.WaitAsync(timeout, token).ConfigureAwait(false);
+                flushTrigger.NotifyCompleted();
+                Atomic.Write(ref flusherPreviousIndex, long.Max(flusherOldSnapshot = newSnapshot, newIndex) + 1L);
+                if (!await flushTrigger.WaitAsync(token).ConfigureAwait(false))
+                    break;
             }
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == token && cleanupTask.Target is Task target)
+        catch (OperationCanceledException e) when (T.IsBackground && e.CancellationToken == token)
         {
-            await target.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+            // suspend
+        }
+        catch (Exception e) when (T.IsBackground)
+        {
+            backgroundTaskFailure = ExceptionDispatchInfo.Capture(e);
+            appliedEvent.Interrupt(e);
         }
         finally
         {
-            cleanupTask.Free();
+            (flushTrigger as IDisposable)?.Dispose();
         }
     }
 
-    private void Flush(long fromIndex, long toIndex)
+    private Task Flush(long fromIndex, long toIndex, CancellationToken token)
     {
-        var ts = new Timestamp();
-        FlushMetadataPages(metadataPages, fromIndex, toIndex);
+        var metadataTask = metadataPages.FlushAsync(fromIndex, toIndex, token).AsTask();
 
         var toMetadata = metadataPages[toIndex];
         var fromMetadata = metadataPages[fromIndex];
-        FlushDataPages(dataPages, fromMetadata.Offset, toMetadata.End);
-        FlushDurationMeter.Record(ts.ElapsedMilliseconds);
-
-        // everything up to toIndex is flushed, save the commit index
-        checkpoint.Value = toIndex;
+        var dataTask = dataPages.FlushAsync(fromMetadata.Offset, toMetadata.End, token).AsTask();
 
         FlushRateMeter.Add(toIndex - fromIndex, measurementTags);
+        return Task.WhenAll(metadataTask, dataTask);
     }
 
-    private static void FlushMetadataPages(MetadataPageManager metadataPages, long fromIndex, long toIndex)
+    private async Task EnsureFlushedAsync(CancellationToken token)
     {
-        var fromPage = metadataPages.GetStartPageIndex(fromIndex);
-        var toPage = metadataPages.GetEndPageIndex(toIndex);
+        Debug.Assert(flushCompleted is not null);
 
-        for (var pageIndex = fromPage; pageIndex <= toPage; pageIndex++)
+        var linkedTokenSource = token.LinkTo(lifetimeToken);
+        var registration = token.UnsafeRegister(Signal, flushCompleted);
+        try
         {
-            if (metadataPages.TryGetValue(pageIndex, out var page))
+            while (Atomic.Read(in flusherPreviousIndex) < LastCommittedEntryIndex)
             {
-                page.Flush();
+                await flushCompleted.WaitAsync().ConfigureAwait(false);
+                if (token.IsCancellationRequested)
+                    ThrowWhenCanceled(linkedTokenSource, token);
             }
+        }
+        finally
+        {
+            await registration.DisposeAsync().ConfigureAwait(false);
+            linkedTokenSource?.Dispose();
+        }
+
+        static void Signal(object? state)
+        {
+            Debug.Assert(state is AsyncAutoResetEventSlim);
+
+            Unsafe.As<AsyncAutoResetEventSlim>(state).Set();
         }
     }
-
-    private static void FlushDataPages(PageManager dataPages, ulong fromAddress, ulong toAddress)
+    
+    [DoesNotReturn]
+    private void ThrowWhenCanceled(LinkedCancellationTokenSource? cts, CancellationToken token)
     {
-        var fromPage = dataPages.GetPageIndex(fromAddress, out _);
-        var toPage = dataPages.GetPageIndex(toAddress, out _);
-
-        for (var pageIndex = fromPage; pageIndex <= toPage; pageIndex++)
+        CancellationToken sourceToken;
+        if (cts is null)
         {
-            if (dataPages.TryGetValue(pageIndex, out var page))
-            {
-                page.Flush();
-            }
+            sourceToken = token;
         }
+        else if (cts.CancellationOrigin == lifetimeToken)
+        {
+            throw new ObjectDisposedException(GetType().Name);
+        }
+        else
+        {
+            sourceToken = cts.CancellationOrigin;
+        }
+
+        throw new OperationCanceledException(sourceToken);
     }
 
     /// <summary>
@@ -130,28 +154,16 @@ partial class WriteAheadLog
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous state of the operation.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public ValueTask FlushAsync(CancellationToken token = default)
-    {
-        ValueTask task;
-
-        if (IsDisposingOrDisposed)
-        {
-            task = new(DisposedTask);
-        }
-        else
-        {
-            task = manualFlushQueue.WaitAsync(token);
-            flushTrigger.Set();
-        }
-
-        return task;
-    }
+    public Task FlushAsync(CancellationToken token = default)
+        => flushCompleted is null
+            ? FlushAsync<ForegroundTrigger>(new(), token)
+            : EnsureFlushedAsync(token);
 
     /// <inheritdoc cref="IAuditTrail.LastCommittedEntryIndex"/>
     public long LastCommittedEntryIndex
     {
-        get => Volatile.Read(in commitIndex);
-        private set => Volatile.Write(ref commitIndex, value);
+        get => Atomic.Read(in commitIndex);
+        private set => Atomic.Write(ref commitIndex, value);
     }
     
     private long Commit(long index)
@@ -172,11 +184,69 @@ partial class WriteAheadLog
     [MethodImpl(MethodImplOptions.NoInlining)]
     private void OnCommitted(long count)
     {
-        if (flushOnCommit)
-            flushTrigger.Set();
-
         applyTrigger.Set();
+        flushTrigger?.Set();
         CommitRateMeter.Add(count, measurementTags);
+    }
+    
+    private interface IFlushTrigger
+    {
+        ValueTask<bool> WaitAsync(CancellationToken token);
+
+        void NotifyCompleted();
+
+        static virtual bool IsBackground => true;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct BackgroundTrigger : IFlushTrigger
+    {
+        private readonly AsyncAutoResetEventSlim flushTrigger, flushNotification;
+        
+        public BackgroundTrigger(AsyncAutoResetEventSlim resetEvent, out AsyncAutoResetEventSlim notification)
+        {
+            flushTrigger = resetEvent;
+            notification = flushNotification = new();
+        }
+        
+        ValueTask<bool> IFlushTrigger.WaitAsync(CancellationToken token)
+            => flushTrigger.WaitAsync();
+
+        void IFlushTrigger.NotifyCompleted() => flushNotification.Set();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    [SuppressMessage("Usage", "CA1001", Justification = "False positive")]
+    private readonly struct TimeoutTrigger : IFlushTrigger, IDisposable
+    {
+        private readonly PeriodicTimer timer;
+        private readonly AsyncAutoResetEventSlim flushNotification;
+
+        public TimeoutTrigger(TimeSpan timeout, out AsyncAutoResetEventSlim notification)
+        {
+            timer = new(timeout);
+            notification = flushNotification = new();
+        }
+        
+        ValueTask<bool> IFlushTrigger.WaitAsync(CancellationToken token)
+            => timer.WaitForNextTickAsync(token);
+
+        void IFlushTrigger.NotifyCompleted() => flushNotification.Set();
+
+        void IDisposable.Dispose() => timer.Dispose();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct ForegroundTrigger : IFlushTrigger
+    {
+        ValueTask<bool> IFlushTrigger.WaitAsync(CancellationToken token)
+            => ValueTask.FromResult(false);
+
+        void IFlushTrigger.NotifyCompleted()
+        {
+        }
+
+        static bool IFlushTrigger.IsBackground => false;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -185,44 +255,29 @@ partial class WriteAheadLog
         private const string FileName = "checkpoint";
 
         private readonly SafeFileHandle handle;
-        private long checkpoint;
+        private readonly byte[] buffer;
 
-        internal Checkpoint(DirectoryInfo location)
+        internal Checkpoint(DirectoryInfo location, out long value)
         {
             var path = Path.Combine(location.FullName, FileName);
-            long preallocationSize;
-            FileMode mode;
 
-            if (File.Exists(path))
+            // read the checkpoint
+            using (var readHandle = File.OpenHandle(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
-                preallocationSize = 0L;
-                mode = FileMode.Open;
-            }
-            else
-            {
-                preallocationSize = sizeof(long);
-                mode = FileMode.CreateNew;
+                Span<byte> readBuf = stackalloc byte[sizeof(long)];
+                value = RandomAccess.Read(readHandle, readBuf, 0L) >= sizeof(long)
+                    ? BinaryPrimitives.ReadInt64LittleEndian(readBuf)
+                    : 0L;
             }
 
-            handle = File.OpenHandle(path, mode, FileAccess.ReadWrite, FileShare.Read, FileOptions.WriteThrough, preallocationSize);
-
-            Span<byte> buffer = stackalloc byte[sizeof(long)];
-            checkpoint = RandomAccess.Read(handle, buffer, 0L) >= sizeof(long)
-                ? BinaryPrimitives.ReadInt64LittleEndian(buffer)
-                : 0L;
+            handle = File.OpenHandle(path, FileMode.Open, FileAccess.Write, options: FileOptions.Asynchronous | FileOptions.WriteThrough);
+            buffer = GC.AllocateArray<byte>(sizeof(long), pinned: true);
         }
 
-        internal long Value
+        public ValueTask UpdateAsync(long value, CancellationToken token)
         {
-            readonly get => checkpoint;
-
-            [SkipLocalsInit]
-            set
-            {
-                Span<byte> buffer = stackalloc byte[sizeof(long)];
-                BinaryPrimitives.WriteInt64LittleEndian(buffer, checkpoint = value);
-                RandomAccess.Write(handle, buffer, fileOffset: 0L);
-            }
+            BinaryPrimitives.WriteInt64LittleEndian(buffer, value);
+            return RandomAccess.WriteAsync(handle, buffer, fileOffset: 0L, token);
         }
 
         public void Dispose()

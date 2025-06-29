@@ -184,34 +184,40 @@ public sealed class SynchronizationTests : Test
     public static void SynchronousWait()
     {
         var cts = new TaskCompletionSource();
-        var task = new ValueTask(cts.Task);
-        ThreadPool.UnsafeQueueUserWorkItem(static cts =>
+        var thread = new Thread(() =>
         {
-            Thread.Sleep(100);
-            cts.SetResult();
-        }, cts, preferLocal: false);
-        task.Wait();
+            var task = new ValueTask(cts.Task);
+            task.Wait();
+            
+            // ensure that the current thread in not interrupted
+            Thread.Sleep(0);
+        });
         
-        // ensure that the current thread in not interrupted
-        Thread.Sleep(0);
+        thread.Start();
+        Thread.Sleep(100);
+
+        cts.TrySetResult();
+        thread.Join();
     }
-    
+
     [Fact]
     public static void SynchronousWaitWithResult()
     {
-        var cts = new TaskCompletionSource<int>();
-        var task = new ValueTask<int>(cts.Task);
-
         const int expected = 42;
-        ThreadPool.UnsafeQueueUserWorkItem(static cts =>
+        var cts = new TaskCompletionSource<int>();
+        var thread = new Thread(() =>
         {
-            Thread.Sleep(100);
-            cts.SetResult(expected);
-        }, cts, preferLocal: false);
-        
-        Equal(expected, task.Wait());
-        
-        // ensure that the current thread in not interrupted
-        Thread.Sleep(0);
+            var task = new ValueTask<int>(cts.Task);
+            Equal(expected, task.Wait());
+
+            // ensure that the current thread in not interrupted
+            Thread.Sleep(0);
+        });
+
+        thread.Start();
+        Thread.Sleep(100);
+
+        cts.TrySetResult(42);
+        thread.Join();
     }
 }

@@ -8,7 +8,7 @@
     <Nullable>enable</Nullable>
     <IsAotCompatible>true</IsAotCompatible>
     <Features>nullablePublicOnly</Features>
-    <VersionPrefix>5.22.0</VersionPrefix>
+    <VersionPrefix>5.23.0</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>
@@ -64,6 +64,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
     <ProjectReference Include="..\..\DotNext.Threading\DotNext.Threading.csproj" />
     <ProjectReference Include="..\..\DotNext.IO\DotNext.IO.csproj" />
+    <ProjectReference Include="..\..\DotNext.Unsafe\DotNext.Unsafe.csproj" />
   </ItemGroup>
 
   <ItemGroup>
