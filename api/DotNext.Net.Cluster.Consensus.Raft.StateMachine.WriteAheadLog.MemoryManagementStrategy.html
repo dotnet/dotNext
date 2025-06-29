@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Enum ManualResetCompletionSourceStatus | .NEXT </title>
+    <title>Enum WriteAheadLog.MemoryManagementStrategy | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Enum ManualResetCompletionSourceStatus | .NEXT ">
+    <meta name="title" content="Enum WriteAheadLog.MemoryManagementStrategy | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,20 +65,21 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSourceStatus">
+            <article class="content wrap" id="_content" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy">
 
 
 
 
-  <h1 id="DotNext_Threading_Tasks_ManualResetCompletionSourceStatus" data-uid="DotNext.Threading.Tasks.ManualResetCompletionSourceStatus" class="text-break">Enum ManualResetCompletionSourceStatus</h1>
-  <div class="markdown level0 summary"><p>Represents status of <a class="xref" href="DotNext.Threading.Tasks.ManualResetCompletionSource.html">ManualResetCompletionSource</a>.</p>
+  <h1 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_MemoryManagementStrategy" data-uid="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy" class="text-break">Enum WriteAheadLog.MemoryManagementStrategy</h1>
+  <div class="markdown level0 summary"><p>Represents the type of the memory used by the WAL internals
+to keep the written log entries.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a>.<a class="xref" href="DotNext.Threading.Tasks.html">Tasks</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
-  <h5 id="DotNext_Threading_Tasks_ManualResetCompletionSourceStatus_syntax">Syntax</h5>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Net.html">Net</a>.<a class="xref" href="DotNext.Net.Cluster.html">Cluster</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.html">Consensus</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.html">Raft</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.html">StateMachine</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_MemoryManagementStrategy_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public enum ManualResetCompletionSourceStatus : short</code></pre>
+    <pre><code class="lang-csharp hljs">public enum WriteAheadLog.MemoryManagementStrategy</code></pre>
   </div>
   <h3 id="fields">Fields
 </h3>
@@ -91,51 +92,42 @@
     <thead>
     </thead></thead><tbody>
       <tr>
-        <td id="DotNext_Threading_Tasks_ManualResetCompletionSourceStatus_Activated">Activated</td>
-        <td><p>The task is constructed.</p>
+        <td id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_MemoryManagementStrategy_PrivateMemory">PrivateMemory</td>
+        <td><p>Log entries are written to the temporary private buffer.</p>
 </td>
       </tr>
       <tr>
-        <td id="DotNext_Threading_Tasks_ManualResetCompletionSourceStatus_Consumed">Consumed</td>
-        <td><p>The task has been consumed to the source can be reset to its initial state.</p>
-</td>
-      </tr>
-      <tr>
-        <td id="DotNext_Threading_Tasks_ManualResetCompletionSourceStatus_WaitForActivation">WaitForActivation</td>
-        <td><p>The source is ready to use.</p>
-</td>
-      </tr>
-      <tr>
-        <td id="DotNext_Threading_Tasks_ManualResetCompletionSourceStatus_WaitForConsumption">WaitForConsumption</td>
-        <td><p>The source has been completed and waiting for consumption of the result.</p>
+        <td id="DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_MemoryManagementStrategy_SharedMemory">SharedMemory</td>
+        <td><p>Log entries are written directly to the memory-mapped file representing
+log chunk.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;ManualResetCompletionSourceStatus, TLowerBound, TUpperBound&gt;(ManualResetCompletionSourceStatus, TLowerBound, TUpperBound)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;WriteAheadLog.MemoryManagementStrategy, TLowerBound, TUpperBound&gt;(WriteAheadLog.MemoryManagementStrategy, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;ManualResetCompletionSourceStatus&gt;(ManualResetCompletionSourceStatus, ReadOnlySpan&lt;ManualResetCompletionSourceStatus&gt;)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;WriteAheadLog.MemoryManagementStrategy&gt;(WriteAheadLog.MemoryManagementStrategy, ReadOnlySpan&lt;WriteAheadLog.MemoryManagementStrategy&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerator__2___0_System_Threading_CancellationToken_">Collection.ToAsyncEnumerator&lt;ManualResetCompletionSourceStatus, T&gt;(ManualResetCompletionSourceStatus, CancellationToken)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerator__2___0_System_Threading_CancellationToken_">Collection.ToAsyncEnumerator&lt;WriteAheadLog.MemoryManagementStrategy, T&gt;(WriteAheadLog.MemoryManagementStrategy, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToClassicEnumerator__2___0_">Collection.ToClassicEnumerator&lt;ManualResetCompletionSourceStatus, T&gt;(ManualResetCompletionSourceStatus)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToClassicEnumerator__2___0_">Collection.ToClassicEnumerator&lt;WriteAheadLog.MemoryManagementStrategy, T&gt;(WriteAheadLog.MemoryManagementStrategy)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;ManualResetCompletionSourceStatus, T&gt;(ref ManualResetCompletionSourceStatus, int)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;WriteAheadLog.MemoryManagementStrategy, T&gt;(ref WriteAheadLog.MemoryManagementStrategy, int)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;ManualResetCompletionSourceStatus&gt;(ManualResetCompletionSourceStatus)</a>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;WriteAheadLog.MemoryManagementStrategy&gt;(WriteAheadLog.MemoryManagementStrategy)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Reflection.EnumType.html#DotNext_Reflection_EnumType_GetCustomAttribute__2___0_">EnumType.GetCustomAttribute&lt;ManualResetCompletionSourceStatus, TAttribute&gt;(ManualResetCompletionSourceStatus)</a>
+      <a class="xref" href="DotNext.Reflection.EnumType.html#DotNext_Reflection_EnumType_GetCustomAttribute__2___0_">EnumType.GetCustomAttribute&lt;WriteAheadLog.MemoryManagementStrategy, TAttribute&gt;(WriteAheadLog.MemoryManagementStrategy)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Reflection.EnumType.html#DotNext_Reflection_EnumType_GetCustomAttributes__2___0_">EnumType.GetCustomAttributes&lt;ManualResetCompletionSourceStatus, TAttribute&gt;(ManualResetCompletionSourceStatus)</a>
+      <a class="xref" href="DotNext.Reflection.EnumType.html#DotNext_Reflection_EnumType_GetCustomAttributes__2___0_">EnumType.GetCustomAttributes&lt;WriteAheadLog.MemoryManagementStrategy, TAttribute&gt;(WriteAheadLog.MemoryManagementStrategy)</a>
   </div>
 </article>
           </div>
@@ -145,10 +137,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_ManualResetCompletionSourceStatus.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ManualResetCompletionSourceStatus%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_MemoryManagementStrategy.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ManualResetCompletionSourceStatus.cs/#L6" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/StateMachine/WriteAheadLog.Options.cs/#L17" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

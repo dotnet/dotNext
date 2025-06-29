@@ -82,7 +82,6 @@
     <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.intptr">nint</a>&gt;&gt;</div>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uintptr">nuint</a>&gt;</div>
     <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uintptr">nuint</a>&gt;&gt;</div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ipinnable">IPinnable</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.ispanformattable">ISpanFormattable</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformattable">IFormattable</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.icomparisonoperators-3">IComparisonOperators</a>&lt;<a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;, <a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</div>
@@ -99,6 +98,7 @@
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.idecrementoperators-1">IDecrementOperators</a>&lt;<a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.iadditiveidentity-2">IAdditiveIdentity</a>&lt;<a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.intptr">nint</a>&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.iadditiveidentity-2">IAdditiveIdentity</a>&lt;<a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uintptr">nuint</a>&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ipinnable">IPinnable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -116,7 +116,7 @@
   <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
   <h5 id="DotNext_Runtime_InteropServices_Pointer_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct Pointer&lt;T&gt; : IEquatable&lt;Pointer&lt;T&gt;&gt;, IComparable&lt;Pointer&lt;T&gt;&gt;, IStrongBox, ISupplier&lt;nint&gt;, IFunctional&lt;Func&lt;nint&gt;&gt;, ISupplier&lt;nuint&gt;, IFunctional&lt;Func&lt;nuint&gt;&gt;, IPinnable, ISpanFormattable, IFormattable, IComparisonOperators&lt;Pointer&lt;T&gt;, Pointer&lt;T&gt;, bool&gt;, IEqualityOperators&lt;Pointer&lt;T&gt;, Pointer&lt;T&gt;, bool&gt;, IAdditionOperators&lt;Pointer&lt;T&gt;, int, Pointer&lt;T&gt;&gt;, IAdditionOperators&lt;Pointer&lt;T&gt;, long, Pointer&lt;T&gt;&gt;, IAdditionOperators&lt;Pointer&lt;T&gt;, nint, Pointer&lt;T&gt;&gt;, IAdditionOperators&lt;Pointer&lt;T&gt;, nuint, Pointer&lt;T&gt;&gt;, ISubtractionOperators&lt;Pointer&lt;T&gt;, int, Pointer&lt;T&gt;&gt;, ISubtractionOperators&lt;Pointer&lt;T&gt;, long, Pointer&lt;T&gt;&gt;, ISubtractionOperators&lt;Pointer&lt;T&gt;, nint, Pointer&lt;T&gt;&gt;, ISubtractionOperators&lt;Pointer&lt;T&gt;, nuint, Pointer&lt;T&gt;&gt;, IIncrementOperators&lt;Pointer&lt;T&gt;&gt;, IDecrementOperators&lt;Pointer&lt;T&gt;&gt;, IAdditiveIdentity&lt;Pointer&lt;T&gt;, nint&gt;, IAdditiveIdentity&lt;Pointer&lt;T&gt;, nuint&gt; where T : unmanaged</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct Pointer&lt;T&gt; : IEquatable&lt;Pointer&lt;T&gt;&gt;, IComparable&lt;Pointer&lt;T&gt;&gt;, IStrongBox, ISupplier&lt;nint&gt;, IFunctional&lt;Func&lt;nint&gt;&gt;, ISupplier&lt;nuint&gt;, IFunctional&lt;Func&lt;nuint&gt;&gt;, ISpanFormattable, IFormattable, IComparisonOperators&lt;Pointer&lt;T&gt;, Pointer&lt;T&gt;, bool&gt;, IEqualityOperators&lt;Pointer&lt;T&gt;, Pointer&lt;T&gt;, bool&gt;, IAdditionOperators&lt;Pointer&lt;T&gt;, int, Pointer&lt;T&gt;&gt;, IAdditionOperators&lt;Pointer&lt;T&gt;, long, Pointer&lt;T&gt;&gt;, IAdditionOperators&lt;Pointer&lt;T&gt;, nint, Pointer&lt;T&gt;&gt;, IAdditionOperators&lt;Pointer&lt;T&gt;, nuint, Pointer&lt;T&gt;&gt;, ISubtractionOperators&lt;Pointer&lt;T&gt;, int, Pointer&lt;T&gt;&gt;, ISubtractionOperators&lt;Pointer&lt;T&gt;, long, Pointer&lt;T&gt;&gt;, ISubtractionOperators&lt;Pointer&lt;T&gt;, nint, Pointer&lt;T&gt;&gt;, ISubtractionOperators&lt;Pointer&lt;T&gt;, nuint, Pointer&lt;T&gt;&gt;, IIncrementOperators&lt;Pointer&lt;T&gt;&gt;, IDecrementOperators&lt;Pointer&lt;T&gt;&gt;, IAdditiveIdentity&lt;Pointer&lt;T&gt;, nint&gt;, IAdditiveIdentity&lt;Pointer&lt;T&gt;, nuint&gt;, IPinnable where T : unmanaged</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -146,7 +146,7 @@ Null-pointer is the only check performed by methods.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1__ctor_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.%23ctor(System.IntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L114">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L47">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1__ctor_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.#ctor*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1__ctor_System_IntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.#ctor(System.IntPtr)">Pointer(nint)</h4>
@@ -180,7 +180,7 @@ Null-pointer is the only check performed by methods.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1__ctor_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.%23ctor(System.UIntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L123">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L56">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1__ctor_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.#ctor*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1__ctor_System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.#ctor(System.UIntPtr)">Pointer(nuint)</h4>
@@ -215,7 +215,7 @@ public Pointer(nuint ptr)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1__ctor__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.%23ctor(%600*)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L107">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L40">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1__ctor_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.#ctor*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1__ctor__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.#ctor(`0*)">Pointer(T*)</h4>
@@ -252,7 +252,7 @@ public Pointer(T* ptr)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Address.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Address%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L544">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L295">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Address_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Address*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Address" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Address">Address</h4>
@@ -283,7 +283,7 @@ public Pointer(T* ptr)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Bytes.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Bytes%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L190">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L117">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Bytes_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Bytes*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Bytes" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Bytes">Bytes</h4>
@@ -314,7 +314,7 @@ public Pointer(T* ptr)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_IsAligned.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.IsAligned%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L151">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L78">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_IsAligned_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.IsAligned*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_IsAligned" data-uid="DotNext.Runtime.InteropServices.Pointer`1.IsAligned">IsAligned</h4>
@@ -346,7 +346,7 @@ to the size of <code class="typeparamref">T</code>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_IsNull.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.IsNull%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L553">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L304">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_IsNull_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.IsNull*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_IsNull" data-uid="DotNext.Runtime.InteropServices.Pointer`1.IsNull">IsNull</h4>
@@ -377,7 +377,7 @@ to the size of <code class="typeparamref">T</code>.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Item_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Item(System.UIntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L201">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L128">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Item_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Item*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Item_System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Item(System.UIntPtr)">this[nuint]</h4>
@@ -447,7 +447,7 @@ public ref T this[nuint index] { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Null.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Null%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L99">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L32">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Null_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Null*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Null" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Null">Null</h4>
@@ -478,7 +478,7 @@ public ref T this[nuint index] { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Value.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Value%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L575">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L325">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Value_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Value*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Value" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Value">Value</h4>
@@ -505,30 +505,64 @@ public ref T this[nuint index] { get; }</code></pre>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
+  <h3 id="methods">Methods
+</h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_AsSpan_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.AsSpan(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L112">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_Pointer_1_AsSpan_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.AsSpan*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_Pointer_1_AsSpan_System_Int32_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.AsSpan(System.Int32)">AsSpan(int)</h4>
+  <div class="markdown level1 summary"><p>Converts this pointer into <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span&lt;T&gt;</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Span&lt;T&gt; AsSpan(int length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Condition</th>
+        <th>Name</th>
+        <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.NullPointerException.html">NullPointerException</a></td>
-        <td><p>The pointer is 0.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The number of elements located in the unmanaged memory identified by this pointer.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h3 id="methods">Methods
-</h3>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
+        <td><p><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span&lt;T&gt;</a> representing elements in the unmanaged memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_AsStream_System_Int64_System_IO_FileAccess_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.AsStream(System.Int64%2CSystem.IO.FileAccess)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L476">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.StreamInterop.cs/#L171">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_AsStream_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.AsStream*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_AsStream_System_Int64_System_IO_FileAccess_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.AsStream(System.Int64,System.IO.FileAccess)">AsStream(long, FileAccess)</h4>
@@ -603,7 +637,7 @@ public ref T this[nuint index] { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_As__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.As%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L565">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L316">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_As_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.As*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_As__1" data-uid="DotNext.Runtime.InteropServices.Pointer`1.As``1">As&lt;TOther&gt;()</h4>
@@ -667,7 +701,7 @@ public ref T this[nuint index] { get; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_BitwiseCompare_DotNext_Runtime_InteropServices_Pointer__0__System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.BitwiseCompare(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.UIntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L660">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L396">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_BitwiseCompare_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.BitwiseCompare*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_BitwiseCompare_DotNext_Runtime_InteropServices_Pointer__0__System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.BitwiseCompare(DotNext.Runtime.InteropServices.Pointer{`0},System.UIntPtr)">BitwiseCompare(Pointer&lt;T&gt;, nuint)</h4>
@@ -724,7 +758,7 @@ public int BitwiseCompare(Pointer&lt;T&gt; other, nuint count)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Clear.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Clear%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L271">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L193">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Clear_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Clear*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Clear" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Clear">Clear()</h4>
@@ -756,7 +790,7 @@ public int BitwiseCompare(Pointer&lt;T&gt; other, nuint count)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Clear_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Clear(System.UIntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L246">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L168">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Clear_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Clear*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Clear_System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Clear(System.UIntPtr)">Clear(nuint)</h4>
@@ -807,7 +841,7 @@ public void Clear(nuint count)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_CopyTo_DotNext_Runtime_InteropServices_Pointer__0__System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.CopyTo(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.UIntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L293">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L221">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_CopyTo_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.CopyTo*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_CopyTo_DotNext_Runtime_InteropServices_Pointer__0__System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.CopyTo(DotNext.Runtime.InteropServices.Pointer{`0},System.UIntPtr)">CopyTo(Pointer&lt;T&gt;, nuint)</h4>
@@ -869,7 +903,7 @@ public void CopyTo(Pointer&lt;T&gt; destination, nuint count)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_CopyTo_System_Span__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.CopyTo(System.Span%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L278">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L206">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_CopyTo_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.CopyTo*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_CopyTo_System_Span__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.CopyTo(System.Span{`0})">CopyTo(Span&lt;T&gt;)</h4>
@@ -919,7 +953,7 @@ public void CopyTo(Pointer&lt;T&gt; destination, nuint count)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Equals(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L1117">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L466">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Equals_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Equals_System_Object_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Equals(System.Object)">Equals(object?)</h4>
@@ -971,7 +1005,7 @@ public void CopyTo(Pointer&lt;T&gt; destination, nuint count)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Equals__0_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Equals(%600%2CSystem.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L1097">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L446">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Equals_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Equals__0_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Equals(`0,System.Collections.Generic.IEqualityComparer{`0})">Equals(T, IEqualityComparer&lt;T&gt;)</h4>
@@ -1027,7 +1061,7 @@ public void CopyTo(Pointer&lt;T&gt; destination, nuint count)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Equals__1_DotNext_Runtime_InteropServices_Pointer___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Equals%60%601(DotNext.Runtime.InteropServices.Pointer%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L1075">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L432">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Equals_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Equals__1_DotNext_Runtime_InteropServices_Pointer___0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Equals``1(DotNext.Runtime.InteropServices.Pointer{``0})">Equals&lt;TOther&gt;(Pointer&lt;TOther&gt;)</h4>
@@ -1093,7 +1127,7 @@ public void CopyTo(Pointer&lt;T&gt; destination, nuint count)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Fill__0_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Fill(%600%2CSystem.UIntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L159">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L86">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Fill_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Fill*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Fill__0_System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Fill(`0,System.UIntPtr)">Fill(T, nuint)</h4>
@@ -1150,7 +1184,7 @@ public void Fill(T value, nuint count)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_GetBoxedPointer.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.GetBoxedPointer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L144">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L71">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_GetBoxedPointer_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetBoxedPointer*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_GetBoxedPointer" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetBoxedPointer">GetBoxedPointer()</h4>
@@ -1187,7 +1221,7 @@ public object GetBoxedPointer()</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_GetEnumerator_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.GetEnumerator(System.UIntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L651">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Enumerator.cs/#L62">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_GetEnumerator_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetEnumerator*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_GetEnumerator_System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetEnumerator(System.UIntPtr)">GetEnumerator(nuint)</h4>
@@ -1238,7 +1272,7 @@ public Pointer&lt;T&gt;.Enumerator GetEnumerator(nuint length)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.GetHashCode%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L1110">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L459">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_GetHashCode_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetHashCode*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_GetHashCode" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetHashCode">GetHashCode()</h4>
@@ -1272,7 +1306,7 @@ public Pointer&lt;T&gt;.Enumerator GetEnumerator(nuint length)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_GetHashCode_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.GetHashCode(System.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L1104">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L453">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_GetHashCode_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetHashCode*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_GetHashCode_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetHashCode(System.Collections.Generic.IEqualityComparer{`0})">GetHashCode(IEqualityComparer&lt;T&gt;)</h4>
@@ -1322,7 +1356,7 @@ public Pointer&lt;T&gt;.Enumerator GetEnumerator(nuint length)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_GetUnaligned.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.GetUnaligned%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L592">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L336">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_GetUnaligned_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetUnaligned*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_GetUnaligned" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetUnaligned">GetUnaligned()</h4>
@@ -1370,7 +1404,7 @@ public Pointer&lt;T&gt;.Enumerator GetEnumerator(nuint length)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_GetUnaligned_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.GetUnaligned(System.UIntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L607">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L351">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_GetUnaligned_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetUnaligned*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_GetUnaligned_System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetUnaligned(System.UIntPtr)">GetUnaligned(nuint)</h4>
@@ -1438,7 +1472,7 @@ public T GetUnaligned(nuint index)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Pin_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Pin(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L229">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Pinnable.cs/#L8">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Pin_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Pin*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Pin_System_Int32_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Pin(System.Int32)">Pin(int)</h4>
@@ -1488,7 +1522,7 @@ public T GetUnaligned(nuint index)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_ReadFrom_System_IO_Stream_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.ReadFrom(System.IO.Stream%2CSystem.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L387">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.StreamInterop.cs/#L82">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_ReadFrom_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ReadFrom*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_ReadFrom_System_IO_Stream_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ReadFrom(System.IO.Stream,System.Int64)">ReadFrom(Stream, long)</h4>
@@ -1570,7 +1604,7 @@ public T GetUnaligned(nuint index)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_ReadFromAsync_System_IO_Stream_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.ReadFromAsync(System.IO.Stream%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L422">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.StreamInterop.cs/#L117">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_ReadFromAsync_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ReadFromAsync*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_ReadFromAsync_System_IO_Stream_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ReadFromAsync(System.IO.Stream,System.Int64,System.Threading.CancellationToken)">ReadFromAsync(Stream, long, CancellationToken)</h4>
@@ -1663,7 +1697,7 @@ public T GetUnaligned(nuint index)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_SetUnaligned__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.SetUnaligned(%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L622">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L366">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_SetUnaligned_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.SetUnaligned*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_SetUnaligned__0_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.SetUnaligned(`0)">SetUnaligned(T)</h4>
@@ -1714,7 +1748,7 @@ that this pointer is unaligned.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_SetUnaligned__0_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.SetUnaligned(%600%2CSystem.UIntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L637">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L381">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_SetUnaligned_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.SetUnaligned*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_SetUnaligned__0_System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.SetUnaligned(`0,System.UIntPtr)">SetUnaligned(T, nuint)</h4>
@@ -1772,7 +1806,7 @@ public void SetUnaligned(T value, nuint index)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Swap_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Swap(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L210">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L146">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Swap_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Swap*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Swap_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Swap(DotNext.Runtime.InteropServices.Pointer{`0})">Swap(Pointer&lt;T&gt;)</h4>
@@ -1827,7 +1861,7 @@ public void SetUnaligned(T value, nuint index)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_ToArray_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.ToArray(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L522">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L273">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_ToArray_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ToArray*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_ToArray_System_Int32_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ToArray(System.Int32)">ToArray(int)</h4>
@@ -1894,7 +1928,7 @@ into managed heap as a pinned array.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_ToByteArray_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.ToByteArray(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L495">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L246">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_ToByteArray_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ToByteArray*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_ToByteArray_System_Int32_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ToByteArray(System.Int32)">ToByteArray(int)</h4>
@@ -1961,7 +1995,7 @@ into managed heap as array of bytes.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_ToMemoryOwner_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.ToMemoryOwner(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L1040">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L420">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_ToMemoryOwner_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ToMemoryOwner*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_ToMemoryOwner_System_Int32_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ToMemoryOwner(System.Int32)">ToMemoryOwner(int)</h4>
@@ -2008,60 +2042,10 @@ into managed heap as array of bytes.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_ToSpan_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.ToSpan(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L185">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_Pointer_1_ToSpan_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ToSpan*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Pointer_1_ToSpan_System_Int32_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ToSpan(System.Int32)">ToSpan(int)</h4>
-  <div class="markdown level1 summary"><p>Converts this pointer into <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span&lt;T&gt;</a>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Span&lt;T&gt; ToSpan(int length)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>The number of elements located in the unmanaged memory identified by this pointer.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
-        <td><p><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span&lt;T&gt;</a> representing elements in the unmanaged memory.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L1136">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L487">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_ToString_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ToString*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_ToString" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ToString">ToString()</h4>
@@ -2095,7 +2079,7 @@ into managed heap as array of bytes.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_WriteTo_System_IO_Stream_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.WriteTo(System.IO.Stream%2CSystem.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L320">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.StreamInterop.cs/#L15">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_WriteTo_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.WriteTo*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_WriteTo_System_IO_Stream_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.WriteTo(System.IO.Stream,System.Int64)">WriteTo(Stream, long)</h4>
@@ -2162,7 +2146,7 @@ public void WriteTo(Stream destination, long count)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_WriteToAsync_System_IO_Stream_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.WriteToAsync(System.IO.Stream%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L354">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.StreamInterop.cs/#L49">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_WriteToAsync_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.WriteToAsync*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_WriteToAsync_System_IO_Stream_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.WriteToAsync(System.IO.Stream,System.Int64,System.Threading.CancellationToken)">WriteToAsync(Stream, long, CancellationToken)</h4>
@@ -2258,7 +2242,7 @@ by this pointer to the stream asynchronously.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Addition_DotNext_Runtime_InteropServices_Pointer__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Addition(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L682">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L37">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Addition_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Addition*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Addition_DotNext_Runtime_InteropServices_Pointer__0__System_Int32_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Addition(DotNext.Runtime.InteropServices.Pointer{`0},System.Int32)">operator +(Pointer&lt;T&gt;, int)</h4>
@@ -2317,7 +2301,7 @@ by this pointer to the stream asynchronously.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Addition_DotNext_Runtime_InteropServices_Pointer__0__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Addition(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L806">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L157">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Addition_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Addition*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Addition_DotNext_Runtime_InteropServices_Pointer__0__System_Int64_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Addition(DotNext.Runtime.InteropServices.Pointer{`0},System.Int64)">operator +(Pointer&lt;T&gt;, long)</h4>
@@ -2376,7 +2360,7 @@ by this pointer to the stream asynchronously.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Addition_DotNext_Runtime_InteropServices_Pointer__0__System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Addition(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.IntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L708">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L61">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Addition_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Addition*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Addition_DotNext_Runtime_InteropServices_Pointer__0__System_IntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Addition(DotNext.Runtime.InteropServices.Pointer{`0},System.IntPtr)">operator +(Pointer&lt;T&gt;, nint)</h4>
@@ -2435,7 +2419,7 @@ by this pointer to the stream asynchronously.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Addition_DotNext_Runtime_InteropServices_Pointer__0__System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Addition(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.UIntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L858">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L205">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Addition_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Addition*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Addition_DotNext_Runtime_InteropServices_Pointer__0__System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Addition(DotNext.Runtime.InteropServices.Pointer{`0},System.UIntPtr)">operator +(Pointer&lt;T&gt;, nuint)</h4>
@@ -2495,7 +2479,7 @@ public static Pointer&lt;T&gt; operator +(Pointer&lt;T&gt; pointer, nuint offset
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_CheckedAddition_DotNext_Runtime_InteropServices_Pointer__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_CheckedAddition(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L695">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L49">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedAddition_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedAddition*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedAddition_DotNext_Runtime_InteropServices_Pointer__0__System_Int32_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedAddition(DotNext.Runtime.InteropServices.Pointer{`0},System.Int32)">operator checked +(Pointer&lt;T&gt;, int)</h4>
@@ -2554,7 +2538,7 @@ public static Pointer&lt;T&gt; operator +(Pointer&lt;T&gt; pointer, nuint offset
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_CheckedAddition_DotNext_Runtime_InteropServices_Pointer__0__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_CheckedAddition(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L819">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L169">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedAddition_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedAddition*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedAddition_DotNext_Runtime_InteropServices_Pointer__0__System_Int64_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedAddition(DotNext.Runtime.InteropServices.Pointer{`0},System.Int64)">operator checked +(Pointer&lt;T&gt;, long)</h4>
@@ -2613,7 +2597,7 @@ public static Pointer&lt;T&gt; operator +(Pointer&lt;T&gt; pointer, nuint offset
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_CheckedAddition_DotNext_Runtime_InteropServices_Pointer__0__System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_CheckedAddition(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.IntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L726">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L79">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedAddition_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedAddition*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedAddition_DotNext_Runtime_InteropServices_Pointer__0__System_IntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedAddition(DotNext.Runtime.InteropServices.Pointer{`0},System.IntPtr)">operator checked +(Pointer&lt;T&gt;, nint)</h4>
@@ -2669,10 +2653,70 @@ public static Pointer&lt;T&gt; operator +(Pointer&lt;T&gt; pointer, nuint offset
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_CheckedAddition_DotNext_Runtime_InteropServices_Pointer__0__System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_CheckedAddition(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.UIntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L224">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedAddition_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedAddition*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedAddition_DotNext_Runtime_InteropServices_Pointer__0__System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedAddition(DotNext.Runtime.InteropServices.Pointer{`0},System.UIntPtr)">operator checked +(Pointer&lt;T&gt;, nuint)</h4>
+  <div class="markdown level1 summary"><p>Adds an offset to the value of a pointer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static Pointer&lt;T&gt; operator checked +(Pointer&lt;T&gt; pointer, nuint offset)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td><span class="parametername">pointer</span></td>
+        <td><p>The pointer to add the offset to.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.uintptr">nuint</a></td>
+        <td><span class="parametername">offset</span></td>
+        <td><p>The offset to add.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td><p>A new pointer that reflects the addition of offset to pointer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedAddition_DotNext_Runtime_InteropServices_Pointer__0__System_UIntPtr__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The offset specifies number of elements of type <code class="typeparamref">T</code>, not bytes.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_CheckedDecrement_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_CheckedDecrement(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L932">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L298">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedDecrement_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedDecrement*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedDecrement_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedDecrement(DotNext.Runtime.InteropServices.Pointer{`0})">operator checked --(Pointer&lt;T&gt;)</h4>
@@ -2722,7 +2766,7 @@ public static Pointer&lt;T&gt; operator +(Pointer&lt;T&gt; pointer, nuint offset
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_CheckedIncrement_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_CheckedIncrement(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L918">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L284">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedIncrement_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedIncrement*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedIncrement_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedIncrement(DotNext.Runtime.InteropServices.Pointer{`0})">operator checked ++(Pointer&lt;T&gt;)</h4>
@@ -2772,7 +2816,7 @@ public static Pointer&lt;T&gt; operator +(Pointer&lt;T&gt; pointer, nuint offset
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_CheckedSubtraction_DotNext_Runtime_InteropServices_Pointer__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_CheckedSubtraction(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L757">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L109">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedSubtraction_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedSubtraction*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedSubtraction_DotNext_Runtime_InteropServices_Pointer__0__System_Int32_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedSubtraction(DotNext.Runtime.InteropServices.Pointer{`0},System.Int32)">operator checked -(Pointer&lt;T&gt;, int)</h4>
@@ -2831,7 +2875,7 @@ public static Pointer&lt;T&gt; operator +(Pointer&lt;T&gt; pointer, nuint offset
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_CheckedSubtraction_DotNext_Runtime_InteropServices_Pointer__0__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_CheckedSubtraction(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L845">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L193">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedSubtraction_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedSubtraction*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedSubtraction_DotNext_Runtime_InteropServices_Pointer__0__System_Int64_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedSubtraction(DotNext.Runtime.InteropServices.Pointer{`0},System.Int64)">operator checked -(Pointer&lt;T&gt;, long)</h4>
@@ -2890,7 +2934,7 @@ public static Pointer&lt;T&gt; operator +(Pointer&lt;T&gt; pointer, nuint offset
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_CheckedSubtraction_DotNext_Runtime_InteropServices_Pointer__0__System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_CheckedSubtraction(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.IntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L788">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L139">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedSubtraction_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedSubtraction*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedSubtraction_DotNext_Runtime_InteropServices_Pointer__0__System_IntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedSubtraction(DotNext.Runtime.InteropServices.Pointer{`0},System.IntPtr)">operator checked -(Pointer&lt;T&gt;, nint)</h4>
@@ -2949,7 +2993,7 @@ public static Pointer&lt;T&gt; operator +(Pointer&lt;T&gt; pointer, nuint offset
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_CheckedSubtraction_DotNext_Runtime_InteropServices_Pointer__0__System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_CheckedSubtraction(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.UIntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L896">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L262">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedSubtraction_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedSubtraction*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_CheckedSubtraction_DotNext_Runtime_InteropServices_Pointer__0__System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_CheckedSubtraction(DotNext.Runtime.InteropServices.Pointer{`0},System.UIntPtr)">operator checked -(Pointer&lt;T&gt;, nuint)</h4>
@@ -3009,7 +3053,7 @@ public static Pointer&lt;T&gt; operator checked -(Pointer&lt;T&gt; pointer, nuin
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Decrement_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Decrement(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L925">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L291">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Decrement_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Decrement*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Decrement_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Decrement(DotNext.Runtime.InteropServices.Pointer{`0})">operator --(Pointer&lt;T&gt;)</h4>
@@ -3059,7 +3103,7 @@ public static Pointer&lt;T&gt; operator checked -(Pointer&lt;T&gt; pointer, nuin
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Equality_DotNext_Runtime_InteropServices_Pointer__0__DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Equality(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CDotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L940">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L306">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Equality_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Equality*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Equality_DotNext_Runtime_InteropServices_Pointer__0__DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Equality(DotNext.Runtime.InteropServices.Pointer{`0},DotNext.Runtime.InteropServices.Pointer{`0})">operator ==(Pointer&lt;T&gt;, Pointer&lt;T&gt;)</h4>
@@ -3115,7 +3159,7 @@ public static Pointer&lt;T&gt; operator checked -(Pointer&lt;T&gt; pointer, nuin
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Explicit_System_Buffers_MemoryHandle___DotNext_Runtime_InteropServices_Pointer__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Explicit(System.Buffers.MemoryHandle%40)~DotNext.Runtime.InteropServices.Pointer%7B%600%7D%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L1047">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L389">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Explicit_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Explicit*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Explicit_System_Buffers_MemoryHandle___DotNext_Runtime_InteropServices_Pointer__0_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Explicit(System.Buffers.MemoryHandle@)~DotNext.Runtime.InteropServices.Pointer{`0}">explicit operator Pointer&lt;T&gt;(in MemoryHandle)</h4>
@@ -3164,7 +3208,7 @@ public static Pointer&lt;T&gt; operator checked -(Pointer&lt;T&gt; pointer, nuin
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_False_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_False(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L1063">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L403">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_False_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_False*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_False_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_False(DotNext.Runtime.InteropServices.Pointer{`0})">operator false(Pointer&lt;T&gt;)</h4>
@@ -3214,7 +3258,7 @@ public static Pointer&lt;T&gt; operator checked -(Pointer&lt;T&gt; pointer, nuin
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_GreaterThan_DotNext_Runtime_InteropServices_Pointer__0__DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_GreaterThan(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CDotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L961">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L325">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_GreaterThan_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_GreaterThan*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_GreaterThan_DotNext_Runtime_InteropServices_Pointer__0__DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_GreaterThan(DotNext.Runtime.InteropServices.Pointer{`0},DotNext.Runtime.InteropServices.Pointer{`0})">operator &gt;(Pointer&lt;T&gt;, Pointer&lt;T&gt;)</h4>
@@ -3271,7 +3315,7 @@ than the address of the second pointer.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_GreaterThanOrEqual_DotNext_Runtime_InteropServices_Pointer__0__DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_GreaterThanOrEqual(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CDotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L983">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L345">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_GreaterThanOrEqual_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_GreaterThanOrEqual*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_GreaterThanOrEqual_DotNext_Runtime_InteropServices_Pointer__0__DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_GreaterThanOrEqual(DotNext.Runtime.InteropServices.Pointer{`0},DotNext.Runtime.InteropServices.Pointer{`0})">operator &gt;=(Pointer&lt;T&gt;, Pointer&lt;T&gt;)</h4>
@@ -3325,10 +3369,60 @@ than or equal to the address of the second pointer.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_DotNext_Runtime_InteropServices_Pointer__0___DotNext_Runtime_ValueReference__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Implicit(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)~DotNext.Runtime.ValueReference%7B%600%7D%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L417">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Implicit*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_DotNext_Runtime_InteropServices_Pointer__0___DotNext_Runtime_ValueReference__0_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Implicit(DotNext.Runtime.InteropServices.Pointer{`0})~DotNext.Runtime.ValueReference{`0}">implicit operator ValueReference&lt;T&gt;(Pointer&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Gets the reference to the unmanaged memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator ValueReference&lt;T&gt;(Pointer&lt;T&gt; pointer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td><span class="parametername">pointer</span></td>
+        <td><p>The memory block.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.ValueReference-1.html">ValueReference</a>&lt;T&gt;</td>
+        <td><p>The reference to the unmanaged memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_DotNext_Runtime_InteropServices_Pointer__0___System_IntPtr.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Implicit(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)~System.IntPtr%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L1018">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L376">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_DotNext_Runtime_InteropServices_Pointer__0___System_IntPtr" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Implicit(DotNext.Runtime.InteropServices.Pointer{`0})~System.IntPtr">implicit operator nint(Pointer&lt;T&gt;)</h4>
@@ -3377,7 +3471,7 @@ than or equal to the address of the second pointer.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_DotNext_Runtime_InteropServices_Pointer__0___System_UIntPtr.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Implicit(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)~System.UIntPtr%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L1028">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L382">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_DotNext_Runtime_InteropServices_Pointer__0___System_UIntPtr" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Implicit(DotNext.Runtime.InteropServices.Pointer{`0})~System.UIntPtr">implicit operator nuint(Pointer&lt;T&gt;)</h4>
@@ -3427,7 +3521,7 @@ public static implicit operator nuint(Pointer&lt;T&gt; ptr)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_DotNext_Runtime_InteropServices_Pointer__0____0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Implicit(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)~%600*%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L1010">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L369">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_DotNext_Runtime_InteropServices_Pointer__0____0_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Implicit(DotNext.Runtime.InteropServices.Pointer{`0})~`0*">implicit operator T*(Pointer&lt;T&gt;)</h4>
@@ -3477,7 +3571,7 @@ public static implicit operator T*(Pointer&lt;T&gt; ptr)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Implicit__0___DotNext_Runtime_InteropServices_Pointer__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Implicit(%600*)~DotNext.Runtime.InteropServices.Pointer%7B%600%7D%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L1002">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L362">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Implicit__0___DotNext_Runtime_InteropServices_Pointer__0_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Implicit(`0*)~DotNext.Runtime.InteropServices.Pointer{`0}">implicit operator Pointer&lt;T&gt;(T*)</h4>
@@ -3527,7 +3621,7 @@ public static implicit operator Pointer&lt;T&gt;(T* value)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Increment_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Increment(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L911">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L277">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Increment_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Increment*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Increment_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Increment(DotNext.Runtime.InteropServices.Pointer{`0})">operator ++(Pointer&lt;T&gt;)</h4>
@@ -3577,7 +3671,7 @@ public static implicit operator Pointer&lt;T&gt;(T* value)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Inequality_DotNext_Runtime_InteropServices_Pointer__0__DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Inequality(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CDotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L950">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L315">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Inequality_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Inequality*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Inequality_DotNext_Runtime_InteropServices_Pointer__0__DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Inequality(DotNext.Runtime.InteropServices.Pointer{`0},DotNext.Runtime.InteropServices.Pointer{`0})">operator !=(Pointer&lt;T&gt;, Pointer&lt;T&gt;)</h4>
@@ -3633,7 +3727,7 @@ public static implicit operator Pointer&lt;T&gt;(T* value)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_LessThan_DotNext_Runtime_InteropServices_Pointer__0__DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_LessThan(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CDotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L972">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L335">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_LessThan_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_LessThan*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_LessThan_DotNext_Runtime_InteropServices_Pointer__0__DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_LessThan(DotNext.Runtime.InteropServices.Pointer{`0},DotNext.Runtime.InteropServices.Pointer{`0})">operator &lt;(Pointer&lt;T&gt;, Pointer&lt;T&gt;)</h4>
@@ -3690,7 +3784,7 @@ than the address of the second pointer.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_LessThanOrEqual_DotNext_Runtime_InteropServices_Pointer__0__DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_LessThanOrEqual(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CDotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L994">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L355">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_LessThanOrEqual_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_LessThanOrEqual*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_LessThanOrEqual_DotNext_Runtime_InteropServices_Pointer__0__DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_LessThanOrEqual(DotNext.Runtime.InteropServices.Pointer{`0},DotNext.Runtime.InteropServices.Pointer{`0})">operator &lt;=(Pointer&lt;T&gt;, Pointer&lt;T&gt;)</h4>
@@ -3744,10 +3838,60 @@ than or equal to the address of the second pointer.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_LogicalNot_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_LogicalNot(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L410">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_Pointer_1_op_LogicalNot_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_LogicalNot*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_LogicalNot_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_LogicalNot(DotNext.Runtime.InteropServices.Pointer{`0})">operator !(Pointer&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Checks whether this pointer is not zero.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator !(Pointer&lt;T&gt; ptr)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
+        <td><span class="parametername">ptr</span></td>
+        <td><p>The pointer to check.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if this pointer is not zero; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Subtraction_DotNext_Runtime_InteropServices_Pointer__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Subtraction(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L744">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L97">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Subtraction_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Subtraction*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Subtraction_DotNext_Runtime_InteropServices_Pointer__0__System_Int32_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Subtraction(DotNext.Runtime.InteropServices.Pointer{`0},System.Int32)">operator -(Pointer&lt;T&gt;, int)</h4>
@@ -3806,7 +3950,7 @@ than or equal to the address of the second pointer.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Subtraction_DotNext_Runtime_InteropServices_Pointer__0__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Subtraction(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L832">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L181">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Subtraction_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Subtraction*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Subtraction_DotNext_Runtime_InteropServices_Pointer__0__System_Int64_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Subtraction(DotNext.Runtime.InteropServices.Pointer{`0},System.Int64)">operator -(Pointer&lt;T&gt;, long)</h4>
@@ -3865,7 +4009,7 @@ than or equal to the address of the second pointer.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Subtraction_DotNext_Runtime_InteropServices_Pointer__0__System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Subtraction(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.IntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L770">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L121">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Subtraction_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Subtraction*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Subtraction_DotNext_Runtime_InteropServices_Pointer__0__System_IntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Subtraction(DotNext.Runtime.InteropServices.Pointer{`0},System.IntPtr)">operator -(Pointer&lt;T&gt;, nint)</h4>
@@ -3924,7 +4068,7 @@ than or equal to the address of the second pointer.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Subtraction_DotNext_Runtime_InteropServices_Pointer__0__System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Subtraction(DotNext.Runtime.InteropServices.Pointer%7B%600%7D%2CSystem.UIntPtr)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L877">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L243">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Subtraction_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Subtraction*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Subtraction_DotNext_Runtime_InteropServices_Pointer__0__System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Subtraction(DotNext.Runtime.InteropServices.Pointer{`0},System.UIntPtr)">operator -(Pointer&lt;T&gt;, nuint)</h4>
@@ -3984,7 +4128,7 @@ public static Pointer&lt;T&gt; operator -(Pointer&lt;T&gt; pointer, nuint offset
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_True_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_True(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L1055">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Operators.cs/#L396">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_True_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_True*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_True_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_True(DotNext.Runtime.InteropServices.Pointer{`0})">operator true(Pointer&lt;T&gt;)</h4>
@@ -4052,9 +4196,6 @@ public static Pointer&lt;T&gt; operator -(Pointer&lt;T&gt; pointer, nuint offset
       <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ipinnable">IPinnable</a>
-  </div>
-  <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.ispanformattable">ISpanFormattable</a>
   </div>
   <div>
@@ -4102,6 +4243,9 @@ public static Pointer&lt;T&gt; operator -(Pointer&lt;T&gt; pointer, nuint offset
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.numerics.iadditiveidentity-2">IAdditiveIdentity&lt;TSelf, TResult&gt;</a>
   </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ipinnable">IPinnable</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_Disclosed__1___0_">BasicExtensions.Disclosed&lt;T&gt;(T)</a>
@@ -4139,7 +4283,7 @@ public static Pointer&lt;T&gt; operator -(Pointer&lt;T&gt; pointer, nuint offset
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L25" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.StreamInterop.cs/#L5" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

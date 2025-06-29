@@ -5350,6 +5350,22 @@ references:
   fullName.vb: DotNext.Buffers.UnmanagedMemory.AsMemory(Of T)(T*, Integer)
   nameWithType: UnmanagedMemory.AsMemory<T>(T*, int)
   nameWithType.vb: UnmanagedMemory.AsMemory(Of T)(T*, Integer)
+- uid: DotNext.Buffers.UnmanagedMemory.Discard*
+  name: Discard
+  href: api/DotNext.Buffers.UnmanagedMemory.html#DotNext_Buffers_UnmanagedMemory_Discard_
+  commentId: Overload:DotNext.Buffers.UnmanagedMemory.Discard
+  isSpec: "True"
+  fullName: DotNext.Buffers.UnmanagedMemory.Discard
+  nameWithType: UnmanagedMemory.Discard
+- uid: DotNext.Buffers.UnmanagedMemory.Discard``1(System.Span{``0})
+  name: Discard<T>(Span<T>)
+  href: api/DotNext.Buffers.UnmanagedMemory.html#DotNext_Buffers_UnmanagedMemory_Discard__1_System_Span___0__
+  commentId: M:DotNext.Buffers.UnmanagedMemory.Discard``1(System.Span{``0})
+  name.vb: Discard(Of T)(Span(Of T))
+  fullName: DotNext.Buffers.UnmanagedMemory.Discard<T>(System.Span<T>)
+  fullName.vb: DotNext.Buffers.UnmanagedMemory.Discard(Of T)(System.Span(Of T))
+  nameWithType: UnmanagedMemory.Discard<T>(Span<T>)
+  nameWithType.vb: UnmanagedMemory.Discard(Of T)(Span(Of T))
 - uid: DotNext.Buffers.UnmanagedMemory.GetAllocator*
   name: GetAllocator
   href: api/DotNext.Buffers.UnmanagedMemory.html#DotNext_Buffers_UnmanagedMemory_GetAllocator_
@@ -5366,6 +5382,22 @@ references:
   fullName.vb: DotNext.Buffers.UnmanagedMemory.GetAllocator(Of T)(Boolean)
   nameWithType: UnmanagedMemory.GetAllocator<T>(bool)
   nameWithType.vb: UnmanagedMemory.GetAllocator(Of T)(Boolean)
+- uid: DotNext.Buffers.UnmanagedMemory.GetPageAlignedOffset(System.ReadOnlySpan{System.Byte},System.Int32@)
+  name: GetPageAlignedOffset(ReadOnlySpan<byte>, out int)
+  href: api/DotNext.Buffers.UnmanagedMemory.html#DotNext_Buffers_UnmanagedMemory_GetPageAlignedOffset_System_ReadOnlySpan_System_Byte__System_Int32__
+  commentId: M:DotNext.Buffers.UnmanagedMemory.GetPageAlignedOffset(System.ReadOnlySpan{System.Byte},System.Int32@)
+  name.vb: GetPageAlignedOffset(ReadOnlySpan(Of Byte), Integer)
+  fullName: DotNext.Buffers.UnmanagedMemory.GetPageAlignedOffset(System.ReadOnlySpan<byte>, out int)
+  fullName.vb: DotNext.Buffers.UnmanagedMemory.GetPageAlignedOffset(System.ReadOnlySpan(Of Byte), Integer)
+  nameWithType: UnmanagedMemory.GetPageAlignedOffset(ReadOnlySpan<byte>, out int)
+  nameWithType.vb: UnmanagedMemory.GetPageAlignedOffset(ReadOnlySpan(Of Byte), Integer)
+- uid: DotNext.Buffers.UnmanagedMemory.GetPageAlignedOffset*
+  name: GetPageAlignedOffset
+  href: api/DotNext.Buffers.UnmanagedMemory.html#DotNext_Buffers_UnmanagedMemory_GetPageAlignedOffset_
+  commentId: Overload:DotNext.Buffers.UnmanagedMemory.GetPageAlignedOffset
+  isSpec: "True"
+  fullName: DotNext.Buffers.UnmanagedMemory.GetPageAlignedOffset
+  nameWithType: UnmanagedMemory.GetPageAlignedOffset
 - uid: DotNext.Buffers.UnmanagedMemoryPool`1
   name: UnmanagedMemoryPool<T>
   href: api/DotNext.Buffers.UnmanagedMemoryPool-1.html
@@ -32879,6 +32911,24 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.LogEntryReader.this[]
   nameWithType: WriteAheadLog.LogEntryReader.this
   nameWithType.vb: WriteAheadLog.LogEntryReader.this[]
+- uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy
+  name: WriteAheadLog.MemoryManagementStrategy
+  href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy.html
+  commentId: T:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy
+  fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy
+  nameWithType: WriteAheadLog.MemoryManagementStrategy
+- uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy.PrivateMemory
+  name: PrivateMemory
+  href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_MemoryManagementStrategy_PrivateMemory
+  commentId: F:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy.PrivateMemory
+  fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy.PrivateMemory
+  nameWithType: WriteAheadLog.MemoryManagementStrategy.PrivateMemory
+- uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy.SharedMemory
+  name: SharedMemory
+  href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_MemoryManagementStrategy_SharedMemory
+  commentId: F:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy.SharedMemory
+  fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy.SharedMemory
+  nameWithType: WriteAheadLog.MemoryManagementStrategy.SharedMemory
 - uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options
   name: WriteAheadLog.Options
   href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html
@@ -32898,19 +32948,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.Allocator
   nameWithType: WriteAheadLog.Options.Allocator
-- uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.ChunkMaxSize
-  name: ChunkMaxSize
-  href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_ChunkMaxSize
-  commentId: P:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.ChunkMaxSize
-  fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.ChunkMaxSize
-  nameWithType: WriteAheadLog.Options.ChunkMaxSize
-- uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.ChunkMaxSize*
-  name: ChunkMaxSize
-  href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_ChunkMaxSize_
-  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.ChunkMaxSize
+- uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.ChunkSize
+  name: ChunkSize
+  href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_ChunkSize
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.ChunkSize
+  fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.ChunkSize
+  nameWithType: WriteAheadLog.Options.ChunkSize
+- uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.ChunkSize*
+  name: ChunkSize
+  href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_ChunkSize_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.ChunkSize
   isSpec: "True"
-  fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.ChunkMaxSize
-  nameWithType: WriteAheadLog.Options.ChunkMaxSize
+  fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.ChunkSize
+  nameWithType: WriteAheadLog.Options.ChunkSize
 - uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.ConcurrencyLevel
   name: ConcurrencyLevel
   href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_ConcurrencyLevel
@@ -32963,6 +33013,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.MeasurementTags
   nameWithType: WriteAheadLog.Options.MeasurementTags
+- uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.MemoryManagement
+  name: MemoryManagement
+  href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_MemoryManagement
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.MemoryManagement
+  fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.MemoryManagement
+  nameWithType: WriteAheadLog.Options.MemoryManagement
+- uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.MemoryManagement*
+  name: MemoryManagement
+  href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_Options_MemoryManagement_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.MemoryManagement
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.MemoryManagement
+  nameWithType: WriteAheadLog.Options.MemoryManagement
 - uid: DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.ReadAsync(System.Int64,System.Int64,System.Threading.CancellationToken)
   name: ReadAsync(long, long, CancellationToken)
   href: api/DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.html#DotNext_Net_Cluster_Consensus_Raft_StateMachine_WriteAheadLog_ReadAsync_System_Int64_System_Int64_System_Threading_CancellationToken_
@@ -38533,6 +38596,31 @@ references:
   fullName.vb: DotNext.Result.Coalesce(Of T)(DotNext.Result(Of T), DotNext.Result(Of T))
   nameWithType: Result.Coalesce<T>(in Result<T>, in Result<T>)
   nameWithType.vb: Result.Coalesce(Of T)(Result(Of T), Result(Of T))
+- uid: DotNext.Result.EnsureNotNull*
+  name: EnsureNotNull
+  href: api/DotNext.Result.html#DotNext_Result_EnsureNotNull_
+  commentId: Overload:DotNext.Result.EnsureNotNull
+  isSpec: "True"
+  fullName: DotNext.Result.EnsureNotNull
+  nameWithType: Result.EnsureNotNull
+- uid: DotNext.Result.EnsureNotNull``1(DotNext.Result{``0})
+  name: EnsureNotNull<T>(Result<T?>)
+  href: api/DotNext.Result.html#DotNext_Result_EnsureNotNull__1_DotNext_Result___0__
+  commentId: M:DotNext.Result.EnsureNotNull``1(DotNext.Result{``0})
+  name.vb: EnsureNotNull(Of T)(Result(Of T))
+  fullName: DotNext.Result.EnsureNotNull<T>(DotNext.Result<T?>)
+  fullName.vb: DotNext.Result.EnsureNotNull(Of T)(DotNext.Result(Of T))
+  nameWithType: Result.EnsureNotNull<T>(Result<T?>)
+  nameWithType.vb: Result.EnsureNotNull(Of T)(Result(Of T))
+- uid: DotNext.Result.EnsureNotNull``2(DotNext.Result{``0})
+  name: EnsureNotNull<T, TException>(Result<T?>)
+  href: api/DotNext.Result.html#DotNext_Result_EnsureNotNull__2_DotNext_Result___0__
+  commentId: M:DotNext.Result.EnsureNotNull``2(DotNext.Result{``0})
+  name.vb: EnsureNotNull(Of T, TException)(Result(Of T))
+  fullName: DotNext.Result.EnsureNotNull<T, TException>(DotNext.Result<T?>)
+  fullName.vb: DotNext.Result.EnsureNotNull(Of T, TException)(DotNext.Result(Of T))
+  nameWithType: Result.EnsureNotNull<T, TException>(Result<T?>)
+  nameWithType.vb: Result.EnsureNotNull(Of T, TException)(Result(Of T))
 - uid: DotNext.Result.FromException*
   name: FromException
   href: api/DotNext.Result.html#DotNext_Result_FromException_
@@ -42622,6 +42710,24 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).As
   nameWithType: Pointer<T>.As
   nameWithType.vb: Pointer(Of T).As
+- uid: DotNext.Runtime.InteropServices.Pointer`1.AsSpan(System.Int32)
+  name: AsSpan(int)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_AsSpan_System_Int32_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.AsSpan(System.Int32)
+  name.vb: AsSpan(Integer)
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.AsSpan(int)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).AsSpan(Integer)
+  nameWithType: Pointer<T>.AsSpan(int)
+  nameWithType.vb: Pointer(Of T).AsSpan(Integer)
+- uid: DotNext.Runtime.InteropServices.Pointer`1.AsSpan*
+  name: AsSpan
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_AsSpan_
+  commentId: Overload:DotNext.Runtime.InteropServices.Pointer`1.AsSpan
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.AsSpan
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).AsSpan
+  nameWithType: Pointer<T>.AsSpan
+  nameWithType.vb: Pointer(Of T).AsSpan
 - uid: DotNext.Runtime.InteropServices.Pointer`1.AsStream(System.Int64,System.IO.FileAccess)
   name: AsStream(long, FileAccess)
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_AsStream_System_Int64_System_IO_FileAccess_
@@ -43177,24 +43283,6 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).ToMemoryOwner
   nameWithType: Pointer<T>.ToMemoryOwner
   nameWithType.vb: Pointer(Of T).ToMemoryOwner
-- uid: DotNext.Runtime.InteropServices.Pointer`1.ToSpan(System.Int32)
-  name: ToSpan(int)
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_ToSpan_System_Int32_
-  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.ToSpan(System.Int32)
-  name.vb: ToSpan(Integer)
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.ToSpan(int)
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).ToSpan(Integer)
-  nameWithType: Pointer<T>.ToSpan(int)
-  nameWithType.vb: Pointer(Of T).ToSpan(Integer)
-- uid: DotNext.Runtime.InteropServices.Pointer`1.ToSpan*
-  name: ToSpan
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_ToSpan_
-  commentId: Overload:DotNext.Runtime.InteropServices.Pointer`1.ToSpan
-  isSpec: "True"
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.ToSpan
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).ToSpan
-  nameWithType: Pointer<T>.ToSpan
-  nameWithType.vb: Pointer(Of T).ToSpan
 - uid: DotNext.Runtime.InteropServices.Pointer`1.ToString
   name: ToString()
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_ToString
@@ -43338,6 +43426,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).op_CheckedAddition(DotNext.Runtime.InteropServices.Pointer(Of T), System.IntPtr)
   nameWithType: Pointer<T>.operator checked +(Pointer<T>, nint)
   nameWithType.vb: Pointer(Of T).op_CheckedAddition(Pointer(Of T), IntPtr)
+- uid: DotNext.Runtime.InteropServices.Pointer`1.op_CheckedAddition(DotNext.Runtime.InteropServices.Pointer{`0},System.UIntPtr)
+  name: operator checked +(Pointer<T>, nuint)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_op_CheckedAddition_DotNext_Runtime_InteropServices_Pointer__0__System_UIntPtr_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.op_CheckedAddition(DotNext.Runtime.InteropServices.Pointer{`0},System.UIntPtr)
+  name.vb: op_CheckedAddition(Pointer(Of T), UIntPtr)
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.operator checked +(DotNext.Runtime.InteropServices.Pointer<T>, nuint)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).op_CheckedAddition(DotNext.Runtime.InteropServices.Pointer(Of T), System.UIntPtr)
+  nameWithType: Pointer<T>.operator checked +(Pointer<T>, nuint)
+  nameWithType.vb: Pointer(Of T).op_CheckedAddition(Pointer(Of T), UIntPtr)
 - uid: DotNext.Runtime.InteropServices.Pointer`1.op_CheckedAddition*
   name: operator checked +
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_op_CheckedAddition_
@@ -43546,6 +43643,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).>=
   nameWithType: Pointer<T>.operator >=
   nameWithType.vb: Pointer(Of T).>=
+- uid: DotNext.Runtime.InteropServices.Pointer`1.op_Implicit(DotNext.Runtime.InteropServices.Pointer{`0})~DotNext.Runtime.ValueReference{`0}
+  name: implicit operator ValueReference<T>(Pointer<T>)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_DotNext_Runtime_InteropServices_Pointer__0___DotNext_Runtime_ValueReference__0_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.op_Implicit(DotNext.Runtime.InteropServices.Pointer{`0})~DotNext.Runtime.ValueReference{`0}
+  name.vb: CType(Pointer(Of T))
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.implicit operator DotNext.Runtime.ValueReference<T>(DotNext.Runtime.InteropServices.Pointer<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).CType(DotNext.Runtime.InteropServices.Pointer(Of T))
+  nameWithType: Pointer<T>.implicit operator ValueReference<T>(Pointer<T>)
+  nameWithType.vb: Pointer(Of T).CType(Pointer(Of T))
 - uid: DotNext.Runtime.InteropServices.Pointer`1.op_Implicit(DotNext.Runtime.InteropServices.Pointer{`0})~System.IntPtr
   name: implicit operator nint(Pointer<T>)
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_DotNext_Runtime_InteropServices_Pointer__0___System_IntPtr
@@ -43668,6 +43774,25 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).<=
   nameWithType: Pointer<T>.operator <=
   nameWithType.vb: Pointer(Of T).<=
+- uid: DotNext.Runtime.InteropServices.Pointer`1.op_LogicalNot(DotNext.Runtime.InteropServices.Pointer{`0})
+  name: operator !(Pointer<T>)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_op_LogicalNot_DotNext_Runtime_InteropServices_Pointer__0__
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.op_LogicalNot(DotNext.Runtime.InteropServices.Pointer{`0})
+  name.vb: Not(Pointer(Of T))
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.operator !(DotNext.Runtime.InteropServices.Pointer<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Not(DotNext.Runtime.InteropServices.Pointer(Of T))
+  nameWithType: Pointer<T>.operator !(Pointer<T>)
+  nameWithType.vb: Pointer(Of T).Not(Pointer(Of T))
+- uid: DotNext.Runtime.InteropServices.Pointer`1.op_LogicalNot*
+  name: operator !
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_op_LogicalNot_
+  commentId: Overload:DotNext.Runtime.InteropServices.Pointer`1.op_LogicalNot
+  isSpec: "True"
+  name.vb: Not
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.operator !
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Not
+  nameWithType: Pointer<T>.operator !
+  nameWithType.vb: Pointer(Of T).Not
 - uid: DotNext.Runtime.InteropServices.Pointer`1.op_Subtraction(DotNext.Runtime.InteropServices.Pointer{`0},System.Int32)
   name: operator -(Pointer<T>, int)
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_op_Subtraction_DotNext_Runtime_InteropServices_Pointer__0__System_Int32_
@@ -43752,6 +43877,85 @@ references:
   isSpec: "True"
   fullName: DotNext.Runtime.InteropServices.SafeBufferExtensions.AcquirePointer
   nameWithType: SafeBufferExtensions.AcquirePointer
+- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1
+  name: UnmanagedMemory<T>
+  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html
+  commentId: T:DotNext.Runtime.InteropServices.UnmanagedMemory`1
+  name.vb: UnmanagedMemory(Of T)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T)
+  nameWithType: UnmanagedMemory<T>
+  nameWithType.vb: UnmanagedMemory(Of T)
+- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.#ctor
+  name: UnmanagedMemory()
+  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1__ctor
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedMemory`1.#ctor
+  name.vb: New()
+  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.UnmanagedMemory()
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).New()
+  nameWithType: UnmanagedMemory<T>.UnmanagedMemory()
+  nameWithType.vb: UnmanagedMemory(Of T).New()
+- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.#ctor(`0)
+  name: UnmanagedMemory(T)
+  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1__ctor__0_
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedMemory`1.#ctor(`0)
+  name.vb: New(T)
+  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.UnmanagedMemory(T)
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).New(T)
+  nameWithType: UnmanagedMemory<T>.UnmanagedMemory(T)
+  nameWithType.vb: UnmanagedMemory(Of T).New(T)
+- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.#ctor*
+  name: UnmanagedMemory
+  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1__ctor_
+  commentId: Overload:DotNext.Runtime.InteropServices.UnmanagedMemory`1.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.UnmanagedMemory
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).New
+  nameWithType: UnmanagedMemory<T>.UnmanagedMemory
+  nameWithType.vb: UnmanagedMemory(Of T).New
+- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.Dispose
+  name: Dispose()
+  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_Dispose
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedMemory`1.Dispose
+  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.Dispose()
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).Dispose()
+  nameWithType: UnmanagedMemory<T>.Dispose()
+  nameWithType.vb: UnmanagedMemory(Of T).Dispose()
+- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.Dispose*
+  name: Dispose
+  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_Dispose_
+  commentId: Overload:DotNext.Runtime.InteropServices.UnmanagedMemory`1.Dispose
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.Dispose
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).Dispose
+  nameWithType: UnmanagedMemory<T>.Dispose
+  nameWithType.vb: UnmanagedMemory(Of T).Dispose
+- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.Pointer
+  name: Pointer
+  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_Pointer
+  commentId: F:DotNext.Runtime.InteropServices.UnmanagedMemory`1.Pointer
+  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.Pointer
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).Pointer
+  nameWithType: UnmanagedMemory<T>.Pointer
+  nameWithType.vb: UnmanagedMemory(Of T).Pointer
+- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.ToString
+  name: ToString()
+  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_ToString
+  commentId: M:DotNext.Runtime.InteropServices.UnmanagedMemory`1.ToString
+  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.ToString()
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).ToString()
+  nameWithType: UnmanagedMemory<T>.ToString()
+  nameWithType.vb: UnmanagedMemory(Of T).ToString()
+- uid: DotNext.Runtime.InteropServices.UnmanagedMemory`1.ToString*
+  name: ToString
+  href: api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html#DotNext_Runtime_InteropServices_UnmanagedMemory_1_ToString_
+  commentId: Overload:DotNext.Runtime.InteropServices.UnmanagedMemory`1.ToString
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.UnmanagedMemory<T>.ToString
+  fullName.vb: DotNext.Runtime.InteropServices.UnmanagedMemory(Of T).ToString
+  nameWithType: UnmanagedMemory<T>.ToString
+  nameWithType.vb: UnmanagedMemory(Of T).ToString
 - uid: DotNext.Runtime.Intrinsics
   name: Intrinsics
   href: api/DotNext.Runtime.Intrinsics.html
@@ -50370,6 +50574,31 @@ references:
   fullName.vb: DotNext.Threading.Atomic.IsAtomic(Of T)()
   nameWithType: Atomic.IsAtomic<T>()
   nameWithType.vb: Atomic.IsAtomic(Of T)()
+- uid: DotNext.Threading.Atomic.Read(System.Int64@)
+  name: Read(ref readonly long)
+  href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_Read_System_Int64__
+  commentId: M:DotNext.Threading.Atomic.Read(System.Int64@)
+  name.vb: Read(Long)
+  fullName: DotNext.Threading.Atomic.Read(ref readonly long)
+  fullName.vb: DotNext.Threading.Atomic.Read(Long)
+  nameWithType: Atomic.Read(ref readonly long)
+  nameWithType.vb: Atomic.Read(Long)
+- uid: DotNext.Threading.Atomic.Read(System.UInt64@)
+  name: Read(ref readonly ulong)
+  href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_Read_System_UInt64__
+  commentId: M:DotNext.Threading.Atomic.Read(System.UInt64@)
+  name.vb: Read(ULong)
+  fullName: DotNext.Threading.Atomic.Read(ref readonly ulong)
+  fullName.vb: DotNext.Threading.Atomic.Read(ULong)
+  nameWithType: Atomic.Read(ref readonly ulong)
+  nameWithType.vb: Atomic.Read(ULong)
+- uid: DotNext.Threading.Atomic.Read*
+  name: Read
+  href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_Read_
+  commentId: Overload:DotNext.Threading.Atomic.Read
+  isSpec: "True"
+  fullName: DotNext.Threading.Atomic.Read
+  nameWithType: Atomic.Read
 - uid: DotNext.Threading.Atomic.UpdateAndGet(System.Double@,System.Func{System.Double,System.Double})
   name: UpdateAndGet(ref double, Func<double, double>)
   href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_UpdateAndGet_System_Double__System_Func_System_Double_System_Double__
@@ -50521,6 +50750,31 @@ references:
   fullName.vb: DotNext.Threading.Atomic.UpdateAndGet(Of TUpdater)(System.UIntPtr, TUpdater)
   nameWithType: Atomic.UpdateAndGet<TUpdater>(ref nuint, TUpdater)
   nameWithType.vb: Atomic.UpdateAndGet(Of TUpdater)(UIntPtr, TUpdater)
+- uid: DotNext.Threading.Atomic.Write(System.Int64@,System.Int64)
+  name: Write(ref long, long)
+  href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_Write_System_Int64__System_Int64_
+  commentId: M:DotNext.Threading.Atomic.Write(System.Int64@,System.Int64)
+  name.vb: Write(Long, Long)
+  fullName: DotNext.Threading.Atomic.Write(ref long, long)
+  fullName.vb: DotNext.Threading.Atomic.Write(Long, Long)
+  nameWithType: Atomic.Write(ref long, long)
+  nameWithType.vb: Atomic.Write(Long, Long)
+- uid: DotNext.Threading.Atomic.Write(System.UInt64@,System.UInt64)
+  name: Write(ref ulong, ulong)
+  href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_Write_System_UInt64__System_UInt64_
+  commentId: M:DotNext.Threading.Atomic.Write(System.UInt64@,System.UInt64)
+  name.vb: Write(ULong, ULong)
+  fullName: DotNext.Threading.Atomic.Write(ref ulong, ulong)
+  fullName.vb: DotNext.Threading.Atomic.Write(ULong, ULong)
+  nameWithType: Atomic.Write(ref ulong, ulong)
+  nameWithType.vb: Atomic.Write(ULong, ULong)
+- uid: DotNext.Threading.Atomic.Write*
+  name: Write
+  href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_Write_
+  commentId: Overload:DotNext.Threading.Atomic.Write
+  isSpec: "True"
+  fullName: DotNext.Threading.Atomic.Write
+  nameWithType: Atomic.Write
 - uid: DotNext.Threading.Atomic`1
   name: Atomic<T>
   href: api/DotNext.Threading.Atomic-1.html
