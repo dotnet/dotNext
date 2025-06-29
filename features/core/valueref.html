@@ -93,6 +93,33 @@
 ValueReference&lt;int&gt; reference = new ValueReference&lt;int&gt;(ref MyClass.Field);
 reference.Value = 42;
 </code></pre>
+<h1 id="unmanaged-memory-reference">Unmanaged memory reference</h1>
+<p><code>ValueReference&lt;T&gt;</code> can be used in combination with <a class="xref" href="../../api/DotNext.Runtime.InteropServices.Pointer-1.html">Pointer&lt;T&gt;</a> data type to provide a reference to the unmanaged memory:</p>
+<pre><code class="lang-csharp">Pointer&lt;long&gt; ptr = NativeMemory.Alloc((uint)sizeof(long));
+ValueReference&lt;long&gt; reference = ptr;
+reference.Value = 20L;
+</code></pre>
+<h1 id="by-ref-parameters-in-async-methods">By-ref parameters in async methods</h1>
+<p>Async method disallows <strong>ref</strong> parameters because the reference might point the stack-allocated memory of the caller. If async methods needs to suspend, the entire state machine is allocated on the heap, so the stack-allocated pointer becomes invalid. However, some memory allocations are still safe in that case:</p>
+<ul>
+<li>The value allocated in the <a href="https://learn.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.nativememory">unmanaged heap</a>, memory-mapped file, or anonymous memory page</li>
+<li>A reference to the field which is a part of the object allocated in the managed heap</li>
+<li>A reference to the static field</li>
+</ul>
+<p>Async method can use <code>ValueReference&lt;T&gt;</code> to simulate by-ref parameter. In combination with <a class="xref" href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html">UnmanagedMemory&lt;T&gt;</a>, async caller doesn't need to allocate the memory for by-ref value in the managed heap, reducing GC pressure:</p>
+<pre><code class="lang-csharp">static async Task ByRefMethod(ValueReference&lt;int&gt; reference)
+{
+    await Task.Yield();
+    reference.Value = 42;
+}
+
+static async Task AsyncCaller()
+{
+    using var memory = new UnmanagedMemory&lt;int&gt;();
+    await ByRefMethod(memory.Pointer);
+    Console.WriteLine(memory.Pointer.Value); // prints 42
+}
+</code></pre>
 
 </article>
           </div>
