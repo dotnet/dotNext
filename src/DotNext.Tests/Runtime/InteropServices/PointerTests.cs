@@ -294,4 +294,17 @@ public sealed class PointerTests : Test
 
         Equal(0, i);
     }
+
+    [Fact]
+    public static unsafe void SpanOverElements()
+    {
+        const int count = 2;
+        Pointer<int> ptr = stackalloc int[count];
+        var elements = ptr.AsSpan(count);
+        elements[0] = 42;
+        elements[1] = 43;
+
+        Equal(42, ptr[0]);
+        Equal(43, ptr[1]);
+    }
 }

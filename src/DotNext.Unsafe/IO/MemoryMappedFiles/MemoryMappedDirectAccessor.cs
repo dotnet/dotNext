@@ -59,7 +59,7 @@ public unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
     /// Represents memory-mapped file segment in the form of <see cref="Span{T}"/>.
     /// </summary>
     /// <value><see cref="Span{T}"/> representing virtual memory of the mapped file segment.</value>
-    public readonly Span<byte> Bytes => Pointer.ToSpan(int.CreateSaturating(accessor.Capacity));
+    public readonly Span<byte> Bytes => Pointer.AsSpan(int.CreateSaturating(accessor.Capacity));
 
     /// <summary>
     /// Sets all bits of allocated memory to zero.

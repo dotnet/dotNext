@@ -7,7 +7,7 @@ public sealed class UnmanagedMemoryTests : Test
     [Fact]
     public static void DefaultValue()
     {
-        var memory = default(UnmanagedMemory<Int128>);
+        using var memory = default(UnmanagedMemory<Int128>);
         True(memory.Pointer.IsNull);
         True(Unsafe.IsNullRef(in memory.Pointer.Value));
 

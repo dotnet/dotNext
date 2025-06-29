@@ -36,7 +36,7 @@ internal sealed unsafe class MappedMemory : MemoryManager<byte>, IMappedMemory
 
     public void Flush() => accessor.Flush();
 
-    public override Span<byte> GetSpan() => Pointer.ToSpan((int)accessor.Capacity);
+    public override Span<byte> GetSpan() => Pointer.AsSpan((int)accessor.Capacity);
 
     public override Memory<byte> Memory => CreateMemory((int)accessor.Capacity);
 

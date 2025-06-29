@@ -109,7 +109,7 @@ public readonly partial struct Pointer<T> :
     /// </summary>
     /// <param name="length">The number of elements located in the unmanaged memory identified by this pointer.</param>
     /// <returns><see cref="Span{T}"/> representing elements in the unmanaged memory.</returns>
-    public unsafe Span<T> ToSpan(int length) => IsNull ? [] : new(value, length);
+    public unsafe Span<T> AsSpan(int length) => IsNull ? [] : new(value, length);
 
     /// <summary>
     /// Converts this pointer into span of bytes.
