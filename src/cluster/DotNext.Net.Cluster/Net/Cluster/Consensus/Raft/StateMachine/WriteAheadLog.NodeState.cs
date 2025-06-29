@@ -62,7 +62,7 @@ partial class WriteAheadLog
             term = ReadInt64LittleEndian(buffer.AsSpan(TermOffset));
         }
 
-        public readonly long Term => Volatile.Read(in term);
+        public readonly long Term => Atomic.Read(in term);
         
         public readonly bool IsVotedFor(in ClusterMemberId expected) => IPersistentState.IsVotedFor(votedFor, expected);
         
@@ -75,7 +75,7 @@ partial class WriteAheadLog
                 buffer[LastVotePresenceOffset] = Unsafe.BitCast<bool, byte>(false);
             }
 
-            Volatile.Write(ref term, value);
+            Atomic.Write(ref term, value);
         }
         
         public long IncrementTerm(ClusterMemberId id)

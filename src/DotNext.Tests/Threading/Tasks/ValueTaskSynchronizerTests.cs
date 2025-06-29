@@ -1,5 +1,6 @@
 namespace DotNext.Threading.Tasks;
 
+[Collection(TestCollections.AsyncPrimitives)]
 public sealed class ValueTaskSynchronizerTests : Test
 {
     private sealed class SharedCounter

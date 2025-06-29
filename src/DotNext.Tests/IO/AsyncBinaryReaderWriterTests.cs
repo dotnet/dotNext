@@ -102,12 +102,7 @@ public sealed class AsyncBinaryReaderWriterTests : Test
         public Task FlushAsync(CancellationToken token)
             => pipe.Writer.FlushAsync(token).AsTask();
 
-        void IFlushable.Flush()
-        {
-            using var timeoutSource = new CancellationTokenSource(DefaultTimeout);
-            using var task = FlushAsync(timeoutSource.Token);
-            task.Wait();
-        }
+        void IFlushable.Flush() => throw new NotSupportedException();
 
         public async ValueTask DisposeAsync()
         {
@@ -154,13 +149,7 @@ public sealed class AsyncBinaryReaderWriterTests : Test
 
         public Task FlushAsync(CancellationToken token) => writer.WriteAsync(token).AsTask();
 
-        void IFlushable.Flush()
-        {
-            using var cts = new CancellationTokenSource();
-            using var task = FlushAsync(cts.Token);
-            cts.CancelAfter(DefaultTimeout);
-            task.Wait();
-        }
+        void IFlushable.Flush() => throw new NotSupportedException();
 
         protected override void Dispose(bool disposing)
         {

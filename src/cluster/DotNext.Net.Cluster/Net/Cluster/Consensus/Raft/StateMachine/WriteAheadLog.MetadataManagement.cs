@@ -1,5 +1,5 @@
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
@@ -8,29 +8,34 @@ partial class WriteAheadLog
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private readonly MetadataPageManager metadataPages;
 
-    private sealed class MetadataPageManager : PageManager
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct MetadataPageManager(PageManager manager) : IDisposable
     {
-        public new const int PageSize = Page.MinPageSize;
-
-        public MetadataPageManager(DirectoryInfo location)
-            : base(location, PageSize)
+        public const string LocationPrefix = "metadata";
+        
+        public long DeletePages(long toIndex)
         {
-            Debug.Assert(PageSize % LogEntryMetadata.AlignedSize is 0);
+            var toPage = GetEndPageIndex(toIndex, out _);
+            return manager.DeletePages(toPage) * manager.PageSize;
         }
-
-        public uint GetStartPageIndex(long index)
-            => GetStartPageIndex(index, out _);
-
+        
         private uint GetStartPageIndex(long index, out int offset)
-            => GetPageIndex((ulong)index * LogEntryMetadata.AlignedSize, out offset);
+            => manager.GetPageIndex((ulong)index * LogEntryMetadata.AlignedSize, out offset);
 
-        public uint GetEndPageIndex(long index)
-            => GetPageIndex((ulong)index * LogEntryMetadata.AlignedSize + LogEntryMetadata.AlignedSize, out _);
+        private uint GetEndPageIndex(long index, out int offset)
+            => manager.GetPageIndex((ulong)index * LogEntryMetadata.AlignedSize + LogEntryMetadata.AlignedSize, out offset);
 
-        internal bool TryGetMetadata(long index, out LogEntryMetadata metadata)
+        public ValueTask FlushAsync(long fromIndex, long toIndex, CancellationToken token)
+        {
+            var startPage = GetStartPageIndex(fromIndex, out var startOffset);
+            var endPage = GetEndPageIndex(toIndex, out var endOffset);
+            return manager.FlushAsync(startPage, startOffset, endPage, endOffset, token);
+        }
+        
+        public bool TryGetMetadata(long index, out LogEntryMetadata metadata)
         {
             var pageIndex = GetStartPageIndex(index, out var offset);
-            if (TryGetValue(pageIndex, out var page))
+            if (manager.TryGetPage(pageIndex) is { } page)
             {
                 metadata = new(page.GetSpan().Slice(offset));
                 return true;
@@ -45,16 +50,17 @@ partial class WriteAheadLog
             get
             {
                 var pageIndex = GetStartPageIndex(index, out var offset);
-                return TryGetValue(pageIndex, out var page)
-                    ? new(page.GetSpan().Slice(offset))
-                    : throw new ArgumentOutOfRangeException(nameof(index));
+                var page = manager[pageIndex];
+                return new(page.GetSpan().Slice(offset));
             }
 
             set
             {
-                var page = GetOrAdd(GetStartPageIndex(index, out var offset));
+                var page = manager.GetOrAddPage(GetStartPageIndex(index, out var offset));
                 value.Format(page.GetSpan().Slice(offset));
             }
         }
+
+        public void Dispose() => manager.Dispose();
     }
 }

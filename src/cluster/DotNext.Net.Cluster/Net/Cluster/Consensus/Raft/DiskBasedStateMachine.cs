@@ -6,6 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using IO.Log;
 using Runtime.CompilerServices;
+using Threading;
 
 /// <summary>
 /// Represents disk-based state machine.
@@ -71,7 +72,7 @@ public abstract partial class DiskBasedStateMachine : PersistentState
 
                 var entry = partition.Read(sessionId, startIndex);
                 var snapshotLength = await ApplyCoreAsync(entry).ConfigureAwait(false);
-                Volatile.Write(ref lastTerm, entry.Term);
+                Atomic.Write(ref lastTerm, entry.Term);
                 partition.ClearContext(startIndex);
 
                 if (bufferManager.IsCachingEnabled)

@@ -3,6 +3,8 @@
 	<RunConfiguration>
 		<TestSessionTimeout>300000</TestSessionTimeout>
 		<TargetFrameworkVersion>net8.0</TargetFrameworkVersion>
+		<LongRunningTestSeconds>30</LongRunningTestSeconds>
+        <DiagnosticMessages>true</DiagnosticMessages>
 	</RunConfiguration>
 	<DataCollectionRunSettings>
 		<DataCollectors>

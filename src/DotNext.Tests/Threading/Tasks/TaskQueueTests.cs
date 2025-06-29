@@ -1,5 +1,6 @@
 namespace DotNext.Threading.Tasks;
 
+[Collection(TestCollections.AdvancedSynchronization)]
 public class TaskQueueTests : Test
 {
     [Fact]

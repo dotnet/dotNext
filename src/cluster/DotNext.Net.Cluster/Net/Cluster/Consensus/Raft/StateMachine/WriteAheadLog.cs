@@ -10,6 +10,7 @@ using Buffers;
 using IO;
 using IO.Log;
 using Threading;
+using Threading.Tasks;
 
 /// <summary>
 /// Represents the general-purpose Raft WAL.
@@ -17,12 +18,11 @@ using Threading;
 [Experimental("DOTNEXT001")]
 public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentState
 {
-    private const string DataPagesLocationPrefix = "data";
-    private const string MetadataPagesLocationPrefix = "metadata";
     private const int DictionaryConcurrencyLevel = 3; // append flow and cleaner and applier
 
     private readonly MemoryAllocator<byte> bufferAllocator;
     private readonly IStateMachine stateMachine;
+    private readonly CancellationToken lifetimeToken;
     
     private volatile ExceptionDispatchInfo? backgroundTaskFailure;
     private long lastEntryIndex; // Append lock protects modification of this field
@@ -41,9 +41,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(stateMachine);
 
-        lifetimeTokenSource = new();
+        lifetimeToken = (lifetimeTokenSource = new()).Token;
         var rootPath = new DirectoryInfo(configuration.Location);
-        CreateIfNeeded(rootPath);
+        rootPath.CreateIfNeeded();
 
         context = new(DictionaryConcurrencyLevel, configuration.ConcurrencyLevel);
         lockManager = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
@@ -52,21 +52,33 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         stateLock = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
         state = new(rootPath);
         measurementTags = configuration.MeasurementTags;
-        manualFlushQueue = new() { MeasurementTags = configuration.MeasurementTags };
-        
-        checkpoint = new(rootPath);
-        var lastReliablyWrittenEntryIndex = checkpoint.Value;
+
+        checkpoint = new(rootPath, out var lastReliablyWrittenEntryIndex);
         
         // page management
         {
-            var pagesLocation = new DirectoryInfo(Path.Combine(rootPath.FullName, MetadataPagesLocationPrefix));
-            CreateIfNeeded(pagesLocation);
-            metadataPages = new(pagesLocation);
-            
-            pagesLocation = new(Path.Combine(rootPath.FullName, DataPagesLocationPrefix));
-            CreateIfNeeded(pagesLocation);
+            var metadataLocation = rootPath.GetSubdirectory(MetadataPageManager.LocationPrefix);
+            metadataLocation.CreateIfNeeded();
 
-            dataPages = new(pagesLocation, configuration.ChunkMaxSize)
+            var dataLocation = rootPath.GetSubdirectory(PagedBufferWriter.LocationPrefix);
+            dataLocation.CreateIfNeeded();
+
+            PageManager m, d;
+            switch (configuration.MemoryManagement)
+            {
+                case MemoryManagementStrategy.PrivateMemory:
+                    m = new AnonymousPageManager(metadataLocation, Page.MinSize);
+                    d = new AnonymousPageManager(dataLocation, configuration.ChunkSize);
+                    break;
+                case MemoryManagementStrategy.SharedMemory:
+                default:
+                    m = new MemoryMappedPageManager(metadataLocation, Page.MinSize);
+                    d = new MemoryMappedPageManager(dataLocation, configuration.ChunkSize);
+                    break;
+            }
+
+            metadataPages = new(m);
+            dataPages = new(d)
             {
                 LastWrittenAddress = metadataPages.TryGetMetadata(lastReliablyWrittenEntryIndex, out var metadata)
                     ? metadata.End
@@ -79,34 +91,29 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         
         // flusher
         {
-            flushTrigger = new(initialState: false) { MeasurementTags = configuration.MeasurementTags };
-
             var interval = configuration.FlushInterval;
+            flusherPreviousIndex = commitIndex + 1L;
             if (interval == TimeSpan.Zero)
             {
-                flushOnCommit = true;
-                interval = InfiniteTimeSpan;
+                flushTrigger = new(initialState: false);
+                flusherTask = FlushAsync(new BackgroundTrigger(flushTrigger, out flushCompleted), lifetimeToken);
+            }
+            else if (interval == InfiniteTimeSpan)
+            {
+                flusherTask = Task.CompletedTask;
             }
             else
             {
-                flushOnCommit = false;
+                flusherTask = FlushAsync(new TimeoutTrigger(interval, out flushCompleted), lifetimeToken);
             }
-            
-            flusherTask = FlushAsync(commitIndex + 1L, interval, lifetimeTokenSource.Token);
         }
-        
+
         // applier
         {
             appliedIndex = snapshotIndex;
-            applyTrigger = new(initialState: false) { MeasurementTags = configuration.MeasurementTags };
+            applyTrigger = new();
             appenderTask = ApplyAsync(lifetimeTokenSource.Token);
             appliedEvent = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
-        }
-
-        static void CreateIfNeeded(DirectoryInfo directory)
-        {
-            if (!directory.Exists)
-                directory.Create();
         }
     }
 
@@ -126,8 +133,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     /// <inheritdoc cref="IAuditTrail.LastEntryIndex"/>
     public long LastEntryIndex
     {
-        get => Volatile.Read(ref lastEntryIndex);
-        private set => Volatile.Write(ref lastEntryIndex, value);
+        get => Atomic.Read(ref lastEntryIndex);
+        private set => Atomic.Write(ref lastEntryIndex, value);
     }
 
     private async ValueTask<long> AppendUnbufferedAsync<TEntry>(TEntry entry, CancellationToken token)
@@ -252,7 +259,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                 if (startIndex <= LastCommittedEntryIndex)
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
                 
-                appliedIndex = await stateMachine.ApplyAsync(new LogEntry(entry, startIndex), token).ConfigureAwait(false);
+                LastAppliedIndex = await stateMachine.ApplyAsync(new LogEntry(entry, startIndex), token).ConfigureAwait(false);
                 var snapshotIndex = stateMachine.Snapshot?.Index ?? startIndex;
                 LastEntryIndex = long.Max(tailIndex, LastCommittedEntryIndex = snapshotIndex);
             }
@@ -586,8 +593,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
 
     private void CleanUp()
     {
-        Dispose<PageManager>([dataPages, metadataPages]);
-        Dispose<QueuedSynchronizer>([lockManager, appliedEvent, flushTrigger, applyTrigger, stateLock, manualFlushQueue]);
+        metadataPages.Dispose();
+        dataPages.Dispose();
+        Dispose<QueuedSynchronizer>([lockManager, appliedEvent, stateLock]);
         checkpoint.Dispose();
         state.Dispose();
         context.Clear();
@@ -603,6 +611,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                 cts.Cancel();
             }
         }
+        
+        flushTrigger?.Set();
+        applyTrigger.Set();
     }
 
     /// <inheritdoc/>
@@ -613,6 +624,9 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         await flusherTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
         await appenderTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
 
+        if (cleanupTask.TryGetTarget(out var task))
+            await task.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+        
         CleanUp();
     }
 
@@ -621,13 +635,24 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     {
         if (disposing)
         {
-            CancelBackgroundJobs();
-            CleanUp();
+            DisposeAsyncCore().Wait();
         }
-        
+
         base.Dispose(disposing);
     }
 
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync()"/>
     public new ValueTask DisposeAsync() => base.DisposeAsync();
+}
+
+file static class DirectoryInfoExtensions
+{
+    public static void CreateIfNeeded(this DirectoryInfo directory)
+    {
+        if (!directory.Exists)
+            directory.Create();
+    }
+
+    public static DirectoryInfo GetSubdirectory(this DirectoryInfo root, string prefix)
+        => new(Path.Combine(root.FullName, prefix));
 }

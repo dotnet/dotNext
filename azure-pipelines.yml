@@ -4,7 +4,6 @@ variables:
   TestProject: $(TestFolder)/DotNext.Tests.csproj
   AotTestFolder: src/DotNext.AotTests
   AotTestProject: $(AotTestFolder)/DotNext.AotTests.csproj
-  InternetAccess: false
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: false
   isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/master')]
 trigger:
@@ -136,7 +135,7 @@ stages:
             inputs:
               command: custom
               custom: tool
-              arguments: install --tool-path . sign --version 0.9.0-beta.23127.3
+              arguments: install --tool-path . sign --prerelease
           - download: current
             displayName: Download packages
             artifact: packages

@@ -3,6 +3,7 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
+[Collection(TestCollections.AsyncPrimitives)]
 public sealed class AsyncTriggerTests : Test
 {
     [Fact]

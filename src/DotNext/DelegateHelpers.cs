@@ -14,10 +14,10 @@ public static partial class DelegateHelpers
         => expression.Body switch
         {
             MethodCallExpression expr => expr.Method,
-            MemberExpression { Member: PropertyInfo { CanRead: true } property } => property.GetMethod!,
-            BinaryExpression { Method: not null } expr => expr.Method,
-            IndexExpression { Indexer.CanRead: true } expr => expr.Indexer.GetMethod!,
-            UnaryExpression { Method: not null } expr => expr.Method,
+            MemberExpression { Member: PropertyInfo { GetMethod: { } getter } } => getter,
+            BinaryExpression { Method: { } method } => method,
+            IndexExpression { Indexer.GetMethod: { } getter } => getter,
+            UnaryExpression { Method: { } method } => method,
             _ => throw new ArgumentException(ExceptionMessages.InvalidExpressionTree, nameof(expression))
         };
 
@@ -42,9 +42,9 @@ public static partial class DelegateHelpers
     /// <returns>The open delegate representing property setter.</returns>
     public static Action<T, TValue> CreateOpenDelegate<T, TValue>(Expression<Func<T, TValue>> properyExpr)
         where T : class
-        => properyExpr.Body is MemberExpression { Member: PropertyInfo { CanWrite: true } property } ?
-            property.SetMethod!.CreateDelegate<Action<T, TValue>>() :
-            throw new ArgumentException(ExceptionMessages.InvalidExpressionTree, nameof(properyExpr));
+        => properyExpr.Body is MemberExpression { Member: PropertyInfo { SetMethod: { } setter } }
+            ? setter.CreateDelegate<Action<T, TValue>>()
+            : throw new ArgumentException(ExceptionMessages.InvalidExpressionTree, nameof(properyExpr));
 
     /// <summary>
     /// Creates a factory for closed delegates.
@@ -54,7 +54,7 @@ public static partial class DelegateHelpers
     /// <returns>The factory of closed delegate.</returns>
     public static Func<object, TDelegate> CreateClosedDelegateFactory<TDelegate>(Expression<TDelegate> expression)
         where TDelegate : Delegate
-        => new(GetMethod(expression).CreateDelegate<TDelegate>);
+        => GetMethod(expression).CreateDelegate<TDelegate>;
 
     /// <summary>
     /// Performs contravariant conversion

@@ -131,7 +131,7 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
 
     /// <inheritdoc/>
     public override string? ToString()
-        => owner is not null ? ValueReference.GetObjectData<T>(owner, offset)?.ToString() : null;
+        => IsEmpty ? null : Value?.ToString();
 
     /// <inheritdoc/>
     public override bool Equals([NotNullWhen(true)] object? other)
@@ -289,7 +289,7 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
 
     /// <inheritdoc/>
     public override string? ToString()
-        => owner is not null ? ValueReference.GetObjectData<T>(owner, offset)?.ToString() : null;
+        => IsEmpty ? null : Value?.ToString();
 
     /// <inheritdoc/>
     public override bool Equals([NotNullWhen(true)] object? other)

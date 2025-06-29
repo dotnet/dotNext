@@ -2,6 +2,7 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks;
 
+[Collection(TestCollections.AsyncPrimitives)]
 public sealed class ValueTaskCompletionSourceTests : Test
 {
     [Theory]
@@ -139,20 +140,15 @@ public sealed class ValueTaskCompletionSourceTests : Test
     }
 
     [Theory]
-    [InlineData(false, false, false)]
-    [InlineData(false, false, true)]
-    [InlineData(false, true, false)]
-    [InlineData(false, true, true)]
-    [InlineData(true, false, false)]
-    [InlineData(true, false, true)]
-    [InlineData(true, true, false)]
-    [InlineData(true, true, true)]
-    public static async Task ContextFlow(bool runContinuationsAsynchronously, bool continueOnCapturedContext, bool flowExecutionContext)
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public static async Task ContextFlow(bool runContinuationsAsynchronously, bool flowExecutionContext)
     {
         var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
         var dest = new TaskCompletionSource();
         var awaiter = source.CreateTask(InfiniteTimeSpan, CancellationToken.None)
-            .ConfigureAwait(continueOnCapturedContext)
             .GetAwaiter();
 
         if (flowExecutionContext)

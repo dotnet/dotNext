@@ -51,7 +51,8 @@ public static class Result
     /// </summary>
     /// <param name="resultType">The type of <see cref="Result{T}"/>.</param>
     /// <returns><see langword="true"/>, if specified type is result type; otherwise, <see langword="false"/>.</returns>
-    public static bool IsResult(this Type resultType) => resultType.IsConstructedGenericType && resultType.GetGenericTypeDefinition().IsOneOf([typeof(Result<>), typeof(Result<,>)]);
+    public static bool IsResult(this Type resultType) => resultType.IsConstructedGenericType &&
+                                                         resultType.GetGenericTypeDefinition().IsOneOf([typeof(Result<>), typeof(Result<,>)]);
 
     /// <summary>
     /// Returns the underlying type argument of the specified result type.
@@ -75,6 +76,30 @@ public static class Result
     /// <param name="e">The exception to be placed to the container.</param>
     /// <returns>The exception encapsulated by <see cref="Result{T}"/>.</returns>
     public static Result<T> FromException<T>(Exception e) => new(e);
+
+    /// <summary>
+    /// Ensures that the specified result doesn't contain null value.
+    /// </summary>
+    /// <param name="result">The result to be checked.</param>
+    /// <typeparam name="T">The type of the result.</typeparam>
+    /// <returns>The result containing non-null value; or <see cref="NullReferenceException"/> as an error.</returns>
+    public static Result<T> EnsureNotNull<T>(this Result<T?> result)
+        where T : class
+        => EnsureNotNull<T, NullReferenceException>(result);
+
+    /// <summary>
+    /// Ensures that the specified result doesn't contain null value.
+    /// </summary>
+    /// <param name="result">The result to be checked.</param>
+    /// <typeparam name="T">The type of the result.</typeparam>
+    /// <typeparam name="TException">The type of the exception to be returned from the null result.</typeparam>
+    /// <returns>The result containing non-null value; or <paramref cref="TException"/> as an error.</returns>
+    public static Result<T> EnsureNotNull<T, TException>(this Result<T?> result)
+        where T : class
+        where TException : Exception, new()
+        => result.IsNull
+            ? FromException<T>(ExceptionDispatchInfo.SetCurrentStackTrace(new TException()))
+            : result!;
 }
 
 /// <summary>
@@ -101,6 +126,10 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
         : this(ExceptionDispatchInfo.Capture(error))
     {
     }
+
+    [JsonIgnore]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    internal bool IsNull => exception is null && value is null;
 
     private Result(ExceptionDispatchInfo dispatchInfo)
     {

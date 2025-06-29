@@ -66,7 +66,7 @@ public sealed class PointerTests : Test
         fixed (ushort* p = array)
         {
             var ptr = new Pointer<ushort>(p);
-            Equal(new IntPtr(p), (IntPtr)ptr.Address);
+            Equal(new IntPtr(p), ptr.Address);
             ptr.Value = 20;
             Equal(20, array[0]);
             Equal(20, ptr.Value);
@@ -136,7 +136,7 @@ public sealed class PointerTests : Test
     {
         var ptr = default(Pointer<int>);
         Throws<NullPointerException>(() => ptr[0] = 10);
-        Throws<NullPointerException>(() => ptr.Value = 10);
+        Throws<NullReferenceException>(() => ptr.Value = 10);
         Empty(ptr.ToByteArray(10));
         True(ptr.Bytes.IsEmpty);
         Equal(Pointer<int>.Null, ptr);
@@ -163,34 +163,37 @@ public sealed class PointerTests : Test
     [Fact]
     public static unsafe void Operators()
     {
-        var ptr1 = new Pointer<int>(new IntPtr(42));
-        var ptr2 = new Pointer<int>(new IntPtr(46));
+        var ptr1 = new Pointer<int>(new nint(42));
+        var ptr2 = new Pointer<int>(new nint(46));
         True(ptr1 != ptr2);
         False(ptr1 == ptr2);
-        ptr2 -= new IntPtr(1);
-        Equal(new IntPtr(42), ptr2);
+        
+        ptr2 -= new nint(1);
+        Equal(new nint(42), ptr2);
         False(ptr1 != ptr2);
-        Equal(new IntPtr(42), ptr1);
-        True(new IntPtr(42).ToPointer() == ptr1);
+        Equal(new nint(42), ptr1);
+        True(new nint(42).ToPointer() == ptr1);
         if (ptr1) { }
         else Fail("Unexpected zero pointer");
+        
         ptr2 = default;
         if (ptr2) Fail("Unexpected non-zero pointer");
+        True(!ptr2);
 
         ptr1 += 2U;
-        Equal(new IntPtr(50), ptr1);
+        Equal(new nint(50), ptr1);
         ptr1 += 1L;
-        Equal(new IntPtr(54), ptr1);
-        ptr1 += new IntPtr(2);
-        Equal(new IntPtr(62), ptr1);
+        Equal(new nint(54), ptr1);
+        ptr1 += new nint(2);
+        Equal(new nint(62), ptr1);
 
-        ptr1 = new Pointer<int>(new UIntPtr(56U));
-        Equal(new UIntPtr(56U), ptr1);
+        ptr1 = new Pointer<int>(new nuint(56U));
+        Equal(new nuint(56U), ptr1);
 
         ptr1 += (nint)1;
-        Equal(new IntPtr(60), ptr1);
+        Equal(new nint(60), ptr1);
         ptr1 -= (nint)1;
-        Equal(new IntPtr(56), ptr1);
+        Equal(new nint(56), ptr1);
 
         True(ptr1 > ptr2);
         True(ptr1 >= ptr2);
@@ -250,16 +253,16 @@ public sealed class PointerTests : Test
         ptr.Value = 42;
         var obj = ptr.GetBoxedPointer();
         IsType<Pointer>(obj);
-        Equal((IntPtr)ptr.Address, new IntPtr(Pointer.Unbox(obj)));
+        Equal(ptr.Address, new IntPtr(Pointer.Unbox(obj)));
     }
 
     [Fact]
     public static void CompareToMethod()
     {
-        IComparable<Pointer<int>> x = new Pointer<int>((nint)9);
+        IComparable<Pointer<int>> x = new Pointer<int>(9);
         Equal(1, x.CompareTo(Pointer<int>.Null));
-        Equal(-1, x.CompareTo(new((nint)10)));
-        Equal(0, x.CompareTo(new((nint)9)));
+        Equal(-1, x.CompareTo(new(10)));
+        Equal(0, x.CompareTo(new(9)));
     }
 
     [Fact]
@@ -267,5 +270,41 @@ public sealed class PointerTests : Test
     {
         var i = 0;
         True(new Pointer<int>(&i).IsAligned);
+    }
+
+    [Fact]
+    public static void BitwiseComparison()
+    {
+        using var mem1 = new UnmanagedMemory<UInt128>(UInt128.MaxValue);
+        using var mem2 = new UnmanagedMemory<UInt128>(UInt128.MaxValue);
+        True(mem1.Pointer.BitwiseCompare(mem2.Pointer, 1U) is 0);
+
+        mem2.Pointer.Value--;
+
+        True(mem1.Pointer.BitwiseCompare(mem2.Pointer, 1U) > 0);
+    }
+
+    [Fact]
+    public static unsafe void ClearValue()
+    {
+        var i = 42;
+
+        Pointer<int> ptr = &i;
+        ptr.Clear();
+
+        Equal(0, i);
+    }
+
+    [Fact]
+    public static unsafe void SpanOverElements()
+    {
+        const int count = 2;
+        Pointer<int> ptr = stackalloc int[count];
+        var elements = ptr.AsSpan(count);
+        elements[0] = 42;
+        elements[1] = 43;
+
+        Equal(42, ptr[0]);
+        Equal(43, ptr[1]);
     }
 }

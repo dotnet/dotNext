@@ -84,7 +84,11 @@ public sealed class IndexPoolTests : Test
         Equal(3, pool.Count);
 
         Equal(0, pool.Take());
+        Equal(2, pool.Count);
+        
         Equal(1, pool.Take());
+        Single(pool);
+        
         Equal(2, pool.Take());
 
         False(pool.TryTake(out _));

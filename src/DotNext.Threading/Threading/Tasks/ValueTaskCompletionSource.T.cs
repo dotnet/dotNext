@@ -134,21 +134,16 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         Debug.Assert(func != null);
 
         bool result;
-        EnterLock();
-        try
+        lock (SyncRoot)
         {
             result = versionAndStatus.CanBeCompleted(completionToken);
             if (!result || !SetResult(func(arg), completionData))
                 goto exit;
         }
-        finally
-        {
-            ExitLock();
-        }
 
         Resume();
 
-    exit:
+        exit:
         return result;
     }
 
@@ -163,14 +158,9 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     internal bool TrySetResult(object? completionData, short? completionToken, in Result<T> result, out bool resumable)
     {
         bool successful;
-        EnterLock();
-        try
+        lock (SyncRoot)
         {
             resumable = (successful = versionAndStatus.CanBeCompleted(completionToken)) && SetResult(in result, completionData);
-        }
-        finally
-        {
-            ExitLock();
         }
 
         return successful;

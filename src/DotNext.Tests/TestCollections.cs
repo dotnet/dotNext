@@ -6,4 +6,10 @@ namespace DotNext;
 internal static class TestCollections
 {
     internal const string Raft = "Raft";
+
+    internal const string AsyncPrimitives = "Async";
+
+    internal const string AdvancedSynchronization = "AdvancedAsync";
+
+    internal const string WriteAheadLog = "WAL";
 }

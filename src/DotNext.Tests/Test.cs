@@ -1,5 +1,8 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
+
+[assembly: DotNext.ReportLongRunningTests(30_000)]
 
 namespace DotNext;
 
@@ -43,4 +46,32 @@ public abstract class Test : Assert
     private protected static Action<T> Same<T>(T expected)
         where T : class
         => actual => Same(expected, actual);
+    
+    protected static TResult InvokeAsThread<TResult>(Func<TResult> func, [CallerMemberName] string threadName = "")
+    {
+        var state = new State<TResult>(func);
+
+        var thread = new Thread(Start)
+        {
+            IsBackground = true,
+            Name = threadName,
+        };
+        
+        thread.UnsafeStart(state);
+        True(thread.Join(DefaultTimeout));
+        return state.Result;
+
+        static void Start(object state)
+        {
+            var tuple = (State<TResult>)state;
+            tuple.Invoke();
+        }
+    }
+    
+    private sealed class State<T>(Func<T> func)
+    {
+        internal T Result;
+
+        internal void Invoke() => Result = func();
+    }
 }

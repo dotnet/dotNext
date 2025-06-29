@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Collections.Concurrent;
 
 using Generic;
+using Threading;
 
 /// <summary>
 /// Represents a pool of integer values.
@@ -44,9 +45,10 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
         if ((uint)maxValue > (uint)MaxValue)
             throw new ArgumentOutOfRangeException(nameof(maxValue));
 
-        bitmask = ulong.MaxValue;
-        this.maxValue = maxValue;
+        bitmask = GetBitMask(this.maxValue = maxValue);
     }
+
+    private static ulong GetBitMask(int maxValue) => ulong.MaxValue >>> (MaxValue - maxValue);
 
     /// <summary>
     /// Gets or sets a value indicating that the pool is empty.
@@ -54,7 +56,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     public bool IsEmpty
     {
         readonly get => Count is 0;
-        init => bitmask = value ? 0UL : ulong.MaxValue;
+        init => bitmask = value ? 0UL : GetBitMask(maxValue);
     }
 
     /// <summary>
@@ -74,7 +76,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// <param name="result">The index which is greater than or equal to zero.</param>
     /// <returns><see langword="true"/> if the index is available for rent; otherwise, <see langword="false"/>.</returns>
     public readonly bool TryPeek(out int result)
-        => (result = BitOperations.TrailingZeroCount(Volatile.Read(in bitmask))) <= maxValue;
+        => (result = BitOperations.TrailingZeroCount(Atomic.Read(in bitmask))) <= maxValue;
 
     /// <summary>
     /// Returns the available index from the pool.
@@ -88,7 +90,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
 
         static bool TryTake(ref ulong bitmask, int maxValue, out int result)
         {
-            var current = Volatile.Read(in bitmask);
+            var current = Atomic.Read(in bitmask);
             for (ulong newValue; ; current = newValue)
             {
                 newValue = current & (current - 1UL); // Reset the lowest set bit, the same as BLSR instruction
@@ -189,7 +191,10 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// <summary>
     /// Returns all values to the pool.
     /// </summary>
-    public void Reset() => Volatile.Write(ref bitmask, ulong.MaxValue);
+    public void Reset()
+    {
+        Atomic.Write(ref bitmask, ulong.MaxValue);
+    }
 
     /// <inheritdoc/>
     void IConsumer<int>.Invoke(int value) => Return(value);
@@ -200,7 +205,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// <param name="value">The value to check.</param>
     /// <returns><see langword="true"/> if <paramref name="value"/> is available for rent; otherwise, <see langword="false"/>.</returns>
     public readonly bool Contains(int value)
-        => (uint)value <= (uint)maxValue && Contains(Volatile.Read(in bitmask), value);
+        => (uint)value <= (uint)maxValue && Contains(Atomic.Read(in bitmask), value);
 
     private static bool Contains(ulong bitmask, int index)
         => (bitmask & (1UL << index)) is not 0UL;
@@ -214,7 +219,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// Gets an enumerator over available indices in the pool.
     /// </summary>
     /// <returns>The enumerator over available indices in this pool.</returns>
-    public readonly Enumerator GetEnumerator() => new(Volatile.Read(in bitmask), maxValue);
+    public readonly Enumerator GetEnumerator() => new(Atomic.Read(in bitmask), maxValue);
 
     /// <inheritdoc/>
     readonly IEnumerator<int> IEnumerable<int>.GetEnumerator()
