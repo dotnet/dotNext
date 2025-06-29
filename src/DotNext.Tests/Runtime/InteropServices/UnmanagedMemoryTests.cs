@@ -27,4 +27,14 @@ public sealed class UnmanagedMemoryTests : Test
         False(reference.IsEmpty);
         Equal(expected, reference.Value);
     }
+
+    [Fact]
+    public static void UnmanagedMemoryInterface()
+    {
+        var expected = 42L;
+        IUnmanagedMemory memory = new UnmanagedMemory<long>(expected);
+        Equal(Span.AsReadOnlyBytes(in expected), memory.Bytes);
+        Equal((uint)sizeof(ulong), memory.Size);
+        Equal(memory.Pointer.ToString(), memory.ToString());
+    }
 }
