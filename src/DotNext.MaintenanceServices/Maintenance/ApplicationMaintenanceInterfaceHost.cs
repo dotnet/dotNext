@@ -211,6 +211,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         {
             clientSocket.Dispose();
             inputBuffer?.Dispose();
+            outputBuffer?.Dispose();
             session?.Dispose();
         }
     }
