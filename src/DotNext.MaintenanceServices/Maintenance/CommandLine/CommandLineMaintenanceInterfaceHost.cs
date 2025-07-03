@@ -11,7 +11,7 @@ namespace DotNext.Maintenance.CommandLine;
 
 using Authentication;
 using Authorization;
-using MaintenanceConsole = CommandLine.IO.MaintenanceConsole;
+using MaintenanceConsole = IO.MaintenanceConsole;
 
 /// <summary>
 /// Provides AMI in the form of the text commands with the syntax identical to OS shell commands.
