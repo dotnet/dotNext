@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.CommandLine;
 using System.CommandLine.IO;
 
 namespace DotNext.Maintenance.CommandLine.IO;
@@ -8,6 +7,8 @@ using Buffers;
 
 internal sealed class MaintenanceConsole : Disposable, IMaintenanceConsole
 {
+    private const string Prompt = "> ";
+    
     private sealed class BufferedStreamWriter : Disposable, IStandardStreamWriter
     {
         private readonly PoolingBufferWriter<char> buffer;
@@ -76,6 +77,11 @@ internal sealed class MaintenanceConsole : Disposable, IMaintenanceConsole
             case not 0 when SuppressErrorBuffer is false:
                 error.CopyTo(Session.ResponseWriter);
                 break;
+        }
+
+        if (Session.IsInteractive)
+        {
+            Session.ResponseWriter.Write(Prompt);
         }
     }
 
