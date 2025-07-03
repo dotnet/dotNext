@@ -11,7 +11,7 @@
     <Authors>.NET Foundation and Contributors</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <VersionPrefix>0.5.0</VersionPrefix>
+    <VersionPrefix>0.6.0</VersionPrefix>
     <VersionSuffix></VersionSuffix>
 	<AssemblyName>DotNext.MaintenanceServices</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
