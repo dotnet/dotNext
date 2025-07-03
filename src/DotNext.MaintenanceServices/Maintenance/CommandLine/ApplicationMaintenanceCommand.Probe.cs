@@ -7,7 +7,7 @@ namespace DotNext.Maintenance.CommandLine;
 using IApplicationStatusProvider = Diagnostics.IApplicationStatusProvider;
 using DefaultBindings = Binding.DefaultBindings;
 
-public partial class ApplicationMaintenanceCommand
+partial class ApplicationMaintenanceCommand
 {
     /// <summary>
     /// Creates a command that can be used to execute members of <see cref="IApplicationStatusProvider"/>.

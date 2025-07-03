@@ -47,6 +47,7 @@ public sealed partial class ApplicationMaintenanceCommand : Command
     /// <seealso cref="LeaveInteractiveModeCommand"/>
     public static IEnumerable<ApplicationMaintenanceCommand> GetDefaultCommands()
     {
+        yield return HelpCommand();
         yield return GCCommand();
         yield return EnterInteractiveModeCommand();
         yield return LeaveInteractiveModeCommand();

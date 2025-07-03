@@ -4,7 +4,7 @@ namespace DotNext.Maintenance.CommandLine;
 
 using DefaultBindings = Binding.DefaultBindings;
 
-public partial class ApplicationMaintenanceCommand
+partial class ApplicationMaintenanceCommand
 {
     /// <summary>
     /// Creates a command that allows to enter interactive mode.

@@ -49,10 +49,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="ExceptionMessages.restext">
-      <LogicalName>DotNext.ExceptionMessages.resources</LogicalName>
-      <Generator></Generator>
-    </EmbeddedResource>
     <EmbeddedResource Include="Maintenance/CommandLine/CommandResources.restext">
       <LogicalName>DotNext.Maintenance.CommandLine.CommandResources.resources</LogicalName>
       <Generator></Generator>

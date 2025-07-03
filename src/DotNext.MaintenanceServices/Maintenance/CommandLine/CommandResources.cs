@@ -60,4 +60,6 @@ internal static class CommandResources
     internal static string ProbeCommandSuccessfulResponseOptionDescription => (string)Resources.Get();
 
     internal static string ProbeCommandUnsuccessfulResponseOptionDescription => (string)Resources.Get();
+
+    internal static string HelpCommandDescription => (string)Resources.Get();
 }

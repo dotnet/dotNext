@@ -5,7 +5,7 @@ using System.Runtime;
 
 namespace DotNext.Maintenance.CommandLine;
 
-public partial class ApplicationMaintenanceCommand
+partial class ApplicationMaintenanceCommand
 {
     private static ApplicationMaintenanceCommand GCCollectCommand()
     {
