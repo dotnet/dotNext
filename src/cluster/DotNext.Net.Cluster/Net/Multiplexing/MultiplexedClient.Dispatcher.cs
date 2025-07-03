@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Net.Multiplexing;
 
-using Buffers;
 using Runtime.CompilerServices;
 using Threading;
 
@@ -49,7 +48,9 @@ partial class MultiplexedClient
                         FlushResult result;
                         try
                         {
-                            result = await ReceiveAsync(stream.Output, header.Length, token).ConfigureAwait(false);
+                            result = await stream.Output.WriteAsync(
+                                receiveBuffer.AsMemory(0, header.Length),
+                                token).ConfigureAwait(false);
                         }
                         catch (Exception e)
                         {
@@ -57,7 +58,11 @@ partial class MultiplexedClient
                             goto default;
                         }
 
-                        if (result.IsCompleted || result.IsCanceled || header.Control is FragmentControl.FinalDataChunk)
+                        if (result.IsCanceled)
+                        {
+                            stream.Close();
+                        }
+                        else if (result.IsCompleted || header.Control is FragmentControl.FinalDataChunk)
                         {
                             stream.Close();
                             await stream.Output.CompleteAsync().ConfigureAwait(false);
@@ -79,13 +84,15 @@ partial class MultiplexedClient
             throw;
         }
     }
-
-    private ValueTask<FlushResult> ReceiveAsync(PipeWriter writer, ushort length, CancellationToken token)
-    {
-        writer.Write(receiveBuffer.AsSpan(0, length));
-        return writer.FlushAsync(token);
-    }
     
+    // Dispatcher consists of two parallel tasks:
+    // 1. Sending task (sender)
+    // 2. Receiving task (receiver)
+    //
+    // Sender can complete its PipeWriter, which means that the sender doesn't expect to write more data.
+    // After that, the sender needs to wait for PipeReader to be completed. However, PipeReader can
+    // be completed by the server because there is no more data expected from it. In that case,
+    // sender's PipeReader completes as well.
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
     private async Task DispatchAsync(CancellationToken token)
     {
