@@ -18,12 +18,12 @@ public static class PointerMarshaller<T>
     /// </summary>
     /// <param name="ptr">The pointer value.</param>
     /// <returns>The address of the pointer.</returns>
-    public static nuint ConvertToUnmanaged(Pointer<T> ptr) => ptr;
+    public static nint ConvertToUnmanaged(Pointer<T> ptr) => ptr;
 
     /// <summary>
     /// Converts an address to the pointer.
     /// </summary>
     /// <param name="address">The address of the pointer.</param>
     /// <returns>The typed pointer.</returns>
-    public static Pointer<T> ConvertToManaged(nuint address) => new(address);
+    public static Pointer<T> ConvertToManaged(nint address) => new(address);
 }
