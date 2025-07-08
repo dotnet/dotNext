@@ -307,4 +307,13 @@ public sealed class PointerTests : Test
         Equal(42, ptr[0]);
         Equal(43, ptr[1]);
     }
+
+    [Fact]
+    public static unsafe void PointerMarshalling()
+    {
+        Pointer<int> ptr = stackalloc int[1];
+        nuint address = ptr;
+        Equal(address, PointerMarshaller<int>.ConvertToUnmanaged(ptr));
+        Equal(ptr, PointerMarshaller<int>.ConvertToManaged(address));
+    }
 }
