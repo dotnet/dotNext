@@ -93,7 +93,7 @@ public static class Result
     /// <param name="result">The result to be checked.</param>
     /// <typeparam name="T">The type of the result.</typeparam>
     /// <typeparam name="TException">The type of the exception to be returned from the null result.</typeparam>
-    /// <returns>The result containing non-null value; or <paramref cref="TException"/> as an error.</returns>
+    /// <returns>The result containing non-null value; or <typeparamref name="TException"/> as an error.</returns>
     public static Result<T> EnsureNotNull<T, TException>(this Result<T?> result)
         where T : class
         where TException : Exception, new()
