@@ -1,4 +1,4 @@
-namespace DotNext;
+namespace DotNext.Hosting;
 
 public sealed class ConsoleLifetimeTokenSourceTests : Test
 {

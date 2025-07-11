@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 
-namespace DotNext;
+namespace DotNext.Hosting;
 
 /// <summary>
 /// Represents a token that becomes canceled if the console application is requested to stop.
