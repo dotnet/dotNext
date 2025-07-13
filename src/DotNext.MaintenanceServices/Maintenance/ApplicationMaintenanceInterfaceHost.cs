@@ -10,6 +10,7 @@ namespace DotNext.Maintenance;
 
 using Buffers;
 using Collections.Specialized;
+using Runtime.CompilerServices;
 using Security.Principal;
 using static IO.TextStreamExtensions;
 using static Runtime.InteropServices.UnixDomainSocketInterop;

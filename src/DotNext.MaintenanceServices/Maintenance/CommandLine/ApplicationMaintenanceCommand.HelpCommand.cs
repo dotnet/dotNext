@@ -1,8 +1,5 @@
 using System.CommandLine;
 using System.CommandLine.Help;
-using System.CommandLine.Invocation;
-using System.CommandLine.IO;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace DotNext.Maintenance.CommandLine;
 
@@ -14,22 +11,22 @@ partial class ApplicationMaintenanceCommand
     /// <returns>A new command instance.</returns>
     public static ApplicationMaintenanceCommand HelpCommand()
     {
-        var command = new ApplicationMaintenanceCommand("help", CommandResources.HelpCommandDescription);
-        command.SetHandler(Handle);
-        return command;
-
-        static void Handle(InvocationContext context)
+        var help = new HelpOption();
+        var command = new ApplicationMaintenanceCommand("help")
         {
-            if (context.BindingContext.GetService<HelpBuilder>() is { } builder)
-            {
-                using var output = context.BindingContext.Console.Out.CreateTextWriter();
-                var helpContext = new HelpContext(builder,
-                    context.Parser.Configuration.RootCommand,
-                    output,
-                    context.ParseResult);
+            Description = help.Description
+        };
 
-                builder.Write(helpContext);
-            }
-        }
+        command.SetAction(help.Invoke);
+        return command;
+    }
+}
+
+file static class HelpOptionExtensions
+{
+    public static int Invoke(this HelpOption option, ParseResult result)
+    {
+        var root = result.RootCommandResult;
+        return result.Configuration.Invoke(option.Name);
     }
 }

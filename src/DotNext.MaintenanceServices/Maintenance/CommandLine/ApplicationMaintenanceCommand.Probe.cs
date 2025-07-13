@@ -5,7 +5,6 @@ using System.Globalization;
 namespace DotNext.Maintenance.CommandLine;
 
 using IApplicationStatusProvider = Diagnostics.IApplicationStatusProvider;
-using DefaultBindings = Binding.DefaultBindings;
 
 partial class ApplicationMaintenanceCommand
 {
@@ -19,37 +18,46 @@ partial class ApplicationMaintenanceCommand
     {
         ArgumentNullException.ThrowIfNull(provider);
 
-        var probeTypeArg = new Argument<string>("type", CommandResources.ProbeCommandProbeTypeArgDescription)
-            .FromAmong(ApplicationProbe.StartupProbeName, ApplicationProbe.ReadinessProbeName, ApplicationProbe.LivenessProbeName);
+        var probeTypeArg = new Argument<string>("type")
+            {
+                Description = CommandResources.ProbeCommandProbeTypeArgDescription,
+            }
+            .AcceptOnlyFromAmong(ApplicationProbe.StartupProbeName, ApplicationProbe.ReadinessProbeName, ApplicationProbe.LivenessProbeName);
 
-        var timeoutArg = new Argument<TimeSpan>("timeout", parse: ParseTimeout, description: CommandResources.ProbeCommandTimeoutArgDescription);
-        timeoutArg.SetDefaultValue(Timeout.InfiniteTimeSpan);
+        var timeoutArg = new Argument<TimeSpan>("timeout")
+        {
+            Description = CommandResources.ProbeCommandTimeoutArgDescription,
+            CustomParser = ParseTimeout,
+            DefaultValueFactory = static _ => Timeout.InfiniteTimeSpan,
+        };
 
-        var successfulResponseOption = new Option<string>("--successful-response", Func.Constant("ok"), CommandResources.ProbeCommandSuccessfulResponseOptionDescription)
+        var successfulResponseOption = new Option<string>("--successful-response", "-s", "-ok")
         {
             Arity = ArgumentArity.ExactlyOne,
-            IsRequired = false,
+            Required = false,
+            Description = CommandResources.ProbeCommandSuccessfulResponseOptionDescription,
+            DefaultValueFactory = static _ => "ok"
         };
-        successfulResponseOption.AddAlias("-s");
-        successfulResponseOption.AddAlias("-ok");
 
-        var failedResponseOption = new Option<string>("--unsuccessful-response", Func.Constant("fail"), CommandResources.ProbeCommandUnsuccessfulResponseOptionDescription)
+        var failedResponseOption = new Option<string>("--unsuccessful-response", "-u", "-f")
         {
             Arity = ArgumentArity.ExactlyOne,
-            IsRequired = false,
+            Required = false,
+            Description = CommandResources.ProbeCommandUnsuccessfulResponseOptionDescription,
+            DefaultValueFactory = static _ => "fail",
         };
-        failedResponseOption.AddAlias("-u");
-        failedResponseOption.AddAlias("-f");
 
-        var command = new ApplicationMaintenanceCommand("probe", CommandResources.ProbeCommandDescription)
+        var command = new ApplicationMaintenanceCommand("probe")
         {
             probeTypeArg,
             timeoutArg,
             successfulResponseOption,
             failedResponseOption,
         };
+        
+        command.Description = CommandResources.ProbeCommandDescription;
 
-        command.SetHandler(provider.InvokeProbeAsync, probeTypeArg, DefaultBindings.Console, successfulResponseOption, failedResponseOption, timeoutArg, DefaultBindings.Token);
+        command.SetAction(InvokeAsync);
         return command;
 
         static TimeSpan ParseTimeout(ArgumentResult result)
@@ -58,10 +66,19 @@ partial class ApplicationMaintenanceCommand
 
             if (!(TimeSpan.TryParse(token, CultureInfo.InvariantCulture, out var timeout) && timeout > TimeSpan.Zero))
             {
-                result.ErrorMessage = CommandResources.ProbeCommandInvalidTimeoutArg(token);
+                result.AddError(CommandResources.ProbeCommandInvalidTimeoutArg(token));
             }
 
             return timeout;
         }
+
+        Task InvokeAsync(ParseResult result, CancellationToken token) => provider.InvokeProbeAsync(
+            result.GetRequiredValue(probeTypeArg),
+            result.GetRequiredValue(successfulResponseOption),
+            result.GetRequiredValue(failedResponseOption),
+            result.GetRequiredValue(timeoutArg),
+            result.Configuration.Output,
+            token
+        );
     }
 }

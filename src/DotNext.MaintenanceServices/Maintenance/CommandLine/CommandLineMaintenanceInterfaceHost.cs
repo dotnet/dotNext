@@ -1,17 +1,14 @@
 using System.CommandLine;
-using System.CommandLine.Binding;
-using System.CommandLine.Builder;
-using System.CommandLine.Help;
 using System.CommandLine.Invocation;
-using System.CommandLine.Parsing;
 using System.Net.Sockets;
+using DotNext.IO;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Maintenance.CommandLine;
 
 using Authentication;
 using Authorization;
-using MaintenanceConsole = IO.MaintenanceConsole;
+using Buffers;
 
 /// <summary>
 /// Provides AMI in the form of the text commands with the syntax identical to OS shell commands.
@@ -23,12 +20,9 @@ using MaintenanceConsole = IO.MaintenanceConsole;
 /// </example>
 public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenanceInterfaceHost
 {
-    private const int InvalidArgumentExitCode = 64; // EX_USAGE from sysexits.h
-    private const string PrintErrorCodeDirective = "prnec";
-    private const string SuppressStandardOutputDirective = "supout";
-    private const string SuppressStandardErrorDirective = "superr";
-
-    private readonly Parser parser;
+    private readonly RootCommand root;
+    private readonly IAuthenticationHandler? authentication;
+    private readonly AuthorizationCallback? authorization;
 
     /// <summary>
     /// Initializes a new host.
@@ -46,93 +40,57 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
         ILoggerFactory? loggerFactory = null)
         : base(endPoint, loggerFactory)
     {
-        parser = CreateCommandParser(commands, authentication, authorization);
-    }
-
-    private static Parser CreateCommandParser(IEnumerable<ApplicationMaintenanceCommand> commands, IAuthenticationHandler? authHandler, AuthorizationCallback? globalAuth)
-    {
-        var root = new RootCommand(RootCommand.ExecutableName + " Maintenance Interface");
+        root = new RootCommand(RootCommand.ExecutableName + " Maintenance Interface");
+        root.Action = new MyAction();
         foreach (var subCommand in commands)
             root.Add(subCommand);
 
-        foreach (var authOption in authHandler?.GetGlobalOptions() ?? [])
-            root.AddGlobalOption(authOption);
+        foreach (var authOption in authentication?.GetGlobalOptions() ?? [])
+            root.Add(authOption);
+        
+        CommandContext.RegisterDirectives(root);
 
-        return new CommandLineBuilder(root)
-            .UseHelpBuilder(CustomizeHelp)
-            .UseHelp()
-            .UseParseErrorReporting(InvalidArgumentExitCode)
-            .UseExceptionHandler(HandleException)
-            .AddMiddleware(ProcessDirectives)
-            .AddMiddleware(authHandler is null ? AuthenticationMiddleware.SetDefaultPrincipal : authHandler.AuthenticateAsync)
-            .AddMiddleware(globalAuth.AuthorizeAsync)
-            .AddMiddleware(InjectServices)
-            .Build();
+        this.authentication = authentication;
+        this.authorization = authorization;
     }
-
-    private static Task ProcessDirectives(InvocationContext context, Func<InvocationContext, Task> next)
+    
+    private sealed class MyAction : SynchronousCommandLineAction
     {
-        if (context.Console is MaintenanceConsole console)
+        public MyAction()
         {
-            console.PrintExitCode = context.ParseResult.Directives.Contains(PrintErrorCodeDirective);
-            console.SuppressOutputBuffer = context.ParseResult.Directives.Contains(SuppressStandardOutputDirective);
-            console.SuppressErrorBuffer = context.ParseResult.Directives.Contains(SuppressStandardErrorDirective);
+            Terminating = false;
         }
-
-        return next(context);
-    }
-
-    private static void HandleException(Exception e, InvocationContext context)
-    {
-        switch (e)
+        
+        public override int Invoke(ParseResult parseResult)
         {
-            case TimeoutException:
-                const int timeoutExitCode = 75; // EX_TEMPFAIL from sysexits.h
-                context.ExitCode = timeoutExitCode;
-                context.Console.Error.Write(e.Message);
-                break;
-            default:
-                if (context.Console is MaintenanceConsole console)
-                {
-                    console.Session.IsInteractive = false;
-                    console.Session.ResponseWriter.Write(e.ToString());
-                }
-                else
-                {
-                    context.Console.Error.Write(e.ToString());
-                }
-
-                break;
+            return 0;
         }
-    }
-
-    private static Task InjectServices(InvocationContext context, Func<InvocationContext, Task> next)
-    {
-        var token = context.GetCancellationToken();
-        context.BindingContext.AddService(sp => token);
-        return next(context);
-    }
-
-    private static HelpBuilder CustomizeHelp(BindingContext context)
-    {
-        var builder = new HelpBuilder(LocalizationResources.Instance);
-        builder.CustomizeLayout(DefaultLayout);
-        return builder;
-    }
-
-    private static IEnumerable<HelpSectionDelegate> DefaultLayout(HelpContext context)
-    {
-        yield return HelpBuilder.Default.SynopsisSection();
-        yield return HelpBuilder.Default.CommandArgumentsSection();
-        yield return HelpBuilder.Default.OptionsSection();
-        yield return HelpBuilder.Default.SubcommandsSection();
-        yield return HelpBuilder.Default.AdditionalArgumentsSection();
     }
 
     /// <inheritdoc />
     protected override async ValueTask ExecuteCommandAsync(IMaintenanceSession session, ReadOnlyMemory<char> command, CancellationToken token)
     {
-        using var console = new MaintenanceConsole(session, BufferSize, CharBufferAllocator);
-        console.Exit(await parser.InvokeAsync(command.ToString(), console).ConfigureAwait(false));
+        var output = new PoolingBufferWriter<char>(CharBufferAllocator) { Capacity = BufferSize };
+        var error = new PoolingBufferWriter<char>(CharBufferAllocator) { Capacity = BufferSize };
+        var outputWriter = output.AsTextWriter();
+        var errorWriter = error.AsTextWriter();
+        var context = new CommandContext(root, session) { Error = errorWriter, Output = outputWriter };
+        try
+        {
+            var exitCode = await context.InvokeAsync(command.ToString(), authentication, authorization, token).ConfigureAwait(false);
+            context.Exit(exitCode, output, error);
+        }
+        catch (Exception e)
+        {
+            session.IsInteractive = false;
+            session.ResponseWriter.Write(e);
+        }
+        finally
+        {
+            output.Dispose();
+            error.Dispose();
+            await outputWriter.DisposeAsync().ConfigureAwait(false);
+            await errorWriter.DisposeAsync().ConfigureAwait(false);
+        }
     }
 }

@@ -1,9 +1,6 @@
-using System.Buffers;
-
 namespace DotNext.Maintenance.CommandLine;
 
 using IApplicationStatusProvider = Diagnostics.IApplicationStatusProvider;
-using IMaintenanceConsole = IO.IMaintenanceConsole;
 
 internal static class ApplicationProbe
 {
@@ -11,7 +8,8 @@ internal static class ApplicationProbe
     internal const string ReadinessProbeName = "readiness";
     internal const string LivenessProbeName = "liveness";
 
-    internal static async Task InvokeProbeAsync(this IApplicationStatusProvider provider, string probeName, IMaintenanceConsole console, string successfulResponse, string unsuccessfulRespose, TimeSpan timeout, CancellationToken token)
+    internal static async Task InvokeProbeAsync(this IApplicationStatusProvider provider, string probeName, string successfulResponse,
+        string unsuccessfulRespose, TimeSpan timeout, TextWriter writer, CancellationToken token)
     {
         bool success;
 
@@ -38,7 +36,7 @@ internal static class ApplicationProbe
             success = await ExecuteProbeByNameAsync(provider, probeName, token).ConfigureAwait(false);
         }
 
-        console.Out.Write(success ? successfulResponse : unsuccessfulRespose);
+        await writer.WriteAsync((success ? successfulResponse : unsuccessfulRespose).AsMemory(), token).ConfigureAwait(false);
     }
 
     private static Task<bool> ExecuteProbeByNameAsync(IApplicationStatusProvider provider, string probeName, CancellationToken token) => probeName switch

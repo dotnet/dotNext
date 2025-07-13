@@ -1,5 +1,6 @@
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Maintenance.CommandLine;
 
@@ -52,4 +53,6 @@ public sealed partial class ApplicationMaintenanceCommand : Command
         yield return EnterInteractiveModeCommand();
         yield return LeaveInteractiveModeCommand();
     }
+
+    private static bool False(ArgumentResult _) => false;
 }

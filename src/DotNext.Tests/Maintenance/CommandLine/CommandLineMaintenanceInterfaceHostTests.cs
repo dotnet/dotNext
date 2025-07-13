@@ -9,7 +9,6 @@ namespace DotNext.Maintenance.CommandLine;
 
 using Authentication;
 using Authorization;
-using Binding;
 using Diagnostics;
 using Security.Principal;
 
@@ -69,14 +68,14 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
                     .UseApplicationMaintenanceInterfaceAuthentication<LinuxUdsPeerAuthenticationHandler>()
                     .RegisterMaintenanceCommand("client-pid", static command =>
                     {
-                        command.SetHandler(static session =>
+                        command.SetAction(static result =>
                         {
-                            True(session.Identity.IsAuthenticated);
-                            var identity = IsType<LinuxUdsPeerIdentity>(session.Identity);
+                            var context = IsType<CommandContext>(result.Configuration);
+                            True(context.Session.Identity.IsAuthenticated);
+                            var identity = IsType<LinuxUdsPeerIdentity>(context.Session.Identity);
                             Equal(Environment.UserName, identity.Name);
-                            session.ResponseWriter.Write(identity.ProcessId);
-                        },
-                        DefaultBindings.Session);
+                            context.Output.Write(identity.ProcessId);
+                        });
                     });
             })
             .Build();
@@ -98,8 +97,7 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
     [InlineData("probe readiness 00:00:01 --login test --secret pwd", "ok")]
     [InlineData("probe startup 00:00:01 --login test --secret pwd", "ok")]
     [InlineData("probe liveness 00:00:01 --login test --secret pwd", "fail")]
-    [InlineData("[superr] [supout] [prnec] add 10 20", "[77]")]
-    [InlineData("[superr] [supout] [prnec] add 10 20 -login test --secret pwd", "[77]")]
+    [InlineData("[superr] [supout] [prnec] add 10 20 --login test --secret pwd", "[77]")]
     [InlineData("add 10 20 --login test2 --secret pwd", "30")]
     public static async Task PasswordAuthentication(string request, string response)
     {
@@ -113,7 +111,7 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
                     .UseApplicationStatusProvider<TestStatusProvider>()
                     .UseApplicationMaintenanceInterfaceGlobalAuthorization(static (user, cmd, ctx, token) =>
                     {
-                        True(user.Identity.IsAuthenticated);
+                        True(user.Identity?.IsAuthenticated);
                         return new(user.IsInRole("role1"));
                     })
                     .RegisterMaintenanceCommand("add", static cmd =>
@@ -122,23 +120,21 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
                         {
                             Arity = ArgumentArity.ExactlyOne,
                         };
-                        cmd.AddArgument(argX);
+                        cmd.Add(argX);
 
                         var argY = new Argument<int>("y")
                         {
                             Arity = ArgumentArity.ExactlyOne,
                         };
-                        cmd.AddArgument(argY);
+                        cmd.Add(argY);
 
-                        cmd.SetHandler(static (x, y, session) =>
-                        {
-                            session.ResponseWriter.Write(x + y);
-                            session.ResponseWriter.Flush();
-                        },
-                        argX,
-                        argY,
-                        DefaultBindings.Session);
-                        cmd.Authorization += static (user, cmd, ctx, token) => new(user.IsInRole("role2"));
+                        cmd.SetAction(result =>
+                            {
+                                var x = result.GetRequiredValue(argX);
+                                var y = result.GetRequiredValue(argY);
+                            result.Configuration.Output.Write(x + y);
+                        });
+                        cmd.Authorization += static (user, _, _, _) => new(user.IsInRole("role2"));
                     });
             })
             .Build();
