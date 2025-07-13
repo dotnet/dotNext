@@ -47,7 +47,7 @@ public sealed partial class CommandContext : CommandLineConfiguration
         
         if (result.Errors is { Count: > 0 } errors)
         {
-            exitCode = ProcessParseErrors(errors);
+            exitCode = ProcessParseErrors(errors, result.Tokens);
         }
         else if (await AuthenticateAsync(Session, result, authentication, token).ConfigureAwait(false)
                  && await authorization.AuthorizeAsync(Session, result.CommandResult, token).ConfigureAwait(false)
@@ -57,33 +57,29 @@ public sealed partial class CommandContext : CommandLineConfiguration
         }
         else
         {
-            ExecuteDirectives(result);
-            exitCode = Forbid();
+            exitCode = Forbid(result.Tokens);
         }
 
         return exitCode;
     }
 
-    private void ExecuteDirectives(ParseResult result)
+    private void ExecuteDirectives(IEnumerable<Token> tokens)
     {
-        var directives = (RootCommand as RootCommand)?.Directives ?? [];
-        foreach (var token in result.Tokens)
+        var actions = from directive in (RootCommand as RootCommand)?.Directives ?? []
+            from token in tokens
+            where Matches(token, directive)
+            let action = (directive.Action as DirectiveAction)?.Action
+            where action is not null
+            select action;
+
+        foreach (var action in actions)
         {
-            if (token.Type is TokenType.Directive
-                && directives.FirstOrDefault(d => Matches(token, d))?.Action is DirectiveAction action)
-            {
-                action.Action.Invoke(this);
-            }
+            action.Invoke(this);
         }
 
         static bool Matches(Token token, Directive directive)
-        {
-            ReadOnlySpan<char> tokenValue = token.Value;
-            return !tokenValue.IsEmpty
-                   && tokenValue[0] is '['
-                   && tokenValue[^1] is ']'
-                   && tokenValue[1..^1].SequenceEqual(directive.Name);
-        }
+            => token is { Type: TokenType.Directive, Value: ['[', .. var directiveName, ']'] }
+               && MemoryExtensions.SequenceEqual<char>(directiveName, directive.Name);
     }
 
     private static async ValueTask<bool> AuthenticateAsync(IMaintenanceSession session,
@@ -144,9 +140,11 @@ public sealed partial class CommandContext : CommandLineConfiguration
         }
     }
 
-    private int ProcessParseErrors(IReadOnlyList<ParseError> parseErrors)
+    private int ProcessParseErrors(IReadOnlyList<ParseError> errors, IReadOnlyList<Token> tokens)
     {
-        foreach (var parseError in parseErrors)
+        ExecuteDirectives(tokens);
+        
+        foreach (var parseError in errors)
         {
             Error.WriteLine(parseError.Message);
         }
@@ -154,8 +152,9 @@ public sealed partial class CommandContext : CommandLineConfiguration
         return InvalidArgumentExitCode;
     }
 
-    private int Forbid()
+    private int Forbid(IReadOnlyList<Token> tokens)
     {
+        ExecuteDirectives(tokens);
         Output.WriteLine(CommandResources.AccessDenied);
         return ForbiddenExitCode;
     }
