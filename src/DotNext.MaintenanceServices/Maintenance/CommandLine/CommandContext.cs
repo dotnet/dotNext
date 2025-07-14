@@ -17,6 +17,9 @@ public sealed partial class CommandContext : CommandLineConfiguration
     private const int InvalidArgumentExitCode = 64; // EX_USAGE from sysexits.h
     private const int ForbiddenExitCode = 77; // EX_NOPERM
     
+    private const char LeftSquareBracket = '[';
+    private const char RightSquareBracket = ']';
+    
     private bool printExitCode;
     private bool suppressOutputBuffer;
     private bool suppressErrorBuffer;
@@ -78,7 +81,7 @@ public sealed partial class CommandContext : CommandLineConfiguration
         }
 
         static bool Matches(Token token, Directive directive)
-            => token is { Type: TokenType.Directive, Value: ['[', .. var directiveName, ']'] }
+            => token is { Type: TokenType.Directive, Value: [LeftSquareBracket, .. var directiveName, RightSquareBracket] }
                && MemoryExtensions.SequenceEqual<char>(directiveName, directive.Name);
     }
 
@@ -106,21 +109,19 @@ public sealed partial class CommandContext : CommandLineConfiguration
 
         return true;
     }
-    
+
     private static ValueTask<bool> AuthorizeAsync(IMaintenanceSession session,
         CommandResult result,
         CancellationToken token)
-        => result.Command is ApplicationMaintenanceCommand command
-            ? command.AuthorizeAsync(session, result, token)
-            : ValueTask.FromResult(true);
+        => (result.Command as ApplicationMaintenanceCommand)?.AuthorizeAsync(session, result, token) ?? ValueTask.FromResult(true);
 
     internal void Exit(int exitCode, BufferWriter<char> output, BufferWriter<char> error)
     {
         if (printExitCode)
         {
-            Session.ResponseWriter.Write('[');
+            Session.ResponseWriter.Write(LeftSquareBracket);
             Session.ResponseWriter.Write(exitCode);
-            Session.ResponseWriter.Write(']');
+            Session.ResponseWriter.Write(RightSquareBracket);
         }
 
         switch (exitCode)
