@@ -296,4 +296,11 @@ public sealed class UnmanagedMemoryPoolTests : Test
         
         UnmanagedMemory.Discard(bytes.AsSpan(offset, Environment.SystemPageSize));
     }
+
+    [Fact]
+    public static void UnmanagedMemoryMarshalling()
+    {
+        using var memory = UnmanagedMemory.Allocate<long>(2);
+        Equal(memory.Pointer.Address, Runtime.InteropServices.UnmanagedMemoryMarshaller<long>.ConvertToUnmanaged(memory));
+    }
 }
