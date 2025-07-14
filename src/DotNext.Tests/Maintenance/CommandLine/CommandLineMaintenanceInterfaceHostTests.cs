@@ -68,13 +68,12 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
                     .UseApplicationMaintenanceInterfaceAuthentication<LinuxUdsPeerAuthenticationHandler>()
                     .RegisterMaintenanceCommand("client-pid", static command =>
                     {
-                        command.SetAction(static result =>
+                        command.SetAction(static (session, result) =>
                         {
-                            var context = IsType<CommandContext>(result.Configuration);
-                            True(context.Session.Identity.IsAuthenticated);
-                            var identity = IsType<LinuxUdsPeerIdentity>(context.Session.Identity);
+                            True(session.Identity.IsAuthenticated);
+                            var identity = IsType<LinuxUdsPeerIdentity>(session.Identity);
                             Equal(Environment.UserName, identity.Name);
-                            context.Output.Write(identity.ProcessId);
+                            result.Configuration.Output.Write(identity.ProcessId);
                         });
                     });
             })
@@ -128,11 +127,11 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
                         };
                         cmd.Add(argY);
 
-                        cmd.SetAction(result =>
-                            {
-                                var x = result.GetRequiredValue(argX);
-                                var y = result.GetRequiredValue(argY);
-                            result.Configuration.Output.Write(x + y);
+                        cmd.SetAction((_, result, token) =>
+                        {
+                            var x = result.GetRequiredValue(argX);
+                            var y = result.GetRequiredValue(argY);
+                            return new(result.Configuration.Output.WriteAsync((x + y).ToString().AsMemory(), token));
                         });
                         cmd.Authorization += static (user, _, _, _) => new(user.IsInRole("role2"));
                     });

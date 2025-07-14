@@ -12,7 +12,7 @@ using Buffers;
 /// <summary>
 /// Represents command invocation context.
 /// </summary>
-public sealed partial class CommandContext : CommandLineConfiguration
+internal sealed partial class CommandContext : CommandLineConfiguration
 {
     private const int InvalidArgumentExitCode = 64; // EX_USAGE from sysexits.h
     private const int ForbiddenExitCode = 77; // EX_NOPERM
@@ -159,4 +159,7 @@ public sealed partial class CommandContext : CommandLineConfiguration
         Error.WriteLine(CommandResources.AccessDenied);
         return ForbiddenExitCode;
     }
+
+    internal static IMaintenanceSession? TryGetSession(ParseResult result)
+        => (result.Configuration as CommandContext)?.Session;
 }
