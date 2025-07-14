@@ -156,7 +156,7 @@ public sealed partial class CommandContext : CommandLineConfiguration
     private int Forbid(IReadOnlyList<Token> tokens)
     {
         ExecuteDirectives(tokens);
-        Output.WriteLine(CommandResources.AccessDenied);
+        Error.WriteLine(CommandResources.AccessDenied);
         return ForbiddenExitCode;
     }
 }
