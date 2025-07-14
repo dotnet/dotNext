@@ -5,27 +5,31 @@ using System.Runtime;
 
 namespace DotNext.Maintenance.CommandLine;
 
-public partial class ApplicationMaintenanceCommand
+partial class ApplicationMaintenanceCommand
 {
     private static ApplicationMaintenanceCommand GCCollectCommand()
     {
-        var generationArg = new Argument<int>("generation", parse: ParseGeneration, description: CommandResources.GCCollectCommandGenerationArgDescription);
-
-        var blockingOption = new Option<bool>("--blocking", Func.Constant(false), description: CommandResources.GCCollectCommandBlockingOptionDescription)
+        var generationArg = new Argument<int>("generation")
         {
-            Arity = ArgumentArity.Zero,
-            IsRequired = false,
+            Description = CommandResources.GCCollectCommandGenerationArgDescription,
+            CustomParser = ParseGeneration,
         };
 
-        blockingOption.AddAlias("-b");
-
-        var compactingOption = new Option<bool>("--compacting", Func.Constant(false), description: CommandResources.GCCollectCommandCompactingOptionDescription)
+        var blockingOption = new Option<bool>("--blocking", "-b")
         {
+            Description = CommandResources.GCCollectCommandBlockingOptionDescription,
             Arity = ArgumentArity.Zero,
-            IsRequired = false,
+            Required = false,
+            DefaultValueFactory = False,
         };
 
-        compactingOption.AddAlias("-c");
+        var compactingOption = new Option<bool>("--compacting", "-c")
+        {
+            Arity = ArgumentArity.Zero,
+            Required = false,
+            Description = CommandResources.GCCollectCommandCompactingOptionDescription,
+            DefaultValueFactory = False,
+        };
 
         var command = new ApplicationMaintenanceCommand("collect", CommandResources.GCCollectCommandDescription)
         {
@@ -34,7 +38,15 @@ public partial class ApplicationMaintenanceCommand
             compactingOption,
         };
 
-        command.SetHandler(static (generation, blocking, compacting) => GC.Collect(generation, GCCollectionMode.Forced, blocking, compacting), generationArg, blockingOption, compactingOption);
+        command.SetAction(result =>
+        {
+            GC.Collect(
+                result.GetRequiredValue(generationArg),
+                GCCollectionMode.Forced,
+                result.GetRequiredValue(blockingOption),
+                result.GetRequiredValue(compactingOption));
+        });
+
         return command;
 
         static int ParseGeneration(ArgumentResult result)
@@ -43,7 +55,7 @@ public partial class ApplicationMaintenanceCommand
 
             if (!(int.TryParse(token, NumberStyles.Integer, CultureInfo.InvariantCulture, out var generation) && generation >= 0 && generation <= GC.MaxGeneration))
             {
-                result.ErrorMessage = CommandResources.GCCollectCommandInvalidGenerationArg(token);
+                result.AddError(CommandResources.GCCollectCommandInvalidGenerationArg(token));
             }
 
             return generation;
@@ -52,15 +64,19 @@ public partial class ApplicationMaintenanceCommand
 
     private static Command LohCompactionModeCommand()
     {
-        var modeArg = new Argument<GCLargeObjectHeapCompactionMode>("mode", parse: ParseMode, description: CommandResources.GCLohModeCommandModeArgDescription);
-        modeArg.FromAmong(Enum.GetNames<GCLargeObjectHeapCompactionMode>());
+        var modeArg = new Argument<GCLargeObjectHeapCompactionMode>("mode")
+            {
+                Description = CommandResources.GCLohModeCommandModeArgDescription,
+                CustomParser = ParseMode,
+            }
+            .AcceptOnlyFromAmong(Enum.GetNames<GCLargeObjectHeapCompactionMode>());
 
         var command = new ApplicationMaintenanceCommand("loh-compaction-mode", CommandResources.GCLohModeCommandDescription)
         {
             modeArg,
         };
 
-        command.SetHandler(static mode => GCSettings.LargeObjectHeapCompactionMode = mode, modeArg);
+        command.SetAction(result => GCSettings.LargeObjectHeapCompactionMode = result.GetRequiredValue(modeArg));
         return command;
 
         static GCLargeObjectHeapCompactionMode ParseMode(ArgumentResult result)
@@ -69,7 +85,7 @@ public partial class ApplicationMaintenanceCommand
 
             if (!Enum.TryParse<GCLargeObjectHeapCompactionMode>(token, ignoreCase: true, out var mode))
             {
-                result.ErrorMessage = CommandResources.GCLohModeCommandInvalidModeArg(token);
+                result.AddError(CommandResources.GCLohModeCommandInvalidModeArg(token));
             }
 
             return mode;
@@ -78,8 +94,12 @@ public partial class ApplicationMaintenanceCommand
 
     private static Command RefreshMemoryLimitsCommand()
     {
-        var command = new ApplicationMaintenanceCommand("refresh-mem-limit", CommandResources.GCRefreshMemoryLimit);
-        command.SetHandler(GC.RefreshMemoryLimit);
+        var command = new ApplicationMaintenanceCommand("refresh-mem-limit")
+        {
+            Description = CommandResources.GCRefreshMemoryLimit,
+        };
+
+        command.SetAction(static _ => GC.RefreshMemoryLimit());
         return command;
     }
 
@@ -89,10 +109,14 @@ public partial class ApplicationMaintenanceCommand
     /// <returns>A new command.</returns>
     public static ApplicationMaintenanceCommand GCCommand()
     {
-        var command = new ApplicationMaintenanceCommand("gc", CommandResources.GCCommandDescription);
-        command.AddCommand(GCCollectCommand());
-        command.AddCommand(LohCompactionModeCommand());
-        command.AddCommand(RefreshMemoryLimitsCommand());
+        var command = new ApplicationMaintenanceCommand("gc")
+        {
+            GCCollectCommand(),
+            LohCompactionModeCommand(),
+            RefreshMemoryLimitsCommand(),
+        };
+
+        command.Description = CommandResources.GCCommandDescription;
         return command;
     }
 }

@@ -37,4 +37,18 @@ public sealed class UnmanagedMemoryTests : Test
         Equal((uint)sizeof(ulong), memory.Size);
         Equal(memory.Pointer.ToString(), memory.ToString());
     }
+
+    [Fact]
+    public static async Task ByRefParameter()
+    {
+        using var memory = new UnmanagedMemory<long>();
+        await DoAsync(memory.Pointer);
+        Equal(42L, memory.Pointer.Value);
+        
+        static async Task DoAsync(ValueReference<long> byRef)
+        {
+            await Task.Yield();
+            byRef.Value = 42L;
+        }
+    }
 }

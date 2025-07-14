@@ -10,6 +10,7 @@ namespace DotNext.Maintenance;
 
 using Buffers;
 using Collections.Specialized;
+using Runtime.CompilerServices;
 using Security.Principal;
 using static IO.TextStreamExtensions;
 using static Runtime.InteropServices.UnixDomainSocketInterop;
@@ -211,6 +212,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         {
             clientSocket.Dispose();
             inputBuffer?.Dispose();
+            outputBuffer?.Dispose();
             session?.Dispose();
         }
     }

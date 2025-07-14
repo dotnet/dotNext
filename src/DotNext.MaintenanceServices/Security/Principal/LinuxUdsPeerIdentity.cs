@@ -12,7 +12,7 @@ namespace DotNext.Security.Principal;
 /// This class is supported on Linux systems only.
 /// </remarks>
 [CLSCompliant(false)]
-public sealed record class LinuxUdsPeerIdentity : IIdentity
+public sealed record LinuxUdsPeerIdentity : IIdentity
 {
     private static readonly Getpwuid? GetpwuidFunction;
 

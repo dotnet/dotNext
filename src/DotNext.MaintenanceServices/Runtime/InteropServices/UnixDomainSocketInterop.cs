@@ -21,6 +21,6 @@ internal static class UnixDomainSocketInterop
         processId = ucred[0];
         userId = ucred[1];
         groupId = ucred[2];
-        return bytesWritten == (ucred.Length * sizeof(uint));
+        return bytesWritten == ucred.Length * sizeof(uint);
     }
 }

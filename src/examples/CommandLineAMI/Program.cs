@@ -1,8 +1,6 @@
-﻿using System.Buffers;
-using System.CommandLine;
+﻿using System.CommandLine;
 using System.CommandLine.Parsing;
 using DotNext.Maintenance.CommandLine;
-using DotNext.Maintenance.CommandLine.Binding;
 
 var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 Console.WriteLine($"Print nc -U {path} in separated Terminal session to get access to Application Management Interface");
@@ -23,49 +21,53 @@ await new HostBuilder()
 static void ConfigureAddCommand(ApplicationMaintenanceCommand command)
 {
     command.Description = "Adds two integers";
-    var argX = new Argument<int>("x", parse: ParseInteger, description: "The first operand")
-    {
-        Arity = ArgumentArity.ExactlyOne
-    };
-    var argY = new Argument<int>("y", parse: ParseInteger, description: "The second operand")
+    var argX = new Argument<int>("x")
     {
         Arity = ArgumentArity.ExactlyOne,
+        Description = "The first operand",
+        CustomParser = ParseInteger
+    };
+    var argY = new Argument<int>("y")
+    {
+        Arity = ArgumentArity.ExactlyOne,
+        Description = "The second operand",
+        CustomParser = ParseInteger,
     };
 
-    command.AddArgument(argX);
-    command.AddArgument(argY);
-    command.SetHandler(static (x, y, console) =>
+    command.Add(argX);
+    command.Add(argY);
+    command.SetAction(result =>
     {
-        console.Out.Write((x + y).ToString());
-        console.Out.Write(Environment.NewLine);
-    },
-    argX,
-    argY,
-    DefaultBindings.Console);
+        var x = result.GetRequiredValue(argX);
+        var y = result.GetRequiredValue(argY);
+        result.Configuration.Output.WriteLine(x + y);
+    });
 }
 
 static void ConfigureSubtractCommand(ApplicationMaintenanceCommand command)
 {
-    command.Description = "Adds two integers";
-    var argX = new Argument<int>("x", parse: ParseInteger, description: "The first operand")
+    command.Description = "Subtracts two integers";
+    var argX = new Argument<int>("x")
     {
-        Arity = ArgumentArity.ExactlyOne
+        Arity = ArgumentArity.ExactlyOne,
+        Description = "The first operand",
+        CustomParser = ParseInteger
     };
-    var argY = new Argument<int>("y", parse: ParseInteger, description: "The second operand")
+    var argY = new Argument<int>("y")
     {
-        Arity = ArgumentArity.ExactlyOne
+        Arity = ArgumentArity.ExactlyOne,
+        Description = "The second operand",
+        CustomParser = ParseInteger,
     };
 
-    command.AddArgument(argX);
-    command.AddArgument(argY);
-    command.SetHandler(static (x, y, console) =>
+    command.Add(argX);
+    command.Add(argY);
+    command.SetAction(result =>
     {
-        console.Out.Write((x - y).ToString());
-        console.Out.Write(Environment.NewLine);
-    },
-    argX,
-    argY,
-    DefaultBindings.Console);
+        var x = result.GetRequiredValue(argX);
+        var y = result.GetRequiredValue(argY);
+        result.Configuration.Output.WriteLine(x - y);
+    });
 }
 
 static int ParseInteger(ArgumentResult result)
@@ -74,7 +76,7 @@ static int ParseInteger(ArgumentResult result)
 
     if (!int.TryParse(token, out var value))
     {
-        result.ErrorMessage = $"{token} is not an integer number";
+        result.AddError($"{token} is not an integer number");
     }
 
     return value;

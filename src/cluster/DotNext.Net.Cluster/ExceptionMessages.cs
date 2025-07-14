@@ -27,12 +27,6 @@ internal static class ExceptionMessages
 
     internal static string UnsupportedAddressFamily => (string)Resources.Get();
 
-    internal static string DuplicateCorrelationId => (string)Resources.Get();
-
-    internal static string UnexpectedUdpSenderBehavior => (string)Resources.Get();
-
-    internal static string ExchangeCompleted => (string)Resources.Get();
-
     internal static string UnavailableMember => (string)Resources.Get();
 
     internal static string MissingPartition(long index) => Resources.Get().Format(index);

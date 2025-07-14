@@ -1,6 +1,11 @@
+using System.CommandLine.Parsing;
+using System.Diagnostics;
+using System.Security.Principal;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DotNext.Maintenance.CommandLine.Authorization;
+
+using Collections.Specialized;
 
 /// <summary>
 /// Provides methods for configuring AMI authorization in DI environment.
@@ -30,4 +35,26 @@ public static class AuthorizationServices
     private static AuthorizationCallback CreateCallback<TDependency>(this Func<TDependency, AuthorizationCallback> factory, IServiceProvider services)
         where TDependency : notnull
         => factory(services.GetRequiredService<TDependency>());
+
+    internal static ValueTask<bool> AuthorizeAsync(this AuthorizationCallback? authorizationRules, IMaintenanceSession session, CommandResult target,
+        CancellationToken token)
+    {
+        return authorizationRules is null
+            ? ValueTask.FromResult(true)
+            : session.Principal is { } principal
+                ? AuthorizeAsync(authorizationRules, principal, session.Context, target, token)
+                : ValueTask.FromResult(false);
+    }
+
+    private static async ValueTask<bool> AuthorizeAsync(AuthorizationCallback authorizationRules, IPrincipal principal, ITypeMap context,
+        CommandResult target, CancellationToken token)
+    {
+        foreach (AuthorizationCallback rule in authorizationRules.GetInvocationList())
+        {
+            if (!await rule.Invoke(principal, target, context, token).ConfigureAwait(false))
+                return false;
+        }
+
+        return true;
+    }
 }

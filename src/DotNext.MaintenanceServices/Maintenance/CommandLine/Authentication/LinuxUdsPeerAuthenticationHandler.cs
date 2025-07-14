@@ -1,4 +1,4 @@
-using System.CommandLine.Invocation;
+using System.CommandLine;
 using System.Security.Principal;
 
 namespace DotNext.Maintenance.CommandLine.Authentication;
@@ -16,7 +16,7 @@ using LinuxUdsPeerIdentity = Security.Principal.LinuxUdsPeerIdentity;
 public sealed class LinuxUdsPeerAuthenticationHandler : IAuthenticationHandler
 {
     /// <inheritdoc />
-    ValueTask<IPrincipal?> IAuthenticationHandler.ChallengeAsync(InvocationContext context, IIdentity identity, CancellationToken token)
+    ValueTask<IPrincipal?> IAuthenticationHandler.ChallengeAsync(ParseResult context, IIdentity identity, CancellationToken token)
         => new(identity is LinuxUdsPeerIdentity peerIdentity ? Challenge(peerIdentity) : null);
 
     private static GenericPrincipal Challenge(LinuxUdsPeerIdentity identity)

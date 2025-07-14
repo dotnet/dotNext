@@ -3,6 +3,7 @@ using System.IO.Hashing;
 using DotNext;
 using DotNext.Buffers;
 using DotNext.Diagnostics;
+using DotNext.Hosting;
 using DotNext.Runtime.Caching;
 
 // Usage: program <number-of-entries> <cache-size> <duration-in-seconds> <parallel-requests>

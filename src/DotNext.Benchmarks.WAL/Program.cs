@@ -1,8 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
-using DotNext;
 using DotNext.Benchmarks.WAL;
 using DotNext.Diagnostics;
+using DotNext.Hosting;
 using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 using FASTER.core;
