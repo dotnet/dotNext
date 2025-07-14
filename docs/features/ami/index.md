@@ -41,7 +41,7 @@ If you want to send the command programmatically then you need to insert line te
 
 Some of the commands may produce output in the form of plain text.
 
-In interactive mode, administrator can use standard flags `-h` or `--help` to get help for the commands or subcommands.
+In interactive mode, administrator can use standard flags `-h`, `--help`, or command `help` to get help for the commands or subcommands.
 
 # AMI Hosting
 AMI is supported for the application with or without Dependency Injection support. For simplicity, all code examples implies DI enabled.
@@ -86,32 +86,38 @@ await new HostBuilder()
 static void ConfigureAddCommand(ApplicationMaintenanceCommand command)
 {
     command.Description = "Adds two integers";
-    var argX = new Argument<int>("x", parse: ParseInteger, description: "The first operand")
-    {
-        Arity = ArgumentArity.ExactlyOne
-    };
-    var argY = new Argument<int>("y", parse: ParseInteger, description: "The second operand")
+    var argX = new Argument<int>("x")
     {
         Arity = ArgumentArity.ExactlyOne,
+        CustomParser = ParseInteger,
+        Description = "The first operand",
+    };
+    var argY = new Argument<int>("y")
+    {
+        Arity = ArgumentArity.ExactlyOne,
+        CustomParser = ParseInteger,
+        Description = "The second operand",
     };
 
-    command.AddArgument(argX);
-    command.AddArgument(argY);
-    command.SetHandler(static (x, y, console) =>
+    command.Add(argX);
+    command.Add(argY);
+    command.SetAction(result =>
     {
-        console.Out.Write((x + y).ToString());
-        console.Out.Write(Environment.NewLine);
-    },
-    argX,
-    argY,
-    DefaultBindings.Console);
+        var x = result.GetRequiredValue(argX);
+        var y = result.GetRequiredValue(argY);
+        
+        result.Configuration.Output.WriteLine(x + y);
+    });
 }
+
+static int ParseInteger(ArgumentResult result)
+    => int.Parse(result.Tokens.FirstOrDefault()?.Value);
 ```
 
 Registered custom commands will be automatically discovered by AMI host. [DefaultBindings](xref:DotNext.Maintenance.CommandLine.Binding.DefaultBindings) provides extra bindings available for the commands when executing by AMI host.
 
 # Security
-AMI is based on Unix Domain Sockets. It means that there is no way to have a direct connection to the application remotely. Potential attacker must have a direct access to the container or operating system to interact with the app via AMI. In most cases, it should be enough to protect the interface. However, administrator can use the following approaches to improve security:
+AMI is based on Unix Domain Sockets. It means that there is no way to have a direct connection to the application remotely. Potential attacker must have direct access to the container or operating system to interact with the app via AMI. In most cases, it should be enough to protect the interface. However, administrator can use the following approaches to improve security:
 * Configure access rights for the pseudo file at file system level
 * Use authentication and authorization at AMI level
 
