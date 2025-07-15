@@ -150,12 +150,8 @@ partial class WriteAheadLog
         internal unsafe void ConvertToHugePage(delegate*unmanaged<nint, nint, int, int> madise)
         {
             const int MADV_HUGEPAGE = 14;
-#if DEBUG
             var errorCode = madise((nint)address, pageSize, MADV_HUGEPAGE);
             Debug.Assert(errorCode is 0);
-#else
-            madise((nint)address, pageSize, MADV_HUGEPAGE);
-#endif
         }
 
         public override unsafe Span<byte> GetSpan() => new(address, pageSize);
