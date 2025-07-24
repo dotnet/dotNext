@@ -10,7 +10,7 @@ internal readonly struct FragmentHeader(ulong id, FragmentControl control, ushor
 {
     public const int Size = sizeof(long) + sizeof(FragmentControl) + sizeof(ushort);
     
-    public ulong Id => id;
+    public ulong Id => id; // if 0, then the packet is protocol-specific
     public FragmentControl Control => control;
     public ushort Length => length;
 
