@@ -186,6 +186,48 @@ public sealed class ResultTests : Test
     }
 
     [Fact]
+    public static void ConvertToResult()
+    {
+        Result<string> validStringResult = "20";
+        var convertedResult1 = validStringResult.Convert(ToInt);
+        True(convertedResult1.IsSuccessful);
+        Equal(20, convertedResult1);
+
+        Result<string> invdalidStringResult = "20F";
+        var convertedResult2 = invdalidStringResult.Convert(ToInt);
+        False(convertedResult2.IsSuccessful);
+        True(convertedResult2.Error is FormatException);
+
+        Result<string> exceptionResult = new(new ArgumentNullException());
+        var convertedResult3 = exceptionResult.Convert(ToInt);
+        False(convertedResult3.IsSuccessful);
+        True(convertedResult3.Error is ArgumentNullException);
+
+        static Result<int> ToInt(string value) => int.TryParse(value, out var result) ? result : throw new FormatException();
+    }
+
+    [Fact]
+    public static void ConvertToResult2()
+    {
+        Result<string, EnvironmentVariableTarget> validStringResult = "20";
+        var convertedResult1 = validStringResult.Convert(ToInt);
+        True(convertedResult1.IsSuccessful);
+        Equal(20, convertedResult1);
+
+        Result<string, EnvironmentVariableTarget> invalidStringResult = "20F";
+        var convertedResult2 = invalidStringResult.Convert(ToInt);
+        False(convertedResult2.IsSuccessful);
+        Equal(EnvironmentVariableTarget.Machine, convertedResult2.Error);
+
+        Result<string, EnvironmentVariableTarget> errorCodeResult = new(EnvironmentVariableTarget.User);
+        var convertedResult3 = errorCodeResult.Convert(ToInt);
+        False(convertedResult3.IsSuccessful);
+        Equal(EnvironmentVariableTarget.User, convertedResult3.Error);
+
+        static Result<int, EnvironmentVariableTarget> ToInt(string value) => int.TryParse(value, out var result) ? new(result) : new(EnvironmentVariableTarget.Machine);
+    }
+
+    [Fact]
     public static void HandleException()
     {
         Result<int> result = 20;
