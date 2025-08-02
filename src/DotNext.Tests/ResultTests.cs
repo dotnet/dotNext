@@ -186,43 +186,79 @@ public sealed class ResultTests : Test
     }
 
     [Fact]
-    public static void ConvertToResult()
+    public static unsafe void ConvertToResult()
     {
+        // Standard conversion
         Result<string> validStringResult = "20";
         var convertedResult1 = validStringResult.Convert(ToInt);
         True(convertedResult1.IsSuccessful);
         Equal(20, convertedResult1);
 
-        Result<string> invdalidStringResult = "20F";
-        var convertedResult2 = invdalidStringResult.Convert(ToInt);
-        False(convertedResult2.IsSuccessful);
-        True(convertedResult2.Error is FormatException);
+        // Unsafe standard conversion
+        var convertedResult2 = validStringResult.Convert<int>(&ToInt);
+        True(convertedResult2.IsSuccessful);
+        Equal(20, convertedResult2);
 
-        Result<string> exceptionResult = new(new ArgumentNullException());
-        var convertedResult3 = exceptionResult.Convert(ToInt);
+        // Failing conversion
+        Result<string> invalidStringResult = "20F";
+        var convertedResult3 = invalidStringResult.Convert(ToInt);
         False(convertedResult3.IsSuccessful);
-        True(convertedResult3.Error is ArgumentNullException);
+        IsType<FormatException>(convertedResult3.Error);
+        
+        // Unsafe failing conversion
+        var convertedResult4 = invalidStringResult.Convert<int>(&ToInt);
+        False(convertedResult4.IsSuccessful);
+        IsType<FormatException>(convertedResult4.Error);
+
+        // Conversion of unsuccessful Result<T>
+        Result<string> exceptionResult = new(new ArgumentNullException());
+        var convertedResult5 = exceptionResult.Convert(ToInt);
+        False(convertedResult5.IsSuccessful);
+        IsType<ArgumentNullException>(convertedResult5.Error);
+
+        // Unsafe conversion of unsuccessful Result<T>
+        var convertedResult6 = exceptionResult.Convert<int>(&ToInt);
+        False(convertedResult6.IsSuccessful);
+        IsType<ArgumentNullException>(convertedResult6.Error);
 
         static Result<int> ToInt(string value) => int.TryParse(value, out var result) ? result : throw new FormatException();
     }
 
     [Fact]
-    public static void ConvertToResult2()
+    public unsafe static void ConvertToResultWithErrorCode()
     {
+        // Standard conversion
         Result<string, EnvironmentVariableTarget> validStringResult = "20";
         var convertedResult1 = validStringResult.Convert(ToInt);
         True(convertedResult1.IsSuccessful);
         Equal(20, convertedResult1);
 
-        Result<string, EnvironmentVariableTarget> invalidStringResult = "20F";
-        var convertedResult2 = invalidStringResult.Convert(ToInt);
-        False(convertedResult2.IsSuccessful);
-        Equal(EnvironmentVariableTarget.Machine, convertedResult2.Error);
+        // Unsafe standard conversion
+        var convertedResult2 = validStringResult.Convert<int>(&ToInt);
+        True(convertedResult2.IsSuccessful);
+        Equal(20, convertedResult2);
 
-        Result<string, EnvironmentVariableTarget> errorCodeResult = new(EnvironmentVariableTarget.User);
-        var convertedResult3 = errorCodeResult.Convert(ToInt);
+        // Failing conversion
+        Result<string, EnvironmentVariableTarget> invalidStringResult = "20F";
+        var convertedResult3 = invalidStringResult.Convert(ToInt);
         False(convertedResult3.IsSuccessful);
-        Equal(EnvironmentVariableTarget.User, convertedResult3.Error);
+        Equal(EnvironmentVariableTarget.Machine, convertedResult3.Error);
+
+        // Unsafe failing conversion
+        var convertedResult4 = invalidStringResult.Convert<int>(&ToInt);
+        False(convertedResult4.IsSuccessful);
+        Equal(EnvironmentVariableTarget.Machine, convertedResult4.Error);
+
+        // Conversion of unsuccessful Result<T>
+        Result<string, EnvironmentVariableTarget> errorCodeResult = new(EnvironmentVariableTarget.User);
+        var convertedResult5 = errorCodeResult.Convert(ToInt);
+        False(convertedResult5.IsSuccessful);
+        Equal(EnvironmentVariableTarget.User, convertedResult5.Error);
+
+        // Unsafe conversion of unsuccessful Result<T>
+        var convertedResult6 = errorCodeResult.Convert<int>(&ToInt);
+        False(convertedResult6.IsSuccessful);
+        Equal(EnvironmentVariableTarget.User, convertedResult6.Error);
 
         static Result<int, EnvironmentVariableTarget> ToInt(string value) => int.TryParse(value, out var result) ? new(result) : new(EnvironmentVariableTarget.Machine);
     }
