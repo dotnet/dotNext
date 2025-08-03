@@ -56,7 +56,7 @@ public sealed class TimeoutSource : IDisposable, IAsyncDisposable
     {
         for (uint current = state, tmp;; current = tmp)
         {
-            if (current is StartedState or InitialState)
+            if (current <= StartedState)
             {
                 tmp = Interlocked.CompareExchange(ref state, CanceledState, current);
                 
@@ -109,9 +109,12 @@ public sealed class TimeoutSource : IDisposable, IAsyncDisposable
     /// Tries to reset the timer.
     /// </summary>
     /// <returns><see langword="true"/> if this object can be reused by calling <see cref="TryStart"/> again; otherwise, <see langword="false"/>.</returns>
-    public bool TryReset()
-        => Interlocked.CompareExchange(ref state, InitialState, StartedState) is StartedState
-           && timer.Change(InfiniteTimeSpan, InfiniteTimeSpan);
+    public bool TryReset() => Interlocked.CompareExchange(ref state, InitialState, StartedState) switch
+    {
+        InitialState => true,
+        StartedState => timer.Change(InfiniteTimeSpan, InfiniteTimeSpan),
+        _ => false,
+    };
     
     /// <summary>
     /// The cancellation token that is linked to the root token and the timeout.
@@ -119,12 +122,12 @@ public sealed class TimeoutSource : IDisposable, IAsyncDisposable
     public CancellationToken Token { get; }
 
     /// <summary>
-    /// Gets a value indicating that the provider is canceled by the root token.
+    /// Gets a value indicating that this source is canceled by the root token.
     /// </summary>
     public bool IsCanceled => state is CanceledState;
 
     /// <summary>
-    /// Gets a value indicating that the provider is timed out.
+    /// Gets a value indicating that this source is timed out.
     /// </summary>
     public bool IsTimedOut => state is TimedOutState;
 

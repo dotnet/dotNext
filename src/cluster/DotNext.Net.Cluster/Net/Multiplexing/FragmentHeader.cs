@@ -5,9 +5,20 @@ namespace DotNext.Net.Multiplexing;
 using Buffers;
 using Buffers.Binary;
 
+/// <summary>
+/// Represents fragment header.
+/// </summary>
+/// <param name="id">The identifier of the stream.</param>
+/// <param name="control">The fragment behavior.</param>
+/// <param name="length">The length of the fragment data.</param>
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct FragmentHeader(ulong id, FragmentControl control, ushort length) : IBinaryFormattable<FragmentHeader>
 {
+    /// <summary>
+    /// All protocol-specific fragments have ID = 0.
+    /// </summary>
+    private const ulong SystemStreamId = 0U;
+    
     public const int Size = sizeof(long) + sizeof(FragmentControl) + sizeof(ushort);
     
     public ulong Id => id; // if 0, then the packet is protocol-specific
@@ -31,5 +42,12 @@ internal readonly struct FragmentHeader(ulong id, FragmentControl control, ushor
             reader.ReadLittleEndian<ulong>(),
             (FragmentControl)reader.ReadLittleEndian<ushort>(),
             reader.ReadLittleEndian<ushort>());
+    }
+
+    public static int WriteHeartbeat(Span<byte> buffer)
+    {
+        var header = new FragmentHeader(SystemStreamId, FragmentControl.Heartbeat, length: 0);
+        header.Format(buffer);
+        return Size;
     }
 }

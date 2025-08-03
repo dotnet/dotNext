@@ -1,5 +1,7 @@
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net.Sockets;
+using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Multiplexing;
 
@@ -8,26 +10,79 @@ namespace DotNext.Net.Multiplexing;
 /// </summary>
 public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
 {
+    private readonly TimeSpan heartbeatTimeout, timeout;
+    private readonly TaskCompletionSource readiness;
+    private readonly CancellationToken lifetimeToken;
+    private Task dispatcher;
+    
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private volatile CancellationTokenSource? lifetimeTokenSource;
 
-    protected MultiplexedClient(int fragmentSize = 1380, PipeOptions? options = null)
+    /// <summary>
+    /// Initializes a new multiplexed client.
+    /// </summary>
+    /// <param name="options">The configuration of the client.</param>
+    protected MultiplexedClient(Options options)
     {
-        if ((uint)fragmentSize is 0U or >= ushort.MaxValue)
-            throw new ArgumentOutOfRangeException(nameof(fragmentSize));
-
         streams = new();
-        sendBuffer = GC.AllocateArray<byte>(fragmentSize, pinned: true);
-        receiveBuffer = GC.AllocateArray<byte>(fragmentSize, pinned: true);
+        sendBuffer = GC.AllocateArray<byte>(options.FragmentSize, pinned: true);
+        receiveBuffer = GC.AllocateArray<byte>(options.FragmentSize, pinned: true);
+        this.options = options.BufferOptions;
         writeSignal = new(initialState: false);
-        this.options = options ?? PipeOptions.Default;
-        dispatcher = DispatchAsync((lifetimeTokenSource = new()).Token);
+        lifetimeToken = (lifetimeTokenSource = new()).Token;
+
+        dispatcher = Task.CompletedTask;
+        timeout = options.Timeout;
+        heartbeatTimeout = options.HeartbeatTimeout;
+        readiness = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    }
+
+    /// <summary>
+    /// Connects to the server and starts the dispatching loop.
+    /// </summary>
+    /// <returns>The task that resumes when the client socket is connected successfully to the server.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The client is disposed.</exception>
+    public ValueTask StartAsync(CancellationToken token = default)
+    {
+        if (ReferenceEquals(dispatcher, Task.CompletedTask))
+        {
+            dispatcher = DispatchAsync();
+        }
+
+        return new(readiness.Task.WaitAsync(token));
     }
 
     /// <summary>
     /// Creates a new multiplexed client stream.
     /// </summary>
-    /// <returns></returns>
-    public IDuplexPipe CreateStream()
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <remarks>
+    /// If <see cref="IDuplexPipe.Output"/> is completed successfully, then the implementation
+    /// doesn't expect the input data and remote <see cref="IDuplexPipe.Input"/> will be completed successfully as well.
+    /// If <see cref="IDuplexPipe.Output"/> is completed with exception, then the implementation
+    /// doesn't expect the input data, but remote <see cref="IDuplexPipe.Input"/> will not be completed.
+    /// If <see cref="IDuplexPipe.Input"/> is completed (successfully or not), then the implementation
+    /// skips any incoming packets for the associated stream.
+    ///
+    /// To deactivate the stream, the consumer needs to complete both <see cref="IDuplexPipe.Input"/> and <see cref="IDuplexPipe.Output"/>.
+    ///
+    /// <see cref="IDuplexPipe.Input"/> can be completed successfully if the remote <see cref="IDuplexPipe.Output"/> completes successfully.
+    /// <see cref="IDuplexPipe.Input"/> can be completed with <see cref="StreamRejectedException"/> if the backlog of the remote peer is full,
+    /// and the peer cannot accept the incoming stream. <see cref="TimeoutException"/> if the consumer of <see cref="IDuplexPipe.Input"/> is not
+    /// fast enough to consume the incoming traffic. <see cref="ConnectionResetException"/> if the client or server is disposed.
+    /// </remarks>
+    /// <returns>A duplex pipe for data input/output.</returns>
+    public ValueTask<IDuplexPipe> OpenStreamAsync(CancellationToken token = default)
+        => readiness.Task.IsCompletedSuccessfully ? new(OpenStream()) : OpenStreamCoreAsync(token);
+
+    private async ValueTask<IDuplexPipe> OpenStreamCoreAsync(CancellationToken token)
+    {
+        await readiness.Task.WaitAsync(token).ConfigureAwait(false);
+        return OpenStream();
+    }
+
+    private IDuplexPipe OpenStream()
     {
         var stream = new StreamHandler(options, writeSignal);
         ulong id;
@@ -36,7 +91,6 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
             id = Interlocked.Increment(ref streamId);
         } while (!streams.TryAdd(id, stream));
 
-        writeSignal.Set();
         return stream;
     }
 
@@ -53,6 +107,7 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
         if (disposing)
         {
             Cancel();
+            dispatcher.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(writeSignal.Dispose);
         }
         
         base.Dispose(disposing);
@@ -62,6 +117,7 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     {
         if (Interlocked.Exchange(ref lifetimeTokenSource, null) is { } cts)
         {
+            readiness.TrySetException(new ObjectDisposedException(GetType().Name));
             using (cts)
             {
                 cts.Cancel();
@@ -74,6 +130,7 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     {
         Cancel();
         await dispatcher.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+        writeSignal.Dispose();
     }
 
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync"/>

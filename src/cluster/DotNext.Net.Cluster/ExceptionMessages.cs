@@ -58,4 +58,12 @@ internal static class ExceptionMessages
     internal static string SparseFileNotSupported => (string)Resources.Get();
 
     internal static string InvalidPartitionFormat => (string)Resources.Get();
+
+    internal static string StreamRejected => (string)Resources.Get();
+
+    internal static string ConnectionClosed => (string)Resources.Get();
+
+    internal static string ConnectionTimedOut => (string)Resources.Get();
+
+    internal static string PipeTimedOut => (string)Resources.Get();
 }

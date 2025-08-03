@@ -37,4 +37,12 @@ public sealed class TimeoutSourceTests : Test
         True(source.IsCanceled);
         False(source.IsTimedOut);
     }
+
+    [Fact]
+    public static void IdempotentReset()
+    {
+        using var source = new TimeoutSource(TimeProvider.System, new(canceled: false));
+        True(source.TryReset());
+        True(source.TryReset());
+    }
 }

@@ -4,21 +4,59 @@ using System.Net.Sockets;
 
 namespace DotNext.Net.Multiplexing;
 
-public class TcpMultiplexedClient(EndPoint address, int fragmentSize = 1380, PipeOptions? options = null) : MultiplexedClient(fragmentSize, options)
+using Threading;
+
+/// <summary>
+/// Represents a client-side of the multiplexing protocol on top of TCP.
+/// </summary>
+/// <param name="address">The address of the server.</param>
+/// <param name="configuration">The configuration of the client.</param>
+public class TcpMultiplexedClient(EndPoint address, TcpMultiplexedClient.Options configuration) : MultiplexedClient(configuration)
 {
-    protected override async ValueTask<Socket> ConnectAsync(CancellationToken token)
+    private readonly TimeSpan connectTimeout = configuration.ConnectTimeout;
+
+    /// <inheritdoc/>
+    protected sealed override async ValueTask<Socket> ConnectAsync(CancellationToken token)
     {
         var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+        var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
+        timeoutSource.CancelAfter(connectTimeout);
         try
         {
-            await socket.ConnectAsync(address, token).ConfigureAwait(false);
+            await socket.ConnectAsync(address, timeoutSource.Token).ConfigureAwait(false);
         }
         catch
         {
             socket.Dispose();
             throw;
         }
+        finally
+        {
+            timeoutSource.Dispose();
+        }
 
         return socket;
+    }
+
+    /// <summary>
+    /// Represents configuration of TCP multiplexing protocol client. 
+    /// </summary>
+    public new class Options : MultiplexedClient.Options
+    {
+        private readonly TimeSpan connectTimeout = TimeSpan.FromSeconds(30);
+
+        /// <summary>
+        /// Gets or sets connection timeout.
+        /// </summary>
+        public TimeSpan ConnectTimeout
+        {
+            get => connectTimeout;
+            init
+            {
+                Threading.Timeout.Validate(value);
+
+                connectTimeout = value;
+            }
+        }
     }
 }
