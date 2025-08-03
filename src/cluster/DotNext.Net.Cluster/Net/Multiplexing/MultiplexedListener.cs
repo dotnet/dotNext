@@ -1,0 +1,190 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.IO.Pipelines;
+using System.Net.Sockets;
+using System.Runtime.CompilerServices;
+using System.Threading.Channels;
+
+namespace DotNext.Net.Multiplexing;
+
+using Threading;
+
+/// <summary>
+/// Represents multiplexed listener.
+/// </summary>
+public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
+{
+    private readonly CancellationToken lifetimeToken;
+    private readonly TimeSpan heartbeatTimeout, timeout;
+    private readonly Channel<StreamHandler> pendingStreams;
+    private readonly PipeOptions options;
+    private readonly int fragmentSize;
+    private Task listener;
+    private readonly TaskCompletionSource readiness;
+
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
+    private volatile CancellationTokenSource? lifetimeTokenSource;
+
+    /// <summary>
+    /// Initializes a new multiplexed listener.
+    /// </summary>
+    /// <param name="configuration"></param>
+    protected MultiplexedListener(Options configuration)
+    {
+        pendingStreams = Channel.CreateBounded<StreamHandler>(new BoundedChannelOptions(configuration.Backlog)
+        {
+            AllowSynchronousContinuations = false,
+            FullMode = BoundedChannelFullMode.DropWrite,
+            SingleWriter = false,
+            SingleReader = false,
+        });
+
+        options = configuration.BufferOptions;
+        fragmentSize = configuration.FragmentSize;
+        readiness = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        lifetimeToken = (lifetimeTokenSource = new()).Token;
+        heartbeatTimeout = configuration.HeartbeatTimeout;
+        timeout = configuration.Timeout;
+        listener = Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Accepts the incoming stream asynchronously.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The incoming stream.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The listener is disposed.</exception>
+    public async ValueTask<IDuplexPipe> AcceptAsync(CancellationToken token = default)
+    {
+        StreamHandler result;
+        try
+        {
+            do
+            {
+                result = await pendingStreams.Reader.ReadAsync(token).ConfigureAwait(false);
+            } while (result.IsTransportSideCompleted);
+        }
+        catch (ChannelClosedException)
+        {
+            throw new ObjectDisposedException(GetType().Name);
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Ensures that the listener is waiting for the incoming connections.
+    /// </summary>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task that resumes when the listener is started listening the socket.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">The listener is disposed.</exception>
+    public ValueTask StartAsync(CancellationToken token = default)
+    {
+        if (ReferenceEquals(listener, Task.CompletedTask))
+        {
+            listener = ListenAsync();
+        }
+
+        return new(readiness.Task.WaitAsync(token));
+    }
+
+    /// <summary>
+    /// Creates listening socket.
+    /// </summary>
+    /// <returns>Listening socket.</returns>
+    protected abstract Socket Listen();
+
+    private async Task ListenAsync()
+    {
+        Debugger.NotifyOfCrossThreadDependency();
+        Socket listeningSocket;
+        try
+        {
+            listeningSocket = Listen();
+        }
+        catch (Exception e)
+        {
+            readiness.TrySetException(e);
+            throw;
+        }
+
+        readiness.TrySetResult();
+        var connections = new HashSet<WeakReference<Task>>();
+        try
+        {
+            while (!lifetimeToken.IsCancellationRequested)
+            {
+                var clientSocket = await listeningSocket.AcceptAsync(lifetimeToken).ConfigureAwait(false);
+                connections.Add(new(DispatchAsync(clientSocket)));
+
+                // GC: remove completed tasks
+                connections.RemoveWhere(IsCompleted);
+            }
+        }
+        finally
+        {
+            listeningSocket.Dispose();
+            await Task.WhenAll(connections.Select(Unwrap)).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+            connections.Clear();
+        }
+
+        static bool IsCompleted(WeakReference<Task> taskRef)
+            => !taskRef.TryGetTarget(out var task) || task.IsCompleted;
+
+        static Task Unwrap(WeakReference<Task> taskRef)
+        {
+            if (!taskRef.TryGetTarget(out var task))
+                task = Task.CompletedTask;
+
+            return task;
+        }
+    }
+
+    private StreamHandler? CreateHandler(AsyncAutoResetEvent writeSignal)
+    {
+        var handler = new StreamHandler(options, writeSignal);
+        return pendingStreams.Writer.TryWrite(handler)
+            ? handler
+            : null;
+    }
+
+    private void Cancel()
+    {
+        if (Interlocked.Exchange(ref lifetimeTokenSource, null) is { } cts)
+        {
+            readiness.TrySetException(new ObjectDisposedException(GetType().Name));
+            try
+            {
+                cts.Cancel();
+            }
+            finally
+            {
+                cts.Dispose();
+                pendingStreams.Writer.Complete();
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            Cancel();
+        }
+        
+        base.Dispose(disposing);
+    }
+
+    /// <inheritdoc/>
+    protected override async ValueTask DisposeAsyncCore()
+    {
+        Cancel();
+        await listener.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+    }
+
+    /// <inheritdoc/>
+    public new ValueTask DisposeAsync() => base.DisposeAsync();
+}

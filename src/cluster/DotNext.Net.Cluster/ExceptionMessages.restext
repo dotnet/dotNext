@@ -18,3 +18,7 @@ ConcurrentMembershipUpdate=Cluster membership cannot be modified concurrently
 LogEntryPayloadTooLarge=The size of the log entry is larger than specified threshold
 SparseFileNotSupported=TAR archive doesn't support sparse files on the target platform
 InvalidPartitionFormat=Partition has invalid binary format or broken
+StreamRejected=The stream has been rejected by the server due to overflow of its backlog
+ConnectionClosed=The underlying connection is closed
+ConnectionTimedOut=The data cannot be sent or received on time
+PipeTimedOut=The data cannot be written on time
