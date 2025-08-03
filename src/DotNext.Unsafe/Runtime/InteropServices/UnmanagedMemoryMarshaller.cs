@@ -15,6 +15,7 @@ public static class UnmanagedMemoryMarshaller
     /// </summary>
     /// <param name="memory">The pointer value.</param>
     /// <returns>The address of the pointer.</returns>
+    [CLSCompliant(false)]
     public static nint ConvertToUnmanaged(IUnmanagedMemory memory) => memory.Pointer;
 }
 
@@ -31,5 +32,6 @@ public static class UnmanagedMemoryMarshaller<T>
     /// </summary>
     /// <param name="memory">The pointer value.</param>
     /// <returns>The address of the pointer.</returns>
+    [CLSCompliant(false)]
     public static nint ConvertToUnmanaged(IUnmanagedMemory<T> memory) => memory.Pointer;
 }
