@@ -27,3 +27,13 @@ internal sealed class StreamRejectedCommand(ulong streamId) : ProtocolCommand
         return FragmentHeader.Size;
     }
 }
+
+internal sealed class StreamClosedCommand(ulong streamId) : ProtocolCommand
+{
+    public override int Write(Span<byte> buffer)
+    {
+        var header = new FragmentHeader(streamId, FragmentControl.StreamClosed, 0);
+        header.Format(buffer);
+        return FragmentHeader.Size;
+    }
+}

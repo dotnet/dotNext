@@ -62,8 +62,11 @@ internal sealed class OutputMultiplexer(
                 await timeoutSource.ResetAsync(token).ConfigureAwait(false);
             }
 
-            if (header.Control is FragmentControl.Heartbeat)
-                continue;
+            switch (header.Control)
+            {
+                case FragmentControl.Heartbeat:
+                    continue;
+            }
 
             if (!streams.TryGetValue(header.Id, out var handler))
             {
@@ -90,12 +93,7 @@ internal sealed class OutputMultiplexer(
             timeoutSource.Start(timeout);
             try
             {
-                if (header.Control is FragmentControl.StreamRejected)
-                    throw new StreamRejectedException();
-
-                result = await handler.Output.WriteAsync(
-                    buffer.Slice(FragmentHeader.Size, header.Length),
-                    timeoutSource.Token).ConfigureAwait(false);
+                result = await WriteAsync(header, handler, timeoutSource.Token).ConfigureAwait(false);
             }
             catch (OperationCanceledException e) when (timeoutSource.IsCanceled(e))
             {
@@ -104,11 +102,8 @@ internal sealed class OutputMultiplexer(
             catch (Exception e)
             {
                 // on exception, complete input/output and remove the stream
-                if (e is OperationCanceledException canceledEx && timeoutSource.IsTimedOut(canceledEx))
-                    e = new TimeoutException(ExceptionMessages.PipeTimedOut, e);
-
-                await handler.CompleteTransportOutputAsync(e).ConfigureAwait(false);
-                result = new(isCanceled: true, isCompleted: true);
+                await CompleteTransportOutputAsync(handler, e).ConfigureAwait(false);
+                result = new(isCanceled: true, isCompleted: false);
             }
             finally
             {
@@ -121,7 +116,39 @@ internal sealed class OutputMultiplexer(
             }
         }
     }
-    
+
+    private ValueTask CompleteTransportOutputAsync(StreamHandler stream, Exception e)
+    {
+        switch (e)
+        {
+            case OperationCanceledException canceledEx when timeoutSource.IsTimedOut(canceledEx):
+                e = new TimeoutException(ExceptionMessages.PipeTimedOut, e);
+                break;
+        }
+
+        return stream.CompleteTransportOutputAsync(e);
+    }
+
+    private ValueTask<FlushResult> WriteAsync(FragmentHeader header, StreamHandler stream, CancellationToken token)
+    {
+        ValueTask<FlushResult> task;
+        switch (header.Control)
+        {
+            case FragmentControl.StreamRejected:
+                task = ValueTask.FromException<FlushResult>(new StreamRejectedException());
+                break;
+            case FragmentControl.StreamClosed:
+                stream.CancelAppSide();
+                task = ValueTask.FromResult<FlushResult>(new(isCanceled: false, isCompleted: true));
+                break;
+            default:
+                task = stream.Output.WriteAsync(buffer.Slice(FragmentHeader.Size, header.Length), token);
+                break;
+        }
+
+        return task;
+    }
+
     private static void AdjustReceiveBuffer(int bytesRead, ref int totalBytes, Span<byte> buffer)
     {
         totalBytes -= bytesRead;

@@ -22,8 +22,7 @@ internal sealed class InputMultiplexer(
     public OutputMultiplexer CreateOutput(Memory<byte> outputBuffer, TimeSpan receiveTimeout, Func<StreamHandler?> handlerFactory, CancellationToken token)
         => new(streams, writeSignal, commands, outputBuffer, receiveTimeout, token) { HandlerFactory = handlerFactory };
 
-    private static ValueTask ReadAsync(
-        ICollection<KeyValuePair<ulong, StreamHandler>> streams,
+    private ValueTask ReadAsync(
         ulong streamId,
         StreamHandler stream,
         out ReadResult? result)
@@ -43,10 +42,12 @@ internal sealed class InputMultiplexer(
                 task = stream.CompleteTransportInputAsync(e);
             }
         }
-        else if (appSideCompleted && streams.Remove(new(streamId, stream)))
+        else if (appSideCompleted && streams.As<ICollection<KeyValuePair<ulong, StreamHandler>>>().Remove(new(streamId, stream)))
         {
             stream.Output.CancelPendingFlush();
             task = stream.CompleteTransportOutputAsync();
+
+            commands.TryAdd(new StreamClosedCommand(streamId));
         }
 
         return task;
@@ -61,7 +62,7 @@ internal sealed class InputMultiplexer(
             while (enumerator.MoveNext())
             {
                 var (streamId, stream) = enumerator.Current;
-                await ReadAsync(streams, streamId, stream, out var readResult).ConfigureAwait(false);
+                await ReadAsync(streamId, stream, out var readResult).ConfigureAwait(false);
 
                 if (readResult is null)
                     continue;

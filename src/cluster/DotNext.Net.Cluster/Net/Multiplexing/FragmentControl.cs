@@ -26,6 +26,11 @@ internal enum FragmentControl : ushort
     /// </remarks>
     StreamRejected = 2,
     
+    /// <summary>
+    /// The stream is closed.
+    /// </summary>
+    StreamClosed = 3,
+    
     // System packets. All of them must have stream ID = 0
     
     /// <summary>
