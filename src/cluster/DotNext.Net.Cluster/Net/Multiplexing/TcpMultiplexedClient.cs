@@ -1,14 +1,16 @@
-using System.IO.Pipelines;
 using System.Net;
 using System.Net.Sockets;
 
 namespace DotNext.Net.Multiplexing;
 
-using Threading;
-
 /// <summary>
 /// Represents a client-side of the multiplexing protocol on top of TCP.
 /// </summary>
+/// <remarks>
+/// TCP multiplexer provides unencrypted multiplexed transport on top of TCP/IP stack. It should
+/// not be used for communication over the Internet or any other untrusted network. It's aimed for
+/// efficient communication between cluster nodes within the trusted LAN.
+/// </remarks>
 /// <param name="address">The address of the server.</param>
 /// <param name="configuration">The configuration of the client.</param>
 public class TcpMultiplexedClient(EndPoint address, TcpMultiplexedClient.Options configuration) : MultiplexedClient(configuration)

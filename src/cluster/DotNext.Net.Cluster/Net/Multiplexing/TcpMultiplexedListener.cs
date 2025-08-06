@@ -6,8 +6,8 @@ namespace DotNext.Net.Multiplexing;
 /// <summary>
 /// Represents a server-side of the multiplexing protocol on top of TCP.
 /// </summary>
-/// <param name="listenAddress"></param>
-/// <param name="configuration"></param>
+/// <param name="listenAddress">The local endpoint to listen to.</param>
+/// <param name="configuration">The configuration of the listener.</param>
 public class TcpMultiplexedListener(EndPoint listenAddress, MultiplexedListener.Options configuration) : MultiplexedListener(configuration)
 {
     private readonly int backlog = configuration.Backlog;
