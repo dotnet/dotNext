@@ -1,9 +1,7 @@
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Multiplexing;
@@ -12,25 +10,20 @@ using Threading;
 
 partial class MultiplexedClient
 {
-    private readonly ConcurrentDictionary<ulong, StreamHandler> streams;
-    private readonly byte[] sendBuffer, receiveBuffer;
-    
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private readonly AsyncAutoResetEvent writeSignal;
     private readonly PipeOptions options;
+    private readonly InputMultiplexer input;
+    private readonly OutputMultiplexer output;
     private ulong streamId;
 
     private async Task DispatchAsync()
     {
-        Debugger.NotifyOfCrossThreadDependency();
-        var input = new InputMultiplexer(streams, writeSignal, sendBuffer, timeout, heartbeatTimeout, lifetimeToken);
-        var output = input.CreateOutput(receiveBuffer, timeout);
-        
         var socket = default(Socket);
         var receiveLoop = Task.CompletedTask;
 
         // send loop
-        while (!lifetimeToken.IsCancellationRequested)
+        while (!input.Token.IsCancellationRequested)
         {
             try
             {
@@ -41,7 +34,7 @@ partial class MultiplexedClient
                 // connect if needed
                 if (socket is null)
                 {
-                    socket = await ConnectAsync(lifetimeToken).ConfigureAwait(false);
+                    socket = await ConnectAsync(input.Token).ConfigureAwait(false);
                     receiveLoop = output.ProcessAsync(socket);
                     readiness.TrySetResult();
                 }
@@ -49,7 +42,7 @@ partial class MultiplexedClient
                 // send data
                 await input.ProcessAsync(receiveLoop.IsNotCompleted, socket).ConfigureAwait(false);
             }
-            catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
+            catch (OperationCanceledException e) when (e.CancellationToken == input.Token)
             {
                 await receiveLoop.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
                 await input.CompleteAllAsync(new ConnectionResetException(ExceptionMessages.ConnectionClosed, e))
@@ -68,10 +61,7 @@ partial class MultiplexedClient
             }
         }
 
-        await input.DisposeAsync().ConfigureAwait(false);
-        await output.DisposeAsync().ConfigureAwait(false);
-
         if (socket is not null)
-            await socket.DisconnectAsync(timeout).ConfigureAwait(false);
+            await socket.DisconnectAsync(input.Timeout).ConfigureAwait(false);
     }
 }

@@ -2,10 +2,11 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Net.Multiplexing;
 
-using Threading;
-
 partial class MultiplexedListener
 {
+    /// <summary>
+    /// Represents multiplexed listener configuration.
+    /// </summary>
     public class Options : MultiplexingOptions
     {
         private readonly TimeSpan receiveTimeout = TimeSpan.FromSeconds(60);

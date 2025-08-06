@@ -1,7 +1,9 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.IO.Pipelines;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using DotNext.Buffers;
 
 namespace DotNext.Net.Multiplexing;
@@ -12,12 +14,23 @@ internal sealed class InputMultiplexer(
     ConcurrentDictionary<ulong, StreamHandler> streams,
     AsyncAutoResetEvent writeSignal,
     Memory<byte> buffer,
+    UpDownCounter<int> streamCount,
+    TagList measurementTags,
     TimeSpan timeout,
     TimeSpan heartbeatTimeout,
     CancellationToken token) : Multiplexer(streams, new ConcurrentQueue<ProtocolCommand>(), token)
 {
+    public TimeSpan Timeout => timeout;
+
+    public bool TryAddStream(ulong streamId, StreamHandler stream)
+    {
+        var result = streams.TryAdd(streamId, stream);
+        streamCount.Add(Unsafe.BitCast<bool, byte>(result), in measurementTags);
+        return result;
+    }
+    
     public OutputMultiplexer CreateOutput(Memory<byte> outputBuffer, TimeSpan receiveTimeout)
-        => new(streams, writeSignal, commands, outputBuffer, receiveTimeout, token);
+        => new(streams, writeSignal, commands, outputBuffer, receiveTimeout, Token);
 
     public OutputMultiplexer CreateOutput(Memory<byte> outputBuffer, TimeSpan receiveTimeout, Func<StreamHandler?> handlerFactory, CancellationToken token)
         => new(streams, writeSignal, commands, outputBuffer, receiveTimeout, token) { HandlerFactory = handlerFactory };
@@ -50,6 +63,7 @@ internal sealed class InputMultiplexer(
 
             commands.TryAdd(new StreamClosedCommand(streamId));
             writeSignal.Set();
+            streamCount.Add(-1, in measurementTags);
         }
 
         return task;
@@ -59,7 +73,7 @@ internal sealed class InputMultiplexer(
     {
         // send data
         using var enumerator = streams.GetEnumerator();
-        for (ReadOnlyMemory<byte> dataToSend; !token.IsCancellationRequested && condition(); enumerator.Reset())
+        for (ReadOnlyMemory<byte> dataToSend; !Token.IsCancellationRequested && condition(); enumerator.Reset())
         {
             while (enumerator.MoveNext())
             {
@@ -83,7 +97,7 @@ internal sealed class InputMultiplexer(
                 }
                 catch (OperationCanceledException e) when (timeoutSource.IsCanceled(e))
                 {
-                    throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, token);
+                    throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, Token);
                 }
                 catch (OperationCanceledException e) when (timeoutSource.IsTimedOut(e))
                 {
@@ -92,7 +106,7 @@ internal sealed class InputMultiplexer(
                 finally
                 {
                     stream.Input.AdvanceTo(position);
-                    await timeoutSource.ResetAsync(token).ConfigureAwait(false);
+                    await timeoutSource.ResetAsync(Token).ConfigureAwait(false);
                 }
 
                 if (completed)
@@ -106,7 +120,7 @@ internal sealed class InputMultiplexer(
             }
 
             // wait for input data
-            if (!await writeSignal.WaitAsync(heartbeatTimeout, token).ConfigureAwait(false))
+            if (!await writeSignal.WaitAsync(heartbeatTimeout, Token).ConfigureAwait(false))
             {
                 // send the heartbeat
                 commands.TryAdd(HeartbeatCommand.Instance);
@@ -129,11 +143,11 @@ internal sealed class InputMultiplexer(
                 }
                 catch (OperationCanceledException e) when (timeoutSource.IsCanceled(e))
                 {
-                    throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, token);
+                    throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, Token);
                 }
                 finally
                 {
-                    await timeoutSource.ResetAsync(token).ConfigureAwait(false);
+                    await timeoutSource.ResetAsync(Token).ConfigureAwait(false);
                 }
             }
         }

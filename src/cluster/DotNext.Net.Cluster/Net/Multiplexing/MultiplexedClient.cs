@@ -10,9 +10,7 @@ namespace DotNext.Net.Multiplexing;
 /// </summary>
 public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
 {
-    private readonly TimeSpan heartbeatTimeout, timeout;
     private readonly TaskCompletionSource readiness;
-    private readonly CancellationToken lifetimeToken;
     private Task dispatcher;
     
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
@@ -24,17 +22,22 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     /// <param name="options">The configuration of the client.</param>
     protected MultiplexedClient(Options options)
     {
-        streams = new();
-        sendBuffer = GC.AllocateArray<byte>(options.FragmentSize, pinned: true);
-        receiveBuffer = GC.AllocateArray<byte>(options.FragmentSize, pinned: true);
         this.options = options.BufferOptions;
         writeSignal = new(initialState: false);
-        lifetimeToken = (lifetimeTokenSource = new()).Token;
+        var lifetimeToken = (lifetimeTokenSource = new()).Token;
 
         dispatcher = Task.CompletedTask;
-        timeout = options.Timeout;
-        heartbeatTimeout = options.HeartbeatTimeout;
         readiness = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        
+        input = new(new(),
+            writeSignal,
+            GC.AllocateArray<byte>(options.FragmentSize, pinned: true),
+            streamCount,
+            options.MeasurementTags,
+            options.Timeout,
+            options.HeartbeatTimeout,
+            lifetimeToken);
+        output = input.CreateOutput(GC.AllocateArray<byte>(options.FragmentSize, pinned: true), options.Timeout);
     }
 
     /// <summary>
@@ -89,8 +92,8 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
         do
         {
             id = Interlocked.Increment(ref streamId);
-        } while (!streams.TryAdd(id, stream));
-
+        } while (!input.TryAddStream(id, stream));
+        
         return stream;
     }
 
@@ -107,7 +110,7 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
         if (disposing)
         {
             Cancel();
-            dispatcher.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(writeSignal.Dispose);
+            dispatcher.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(writeSignal.Dispose + input.Dispose + output.Dispose);
         }
         
         base.Dispose(disposing);
@@ -130,6 +133,8 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     {
         Cancel();
         await dispatcher.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+        await input.DisposeAsync().ConfigureAwait(false);
+        await output.DisposeAsync().ConfigureAwait(false);
         writeSignal.Dispose();
     }
 

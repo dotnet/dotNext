@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Connections;
@@ -9,13 +10,36 @@ using Threading;
 
 partial class MultiplexedListener
 {
+    private static void AddRemoteAddress(ref TagList measurementTags, EndPoint? remoteEndPoint)
+    {
+        if (remoteEndPoint is not null)
+        {
+            measurementTags.Add(ClientAddressMeterAttribute, remoteEndPoint.ToString());
+        }
+    }
+
+    private TagList CreateMeasurementTags(Socket socket)
+    {
+        var tags = measurementTags;
+        AddRemoteAddress(ref tags, socket.RemoteEndPoint);
+        return tags;
+    }
+    
     private async Task DispatchAsync(Socket socket)
     {
         Debugger.NotifyOfCrossThreadDependency();
         var writeSignal = new AsyncAutoResetEvent(initialState: false);
         var sendBuffer = options.Pool.Rent(fragmentSize);
         var receiveBuffer = options.Pool.Rent(fragmentSize);
-        var input = new InputMultiplexer(new(), writeSignal, sendBuffer.Memory, timeout, heartbeatTimeout, lifetimeToken);
+        var input = new InputMultiplexer(
+            new(),
+            writeSignal,
+            sendBuffer.Memory,
+            streamCount,
+            CreateMeasurementTags(socket),
+            timeout,
+            heartbeatTimeout,
+            lifetimeToken);
         var receiveTokenSource = CancellationTokenSource.CreateLinkedTokenSource(lifetimeToken);
         var output = input.CreateOutput(
             receiveBuffer.Memory,

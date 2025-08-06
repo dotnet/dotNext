@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.IO.Pipelines;
 
 namespace DotNext.Net.Multiplexing;
@@ -30,5 +31,14 @@ public abstract class MultiplexingOptions
     {
         get => options;
         init => options = value ?? throw new ArgumentNullException(nameof(value));
+    }
+    
+    /// <summary>
+    /// Gets or sets measurement tags for metrics.
+    /// </summary>
+    public TagList MeasurementTags
+    {
+        get;
+        init;
     }
 }

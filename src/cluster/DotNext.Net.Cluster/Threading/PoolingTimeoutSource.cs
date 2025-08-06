@@ -1,6 +1,6 @@
 namespace DotNext.Threading;
 
-internal sealed class PoolingTimeoutSource(CancellationToken token) : IAsyncDisposable
+internal sealed class PoolingTimeoutSource(CancellationToken token) : IAsyncDisposable, IDisposable
 {
     private TimeoutSource source = new(TimeProvider.System, token);
 
@@ -24,4 +24,6 @@ internal sealed class PoolingTimeoutSource(CancellationToken token) : IAsyncDisp
     }
 
     public ValueTask DisposeAsync() => source.DisposeAsync();
+
+    public void Dispose() => source.Dispose();
 }

@@ -29,7 +29,7 @@ internal sealed class OutputMultiplexer(
     private async Task ProcessCoreAsync(Socket socket)
     {
         FragmentHeader header;
-        for (var totalBytes = 0; !token.IsCancellationRequested; AdjustReceiveBuffer(header.Length, ref totalBytes, buffer.Span))
+        for (var totalBytes = 0; !Token.IsCancellationRequested; AdjustReceiveBuffer(header.Length, ref totalBytes, buffer.Span))
         {
             timeoutSource.Start(timeout); // resumed by heartbeat
             try
@@ -37,7 +37,7 @@ internal sealed class OutputMultiplexer(
                 // read at least header
                 while (totalBytes < FragmentHeader.Size)
                 {
-                    totalBytes += await socket.ReceiveAsync(buffer.Slice(totalBytes), token).ConfigureAwait(false);
+                    totalBytes += await socket.ReceiveAsync(buffer.Slice(totalBytes), Token).ConfigureAwait(false);
                 }
 
                 header = FragmentHeader.Parse(buffer.Span);
@@ -51,7 +51,7 @@ internal sealed class OutputMultiplexer(
             }
             catch (OperationCanceledException e) when (timeoutSource.IsCanceled(e))
             {
-                throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, token);
+                throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, Token);
             }
             catch (OperationCanceledException e) when (timeoutSource.IsTimedOut(e))
             {
@@ -59,7 +59,7 @@ internal sealed class OutputMultiplexer(
             }
             finally
             {
-                await timeoutSource.ResetAsync(token).ConfigureAwait(false);
+                await timeoutSource.ResetAsync(Token).ConfigureAwait(false);
             }
 
             switch (header.Control)
@@ -97,7 +97,7 @@ internal sealed class OutputMultiplexer(
             }
             catch (OperationCanceledException e) when (timeoutSource.IsCanceled(e))
             {
-                throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, token);
+                throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, Token);
             }
             catch (Exception e)
             {
@@ -107,7 +107,7 @@ internal sealed class OutputMultiplexer(
             }
             finally
             {
-                await timeoutSource.ResetAsync(token).ConfigureAwait(false);
+                await timeoutSource.ResetAsync(Token).ConfigureAwait(false);
             }
 
             if (!result.IsCanceled && (result.IsCompleted || header.Control is FragmentControl.FinalDataChunk))

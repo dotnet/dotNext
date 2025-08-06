@@ -2,9 +2,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using System.Threading.Channels;
-using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Multiplexing;
 
@@ -40,6 +38,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
             SingleReader = false,
         });
 
+        measurementTags = configuration.MeasurementTags;
         options = configuration.BufferOptions;
         fragmentSize = configuration.FragmentSize;
         readiness = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);

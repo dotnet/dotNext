@@ -7,12 +7,25 @@ using Threading;
 internal abstract class Multiplexer(
     ConcurrentDictionary<ulong, StreamHandler> streams,
     IProducerConsumerCollection<ProtocolCommand> commands,
-    CancellationToken token) : IAsyncDisposable
+    CancellationToken token) : Disposable
 {
     protected readonly ConcurrentDictionary<ulong, StreamHandler> streams = streams;
     protected readonly PoolingTimeoutSource timeoutSource = new(token);
     protected readonly IProducerConsumerCollection<ProtocolCommand> commands = commands;
-    protected readonly CancellationToken token = token;
+    
+    public CancellationToken Token => token;
 
-    public ValueTask DisposeAsync() => timeoutSource.DisposeAsync();
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            timeoutSource.Dispose();
+        }
+        
+        base.Dispose(disposing);
+    }
+
+    protected override ValueTask DisposeAsyncCore() => timeoutSource.DisposeAsync();
+
+    public new ValueTask DisposeAsync() => base.DisposeAsync();
 }
