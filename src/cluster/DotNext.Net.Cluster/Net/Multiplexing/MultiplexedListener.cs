@@ -4,6 +4,7 @@ using System.IO.Pipelines;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Threading.Channels;
+using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Multiplexing;
 
@@ -60,10 +61,15 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
         StreamHandler result;
         try
         {
-            do
+            while (true)
             {
                 result = await pendingStreams.Reader.ReadAsync(token).ConfigureAwait(false);
-            } while (result.IsTransportSideCompleted);
+
+                if (!result.IsTransportSideCompleted)
+                    break;
+
+                await result.AbortAppSideAsync().ConfigureAwait(false);
+            }
         }
         catch (ChannelClosedException)
         {

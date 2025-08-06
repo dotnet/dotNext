@@ -70,7 +70,7 @@ internal sealed class OutputMultiplexer(
 
             if (!streams.TryGetValue(header.Id, out var handler))
             {
-                if (HandlerFactory is null)
+                if (HandlerFactory is null || header.CanBeIgnored)
                 {
                     continue;
                 }

@@ -40,6 +40,7 @@ internal sealed class InputMultiplexer(
             catch (Exception e)
             {
                 task = stream.CompleteTransportInputAsync(e);
+                writeSignal.Set(); // pass to the branch below (when application-side of the pipe is completed) on the next iteration 
             }
         }
         else if (appSideCompleted && streams.As<ICollection<KeyValuePair<ulong, StreamHandler>>>().Remove(new(streamId, stream)))
@@ -48,6 +49,7 @@ internal sealed class InputMultiplexer(
             task = stream.CompleteTransportOutputAsync();
 
             commands.TryAdd(new StreamClosedCommand(streamId));
+            writeSignal.Set();
         }
 
         return task;

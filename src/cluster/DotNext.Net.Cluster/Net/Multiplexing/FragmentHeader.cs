@@ -25,6 +25,8 @@ internal readonly struct FragmentHeader(ulong id, FragmentControl control, ushor
     public FragmentControl Control => control;
     public ushort Length => length;
 
+    public bool CanBeIgnored => control is FragmentControl.StreamClosed or FragmentControl.StreamRejected;
+
     static int IBinaryFormattable<FragmentHeader>.Size => Size;
     
     public void Format(Span<byte> destination)

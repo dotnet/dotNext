@@ -134,4 +134,30 @@ public sealed class TcpMultiplexerTests : Test
             await stream.Output.CompleteAsync();
         }
     }
+
+    [Fact]
+    public static async Task AbortStream()
+    {
+        await using var server = new TcpMultiplexedListener(LocalEndPoint, new() { Timeout = Timeout.InfiniteTimeSpan });
+        await server.StartAsync();
+
+        await using var client = new TcpMultiplexedClient(LocalEndPoint, new() { Timeout = Timeout.InfiniteTimeSpan });
+        await client.StartAsync();
+
+        var clientStream = await client.OpenStreamAsync();
+        await clientStream.Input.CompleteAsync(new ArithmeticException());
+        await clientStream.Output.WriteAsync(new byte[3]);
+
+        var serverStream = await server.AcceptAsync();
+        await clientStream.Output.CompleteAsync(new ArithmeticException());
+
+        ReadResult result;
+        do
+        {
+            result = await serverStream.Input.ReadAsync();
+            serverStream.Input.AdvanceTo(result.Buffer.End);
+        } while (!result.IsCanceled);
+        
+        await serverStream.Input.CompleteAsync();
+    }
 }

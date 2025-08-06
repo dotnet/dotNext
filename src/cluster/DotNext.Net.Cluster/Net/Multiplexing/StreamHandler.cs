@@ -1,4 +1,6 @@
 using System.IO.Pipelines;
+using System.Runtime.ExceptionServices;
+using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Multiplexing;
 
@@ -6,8 +8,8 @@ using Threading;
 
 internal sealed partial class StreamHandler : StreamHandlerBase, IDuplexPipe
 {
-    private readonly PipeWriter appWriter;
-    private readonly PipeReader appReader;
+    private readonly AppSideWriter appWriter;
+    private readonly AppSideReader appReader;
 
     public StreamHandler(PipeOptions options, AsyncAutoResetEvent writeSignal)
     {
@@ -24,6 +26,15 @@ internal sealed partial class StreamHandler : StreamHandlerBase, IDuplexPipe
     {
         appWriter.CancelPendingFlush();
         appReader.CancelPendingRead();
+    }
+
+    public async ValueTask AbortAppSideAsync()
+    {
+        var e = new ConnectionAbortedException();
+        ExceptionDispatchInfo.SetCurrentStackTrace(e);
+
+        await appWriter.CompleteAsync(e).ConfigureAwait(false);
+        await appReader.CompleteAsync(e).ConfigureAwait(false);
     }
 
     public ValueTask CompleteTransportInputAsync(Exception? e = null)
