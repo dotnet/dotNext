@@ -1,5 +1,7 @@
 using System.IO.Pipelines;
 using System.Net;
+using System.Runtime.CompilerServices;
+using System.Threading.Channels;
 
 namespace DotNext.Net.Multiplexing;
 
@@ -159,5 +161,6 @@ public sealed class TcpMultiplexerTests : Test
         } while (!result.IsCanceled);
         
         await serverStream.Input.CompleteAsync();
+        await serverStream.Output.CompleteAsync();
     }
 }

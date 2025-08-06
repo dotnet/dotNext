@@ -17,7 +17,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
 {
     private readonly CancellationToken lifetimeToken;
     private readonly TimeSpan heartbeatTimeout, timeout;
-    private readonly Channel<StreamHandler> pendingStreams;
+    private readonly Channel<StreamHandler> backlog;
     private readonly PipeOptions options;
     private readonly int fragmentSize;
     private Task listener;
@@ -32,7 +32,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
     /// <param name="configuration"></param>
     protected MultiplexedListener(Options configuration)
     {
-        pendingStreams = Channel.CreateBounded<StreamHandler>(new BoundedChannelOptions(configuration.Backlog)
+        backlog = Channel.CreateBounded<StreamHandler>(new BoundedChannelOptions(configuration.Backlog)
         {
             AllowSynchronousContinuations = false,
             FullMode = BoundedChannelFullMode.DropWrite,
@@ -63,7 +63,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
         {
             while (true)
             {
-                result = await pendingStreams.Reader.ReadAsync(token).ConfigureAwait(false);
+                result = await backlog.Reader.ReadAsync(token).ConfigureAwait(false);
 
                 if (!result.IsTransportSideCompleted)
                     break;
@@ -151,7 +151,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
     private StreamHandler? CreateHandler(AsyncAutoResetEvent writeSignal)
     {
         var handler = new StreamHandler(options, writeSignal);
-        return pendingStreams.Writer.TryWrite(handler)
+        return backlog.Writer.TryWrite(handler)
             ? handler
             : null;
     }
@@ -168,7 +168,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
             finally
             {
                 cts.Dispose();
-                pendingStreams.Writer.Complete();
+                backlog.Writer.Complete();
             }
         }
     }
