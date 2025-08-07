@@ -76,6 +76,7 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     /// fast enough to consume the incoming traffic. <see cref="ConnectionResetException"/> if the client or server is disposed.
     /// </remarks>
     /// <returns>A duplex pipe for data input/output.</returns>
+    /// <seealso cref="DotNext.IO.Pipelines.DuplexStream"/>
     public ValueTask<IDuplexPipe> OpenStreamAsync(CancellationToken token = default)
         => readiness.Task.IsCompletedSuccessfully ? new(OpenStream()) : OpenStreamCoreAsync(token);
 
