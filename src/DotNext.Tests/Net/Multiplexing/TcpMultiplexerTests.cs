@@ -139,7 +139,7 @@ public sealed class TcpMultiplexerTests : Test
     }
 
     [Fact]
-    public static async Task AbortStream()
+    public static async Task TerminateStream()
     {
         var callback = new StreamCountListener();
         using var listener = new MeterListener();
@@ -147,10 +147,10 @@ public sealed class TcpMultiplexerTests : Test
         listener.InstrumentPublished += StreamCountListener.OnRegistered;
         listener.Start();
         
-        await using var server = new TcpMultiplexedListener(LocalEndPoint, new() { Timeout = Timeout.InfiniteTimeSpan });
+        await using var server = new TcpMultiplexedListener(LocalEndPoint, new() { Timeout = DefaultTimeout });
         await server.StartAsync();
 
-        await using var client = new TcpMultiplexedClient(LocalEndPoint, new() { Timeout = Timeout.InfiniteTimeSpan });
+        await using var client = new TcpMultiplexedClient(LocalEndPoint, new() { Timeout = DefaultTimeout });
         await client.StartAsync();
 
         var clientStream = await client.OpenStreamAsync();
