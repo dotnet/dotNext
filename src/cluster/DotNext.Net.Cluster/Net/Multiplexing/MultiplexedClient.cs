@@ -85,7 +85,7 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
         return OpenStream();
     }
 
-    private IDuplexPipe OpenStream()
+    private MultiplexedStream OpenStream()
     {
         var stream = new MultiplexedStream(options, writeSignal);
         ulong id;
