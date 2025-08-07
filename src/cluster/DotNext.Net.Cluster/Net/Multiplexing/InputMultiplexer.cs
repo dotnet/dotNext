@@ -82,39 +82,43 @@ internal sealed class InputMultiplexer(
                 var (streamId, stream) = enumerator.Current;
                 await ReadAsync(streamId, stream, out var readResult).ConfigureAwait(false);
 
+                bool completed;
                 switch (readResult)
                 {
                     case null:
                         continue;
                     case { IsCanceled: true, IsCompleted: false }:
-                        await stream.CompleteTransportInputAsync().ConfigureAwait(false);
-                        continue;
-                }
+                        completed = true;
+                        break;
+                    default:
+                        // write fragment
+                        dataToSend = PrepareFragment(buffer, streamId, in Nullable.GetValueRefOrDefaultRef(in readResult), out completed,
+                            out var position);
 
-                // write fragment
-                dataToSend = PrepareFragment(buffer, streamId, in Nullable.GetValueRefOrDefaultRef(in readResult), out var completed, out var position);
+                        Debug.Assert(dataToSend.Length >= FragmentHeader.Size);
+                        timeoutSource.Start(timeout);
+                        try
+                        {
+                            do
+                            {
+                                dataToSend.Advance(await socket.SendAsync(dataToSend, timeoutSource.Token).ConfigureAwait(false));
+                            } while (!dataToSend.IsEmpty);
+                        }
+                        catch (OperationCanceledException e) when (timeoutSource.IsCanceled(e))
+                        {
+                            throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, Token);
+                        }
+                        catch (OperationCanceledException e) when (timeoutSource.IsTimedOut(e))
+                        {
+                            throw new TimeoutException(ExceptionMessages.ConnectionTimedOut, e);
+                        }
+                        finally
+                        {
+                            stream.Input.AdvanceTo(position);
+                            await timeoutSource.ResetAsync(Token).ConfigureAwait(false);
+                        }
 
-                Debug.Assert(dataToSend.Length >= FragmentHeader.Size);
-                timeoutSource.Start(timeout);
-                try
-                {
-                    do
-                    {
-                        dataToSend.Advance(await socket.SendAsync(dataToSend, timeoutSource.Token).ConfigureAwait(false));
-                    } while (!dataToSend.IsEmpty);
-                }
-                catch (OperationCanceledException e) when (timeoutSource.IsCanceled(e))
-                {
-                    throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, Token);
-                }
-                catch (OperationCanceledException e) when (timeoutSource.IsTimedOut(e))
-                {
-                    throw new TimeoutException(ExceptionMessages.ConnectionTimedOut, e);
-                }
-                finally
-                {
-                    stream.Input.AdvanceTo(position);
-                    await timeoutSource.ResetAsync(Token).ConfigureAwait(false);
+                        break;
                 }
 
                 if (completed)
