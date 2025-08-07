@@ -4,9 +4,9 @@ namespace DotNext.Net.Multiplexing;
 
 using Threading;
 
-partial class StreamHandler
+partial class MultiplexedStream
 {
-    private sealed class AppSideReader(StreamHandlerBase state, PipeReader reader, AsyncAutoResetEvent writeSignal) : PipeReader
+    private sealed class AppSideReader(IApplicationSideStream state, PipeReader reader, AsyncAutoResetEvent writeSignal) : PipeReader
     {
         public override bool TryRead(out ReadResult result) => reader.TryRead(out result);
 
@@ -24,7 +24,7 @@ partial class StreamHandler
 
         public override void Complete(Exception? exception = null)
         {
-            if (state.TryCompleteAppOutput())
+            if (state.TryCompleteOutput())
             {
                 try
                 {
@@ -39,7 +39,7 @@ partial class StreamHandler
 
         public override async ValueTask CompleteAsync(Exception? exception = null)
         {
-            if (state.TryCompleteAppOutput())
+            if (state.TryCompleteOutput())
             {
                 try
                 {

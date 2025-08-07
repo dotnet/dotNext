@@ -11,7 +11,7 @@ namespace DotNext.Net.Multiplexing;
 using Threading;
 
 internal sealed class InputMultiplexer(
-    ConcurrentDictionary<ulong, StreamHandler> streams,
+    ConcurrentDictionary<ulong, MultiplexedStream> streams,
     AsyncAutoResetEvent writeSignal,
     Memory<byte> buffer,
     UpDownCounter<int> streamCounter,
@@ -22,7 +22,7 @@ internal sealed class InputMultiplexer(
 {
     public TimeSpan Timeout => timeout;
 
-    public bool TryAddStream(ulong streamId, StreamHandler stream)
+    public bool TryAddStream(ulong streamId, MultiplexedStream stream)
     {
         var result = streams.TryAdd(streamId, stream);
         ChangeStreamCount(Unsafe.BitCast<bool, byte>(result));
@@ -32,14 +32,14 @@ internal sealed class InputMultiplexer(
     public OutputMultiplexer CreateOutput(Memory<byte> outputBuffer, TimeSpan receiveTimeout)
         => new(streams, writeSignal, commands, outputBuffer, streamCounter, measurementTags, receiveTimeout, Token);
 
-    public OutputMultiplexer CreateOutput(Memory<byte> outputBuffer, TimeSpan receiveTimeout, Func<StreamHandler?> handlerFactory,
+    public OutputMultiplexer CreateOutput(Memory<byte> outputBuffer, TimeSpan receiveTimeout, Func<MultiplexedStream?> handlerFactory,
         CancellationToken token)
         => new(streams, writeSignal, commands, outputBuffer, streamCounter, measurementTags, receiveTimeout, token)
             { HandlerFactory = handlerFactory };
 
     private ValueTask ReadAsync(
         ulong streamId,
-        StreamHandler stream,
+        MultiplexedStream stream,
         out ReadResult? result)
     {
         var task = ValueTask.CompletedTask;
@@ -58,7 +58,7 @@ internal sealed class InputMultiplexer(
                 writeSignal.Set(); // pass to the branch below (when application-side of the pipe is completed) on the next iteration 
             }
         }
-        else if (appSideCompleted && streams.As<ICollection<KeyValuePair<ulong, StreamHandler>>>().Remove(new(streamId, stream)))
+        else if (appSideCompleted && streams.As<ICollection<KeyValuePair<ulong, MultiplexedStream>>>().Remove(new(streamId, stream)))
         {
             stream.Output.CancelPendingFlush();
             task = stream.CompleteTransportOutputAsync();

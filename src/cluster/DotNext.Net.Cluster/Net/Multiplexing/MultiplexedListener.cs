@@ -15,7 +15,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
 {
     private readonly CancellationToken lifetimeToken;
     private readonly TimeSpan heartbeatTimeout, timeout;
-    private readonly Channel<StreamHandler> backlog;
+    private readonly Channel<MultiplexedStream> backlog;
     private readonly PipeOptions options;
     private readonly int fragmentSize;
     private Task listener;
@@ -30,7 +30,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
     /// <param name="configuration"></param>
     protected MultiplexedListener(Options configuration)
     {
-        backlog = Channel.CreateBounded<StreamHandler>(new BoundedChannelOptions(configuration.Backlog)
+        backlog = Channel.CreateBounded<MultiplexedStream>(new BoundedChannelOptions(configuration.Backlog)
         {
             AllowSynchronousContinuations = false,
             FullMode = BoundedChannelFullMode.DropWrite,
@@ -58,7 +58,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
     /// <seealso cref="MultiplexedClient.OpenStreamAsync"/>
     public async ValueTask<IDuplexPipe> AcceptAsync(CancellationToken token = default)
     {
-        StreamHandler result;
+        MultiplexedStream result;
         try
         {
             while (true)
@@ -148,9 +148,9 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
         }
     }
 
-    private StreamHandler? CreateHandler(AsyncAutoResetEvent writeSignal)
+    private MultiplexedStream? CreateHandler(AsyncAutoResetEvent writeSignal)
     {
-        var handler = new StreamHandler(options, writeSignal);
+        var handler = new MultiplexedStream(options, writeSignal);
         return backlog.Writer.TryWrite(handler)
             ? handler
             : null;

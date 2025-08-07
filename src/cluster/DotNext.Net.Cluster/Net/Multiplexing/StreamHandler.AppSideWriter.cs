@@ -6,9 +6,9 @@ namespace DotNext.Net.Multiplexing;
 
 using Threading;
 
-partial class StreamHandler
+partial class MultiplexedStream
 {
-    private sealed class AppSideWriter(StreamHandlerBase state, PipeWriter writer, AsyncAutoResetEvent writeSignal) : PipeWriter, IValueTaskSource<FlushResult>
+    private sealed class AppSideWriter(IApplicationSideStream appSide, PipeWriter writer, AsyncAutoResetEvent writeSignal) : PipeWriter, IValueTaskSource<FlushResult>
     {
         private ManualResetValueTaskSourceCore<FlushResult> source = new() { RunContinuationsAsynchronously = true };
         private ConfiguredValueTaskAwaitable<FlushResult>.ConfiguredValueTaskAwaiter flushAwaiter;
@@ -16,7 +16,7 @@ partial class StreamHandler
 
         public override async ValueTask CompleteAsync(Exception? exception = null)
         {
-            if (state.TryCompleteAppInput())
+            if (appSide.TryCompleteInput())
             {
                 try
                 {
@@ -31,7 +31,7 @@ partial class StreamHandler
 
         public override void Complete(Exception? exception = null)
         {
-            if (state.TryCompleteAppInput())
+            if (appSide.TryCompleteOutput())
             {
                 try
                 {

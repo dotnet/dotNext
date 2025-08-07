@@ -9,7 +9,7 @@ namespace DotNext.Net.Multiplexing;
 using Threading;
 
 internal sealed class OutputMultiplexer(
-    ConcurrentDictionary<ulong, StreamHandler> streams,
+    ConcurrentDictionary<ulong, MultiplexedStream> streams,
     AsyncAutoResetEvent writeSignal,
     IProducerConsumerCollection<ProtocolCommand> commands,
     Memory<byte> buffer,
@@ -18,7 +18,7 @@ internal sealed class OutputMultiplexer(
     TimeSpan timeout,
     CancellationToken token) : Multiplexer(streams, commands, streamCounter, measurementTags, token)
 {
-    public Func<StreamHandler?>? HandlerFactory { get; init; }
+    public Func<MultiplexedStream?>? HandlerFactory { get; init; }
 
     public Task ProcessAsync(Socket socket)
     {
@@ -122,7 +122,7 @@ internal sealed class OutputMultiplexer(
         }
     }
 
-    private ValueTask CompleteTransportOutputAsync(StreamHandler stream, Exception e)
+    private ValueTask CompleteTransportOutputAsync(MultiplexedStream stream, Exception e)
     {
         switch (e)
         {
@@ -134,7 +134,7 @@ internal sealed class OutputMultiplexer(
         return stream.CompleteTransportOutputAsync(e);
     }
 
-    private ValueTask<FlushResult> WriteAsync(FragmentHeader header, StreamHandler stream, CancellationToken token)
+    private ValueTask<FlushResult> WriteAsync(FragmentHeader header, MultiplexedStream stream, CancellationToken token)
     {
         ValueTask<FlushResult> task;
         switch (header.Control)
@@ -153,7 +153,7 @@ internal sealed class OutputMultiplexer(
         return task;
     }
     
-    private async ValueTask<FlushResult> CompleteAsync(StreamHandler stream)
+    private async ValueTask<FlushResult> CompleteAsync(MultiplexedStream stream)
     {
         await stream.CompleteTransportOutputAsync().ConfigureAwait(false);
         stream.Input.CancelPendingRead();

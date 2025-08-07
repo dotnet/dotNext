@@ -7,7 +7,7 @@ namespace DotNext.Net.Multiplexing;
 using Threading;
 
 internal abstract class Multiplexer(
-    ConcurrentDictionary<ulong, StreamHandler> streams,
+    ConcurrentDictionary<ulong, MultiplexedStream> streams,
     IProducerConsumerCollection<ProtocolCommand> commands,
     UpDownCounter<int> streamCounter,
     in TagList measurementTags,
@@ -15,7 +15,7 @@ internal abstract class Multiplexer(
 {
     protected readonly UpDownCounter<int> streamCounter = streamCounter;
     protected readonly TagList measurementTags = measurementTags;
-    protected readonly ConcurrentDictionary<ulong, StreamHandler> streams = streams;
+    protected readonly ConcurrentDictionary<ulong, MultiplexedStream> streams = streams;
     protected readonly PoolingTimeoutSource timeoutSource = new(token);
     protected readonly IProducerConsumerCollection<ProtocolCommand> commands = commands;
     
