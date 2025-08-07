@@ -22,12 +22,6 @@ internal sealed partial class StreamHandler : StreamHandlerBase, IDuplexPipe
         Output = output.Writer;
     }
 
-    public void CancelAppSide()
-    {
-        appWriter.CancelPendingFlush();
-        appReader.CancelPendingRead();
-    }
-
     public async ValueTask AbortAppSideAsync()
     {
         var e = new ConnectionAbortedException();

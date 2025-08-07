@@ -14,26 +14,28 @@ internal sealed class InputMultiplexer(
     ConcurrentDictionary<ulong, StreamHandler> streams,
     AsyncAutoResetEvent writeSignal,
     Memory<byte> buffer,
-    UpDownCounter<int> streamCount,
-    TagList measurementTags,
+    UpDownCounter<int> streamCounter,
+    in TagList measurementTags,
     TimeSpan timeout,
     TimeSpan heartbeatTimeout,
-    CancellationToken token) : Multiplexer(streams, new ConcurrentQueue<ProtocolCommand>(), token)
+    CancellationToken token) : Multiplexer(streams, new ConcurrentQueue<ProtocolCommand>(), streamCounter, measurementTags, token)
 {
     public TimeSpan Timeout => timeout;
 
     public bool TryAddStream(ulong streamId, StreamHandler stream)
     {
         var result = streams.TryAdd(streamId, stream);
-        streamCount.Add(Unsafe.BitCast<bool, byte>(result), in measurementTags);
+        ChangeStreamCount(Unsafe.BitCast<bool, byte>(result));
         return result;
     }
     
     public OutputMultiplexer CreateOutput(Memory<byte> outputBuffer, TimeSpan receiveTimeout)
-        => new(streams, writeSignal, commands, outputBuffer, receiveTimeout, Token);
+        => new(streams, writeSignal, commands, outputBuffer, streamCounter, measurementTags, receiveTimeout, Token);
 
-    public OutputMultiplexer CreateOutput(Memory<byte> outputBuffer, TimeSpan receiveTimeout, Func<StreamHandler?> handlerFactory, CancellationToken token)
-        => new(streams, writeSignal, commands, outputBuffer, receiveTimeout, token) { HandlerFactory = handlerFactory };
+    public OutputMultiplexer CreateOutput(Memory<byte> outputBuffer, TimeSpan receiveTimeout, Func<StreamHandler?> handlerFactory,
+        CancellationToken token)
+        => new(streams, writeSignal, commands, outputBuffer, streamCounter, measurementTags, receiveTimeout, token)
+            { HandlerFactory = handlerFactory };
 
     private ValueTask ReadAsync(
         ulong streamId,
@@ -63,7 +65,7 @@ internal sealed class InputMultiplexer(
 
             commands.TryAdd(new StreamClosedCommand(streamId));
             writeSignal.Set();
-            streamCount.Add(-1, in measurementTags);
+            ChangeStreamCount(-1);
         }
 
         return task;
@@ -80,8 +82,14 @@ internal sealed class InputMultiplexer(
                 var (streamId, stream) = enumerator.Current;
                 await ReadAsync(streamId, stream, out var readResult).ConfigureAwait(false);
 
-                if (readResult is null)
-                    continue;
+                switch (readResult)
+                {
+                    case null:
+                        continue;
+                    case { IsCanceled: true, IsCompleted: false }:
+                        await stream.CompleteTransportInputAsync().ConfigureAwait(false);
+                        continue;
+                }
 
                 // write fragment
                 dataToSend = PrepareFragment(buffer, streamId, in Nullable.GetValueRefOrDefaultRef(in readResult), out var completed, out var position);

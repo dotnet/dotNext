@@ -1,3 +1,4 @@
+using System.Diagnostics.Metrics;
 using System.IO.Pipelines;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -140,6 +141,12 @@ public sealed class TcpMultiplexerTests : Test
     [Fact]
     public static async Task AbortStream()
     {
+        var callback = new StreamCountListener();
+        using var listener = new MeterListener();
+        listener.SetMeasurementEventCallback<int>(callback.Accept);
+        listener.InstrumentPublished += StreamCountListener.OnRegistered;
+        listener.Start();
+        
         await using var server = new TcpMultiplexedListener(LocalEndPoint, new() { Timeout = Timeout.InfiniteTimeSpan });
         await server.StartAsync();
 
@@ -158,9 +165,34 @@ public sealed class TcpMultiplexerTests : Test
         {
             result = await serverStream.Input.ReadAsync();
             serverStream.Input.AdvanceTo(result.Buffer.End);
-        } while (!result.IsCanceled);
+        } while (!result.IsCompleted);
         
         await serverStream.Input.CompleteAsync();
         await serverStream.Output.CompleteAsync();
+
+        await callback.Task.WaitAsync(DefaultTimeout);
+    }
+    
+    private sealed class StreamCountListener : TaskCompletionSource
+    {
+        private int streamCount;
+
+        public void Accept(Instrument instrument, int measurement, ReadOnlySpan<KeyValuePair<string, object>> tags, object state)
+        {
+            if (IsStreamCount(instrument))
+            {
+                if (Interlocked.Add(ref streamCount, measurement) is 0)
+                    TrySetResult();
+            }
+        }
+
+        private static bool IsStreamCount(Instrument instrument)
+            => instrument is { Meter.Name: "DotNext.Net.Multiplexing.Server", Name: "streams-count" };
+
+        public static void OnRegistered(Instrument instrument, MeterListener listener)
+        {
+            if (IsStreamCount(instrument))
+                listener.EnableMeasurementEvents(instrument);
+        }
     }
 }

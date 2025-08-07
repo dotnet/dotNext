@@ -55,6 +55,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
     /// <returns>The incoming stream.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">The listener is disposed.</exception>
+    /// <seealso cref="MultiplexedClient.OpenStreamAsync"/>
     public async ValueTask<IDuplexPipe> AcceptAsync(CancellationToken token = default)
     {
         StreamHandler result;

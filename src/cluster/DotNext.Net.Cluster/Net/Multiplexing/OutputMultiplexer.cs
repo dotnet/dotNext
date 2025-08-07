@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.IO.Pipelines;
 using System.Net.Sockets;
 
@@ -11,8 +13,10 @@ internal sealed class OutputMultiplexer(
     AsyncAutoResetEvent writeSignal,
     IProducerConsumerCollection<ProtocolCommand> commands,
     Memory<byte> buffer,
+    UpDownCounter<int> streamCounter,
+    in TagList measurementTags,
     TimeSpan timeout,
-    CancellationToken token) : Multiplexer(streams, commands, token)
+    CancellationToken token) : Multiplexer(streams, commands, streamCounter, measurementTags, token)
 {
     public Func<StreamHandler?>? HandlerFactory { get; init; }
 
@@ -82,6 +86,7 @@ internal sealed class OutputMultiplexer(
                 }
 
                 streams[header.Id] = handler;
+                ChangeStreamCount();
             }
             else if (handler.IsTransportOutputCompleted)
             {
@@ -138,8 +143,7 @@ internal sealed class OutputMultiplexer(
                 task = ValueTask.FromException<FlushResult>(new StreamRejectedException());
                 break;
             case FragmentControl.StreamClosed:
-                stream.CancelAppSide();
-                task = ValueTask.FromResult<FlushResult>(new(isCanceled: false, isCompleted: true));
+                task = CompleteAsync(stream);
                 break;
             default:
                 task = stream.Output.WriteAsync(buffer.Slice(FragmentHeader.Size, header.Length), token);
@@ -147,6 +151,14 @@ internal sealed class OutputMultiplexer(
         }
 
         return task;
+    }
+    
+    private async ValueTask<FlushResult> CompleteAsync(StreamHandler stream)
+    {
+        await stream.CompleteTransportOutputAsync().ConfigureAwait(false);
+        stream.Input.CancelPendingRead();
+        writeSignal.Set();
+        return new(isCanceled: false, isCompleted: true);
     }
 
     private static void AdjustReceiveBuffer(int bytesRead, ref int totalBytes, Span<byte> buffer)

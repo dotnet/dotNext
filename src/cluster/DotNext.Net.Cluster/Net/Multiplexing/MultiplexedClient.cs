@@ -110,9 +110,9 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
         if (disposing)
         {
             Cancel();
-            dispatcher.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(writeSignal.Dispose + input.Dispose + output.Dispose);
+            dispatcher.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(new Action(writeSignal.Dispose) + input.Dispose + output.Dispose);
         }
-        
+
         base.Dispose(disposing);
     }
 

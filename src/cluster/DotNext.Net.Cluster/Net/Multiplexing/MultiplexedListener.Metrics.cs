@@ -11,7 +11,7 @@ partial class MultiplexedListener
     
     static MultiplexedListener()
     {
-        var meter = new Meter("DotNext.Net.Multiplexing.Client");
+        var meter = new Meter("DotNext.Net.Multiplexing.Server");
         streamCount = meter.CreateUpDownCounter<int>("streams-count", description: "Number of Streams");
     }
 
