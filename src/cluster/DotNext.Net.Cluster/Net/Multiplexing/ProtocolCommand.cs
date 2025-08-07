@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext.Net.Multiplexing;
 
 using Patterns;
@@ -18,22 +20,16 @@ internal sealed class HeartbeatCommand : ProtocolCommand, ISingleton<HeartbeatCo
     public override int Write(Span<byte> buffer) => FragmentHeader.WriteHeartbeat(buffer);
 }
 
-internal sealed class StreamRejectedCommand(ulong streamId) : ProtocolCommand
+internal abstract class EmptyPayloadCommand(ulong streamId, [ConstantExpected] FragmentControl control) : ProtocolCommand
 {
-    public override int Write(Span<byte> buffer)
+    public sealed override int Write(Span<byte> buffer)
     {
-        var header = new FragmentHeader(streamId, FragmentControl.StreamRejected, 0);
+        var header = new FragmentHeader(streamId, control, 0);
         header.Format(buffer);
         return FragmentHeader.Size;
     }
 }
 
-internal sealed class StreamClosedCommand(ulong streamId) : ProtocolCommand
-{
-    public override int Write(Span<byte> buffer)
-    {
-        var header = new FragmentHeader(streamId, FragmentControl.StreamClosed, 0);
-        header.Format(buffer);
-        return FragmentHeader.Size;
-    }
-}
+internal sealed class StreamRejectedCommand(ulong streamId) : EmptyPayloadCommand(streamId, FragmentControl.StreamRejected);
+
+internal sealed class StreamClosedCommand(ulong streamId) : EmptyPayloadCommand(streamId, FragmentControl.StreamClosed);
