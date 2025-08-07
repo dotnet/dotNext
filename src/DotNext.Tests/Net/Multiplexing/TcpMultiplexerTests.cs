@@ -52,7 +52,12 @@ public sealed class TcpMultiplexerTests : Test
     public static async Task HeartbeatAsync()
     {
         var timeout = TimeSpan.FromSeconds(1);
-        await using var server = new TcpMultiplexedListener(LocalEndPoint, new() { Timeout = timeout });
+        await using var server = new TcpMultiplexedListener(LocalEndPoint, new()
+        {
+            Timeout = timeout,
+            BufferOptions = PipeOptions.Default,
+            Backlog = 3,
+        });
         await server.StartAsync();
         
         await using var client = new TcpMultiplexedClient(LocalEndPoint, new() { Timeout = timeout });
@@ -146,11 +151,11 @@ public sealed class TcpMultiplexerTests : Test
         listener.SetMeasurementEventCallback<int>(callback.Accept);
         listener.InstrumentPublished += StreamCountListener.OnRegistered;
         listener.Start();
-        
-        await using var server = new TcpMultiplexedListener(LocalEndPoint, new() { Timeout = DefaultTimeout });
+
+        await using var server = new TcpMultiplexedListener(LocalEndPoint, new() { Timeout = DefaultTimeout, MeasurementTags = new() });
         await server.StartAsync();
 
-        await using var client = new TcpMultiplexedClient(LocalEndPoint, new() { Timeout = DefaultTimeout });
+        await using var client = new TcpMultiplexedClient(LocalEndPoint, new() { Timeout = DefaultTimeout, MeasurementTags = new() });
         await client.StartAsync();
 
         var clientStream = await client.OpenStreamAsync();
