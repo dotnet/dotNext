@@ -122,6 +122,11 @@ public sealed class TimeoutSource : IDisposable, IAsyncDisposable
     public CancellationToken Token { get; }
 
     /// <summary>
+    /// Gets the root token passed to <seealso cref="TimeoutSource(TimeProvider, CancellationToken)"/> constructor.
+    /// </summary>
+    public CancellationToken RootToken => rootRegistration.Token;
+
+    /// <summary>
     /// Gets a value indicating that this source is canceled by the root token.
     /// </summary>
     public bool IsCanceled => state is CanceledState;

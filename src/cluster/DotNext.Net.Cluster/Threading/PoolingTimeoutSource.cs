@@ -8,6 +8,8 @@ internal sealed class PoolingTimeoutSource(CancellationToken token) : IAsyncDisp
 
     public CancellationToken Token => source.Token;
 
+    public CancellationToken RootToken => source.RootToken;
+
     public bool IsCanceled(OperationCanceledException e)
         => e.CancellationToken == source.Token && source.IsCanceled;
 

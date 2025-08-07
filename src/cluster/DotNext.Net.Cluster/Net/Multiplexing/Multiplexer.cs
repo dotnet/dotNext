@@ -18,8 +18,8 @@ internal abstract class Multiplexer(
     protected readonly ConcurrentDictionary<ulong, MultiplexedStream> streams = streams;
     protected readonly PoolingTimeoutSource timeoutSource = new(token);
     protected readonly IProducerConsumerCollection<ProtocolCommand> commands = commands;
-    
-    public CancellationToken Token => token;
+
+    public CancellationToken Token => timeoutSource.RootToken;
 
     protected void ChangeStreamCount(int delta = 1) => streamCounter.Add(delta, in measurementTags);
 
