@@ -13,7 +13,11 @@ partial class MultiplexedClient
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private readonly AsyncAutoResetEvent writeSignal;
     private readonly PipeOptions options;
+    
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private readonly InputMultiplexer input;
+    
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private readonly OutputMultiplexer output;
     private ulong streamId;
 
