@@ -1,11 +1,10 @@
 using System.Diagnostics.Metrics;
 using System.IO.Pipelines;
 using System.Net;
-using System.Runtime.CompilerServices;
-using System.Threading.Channels;
 
 namespace DotNext.Net.Multiplexing;
 
+using Diagnostics.Metrics;
 using IO.Pipelines;
 
 public sealed class TcpMultiplexerTests : Test
@@ -146,10 +145,11 @@ public sealed class TcpMultiplexerTests : Test
     [Fact]
     public static async Task TerminateStream()
     {
-        var callback = new StreamCountListener();
-        using var listener = new MeterListener();
-        listener.SetMeasurementEventCallback<int>(callback.Accept);
-        listener.InstrumentPublished += StreamCountListener.OnRegistered;
+        var streamCount = new StreamCountObserver();
+        using var listener = new MeterListenerBuilder()
+            .Observe(StreamCountObserver.IsStreamCount, streamCount)
+            .Build();
+        
         listener.Start();
 
         await using var server = new TcpMultiplexedListener(LocalEndPoint, new() { Timeout = DefaultTimeout, MeasurementTags = new() });
@@ -175,29 +175,23 @@ public sealed class TcpMultiplexerTests : Test
         await serverStream.Input.CompleteAsync();
         await serverStream.Output.CompleteAsync();
 
-        await callback.Task.WaitAsync(DefaultTimeout);
+        await streamCount.WaitForZero(DefaultTimeout);
     }
-    
-    private sealed class StreamCountListener : TaskCompletionSource
+
+    private sealed class StreamCountObserver() : InstrumentObserver<int, UpDownCounter<int>>(static (instr, tags) => IsStreamCount(instr))
     {
+        private readonly TaskCompletionSource zeroReached = new();
         private int streamCount;
 
-        public void Accept(Instrument instrument, int measurement, ReadOnlySpan<KeyValuePair<string, object>> tags, object state)
-        {
-            if (IsStreamCount(instrument))
-            {
-                if (Interlocked.Add(ref streamCount, measurement) is 0)
-                    TrySetResult();
-            }
-        }
-
-        private static bool IsStreamCount(Instrument instrument)
+        internal static bool IsStreamCount(Instrument instrument)
             => instrument is { Meter.Name: "DotNext.Net.Multiplexing.Server", Name: "streams-count" };
 
-        public static void OnRegistered(Instrument instrument, MeterListener listener)
+        protected override void Record(int value)
         {
-            if (IsStreamCount(instrument))
-                listener.EnableMeasurementEvents(instrument);
+            if (Interlocked.Add(ref streamCount, value) is 0)
+                zeroReached.TrySetResult();
         }
+
+        public Task WaitForZero(TimeSpan timeout) => zeroReached.Task.WaitAsync(timeout);
     }
 }
