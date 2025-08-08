@@ -29,7 +29,11 @@ public sealed class MeterListenerBuilder
     /// Builds configured <see cref="MeterListener"/>.
     /// </summary>
     /// <returns>The configured listener.</returns>
-    public MeterListener Build() => new() { InstrumentPublished = registration };
+    public MeterListener Build() => new()
+    {
+        InstrumentPublished = registration,
+        MeasurementsCompleted = InstrumentObserver.ObservationCompletionCallback,
+    };
     
     private sealed class InstrumentHandler<TMeasurement, TInstrument>(Predicate<TInstrument> filter,
         InstrumentObserver<TMeasurement, TInstrument> observer)
@@ -40,20 +44,7 @@ public sealed class MeterListenerBuilder
         {
             if (instrument is TInstrument typedInstrument && filter(typedInstrument))
             {
-                listener.SetMeasurementEventCallback<TMeasurement>(Measure);
-                listener.EnableMeasurementEvents(typedInstrument, observer);
-            }
-        }
-        
-        private static void Measure(
-            Instrument instrument,
-            TMeasurement measurement,
-            ReadOnlySpan<KeyValuePair<string, object?>> tags,
-            object? state)
-        {
-            if (state is InstrumentObserver<TMeasurement, TInstrument> observer && instrument is TInstrument typedInstrument)
-            {
-                observer.Record(typedInstrument, measurement, tags);
+                observer.Observe(typedInstrument, listener);
             }
         }
     }
