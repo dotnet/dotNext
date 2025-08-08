@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 
@@ -35,6 +36,10 @@ public abstract class InstrumentObserver
 public abstract class InstrumentObserver<TMeasurement> : InstrumentObserver
     where TMeasurement : struct
 {
+    private protected InstrumentObserver()
+    {
+    }
+    
     private protected abstract void Record(Instrument instrument, TMeasurement measurement, ReadOnlySpan<KeyValuePair<string, object?>> tags);
 
     private protected static void SetMeasurementEventCallback(MeterListener listener)
@@ -71,7 +76,17 @@ public abstract class InstrumentObserver<TMeasurement, TInstrument> : Instrument
     }
 
     private protected sealed override void Record(Instrument instrument, TMeasurement measurement, ReadOnlySpan<KeyValuePair<string, object?>> tags)
-        => Record(Unsafe.As<TInstrument>(instrument), measurement, tags);
+    {
+        Debug.Assert(instrument is TInstrument);
+
+        Record(Unsafe.As<TInstrument>(instrument), measurement, tags);
+    }
+
+    private void Record(TInstrument instrument, TMeasurement value, ReadOnlySpan<KeyValuePair<string, object?>> tags)
+    {
+        if (filter(instrument, tags))
+            Record(value);
+    }
 
     /// <summary>
     /// Observes the specified instrument.
@@ -93,12 +108,6 @@ public abstract class InstrumentObserver<TMeasurement, TInstrument> : Instrument
     /// </summary>
     /// <param name="value">The captured measurement.</param>
     protected abstract void Record(TMeasurement value);
-
-    internal void Record(TInstrument instrument, TMeasurement value, ReadOnlySpan<KeyValuePair<string, object?>> tags)
-    {
-        if (filter(instrument, tags))
-            Record(value);
-    }
     
     private protected static TMeasurement VolatileRead(ref TMeasurement measurement)
     {
