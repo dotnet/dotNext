@@ -22,7 +22,7 @@ using Timestamp = Diagnostics.Timestamp;
 public class QueuedSynchronizer : Disposable
 {
     private const string LockTypeMeterAttribute = "dotnext.asynclock.type";
-    private static readonly Counter<int> SuspendedCallersMeter;
+    private static readonly UpDownCounter<int> SuspendedCallersMeter;
     private static readonly Histogram<double> LockDurationMeter;
 
     private readonly TagList measurementTags;
@@ -33,7 +33,7 @@ public class QueuedSynchronizer : Disposable
     static QueuedSynchronizer()
     {
         var meter = new Meter("DotNext.Threading.AsyncLock");
-        SuspendedCallersMeter = meter.CreateCounter<int>("suspended-callers-count", description: "Number of Suspended Callers");
+        SuspendedCallersMeter = meter.CreateUpDownCounter<int>("suspended-callers-count", description: "Number of Suspended Callers");
         LockDurationMeter = meter.CreateHistogram<double>("suspension-duration", unit: "ms", description: "Async Lock Duration");
     }
 
@@ -104,10 +104,10 @@ public class QueuedSynchronizer : Disposable
         lock (SyncRoot)
         {
             if (waitQueue.First is null)
-                return Array.Empty<Activity?>();
+                return [];
 
             list = [];
-            for (LinkedValueTaskCompletionSource<bool>? current = waitQueue.First; current is not null; current = current.Next)
+            for (var current = waitQueue.First; current is not null; current = current.Next)
             {
                 if (current is WaitNode node)
                     list.Add(node.CallerInfo);
@@ -128,10 +128,18 @@ public class QueuedSynchronizer : Disposable
     /// <seealso cref="TrackSuspendedCallers"/>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public IReadOnlyList<object?> GetSuspendedCallers()
-        => callerInfo is null ? Array.Empty<object?>() : GetSuspendedCallersCore();
+        => callerInfo is null ? [] : GetSuspendedCallersCore();
 
     private protected bool RemoveNode(LinkedValueTaskCompletionSource<bool> node)
-        => waitQueue.Remove(node);
+    {
+        bool removed;
+        if (removed = waitQueue.Remove(node))
+        {
+            SuspendedCallersMeter.Add(-1, measurementTags);
+        }
+
+        return removed;
+    }
 
     private protected void EnqueueNode(WaitNode node)
     {
