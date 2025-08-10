@@ -10,7 +10,7 @@ public sealed class LockAcquisitionTests : Test
     public static async Task AsyncReaderWriterLock()
     {
         var obj = new object();
-        var holder1 = await AcquireReadLockAsync(obj, TimeSpan.Zero);
+        var holder1 = await AcquireReadLockAsync(obj);
         if (holder1) { }
         else Fail("Lock is not acquired");
 
@@ -22,7 +22,7 @@ public sealed class LockAcquisitionTests : Test
         holder1.Dispose();
         holder2.Dispose();
 
-        holder1 = await AcquireWriteLockAsync(obj, TimeSpan.Zero);
+        holder1 = await AcquireWriteLockAsync(obj);
         if (holder1) { }
         else Fail("Lock is not acquired");
         holder1.Dispose();
@@ -32,7 +32,7 @@ public sealed class LockAcquisitionTests : Test
     public static async Task AsyncExclusiveLock()
     {
         var obj = new object();
-        var holder1 = await AcquireLockAsync(obj, TimeSpan.Zero);
+        var holder1 = await AcquireLockAsync(obj);
         if (holder1) { }
         else Fail("Lock is not acquired");
 
