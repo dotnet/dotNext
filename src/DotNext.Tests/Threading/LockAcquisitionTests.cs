@@ -1,5 +1,8 @@
 ﻿namespace DotNext.Threading;
 
+using static AsyncLockAcquisition;
+using static LockAcquisition;
+
 [Collection(TestCollections.AsyncPrimitives)]
 public sealed class LockAcquisitionTests : Test
 {
@@ -7,19 +10,19 @@ public sealed class LockAcquisitionTests : Test
     public static async Task AsyncReaderWriterLock()
     {
         var obj = new object();
-        var holder1 = await obj.AcquireReadLockAsync(TimeSpan.Zero);
+        var holder1 = await AcquireReadLockAsync(obj, TimeSpan.Zero);
         if (holder1) { }
         else Fail("Lock is not acquired");
 
-        var holder2 = await obj.AcquireReadLockAsync(TimeSpan.Zero);
+        var holder2 = await AcquireReadLockAsync(obj, TimeSpan.Zero);
         if (holder2) { }
         else Fail("Lock is not acquired");
 
-        await ThrowsAsync<TimeoutException>(obj.AcquireWriteLockAsync(TimeSpan.Zero).AsTask);
+        await ThrowsAsync<TimeoutException>(AcquireWriteLockAsync(obj, TimeSpan.Zero).AsTask);
         holder1.Dispose();
         holder2.Dispose();
 
-        holder1 = await obj.AcquireWriteLockAsync(TimeSpan.Zero);
+        holder1 = await AcquireWriteLockAsync(obj, TimeSpan.Zero);
         if (holder1) { }
         else Fail("Lock is not acquired");
         holder1.Dispose();
@@ -29,11 +32,11 @@ public sealed class LockAcquisitionTests : Test
     public static async Task AsyncExclusiveLock()
     {
         var obj = new object();
-        var holder1 = await obj.AcquireLockAsync(TimeSpan.Zero);
+        var holder1 = await AcquireLockAsync(obj, TimeSpan.Zero);
         if (holder1) { }
         else Fail("Lock is not acquired");
 
-        await ThrowsAsync<TimeoutException>(obj.AcquireLockAsync(TimeSpan.Zero).AsTask);
+        await ThrowsAsync<TimeoutException>(AcquireLockAsync(obj, TimeSpan.Zero).AsTask);
         holder1.Dispose();
     }
 
@@ -41,19 +44,19 @@ public sealed class LockAcquisitionTests : Test
     public static void ReaderWriterLock()
     {
         var obj = new object();
-        var holder1 = obj.AcquireReadLock(DefaultTimeout);
+        var holder1 = AcquireReadLock(obj, DefaultTimeout);
         if (holder1) { }
         else Fail("Lock is not acquired");
 
-        var holder2 = obj.AcquireReadLock(DefaultTimeout);
+        var holder2 = AcquireReadLock(obj, DefaultTimeout);
         if (holder2) { }
         else Fail("Lock is not acquired");
 
-        Throws<LockRecursionException>(() => obj.AcquireWriteLock(TimeSpan.Zero));
+        Throws<LockRecursionException>(() => AcquireWriteLock(obj, TimeSpan.Zero));
         holder1.Dispose();
         holder2.Dispose();
 
-        holder1 = obj.AcquireWriteLock(TimeSpan.Zero);
+        holder1 = AcquireWriteLock(obj, TimeSpan.Zero);
         if (holder1) { }
         else Fail("Lock is not acquired");
         holder1.Dispose();
@@ -63,13 +66,13 @@ public sealed class LockAcquisitionTests : Test
     public static async Task InvalidLock()
     {
         var obj = string.Intern("Interned string");
-        Throws<InvalidOperationException>(() => obj.AcquireReadLock(DefaultTimeout));
-        Throws<InvalidOperationException>(() => obj.AcquireWriteLock(DefaultTimeout));
-        Throws<InvalidOperationException>(() => obj.AcquireUpgradeableReadLock(DefaultTimeout));
+        Throws<InvalidOperationException>(() => AcquireReadLock(obj, DefaultTimeout));
+        Throws<InvalidOperationException>(() => AcquireWriteLock(obj, DefaultTimeout));
+        Throws<InvalidOperationException>(() => AcquireUpgradeableReadLock(obj, DefaultTimeout));
 
-        await ThrowsAsync<InvalidOperationException>(async () => await obj.AcquireLockAsync(TimeSpan.Zero));
-        await ThrowsAsync<InvalidOperationException>(async () => await obj.AcquireReadLockAsync(TimeSpan.Zero));
-        await ThrowsAsync<InvalidOperationException>(async () => await obj.AcquireWriteLockAsync(TimeSpan.Zero));
-        Throws<InvalidOperationException>(() => obj.AcquireUpgradeableReadLock(TimeSpan.Zero));
+        await ThrowsAsync<InvalidOperationException>(async () => await AcquireLockAsync(obj, TimeSpan.Zero));
+        await ThrowsAsync<InvalidOperationException>(async () => await AcquireReadLockAsync(obj, TimeSpan.Zero));
+        await ThrowsAsync<InvalidOperationException>(async () => await AcquireWriteLockAsync(obj, TimeSpan.Zero));
+        Throws<InvalidOperationException>(() => AcquireUpgradeableReadLock(obj, TimeSpan.Zero));
     }
 }

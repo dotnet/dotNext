@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace DotNext.Threading;
+﻿namespace DotNext.Threading;
 
 /// <summary>
 /// Provides a set of methods to acquire different types of lock.
@@ -11,19 +9,21 @@ public static class LockAcquisition
 
     private sealed class ReaderWriterLockSlimWithRecursion() : ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static ReaderWriterLockSlim GetReaderWriterLock<T>(this T obj)
-        where T : class
+    private static ReaderWriterLockSlim GetReaderWriterLock(object obj)
     {
-        ArgumentNullException.ThrowIfNull(obj);
-
-        if (obj is ReaderWriterLockSlim rws)
-            return rws;
-
-        if (GC.GetGeneration(obj) is int.MaxValue || obj is SemaphoreSlim or WaitHandle or System.Threading.ReaderWriterLock)
-            throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
-
-        return obj.GetUserData().GetOrSet<ReaderWriterLockSlim, ReaderWriterLockSlimWithRecursion>(ReaderWriterLock);
+        switch (obj)
+        {
+            case null:
+                throw new ArgumentNullException(nameof(obj));
+            case ReaderWriterLockSlim rws:
+                return rws;
+            case SemaphoreSlim or WaitHandle or System.Threading.ReaderWriterLock:
+                goto default;
+            case not null when GC.GetGeneration(obj) is not int.MaxValue:
+                return obj.GetUserData().GetOrSet<ReaderWriterLockSlim, ReaderWriterLockSlimWithRecursion>(ReaderWriterLock);
+            default:
+                throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
+        }
     }
 
     /// <summary>
@@ -32,58 +32,52 @@ public static class LockAcquisition
     /// <typeparam name="T">The type of the object to be locked.</typeparam>
     /// <param name="obj">The object to be locked.</param>
     /// <returns>The acquired read lock.</returns>
-    public static Lock.Holder AcquireReadLock<T>(this T obj)
-        where T : class
-        => Lock.ReadLock(obj.GetReaderWriterLock(), false).Acquire();
+    public static Lock.Holder AcquireReadLock(object obj)
+        => Lock.ReadLock(GetReaderWriterLock(obj), false).Acquire();
 
     /// <summary>
     /// Acquires read lock for the specified object.
     /// </summary>
-    /// <typeparam name="T">The type of the object to be locked.</typeparam>
     /// <param name="obj">The object to be locked.</param>
     /// <param name="timeout">The amount of time to wait for the lock.</param>
     /// <returns>The acquired read lock.</returns>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-    public static Lock.Holder AcquireReadLock<T>(this T obj, TimeSpan timeout)
-        where T : class => Lock.ReadLock(obj.GetReaderWriterLock(), false).Acquire(timeout);
+    public static Lock.Holder AcquireReadLock(object obj, TimeSpan timeout)
+        => Lock.ReadLock(GetReaderWriterLock(obj), false).Acquire(timeout);
 
     /// <summary>
     /// Acquires write lock for the specified object.
     /// </summary>
-    /// <typeparam name="T">The type of the object to be locked.</typeparam>
     /// <param name="obj">The object to be locked.</param>
     /// <returns>The acquired write lock.</returns>
-    public static Lock.Holder AcquireWriteLock<T>(this T obj)
-        where T : class => Lock.WriteLock(obj.GetReaderWriterLock()).Acquire();
+    public static Lock.Holder AcquireWriteLock(object obj)
+        => Lock.WriteLock(GetReaderWriterLock(obj)).Acquire();
 
     /// <summary>
     /// Acquires write lock for the specified object.
     /// </summary>
-    /// <typeparam name="T">The type of the object to be locked.</typeparam>
     /// <param name="obj">The object to be locked.</param>
     /// <param name="timeout">The amount of time to wait for the lock.</param>
     /// <returns>The acquired write lock.</returns>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-    public static Lock.Holder AcquireWriteLock<T>(this T obj, TimeSpan timeout)
-        where T : class => Lock.WriteLock(obj.GetReaderWriterLock()).Acquire(timeout);
+    public static Lock.Holder AcquireWriteLock(object obj, TimeSpan timeout)
+        => Lock.WriteLock(GetReaderWriterLock(obj)).Acquire(timeout);
 
     /// <summary>
     /// Acquires upgradeable read lock for the specified object.
     /// </summary>
-    /// <typeparam name="T">The type of the object to be locked.</typeparam>
     /// <param name="obj">The object to be locked.</param>
     /// <returns>The acquired upgradeable read lock.</returns>
-    public static Lock.Holder AcquireUpgradeableReadLock<T>(this T obj)
-        where T : class => Lock.ReadLock(obj.GetReaderWriterLock(), true).Acquire();
+    public static Lock.Holder AcquireUpgradeableReadLock(object obj)
+        => Lock.ReadLock(GetReaderWriterLock(obj), true).Acquire();
 
     /// <summary>
     /// Acquires upgradeable read lock for the specified object.
     /// </summary>
-    /// <typeparam name="T">The type of the object to be locked.</typeparam>
     /// <param name="obj">The object to be locked.</param>
     /// <param name="timeout">The amount of time to wait for the lock.</param>
     /// <returns>The acquired upgradeable read lock.</returns>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-    public static Lock.Holder AcquireUpgradeableReadLock<T>(this T obj, TimeSpan timeout)
-        where T : class => Lock.ReadLock(obj.GetReaderWriterLock(), true).Acquire(timeout);
+    public static Lock.Holder AcquireUpgradeableReadLock(object obj, TimeSpan timeout)
+        => Lock.ReadLock(GetReaderWriterLock(obj), true).Acquire(timeout);
 }
