@@ -6,12 +6,16 @@ using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Multiplexing;
 
+using Buffers;
 using Threading;
 
 partial class MultiplexedClient
 {
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private readonly AsyncAutoResetEvent writeSignal;
+
+    [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
+    private readonly BufferWriter<byte> framingBuffer;
     private readonly PipeOptions options;
     
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]

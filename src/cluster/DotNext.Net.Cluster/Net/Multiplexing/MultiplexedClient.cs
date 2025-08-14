@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Multiplexing;
 
+using Buffers;
+
 /// <summary>
 /// Represents multiplexed client.
 /// </summary>
@@ -19,25 +21,26 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     /// <summary>
     /// Initializes a new multiplexed client.
     /// </summary>
-    /// <param name="options">The configuration of the client.</param>
-    protected MultiplexedClient(Options options)
+    /// <param name="configuration">The configuration of the client.</param>
+    protected MultiplexedClient(Options configuration)
     {
-        this.options = options.BufferOptions;
+        this.options = configuration.BufferOptions;
         writeSignal = new(initialState: false);
         var lifetimeToken = (lifetimeTokenSource = new()).Token;
 
         dispatcher = Task.CompletedTask;
         readiness = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        
+        framingBuffer = new PoolingBufferWriter<byte>(configuration.ToAllocator()) { Capacity = configuration.SendBufferCapacity };
+
         input = new(new(),
             writeSignal,
-            GC.AllocateArray<byte>(options.FragmentSize, pinned: true),
+            framingBuffer,
             streamCount,
-            options.MeasurementTags,
-            options.Timeout,
-            options.HeartbeatTimeout,
+            configuration.MeasurementTags,
+            configuration.Timeout,
+            configuration.HeartbeatTimeout,
             lifetimeToken);
-        output = input.CreateOutput(GC.AllocateArray<byte>(options.FragmentSize, pinned: true), options.Timeout);
+        output = input.CreateOutput(GC.AllocateArray<byte>(configuration.FrameBufferSize, pinned: true), configuration.Timeout);
     }
 
     /// <summary>
@@ -111,7 +114,10 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
         if (disposing)
         {
             Cancel();
-            dispatcher.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(new Action(writeSignal.Dispose) + input.Dispose + output.Dispose);
+            dispatcher.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(new Action(writeSignal.Dispose)
+                                                                            + input.Dispose
+                                                                            + output.Dispose
+                                                                            + framingBuffer.Dispose);
         }
 
         base.Dispose(disposing);
@@ -137,6 +143,7 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
         await input.DisposeAsync().ConfigureAwait(false);
         await output.DisposeAsync().ConfigureAwait(false);
         writeSignal.Dispose();
+        framingBuffer.Dispose();
     }
 
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync"/>

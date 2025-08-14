@@ -29,7 +29,6 @@ public static class LockAcquisition
     /// <summary>
     /// Acquires read lock for the specified object.
     /// </summary>
-    /// <typeparam name="T">The type of the object to be locked.</typeparam>
     /// <param name="obj">The object to be locked.</param>
     /// <returns>The acquired read lock.</returns>
     public static Lock.Holder AcquireReadLock(object obj)

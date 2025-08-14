@@ -17,7 +17,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
     private readonly TimeSpan heartbeatTimeout, timeout;
     private readonly Channel<MultiplexedStream> backlog;
     private readonly PipeOptions options;
-    private readonly int fragmentSize;
+    private readonly int frameBufferSize, sendBufferCapacity;
     private Task listener;
     private readonly TaskCompletionSource readiness;
 
@@ -40,7 +40,8 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
 
         measurementTags = configuration.MeasurementTags;
         options = configuration.BufferOptions;
-        fragmentSize = configuration.FragmentSize;
+        frameBufferSize = configuration.FrameBufferSize;
+        sendBufferCapacity = configuration.SendBufferCapacity;
         readiness = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         lifetimeToken = (lifetimeTokenSource = new()).Token;
         heartbeatTimeout = configuration.HeartbeatTimeout;

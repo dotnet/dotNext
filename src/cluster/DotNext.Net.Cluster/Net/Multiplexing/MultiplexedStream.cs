@@ -9,6 +9,8 @@ using Threading;
 
 internal sealed partial class MultiplexedStream : IDuplexPipe, IApplicationSideStream
 {
+    private const int MaxFrameSize = ushort.MaxValue;
+    
     private const uint AppInputCompletedState = 0B_0001;
     private const uint TransportInputCompletedState = 0B_0010;
     private const uint AppOutputCompletedState = 0B_0100;
@@ -16,37 +18,44 @@ internal sealed partial class MultiplexedStream : IDuplexPipe, IApplicationSideS
 
     private const uint AppSideCompletedState = AppInputCompletedState | AppOutputCompletedState;
     private const uint TransportSideCompletedState = TransportInputCompletedState | TransportOutputCompletedState;
+    private const uint CompletedState = AppSideCompletedState | TransportSideCompletedState;
 
-    /// <summary>
-    /// Represents transport-side input.
-    /// </summary>
-    public readonly PipeReader Input;
-    
-    /// <summary>
-    /// Represents transport-side output.
-    /// </summary>
-    public readonly PipeWriter Output;
-    
+    private readonly PipeReader transportReader;
+    private readonly PipeWriter transportWriter;
     private readonly AppSideWriter appWriter;
     private readonly AppSideReader appReader;
+    private readonly AsyncAutoResetEvent transportSignal;
+
+    private readonly int frameSize;
     private volatile uint state;
 
-    public MultiplexedStream(PipeOptions options, AsyncAutoResetEvent writeSignal)
+    public MultiplexedStream(PipeOptions options, AsyncAutoResetEvent signal)
     {
+        transportSignal = signal;
+
         var input = new Pipe(options);
-        Input = input.Reader;
-        appWriter = new(this, input.Writer, writeSignal);
+        transportReader = input.Reader;
+        appWriter = new(this, input.Writer);
 
         var output = new Pipe(options);
-        Output = output.Writer;
-        appReader = new(this, output.Reader, writeSignal);
+        transportWriter = output.Writer;
+        appReader = new(this, output.Reader);
+
+        resumeThreshold = options.ResumeWriterThreshold;
+        inputWindow = int.CreateSaturating(options.PauseWriterThreshold);
+        frameSize = GetFrameSize(options);
     }
+
+    internal static int GetFrameSize(PipeOptions options)
+        => (int)long.Min(MaxFrameSize, options.ResumeWriterThreshold);
+
+    AsyncAutoResetEvent IApplicationSideStream.TransportSignal => transportSignal;
     
     public ValueTask CompleteTransportInputAsync(Exception? e = null)
-        => TryCompleteTransportInput() ? Input.CompleteAsync(e) : ValueTask.CompletedTask;
+        => TryCompleteTransportInput() ? transportReader.CompleteAsync(e) : ValueTask.CompletedTask;
 
     public ValueTask CompleteTransportOutputAsync(Exception? e = null)
-        => TryCompleteTransportOutput() ? Output.CompleteAsync(e) : ValueTask.CompletedTask;
+        => TryCompleteTransportOutput() ? transportWriter.CompleteAsync(e) : ValueTask.CompletedTask;
 
     private bool TryComplete([ConstantExpected] uint flag)
     {
@@ -66,7 +75,9 @@ internal sealed partial class MultiplexedStream : IDuplexPipe, IApplicationSideS
 
     public bool IsTransportOutputCompleted => (state & TransportOutputCompletedState) is not 0U;
 
-    public bool IsTransportInputCompleted(out bool appSideCompleted)
+    public bool IsCompleted => (state & CompletedState) is CompletedState;
+
+    private bool IsTransportInputCompleted(out bool appSideCompleted)
     {
         var stateCopy = state;
         appSideCompleted = (stateCopy & AppSideCompletedState) is AppSideCompletedState;

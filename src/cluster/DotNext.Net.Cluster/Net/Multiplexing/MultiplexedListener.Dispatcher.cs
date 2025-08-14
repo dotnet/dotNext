@@ -1,11 +1,11 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Multiplexing;
 
+using Buffers;
 using Threading;
 
 partial class MultiplexedListener
@@ -29,12 +29,12 @@ partial class MultiplexedListener
     {
         Debugger.NotifyOfCrossThreadDependency();
         var writeSignal = new AsyncAutoResetEvent(initialState: false);
-        var sendBuffer = options.Pool.Rent(fragmentSize);
-        var receiveBuffer = options.Pool.Rent(fragmentSize);
+        var receiveBuffer = options.Pool.Rent(frameBufferSize);
+        var framingBuffer = new PoolingBufferWriter<byte>(options.Pool.ToAllocator()) { Capacity = sendBufferCapacity };
         var input = new InputMultiplexer(
             new(),
             writeSignal,
-            sendBuffer.Memory,
+            framingBuffer,
             streamCount,
             CreateMeasurementTags(socket),
             timeout,
@@ -85,11 +85,9 @@ partial class MultiplexedListener
             await input.DisposeAsync().ConfigureAwait(false);
             await output.DisposeAsync().ConfigureAwait(false);
             writeSignal.Dispose();
-            sendBuffer.Dispose();
             receiveBuffer.Dispose();
+            framingBuffer.Dispose();
             await socket.DisconnectAsync(timeout).ConfigureAwait(false);
         }
     }
-    
-    
 }

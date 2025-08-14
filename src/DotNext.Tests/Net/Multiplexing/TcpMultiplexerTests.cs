@@ -14,10 +14,10 @@ public sealed class TcpMultiplexerTests : Test
     [Fact]
     public static async Task SuccessfulDataExchange()
     {
-        await using var server = new TcpMultiplexedListener(LocalEndPoint, new() { Timeout = DefaultTimeout, FragmentSize = 1024 });
+        await using var server = new TcpMultiplexedListener(LocalEndPoint, new() { Timeout = DefaultTimeout });
         await server.StartAsync();
 
-        await using var client = new TcpMultiplexedClient(LocalEndPoint, new() { Timeout = DefaultTimeout, FragmentSize = 1024 });
+        await using var client = new TcpMultiplexedClient(LocalEndPoint, new() { Timeout = DefaultTimeout });
         await client.StartAsync();
 
         var clientStream1 = await client.OpenStreamAsync();
@@ -45,6 +45,49 @@ public sealed class TcpMultiplexerTests : Test
 
         Equal(expectedData1, actualData1);
         Equal(expectedData2, actualData2);
+    }
+
+    [Fact]
+    public static async Task LargeDataExchangeAsync()
+    {
+        await using var server = new TcpMultiplexedListener(LocalEndPoint, new()
+        {
+            Timeout = DefaultTimeout
+        });
+        await server.StartAsync();
+
+        await using var client = new TcpMultiplexedClient(LocalEndPoint, new()
+        {
+            Timeout = DefaultTimeout
+        });
+        await client.StartAsync();
+
+        var expectedData = RandomBytes(1024 * 1024);
+
+        await Task.WhenAll(SendAsync(), ReceiveAsync());
+
+        async Task SendAsync()
+        {
+            var stream = await client.OpenStreamAsync();
+            await stream.Output.WriteAsync(expectedData);
+            await stream.Output.CompleteAsync();
+            await stream.Input.CompleteAsync();
+        }
+
+        async Task ReceiveAsync()
+        {
+            var stream = await server.AcceptAsync();
+            var offset = 0;
+            var actualData = new byte[expectedData.Length];
+            
+            await foreach (var block in stream.Input.ReadAllAsync())
+            {
+                block.CopyTo(actualData.AsMemory(offset));
+                offset += block.Length;
+            }
+
+            Equal(expectedData, actualData);
+        }
     }
 
     [Fact]

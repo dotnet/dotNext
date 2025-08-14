@@ -12,22 +12,22 @@ using Buffers.Binary;
 /// <param name="control">The fragment behavior.</param>
 /// <param name="length">The length of the fragment data.</param>
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct FragmentHeader(ulong id, FragmentControl control, ushort length) : IBinaryFormattable<FragmentHeader>
+internal readonly struct FrameHeader(ulong id, FrameControl control, ushort length) : IBinaryFormattable<FrameHeader>
 {
     /// <summary>
     /// All protocol-specific fragments have ID = 0.
     /// </summary>
-    private const ulong SystemStreamId = 0U;
+    public const ulong SystemStreamId = 0U;
     
-    public const int Size = sizeof(long) + sizeof(FragmentControl) + sizeof(ushort);
+    public const int Size = sizeof(ulong) + sizeof(FrameControl) + sizeof(ushort);
     
     public ulong Id => id; // if 0, then the packet is protocol-specific
-    public FragmentControl Control => control;
+    public FrameControl Control => control;
     public ushort Length => length;
 
-    public bool CanBeIgnored => control is FragmentControl.StreamClosed or FragmentControl.StreamRejected;
+    public bool CanBeIgnored => control is FrameControl.StreamClosed or FrameControl.StreamRejected or FrameControl.AdjustWindow;
 
-    static int IBinaryFormattable<FragmentHeader>.Size => Size;
+    static int IBinaryFormattable<FrameHeader>.Size => Size;
     
     public void Format(Span<byte> destination)
     {
@@ -37,19 +37,12 @@ internal readonly struct FragmentHeader(ulong id, FragmentControl control, ushor
         writer.WriteLittleEndian(length);
     }
 
-    public static FragmentHeader Parse(ReadOnlySpan<byte> source)
+    public static FrameHeader Parse(ReadOnlySpan<byte> source)
     {
         var reader = new SpanReader<byte>(source);
         return new(
             reader.ReadLittleEndian<ulong>(),
-            (FragmentControl)reader.ReadLittleEndian<ushort>(),
+            (FrameControl)reader.ReadLittleEndian<ushort>(),
             reader.ReadLittleEndian<ushort>());
-    }
-
-    public static int WriteHeartbeat(Span<byte> buffer)
-    {
-        var header = new FragmentHeader(SystemStreamId, FragmentControl.Heartbeat, length: 0);
-        header.Format(buffer);
-        return Size;
     }
 }

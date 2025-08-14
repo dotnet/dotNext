@@ -3,7 +3,7 @@ namespace DotNext.Net.Multiplexing;
 /// <summary>
 /// Controls the fragment behavior.
 /// </summary>
-internal enum FragmentControl : ushort
+internal enum FrameControl : ushort
 {
     /// <summary>
     /// The fragment contains a data chunk.
@@ -30,6 +30,11 @@ internal enum FragmentControl : ushort
     /// The stream is closed.
     /// </summary>
     StreamClosed = 3,
+    
+    /// <summary>
+    /// Advances the window.
+    /// </summary>
+    AdjustWindow = 4,
     
     // System packets. All of them must have stream ID = 0
     

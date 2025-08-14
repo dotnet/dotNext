@@ -4,11 +4,9 @@ using System.Threading.Tasks.Sources;
 
 namespace DotNext.Net.Multiplexing;
 
-using Threading;
-
 partial class MultiplexedStream
 {
-    private sealed class AppSideWriter(IApplicationSideStream appSide, PipeWriter writer, AsyncAutoResetEvent writeSignal) : PipeWriter, IValueTaskSource<FlushResult>
+    private sealed class AppSideWriter(IApplicationSideStream appSide, PipeWriter writer) : PipeWriter, IValueTaskSource<FlushResult>
     {
         private ManualResetValueTaskSourceCore<FlushResult> source = new() { RunContinuationsAsynchronously = true };
         private ConfiguredValueTaskAwaitable<FlushResult>.ConfiguredValueTaskAwaiter flushAwaiter;
@@ -24,7 +22,7 @@ partial class MultiplexedStream
                 }
                 finally
                 {
-                    writeSignal.Set();
+                    appSide.TransportSignal.Set();
                 }
             }
         }
@@ -39,7 +37,7 @@ partial class MultiplexedStream
                 }
                 finally
                 {
-                    writeSignal.Set();
+                    appSide.TransportSignal.Set();
                 }
             }
         }
@@ -53,6 +51,7 @@ partial class MultiplexedStream
         public override ValueTask<FlushResult> FlushAsync(CancellationToken token = default)
         {
             flushAwaiter = writer.FlushAsync(token).ConfigureAwait(false).GetAwaiter();
+            appSide.TransportSignal.Set();
             if (flushAwaiter.IsCompleted)
             {
                 EndFlush();
@@ -85,8 +84,6 @@ partial class MultiplexedStream
             {
                 flushAwaiter = default;
             }
-
-            writeSignal.Set();
         }
 
         ValueTaskSourceStatus IValueTaskSource<FlushResult>.GetStatus(short token) => source.GetStatus(token);

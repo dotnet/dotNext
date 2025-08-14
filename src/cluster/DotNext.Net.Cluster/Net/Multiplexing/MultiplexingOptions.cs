@@ -3,25 +3,14 @@ using System.IO.Pipelines;
 
 namespace DotNext.Net.Multiplexing;
 
+using Buffers;
+
 /// <summary>
 /// Represents multiplexing protocol options.
 /// </summary>
 public abstract class MultiplexingOptions
 {
-    private readonly int fragmentSize = 1380 - FragmentHeader.Size;
     private readonly PipeOptions options = PipeOptions.Default;
-
-    /// <summary>
-    /// Gets or sets the maximum size of the data encapsulated by the single packet.
-    /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is too small or large.</exception>
-    public int FragmentSize
-    {
-        get => fragmentSize;
-        init => fragmentSize = value is >= FragmentHeader.Size and <= ushort.MaxValue
-            ? value
-            : throw new ArgumentOutOfRangeException(nameof(value));
-    }
 
     /// <summary>
     /// Gets or sets buffering options.
@@ -32,6 +21,12 @@ public abstract class MultiplexingOptions
         get => options;
         init => options = value ?? throw new ArgumentNullException(nameof(value));
     }
+
+    internal MemoryAllocator<byte> ToAllocator() => options.Pool.ToAllocator();
+
+    internal int SendBufferCapacity => int.CreateSaturating(options.PauseWriterThreshold);
+
+    internal int FrameBufferSize => int.Max(MultiplexedStream.GetFrameSize(options) + FrameHeader.Size, SendBufferCapacity);
     
     /// <summary>
     /// Gets or sets measurement tags for metrics.
