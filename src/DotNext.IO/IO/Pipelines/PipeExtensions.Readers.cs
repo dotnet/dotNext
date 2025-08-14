@@ -368,8 +368,15 @@ public static partial class PipeExtensions
                     throw new EndOfStreamException();
                 }
 
-                for (ReadOnlyMemory<byte> block; buffer.TryGet(ref consumed, out block, advance: false) && !block.IsEmpty; count -= block.Length, consumed = buffer.GetPosition(block.Length, consumed))
-                    await consumer.Invoke(block, token).ConfigureAwait(false);
+                for (var position = consumed;
+                     buffer.TryGet(ref position, out var block);
+                     count -= block.Length, consumed = position)
+                {
+                    if (!block.IsEmpty)
+                        await consumer.Invoke(block, token).ConfigureAwait(false);
+                }
+
+                consumed = buffer.End;
             }
             finally
             {
@@ -539,8 +546,15 @@ public static partial class PipeExtensions
 
             try
             {
-                for (ReadOnlyMemory<byte> block; buffer.TryGet(ref consumed, out block, advance: false) && !block.IsEmpty; consumed = buffer.GetPosition(block.Length, consumed))
-                    yield return block;
+                for (var position = consumed;
+                     buffer.TryGet(ref position, out var block);
+                     consumed = position)
+                {
+                    if (!block.IsEmpty)
+                        yield return block;
+                }
+
+                consumed = buffer.End;
             }
             finally
             {
@@ -581,14 +595,17 @@ public static partial class PipeExtensions
 
                 try
                 {
-                    for (ReadOnlyMemory<byte> block;
-                         length > 0L && buffer.TryGet(ref consumed, out block, advance: false) && !block.IsEmpty;
-                         consumed = buffer.GetPosition(block.Length, consumed),
+                    for (var position = consumed;
+                         length > 0L && buffer.TryGet(ref position, out var block);
+                         consumed = position,
                          length -= block.Length)
                     {
                         block = block.TrimLength(int.CreateSaturating(length));
-                        yield return block;
+                        if (!block.IsEmpty)
+                            yield return block;
                     }
+
+                    consumed = buffer.End;
                 }
                 finally
                 {
