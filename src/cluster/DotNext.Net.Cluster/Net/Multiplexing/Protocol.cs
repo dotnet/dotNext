@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Buffers.Binary;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Net.Multiplexing;
@@ -34,4 +35,12 @@ internal static class Protocol
 
     public static int ReadAdjustWindow(ReadOnlySpan<byte> payload)
         => BinaryPrimitives.ReadInt32LittleEndian(payload);
+
+    public static void Serialize(this IProducerConsumerCollection<ProtocolCommand> commands, IBufferWriter<byte> writer)
+    {
+        while (commands.TryTake(out var command))
+        {
+            command.Write(writer);
+        }
+    }
 }

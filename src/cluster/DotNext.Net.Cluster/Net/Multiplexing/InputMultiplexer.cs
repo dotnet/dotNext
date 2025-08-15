@@ -61,10 +61,7 @@ internal sealed class InputMultiplexer(
             }
 
             // process protocol commands
-            while (commands.TryTake(out var command))
-            {
-                command.Write(framingBuffer);
-            }
+            commands.Serialize(framingBuffer);
 
             if (framingBuffer.WrittenCount is 0)
             {
