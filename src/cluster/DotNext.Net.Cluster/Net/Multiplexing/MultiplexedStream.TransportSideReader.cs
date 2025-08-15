@@ -6,7 +6,7 @@ namespace DotNext.Net.Multiplexing;
 
 partial class MultiplexedStream
 {
-    // this is the maximum number of bytes that we can send without the adjusting window
+    // this is the maximum number of bytes that we can send without adjusting the window
     private volatile int inputWindow;
 
     public ValueTask WriteFrameAsync(IBufferWriter<byte> writer, ulong streamId)
@@ -135,9 +135,8 @@ partial class MultiplexedStream
 
     private bool WriteFrame(IBufferWriter<byte> writer, ulong streamId, in ReadResult result)
     {
-        var maxBufferSize = FrameHeader.Size + frameSize;
-        var buffer = writer.GetSpan(maxBufferSize).Slice(0, maxBufferSize);
-        var (bytesWritten, position) = WriteFrame(buffer, streamId, result, out var completed);
+        var buffer = writer.GetSpan(frameAndHeaderSize);
+        var (bytesWritten, position) = WriteFrame(buffer.Slice(0, frameAndHeaderSize), streamId, result, out var completed);
         writer.Advance(bytesWritten);
         transportReader.AdvanceTo(position);
         

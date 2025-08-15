@@ -27,7 +27,7 @@ internal sealed partial class MultiplexedStream : IDuplexPipe, IApplicationSideS
     private readonly AppSideReader appReader;
     private readonly AsyncAutoResetEvent transportSignal;
 
-    private readonly int frameSize;
+    private readonly int frameAndHeaderSize;
     private volatile uint state;
 
     public MultiplexedStream(PipeOptions options, AsyncAutoResetEvent signal)
@@ -44,7 +44,7 @@ internal sealed partial class MultiplexedStream : IDuplexPipe, IApplicationSideS
 
         resumeWatermark = options.PauseWriterThreshold - options.ResumeWriterThreshold;
         inputWindow = int.CreateSaturating(options.PauseWriterThreshold);
-        frameSize = GetFramePayloadSize(options);
+        frameAndHeaderSize = GetFramePayloadSize(options) + FrameHeader.Size;
     }
 
     internal static int GetFramePayloadSize(PipeOptions options)
