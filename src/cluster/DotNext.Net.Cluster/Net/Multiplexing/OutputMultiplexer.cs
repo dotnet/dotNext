@@ -18,7 +18,7 @@ internal sealed class OutputMultiplexer(
     CancellationToken token)
     : Multiplexer(streams, commands, streamCounter, measurementTags, token)
 {
-    public Func<MultiplexedStream?>? HandlerFactory { get; init; }
+    public Func<AsyncAutoResetEvent, MultiplexedStream?>? HandlerFactory { get; init; }
 
     public Task ProcessAsync(Socket socket)
     {
@@ -75,7 +75,7 @@ internal sealed class OutputMultiplexer(
                     continue;
                 }
 
-                if ((stream = HandlerFactory()) is null)
+                if ((stream = HandlerFactory(writeSignal)) is null)
                 {
                     commands.TryAdd(new StreamRejectedCommand(header.Id));
                     writeSignal.Set();

@@ -44,7 +44,7 @@ partial class MultiplexedListener
         var output = input.CreateOutput(
             receiveBuffer.Memory,
             timeout,
-            () => CreateHandler(writeSignal),
+            CreateHandler,
             receiveTokenSource.Token);
         
         // send loop

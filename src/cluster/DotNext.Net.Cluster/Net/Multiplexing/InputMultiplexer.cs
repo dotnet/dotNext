@@ -32,7 +32,7 @@ internal sealed class InputMultiplexer(
     public OutputMultiplexer CreateOutput(Memory<byte> framingBuffer, TimeSpan receiveTimeout)
         => new(streams, writeSignal, commands, framingBuffer, streamCounter, measurementTags, receiveTimeout, Token);
 
-    public OutputMultiplexer CreateOutput(Memory<byte> framingBuffer, TimeSpan receiveTimeout, Func<MultiplexedStream?> handlerFactory,
+    public OutputMultiplexer CreateOutput(Memory<byte> framingBuffer, TimeSpan receiveTimeout, Func<AsyncAutoResetEvent, MultiplexedStream?> handlerFactory,
         CancellationToken token)
         => new(streams, writeSignal, commands, framingBuffer, streamCounter, measurementTags, receiveTimeout, token)
             { HandlerFactory = handlerFactory };
