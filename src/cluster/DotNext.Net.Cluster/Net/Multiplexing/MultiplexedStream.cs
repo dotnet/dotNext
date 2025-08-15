@@ -44,10 +44,10 @@ internal sealed partial class MultiplexedStream : IDuplexPipe, IApplicationSideS
 
         resumeWatermark = options.PauseWriterThreshold - options.ResumeWriterThreshold;
         inputWindow = int.CreateSaturating(options.PauseWriterThreshold);
-        frameSize = GetFrameSize(options);
+        frameSize = GetFramePayloadSize(options);
     }
 
-    internal static int GetFrameSize(PipeOptions options)
+    internal static int GetFramePayloadSize(PipeOptions options)
         => (int)long.Clamp(options.PauseWriterThreshold - options.ResumeWriterThreshold, MinFrameSize, MaxFrameSize);
 
     AsyncAutoResetEvent IApplicationSideStream.TransportSignal => transportSignal;

@@ -31,9 +31,8 @@ public abstract class MultiplexingOptions
     {
         get
         {
-            var minValue = MultiplexedStream.GetFrameSize(options) + FrameHeader.Size;
-            var maxValue = options.PauseWriterThreshold * backlog;
-            return int.Max(minValue, int.CreateSaturating(maxValue));
+            var frameHeaderAndPayloadSize = MultiplexedStream.GetFramePayloadSize(options) + FrameHeader.Size;
+            return checked(frameHeaderAndPayloadSize * backlog);
         }
     }
 
