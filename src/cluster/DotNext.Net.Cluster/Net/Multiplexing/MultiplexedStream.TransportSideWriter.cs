@@ -9,7 +9,7 @@ using Threading;
 
 partial class MultiplexedStream
 {
-    private readonly long resumeThreshold;
+    private readonly long resumeWatermark;
     private long bytesReceived;
 
     public ValueTask ReadFrameAsync(FrameControl control, ReadOnlyMemory<byte> payload, CancellationToken token)
@@ -73,14 +73,14 @@ partial class MultiplexedStream
     void IApplicationSideStream.Consume(long count)
     {
         var totalReceived = Interlocked.Add(ref bytesReceived, count);
-        if (totalReceived > resumeThreshold)
+        if (totalReceived > resumeWatermark)
             transportSignal.Set();
     }
 
     private void AdjustWindowIfNeeded(IBufferWriter<byte> writer, ulong streamId)
     {
         var totalReceived = Atomic.Read(in bytesReceived);
-        if (totalReceived > resumeThreshold)
+        if (totalReceived > resumeWatermark)
         {
             var windowSize = int.CreateSaturating(totalReceived);
             Interlocked.Add(ref bytesReceived, -windowSize);

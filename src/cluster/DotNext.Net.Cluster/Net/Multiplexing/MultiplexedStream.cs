@@ -10,6 +10,7 @@ using Threading;
 internal sealed partial class MultiplexedStream : IDuplexPipe, IApplicationSideStream
 {
     private const int MaxFrameSize = ushort.MaxValue;
+    private const int MinFrameSize = 1024;
     
     private const uint AppInputCompletedState = 0B_0001;
     private const uint TransportInputCompletedState = 0B_0010;
@@ -41,13 +42,13 @@ internal sealed partial class MultiplexedStream : IDuplexPipe, IApplicationSideS
         transportWriter = output.Writer;
         appReader = new(this, output.Reader);
 
-        resumeThreshold = options.ResumeWriterThreshold;
+        resumeWatermark = options.PauseWriterThreshold - options.ResumeWriterThreshold;
         inputWindow = int.CreateSaturating(options.PauseWriterThreshold);
         frameSize = GetFrameSize(options);
     }
 
     internal static int GetFrameSize(PipeOptions options)
-        => (int)long.Min(MaxFrameSize, options.ResumeWriterThreshold);
+        => (int)long.Clamp(options.PauseWriterThreshold - options.ResumeWriterThreshold, MinFrameSize, MaxFrameSize);
 
     AsyncAutoResetEvent IApplicationSideStream.TransportSignal => transportSignal;
     
