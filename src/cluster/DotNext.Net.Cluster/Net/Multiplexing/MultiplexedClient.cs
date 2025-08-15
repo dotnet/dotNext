@@ -31,17 +31,19 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
 
         dispatcher = Task.CompletedTask;
         readiness = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        framingBuffer = new PoolingBufferWriter<byte>(configuration.ToAllocator()) { Capacity = configuration.SendBufferCapacity };
+        var flushThreshold = configuration.BufferCapacity;
+        framingBuffer = new PoolingBufferWriter<byte>(configuration.ToAllocator()) { Capacity = flushThreshold };
 
         input = new(new(),
             writeSignal,
             framingBuffer,
+            flushThreshold,
             streamCount,
             configuration.MeasurementTags,
             configuration.Timeout,
             configuration.HeartbeatTimeout,
             lifetimeToken);
-        output = input.CreateOutput(GC.AllocateArray<byte>(configuration.FrameBufferSize, pinned: true), configuration.Timeout);
+        output = input.CreateOutput(GC.AllocateArray<byte>(configuration.BufferCapacity, pinned: true), configuration.Timeout);
     }
 
     /// <summary>

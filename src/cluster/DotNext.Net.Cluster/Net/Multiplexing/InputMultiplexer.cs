@@ -13,6 +13,7 @@ internal sealed class InputMultiplexer(
     ConcurrentDictionary<ulong, MultiplexedStream> streams,
     AsyncAutoResetEvent writeSignal,
     BufferWriter<byte> framingBuffer,
+    int flushThreshold,
     UpDownCounter<int> streamCounter,
     in TagList measurementTags,
     TimeSpan timeout,
@@ -40,7 +41,9 @@ internal sealed class InputMultiplexer(
     public async Task ProcessAsync(Func<bool> condition, Socket socket)
     {
         using var enumerator = streams.GetEnumerator();
-        while (!Token.IsCancellationRequested && condition())
+        for (var requiresHeartbeat = false;
+             !Token.IsCancellationRequested && condition();
+             requiresHeartbeat = !await writeSignal.WaitAsync(heartbeatTimeout, Token).ConfigureAwait(false))
         {
             framingBuffer.Clear(reuseBuffer: true);
 
@@ -58,43 +61,56 @@ internal sealed class InputMultiplexer(
                 {
                     await stream.WriteFrameAsync(framingBuffer, streamId).ConfigureAwait(false);
                 }
+
+                // write the buffer on overflow
+                if (framingBuffer.WrittenCount >= flushThreshold)
+                {
+                    await SendAsync(framingBuffer.WrittenMemory, socket).ConfigureAwait(false);
+                    framingBuffer.Clear(reuseBuffer: true);
+                }
             }
 
             // process protocol commands
             commands.Serialize(framingBuffer);
 
-            if (framingBuffer.WrittenCount is 0)
+            switch (framingBuffer.WrittenCount)
             {
-                Protocol.WriteHeartbeat(framingBuffer);
+                case 0 when requiresHeartbeat:
+                    Protocol.WriteHeartbeat(framingBuffer);
+                    goto default;
+                case 0:
+                    break;
+                default:
+                    await SendAsync(framingBuffer.WrittenMemory, socket).ConfigureAwait(false);
+                    break;
             }
 
-            // send combined buffer
-            var bufferToSend = framingBuffer.WrittenMemory;
-            for (int bytesWritten; !bufferToSend.IsEmpty; bufferToSend = bufferToSend.Slice(bytesWritten))
-            {
-                timeoutSource.Start(timeout);
-                try
-                {
-                    bytesWritten = await socket.SendAsync(bufferToSend, SocketFlags.None).ConfigureAwait(false);
-                }
-                catch (OperationCanceledException e) when (timeoutSource.IsTimedOut(e))
-                {
-                    throw new TimeoutException(ExceptionMessages.ConnectionTimedOut, e);
-                }
-                catch (OperationCanceledException e) when (timeoutSource.IsCanceled(e))
-                {
-                    throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, Token);
-                }
-                finally
-                {
-                    await timeoutSource.ResetAsync(Token).ConfigureAwait(false);
-                }
-            }
-            
             enumerator.Reset();
+        }
+    }
 
-            // wait for input data
-            await writeSignal.WaitAsync(heartbeatTimeout, Token).ConfigureAwait(false);
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
+    private async ValueTask SendAsync(ReadOnlyMemory<byte> buffer, Socket socket)
+    {
+        for (int bytesWritten; !buffer.IsEmpty; buffer = buffer.Slice(bytesWritten))
+        {
+            timeoutSource.Start(timeout);
+            try
+            {
+                bytesWritten = await socket.SendAsync(buffer, SocketFlags.None).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException e) when (timeoutSource.IsTimedOut(e))
+            {
+                throw new TimeoutException(ExceptionMessages.ConnectionTimedOut, e);
+            }
+            catch (OperationCanceledException e) when (timeoutSource.IsCanceled(e))
+            {
+                throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, Token);
+            }
+            finally
+            {
+                await timeoutSource.ResetAsync(Token).ConfigureAwait(false);
+            }
         }
     }
 

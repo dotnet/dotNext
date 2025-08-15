@@ -11,7 +11,6 @@ partial class MultiplexedListener
     {
         private readonly TimeSpan receiveTimeout = TimeSpan.FromSeconds(60);
         private readonly double heartbeatDrift = .5D;
-        private readonly int backlog = 100;
         
         /// <summary>
         /// Gets or sets the send/receive timeout.
@@ -42,15 +41,5 @@ partial class MultiplexedListener
         internal TimeSpan HeartbeatTimeout => receiveTimeout == InfiniteTimeSpan
             ? InfiniteTimeSpan
             : receiveTimeout * HeartbeatDrift;
-
-        /// <summary>
-        /// Gets or sets the maximum amount of pending streams in the backlog.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
-        public int Backlog
-        {
-            get => backlog;
-            init => backlog = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-        }
     }
 }

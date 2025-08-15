@@ -29,12 +29,13 @@ partial class MultiplexedListener
     {
         Debugger.NotifyOfCrossThreadDependency();
         var writeSignal = new AsyncAutoResetEvent(initialState: false);
-        var receiveBuffer = allocator(frameBufferSize);
-        var framingBuffer = new PoolingBufferWriter<byte>(allocator) { Capacity = sendBufferCapacity };
+        var receiveBuffer = allocator(flushThreshold);
+        var framingBuffer = new PoolingBufferWriter<byte>(allocator) { Capacity = flushThreshold };
         var input = new InputMultiplexer(
             new(),
             writeSignal,
             framingBuffer,
+            flushThreshold,
             streamCount,
             CreateMeasurementTags(socket),
             timeout,

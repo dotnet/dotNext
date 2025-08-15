@@ -12,6 +12,7 @@ using Buffers;
 [Experimental("DOTNEXT001")]
 public abstract class MultiplexingOptions
 {
+    private readonly int backlog = 10;
     private readonly PipeOptions options = PipeOptions.Default;
 
     /// <summary>
@@ -26,10 +27,16 @@ public abstract class MultiplexingOptions
 
     internal MemoryAllocator<byte> ToAllocator() => options.Pool.ToAllocator();
 
-    internal int SendBufferCapacity => int.CreateSaturating(options.PauseWriterThreshold);
+    internal int BufferCapacity
+    {
+        get
+        {
+            var minValue = MultiplexedStream.GetFrameSize(options) + FrameHeader.Size;
+            var maxValue = options.PauseWriterThreshold * backlog;
+            return int.Max(minValue, int.CreateSaturating(maxValue));
+        }
+    }
 
-    internal int FrameBufferSize => int.Max(MultiplexedStream.GetFrameSize(options) + FrameHeader.Size, SendBufferCapacity);
-    
     /// <summary>
     /// Gets or sets measurement tags for metrics.
     /// </summary>
@@ -37,5 +44,16 @@ public abstract class MultiplexingOptions
     {
         get;
         init;
+    }
+    
+    /// <summary>
+    /// For the listener, it's the maximum amount of pending streams in the backlog.
+    /// For the client, it's the maximum amount of the streams that can be in the batch for sending.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
+    public int Backlog
+    {
+        get => backlog;
+        init => backlog = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 }

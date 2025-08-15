@@ -19,7 +19,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
     private readonly TimeSpan heartbeatTimeout, timeout;
     private readonly Channel<MultiplexedStream> backlog;
     private readonly MemoryAllocator<byte> allocator;
-    private readonly int frameBufferSize, sendBufferCapacity;
+    private readonly int flushThreshold;
     private readonly TaskCompletionSource readiness;
     private readonly Func<AsyncAutoResetEvent, MultiplexedStream?> streamFactory;
     private Task listener;
@@ -41,11 +41,10 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
             SingleReader = false,
         });
 
-        allocator = configuration.BufferOptions.Pool.ToAllocator();
+        allocator = configuration.ToAllocator();
         streamFactory = new MultiplexedStreamFactory(configuration.BufferOptions, backlog.Writer).CreateStream;
         measurementTags = configuration.MeasurementTags;
-        frameBufferSize = configuration.FrameBufferSize;
-        sendBufferCapacity = configuration.SendBufferCapacity;
+        flushThreshold = configuration.BufferCapacity;
         readiness = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         lifetimeToken = (lifetimeTokenSource = new()).Token;
         heartbeatTimeout = configuration.HeartbeatTimeout;
