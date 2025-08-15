@@ -29,8 +29,8 @@ partial class MultiplexedListener
     {
         Debugger.NotifyOfCrossThreadDependency();
         var writeSignal = new AsyncAutoResetEvent(initialState: false);
-        var receiveBuffer = options.Pool.Rent(frameBufferSize);
-        var framingBuffer = new PoolingBufferWriter<byte>(options.Pool.ToAllocator()) { Capacity = sendBufferCapacity };
+        var receiveBuffer = allocator(frameBufferSize);
+        var framingBuffer = new PoolingBufferWriter<byte>(allocator) { Capacity = sendBufferCapacity };
         var input = new InputMultiplexer(
             new(),
             writeSignal,
@@ -44,7 +44,7 @@ partial class MultiplexedListener
         var output = input.CreateOutput(
             receiveBuffer.Memory,
             timeout,
-            CreateHandler,
+            streamFactory,
             receiveTokenSource.Token);
         
         // send loop

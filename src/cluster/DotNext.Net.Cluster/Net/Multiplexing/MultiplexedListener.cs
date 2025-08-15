@@ -6,6 +6,7 @@ using System.Threading.Channels;
 
 namespace DotNext.Net.Multiplexing;
 
+using Buffers;
 using Threading;
 
 /// <summary>
@@ -16,10 +17,11 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
     private readonly CancellationToken lifetimeToken;
     private readonly TimeSpan heartbeatTimeout, timeout;
     private readonly Channel<MultiplexedStream> backlog;
-    private readonly PipeOptions options;
+    private readonly MemoryAllocator<byte> allocator;
     private readonly int frameBufferSize, sendBufferCapacity;
-    private Task listener;
     private readonly TaskCompletionSource readiness;
+    private readonly Func<AsyncAutoResetEvent, MultiplexedStream?> streamFactory;
+    private Task listener;
 
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private volatile CancellationTokenSource? lifetimeTokenSource;
@@ -38,8 +40,9 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
             SingleReader = false,
         });
 
+        allocator = configuration.BufferOptions.Pool.ToAllocator();
+        streamFactory = new MultiplexedStreamFactory(configuration.BufferOptions, backlog.Writer).CreateStream;
         measurementTags = configuration.MeasurementTags;
-        options = configuration.BufferOptions;
         frameBufferSize = configuration.FrameBufferSize;
         sendBufferCapacity = configuration.SendBufferCapacity;
         readiness = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -150,14 +153,6 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
         }
     }
 
-    private MultiplexedStream? CreateHandler(AsyncAutoResetEvent writeSignal)
-    {
-        var handler = new MultiplexedStream(options, writeSignal);
-        return backlog.Writer.TryWrite(handler)
-            ? handler
-            : null;
-    }
-
     private void Cancel()
     {
         if (Interlocked.Exchange(ref lifetimeTokenSource, null) is { } cts)
@@ -195,4 +190,15 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
 
     /// <inheritdoc/>
     public new ValueTask DisposeAsync() => base.DisposeAsync();
+}
+
+file sealed class MultiplexedStreamFactory(PipeOptions options, ChannelWriter<MultiplexedStream> backlog)
+{
+    public MultiplexedStream? CreateStream(AsyncAutoResetEvent writeSignal)
+    {
+        var stream = new MultiplexedStream(options, writeSignal);
+        return backlog.TryWrite(stream)
+            ? stream
+            : null;
+    }
 }
