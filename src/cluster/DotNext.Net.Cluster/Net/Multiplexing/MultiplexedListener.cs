@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net.Sockets;
@@ -109,7 +108,6 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
 
     private async Task ListenAsync()
     {
-        Debugger.NotifyOfCrossThreadDependency();
         Socket listeningSocket;
         try
         {

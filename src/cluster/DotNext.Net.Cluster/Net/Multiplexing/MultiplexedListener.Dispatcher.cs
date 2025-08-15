@@ -27,7 +27,6 @@ partial class MultiplexedListener
     
     private async Task DispatchAsync(Socket socket)
     {
-        Debugger.NotifyOfCrossThreadDependency();
         var writeSignal = new AsyncAutoResetEvent(initialState: false);
         var receiveBuffer = allocator(flushThreshold);
         var framingBuffer = new PoolingBufferWriter<byte>(allocator) { Capacity = flushThreshold };
