@@ -15,7 +15,7 @@ namespace DotNext.Net.Multiplexing;
 /// <param name="address">The address of the server.</param>
 /// <param name="configuration">The configuration of the client.</param>
 [Experimental("DOTNEXT001")]
-public class TcpMultiplexedClient(EndPoint address, TcpMultiplexedClient.Options configuration) : MultiplexedClient(configuration)
+public class TcpMultiplexedClient(EndPoint address, TcpMultiplexedClient.Options configuration) : MultiplexedClient(configuration), IPeer
 {
     private readonly TimeSpan connectTimeout = configuration.ConnectTimeout;
 
@@ -41,6 +41,9 @@ public class TcpMultiplexedClient(EndPoint address, TcpMultiplexedClient.Options
 
         return socket;
     }
+
+    /// <inheritdoc/>
+    EndPoint IPeer.EndPoint => address;
 
     /// <summary>
     /// Represents configuration of TCP multiplexing protocol client. 
