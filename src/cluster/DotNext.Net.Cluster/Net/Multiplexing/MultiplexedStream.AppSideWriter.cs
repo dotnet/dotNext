@@ -1,17 +1,11 @@
 using System.IO.Pipelines;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks.Sources;
 
 namespace DotNext.Net.Multiplexing;
 
 partial class MultiplexedStream
 {
-    private sealed class AppSideWriter(IApplicationSideStream appSide, PipeWriter writer) : PipeWriter, IValueTaskSource<FlushResult>
+    private sealed class AppSideWriter(IApplicationSideStream appSide, PipeWriter writer) : PipeWriter
     {
-        private ManualResetValueTaskSourceCore<FlushResult> source = new() { RunContinuationsAsynchronously = true };
-        private ConfiguredValueTaskAwaitable<FlushResult>.ConfiguredValueTaskAwaiter flushAwaiter;
-        private Action? flushCallback;
-
         public override async ValueTask CompleteAsync(Exception? exception = null)
         {
             if (appSide.TryCompleteInput())
@@ -50,18 +44,9 @@ partial class MultiplexedStream
 
         public override ValueTask<FlushResult> FlushAsync(CancellationToken token = default)
         {
-            flushAwaiter = writer.FlushAsync(token).ConfigureAwait(false).GetAwaiter();
+            var task = writer.FlushAsync(token);
             appSide.TransportSignal.Set();
-            if (flushAwaiter.IsCompleted)
-            {
-                EndFlush();
-            }
-            else
-            {
-                flushAwaiter.UnsafeOnCompleted(flushCallback ??= EndFlush);
-            }
-
-            return new(this, source.Version);
+            return task;
         }
 
         public override void Advance(int bytes) => writer.Advance(bytes);
@@ -69,39 +54,5 @@ partial class MultiplexedStream
         public override Memory<byte> GetMemory(int sizeHint = 0) => writer.GetMemory(sizeHint);
 
         public override Span<byte> GetSpan(int sizeHint = 0) => writer.GetSpan(sizeHint);
-
-        private void EndFlush()
-        {
-            try
-            {
-                source.SetResult(flushAwaiter.GetResult());
-            }
-            catch (Exception e)
-            {
-                source.SetException(e);
-            }
-            finally
-            {
-                flushAwaiter = default;
-            }
-        }
-
-        ValueTaskSourceStatus IValueTaskSource<FlushResult>.GetStatus(short token) => source.GetStatus(token);
-
-        FlushResult IValueTaskSource<FlushResult>.GetResult(short token)
-        {
-            try
-            {
-                return source.GetResult(token);
-            }
-            finally
-            {
-                source.Reset();
-            }
-        }
-
-        void IValueTaskSource<FlushResult>.OnCompleted(Action<object?> continuation, object? state, short token,
-            ValueTaskSourceOnCompletedFlags flags)
-            => source.OnCompleted(continuation, state, token, flags);
     }
 }
