@@ -12,6 +12,7 @@ using Threading;
 /// <summary>
 /// Represents multiplexed listener.
 /// </summary>
+[Experimental("DOTNEXT001")]
 public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
 {
     private readonly CancellationToken lifetimeToken;
