@@ -29,10 +29,20 @@ public class TcpMultiplexedClient(EndPoint address, TcpMultiplexedClient.Options
         {
             await socket.ConnectAsync(address, timeoutSource.Token).ConfigureAwait(false);
         }
-        catch
+        catch (Exception e)
         {
             socket.Dispose();
-            throw;
+
+            if (e is OperationCanceledException canceledEx
+                && canceledEx.CancellationToken == timeoutSource.Token
+                && token.IsCancellationRequested)
+            {
+                throw new OperationCanceledException(token);
+            }
+            else
+            {
+                throw;
+            }
         }
         finally
         {

@@ -60,10 +60,7 @@ partial class MultiplexedClient
             }
             catch (Exception e)
             {
-                Debug.Assert(socket is not null);
-
-                socket.Dispose();
-                socket = null;
+                socket?.Dispose();
                 await receiveLoop.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
                 await input.CompleteAllAsync(e).ConfigureAwait(false);
             }
