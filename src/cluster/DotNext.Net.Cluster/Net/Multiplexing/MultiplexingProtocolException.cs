@@ -7,7 +7,7 @@ namespace DotNext.Net.Multiplexing;
 /// </summary>
 public abstract class MultiplexingProtocolException : ProtocolViolationException
 {
-    internal MultiplexingProtocolException(string message)
+    private protected MultiplexingProtocolException(string message)
         : base(message)
     {
     }
