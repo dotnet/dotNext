@@ -253,27 +253,33 @@ public static partial class PipeExtensions
 
         static TResult Parse(PipeReader reader, TArg arg, ReadOnlySpanFunc<byte, TArg, TResult> parser, int length, ReadOnlySequence<byte> source)
         {
+            var consumed = source.Start;
             try
             {
                 if (source.Length < length)
                 {
-                    length = (int)source.Length;
+                    consumed = source.End;
                     throw new EndOfStreamException();
                 }
 
                 if (source.TryGetBlock(length, out var block))
+                {
+                    consumed = source.GetPosition(block.Length, consumed);
                     return parser(block.Span, arg);
+                }
+                else
+                {
+                    using var destination = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
+                        ? stackalloc byte[length]
+                        : new SpanOwner<byte>(length);
 
-                using var destination = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
-                    ? stackalloc byte[length]
-                    : new SpanOwner<byte>(length);
-
-                source.CopyTo(destination.Span, out length);
-                return parser(destination.Span.Slice(0, length), arg);
+                    length = source.CopyTo(destination.Span, out consumed);
+                    return parser(destination.Span.Slice(0, length), arg);
+                }
             }
             finally
             {
-                reader.AdvanceTo(source.GetPosition(length));
+                reader.AdvanceTo(consumed);
             }
         }
     }
@@ -422,15 +428,16 @@ public static partial class PipeExtensions
         static int Read(PipeReader reader, ReadOnlySequence<byte> source, in Memory<byte> destination, int minimumSize)
         {
             var readCount = 0;
+            var consumed = source.Start;
             try
             {
-                source.CopyTo(destination.Span, out readCount);
+                readCount = source.CopyTo(destination.Span, out consumed);
                 if (minimumSize > readCount)
                     throw new EndOfStreamException();
             }
             finally
             {
-                reader.AdvanceTo(source.GetPosition(readCount));
+                reader.AdvanceTo(consumed);
             }
 
             return readCount;
