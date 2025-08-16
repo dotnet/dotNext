@@ -72,22 +72,21 @@ partial class MultiplexedStream
             : ValueTask.CompletedTask;
     }
 
-    private (int, SequencePosition) WriteFrame(Span<byte> output, ulong streamId, in ReadResult readResult, out bool completed)
+    private bool WriteFrame(Span<byte> output, ulong streamId, in ReadResult readResult, out int bytesWritten, out SequencePosition consumed)
     {
         Debug.Assert(output.Length > FrameHeader.Size);
 
         var inputBuffer = readResult.Buffer;
-        int bytesWritten;
-        SequencePosition position;
+        bool completed;
         if (output.Slice(FrameHeader.Size).TrimLength(inputWindow) is { Length: > 0 } payload)
         {
             // we cannot send more than window size
-            bytesWritten = inputBuffer.CopyTo(payload, out position);
+            bytesWritten = inputBuffer.CopyTo(payload, out consumed);
 
             Debug.Assert(bytesWritten <= MaxFrameSize);
 
             FrameControl control;
-            if (!position.Equals(inputBuffer.End))
+            if (!consumed.Equals(inputBuffer.End))
             {
                 control = FrameControl.DataChunk;
                 completed = false;
@@ -112,19 +111,25 @@ partial class MultiplexedStream
             // input window is empty, nothing we can read
             completed = false;
             bytesWritten = 0;
-            position = inputBuffer.Start;
+            consumed = inputBuffer.Start;
         }
 
-        return (bytesWritten, position);
+        return completed;
     }
 
     private bool WriteFrame(IBufferWriter<byte> writer, ulong streamId, in ReadResult result)
     {
         var buffer = writer.GetSpan(frameAndHeaderSize);
-        var (bytesWritten, position) = WriteFrame(buffer.Slice(0, frameAndHeaderSize), streamId, result, out var completed);
-        writer.Advance(bytesWritten);
-        transportReader.AdvanceTo(position);
+        var completed = WriteFrame(
+            buffer.Slice(0, frameAndHeaderSize),
+            streamId,
+            result,
+            out var bytesWritten,
+            out var consumed);
         
+        writer.Advance(bytesWritten);
+        transportReader.AdvanceTo(consumed);
+
         return completed;
     }
 
