@@ -4,6 +4,8 @@ using System.IO.Pipelines;
 
 namespace DotNext.Net.Multiplexing;
 
+using Buffers;
+
 partial class MultiplexedStream
 {
     // this is the maximum number of bytes that we can send without adjusting the window
@@ -80,7 +82,7 @@ partial class MultiplexedStream
         if (output.Slice(FrameHeader.Size).TrimLength(inputWindow) is { Length: > 0 } payload)
         {
             // we cannot send more than window size
-            bytesWritten = CopyTo(inputBuffer, payload, out position);
+            bytesWritten = inputBuffer.CopyTo(payload, out position);
 
             Debug.Assert(bytesWritten <= MaxFrameSize);
 
@@ -114,23 +116,6 @@ partial class MultiplexedStream
         }
 
         return (bytesWritten, position);
-        
-        static int CopyTo(in ReadOnlySequence<byte> source, Span<byte> destination, out SequencePosition consumed)
-        {
-            var result = 0;
-
-            consumed = source.Start;
-            for (var enumerator = source.GetEnumerator(); !destination.IsEmpty && enumerator.MoveNext();)
-            {
-                var block = enumerator.Current;
-                block.Span.CopyTo(destination, out var subcount);
-                result += subcount;
-                consumed = source.GetPosition(subcount, consumed);
-                destination = destination.Slice(subcount);
-            }
-
-            return result;
-        }
     }
 
     private bool WriteFrame(IBufferWriter<byte> writer, ulong streamId, in ReadResult result)

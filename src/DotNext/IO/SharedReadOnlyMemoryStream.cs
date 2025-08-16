@@ -16,8 +16,7 @@ internal abstract class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequen
 
     private protected SequencePosition StartPosition => sequence.Start;
 
-    private ReadOnlySequence<byte> GetRemainingSequence(out SequencePosition start)
-        => sequence.Slice(start = LocalPosition);
+    private ReadOnlySequence<byte> RemainingSequence => sequence.Slice(LocalPosition);
 
     public sealed override bool CanSeek => true;
 
@@ -38,7 +37,7 @@ internal abstract class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequen
     {
         ValidateCopyToArguments(destination, bufferSize);
 
-        foreach (var segment in GetRemainingSequence(out _))
+        foreach (var segment in RemainingSequence)
             await destination.WriteAsync(segment, token).ConfigureAwait(false);
 
         LocalPosition = sequence.End;
@@ -48,7 +47,7 @@ internal abstract class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequen
     {
         ValidateCopyToArguments(destination, bufferSize);
 
-        foreach (var segment in GetRemainingSequence(out _))
+        foreach (var segment in RemainingSequence)
             destination.Write(segment.Span);
 
         LocalPosition = sequence.End;
@@ -58,8 +57,8 @@ internal abstract class SharedReadOnlyMemoryStream(ReadOnlySequence<byte> sequen
 
     public sealed override int Read(Span<byte> buffer)
     {
-        GetRemainingSequence(out var startPos).CopyTo(buffer, out var writtenCount);
-        LocalPosition = sequence.GetPosition(writtenCount, startPos);
+        var writtenCount = RemainingSequence.CopyTo(buffer, out SequencePosition position);
+        LocalPosition = position;
         return writtenCount;
     }
 

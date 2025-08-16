@@ -54,7 +54,7 @@ internal sealed class ReadOnlyMemoryStream(ReadOnlySequence<byte> sequence) : Re
 
     public override int Read(Span<byte> buffer)
     {
-        RemainingSequence.CopyTo(buffer, out var writtenCount);
+        RemainingSequence.CopyTo(buffer, out int writtenCount);
         position = sequence.GetPosition(writtenCount, position);
         return writtenCount;
     }

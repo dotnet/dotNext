@@ -205,7 +205,6 @@ public static partial class Memory
     /// <param name="destination">Destination memory.</param>
     /// <param name="writtenCount">The number of copied elements.</param>
     /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void CopyTo<T>(this in ReadOnlySequence<T> source, scoped Span<T> destination, out int writtenCount)
     {
         if (source.IsSingleSegment)
@@ -219,7 +218,6 @@ public static partial class Memory
             writtenCount = CopyToSlow(in source, destination);
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
         static int CopyToSlow(in ReadOnlySequence<T> source, Span<T> destination)
         {
             int result = 0, subcount;
@@ -227,6 +225,49 @@ public static partial class Memory
             for (var position = source.Start; !destination.IsEmpty && source.TryGet(ref position, out var block); result += subcount)
             {
                 block.Span.CopyTo(destination, out subcount);
+                destination = destination.Slice(subcount);
+            }
+
+            return result;
+        }
+    }
+
+    /// <summary>
+    /// Copies the contents from the source sequence into a destination span.
+    /// </summary>
+    /// <param name="source">Source sequence.</param>
+    /// <param name="destination">Destination memory.</param>
+    /// <param name="position">The position within <paramref name="source"/> that represents the end of <paramref name="destination"/>.</param>
+    /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
+    /// <returns>The number of copied elements.</returns>
+    public static int CopyTo<T>(this in ReadOnlySequence<T> source, scoped Span<T> destination, out SequencePosition position)
+    {
+        int writtenCount;
+        if (source.IsSingleSegment)
+        {
+            // fast path - single-segment sequence
+            source.FirstSpan.CopyTo(destination, out writtenCount);
+            position = source.End;
+        }
+        else
+        {
+            // slow path - multisegment sequence
+            writtenCount = CopyToSlow(in source, destination, out position);
+        }
+
+        return writtenCount;
+
+        static int CopyToSlow(in ReadOnlySequence<T> source, Span<T> destination, out SequencePosition consumed)
+        {
+            var result = 0;
+
+            consumed = source.Start;
+            for (var enumerator = source.GetEnumerator(); !destination.IsEmpty && enumerator.MoveNext();)
+            {
+                var block = enumerator.Current;
+                block.Span.CopyTo(destination, out var subcount);
+                result += subcount;
+                consumed = source.GetPosition(subcount, consumed);
                 destination = destination.Slice(subcount);
             }
 
