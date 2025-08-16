@@ -243,16 +243,23 @@ public static partial class Memory
     public static int CopyTo<T>(this in ReadOnlySequence<T> source, scoped Span<T> destination, out SequencePosition position)
     {
         int writtenCount;
-        if (source.IsSingleSegment)
+        ReadOnlySpan<T> segment;
+        if (!source.IsSingleSegment)
         {
-            // fast path - single-segment sequence
-            source.FirstSpan.CopyTo(destination, out writtenCount);
+            // slow path - multisegment sequence
+            writtenCount = CopyToSlow(in source, destination, out position);
+        }
+        else if ((segment = source.FirstSpan).Length <= destination.Length)
+        {
+            writtenCount = segment.Length;
             position = source.End;
         }
         else
         {
-            // slow path - multisegment sequence
-            writtenCount = CopyToSlow(in source, destination, out position);
+            writtenCount = destination.Length;
+            segment = segment.Slice(0, writtenCount);
+            segment.CopyTo(destination);
+            position = source.GetPosition(writtenCount, source.Start);
         }
 
         return writtenCount;
@@ -261,15 +268,28 @@ public static partial class Memory
         {
             var result = 0;
 
-            consumed = source.Start;
-            for (var enumerator = source.GetEnumerator(); !destination.IsEmpty && enumerator.MoveNext();)
+            ReadOnlyMemory<T> block;
+            for (var position = consumed = source.Start;
+                 source.TryGet(ref position, out block) && block.Length <= destination.Length;
+                 consumed = position,
+                 result += block.Length)
             {
-                var block = enumerator.Current;
-                block.Span.CopyTo(destination, out var subcount);
-                result += subcount;
-                consumed = source.GetPosition(subcount, consumed);
-                destination = destination.Slice(subcount);
+                block.Span.CopyTo(destination);
+                destination = destination.Slice(block.Length);
             }
+
+            if (block.Length > destination.Length)
+            {
+                block = block.Slice(0, destination.Length);
+                consumed = source.GetPosition(destination.Length, consumed);
+            }
+            else
+            {
+                consumed = source.End;
+            }
+            
+            block.Span.CopyTo(destination);
+            result += block.Length;
 
             return result;
         }

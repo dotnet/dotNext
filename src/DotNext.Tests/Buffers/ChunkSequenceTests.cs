@@ -136,4 +136,31 @@ public sealed class ChunkSequenceTests : Test
 
         Equal(builder.ToString(), builder.ToReadOnlySequence().ToString());
     }
+
+    [Fact]
+    public static void CopyFromSequenceAndAdjustPosition()
+    {
+        var destination = new byte[10];
+        ReadOnlySequence<byte> source = new(RandomBytes(16));
+
+        var bytesWritten = source.CopyTo(destination, out SequencePosition consumed);
+        Equal(bytesWritten, destination.Length);
+        Equal(destination, source.Slice(0, consumed).ToArray());
+
+        source = ToReadOnlySequence<byte>(RandomBytes(16), 3);
+        bytesWritten = source.CopyTo(destination, out consumed);
+        Equal(destination.Length, bytesWritten);
+        Equal(destination, source.Slice(0, consumed).ToArray());
+
+        source = ToReadOnlySequence<byte>(RandomBytes(22), 11);
+        bytesWritten = source.CopyTo(destination, out consumed);
+        Equal(destination.Length, bytesWritten);
+        Equal(destination, source.Slice(0, consumed).ToArray());
+
+        source = ToReadOnlySequence<byte>(RandomBytes(6), 3);
+        bytesWritten = source.CopyTo(destination, out consumed);
+        Equal(6, bytesWritten);
+        Equal(source.End, consumed);
+        Equal(destination.AsSpan(0, 6), source.Slice(0, consumed).ToArray().AsSpan());
+    }
 }
