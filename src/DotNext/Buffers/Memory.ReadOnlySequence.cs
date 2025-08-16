@@ -245,41 +245,30 @@ public static partial class Memory
         var writtenCount = 0;
         ReadOnlyMemory<T> block;
 
-        consumed = source.Start;
-        if (source.IsSingleSegment)
+        for (var position = consumed = source.Start;
+             source.TryGet(ref position, out block) && block.Length <= destination.Length;
+             consumed = position,
+             writtenCount += block.Length)
         {
-            block = source.First;
+            block.Span.CopyTo(destination);
+            destination = destination.Slice(block.Length);
+        }
+
+        // copy the last segment
+        if (block.Length > destination.Length)
+        {
+            block = block.Slice(0, destination.Length);
+            consumed = source.GetPosition(destination.Length, consumed);
         }
         else
         {
-            for (var position = consumed;
-                 source.TryGet(ref position, out block) && block.Length <= destination.Length;
-                 consumed = position,
-                 writtenCount += block.Length)
-            {
-                block.Span.CopyTo(destination);
-                destination = destination.Slice(block.Length);
-            }
+            consumed = source.End;
         }
 
-        writtenCount += CopyLastSegment(source, block.Span, destination, ref consumed);
+        block.Span.CopyTo(destination);
+        writtenCount += block.Length;
+        
         return writtenCount;
-
-        static int CopyLastSegment(in ReadOnlySequence<T> source, ReadOnlySpan<T> segment, Span<T> destination, ref SequencePosition consumed)
-        {
-            if (segment.Length > destination.Length)
-            {
-                segment = segment.Slice(0, destination.Length);
-                consumed = source.GetPosition(destination.Length, consumed);
-            }
-            else
-            {
-                consumed = source.End;
-            }
-
-            segment.CopyTo(destination);
-            return segment.Length;
-        }
     }
 
     /// <summary>
