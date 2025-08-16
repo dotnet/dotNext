@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -207,29 +206,21 @@ public static partial class Memory
     /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
     public static void CopyTo<T>(this in ReadOnlySequence<T> source, Span<T> destination, out int writtenCount)
     {
-        if (source.IsSingleSegment)
+        writtenCount = 0;
+        ReadOnlyMemory<T> block;
+
+        for (var position = source.Start;
+             source.TryGet(ref position, out block) && block.Length <= destination.Length;
+             writtenCount += block.Length)
         {
-            // fast path - single-segment sequence
-            source.FirstSpan.CopyTo(destination, out writtenCount);
-        }
-        else
-        {
-            // slow path - multisegment sequence
-            writtenCount = CopyToSlow(in source, destination);
+            block.Span.CopyTo(destination);
+            destination = destination.Slice(block.Length);
         }
 
-        static int CopyToSlow(in ReadOnlySequence<T> source, Span<T> destination)
-        {
-            int result = 0, subcount;
-
-            for (var position = source.Start; !destination.IsEmpty && source.TryGet(ref position, out var block); result += subcount)
-            {
-                block.Span.CopyTo(destination, out subcount);
-                destination = destination.Slice(subcount);
-            }
-
-            return result;
-        }
+        // copy the last segment
+        block = block.TrimLength(destination.Length);
+        block.Span.CopyTo(destination);
+        writtenCount += block.Length;
     }
 
     /// <summary>
