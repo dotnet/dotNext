@@ -22,7 +22,10 @@ public class TcpMultiplexedClient(EndPoint address, TcpMultiplexedClient.Options
     /// <inheritdoc/>
     protected sealed override async ValueTask<Socket> ConnectAsync(CancellationToken token)
     {
-        var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+        var socket = new Socket(SocketType.Stream, ProtocolType.Tcp)
+        {
+            NoDelay = true,
+        };
         var timeoutSource = CancellationTokenSource.CreateLinkedTokenSource(token);
         timeoutSource.CancelAfter(connectTimeout);
         try

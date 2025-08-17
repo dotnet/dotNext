@@ -106,6 +106,17 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
     /// <returns>Listening socket.</returns>
     protected abstract Socket Listen();
 
+    /// <summary>
+    /// Configures the socket associated with the incoming connection.
+    /// </summary>
+    /// <remarks>
+    /// By default, this method does nothing.
+    /// </remarks>
+    /// <param name="socket">The socket that represents the incoming connection.</param>
+    protected virtual void ConfigureAcceptedSocket(Socket socket)
+    {
+    }
+
     private async Task ListenAsync()
     {
         Socket listeningSocket;
@@ -126,6 +137,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
             while (!lifetimeToken.IsCancellationRequested)
             {
                 var clientSocket = await listeningSocket.AcceptAsync(lifetimeToken).ConfigureAwait(false);
+                ConfigureAcceptedSocket(clientSocket);
                 connections.Add(new(DispatchAsync(clientSocket)));
 
                 // GC: remove completed tasks

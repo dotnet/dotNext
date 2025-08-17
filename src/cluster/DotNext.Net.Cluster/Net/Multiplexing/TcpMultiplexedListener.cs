@@ -22,4 +22,8 @@ public class TcpMultiplexedListener(EndPoint listenAddress, MultiplexedListener.
         socket.Listen(backlog);
         return socket;
     }
+
+    /// <inheritdoc/>
+    protected override void ConfigureAcceptedSocket(Socket socket)
+        => socket.NoDelay = true;
 }
