@@ -72,15 +72,15 @@ partial class MultiplexedStream
             : ValueTask.CompletedTask;
     }
 
-    private bool WriteFrame(Span<byte> output, ulong streamId, in ReadResult readResult, out int bytesWritten, out SequencePosition consumed)
+    private bool WriteFrame(Span<byte> frameBuffer, ulong streamId, in ReadResult readResult, out int bytesWritten, out SequencePosition consumed)
     {
-        Debug.Assert(output.Length > FrameHeader.Size);
+        Debug.Assert(frameBuffer.Length > FrameHeader.Size);
 
         var inputBuffer = readResult.Buffer;
         bool completed;
-        if (output.Slice(FrameHeader.Size).TrimLength(inputWindow) is { Length: > 0 } payload)
+        // we cannot send more than window size
+        if (frameBuffer.Slice(FrameHeader.Size).TrimLength(inputWindow) is { Length: > 0 } payload)
         {
-            // we cannot send more than window size
             bytesWritten = inputBuffer.CopyTo(payload, out consumed);
 
             Debug.Assert(bytesWritten <= MaxFrameSize);
@@ -103,7 +103,7 @@ partial class MultiplexedStream
             }
 
             Interlocked.Add(ref inputWindow, -bytesWritten);
-            new FrameHeader(streamId, control, (ushort)bytesWritten).Format(output);
+            new FrameHeader(streamId, control, (ushort)bytesWritten).Format(frameBuffer);
             bytesWritten += FrameHeader.Size;
         }
         else
