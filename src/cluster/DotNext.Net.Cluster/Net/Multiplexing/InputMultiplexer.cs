@@ -42,7 +42,7 @@ internal sealed class InputMultiplexer(
     {
         using var enumerator = streams.GetEnumerator();
         for (var requiresHeartbeat = false;
-             !Token.IsCancellationRequested && condition();
+             condition();
              requiresHeartbeat = !await writeSignal.WaitAsync(heartbeatTimeout, Token).ConfigureAwait(false))
         {
             framingBuffer.Clear(reuseBuffer: true);
@@ -97,7 +97,7 @@ internal sealed class InputMultiplexer(
             timeoutSource.Start(timeout);
             try
             {
-                bytesWritten = await socket.SendAsync(buffer, SocketFlags.None).ConfigureAwait(false);
+                bytesWritten = await socket.SendAsync(buffer, SocketFlags.None, timeoutSource.Token).ConfigureAwait(false);
             }
             catch (OperationCanceledException e) when (timeoutSource.IsTimedOut(e))
             {

@@ -31,7 +31,7 @@ partial class MultiplexedClient
         var receiveLoop = Task.CompletedTask;
 
         // send loop
-        while (!input.Token.IsCancellationRequested)
+        while (true)
         {
             try
             {

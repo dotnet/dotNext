@@ -52,7 +52,7 @@ partial class MultiplexedListener
         {
             var receiveLoop = output.ProcessAsync(socket);
             
-            while (!lifetimeToken.IsCancellationRequested)
+            while (true)
             {
                 // rethrow exception from the receiving loop
                 if (receiveLoop.IsCompleted)

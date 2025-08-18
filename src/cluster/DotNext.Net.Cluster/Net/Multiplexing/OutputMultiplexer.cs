@@ -33,7 +33,7 @@ internal sealed class OutputMultiplexer(
     private async Task ProcessCoreAsync(Socket socket)
     {
         FrameHeader header;
-        for (var bufferedBytes = 0; !Token.IsCancellationRequested; AdjustFramingBuffer(ref bufferedBytes, header, framingBuffer.Span))
+        for (var bufferedBytes = 0;; AdjustFramingBuffer(ref bufferedBytes, header, framingBuffer.Span))
         {
             timeoutSource.Start(timeout); // resumed by heartbeat
             try
@@ -41,7 +41,7 @@ internal sealed class OutputMultiplexer(
                 // read at least header
                 while (bufferedBytes < FrameHeader.Size)
                 {
-                    bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), Token).ConfigureAwait(false);
+                    bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), timeoutSource.Token).ConfigureAwait(false);
                 }
 
                 header = FrameHeader.Parse(framingBuffer.Span);
@@ -91,7 +91,9 @@ internal sealed class OutputMultiplexer(
             }
 
             // write the frame to the output header
-            await stream.ReadFrameAsync(header.Control, framingBuffer.Slice(FrameHeader.Size, header.Length), Token).ConfigureAwait(false);
+            await stream
+                .ReadFrameAsync(header.Control, framingBuffer.Slice(FrameHeader.Size, header.Length), Token)
+                .ConfigureAwait(false);
         }
     }
 
