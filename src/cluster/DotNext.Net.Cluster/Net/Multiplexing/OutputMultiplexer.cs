@@ -92,7 +92,6 @@ internal sealed class OutputMultiplexer(
 
             // write the frame to the output header
             await stream.ReadFrameAsync(header.Control, framingBuffer.Slice(FrameHeader.Size, header.Length), Token).ConfigureAwait(false);
-            Console.WriteLine($"Received: {header.Control} - {header.Length}");
         }
     }
 
