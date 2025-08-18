@@ -97,7 +97,7 @@ internal sealed class InputMultiplexer(
             timeoutSource.Start(timeout);
             try
             {
-                bytesWritten = await socket.SendAsync(buffer, SocketFlags.None, timeoutSource.Token).ConfigureAwait(false);
+                bytesWritten = await socket.SendAsync(buffer, timeoutSource.Token).ConfigureAwait(false);
             }
             catch (OperationCanceledException e) when (timeoutSource.IsTimedOut(e))
             {
