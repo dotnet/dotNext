@@ -10,6 +10,7 @@ Cluster Programming Suite
 1. [Replication](https://en.wikipedia.org/wiki/Replication_(computing))
 1. [Consensus](https://en.wikipedia.org/wiki/Consensus_(computer_science))
 1. Cluster configuration management
+2. Multiplexing protocol for efficient network communication between nodes in the trusted LAN
 
 The programming model at higher level of abstraction is represented by the following interfaces:
 * [IPeer](xref:DotNext.Net.IPeer) represents the peer in the network
@@ -168,3 +169,8 @@ Replication allows sharing the information between nodes to ensure consistency b
 # Implementations
 * [.NEXT Raft](./raft.md) is a fully-featured implementation of Raft algorithm and related infrastructure
 * [.NEXT HyParView](./gossip.md) is a fully-featured implementation of HyParView membership protocol for reliable Gossip-based communication
+
+# Multiplexing
+[QUIC](https://en.wikipedia.org/wiki/QUIC) and [SSH](https://en.wikipedia.org/wiki/Secure_Shell) are good examples of the multiplexing protocols. For instance, SSH shares the single TCP connection for multiple logical channels. QUIC uses a concept of streams to expose multiple logical channels through the same socket port. Both protocols have their own transport-level security and encryption. This is a must-have feature for the communication over untrusted network such as the Internet. However, for the communication between nodes in the cluster it's redundant. Nodes of the cluster typically located in the secured and trusted LAN. The encryption could be enabled at the network layer (e.g., IPSec) or by the encapsulation protocol (e.g., VPN). For instance, Kubernetes CNI plugins, such as Calico or Cilium, provide traffic encryption between nodes. In such an environment, there is no reason to pay for extra CPU cycles required for the encryption.
+
+.NEXT Cluster Programming Suite implements [simple multiplexing protocol](./multiplex.md) on top of TCP. Thus, the single TCP connection can be efficiently shared between multiple components for the application.
