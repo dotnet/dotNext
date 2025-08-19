@@ -21,4 +21,4 @@ InvalidPartitionFormat=Partition has invalid binary format or broken
 StreamRejected=The stream has been rejected by the server due to overflow of its backlog
 ConnectionClosed=The underlying connection is closed
 ConnectionTimedOut=The data cannot be sent or received on time
-PipeTimedOut=The data cannot be written on time
+BadProtocolVersion=Multiplexing protocol version is not supported: {0}

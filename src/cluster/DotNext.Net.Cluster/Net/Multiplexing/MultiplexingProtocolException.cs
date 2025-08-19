@@ -23,3 +23,14 @@ public sealed class StreamRejectedException : MultiplexingProtocolException
     {
     }
 }
+
+/// <summary>
+/// Indicates that the protocol version is not supported.
+/// </summary>
+public sealed class UnsupportedVersionException : MultiplexingProtocolException
+{
+    internal UnsupportedVersionException(byte version)
+        : base(ExceptionMessages.BadProtocolVersion(version))
+    {
+    }
+}

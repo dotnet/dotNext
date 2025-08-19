@@ -59,5 +59,5 @@ internal static class ExceptionMessages
 
     internal static string ConnectionTimedOut => (string)Resources.Get();
 
-    internal static string PipeTimedOut => (string)Resources.Get();
+    internal static string BadProtocolVersion(byte version) => Resources.Get().Format(version);
 }
