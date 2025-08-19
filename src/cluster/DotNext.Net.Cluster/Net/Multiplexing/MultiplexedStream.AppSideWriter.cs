@@ -16,7 +16,7 @@ partial class MultiplexedStream
                 }
                 finally
                 {
-                    appSide.TransportSignal.Set();
+                    appSide.SendTransportSignal();
                 }
             }
         }
@@ -31,7 +31,7 @@ partial class MultiplexedStream
                 }
                 finally
                 {
-                    appSide.TransportSignal.Set();
+                    appSide.SendTransportSignal();
                 }
             }
         }
@@ -45,7 +45,7 @@ partial class MultiplexedStream
         public override ValueTask<FlushResult> FlushAsync(CancellationToken token = default)
         {
             var task = writer.FlushAsync(token);
-            appSide.TransportSignal.Set();
+            appSide.SendTransportSignal();
             return task;
         }
 

@@ -50,7 +50,7 @@ internal sealed partial class MultiplexedStream : IDuplexPipe, IApplicationSideS
     internal static int GetFramePayloadSize(PipeOptions options)
         => (int)long.Clamp(options.PauseWriterThreshold - options.ResumeWriterThreshold, MinFrameSize, MaxFrameSize);
 
-    AsyncAutoResetEvent IApplicationSideStream.TransportSignal => transportSignal;
+    void IApplicationSideStream.SendTransportSignal() => transportSignal.Set();
     
     public ValueTask CompleteTransportInputAsync(Exception? e = null)
         => TryCompleteTransportInput() ? transportReader.CompleteAsync(e) : ValueTask.CompletedTask;

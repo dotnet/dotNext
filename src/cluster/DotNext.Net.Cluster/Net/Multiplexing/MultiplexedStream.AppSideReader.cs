@@ -106,7 +106,7 @@ partial class MultiplexedStream
                 }
                 finally
                 {
-                    state.TransportSignal.Set();
+                    state.SendTransportSignal();
                 }
             }
         }
@@ -121,7 +121,7 @@ partial class MultiplexedStream
                 }
                 finally
                 {
-                    state.TransportSignal.Set();
+                    state.SendTransportSignal();
                 }
             }
         }

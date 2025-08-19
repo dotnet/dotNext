@@ -6,8 +6,6 @@ internal interface IApplicationSideStream
 {
     bool TryCompleteInput();
     bool TryCompleteOutput();
-    
-    AsyncAutoResetEvent TransportSignal { get; }
-
+    void SendTransportSignal();
     void Consume(long count);
 }
