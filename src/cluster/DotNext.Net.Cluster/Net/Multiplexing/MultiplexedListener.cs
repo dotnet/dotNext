@@ -131,35 +131,23 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
         }
 
         readiness.TrySetResult();
-        var connections = new HashSet<WeakReference<Task>>();
+        var headNode = default(TaskNode?);
         try
         {
             while (!lifetimeToken.IsCancellationRequested)
             {
                 var clientSocket = await listeningSocket.AcceptAsync(lifetimeToken).ConfigureAwait(false);
                 ConfigureAcceptedSocket(clientSocket);
-                connections.Add(new(DispatchAsync(clientSocket)));
-
-                // GC: remove completed tasks
-                connections.RemoveWhere(IsCompleted);
+                TaskNode.Add(ref headNode, DispatchAsync(clientSocket));
             }
         }
         finally
         {
             listeningSocket.Dispose();
-            await Task.WhenAll(connections.Select(Unwrap)).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
-            connections.Clear();
-        }
-
-        static bool IsCompleted(WeakReference<Task> taskRef)
-            => !taskRef.TryGetTarget(out var task) || task.IsCompleted;
-
-        static Task Unwrap(WeakReference<Task> taskRef)
-        {
-            if (!taskRef.TryGetTarget(out var task))
-                task = Task.CompletedTask;
-
-            return task;
+            foreach (var task in TaskNode.GetTasks(headNode))
+            {
+                await task.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+            }
         }
     }
 
