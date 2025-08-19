@@ -18,7 +18,7 @@
     <PackageProjectUrl>https://dotnet.github.io/dotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dotnet/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>Consensus;Raft;HyParView;WAL</PackageTags>
+    <PackageTags>Consensus;Raft;HyParView;WAL;Multiplexing</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReleaseNotes>https://github.com/dotnet/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
     <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
