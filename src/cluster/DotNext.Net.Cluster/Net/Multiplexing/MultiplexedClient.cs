@@ -25,7 +25,7 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     /// <param name="configuration">The configuration of the client.</param>
     protected MultiplexedClient(Options configuration)
     {
-        this.options = configuration.BufferOptions;
+        options = configuration.BufferOptions;
         writeSignal = new(initialState: false);
         var lifetimeToken = (lifetimeTokenSource = new()).Token;
 
