@@ -174,14 +174,22 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     {
         ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 
-        using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
+        await syncRoot.EnterWriteLockAsync(token).ConfigureAwait(false);
+        try
+        {
             await AppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
+        }
+        finally
+        {
+            syncRoot.Release();
+        }
     }
 
     /// <inheritdoc/>
     async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(TEntry entry, long startIndex, CancellationToken token)
     {
-        using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
+        await syncRoot.EnterWriteLockAsync(token).ConfigureAwait(false);
+        try
         {
             if (startIndex <= LastCommittedEntryIndex)
             {
@@ -204,20 +212,32 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
                 Append(singleEntryTerm, startIndex);
             }
         }
+        finally
+        {
+            syncRoot.Release();
+        }
     }
 
     /// <inheritdoc/>
     async ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(TEntry entry, CancellationToken token)
     {
-        using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
+        await syncRoot.EnterWriteLockAsync(CancellationToken.None).ConfigureAwait(false);
+        try
+        {
             return await AppendAsync(LogEntryProducer<TEntry>.Of(entry), null, false, CancellationToken.None).ConfigureAwait(false);
+        }
+        finally
+        {
+            syncRoot.Release();
+        }
     }
 
     /// <inheritdoc cref="IAuditTrail.CommitAsync(long, CancellationToken)"/>
     public async ValueTask<long> CommitAsync(long endIndex, CancellationToken token)
     {
         long count;
-        using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
+        await syncRoot.EnterWriteLockAsync(token).ConfigureAwait(false);
+        try
         {
             var startIndex = LastCommittedEntryIndex + 1L;
             count = endIndex - startIndex + 1L;
@@ -230,6 +250,10 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
                 log = log[(int)count..];
                 commitEvent.Signal(resumeAll: true);
             }
+        }
+        finally
+        {
+            syncRoot.Release();
         }
 
         return Math.Max(count, 0L);
@@ -296,8 +320,15 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
         if (endIndex < startIndex)
             return await reader.ReadAsync<EmptyLogEntry, EmptyLogEntry[]>([], null, token).ConfigureAwait(false);
 
-        using (await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false))
+        await syncRoot.EnterReadLockAsync(token).ConfigureAwait(false);
+        try
+        {
             return await ReadCoreAsync(reader, startIndex, endIndex, token).ConfigureAwait(false);
+        }
+        finally
+        {
+            syncRoot.Release();
+        }
     }
 
     /// <summary>
@@ -312,8 +343,15 @@ public sealed class ConsensusOnlyState : Disposable, IPersistentState
     {
         ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
 
-        using (await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false))
+        await syncRoot.EnterReadLockAsync(token).ConfigureAwait(false);
+        try
+        {
             return await ReadCoreAsync(reader, startIndex, LastEntryIndex, token).ConfigureAwait(false);
+        }
+        finally
+        {
+            syncRoot.Release();
+        }
     }
 
     /// <inheritdoc/>

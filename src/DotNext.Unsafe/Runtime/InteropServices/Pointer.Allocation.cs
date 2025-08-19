@@ -4,11 +4,9 @@ namespace DotNext.Runtime.InteropServices;
 
 partial struct Pointer<T>
 {
-    private static bool IsNaturallyAligned => Intrinsics.AlignOf<T>() <= nuint.Size;
-
     internal static unsafe Pointer<T> Allocate()
     {
-        var address = IsNaturallyAligned
+        var address = INativeMemoryAllocator<T>.IsNaturallyAligned
             ? NativeMemory.Alloc((uint)sizeof(T))
             : NativeMemory.AlignedAlloc((uint)sizeof(T), (uint)Intrinsics.AlignOf<T>());
 
@@ -21,7 +19,7 @@ partial struct Pointer<T>
         {
             // nothing to do
         }
-        else if (IsNaturallyAligned)
+        else if (INativeMemoryAllocator<T>.IsNaturallyAligned)
         {
             NativeMemory.Free(pointer);
         }

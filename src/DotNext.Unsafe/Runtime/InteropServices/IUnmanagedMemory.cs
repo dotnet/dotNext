@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace DotNext.Runtime.InteropServices;
 
@@ -7,6 +8,7 @@ namespace DotNext.Runtime.InteropServices;
 /// Represents common interface for the wrapper of the unmanaged memory.
 /// </summary>
 [CLSCompliant(false)]
+[NativeMarshalling(typeof(UnmanagedMemoryMarshaller))]
 public interface IUnmanagedMemory : IDisposable, ISupplier<Stream>
 {
     /// <summary>
@@ -48,6 +50,7 @@ public interface IUnmanagedMemory : IDisposable, ISupplier<Stream>
 /// </summary>
 /// <typeparam name="T">The type of elements in the unmanaged memory.</typeparam>
 [CLSCompliant(false)]
+[NativeMarshalling(typeof(UnmanagedMemoryMarshaller<>))]
 public interface IUnmanagedMemory<T> : IUnmanagedMemory, IMemoryOwner<T>, ISupplier<Memory<T>>
     where T : unmanaged
 {

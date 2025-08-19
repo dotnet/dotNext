@@ -253,27 +253,33 @@ public static partial class PipeExtensions
 
         static TResult Parse(PipeReader reader, TArg arg, ReadOnlySpanFunc<byte, TArg, TResult> parser, int length, ReadOnlySequence<byte> source)
         {
+            var consumed = source.Start;
             try
             {
                 if (source.Length < length)
                 {
-                    length = (int)source.Length;
+                    consumed = source.End;
                     throw new EndOfStreamException();
                 }
 
                 if (source.TryGetBlock(length, out var block))
+                {
+                    consumed = source.GetPosition(block.Length, consumed);
                     return parser(block.Span, arg);
+                }
+                else
+                {
+                    using var destination = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
+                        ? stackalloc byte[length]
+                        : new SpanOwner<byte>(length);
 
-                using var destination = (uint)length <= (uint)SpanOwner<byte>.StackallocThreshold
-                    ? stackalloc byte[length]
-                    : new SpanOwner<byte>(length);
-
-                source.CopyTo(destination.Span, out length);
-                return parser(destination.Span.Slice(0, length), arg);
+                    length = source.CopyTo(destination.Span, out consumed);
+                    return parser(destination.Span.Slice(0, length), arg);
+                }
             }
             finally
             {
-                reader.AdvanceTo(source.GetPosition(length));
+                reader.AdvanceTo(consumed);
             }
         }
     }
@@ -368,8 +374,15 @@ public static partial class PipeExtensions
                     throw new EndOfStreamException();
                 }
 
-                for (ReadOnlyMemory<byte> block; buffer.TryGet(ref consumed, out block, advance: false) && !block.IsEmpty; count -= block.Length, consumed = buffer.GetPosition(block.Length, consumed))
-                    await consumer.Invoke(block, token).ConfigureAwait(false);
+                for (var position = consumed;
+                     buffer.TryGet(ref position, out var block);
+                     count -= block.Length, consumed = position)
+                {
+                    if (!block.IsEmpty)
+                        await consumer.Invoke(block, token).ConfigureAwait(false);
+                }
+
+                consumed = buffer.End;
             }
             finally
             {
@@ -415,15 +428,16 @@ public static partial class PipeExtensions
         static int Read(PipeReader reader, ReadOnlySequence<byte> source, in Memory<byte> destination, int minimumSize)
         {
             var readCount = 0;
+            var consumed = source.Start;
             try
             {
-                source.CopyTo(destination.Span, out readCount);
+                readCount = source.CopyTo(destination.Span, out consumed);
                 if (minimumSize > readCount)
                     throw new EndOfStreamException();
             }
             finally
             {
-                reader.AdvanceTo(source.GetPosition(readCount));
+                reader.AdvanceTo(consumed);
             }
 
             return readCount;
@@ -539,8 +553,15 @@ public static partial class PipeExtensions
 
             try
             {
-                for (ReadOnlyMemory<byte> block; buffer.TryGet(ref consumed, out block, advance: false) && !block.IsEmpty; consumed = buffer.GetPosition(block.Length, consumed))
-                    yield return block;
+                for (var position = consumed;
+                     buffer.TryGet(ref position, out var block);
+                     consumed = position)
+                {
+                    if (!block.IsEmpty)
+                        yield return block;
+                }
+
+                consumed = buffer.End;
             }
             finally
             {
@@ -581,14 +602,17 @@ public static partial class PipeExtensions
 
                 try
                 {
-                    for (ReadOnlyMemory<byte> block;
-                         length > 0L && buffer.TryGet(ref consumed, out block, advance: false) && !block.IsEmpty;
-                         consumed = buffer.GetPosition(block.Length, consumed),
+                    for (var position = consumed;
+                         length > 0L && buffer.TryGet(ref position, out var block);
+                         consumed = position,
                          length -= block.Length)
                     {
                         block = block.TrimLength(int.CreateSaturating(length));
-                        yield return block;
+                        if (!block.IsEmpty)
+                            yield return block;
                     }
+
+                    consumed = buffer.End;
                 }
                 finally
                 {

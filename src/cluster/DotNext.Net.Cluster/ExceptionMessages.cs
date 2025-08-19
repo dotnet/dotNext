@@ -27,12 +27,6 @@ internal static class ExceptionMessages
 
     internal static string UnsupportedAddressFamily => (string)Resources.Get();
 
-    internal static string DuplicateCorrelationId => (string)Resources.Get();
-
-    internal static string UnexpectedUdpSenderBehavior => (string)Resources.Get();
-
-    internal static string ExchangeCompleted => (string)Resources.Get();
-
     internal static string UnavailableMember => (string)Resources.Get();
 
     internal static string MissingPartition(long index) => Resources.Get().Format(index);
@@ -58,4 +52,12 @@ internal static class ExceptionMessages
     internal static string SparseFileNotSupported => (string)Resources.Get();
 
     internal static string InvalidPartitionFormat => (string)Resources.Get();
+
+    internal static string StreamRejected => (string)Resources.Get();
+
+    internal static string ConnectionClosed => (string)Resources.Get();
+
+    internal static string ConnectionTimedOut => (string)Resources.Get();
+
+    internal static string BadProtocolVersion(byte version) => Resources.Get().Format(version);
 }

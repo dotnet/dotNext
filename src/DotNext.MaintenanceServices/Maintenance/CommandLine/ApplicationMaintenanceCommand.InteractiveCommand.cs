@@ -2,9 +2,7 @@ using System.CommandLine;
 
 namespace DotNext.Maintenance.CommandLine;
 
-using DefaultBindings = Binding.DefaultBindings;
-
-public partial class ApplicationMaintenanceCommand
+partial class ApplicationMaintenanceCommand
 {
     /// <summary>
     /// Creates a command that allows to enter interactive mode.
@@ -12,14 +10,22 @@ public partial class ApplicationMaintenanceCommand
     /// <returns>A new command.</returns>
     public static ApplicationMaintenanceCommand EnterInteractiveModeCommand()
     {
-        var command = new ApplicationMaintenanceCommand("interactive-mode", CommandResources.InteractiveCommandDescription);
-        command.SetHandler(EnterInteractiveMode, DefaultBindings.Session);
+        var command = new ApplicationMaintenanceCommand("interactive-mode")
+        {
+            Description = CommandResources.InteractiveCommandDescription,
+        };
+        
+        command.SetAction(EnterInteractiveMode);
         return command;
 
-        static Task EnterInteractiveMode(IMaintenanceSession session)
+        static Task EnterInteractiveMode(ParseResult result, CancellationToken token)
         {
-            session.IsInteractive = true;
-            return session.ResponseWriter.WriteLineAsync(CommandResources.WelcomeMessage(RootCommand.ExecutableName));
+            if (result.Configuration is CommandContext context)
+                context.Session.IsInteractive = true;
+
+            return result.Configuration.Output.WriteLineAsync(
+                CommandResources.WelcomeMessage(RootCommand.ExecutableName).AsMemory(),
+                token);
         }
     }
 
@@ -29,8 +35,17 @@ public partial class ApplicationMaintenanceCommand
     /// <returns>A new command.</returns>
     public static ApplicationMaintenanceCommand LeaveInteractiveModeCommand()
     {
-        var command = new ApplicationMaintenanceCommand("exit", CommandResources.ExitCommandDescription);
-        command.SetHandler(static session => session.IsInteractive = false, DefaultBindings.Session);
+        var command = new ApplicationMaintenanceCommand("exit")
+        {
+            Description = CommandResources.ExitCommandDescription,
+        };
+
+        command.SetAction(static result =>
+        {
+            if (result.Configuration is CommandContext context)
+                context.Session.IsInteractive = false;
+        });
+        
         return command;
     }
 }

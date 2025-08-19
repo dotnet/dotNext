@@ -1,0 +1,29 @@
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Net.Sockets;
+
+namespace DotNext.Net.Multiplexing;
+
+/// <summary>
+/// Represents a server-side of the multiplexing protocol on top of TCP.
+/// </summary>
+/// <param name="listenAddress">The local endpoint to listen to.</param>
+/// <param name="configuration">The configuration of the listener.</param>
+[Experimental("DOTNEXT001")]
+public class TcpMultiplexedListener(EndPoint listenAddress, MultiplexedListener.Options configuration) : MultiplexedListener(configuration)
+{
+    private readonly int backlog = configuration.Backlog;
+    
+    /// <inheritdoc/>
+    protected sealed override Socket Listen()
+    {
+        var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+        socket.Bind(listenAddress);
+        socket.Listen(backlog);
+        return socket;
+    }
+
+    /// <inheritdoc/>
+    protected override void ConfigureAcceptedSocket(Socket socket)
+        => socket.NoDelay = true;
+}

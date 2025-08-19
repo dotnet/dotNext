@@ -66,11 +66,13 @@ public sealed class MemoryOwnerTests : Test
         Equal(10, array[2]);
     }
 
-    public static TheoryData<MemoryAllocator<int>> GetArrayAllocators() => new()
-    {
+    public static TheoryData<MemoryAllocator<int>> GetArrayAllocators() =>
+    [
         Memory.GetArrayAllocator<int>(),
         Memory.GetPinnedArrayAllocator<int>(),
-    };
+        UnmanagedMemory.GetAllocator<int>(zeroMem: false),
+        UnmanagedMemory.GetAllocator<int>(zeroMem: true)
+    ];
 
     [Theory]
     [MemberData(nameof(GetArrayAllocators))]

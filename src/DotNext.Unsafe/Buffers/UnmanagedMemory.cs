@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Buffers;
 
 using Numerics;
+using Runtime;
 using Runtime.InteropServices;
 
 /// <summary>
@@ -28,8 +29,7 @@ public static class UnmanagedMemory
         where T : unmanaged
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
-
-        return UnmanagedMemoryOwner<T>.Create(length);
+        return new UnmanagedMemoryOwner<T, DraftAllocator<T>>(length);
     }
 
     /// <summary>
@@ -44,8 +44,7 @@ public static class UnmanagedMemory
         where T : unmanaged
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
-
-        return UnmanagedMemoryOwner<T>.CreateZeroed(length);
+        return new UnmanagedMemoryOwner<T, ZeroedAllocator<T>>(length);
     }
 
     /// <summary>
@@ -57,13 +56,13 @@ public static class UnmanagedMemory
     public static MemoryAllocator<T> GetAllocator<T>(bool zeroMem)
         where T : unmanaged
     {
-        return zeroMem ? AllocateZeroed : Allocate;
+        return zeroMem
+            ? Allocate<ZeroedAllocator<T>>
+            : Allocate<DraftAllocator<T>>;
 
-        static MemoryOwner<T> Allocate(int length)
-            => new(UnmanagedMemoryOwner<T>.Create, length);
-
-        static MemoryOwner<T> AllocateZeroed(int length)
-            => new(UnmanagedMemoryOwner<T>.CreateZeroed, length);
+        static MemoryOwner<T> Allocate<TAllocator>(int length)
+            where TAllocator : unmanaged, INativeMemoryAllocator<T>
+            => new(static length => new UnmanagedMemoryOwner<T, TAllocator>(length), length);
     }
 
     /// <summary>
@@ -155,13 +154,13 @@ public static class UnmanagedMemory
 internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
     where T : unmanaged
 {
-    private protected void* address;
+    private protected T* address;
 
     private UnmanagedMemory()
     {
     }
     
-    internal UnmanagedMemory(void* address, int length)
+    internal UnmanagedMemory(T* address, int length)
     {
         Debug.Assert(address is not null);
 
@@ -170,7 +169,7 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
     }
 
     internal UnmanagedMemory(nint address, int length)
-        : this(address.ToPointer(), length)
+        : this((T*)address, length)
     {
     }
 
@@ -214,19 +213,14 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
     ~UnmanagedMemory() => Dispose(disposing: false);
 }
 
-internal class UnmanagedMemoryOwner<T> : UnmanagedMemory<T>, IUnmanagedMemory<T>
+internal class UnmanagedMemoryOwner<T, TAllocator> : UnmanagedMemory<T>, IUnmanagedMemory<T>
     where T : unmanaged
+    where TAllocator : struct, INativeMemoryAllocator<T>
 {
-    private protected unsafe UnmanagedMemoryOwner(int length, delegate*<nuint, nuint, void* > allocator)
-        : base(allocator((nuint)length, (nuint)sizeof(T)), length)
+    public unsafe UnmanagedMemoryOwner(int length)
+        : base(INativeMemoryAllocator<T>.Allocate<TAllocator>((uint)length), length)
     {
     }
-
-    internal static unsafe UnmanagedMemoryOwner<T> Create(int length)
-        => new(length, &NativeMemory.Alloc);
-
-    internal static unsafe UnmanagedMemoryOwner<T> CreateZeroed(int length)
-        => new(length, &NativeMemory.AllocZeroed);
 
     public unsafe Pointer<T> Pointer => new((T*)address);
 
@@ -236,8 +230,7 @@ internal class UnmanagedMemoryOwner<T> : UnmanagedMemory<T>, IUnmanagedMemory<T>
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
 
-        var size = (uint)length * (nuint)(uint)sizeof(T);
-        address = NativeMemory.Realloc(address, size);
+        address = INativeMemoryAllocator<T>.Realloc((T*)address, (uint)length);
         Length = length;
     }
 
@@ -247,7 +240,7 @@ internal class UnmanagedMemoryOwner<T> : UnmanagedMemory<T>, IUnmanagedMemory<T>
     {
         if (address is not null)
         {
-            NativeMemory.Free(address);
+            INativeMemoryAllocator<T>.Free(address);
         }
 
         base.Dispose(disposing);
@@ -300,7 +293,7 @@ file sealed unsafe class SystemPageManager : UnmanagedMemory<byte>
 
         if (!IsPageAligned(length))
             throw new ArgumentOutOfRangeException(nameof(length));
-        
+
         if (VirtualMemoryManagementFunc is 0)
             return;
 
@@ -310,18 +303,20 @@ file sealed unsafe class SystemPageManager : UnmanagedMemory<byte>
             const int MADV_DONTNEED = 4;
 
             var madvise = (delegate*unmanaged<nint, nint, int, int>)VirtualMemoryManagementFunc;
-
             errorCode = madvise(address, length, MADV_DONTNEED);
-            if (errorCode is not 0)
-                throw new ExternalException(ExceptionMessages.UnableToDiscardMemory, errorCode);
         }
         else if (OperatingSystem.IsWindows())
         {
             var discardVirtualMemory = (delegate*unmanaged<nint, nint, int>)VirtualMemoryManagementFunc;
             errorCode = discardVirtualMemory(address, length);
-            if (errorCode is not 0)
-                throw new Win32Exception(errorCode, ExceptionMessages.UnableToDiscardMemory);
         }
+        else
+        {
+            errorCode = 0;
+        }
+
+        if (errorCode is not 0)
+            throw new ExternalException(ExceptionMessages.UnableToDiscardMemory, errorCode);
     }
 
     protected override void Dispose(bool disposing)
@@ -334,16 +329,16 @@ file sealed unsafe class SystemPageManager : UnmanagedMemory<byte>
         base.Dispose(disposing);
     }
 
-    private static void* Allocate(int pageCount, out int length)
+    private static byte* Allocate(int pageCount, out int length)
     {
         Debug.Assert(pageCount > 0);
-        
+
         var pageSize = Environment.SystemPageSize;
         length = checked(pageSize * pageCount);
-        return NativeMemory.AlignedAlloc((uint)length, (uint)pageSize);
+        return (byte*)NativeMemory.AlignedAlloc((uint)length, (uint)pageSize);
     }
 
-    private static void* Allocate(ref int sizeInBytes, bool roundUp)
+    private static byte* Allocate(ref int sizeInBytes, bool roundUp)
     {
         var size = (uint)sizeInBytes;
         var pageSize = (uint)Environment.SystemPageSize;
@@ -353,9 +348,9 @@ file sealed unsafe class SystemPageManager : UnmanagedMemory<byte>
             sizeInBytes = checked((int)size);
         }
 
-        return NativeMemory.AlignedAlloc(size, pageSize);
+        return (byte*)NativeMemory.AlignedAlloc(size, pageSize);
     }
-    
+
     [SuppressMessage("Reliability", "CA2015", Justification = "The caller must hold the reference to the memory object.")]
     ~SystemPageManager() => Dispose(disposing: false);
 }

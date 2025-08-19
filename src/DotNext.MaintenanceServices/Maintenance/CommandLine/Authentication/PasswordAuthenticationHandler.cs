@@ -1,5 +1,4 @@
 using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.Security.Principal;
 
 namespace DotNext.Maintenance.CommandLine.Authentication;
@@ -21,10 +20,10 @@ public abstract class PasswordAuthenticationHandler : IAuthenticationHandler
     }
 
     /// <inheritdoc />
-    ValueTask<IPrincipal?> IAuthenticationHandler.ChallengeAsync(InvocationContext context, IIdentity identity, CancellationToken token)
+    ValueTask<IPrincipal?> IAuthenticationHandler.ChallengeAsync(ParseResult result, IIdentity identity, CancellationToken token)
     {
-        var login = context.ParseResult.GetValueForOption(loginOption);
-        var secret = context.ParseResult.GetValueForOption(secretOption);
+        var login = result.GetRequiredValue(loginOption);
+        var secret = result.GetRequiredValue(secretOption);
         return login is { Length: > 0 } && secret is { Length: > 0 } ? ChallengeAsync(login, secret, token) : new(default(IPrincipal));
     }
 
@@ -44,15 +43,19 @@ public abstract class PasswordAuthenticationHandler : IAuthenticationHandler
         yield return secretOption;
     }
 
-    private static Option<string> LoginOption() => new("--login", CommandResources.LoginOptionName)
+    private static Option<string> LoginOption() => new("--login")
     {
-        IsRequired = true,
+        Required = true,
         Arity = ArgumentArity.ExactlyOne,
+        Description = CommandResources.LoginOptionName,
+        Recursive = true,
     };
 
-    private static Option<string> SecretOption() => new("--secret", CommandResources.SecretOptionName)
+    private static Option<string> SecretOption() => new("--secret")
     {
-        IsRequired = true,
+        Required = true,
         Arity = ArgumentArity.ExactlyOne,
+        Description = CommandResources.SecretOptionName,
+        Recursive = true,
     };
 }
