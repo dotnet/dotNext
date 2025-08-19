@@ -4,9 +4,7 @@ using System.Diagnostics.Metrics;
 
 namespace DotNext.Net.Multiplexing;
 
-using Threading;
-
-internal abstract class Multiplexer(
+internal abstract partial class Multiplexer(
     ConcurrentDictionary<ulong, MultiplexedStream> streams,
     IProducerConsumerCollection<ProtocolCommand> commands,
     UpDownCounter<int> streamCounter,
@@ -16,10 +14,7 @@ internal abstract class Multiplexer(
     protected readonly UpDownCounter<int> streamCounter = streamCounter;
     protected readonly TagList measurementTags = measurementTags;
     protected readonly ConcurrentDictionary<ulong, MultiplexedStream> streams = streams;
-    protected readonly PoolingTimeoutSource timeoutSource = new(token);
     protected readonly IProducerConsumerCollection<ProtocolCommand> commands = commands;
-
-    public CancellationToken Token => timeoutSource.RootToken;
 
     protected void ChangeStreamCount(int delta = 1) => streamCounter.Add(delta, in measurementTags);
 
@@ -27,13 +22,13 @@ internal abstract class Multiplexer(
     {
         if (disposing)
         {
-            timeoutSource.Dispose();
+            source.Dispose();
         }
         
         base.Dispose(disposing);
     }
 
-    protected override ValueTask DisposeAsyncCore() => timeoutSource.DisposeAsync();
+    protected override ValueTask DisposeAsyncCore() => source.DisposeAsync();
 
     public new ValueTask DisposeAsync() => base.DisposeAsync();
 }

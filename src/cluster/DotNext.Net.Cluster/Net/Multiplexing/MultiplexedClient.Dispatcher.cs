@@ -42,7 +42,7 @@ partial class MultiplexedClient
                 // connect if needed
                 if (socket is null)
                 {
-                    socket = await ConnectAsync(input.Token).ConfigureAwait(false);
+                    socket = await ConnectAsync(input.RootToken).ConfigureAwait(false);
                     receiveLoop = output.ProcessAsync(socket);
                     readiness.TrySetResult();
                 }
@@ -50,7 +50,7 @@ partial class MultiplexedClient
                 // send data
                 await input.ProcessAsync(receiveLoop.IsNotCompleted, socket).ConfigureAwait(false);
             }
-            catch (OperationCanceledException e) when (e.CancellationToken == input.Token)
+            catch (OperationCanceledException e) when (e.CancellationToken == input.RootToken)
             {
                 await receiveLoop.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
                 await input.CompleteAllAsync(new ConnectionResetException(ExceptionMessages.ConnectionClosed, e))

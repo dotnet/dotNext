@@ -31,7 +31,7 @@ internal sealed class InputMultiplexer(
     }
     
     public OutputMultiplexer CreateOutput(Memory<byte> framingBuffer, TimeSpan receiveTimeout)
-        => new(streams, writeSignal, commands, framingBuffer, streamCounter, measurementTags, receiveTimeout, Token);
+        => new(streams, writeSignal, commands, framingBuffer, streamCounter, measurementTags, receiveTimeout, RootToken);
 
     public OutputMultiplexer CreateOutput(Memory<byte> framingBuffer, TimeSpan receiveTimeout, Func<AsyncAutoResetEvent, MultiplexedStream?> handlerFactory,
         CancellationToken token)
@@ -43,7 +43,7 @@ internal sealed class InputMultiplexer(
         using var enumerator = streams.GetEnumerator();
         for (var requiresHeartbeat = false;
              condition();
-             requiresHeartbeat = !await writeSignal.WaitAsync(heartbeatTimeout, Token).ConfigureAwait(false))
+             requiresHeartbeat = !await writeSignal.WaitAsync(heartbeatTimeout, RootToken).ConfigureAwait(false))
         {
             framingBuffer.Clear(reuseBuffer: true);
 
@@ -94,22 +94,22 @@ internal sealed class InputMultiplexer(
     {
         for (int bytesWritten; !buffer.IsEmpty; buffer = buffer.Slice(bytesWritten))
         {
-            timeoutSource.Start(timeout);
+            StartOperation(timeout);
             try
             {
-                bytesWritten = await socket.SendAsync(buffer, timeoutSource.Token).ConfigureAwait(false);
+                bytesWritten = await socket.SendAsync(buffer, TimeBoundedToken).ConfigureAwait(false);
             }
-            catch (OperationCanceledException e) when (timeoutSource.IsTimedOut(e))
+            catch (OperationCanceledException e) when (IsOperationTimedOut(e))
             {
                 throw new TimeoutException(ExceptionMessages.ConnectionTimedOut, e);
             }
-            catch (OperationCanceledException e) when (timeoutSource.IsCanceled(e))
+            catch (OperationCanceledException e) when (IsOperationCanceled(e))
             {
-                throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, Token);
+                throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, RootToken);
             }
             finally
             {
-                await timeoutSource.ResetAsync(Token).ConfigureAwait(false);
+                await ResetOperationTimeoutAsync().ConfigureAwait(false);
             }
         }
     }

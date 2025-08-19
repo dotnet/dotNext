@@ -29,19 +29,19 @@ internal sealed class OutputMultiplexer(
         task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(writeSignal.SetNoResult);
         return task;
     }
-    
+
     private async Task ProcessCoreAsync(Socket socket)
     {
         FrameHeader header;
         for (var bufferedBytes = 0;; AdjustFramingBuffer(ref bufferedBytes, header, framingBuffer.Span))
         {
-            timeoutSource.Start(timeout); // resumed by heartbeat
+            StartOperation(timeout); // resumed by heartbeat
             try
             {
                 // read at least header
                 while (bufferedBytes < FrameHeader.Size)
                 {
-                    bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), timeoutSource.Token).ConfigureAwait(false);
+                    bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), TimeBoundedToken).ConfigureAwait(false);
                 }
 
                 header = FrameHeader.Parse(framingBuffer.Span);
@@ -49,20 +49,20 @@ internal sealed class OutputMultiplexer(
                 // read the fragment
                 while (bufferedBytes < header.Length + FrameHeader.Size)
                 {
-                    bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), timeoutSource.Token).ConfigureAwait(false);
+                    bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), TimeBoundedToken).ConfigureAwait(false);
                 }
             }
-            catch (OperationCanceledException e) when (timeoutSource.IsCanceled(e))
+            catch (OperationCanceledException e) when (IsOperationCanceled(e))
             {
-                throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, Token);
+                throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, RootToken);
             }
-            catch (OperationCanceledException e) when (timeoutSource.IsTimedOut(e))
+            catch (OperationCanceledException e) when (IsOperationTimedOut(e))
             {
                 throw new TimeoutException(ExceptionMessages.ConnectionTimedOut, e);
             }
             finally
             {
-                await timeoutSource.ResetAsync(Token).ConfigureAwait(false);
+                await ResetOperationTimeoutAsync().ConfigureAwait(false);
             }
 
             if (header.Control is FrameControl.Heartbeat)
@@ -92,7 +92,7 @@ internal sealed class OutputMultiplexer(
 
             // write the frame to the output header
             await stream
-                .ReadFrameAsync(header.Control, framingBuffer.Slice(FrameHeader.Size, header.Length), Token)
+                .ReadFrameAsync(header.Control, framingBuffer.Slice(FrameHeader.Size, header.Length), RootToken)
                 .ConfigureAwait(false);
         }
     }
