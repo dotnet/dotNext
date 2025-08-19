@@ -8,7 +8,7 @@ namespace DotNext.Net.Multiplexing;
 using Threading;
 
 internal sealed class OutputMultiplexer(
-    ConcurrentDictionary<ulong, MultiplexedStream> streams,
+    ConcurrentDictionary<uint, MultiplexedStream> streams,
     AsyncAutoResetEvent writeSignal,
     IProducerConsumerCollection<ProtocolCommand> commands,
     Memory<byte> framingBuffer,

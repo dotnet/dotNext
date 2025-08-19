@@ -11,7 +11,7 @@ partial class MultiplexedStream
     // this is the maximum number of bytes that we can send without adjusting the window
     private volatile int inputWindow;
 
-    public ValueTask WriteFrameAsync(IBufferWriter<byte> writer, ulong streamId)
+    public ValueTask WriteFrameAsync(IBufferWriter<byte> writer, uint streamId)
     {
         ValueTask task;
         if (!IsTransportInputCompleted(out var appSideCompleted))
@@ -64,7 +64,7 @@ partial class MultiplexedStream
         return task;
     }
 
-    private ValueTask WriteFrameAsync(IBufferWriter<byte> writer, ulong streamId, in ReadResult result)
+    private ValueTask WriteFrameAsync(IBufferWriter<byte> writer, uint streamId, in ReadResult result)
     {
         AdjustWindowIfNeeded(writer, streamId);
         return WriteFrame(writer, streamId, result)
@@ -72,7 +72,7 @@ partial class MultiplexedStream
             : ValueTask.CompletedTask;
     }
 
-    private bool WriteFrame(Span<byte> frameBuffer, ulong streamId, in ReadResult readResult, out int bytesWritten, out SequencePosition consumed)
+    private bool WriteFrame(Span<byte> frameBuffer, uint streamId, in ReadResult readResult, out int bytesWritten, out SequencePosition consumed)
     {
         Debug.Assert(frameBuffer.Length > FrameHeader.Size);
 
@@ -117,7 +117,7 @@ partial class MultiplexedStream
         return completed;
     }
 
-    private bool WriteFrame(IBufferWriter<byte> writer, ulong streamId, in ReadResult result)
+    private bool WriteFrame(IBufferWriter<byte> writer, uint streamId, in ReadResult result)
     {
         var buffer = writer.GetSpan(frameAndHeaderSize);
         var completed = WriteFrame(
