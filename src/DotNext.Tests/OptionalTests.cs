@@ -322,10 +322,12 @@ public sealed class OptionalTest : Test
     }
 
     [Fact]
-    public static void ConvertToOptional()
+    public static unsafe void ConvertToOptional()
     {
         Equal(Optional.None<double>(), Optional.None<int>().Convert(ToDouble));
+        Equal(Optional.None<double>(), Optional.None<int>().Convert<double>(&ToDouble));
         Equal(42D, new Optional<int>(42).Convert(ToDouble));
+        Equal(42D, new Optional<int>(42).Convert<double>(&ToDouble));
 
         static Optional<double> ToDouble(int value) => double.CreateChecked(value);
     }

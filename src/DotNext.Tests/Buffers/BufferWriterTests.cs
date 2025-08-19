@@ -377,4 +377,14 @@ public sealed class BufferWriterTests : Test
         writer.Write(builder);
         Equal(builder.ToString(), writer.WrittenSpan);
     }
+
+    [Theory]
+    [MemberData(nameof(ContiguousBuffers))]
+    public static void WriteLargeBuffer(BufferWriter<byte> writer)
+    {
+        var expectedData = RandomBytes(1024 * 1024);
+        writer.Write(expectedData);
+        
+        Equal(expectedData, writer.WrittenMemory.Span);
+    }
 }

@@ -1,10 +1,11 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using DotNext.Runtime;
 
 namespace DotNext.Threading;
 
-using static Runtime.Intrinsics;
+using static Intrinsics;
 
 /// <summary>
 /// Provides atomic access to non-primitive data type.
@@ -528,11 +529,22 @@ public static partial class Atomic
         static float IInterlockedOperations<float>.CompareExchange(ref float location, float value, float comparand)
             => Interlocked.CompareExchange(ref location, value, comparand);
 
-        static double IInterlockedOperations<double>.VolatileRead(ref readonly double location)
-            => Volatile.Read(in location);
+        public static double VolatileRead(ref readonly double location)
+            => Is32BitProcess
+                ? Interlocked.Read(in InToRef<double, long>(in location))
+                : Volatile.Read(in location);
 
-        static void IInterlockedOperations<double>.VolatileWrite(ref double location, double value)
-            => Volatile.Write(ref location, value);
+        public static void VolatileWrite(ref double location, double value)
+        {
+            if (Is32BitProcess)
+            {
+                Interlocked.Exchange(ref Unsafe.As<double, long>(ref location), BitConverter.DoubleToInt64Bits(value));
+            }
+            else
+            {
+                Volatile.Write(ref location, value);
+            }
+        }
 
         static double IInterlockedOperations<double>.CompareExchange(ref double location, double value, double comparand)
             => Interlocked.CompareExchange(ref location, value, comparand);

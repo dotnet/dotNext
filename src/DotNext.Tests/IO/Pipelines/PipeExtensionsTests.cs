@@ -347,4 +347,29 @@ public sealed class PipeExtensionsTests : Test
         await pipe.Reader.ReadUtf8Async(writer);
         Equal("Привет, мир!", writer.WrittenSpan.ToString());
     }
+
+    [Fact]
+    public static async Task WriteLargeData()
+    {
+        var pipe = new Pipe();
+        var expectedData = RandomBytes(1024 * 1024);
+        
+        await Task.WhenAll(WriteAsync(), ReadAsync());
+
+        async Task WriteAsync()
+        {
+            await pipe.Writer.WriteAsync(expectedData);
+            await pipe.Writer.CompleteAsync();
+        }
+
+        async Task ReadAsync()
+        {
+            var offset = 0;
+            await foreach (var block in pipe.Reader.ReadAllAsync())
+            {
+                Equal(expectedData.AsSpan(offset, block.Length), block.Span);
+                offset += block.Length;
+            }
+        }
+    }
 }

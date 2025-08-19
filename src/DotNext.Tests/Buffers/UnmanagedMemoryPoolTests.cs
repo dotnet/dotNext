@@ -29,10 +29,10 @@ public sealed class UnmanagedMemoryPoolTests : Test
     }
 
     [Fact]
-    public static unsafe void ArrayInteropTest()
+    public static void ArrayInteropTest()
     {
         using var owner = UnmanagedMemory.Allocate<ushort>(3);
-        Span<ushort> array = owner.Span;
+        var array = owner.Span;
         array[0] = 10;
         array[1] = 20;
         array[2] = 30;
@@ -45,22 +45,6 @@ public sealed class UnmanagedMemoryPoolTests : Test
         dest[0] = 100;
         dest.CopyTo(owner.Span);
         Equal(100, array[0]);
-    }
-
-    [Fact]
-    public static unsafe void UnmanagedMemoryAllocation()
-    {
-        using var owner = UnmanagedMemory.GetAllocator<ushort>(false).Invoke(3);
-        Span<ushort> array = owner.Span;
-        array[0] = 10;
-        array[1] = 20;
-        array[2] = 30;
-
-        var dest = new ushort[array.Length];
-        array.CopyTo(dest);
-        Equal(10, dest[0]);
-        Equal(20, dest[1]);
-        Equal(30, dest[2]);
     }
 
     [Fact]
@@ -160,7 +144,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     }
 
     [Fact]
-    public static unsafe void ZeroMem()
+    public static void ZeroMem()
     {
         using var memory = UnmanagedMemory.Allocate<byte>(3);
         memory.Span[0] = 10;
@@ -195,7 +179,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     }
 
     [Fact]
-    public static unsafe void ToStreamConversion()
+    public static void ToStreamConversion()
     {
         using var memory = UnmanagedMemory.AllocateZeroed<byte>(3);
         new byte[] { 10, 20, 30 }.AsSpan().CopyTo(memory.Bytes);
@@ -295,5 +279,12 @@ public sealed class UnmanagedMemoryPoolTests : Test
         True(UnmanagedMemory.GetPageAlignedOffset(bytes, out var offset));
         
         UnmanagedMemory.Discard(bytes.AsSpan(offset, Environment.SystemPageSize));
+    }
+
+    [Fact]
+    public static void UnmanagedMemoryMarshalling()
+    {
+        using var memory = UnmanagedMemory.Allocate<long>(2);
+        Equal(memory.Pointer.Address, Runtime.InteropServices.UnmanagedMemoryMarshaller<long>.ConvertToUnmanaged(memory));
     }
 }

@@ -6,37 +6,19 @@ namespace DotNext.Threading;
 [CLSCompliant(false)]
 public static unsafe class ThreadPoolWorkItemFactory
 {
-    private sealed class ThreadPoolWorkItem<T> : Tuple<T>, IThreadPoolWorkItem
+    private sealed class ThreadPoolWorkItem<T>(delegate*<T, void> invoker, T arg) : IThreadPoolWorkItem
     {
-        private readonly delegate*<T, void> invoker;
-
-        internal ThreadPoolWorkItem(delegate*<T, void> invoker, T arg)
-            : base(arg)
-            => this.invoker = invoker;
-
-        void IThreadPoolWorkItem.Execute() => invoker(Item1);
+        void IThreadPoolWorkItem.Execute() => invoker(arg);
     }
 
-    private sealed class ThreadPoolWorkItem<T1, T2> : Tuple<T1, T2>, IThreadPoolWorkItem
+    private sealed class ThreadPoolWorkItem<T1, T2>(delegate*<T1, T2, void> invoker, T1 arg1, T2 arg2) : IThreadPoolWorkItem
     {
-        private readonly delegate*<T1, T2, void> invoker;
-
-        internal ThreadPoolWorkItem(delegate*<T1, T2, void> invoker, T1 arg1, T2 arg2)
-            : base(arg1, arg2)
-            => this.invoker = invoker;
-
-        void IThreadPoolWorkItem.Execute() => invoker(Item1, Item2);
+        void IThreadPoolWorkItem.Execute() => invoker(arg1, arg2);
     }
 
-    private sealed class ThreadPoolWorkItem<T1, T2, T3> : Tuple<T1, T2, T3>, IThreadPoolWorkItem
+    private sealed class ThreadPoolWorkItem<T1, T2, T3>(delegate*<T1, T2, T3, void> invoker, T1 arg1, T2 arg2, T3 arg3) : IThreadPoolWorkItem
     {
-        private readonly delegate*<T1, T2, T3, void> invoker;
-
-        internal ThreadPoolWorkItem(delegate*<T1, T2, T3, void> invoker, T1 arg1, T2 arg2, T3 arg3)
-            : base(arg1, arg2, arg3)
-            => this.invoker = invoker;
-
-        void IThreadPoolWorkItem.Execute() => invoker(Item1, Item2, Item3);
+        void IThreadPoolWorkItem.Execute() => invoker(arg1, arg2, arg3);
     }
 
     /// <summary>

@@ -290,7 +290,7 @@ file sealed unsafe class SystemPageManager : UnmanagedMemory<byte>
 
         if (!IsPageAligned(length))
             throw new ArgumentOutOfRangeException(nameof(length));
-        
+
         if (VirtualMemoryManagementFunc is 0)
             return;
 
@@ -300,18 +300,20 @@ file sealed unsafe class SystemPageManager : UnmanagedMemory<byte>
             const int MADV_DONTNEED = 4;
 
             var madvise = (delegate*unmanaged<nint, nint, int, int>)VirtualMemoryManagementFunc;
-
             errorCode = madvise(address, length, MADV_DONTNEED);
-            if (errorCode is not 0)
-                throw new ExternalException(ExceptionMessages.UnableToDiscardMemory, errorCode);
         }
         else if (OperatingSystem.IsWindows())
         {
             var discardVirtualMemory = (delegate*unmanaged<nint, nint, int>)VirtualMemoryManagementFunc;
             errorCode = discardVirtualMemory(address, length);
-            if (errorCode is not 0)
-                throw new Win32Exception(errorCode, ExceptionMessages.UnableToDiscardMemory);
         }
+        else
+        {
+            errorCode = 0;
+        }
+
+        if (errorCode is not 0)
+            throw new ExternalException(ExceptionMessages.UnableToDiscardMemory, errorCode);
     }
 
     protected override void Dispose(bool disposing)

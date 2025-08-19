@@ -136,4 +136,46 @@ public sealed class ChunkSequenceTests : Test
 
         Equal(builder.ToString(), builder.ToReadOnlySequence().ToString());
     }
+
+    [Fact]
+    public static void CopyFromSequenceAndAdjustPosition()
+    {
+        var destination = new byte[10];
+        ReadOnlySequence<byte> source = new(RandomBytes(16));
+
+        // source > destination, single segment
+        var bytesWritten = source.CopyTo(destination, out SequencePosition consumed);
+        Equal(bytesWritten, destination.Length);
+        Equal(destination, source.Slice(0, consumed).ToArray());
+
+        // source > destination, multisegment, segment < destination
+        Array.Clear(destination);
+        source = ToReadOnlySequence<byte>(RandomBytes(16), 3);
+        bytesWritten = source.CopyTo(destination, out consumed);
+        Equal(destination.Length, bytesWritten);
+        Equal(destination, source.Slice(0, consumed).ToArray());
+
+        // source > destination, multisegment, segment > destination
+        Array.Clear(destination);
+        source = ToReadOnlySequence<byte>(RandomBytes(22), 11);
+        bytesWritten = source.CopyTo(destination, out consumed);
+        Equal(destination.Length, bytesWritten);
+        Equal(destination, source.Slice(0, consumed).ToArray());
+
+        // source < destination, multisegment, segment < destination
+        Array.Clear(destination);
+        source = ToReadOnlySequence<byte>(RandomBytes(6), 3);
+        bytesWritten = source.CopyTo(destination, out consumed);
+        Equal(source.Length, bytesWritten);
+        Equal(source.End, consumed);
+        Equal(destination.AsSpan(0, (int)source.Length), source.Slice(0, consumed).ToArray().AsSpan());
+        
+        // source < destination, single segment
+        Array.Clear(destination);
+        source = new(RandomBytes(3));
+        bytesWritten = source.CopyTo(destination, out consumed);
+        Equal(source.Length, bytesWritten);
+        Equal(source.End, consumed);
+        Equal(destination.AsSpan(0, (int)source.Length), source.Slice(0, consumed).ToArray().AsSpan());
+    }
 }

@@ -16,12 +16,12 @@ internal sealed class ReadOnlyMemoryStream(ReadOnlySequence<byte> sequence) : Re
 
     public override long Position
     {
-        get => sequence.GetOffset(position);
+        get => sequence.Slice(sequence.Start, position).Length;
         set
         {
             ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value, (ulong)sequence.Length, nameof(value));
 
-            position = sequence.GetPosition(value);
+            position = sequence.GetPosition(value, sequence.Start);
         }
     }
 
@@ -47,24 +47,20 @@ internal sealed class ReadOnlyMemoryStream(ReadOnlySequence<byte> sequence) : Re
 
     public override void SetLength(long value)
     {
-        var newSeq = sequence.Slice(0L, value);
-        position = newSeq.GetPosition(Math.Min(sequence.GetOffset(position), newSeq.Length));
+        var newSeq = sequence.Slice(sequence.Start, value);
+        position = newSeq.GetPosition(Math.Min(Position, newSeq.Length));
         sequence = newSeq;
     }
 
     public override int Read(Span<byte> buffer)
-    {
-        RemainingSequence.CopyTo(buffer, out var writtenCount);
-        position = sequence.GetPosition(writtenCount, position);
-        return writtenCount;
-    }
+        => RemainingSequence.CopyTo(buffer, out position);
 
     public override long Seek(long offset, SeekOrigin origin)
     {
         var newPosition = origin switch
         {
             SeekOrigin.Begin => offset,
-            SeekOrigin.Current => sequence.GetOffset(position) + offset,
+            SeekOrigin.Current => Position + offset,
             SeekOrigin.End => sequence.Length + offset,
             _ => throw new ArgumentOutOfRangeException(nameof(origin))
         };
@@ -74,7 +70,7 @@ internal sealed class ReadOnlyMemoryStream(ReadOnlySequence<byte> sequence) : Re
 
         ArgumentOutOfRangeException.ThrowIfGreaterThan(newPosition, sequence.Length, nameof(offset));
 
-        position = sequence.GetPosition(newPosition);
+        position = sequence.GetPosition(newPosition, sequence.Start);
         return newPosition;
     }
 

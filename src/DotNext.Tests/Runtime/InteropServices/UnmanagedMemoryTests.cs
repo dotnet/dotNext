@@ -51,4 +51,11 @@ public sealed class UnmanagedMemoryTests : Test
             byRef.Value = 42L;
         }
     }
+
+    [Fact]
+    public static void UnmanagedMemoryMarshalling()
+    {
+        using IUnmanagedMemory memory = new UnmanagedMemory<long>();
+        Equal(memory.Pointer.Address, UnmanagedMemoryMarshaller.ConvertToUnmanaged(memory));
+    }
 }

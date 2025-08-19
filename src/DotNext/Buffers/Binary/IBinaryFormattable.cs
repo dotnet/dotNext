@@ -96,7 +96,7 @@ public interface IBinaryFormattable<out TSelf>
                 ? stackalloc byte[TSelf.Size]
                 : new SpanOwner<byte>(TSelf.Size);
 
-            input.CopyTo(buffer.Span, out var writtenCount);
+            input.CopyTo(buffer.Span, out int writtenCount);
             return TSelf.Parse(buffer.Span.Slice(0, writtenCount));
         }
     }
