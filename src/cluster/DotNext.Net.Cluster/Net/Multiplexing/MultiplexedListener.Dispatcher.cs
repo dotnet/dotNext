@@ -51,16 +51,15 @@ partial class MultiplexedListener
         try
         {
             var receiveLoop = output.ProcessAsync(socket);
-            
             while (true)
             {
-                // rethrow exception from the receiving loop
-                if (receiveLoop.IsCompleted)
-                    await receiveLoop.ConfigureAwait(false);
-
                 try
                 {
-                    await input.ProcessAsync(receiveLoop.IsNotCompleted, socket).ConfigureAwait(false);
+                    // rethrow exception from the receiving loop
+                    await (receiveLoop.IsCompleted
+                            ? receiveLoop
+                            : input.ProcessAsync(receiveLoop.IsNotCompleted, socket))
+                        .ConfigureAwait(false);
                 }
                 catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
                 {

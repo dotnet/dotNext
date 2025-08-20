@@ -95,7 +95,7 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     private MultiplexedStream OpenStream()
     {
         var stream = new MultiplexedStream(options, writeSignal);
-        ulong id;
+        uint id;
         do
         {
             id = Interlocked.Increment(ref streamId);

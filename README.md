@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-18-2025
+Release Date: 08-19-2025
 
 <a href="https://www.nuget.org/packages/dotnext/5.24.0">DotNext 5.24.0</a>
 * Merged [258](https://github.com/dotnet/dotNext/pull/258)

@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 08-18-2025
+# 08-19-2025
 <a href="https://www.nuget.org/packages/dotnext/5.24.0">DotNext 5.24.0</a>
 * Merged [258](https://github.com/dotnet/dotNext/pull/258)
 * Added `CopyTo` extension method overload for [ReadOnlySequence&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) data type that returns the position within the sequence

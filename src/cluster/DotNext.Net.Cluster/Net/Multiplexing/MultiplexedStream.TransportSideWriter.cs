@@ -77,7 +77,7 @@ partial class MultiplexedStream
             transportSignal.Set();
     }
 
-    private void AdjustWindowIfNeeded(IBufferWriter<byte> writer, ulong streamId)
+    private void AdjustWindowIfNeeded(IBufferWriter<byte> writer, uint streamId)
     {
         var totalReceived = Atomic.Read(in bytesReceived);
         if (totalReceived > resumeWatermark)

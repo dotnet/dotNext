@@ -7,7 +7,7 @@ namespace DotNext.Net.Multiplexing;
 
 internal static class Protocol
 {
-    private static void WriteEmptyFrame(IBufferWriter<byte> writer, [ConstantExpected] FrameControl control, ulong streamId)
+    private static void WriteEmptyFrame(IBufferWriter<byte> writer, [ConstantExpected] FrameControl control, uint streamId)
     {
         var header = new FrameHeader(streamId, control, length: 0);
         header.Format(writer.GetSpan(FrameHeader.Size));
@@ -17,13 +17,13 @@ internal static class Protocol
     public static void WriteHeartbeat(IBufferWriter<byte> writer)
         => WriteEmptyFrame(writer, FrameControl.Heartbeat, FrameHeader.SystemStreamId);
 
-    public static void WriteStreamRejected(IBufferWriter<byte> writer, ulong streamId)
+    public static void WriteStreamRejected(IBufferWriter<byte> writer, uint streamId)
         => WriteEmptyFrame(writer, FrameControl.StreamRejected, streamId);
 
-    public static void WriteStreamClosed(IBufferWriter<byte> writer, ulong streamId)
+    public static void WriteStreamClosed(IBufferWriter<byte> writer, uint streamId)
         => WriteEmptyFrame(writer, FrameControl.StreamClosed, streamId);
 
-    public static void WriteAdjustWindow(IBufferWriter<byte> writer, ulong streamId, int windowSize)
+    public static void WriteAdjustWindow(IBufferWriter<byte> writer, uint streamId, int windowSize)
     {
         const int messageSize = FrameHeader.Size + sizeof(int);
 

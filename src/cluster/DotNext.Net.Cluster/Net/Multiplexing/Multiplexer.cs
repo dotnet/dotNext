@@ -5,7 +5,7 @@ using System.Diagnostics.Metrics;
 namespace DotNext.Net.Multiplexing;
 
 internal abstract partial class Multiplexer(
-    ConcurrentDictionary<ulong, MultiplexedStream> streams,
+    ConcurrentDictionary<uint, MultiplexedStream> streams,
     IProducerConsumerCollection<ProtocolCommand> commands,
     UpDownCounter<int> streamCounter,
     in TagList measurementTags,
@@ -13,7 +13,7 @@ internal abstract partial class Multiplexer(
 {
     protected readonly UpDownCounter<int> streamCounter = streamCounter;
     protected readonly TagList measurementTags = measurementTags;
-    protected readonly ConcurrentDictionary<ulong, MultiplexedStream> streams = streams;
+    protected readonly ConcurrentDictionary<uint, MultiplexedStream> streams = streams;
     protected readonly IProducerConsumerCollection<ProtocolCommand> commands = commands;
 
     protected void ChangeStreamCount(int delta = 1) => streamCounter.Add(delta, in measurementTags);

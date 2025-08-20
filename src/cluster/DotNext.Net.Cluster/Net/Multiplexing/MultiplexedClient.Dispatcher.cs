@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net.Sockets;
@@ -23,7 +22,7 @@ partial class MultiplexedClient
     
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private readonly OutputMultiplexer output;
-    private ulong streamId;
+    private uint streamId;
 
     private async Task DispatchAsync()
     {

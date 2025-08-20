@@ -3,7 +3,7 @@ namespace DotNext.Net.Multiplexing;
 /// <summary>
 /// Controls the fragment behavior.
 /// </summary>
-internal enum FrameControl : ushort
+internal enum FrameControl : byte
 {
     /// <summary>
     /// The fragment contains a data chunk.
@@ -41,5 +41,5 @@ internal enum FrameControl : ushort
     /// <summary>
     /// Heartbeat system fragment.
     /// </summary>
-    Heartbeat = 1024,
+    Heartbeat = 128,
 }

@@ -10,7 +10,7 @@ using Buffers;
 using Threading;
 
 internal sealed class InputMultiplexer(
-    ConcurrentDictionary<ulong, MultiplexedStream> streams,
+    ConcurrentDictionary<uint, MultiplexedStream> streams,
     AsyncAutoResetEvent writeSignal,
     BufferWriter<byte> framingBuffer,
     int flushThreshold,
@@ -23,7 +23,7 @@ internal sealed class InputMultiplexer(
     
     public TimeSpan Timeout => timeout;
 
-    public bool TryAddStream(ulong streamId, MultiplexedStream stream)
+    public bool TryAddStream(uint streamId, MultiplexedStream stream)
     {
         var result = streams.TryAdd(streamId, stream);
         ChangeStreamCount(Unsafe.BitCast<bool, byte>(result));
