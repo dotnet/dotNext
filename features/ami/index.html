@@ -127,7 +127,7 @@
 </code></pre>
 <p>If you want to send the command programmatically then you need to insert line termination sequence (<code>\n</code> on Unix, or <code>\n\r</code> on Windows) or null character (<code>\0</code>) in the end of each command.</p>
 <p>Some of the commands may produce output in the form of plain text.</p>
-<p>In interactive mode, administrator can use standard flags <code>-h</code> or <code>--help</code> to get help for the commands or subcommands.</p>
+<p>In interactive mode, administrator can use standard flags <code>-h</code>, <code>--help</code>, or command <code>help</code> to get help for the commands or subcommands.</p>
 <h1 id="ami-hosting">AMI Hosting</h1>
 <p>AMI is supported for the application with or without Dependency Injection support. For simplicity, all code examples implies DI enabled.</p>
 <p>The following code snippet demonstrates bare minimum to enable AMI for the application:</p>
@@ -149,8 +149,8 @@ await new HostBuilder()
 <pre><code class="lang-csharp">using System.Buffers;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using DotNext.Maintenance;
 using DotNext.Maintenance.CommandLine;
-using DotNext.Maintenance.CommandLine.Binding;
 using Microsoft.Extensions.Hosting;
 
 await new HostBuilder()
@@ -166,30 +166,44 @@ await new HostBuilder()
 static void ConfigureAddCommand(ApplicationMaintenanceCommand command)
 {
     command.Description = &quot;Adds two integers&quot;;
-    var argX = new Argument&lt;int&gt;(&quot;x&quot;, parse: ParseInteger, description: &quot;The first operand&quot;)
-    {
-        Arity = ArgumentArity.ExactlyOne
-    };
-    var argY = new Argument&lt;int&gt;(&quot;y&quot;, parse: ParseInteger, description: &quot;The second operand&quot;)
+    var argX = new Argument&lt;int&gt;(&quot;x&quot;)
     {
         Arity = ArgumentArity.ExactlyOne,
+        Description = &quot;The first operand&quot;,
+        CustomParser = ParseInteger
+    };
+    var argY = new Argument&lt;int&gt;(&quot;y&quot;)
+    {
+        Arity = ArgumentArity.ExactlyOne,
+        Description = &quot;The second operand&quot;,
+        CustomParser = ParseInteger,
     };
 
-    command.AddArgument(argX);
-    command.AddArgument(argY);
-    command.SetHandler(static (x, y, console) =&gt;
+    command.Add(argX);
+    command.Add(argY);
+    command.SetAction(result =&gt;
     {
-        console.Out.Write((x + y).ToString());
-        console.Out.Write(Environment.NewLine);
-    },
-    argX,
-    argY,
-    DefaultBindings.Console);
+        var x = result.GetRequiredValue(argX);
+        var y = result.GetRequiredValue(argY);
+        result.Configuration.Output.WriteLine(x + y);
+    });
+}
+
+static int ParseInteger(IMaintenanceSession session, ArgumentResult result)
+{
+    var token = result.Tokens.FirstOrDefault()?.Value;
+
+    if (!int.TryParse(token, out var value))
+    {
+        result.AddError($&quot;{token} is not an integer number&quot;);
+    }
+
+    return value;
 }
 </code></pre>
-<p>Registered custom commands will be automatically discovered by AMI host. <a class="xref" href="../../api/DotNext.Maintenance.CommandLine.Binding.DefaultBindings.html">DefaultBindings</a> provides extra bindings available for the commands when executing by AMI host.</p>
+<p>Registered custom commands will be automatically discovered by AMI host. The <a class="xref" href="../../api/DotNext.Maintenance.IMaintenanceSession.html">IMaintenanceSession</a> object represents AMI session that executes the command. The session is a socket connection. If multiple commands are executed within the same session, the session object remains the same between command handlers. Thus, the session object can be used to keep the state.</p>
 <h1 id="security">Security</h1>
-<p>AMI is based on Unix Domain Sockets. It means that there is no way to have a direct connection to the application remotely. Potential attacker must have a direct access to the container or operating system to interact with the app via AMI. In most cases, it should be enough to protect the interface. However, administrator can use the following approaches to improve security:</p>
+<p>AMI is based on Unix Domain Sockets. It means that there is no way to have a direct connection to the application remotely. Potential attacker must have direct access to the container or operating system to interact with the app via AMI. In most cases, it should be enough to protect the interface. However, administrator can use the following approaches to improve security:</p>
 <ul>
 <li>Configure access rights for the pseudo file at file system level</li>
 <li>Use authentication and authorization at AMI level</li>

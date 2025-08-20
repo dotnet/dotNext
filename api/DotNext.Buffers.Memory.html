@@ -392,7 +392,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_Concat__1_System_ReadOnlyMemory___0__System_ReadOnlyMemory___0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.Concat%60%601(System.ReadOnlyMemory%7B%60%600%7D%2CSystem.ReadOnlyMemory%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L188">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L186">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_Concat_" data-uid="DotNext.Buffers.Memory.Concat*"></a>
   <h4 id="DotNext_Buffers_Memory_Concat__1_System_ReadOnlyMemory___0__System_ReadOnlyMemory___0__" data-uid="DotNext.Buffers.Memory.Concat``1(System.ReadOnlyMemory{``0},System.ReadOnlyMemory{``0})">Concat&lt;T&gt;(ReadOnlyMemory&lt;T&gt;, ReadOnlyMemory&lt;T&gt;)</h4>
@@ -464,16 +464,16 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_CopyTo__1_System_Buffers_ReadOnlySequence___0___System_Span___0__System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.CopyTo%60%601(System.Buffers.ReadOnlySequence%7B%60%600%7D%40%2CSystem.Span%7B%60%600%7D%2CSystem.Int32%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L209">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L207">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_CopyTo_" data-uid="DotNext.Buffers.Memory.CopyTo*"></a>
-  <h4 id="DotNext_Buffers_Memory_CopyTo__1_System_Buffers_ReadOnlySequence___0___System_Span___0__System_Int32__" data-uid="DotNext.Buffers.Memory.CopyTo``1(System.Buffers.ReadOnlySequence{``0}@,System.Span{``0},System.Int32@)">CopyTo&lt;T&gt;(in ReadOnlySequence&lt;T&gt;, scoped Span&lt;T&gt;, out int)</h4>
+  <h4 id="DotNext_Buffers_Memory_CopyTo__1_System_Buffers_ReadOnlySequence___0___System_Span___0__System_Int32__" data-uid="DotNext.Buffers.Memory.CopyTo``1(System.Buffers.ReadOnlySequence{``0}@,System.Span{``0},System.Int32@)">CopyTo&lt;T&gt;(in ReadOnlySequence&lt;T&gt;, Span&lt;T&gt;, out int)</h4>
   <div class="markdown level1 summary"><p>Copies the contents from the source sequence into a destination span.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void CopyTo&lt;T&gt;(this in ReadOnlySequence&lt;T&gt; source, scoped Span&lt;T&gt; destination, out int writtenCount)</code></pre>
+    <pre><code class="lang-csharp hljs">public static void CopyTo&lt;T&gt;(this in ReadOnlySequence&lt;T&gt; source, Span&lt;T&gt; destination, out int writtenCount)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -500,6 +500,84 @@
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
         <td><span class="parametername">writtenCount</span></td>
+        <td><p>The number of copied elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the elements in the sequence.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_CopyTo__1_System_Buffers_ReadOnlySequence___0___System_Span___0__System_SequencePosition__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.CopyTo%60%601(System.Buffers.ReadOnlySequence%7B%60%600%7D%40%2CSystem.Span%7B%60%600%7D%2CSystem.SequencePosition%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L234">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_Memory_CopyTo_" data-uid="DotNext.Buffers.Memory.CopyTo*"></a>
+  <h4 id="DotNext_Buffers_Memory_CopyTo__1_System_Buffers_ReadOnlySequence___0___System_Span___0__System_SequencePosition__" data-uid="DotNext.Buffers.Memory.CopyTo``1(System.Buffers.ReadOnlySequence{``0}@,System.Span{``0},System.SequencePosition@)">CopyTo&lt;T&gt;(in ReadOnlySequence&lt;T&gt;, Span&lt;T&gt;, out SequencePosition)</h4>
+  <div class="markdown level1 summary"><p>Copies the contents from the source sequence into a destination span.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int CopyTo&lt;T&gt;(this in ReadOnlySequence&lt;T&gt; source, Span&lt;T&gt; destination, out SequencePosition consumed)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;</td>
+        <td><span class="parametername">source</span></td>
+        <td><p>Source sequence.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
+        <td><span class="parametername">destination</span></td>
+        <td><p>Destination memory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.sequenceposition">SequencePosition</a></td>
+        <td><span class="parametername">consumed</span></td>
+        <td><p>The position within <code class="paramref">source</code> that represents the end of <code class="paramref">destination</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
         <td><p>The number of copied elements.</p>
 </td>
       </tr>
@@ -1018,7 +1096,7 @@ object in the rented block.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_ToReadOnlySequence_System_Collections_Generic_IEnumerable_System_String__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.ToReadOnlySequence(System.Collections.Generic.IEnumerable%7BSystem.String%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L96">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L94">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_ToReadOnlySequence_" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence*"></a>
   <h4 id="DotNext_Buffers_Memory_ToReadOnlySequence_System_Collections_Generic_IEnumerable_System_String__" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence(System.Collections.Generic.IEnumerable{System.String})">ToReadOnlySequence(IEnumerable&lt;string?&gt;?)</h4>
@@ -1068,7 +1146,7 @@ object in the rented block.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_ToReadOnlySequence_System_ReadOnlySpan_System_String__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.ToReadOnlySequence(System.ReadOnlySpan%7BSystem.String%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L132">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L130">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_ToReadOnlySequence_" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence*"></a>
   <h4 id="DotNext_Buffers_Memory_ToReadOnlySequence_System_ReadOnlySpan_System_String__" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence(System.ReadOnlySpan{System.String})">ToReadOnlySequence(ReadOnlySpan&lt;string?&gt;)</h4>
@@ -1118,7 +1196,7 @@ object in the rented block.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_ToReadOnlySequence_System_Text_StringBuilder_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.ToReadOnlySequence(System.Text.StringBuilder)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L161">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L159">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_ToReadOnlySequence_" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence*"></a>
   <h4 id="DotNext_Buffers_Memory_ToReadOnlySequence_System_Text_StringBuilder_" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence(System.Text.StringBuilder)">ToReadOnlySequence(StringBuilder)</h4>
@@ -1168,7 +1246,7 @@ object in the rented block.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_ToReadOnlySequence__1_System_Collections_Generic_IEnumerable_System_ReadOnlyMemory___0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.ToReadOnlySequence%60%601(System.Collections.Generic.IEnumerable%7BSystem.ReadOnlyMemory%7B%60%600%7D%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L17">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L15">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_ToReadOnlySequence_" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence*"></a>
   <h4 id="DotNext_Buffers_Memory_ToReadOnlySequence__1_System_Collections_Generic_IEnumerable_System_ReadOnlyMemory___0___" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence``1(System.Collections.Generic.IEnumerable{System.ReadOnlyMemory{``0}})">ToReadOnlySequence&lt;T&gt;(IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;?)</h4>
@@ -1234,7 +1312,7 @@ object in the rented block.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_ToReadOnlySequence__1_System_ReadOnlySpan_System_ReadOnlyMemory___0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.ToReadOnlySequence%60%601(System.ReadOnlySpan%7BSystem.ReadOnlyMemory%7B%60%600%7D%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L67">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L65">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_ToReadOnlySequence_" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence*"></a>
   <h4 id="DotNext_Buffers_Memory_ToReadOnlySequence__1_System_ReadOnlySpan_System_ReadOnlyMemory___0___" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence``1(System.ReadOnlySpan{System.ReadOnlyMemory{``0}})">ToReadOnlySequence&lt;T&gt;(ReadOnlySpan&lt;ReadOnlyMemory&lt;T&gt;&gt;)</h4>
@@ -1446,7 +1524,7 @@ If length is less that <code class="paramref">maxLength</code> then the original
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_TryGetBlock__1_System_Buffers_ReadOnlySequence___0___System_Int32_System_ReadOnlyMemory___0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.TryGetBlock%60%601(System.Buffers.ReadOnlySequence%7B%60%600%7D%40%2CSystem.Int32%2CSystem.ReadOnlyMemory%7B%60%600%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L246">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L273">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_TryGetBlock_" data-uid="DotNext.Buffers.Memory.TryGetBlock*"></a>
   <h4 id="DotNext_Buffers_Memory_TryGetBlock__1_System_Buffers_ReadOnlySequence___0___System_Int32_System_ReadOnlyMemory___0___" data-uid="DotNext.Buffers.Memory.TryGetBlock``1(System.Buffers.ReadOnlySequence{``0}@,System.Int32,System.ReadOnlyMemory{``0}@)">TryGetBlock&lt;T&gt;(in ReadOnlySequence&lt;T&gt;, int, out ReadOnlyMemory&lt;T&gt;)</h4>
@@ -1531,7 +1609,7 @@ If length is less that <code class="paramref">maxLength</code> then the original
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L9" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L7" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

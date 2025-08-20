@@ -80,6 +80,7 @@
 <li><a href="https://en.wikipedia.org/wiki/Replication_(computing)">Replication</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Consensus_(computer_science)">Consensus</a></li>
 <li>Cluster configuration management</li>
+<li>Multiplexing protocol for efficient network communication between nodes in the trusted LAN</li>
 </ol>
 <p>The programming model at higher level of abstraction is represented by the following interfaces:</p>
 <ul>
@@ -225,6 +226,9 @@ public class TestMessageHandler : MessageHandler
 <li><a href="raft.html">.NEXT Raft</a> is a fully-featured implementation of Raft algorithm and related infrastructure</li>
 <li><a href="gossip.html">.NEXT HyParView</a> is a fully-featured implementation of HyParView membership protocol for reliable Gossip-based communication</li>
 </ul>
+<h1 id="multiplexing">Multiplexing</h1>
+<p><a href="https://en.wikipedia.org/wiki/QUIC">QUIC</a> and <a href="https://en.wikipedia.org/wiki/Secure_Shell">SSH</a> are good examples of the multiplexing protocols. For instance, SSH shares the single TCP connection for multiple logical channels. QUIC uses a concept of streams to expose multiple logical channels through the same socket port. Both protocols have their own transport-level security and encryption. This is a must-have feature for the communication over untrusted network such as the Internet. However, for the communication between nodes in the cluster it's redundant. Nodes of the cluster typically located in the secured and trusted LAN. The encryption could be enabled at the network layer (e.g., IPSec) or by the encapsulation protocol (e.g., VPN). For instance, Kubernetes CNI plugins, such as Calico or Cilium, provide traffic encryption between nodes. In such an environment, there is no reason to pay for extra CPU cycles required for the encryption.</p>
+<p>.NEXT Cluster Programming Suite implements <a href="multiplex.html">simple multiplexing protocol</a> on top of TCP. Thus, the single TCP connection can be efficiently shared between multiple components for the application.</p>
 
 </article>
           </div>

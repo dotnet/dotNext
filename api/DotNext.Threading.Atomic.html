@@ -3541,7 +3541,7 @@ public static nuint GetAndUpdate&lt;TUpdater&gt;(ref nuint value, TUpdater updat
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Atomic_IsAtomic__1.md&amp;value=---%0Auid%3A%20DotNext.Threading.Atomic.IsAtomic%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Atomic.cs/#L434">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Atomic.cs/#L435">View Source</a>
   </span>
   <a id="DotNext_Threading_Atomic_IsAtomic_" data-uid="DotNext.Threading.Atomic.IsAtomic*"></a>
   <h4 id="DotNext_Threading_Atomic_IsAtomic__1" data-uid="DotNext.Threading.Atomic.IsAtomic``1">IsAtomic&lt;T&gt;()</h4>
@@ -3585,6 +3585,60 @@ type <code class="typeparamref">T</code> is atomic.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Atomic_Read_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Atomic.Read(System.Double%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Atomic.Double.cs/#L127">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Atomic_Read_" data-uid="DotNext.Threading.Atomic.Read*"></a>
+  <h4 id="DotNext_Threading_Atomic_Read_System_Double__" data-uid="DotNext.Threading.Atomic.Read(System.Double@)">Read(ref readonly double)</h4>
+  <div class="markdown level1 summary"><p>Reads atomically the value from the specified location in the memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static double Read(ref readonly double location)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">double</a></td>
+        <td><span class="parametername">location</span></td>
+        <td><p>The location of the value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">double</a></td>
+        <td><p>The value at the specified location.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Atomic_Read_System_Double___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method works correctly on 32-bit and 64-bit architectures.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Atomic_Read_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Atomic.Read(System.Int64%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
@@ -4738,6 +4792,50 @@ public static nuint UpdateAndGet&lt;TUpdater&gt;(ref nuint value, TUpdater updat
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Atomic_Write_System_Double__System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Atomic.Write(System.Double%40%2CSystem.Double)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Atomic.Double.cs/#L138">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Atomic_Write_" data-uid="DotNext.Threading.Atomic.Write*"></a>
+  <h4 id="DotNext_Threading_Atomic_Write_System_Double__System_Double_" data-uid="DotNext.Threading.Atomic.Write(System.Double@,System.Double)">Write(ref double, double)</h4>
+  <div class="markdown level1 summary"><p>Writes atomically the value at the specified location in the memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static void Write(ref double location, double value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">double</a></td>
+        <td><span class="parametername">location</span></td>
+        <td><p>The location of the value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.double">double</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The desired value at the specified location.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Atomic_Write_System_Double__System_Double__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method works correctly on 32-bit and 64-bit architectures.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Atomic_Write_System_Int64__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Atomic.Write(System.Int64%40%2CSystem.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>

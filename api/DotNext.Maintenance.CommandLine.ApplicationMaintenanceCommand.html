@@ -77,44 +77,41 @@
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
     <div class="level1"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.symbol">Symbol</a></div>
-    <div class="level2"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.identifiersymbol">IdentifierSymbol</a></div>
-    <div class="level3"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command">Command</a></div>
-    <div class="level4"><span class="xref">ApplicationMaintenanceCommand</span></div>
+    <div class="level2"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command">Command</a></div>
+    <div class="level3"><span class="xref">ApplicationMaintenanceCommand</span></div>
   </div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.completions.icompletionsource">ICompletionSource</a></div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.symbol">Symbol</a>&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.addargument">Command.AddArgument(Argument)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.setaction#system-commandline-command-setaction(system-action((system-commandline-parseresult)))">Command.SetAction(Action&lt;ParseResult&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.addcommand">Command.AddCommand(Command)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.setaction#system-commandline-command-setaction(system-func((system-commandline-parseresult-system-int32)))">Command.SetAction(Func&lt;ParseResult, int&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.addoption">Command.AddOption(Option)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.setaction#system-commandline-command-setaction(system-func((system-commandline-parseresult-system-threading-cancellationtoken-system-threading-tasks-task)))">Command.SetAction(Func&lt;ParseResult, CancellationToken, Task&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.addglobaloption">Command.AddGlobalOption(Option)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.add#system-commandline-command-add(system-commandline-option)">Command.Add(Option)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.setaction#system-commandline-command-setaction(system-func((system-commandline-parseresult-system-threading-cancellationtoken-system-threading-tasks-task((system-int32)))))">Command.SetAction(Func&lt;ParseResult, CancellationToken, Task&lt;int&gt;&gt;)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.add#system-commandline-command-add(system-commandline-argument)">Command.Add(Argument)</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.add#system-commandline-command-add(system-commandline-option)">Command.Add(Option)</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.add#system-commandline-command-add(system-commandline-command)">Command.Add(Command)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.addvalidator">Command.AddValidator(ValidateSymbolResult&lt;CommandResult&gt;)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.parse#system-commandline-command-parse(system-collections-generic-ireadonlylist((system-string))-system-commandline-commandlineconfiguration)">Command.Parse(IReadOnlyList&lt;string&gt;, CommandLineConfiguration)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.getenumerator">Command.GetEnumerator()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.parse#system-commandline-command-parse(system-string-system-commandline-commandlineconfiguration)">Command.Parse(string, CommandLineConfiguration)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.getcompletions">Command.GetCompletions(CompletionContext)</a>
@@ -132,25 +129,16 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.subcommands">Command.Subcommands</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.validators">Command.Validators</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.aliases">Command.Aliases</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.action">Command.Action</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.treatunmatchedtokensaserrors">Command.TreatUnmatchedTokensAsErrors</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.command.handler">Command.Handler</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.identifiersymbol.addalias">IdentifierSymbol.AddAlias(string)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.identifiersymbol.hasalias">IdentifierSymbol.HasAlias(string)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.identifiersymbol.aliases">IdentifierSymbol.Aliases</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.identifiersymbol.name">IdentifierSymbol.Name</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.symbol.getcompletions#system-commandline-symbol-getcompletions">Symbol.GetCompletions()</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.symbol.tostring">Symbol.ToString()</a>
@@ -159,7 +147,10 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.symbol.description">Symbol.Description</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.symbol.ishidden">Symbol.IsHidden</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.symbol.name">Symbol.Name</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.symbol.hidden">Symbol.Hidden</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.symbol.parents">Symbol.Parents</a>
@@ -184,7 +175,7 @@
   <h6><strong>Assembly</strong>: DotNext.MaintenanceServices.dll</h6>
   <h5 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class ApplicationMaintenanceCommand : Command, ICompletionSource, IEnumerable&lt;Symbol&gt;, IEnumerable</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class ApplicationMaintenanceCommand : Command, IEnumerable</code></pre>
   </div>
   <h5 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>All registered singleton services of this type in DI container will be automatically
@@ -197,7 +188,7 @@ discovered by <a class="xref" href="DotNext.Maintenance.CommandLine.CommandLineM
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__ctor_System_String_System_String_.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.%23ctor(System.String%2CSystem.String)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.cs/#L24">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.cs/#L25">View Source</a>
   </span>
   <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__ctor_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.#ctor*"></a>
   <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__ctor_System_String_System_String_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.#ctor(System.String,System.String)">ApplicationMaintenanceCommand(string, string?)</h4>
@@ -239,7 +230,7 @@ discovered by <a class="xref" href="DotNext.Maintenance.CommandLine.CommandLineM
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_Create_DotNext_Diagnostics_IApplicationStatusProvider_.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.Create(DotNext.Diagnostics.IApplicationStatusProvider)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.Probe.cs/#L18">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.Probe.cs/#L17">View Source</a>
   </span>
   <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_Create_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.Create*"></a>
   <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_Create_DotNext_Diagnostics_IApplicationStatusProvider_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.Create(DotNext.Diagnostics.IApplicationStatusProvider)">Create(IApplicationStatusProvider)</h4>
@@ -305,7 +296,7 @@ discovered by <a class="xref" href="DotNext.Maintenance.CommandLine.CommandLineM
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_EnterInteractiveModeCommand.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.EnterInteractiveModeCommand%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.InteractiveCommand.cs/#L13">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.InteractiveCommand.cs/#L11">View Source</a>
   </span>
   <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_EnterInteractiveModeCommand_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.EnterInteractiveModeCommand*"></a>
   <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_EnterInteractiveModeCommand" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.EnterInteractiveModeCommand">EnterInteractiveModeCommand()</h4>
@@ -337,7 +328,7 @@ discovered by <a class="xref" href="DotNext.Maintenance.CommandLine.CommandLineM
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GCCommand.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GCCommand%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.GCCommand.cs/#L90">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.GCCommand.cs/#L110">View Source</a>
   </span>
   <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GCCommand_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GCCommand*"></a>
   <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GCCommand" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GCCommand">GCCommand()</h4>
@@ -369,7 +360,7 @@ discovered by <a class="xref" href="DotNext.Maintenance.CommandLine.CommandLineM
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GetDefaultCommands.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GetDefaultCommands%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.cs/#L48">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.cs/#L49">View Source</a>
   </span>
   <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GetDefaultCommands_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GetDefaultCommands*"></a>
   <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_GetDefaultCommands" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GetDefaultCommands">GetDefaultCommands()</h4>
@@ -404,10 +395,42 @@ discovered by <a class="xref" href="DotNext.Maintenance.CommandLine.CommandLineM
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_HelpCommand.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.HelpCommand%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.HelpCommand.cs/#L12">View Source</a>
+  </span>
+  <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_HelpCommand_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.HelpCommand*"></a>
+  <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_HelpCommand" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.HelpCommand">HelpCommand()</h4>
+  <div class="markdown level1 summary"><p>Represents help command.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ApplicationMaintenanceCommand HelpCommand()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html">ApplicationMaintenanceCommand</a></td>
+        <td><p>A new command instance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_LeaveInteractiveModeCommand.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.LeaveInteractiveModeCommand%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.InteractiveCommand.cs/#L30">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.InteractiveCommand.cs/#L36">View Source</a>
   </span>
   <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_LeaveInteractiveModeCommand_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.LeaveInteractiveModeCommand*"></a>
   <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_LeaveInteractiveModeCommand" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.LeaveInteractiveModeCommand">LeaveInteractiveModeCommand()</h4>
@@ -434,6 +457,106 @@ discovered by <a class="xref" href="DotNext.Maintenance.CommandLine.CommandLineM
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_SetAction_System_Action_DotNext_Maintenance_IMaintenanceSession_System_CommandLine_ParseResult__.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction(System.Action%7BDotNext.Maintenance.IMaintenanceSession%2CSystem.CommandLine.ParseResult%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.Actions.cs/#L69">View Source</a>
+  </span>
+  <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_SetAction_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction*"></a>
+  <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_SetAction_System_Action_DotNext_Maintenance_IMaintenanceSession_System_CommandLine_ParseResult__" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction(System.Action{DotNext.Maintenance.IMaintenanceSession,System.CommandLine.ParseResult})">SetAction(Action&lt;IMaintenanceSession, ParseResult&gt;)</h4>
+  <div class="markdown level1 summary"><p>Sets synchronous command handler.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void SetAction(Action&lt;IMaintenanceSession, ParseResult&gt; handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-2">Action</a>&lt;<a class="xref" href="DotNext.Maintenance.IMaintenanceSession.html">IMaintenanceSession</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.parseresult">ParseResult</a>&gt;</td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The command handler.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_SetAction_System_Func_DotNext_Maintenance_IMaintenanceSession_System_CommandLine_ParseResult_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction(System.Func%7BDotNext.Maintenance.IMaintenanceSession%2CSystem.CommandLine.ParseResult%2CSystem.Threading.CancellationToken%2CSystem.Threading.Tasks.ValueTask%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.Actions.cs/#L80">View Source</a>
+  </span>
+  <a id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_SetAction_" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction*"></a>
+  <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_SetAction_System_Func_DotNext_Maintenance_IMaintenanceSession_System_CommandLine_ParseResult_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction(System.Func{DotNext.Maintenance.IMaintenanceSession,System.CommandLine.ParseResult,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask})">SetAction(Func&lt;IMaintenanceSession, ParseResult, CancellationToken, ValueTask&gt;)</h4>
+  <div class="markdown level1 summary"><p>Sets asynchronous command handler.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void SetAction(Func&lt;IMaintenanceSession, ParseResult, CancellationToken, ValueTask&gt; handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;<a class="xref" href="DotNext.Maintenance.IMaintenanceSession.html">IMaintenanceSession</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.parseresult">ParseResult</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;</td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The command handler.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">handler</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="events">Events
 </h3>
   <span class="small pull-right mobile-hide">
@@ -441,7 +564,7 @@ discovered by <a class="xref" href="DotNext.Maintenance.CommandLine.CommandLineM
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_Authorization.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.Authorization%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.cs/#L32">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.cs/#L33">View Source</a>
   </span>
   <h4 id="DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_Authorization" data-uid="DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.Authorization">Authorization</h4>
   <div class="markdown level1 summary"><p>Allows to attach custom authorization rules for this command.</p>
@@ -468,12 +591,6 @@ discovered by <a class="xref" href="DotNext.Maintenance.CommandLine.CommandLineM
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.commandline.completions.icompletionsource">ICompletionSource</a>
-  </div>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable&lt;T&gt;</a>
-  </div>
-  <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
@@ -492,87 +609,6 @@ discovered by <a class="xref" href="DotNext.Maintenance.CommandLine.CommandLineM
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Boolean_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, bool, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Boolean_System_TimeSpan_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, bool, TimeSpan, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Append__1_System_Collections_Generic_IEnumerable___0____0___">Collection.Append&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Copy__1_System_Collections_Generic_IEnumerable___0__System_Int32_DotNext_Buffers_MemoryAllocator___0__">Collection.Copy&lt;T&gt;(IEnumerable&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Collection.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, int, out T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_FirstOrNone__1_System_Collections_Generic_IEnumerable___0__">Collection.FirstOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Collection.ForEachAsync&lt;T&gt;(IEnumerable&lt;T&gt;, Func&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Collection.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_LastOrNone__1_System_Collections_Generic_IEnumerable___0__">Collection.LastOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Prepend__1_System_Collections_Generic_IEnumerable___0____0___">Collection.Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_SequenceHashCode__1_System_Collections_Generic_IEnumerable___0__System_Boolean_">Collection.SequenceHashCode&lt;T&gt;(IEnumerable&lt;T&gt;, bool)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_SkipNulls__1_System_Collections_Generic_IEnumerable___0__">Collection.SkipNulls&lt;T&gt;(IEnumerable&lt;T?&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__System_Boolean_">Collection.ToAsyncEnumerable&lt;T&gt;(IEnumerable&lt;T&gt;, bool)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Collection.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, string, string)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_">Enumerator.GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</a>
-  </div>
 
 </article>
           </div>
@@ -585,7 +621,7 @@ discovered by <a class="xref" href="DotNext.Maintenance.CommandLine.CommandLineM
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand.md&amp;value=---%0Auid%3A%20DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.Probe.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.MaintenanceServices/Maintenance/CommandLine/ApplicationMaintenanceCommand.Probe.cs/#L9" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -2569,14 +2569,23 @@ references:
   fullName: DotNext.Buffers.Memory.CopyTo
   nameWithType: Memory.CopyTo
 - uid: DotNext.Buffers.Memory.CopyTo``1(System.Buffers.ReadOnlySequence{``0}@,System.Span{``0},System.Int32@)
-  name: CopyTo<T>(in ReadOnlySequence<T>, scoped Span<T>, out int)
+  name: CopyTo<T>(in ReadOnlySequence<T>, Span<T>, out int)
   href: api/DotNext.Buffers.Memory.html#DotNext_Buffers_Memory_CopyTo__1_System_Buffers_ReadOnlySequence___0___System_Span___0__System_Int32__
   commentId: M:DotNext.Buffers.Memory.CopyTo``1(System.Buffers.ReadOnlySequence{``0}@,System.Span{``0},System.Int32@)
   name.vb: CopyTo(Of T)(ReadOnlySequence(Of T), Span(Of T), Integer)
-  fullName: DotNext.Buffers.Memory.CopyTo<T>(in System.Buffers.ReadOnlySequence<T>, scoped System.Span<T>, out int)
+  fullName: DotNext.Buffers.Memory.CopyTo<T>(in System.Buffers.ReadOnlySequence<T>, System.Span<T>, out int)
   fullName.vb: DotNext.Buffers.Memory.CopyTo(Of T)(System.Buffers.ReadOnlySequence(Of T), System.Span(Of T), Integer)
-  nameWithType: Memory.CopyTo<T>(in ReadOnlySequence<T>, scoped Span<T>, out int)
+  nameWithType: Memory.CopyTo<T>(in ReadOnlySequence<T>, Span<T>, out int)
   nameWithType.vb: Memory.CopyTo(Of T)(ReadOnlySequence(Of T), Span(Of T), Integer)
+- uid: DotNext.Buffers.Memory.CopyTo``1(System.Buffers.ReadOnlySequence{``0}@,System.Span{``0},System.SequencePosition@)
+  name: CopyTo<T>(in ReadOnlySequence<T>, Span<T>, out SequencePosition)
+  href: api/DotNext.Buffers.Memory.html#DotNext_Buffers_Memory_CopyTo__1_System_Buffers_ReadOnlySequence___0___System_Span___0__System_SequencePosition__
+  commentId: M:DotNext.Buffers.Memory.CopyTo``1(System.Buffers.ReadOnlySequence{``0}@,System.Span{``0},System.SequencePosition@)
+  name.vb: CopyTo(Of T)(ReadOnlySequence(Of T), Span(Of T), SequencePosition)
+  fullName: DotNext.Buffers.Memory.CopyTo<T>(in System.Buffers.ReadOnlySequence<T>, System.Span<T>, out System.SequencePosition)
+  fullName.vb: DotNext.Buffers.Memory.CopyTo(Of T)(System.Buffers.ReadOnlySequence(Of T), System.Span(Of T), System.SequencePosition)
+  nameWithType: Memory.CopyTo<T>(in ReadOnlySequence<T>, Span<T>, out SequencePosition)
+  nameWithType.vb: Memory.CopyTo(Of T)(ReadOnlySequence(Of T), Span(Of T), SequencePosition)
 - uid: DotNext.Buffers.Memory.GetArrayAllocator*
   name: GetArrayAllocator
   href: api/DotNext.Buffers.Memory.html#DotNext_Buffers_Memory_GetArrayAllocator_
@@ -9784,47 +9793,6 @@ references:
   fullName.vb: DotNext.ComponentModel.DataAnnotations.RequiredAttribute(Of T).IsValid
   nameWithType: RequiredAttribute<T>.IsValid
   nameWithType.vb: RequiredAttribute(Of T).IsValid
-- uid: DotNext.ConsoleLifetimeTokenSource
-  name: ConsoleLifetimeTokenSource
-  href: api/DotNext.ConsoleLifetimeTokenSource.html
-  commentId: T:DotNext.ConsoleLifetimeTokenSource
-  fullName: DotNext.ConsoleLifetimeTokenSource
-  nameWithType: ConsoleLifetimeTokenSource
-- uid: DotNext.ConsoleLifetimeTokenSource.#ctor
-  name: ConsoleLifetimeTokenSource()
-  href: api/DotNext.ConsoleLifetimeTokenSource.html#DotNext_ConsoleLifetimeTokenSource__ctor
-  commentId: M:DotNext.ConsoleLifetimeTokenSource.#ctor
-  name.vb: New()
-  fullName: DotNext.ConsoleLifetimeTokenSource.ConsoleLifetimeTokenSource()
-  fullName.vb: DotNext.ConsoleLifetimeTokenSource.New()
-  nameWithType: ConsoleLifetimeTokenSource.ConsoleLifetimeTokenSource()
-  nameWithType.vb: ConsoleLifetimeTokenSource.New()
-- uid: DotNext.ConsoleLifetimeTokenSource.#ctor*
-  name: ConsoleLifetimeTokenSource
-  href: api/DotNext.ConsoleLifetimeTokenSource.html#DotNext_ConsoleLifetimeTokenSource__ctor_
-  commentId: Overload:DotNext.ConsoleLifetimeTokenSource.#ctor
-  isSpec: "True"
-  name.vb: New
-  fullName: DotNext.ConsoleLifetimeTokenSource.ConsoleLifetimeTokenSource
-  fullName.vb: DotNext.ConsoleLifetimeTokenSource.New
-  nameWithType: ConsoleLifetimeTokenSource.ConsoleLifetimeTokenSource
-  nameWithType.vb: ConsoleLifetimeTokenSource.New
-- uid: DotNext.ConsoleLifetimeTokenSource.Dispose(System.Boolean)
-  name: Dispose(bool)
-  href: api/DotNext.ConsoleLifetimeTokenSource.html#DotNext_ConsoleLifetimeTokenSource_Dispose_System_Boolean_
-  commentId: M:DotNext.ConsoleLifetimeTokenSource.Dispose(System.Boolean)
-  name.vb: Dispose(Boolean)
-  fullName: DotNext.ConsoleLifetimeTokenSource.Dispose(bool)
-  fullName.vb: DotNext.ConsoleLifetimeTokenSource.Dispose(Boolean)
-  nameWithType: ConsoleLifetimeTokenSource.Dispose(bool)
-  nameWithType.vb: ConsoleLifetimeTokenSource.Dispose(Boolean)
-- uid: DotNext.ConsoleLifetimeTokenSource.Dispose*
-  name: Dispose
-  href: api/DotNext.ConsoleLifetimeTokenSource.html#DotNext_ConsoleLifetimeTokenSource_Dispose_
-  commentId: Overload:DotNext.ConsoleLifetimeTokenSource.Dispose
-  isSpec: "True"
-  fullName: DotNext.ConsoleLifetimeTokenSource.Dispose
-  nameWithType: ConsoleLifetimeTokenSource.Dispose
 - uid: DotNext.ConsumerClosure`2
   name: ConsumerClosure<TContext, T>
   href: api/DotNext.ConsumerClosure-2.html
@@ -11029,6 +10997,276 @@ references:
   isSpec: "True"
   fullName: DotNext.Diagnostics.IFailureDetector.ReportHeartbeat
   nameWithType: IFailureDetector.ReportHeartbeat
+- uid: DotNext.Diagnostics.Metrics
+  name: DotNext.Diagnostics.Metrics
+  href: api/DotNext.Diagnostics.Metrics.html
+  commentId: N:DotNext.Diagnostics.Metrics
+  fullName: DotNext.Diagnostics.Metrics
+  nameWithType: DotNext.Diagnostics.Metrics
+- uid: DotNext.Diagnostics.Metrics.HistogramObserver`1
+  name: HistogramObserver<TMeasurement>
+  href: api/DotNext.Diagnostics.Metrics.HistogramObserver-1.html
+  commentId: T:DotNext.Diagnostics.Metrics.HistogramObserver`1
+  name.vb: HistogramObserver(Of TMeasurement)
+  fullName: DotNext.Diagnostics.Metrics.HistogramObserver<TMeasurement>
+  fullName.vb: DotNext.Diagnostics.Metrics.HistogramObserver(Of TMeasurement)
+  nameWithType: HistogramObserver<TMeasurement>
+  nameWithType.vb: HistogramObserver(Of TMeasurement)
+- uid: DotNext.Diagnostics.Metrics.HistogramObserver`1.#ctor(DotNext.Diagnostics.Metrics.MeasurementFilter{System.Diagnostics.Metrics.Histogram{`0}})
+  name: HistogramObserver(MeasurementFilter<Histogram<TMeasurement>>?)
+  href: api/DotNext.Diagnostics.Metrics.HistogramObserver-1.html#DotNext_Diagnostics_Metrics_HistogramObserver_1__ctor_DotNext_Diagnostics_Metrics_MeasurementFilter_System_Diagnostics_Metrics_Histogram__0___
+  commentId: M:DotNext.Diagnostics.Metrics.HistogramObserver`1.#ctor(DotNext.Diagnostics.Metrics.MeasurementFilter{System.Diagnostics.Metrics.Histogram{`0}})
+  name.vb: New(MeasurementFilter(Of Histogram(Of TMeasurement)))
+  fullName: DotNext.Diagnostics.Metrics.HistogramObserver<TMeasurement>.HistogramObserver(DotNext.Diagnostics.Metrics.MeasurementFilter<System.Diagnostics.Metrics.Histogram<TMeasurement>>?)
+  fullName.vb: DotNext.Diagnostics.Metrics.HistogramObserver(Of TMeasurement).New(DotNext.Diagnostics.Metrics.MeasurementFilter(Of System.Diagnostics.Metrics.Histogram(Of TMeasurement)))
+  nameWithType: HistogramObserver<TMeasurement>.HistogramObserver(MeasurementFilter<Histogram<TMeasurement>>?)
+  nameWithType.vb: HistogramObserver(Of TMeasurement).New(MeasurementFilter(Of Histogram(Of TMeasurement)))
+- uid: DotNext.Diagnostics.Metrics.HistogramObserver`1.#ctor*
+  name: HistogramObserver
+  href: api/DotNext.Diagnostics.Metrics.HistogramObserver-1.html#DotNext_Diagnostics_Metrics_HistogramObserver_1__ctor_
+  commentId: Overload:DotNext.Diagnostics.Metrics.HistogramObserver`1.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Diagnostics.Metrics.HistogramObserver<TMeasurement>.HistogramObserver
+  fullName.vb: DotNext.Diagnostics.Metrics.HistogramObserver(Of TMeasurement).New
+  nameWithType: HistogramObserver<TMeasurement>.HistogramObserver
+  nameWithType.vb: HistogramObserver(Of TMeasurement).New
+- uid: DotNext.Diagnostics.Metrics.HistogramObserver`1.Record(`0)
+  name: Record(TMeasurement)
+  href: api/DotNext.Diagnostics.Metrics.HistogramObserver-1.html#DotNext_Diagnostics_Metrics_HistogramObserver_1_Record__0_
+  commentId: M:DotNext.Diagnostics.Metrics.HistogramObserver`1.Record(`0)
+  fullName: DotNext.Diagnostics.Metrics.HistogramObserver<TMeasurement>.Record(TMeasurement)
+  fullName.vb: DotNext.Diagnostics.Metrics.HistogramObserver(Of TMeasurement).Record(TMeasurement)
+  nameWithType: HistogramObserver<TMeasurement>.Record(TMeasurement)
+  nameWithType.vb: HistogramObserver(Of TMeasurement).Record(TMeasurement)
+- uid: DotNext.Diagnostics.Metrics.HistogramObserver`1.Record*
+  name: Record
+  href: api/DotNext.Diagnostics.Metrics.HistogramObserver-1.html#DotNext_Diagnostics_Metrics_HistogramObserver_1_Record_
+  commentId: Overload:DotNext.Diagnostics.Metrics.HistogramObserver`1.Record
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Metrics.HistogramObserver<TMeasurement>.Record
+  fullName.vb: DotNext.Diagnostics.Metrics.HistogramObserver(Of TMeasurement).Record
+  nameWithType: HistogramObserver<TMeasurement>.Record
+  nameWithType.vb: HistogramObserver(Of TMeasurement).Record
+- uid: DotNext.Diagnostics.Metrics.HistogramObserver`1.Value
+  name: Value
+  href: api/DotNext.Diagnostics.Metrics.HistogramObserver-1.html#DotNext_Diagnostics_Metrics_HistogramObserver_1_Value
+  commentId: P:DotNext.Diagnostics.Metrics.HistogramObserver`1.Value
+  fullName: DotNext.Diagnostics.Metrics.HistogramObserver<TMeasurement>.Value
+  fullName.vb: DotNext.Diagnostics.Metrics.HistogramObserver(Of TMeasurement).Value
+  nameWithType: HistogramObserver<TMeasurement>.Value
+  nameWithType.vb: HistogramObserver(Of TMeasurement).Value
+- uid: DotNext.Diagnostics.Metrics.HistogramObserver`1.Value*
+  name: Value
+  href: api/DotNext.Diagnostics.Metrics.HistogramObserver-1.html#DotNext_Diagnostics_Metrics_HistogramObserver_1_Value_
+  commentId: Overload:DotNext.Diagnostics.Metrics.HistogramObserver`1.Value
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Metrics.HistogramObserver<TMeasurement>.Value
+  fullName.vb: DotNext.Diagnostics.Metrics.HistogramObserver(Of TMeasurement).Value
+  nameWithType: HistogramObserver<TMeasurement>.Value
+  nameWithType.vb: HistogramObserver(Of TMeasurement).Value
+- uid: DotNext.Diagnostics.Metrics.InstrumentObserver
+  name: InstrumentObserver
+  href: api/DotNext.Diagnostics.Metrics.InstrumentObserver.html
+  commentId: T:DotNext.Diagnostics.Metrics.InstrumentObserver
+  fullName: DotNext.Diagnostics.Metrics.InstrumentObserver
+  nameWithType: InstrumentObserver
+- uid: DotNext.Diagnostics.Metrics.InstrumentObserver.IsCompleted
+  name: IsCompleted
+  href: api/DotNext.Diagnostics.Metrics.InstrumentObserver.html#DotNext_Diagnostics_Metrics_InstrumentObserver_IsCompleted
+  commentId: P:DotNext.Diagnostics.Metrics.InstrumentObserver.IsCompleted
+  fullName: DotNext.Diagnostics.Metrics.InstrumentObserver.IsCompleted
+  nameWithType: InstrumentObserver.IsCompleted
+- uid: DotNext.Diagnostics.Metrics.InstrumentObserver.IsCompleted*
+  name: IsCompleted
+  href: api/DotNext.Diagnostics.Metrics.InstrumentObserver.html#DotNext_Diagnostics_Metrics_InstrumentObserver_IsCompleted_
+  commentId: Overload:DotNext.Diagnostics.Metrics.InstrumentObserver.IsCompleted
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Metrics.InstrumentObserver.IsCompleted
+  nameWithType: InstrumentObserver.IsCompleted
+- uid: DotNext.Diagnostics.Metrics.InstrumentObserver.ObservationCompletionCallback
+  name: ObservationCompletionCallback
+  href: api/DotNext.Diagnostics.Metrics.InstrumentObserver.html#DotNext_Diagnostics_Metrics_InstrumentObserver_ObservationCompletionCallback
+  commentId: F:DotNext.Diagnostics.Metrics.InstrumentObserver.ObservationCompletionCallback
+  fullName: DotNext.Diagnostics.Metrics.InstrumentObserver.ObservationCompletionCallback
+  nameWithType: InstrumentObserver.ObservationCompletionCallback
+- uid: DotNext.Diagnostics.Metrics.InstrumentObserver`1
+  name: InstrumentObserver<TMeasurement>
+  href: api/DotNext.Diagnostics.Metrics.InstrumentObserver-1.html
+  commentId: T:DotNext.Diagnostics.Metrics.InstrumentObserver`1
+  name.vb: InstrumentObserver(Of TMeasurement)
+  fullName: DotNext.Diagnostics.Metrics.InstrumentObserver<TMeasurement>
+  fullName.vb: DotNext.Diagnostics.Metrics.InstrumentObserver(Of TMeasurement)
+  nameWithType: InstrumentObserver<TMeasurement>
+  nameWithType.vb: InstrumentObserver(Of TMeasurement)
+- uid: DotNext.Diagnostics.Metrics.InstrumentObserver`2
+  name: InstrumentObserver<TMeasurement, TInstrument>
+  href: api/DotNext.Diagnostics.Metrics.InstrumentObserver-2.html
+  commentId: T:DotNext.Diagnostics.Metrics.InstrumentObserver`2
+  name.vb: InstrumentObserver(Of TMeasurement, TInstrument)
+  fullName: DotNext.Diagnostics.Metrics.InstrumentObserver<TMeasurement, TInstrument>
+  fullName.vb: DotNext.Diagnostics.Metrics.InstrumentObserver(Of TMeasurement, TInstrument)
+  nameWithType: InstrumentObserver<TMeasurement, TInstrument>
+  nameWithType.vb: InstrumentObserver(Of TMeasurement, TInstrument)
+- uid: DotNext.Diagnostics.Metrics.InstrumentObserver`2.#ctor(DotNext.Diagnostics.Metrics.MeasurementFilter{`1})
+  name: InstrumentObserver(MeasurementFilter<TInstrument>?)
+  href: api/DotNext.Diagnostics.Metrics.InstrumentObserver-2.html#DotNext_Diagnostics_Metrics_InstrumentObserver_2__ctor_DotNext_Diagnostics_Metrics_MeasurementFilter__1__
+  commentId: M:DotNext.Diagnostics.Metrics.InstrumentObserver`2.#ctor(DotNext.Diagnostics.Metrics.MeasurementFilter{`1})
+  name.vb: New(MeasurementFilter(Of TInstrument))
+  fullName: DotNext.Diagnostics.Metrics.InstrumentObserver<TMeasurement, TInstrument>.InstrumentObserver(DotNext.Diagnostics.Metrics.MeasurementFilter<TInstrument>?)
+  fullName.vb: DotNext.Diagnostics.Metrics.InstrumentObserver(Of TMeasurement, TInstrument).New(DotNext.Diagnostics.Metrics.MeasurementFilter(Of TInstrument))
+  nameWithType: InstrumentObserver<TMeasurement, TInstrument>.InstrumentObserver(MeasurementFilter<TInstrument>?)
+  nameWithType.vb: InstrumentObserver(Of TMeasurement, TInstrument).New(MeasurementFilter(Of TInstrument))
+- uid: DotNext.Diagnostics.Metrics.InstrumentObserver`2.#ctor*
+  name: InstrumentObserver
+  href: api/DotNext.Diagnostics.Metrics.InstrumentObserver-2.html#DotNext_Diagnostics_Metrics_InstrumentObserver_2__ctor_
+  commentId: Overload:DotNext.Diagnostics.Metrics.InstrumentObserver`2.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Diagnostics.Metrics.InstrumentObserver<TMeasurement, TInstrument>.InstrumentObserver
+  fullName.vb: DotNext.Diagnostics.Metrics.InstrumentObserver(Of TMeasurement, TInstrument).New
+  nameWithType: InstrumentObserver<TMeasurement, TInstrument>.InstrumentObserver
+  nameWithType.vb: InstrumentObserver(Of TMeasurement, TInstrument).New
+- uid: DotNext.Diagnostics.Metrics.InstrumentObserver`2.Observe(`1,System.Diagnostics.Metrics.MeterListener)
+  name: Observe(TInstrument, MeterListener)
+  href: api/DotNext.Diagnostics.Metrics.InstrumentObserver-2.html#DotNext_Diagnostics_Metrics_InstrumentObserver_2_Observe__1_System_Diagnostics_Metrics_MeterListener_
+  commentId: M:DotNext.Diagnostics.Metrics.InstrumentObserver`2.Observe(`1,System.Diagnostics.Metrics.MeterListener)
+  fullName: DotNext.Diagnostics.Metrics.InstrumentObserver<TMeasurement, TInstrument>.Observe(TInstrument, System.Diagnostics.Metrics.MeterListener)
+  fullName.vb: DotNext.Diagnostics.Metrics.InstrumentObserver(Of TMeasurement, TInstrument).Observe(TInstrument, System.Diagnostics.Metrics.MeterListener)
+  nameWithType: InstrumentObserver<TMeasurement, TInstrument>.Observe(TInstrument, MeterListener)
+  nameWithType.vb: InstrumentObserver(Of TMeasurement, TInstrument).Observe(TInstrument, MeterListener)
+- uid: DotNext.Diagnostics.Metrics.InstrumentObserver`2.Observe*
+  name: Observe
+  href: api/DotNext.Diagnostics.Metrics.InstrumentObserver-2.html#DotNext_Diagnostics_Metrics_InstrumentObserver_2_Observe_
+  commentId: Overload:DotNext.Diagnostics.Metrics.InstrumentObserver`2.Observe
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Metrics.InstrumentObserver<TMeasurement, TInstrument>.Observe
+  fullName.vb: DotNext.Diagnostics.Metrics.InstrumentObserver(Of TMeasurement, TInstrument).Observe
+  nameWithType: InstrumentObserver<TMeasurement, TInstrument>.Observe
+  nameWithType.vb: InstrumentObserver(Of TMeasurement, TInstrument).Observe
+- uid: DotNext.Diagnostics.Metrics.InstrumentObserver`2.Record(`0)
+  name: Record(TMeasurement)
+  href: api/DotNext.Diagnostics.Metrics.InstrumentObserver-2.html#DotNext_Diagnostics_Metrics_InstrumentObserver_2_Record__0_
+  commentId: M:DotNext.Diagnostics.Metrics.InstrumentObserver`2.Record(`0)
+  fullName: DotNext.Diagnostics.Metrics.InstrumentObserver<TMeasurement, TInstrument>.Record(TMeasurement)
+  fullName.vb: DotNext.Diagnostics.Metrics.InstrumentObserver(Of TMeasurement, TInstrument).Record(TMeasurement)
+  nameWithType: InstrumentObserver<TMeasurement, TInstrument>.Record(TMeasurement)
+  nameWithType.vb: InstrumentObserver(Of TMeasurement, TInstrument).Record(TMeasurement)
+- uid: DotNext.Diagnostics.Metrics.InstrumentObserver`2.Record*
+  name: Record
+  href: api/DotNext.Diagnostics.Metrics.InstrumentObserver-2.html#DotNext_Diagnostics_Metrics_InstrumentObserver_2_Record_
+  commentId: Overload:DotNext.Diagnostics.Metrics.InstrumentObserver`2.Record
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Metrics.InstrumentObserver<TMeasurement, TInstrument>.Record
+  fullName.vb: DotNext.Diagnostics.Metrics.InstrumentObserver(Of TMeasurement, TInstrument).Record
+  nameWithType: InstrumentObserver<TMeasurement, TInstrument>.Record
+  nameWithType.vb: InstrumentObserver(Of TMeasurement, TInstrument).Record
+- uid: DotNext.Diagnostics.Metrics.MeasurementFilter`1
+  name: MeasurementFilter<TInstrument>
+  href: api/DotNext.Diagnostics.Metrics.MeasurementFilter-1.html
+  commentId: T:DotNext.Diagnostics.Metrics.MeasurementFilter`1
+  name.vb: MeasurementFilter(Of TInstrument)
+  fullName: DotNext.Diagnostics.Metrics.MeasurementFilter<TInstrument>
+  fullName.vb: DotNext.Diagnostics.Metrics.MeasurementFilter(Of TInstrument)
+  nameWithType: MeasurementFilter<TInstrument>
+  nameWithType.vb: MeasurementFilter(Of TInstrument)
+- uid: DotNext.Diagnostics.Metrics.MeterListenerBuilder
+  name: MeterListenerBuilder
+  href: api/DotNext.Diagnostics.Metrics.MeterListenerBuilder.html
+  commentId: T:DotNext.Diagnostics.Metrics.MeterListenerBuilder
+  fullName: DotNext.Diagnostics.Metrics.MeterListenerBuilder
+  nameWithType: MeterListenerBuilder
+- uid: DotNext.Diagnostics.Metrics.MeterListenerBuilder.Build
+  name: Build()
+  href: api/DotNext.Diagnostics.Metrics.MeterListenerBuilder.html#DotNext_Diagnostics_Metrics_MeterListenerBuilder_Build
+  commentId: M:DotNext.Diagnostics.Metrics.MeterListenerBuilder.Build
+  fullName: DotNext.Diagnostics.Metrics.MeterListenerBuilder.Build()
+  nameWithType: MeterListenerBuilder.Build()
+- uid: DotNext.Diagnostics.Metrics.MeterListenerBuilder.Build*
+  name: Build
+  href: api/DotNext.Diagnostics.Metrics.MeterListenerBuilder.html#DotNext_Diagnostics_Metrics_MeterListenerBuilder_Build_
+  commentId: Overload:DotNext.Diagnostics.Metrics.MeterListenerBuilder.Build
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Metrics.MeterListenerBuilder.Build
+  nameWithType: MeterListenerBuilder.Build
+- uid: DotNext.Diagnostics.Metrics.MeterListenerBuilder.Observe*
+  name: Observe
+  href: api/DotNext.Diagnostics.Metrics.MeterListenerBuilder.html#DotNext_Diagnostics_Metrics_MeterListenerBuilder_Observe_
+  commentId: Overload:DotNext.Diagnostics.Metrics.MeterListenerBuilder.Observe
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Metrics.MeterListenerBuilder.Observe
+  nameWithType: MeterListenerBuilder.Observe
+- uid: DotNext.Diagnostics.Metrics.MeterListenerBuilder.Observe``2(System.Predicate{``1},DotNext.Diagnostics.Metrics.InstrumentObserver{``0,``1})
+  name: Observe<TMeasurement, TInstrument>(Predicate<TInstrument>, InstrumentObserver<TMeasurement, TInstrument>)
+  href: api/DotNext.Diagnostics.Metrics.MeterListenerBuilder.html#DotNext_Diagnostics_Metrics_MeterListenerBuilder_Observe__2_System_Predicate___1__DotNext_Diagnostics_Metrics_InstrumentObserver___0___1__
+  commentId: M:DotNext.Diagnostics.Metrics.MeterListenerBuilder.Observe``2(System.Predicate{``1},DotNext.Diagnostics.Metrics.InstrumentObserver{``0,``1})
+  name.vb: Observe(Of TMeasurement, TInstrument)(Predicate(Of TInstrument), InstrumentObserver(Of TMeasurement, TInstrument))
+  fullName: DotNext.Diagnostics.Metrics.MeterListenerBuilder.Observe<TMeasurement, TInstrument>(System.Predicate<TInstrument>, DotNext.Diagnostics.Metrics.InstrumentObserver<TMeasurement, TInstrument>)
+  fullName.vb: DotNext.Diagnostics.Metrics.MeterListenerBuilder.Observe(Of TMeasurement, TInstrument)(System.Predicate(Of TInstrument), DotNext.Diagnostics.Metrics.InstrumentObserver(Of TMeasurement, TInstrument))
+  nameWithType: MeterListenerBuilder.Observe<TMeasurement, TInstrument>(Predicate<TInstrument>, InstrumentObserver<TMeasurement, TInstrument>)
+  nameWithType.vb: MeterListenerBuilder.Observe(Of TMeasurement, TInstrument)(Predicate(Of TInstrument), InstrumentObserver(Of TMeasurement, TInstrument))
+- uid: DotNext.Diagnostics.Metrics.UpDownCounterObserver`1
+  name: UpDownCounterObserver<TMeasurement>
+  href: api/DotNext.Diagnostics.Metrics.UpDownCounterObserver-1.html
+  commentId: T:DotNext.Diagnostics.Metrics.UpDownCounterObserver`1
+  name.vb: UpDownCounterObserver(Of TMeasurement)
+  fullName: DotNext.Diagnostics.Metrics.UpDownCounterObserver<TMeasurement>
+  fullName.vb: DotNext.Diagnostics.Metrics.UpDownCounterObserver(Of TMeasurement)
+  nameWithType: UpDownCounterObserver<TMeasurement>
+  nameWithType.vb: UpDownCounterObserver(Of TMeasurement)
+- uid: DotNext.Diagnostics.Metrics.UpDownCounterObserver`1.#ctor(DotNext.Diagnostics.Metrics.MeasurementFilter{System.Diagnostics.Metrics.UpDownCounter{`0}})
+  name: UpDownCounterObserver(MeasurementFilter<UpDownCounter<TMeasurement>>?)
+  href: api/DotNext.Diagnostics.Metrics.UpDownCounterObserver-1.html#DotNext_Diagnostics_Metrics_UpDownCounterObserver_1__ctor_DotNext_Diagnostics_Metrics_MeasurementFilter_System_Diagnostics_Metrics_UpDownCounter__0___
+  commentId: M:DotNext.Diagnostics.Metrics.UpDownCounterObserver`1.#ctor(DotNext.Diagnostics.Metrics.MeasurementFilter{System.Diagnostics.Metrics.UpDownCounter{`0}})
+  name.vb: New(MeasurementFilter(Of UpDownCounter(Of TMeasurement)))
+  fullName: DotNext.Diagnostics.Metrics.UpDownCounterObserver<TMeasurement>.UpDownCounterObserver(DotNext.Diagnostics.Metrics.MeasurementFilter<System.Diagnostics.Metrics.UpDownCounter<TMeasurement>>?)
+  fullName.vb: DotNext.Diagnostics.Metrics.UpDownCounterObserver(Of TMeasurement).New(DotNext.Diagnostics.Metrics.MeasurementFilter(Of System.Diagnostics.Metrics.UpDownCounter(Of TMeasurement)))
+  nameWithType: UpDownCounterObserver<TMeasurement>.UpDownCounterObserver(MeasurementFilter<UpDownCounter<TMeasurement>>?)
+  nameWithType.vb: UpDownCounterObserver(Of TMeasurement).New(MeasurementFilter(Of UpDownCounter(Of TMeasurement)))
+- uid: DotNext.Diagnostics.Metrics.UpDownCounterObserver`1.#ctor*
+  name: UpDownCounterObserver
+  href: api/DotNext.Diagnostics.Metrics.UpDownCounterObserver-1.html#DotNext_Diagnostics_Metrics_UpDownCounterObserver_1__ctor_
+  commentId: Overload:DotNext.Diagnostics.Metrics.UpDownCounterObserver`1.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Diagnostics.Metrics.UpDownCounterObserver<TMeasurement>.UpDownCounterObserver
+  fullName.vb: DotNext.Diagnostics.Metrics.UpDownCounterObserver(Of TMeasurement).New
+  nameWithType: UpDownCounterObserver<TMeasurement>.UpDownCounterObserver
+  nameWithType.vb: UpDownCounterObserver(Of TMeasurement).New
+- uid: DotNext.Diagnostics.Metrics.UpDownCounterObserver`1.Record(`0)
+  name: Record(TMeasurement)
+  href: api/DotNext.Diagnostics.Metrics.UpDownCounterObserver-1.html#DotNext_Diagnostics_Metrics_UpDownCounterObserver_1_Record__0_
+  commentId: M:DotNext.Diagnostics.Metrics.UpDownCounterObserver`1.Record(`0)
+  fullName: DotNext.Diagnostics.Metrics.UpDownCounterObserver<TMeasurement>.Record(TMeasurement)
+  fullName.vb: DotNext.Diagnostics.Metrics.UpDownCounterObserver(Of TMeasurement).Record(TMeasurement)
+  nameWithType: UpDownCounterObserver<TMeasurement>.Record(TMeasurement)
+  nameWithType.vb: UpDownCounterObserver(Of TMeasurement).Record(TMeasurement)
+- uid: DotNext.Diagnostics.Metrics.UpDownCounterObserver`1.Record*
+  name: Record
+  href: api/DotNext.Diagnostics.Metrics.UpDownCounterObserver-1.html#DotNext_Diagnostics_Metrics_UpDownCounterObserver_1_Record_
+  commentId: Overload:DotNext.Diagnostics.Metrics.UpDownCounterObserver`1.Record
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Metrics.UpDownCounterObserver<TMeasurement>.Record
+  fullName.vb: DotNext.Diagnostics.Metrics.UpDownCounterObserver(Of TMeasurement).Record
+  nameWithType: UpDownCounterObserver<TMeasurement>.Record
+  nameWithType.vb: UpDownCounterObserver(Of TMeasurement).Record
+- uid: DotNext.Diagnostics.Metrics.UpDownCounterObserver`1.Value
+  name: Value
+  href: api/DotNext.Diagnostics.Metrics.UpDownCounterObserver-1.html#DotNext_Diagnostics_Metrics_UpDownCounterObserver_1_Value
+  commentId: P:DotNext.Diagnostics.Metrics.UpDownCounterObserver`1.Value
+  fullName: DotNext.Diagnostics.Metrics.UpDownCounterObserver<TMeasurement>.Value
+  fullName.vb: DotNext.Diagnostics.Metrics.UpDownCounterObserver(Of TMeasurement).Value
+  nameWithType: UpDownCounterObserver<TMeasurement>.Value
+  nameWithType.vb: UpDownCounterObserver(Of TMeasurement).Value
+- uid: DotNext.Diagnostics.Metrics.UpDownCounterObserver`1.Value*
+  name: Value
+  href: api/DotNext.Diagnostics.Metrics.UpDownCounterObserver-1.html#DotNext_Diagnostics_Metrics_UpDownCounterObserver_1_Value_
+  commentId: Overload:DotNext.Diagnostics.Metrics.UpDownCounterObserver`1.Value
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Metrics.UpDownCounterObserver<TMeasurement>.Value
+  fullName.vb: DotNext.Diagnostics.Metrics.UpDownCounterObserver(Of TMeasurement).Value
+  nameWithType: UpDownCounterObserver<TMeasurement>.Value
+  nameWithType.vb: UpDownCounterObserver(Of TMeasurement).Value
 - uid: DotNext.Diagnostics.PhiAccrualFailureDetector
   name: PhiAccrualFailureDetector
   href: api/DotNext.Diagnostics.PhiAccrualFailureDetector.html
@@ -12452,6 +12690,53 @@ references:
   fullName.vb: DotNext.GenericArgumentException(Of T).New
   nameWithType: GenericArgumentException<T>.GenericArgumentException
   nameWithType.vb: GenericArgumentException(Of T).New
+- uid: DotNext.Hosting
+  name: DotNext.Hosting
+  href: api/DotNext.Hosting.html
+  commentId: N:DotNext.Hosting
+  fullName: DotNext.Hosting
+  nameWithType: DotNext.Hosting
+- uid: DotNext.Hosting.ConsoleLifetimeTokenSource
+  name: ConsoleLifetimeTokenSource
+  href: api/DotNext.Hosting.ConsoleLifetimeTokenSource.html
+  commentId: T:DotNext.Hosting.ConsoleLifetimeTokenSource
+  fullName: DotNext.Hosting.ConsoleLifetimeTokenSource
+  nameWithType: ConsoleLifetimeTokenSource
+- uid: DotNext.Hosting.ConsoleLifetimeTokenSource.#ctor
+  name: ConsoleLifetimeTokenSource()
+  href: api/DotNext.Hosting.ConsoleLifetimeTokenSource.html#DotNext_Hosting_ConsoleLifetimeTokenSource__ctor
+  commentId: M:DotNext.Hosting.ConsoleLifetimeTokenSource.#ctor
+  name.vb: New()
+  fullName: DotNext.Hosting.ConsoleLifetimeTokenSource.ConsoleLifetimeTokenSource()
+  fullName.vb: DotNext.Hosting.ConsoleLifetimeTokenSource.New()
+  nameWithType: ConsoleLifetimeTokenSource.ConsoleLifetimeTokenSource()
+  nameWithType.vb: ConsoleLifetimeTokenSource.New()
+- uid: DotNext.Hosting.ConsoleLifetimeTokenSource.#ctor*
+  name: ConsoleLifetimeTokenSource
+  href: api/DotNext.Hosting.ConsoleLifetimeTokenSource.html#DotNext_Hosting_ConsoleLifetimeTokenSource__ctor_
+  commentId: Overload:DotNext.Hosting.ConsoleLifetimeTokenSource.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Hosting.ConsoleLifetimeTokenSource.ConsoleLifetimeTokenSource
+  fullName.vb: DotNext.Hosting.ConsoleLifetimeTokenSource.New
+  nameWithType: ConsoleLifetimeTokenSource.ConsoleLifetimeTokenSource
+  nameWithType.vb: ConsoleLifetimeTokenSource.New
+- uid: DotNext.Hosting.ConsoleLifetimeTokenSource.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/DotNext.Hosting.ConsoleLifetimeTokenSource.html#DotNext_Hosting_ConsoleLifetimeTokenSource_Dispose_System_Boolean_
+  commentId: M:DotNext.Hosting.ConsoleLifetimeTokenSource.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: DotNext.Hosting.ConsoleLifetimeTokenSource.Dispose(bool)
+  fullName.vb: DotNext.Hosting.ConsoleLifetimeTokenSource.Dispose(Boolean)
+  nameWithType: ConsoleLifetimeTokenSource.Dispose(bool)
+  nameWithType.vb: ConsoleLifetimeTokenSource.Dispose(Boolean)
+- uid: DotNext.Hosting.ConsoleLifetimeTokenSource.Dispose*
+  name: Dispose
+  href: api/DotNext.Hosting.ConsoleLifetimeTokenSource.html#DotNext_Hosting_ConsoleLifetimeTokenSource_Dispose_
+  commentId: Overload:DotNext.Hosting.ConsoleLifetimeTokenSource.Dispose
+  isSpec: "True"
+  fullName: DotNext.Hosting.ConsoleLifetimeTokenSource.Dispose
+  nameWithType: ConsoleLifetimeTokenSource.Dispose
 - uid: DotNext.IConsumer`1
   name: IConsumer<T>
   href: api/DotNext.IConsumer-1.html
@@ -23469,6 +23754,31 @@ references:
   fullName.vb: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.New
   nameWithType: ApplicationMaintenanceCommand.ApplicationMaintenanceCommand
   nameWithType.vb: ApplicationMaintenanceCommand.New
+- uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction
+  name: ApplicationMaintenanceCommand.AsynchronousAction
+  href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction.html
+  commentId: T:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction
+  fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction
+  nameWithType: ApplicationMaintenanceCommand.AsynchronousAction
+- uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction.InvokeAsync(DotNext.Maintenance.IMaintenanceSession,System.CommandLine.ParseResult,System.Threading.CancellationToken)
+  name: InvokeAsync(IMaintenanceSession, ParseResult, CancellationToken)
+  href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_AsynchronousAction_InvokeAsync_DotNext_Maintenance_IMaintenanceSession_System_CommandLine_ParseResult_System_Threading_CancellationToken_
+  commentId: M:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction.InvokeAsync(DotNext.Maintenance.IMaintenanceSession,System.CommandLine.ParseResult,System.Threading.CancellationToken)
+  fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction.InvokeAsync(DotNext.Maintenance.IMaintenanceSession, System.CommandLine.ParseResult, System.Threading.CancellationToken)
+  nameWithType: ApplicationMaintenanceCommand.AsynchronousAction.InvokeAsync(IMaintenanceSession, ParseResult, CancellationToken)
+- uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction.InvokeAsync(System.CommandLine.ParseResult,System.Threading.CancellationToken)
+  name: InvokeAsync(ParseResult, CancellationToken)
+  href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_AsynchronousAction_InvokeAsync_System_CommandLine_ParseResult_System_Threading_CancellationToken_
+  commentId: M:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction.InvokeAsync(System.CommandLine.ParseResult,System.Threading.CancellationToken)
+  fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction.InvokeAsync(System.CommandLine.ParseResult, System.Threading.CancellationToken)
+  nameWithType: ApplicationMaintenanceCommand.AsynchronousAction.InvokeAsync(ParseResult, CancellationToken)
+- uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction.InvokeAsync*
+  name: InvokeAsync
+  href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_AsynchronousAction_InvokeAsync_
+  commentId: Overload:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction.InvokeAsync
+  isSpec: "True"
+  fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.AsynchronousAction.InvokeAsync
+  nameWithType: ApplicationMaintenanceCommand.AsynchronousAction.InvokeAsync
 - uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.Authorization
   name: Authorization
   href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_Authorization
@@ -23527,6 +23837,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.GetDefaultCommands
   nameWithType: ApplicationMaintenanceCommand.GetDefaultCommands
+- uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.HelpCommand
+  name: HelpCommand()
+  href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_HelpCommand
+  commentId: M:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.HelpCommand
+  fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.HelpCommand()
+  nameWithType: ApplicationMaintenanceCommand.HelpCommand()
+- uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.HelpCommand*
+  name: HelpCommand
+  href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_HelpCommand_
+  commentId: Overload:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.HelpCommand
+  isSpec: "True"
+  fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.HelpCommand
+  nameWithType: ApplicationMaintenanceCommand.HelpCommand
 - uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.LeaveInteractiveModeCommand
   name: LeaveInteractiveModeCommand()
   href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_LeaveInteractiveModeCommand
@@ -23540,6 +23863,56 @@ references:
   isSpec: "True"
   fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.LeaveInteractiveModeCommand
   nameWithType: ApplicationMaintenanceCommand.LeaveInteractiveModeCommand
+- uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction(System.Action{DotNext.Maintenance.IMaintenanceSession,System.CommandLine.ParseResult})
+  name: SetAction(Action<IMaintenanceSession, ParseResult>)
+  href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_SetAction_System_Action_DotNext_Maintenance_IMaintenanceSession_System_CommandLine_ParseResult__
+  commentId: M:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction(System.Action{DotNext.Maintenance.IMaintenanceSession,System.CommandLine.ParseResult})
+  name.vb: SetAction(Action(Of IMaintenanceSession, ParseResult))
+  fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction(System.Action<DotNext.Maintenance.IMaintenanceSession, System.CommandLine.ParseResult>)
+  fullName.vb: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction(System.Action(Of DotNext.Maintenance.IMaintenanceSession, System.CommandLine.ParseResult))
+  nameWithType: ApplicationMaintenanceCommand.SetAction(Action<IMaintenanceSession, ParseResult>)
+  nameWithType.vb: ApplicationMaintenanceCommand.SetAction(Action(Of IMaintenanceSession, ParseResult))
+- uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction(System.Func{DotNext.Maintenance.IMaintenanceSession,System.CommandLine.ParseResult,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask})
+  name: SetAction(Func<IMaintenanceSession, ParseResult, CancellationToken, ValueTask>)
+  href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_SetAction_System_Func_DotNext_Maintenance_IMaintenanceSession_System_CommandLine_ParseResult_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__
+  commentId: M:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction(System.Func{DotNext.Maintenance.IMaintenanceSession,System.CommandLine.ParseResult,System.Threading.CancellationToken,System.Threading.Tasks.ValueTask})
+  name.vb: SetAction(Func(Of IMaintenanceSession, ParseResult, CancellationToken, ValueTask))
+  fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction(System.Func<DotNext.Maintenance.IMaintenanceSession, System.CommandLine.ParseResult, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask>)
+  fullName.vb: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction(System.Func(Of DotNext.Maintenance.IMaintenanceSession, System.CommandLine.ParseResult, System.Threading.CancellationToken, System.Threading.Tasks.ValueTask))
+  nameWithType: ApplicationMaintenanceCommand.SetAction(Func<IMaintenanceSession, ParseResult, CancellationToken, ValueTask>)
+  nameWithType.vb: ApplicationMaintenanceCommand.SetAction(Func(Of IMaintenanceSession, ParseResult, CancellationToken, ValueTask))
+- uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction*
+  name: SetAction
+  href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_SetAction_
+  commentId: Overload:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction
+  isSpec: "True"
+  fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SetAction
+  nameWithType: ApplicationMaintenanceCommand.SetAction
+- uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction
+  name: ApplicationMaintenanceCommand.SynchronousAction
+  href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction.html
+  commentId: T:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction
+  fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction
+  nameWithType: ApplicationMaintenanceCommand.SynchronousAction
+- uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction.Invoke(DotNext.Maintenance.IMaintenanceSession,System.CommandLine.ParseResult)
+  name: Invoke(IMaintenanceSession, ParseResult)
+  href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_SynchronousAction_Invoke_DotNext_Maintenance_IMaintenanceSession_System_CommandLine_ParseResult_
+  commentId: M:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction.Invoke(DotNext.Maintenance.IMaintenanceSession,System.CommandLine.ParseResult)
+  fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction.Invoke(DotNext.Maintenance.IMaintenanceSession, System.CommandLine.ParseResult)
+  nameWithType: ApplicationMaintenanceCommand.SynchronousAction.Invoke(IMaintenanceSession, ParseResult)
+- uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction.Invoke(System.CommandLine.ParseResult)
+  name: Invoke(ParseResult)
+  href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_SynchronousAction_Invoke_System_CommandLine_ParseResult_
+  commentId: M:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction.Invoke(System.CommandLine.ParseResult)
+  fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction.Invoke(System.CommandLine.ParseResult)
+  nameWithType: ApplicationMaintenanceCommand.SynchronousAction.Invoke(ParseResult)
+- uid: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction.Invoke*
+  name: Invoke
+  href: api/DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction.html#DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand_SynchronousAction_Invoke_
+  commentId: Overload:DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction.Invoke
+  isSpec: "True"
+  fullName: DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand.SynchronousAction.Invoke
+  nameWithType: ApplicationMaintenanceCommand.SynchronousAction.Invoke
 - uid: DotNext.Maintenance.CommandLine.Authentication
   name: DotNext.Maintenance.CommandLine.Authentication
   href: api/DotNext.Maintenance.CommandLine.Authentication.html
@@ -23574,12 +23947,12 @@ references:
   commentId: T:DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler
   fullName: DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler
   nameWithType: IAuthenticationHandler
-- uid: DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler.ChallengeAsync(System.CommandLine.Invocation.InvocationContext,System.Security.Principal.IIdentity,System.Threading.CancellationToken)
-  name: ChallengeAsync(InvocationContext, IIdentity, CancellationToken)
-  href: api/DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler.html#DotNext_Maintenance_CommandLine_Authentication_IAuthenticationHandler_ChallengeAsync_System_CommandLine_Invocation_InvocationContext_System_Security_Principal_IIdentity_System_Threading_CancellationToken_
-  commentId: M:DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler.ChallengeAsync(System.CommandLine.Invocation.InvocationContext,System.Security.Principal.IIdentity,System.Threading.CancellationToken)
-  fullName: DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler.ChallengeAsync(System.CommandLine.Invocation.InvocationContext, System.Security.Principal.IIdentity, System.Threading.CancellationToken)
-  nameWithType: IAuthenticationHandler.ChallengeAsync(InvocationContext, IIdentity, CancellationToken)
+- uid: DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler.ChallengeAsync(System.CommandLine.ParseResult,System.Security.Principal.IIdentity,System.Threading.CancellationToken)
+  name: ChallengeAsync(ParseResult, IIdentity, CancellationToken)
+  href: api/DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler.html#DotNext_Maintenance_CommandLine_Authentication_IAuthenticationHandler_ChallengeAsync_System_CommandLine_ParseResult_System_Security_Principal_IIdentity_System_Threading_CancellationToken_
+  commentId: M:DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler.ChallengeAsync(System.CommandLine.ParseResult,System.Security.Principal.IIdentity,System.Threading.CancellationToken)
+  fullName: DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler.ChallengeAsync(System.CommandLine.ParseResult, System.Security.Principal.IIdentity, System.Threading.CancellationToken)
+  nameWithType: IAuthenticationHandler.ChallengeAsync(ParseResult, IIdentity, CancellationToken)
 - uid: DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler.ChallengeAsync*
   name: ChallengeAsync
   href: api/DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler.html#DotNext_Maintenance_CommandLine_Authentication_IAuthenticationHandler_ChallengeAsync_
@@ -23687,57 +24060,6 @@ references:
   fullName.vb: DotNext.Maintenance.CommandLine.Authorization.AuthorizationServices.UseApplicationMaintenanceInterfaceGlobalAuthorization(Of TDependency)(Microsoft.Extensions.DependencyInjection.IServiceCollection, System.Func(Of TDependency, DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback))
   nameWithType: AuthorizationServices.UseApplicationMaintenanceInterfaceGlobalAuthorization<TDependency>(IServiceCollection, Func<TDependency, AuthorizationCallback>)
   nameWithType.vb: AuthorizationServices.UseApplicationMaintenanceInterfaceGlobalAuthorization(Of TDependency)(IServiceCollection, Func(Of TDependency, AuthorizationCallback))
-- uid: DotNext.Maintenance.CommandLine.Binding
-  name: DotNext.Maintenance.CommandLine.Binding
-  href: api/DotNext.Maintenance.CommandLine.Binding.html
-  commentId: N:DotNext.Maintenance.CommandLine.Binding
-  fullName: DotNext.Maintenance.CommandLine.Binding
-  nameWithType: DotNext.Maintenance.CommandLine.Binding
-- uid: DotNext.Maintenance.CommandLine.Binding.DefaultBindings
-  name: DefaultBindings
-  href: api/DotNext.Maintenance.CommandLine.Binding.DefaultBindings.html
-  commentId: T:DotNext.Maintenance.CommandLine.Binding.DefaultBindings
-  fullName: DotNext.Maintenance.CommandLine.Binding.DefaultBindings
-  nameWithType: DefaultBindings
-- uid: DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Console
-  name: Console
-  href: api/DotNext.Maintenance.CommandLine.Binding.DefaultBindings.html#DotNext_Maintenance_CommandLine_Binding_DefaultBindings_Console
-  commentId: P:DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Console
-  fullName: DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Console
-  nameWithType: DefaultBindings.Console
-- uid: DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Console*
-  name: Console
-  href: api/DotNext.Maintenance.CommandLine.Binding.DefaultBindings.html#DotNext_Maintenance_CommandLine_Binding_DefaultBindings_Console_
-  commentId: Overload:DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Console
-  isSpec: "True"
-  fullName: DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Console
-  nameWithType: DefaultBindings.Console
-- uid: DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Session
-  name: Session
-  href: api/DotNext.Maintenance.CommandLine.Binding.DefaultBindings.html#DotNext_Maintenance_CommandLine_Binding_DefaultBindings_Session
-  commentId: P:DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Session
-  fullName: DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Session
-  nameWithType: DefaultBindings.Session
-- uid: DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Session*
-  name: Session
-  href: api/DotNext.Maintenance.CommandLine.Binding.DefaultBindings.html#DotNext_Maintenance_CommandLine_Binding_DefaultBindings_Session_
-  commentId: Overload:DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Session
-  isSpec: "True"
-  fullName: DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Session
-  nameWithType: DefaultBindings.Session
-- uid: DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Token
-  name: Token
-  href: api/DotNext.Maintenance.CommandLine.Binding.DefaultBindings.html#DotNext_Maintenance_CommandLine_Binding_DefaultBindings_Token
-  commentId: P:DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Token
-  fullName: DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Token
-  nameWithType: DefaultBindings.Token
-- uid: DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Token*
-  name: Token
-  href: api/DotNext.Maintenance.CommandLine.Binding.DefaultBindings.html#DotNext_Maintenance_CommandLine_Binding_DefaultBindings_Token_
-  commentId: Overload:DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Token
-  isSpec: "True"
-  fullName: DotNext.Maintenance.CommandLine.Binding.DefaultBindings.Token
-  nameWithType: DefaultBindings.Token
 - uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost
   name: CommandLineMaintenanceInterfaceHost
   href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html
@@ -23873,57 +24195,6 @@ references:
   fullName.vb: DotNext.Maintenance.CommandLine.HostingServices.UseApplicationStatusProvider(Of TProvider)(Microsoft.Extensions.DependencyInjection.IServiceCollection)
   nameWithType: HostingServices.UseApplicationStatusProvider<TProvider>(IServiceCollection)
   nameWithType.vb: HostingServices.UseApplicationStatusProvider(Of TProvider)(IServiceCollection)
-- uid: DotNext.Maintenance.CommandLine.IO
-  name: DotNext.Maintenance.CommandLine.IO
-  href: api/DotNext.Maintenance.CommandLine.IO.html
-  commentId: N:DotNext.Maintenance.CommandLine.IO
-  fullName: DotNext.Maintenance.CommandLine.IO
-  nameWithType: DotNext.Maintenance.CommandLine.IO
-- uid: DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole
-  name: IMaintenanceConsole
-  href: api/DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.html
-  commentId: T:DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole
-  fullName: DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole
-  nameWithType: IMaintenanceConsole
-- uid: DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Error
-  name: Error
-  href: api/DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.html#DotNext_Maintenance_CommandLine_IO_IMaintenanceConsole_Error
-  commentId: P:DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Error
-  fullName: DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Error
-  nameWithType: IMaintenanceConsole.Error
-- uid: DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Error*
-  name: Error
-  href: api/DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.html#DotNext_Maintenance_CommandLine_IO_IMaintenanceConsole_Error_
-  commentId: Overload:DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Error
-  isSpec: "True"
-  fullName: DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Error
-  nameWithType: IMaintenanceConsole.Error
-- uid: DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Out
-  name: Out
-  href: api/DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.html#DotNext_Maintenance_CommandLine_IO_IMaintenanceConsole_Out
-  commentId: P:DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Out
-  fullName: DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Out
-  nameWithType: IMaintenanceConsole.Out
-- uid: DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Out*
-  name: Out
-  href: api/DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.html#DotNext_Maintenance_CommandLine_IO_IMaintenanceConsole_Out_
-  commentId: Overload:DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Out
-  isSpec: "True"
-  fullName: DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Out
-  nameWithType: IMaintenanceConsole.Out
-- uid: DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Session
-  name: Session
-  href: api/DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.html#DotNext_Maintenance_CommandLine_IO_IMaintenanceConsole_Session
-  commentId: P:DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Session
-  fullName: DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Session
-  nameWithType: IMaintenanceConsole.Session
-- uid: DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Session*
-  name: Session
-  href: api/DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.html#DotNext_Maintenance_CommandLine_IO_IMaintenanceConsole_Session_
-  commentId: Overload:DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Session
-  isSpec: "True"
-  fullName: DotNext.Maintenance.CommandLine.IO.IMaintenanceConsole.Session
-  nameWithType: IMaintenanceConsole.Session
 - uid: DotNext.Maintenance.IMaintenanceSession
   name: IMaintenanceSession
   href: api/DotNext.Maintenance.IMaintenanceSession.html
@@ -36121,6 +36392,472 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Mime.ContentTypeExtensions.GetEncoding
   nameWithType: ContentTypeExtensions.GetEncoding
+- uid: DotNext.Net.Multiplexing
+  name: DotNext.Net.Multiplexing
+  href: api/DotNext.Net.Multiplexing.html
+  commentId: N:DotNext.Net.Multiplexing
+  fullName: DotNext.Net.Multiplexing
+  nameWithType: DotNext.Net.Multiplexing
+- uid: DotNext.Net.Multiplexing.MultiplexedClient
+  name: MultiplexedClient
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.html
+  commentId: T:DotNext.Net.Multiplexing.MultiplexedClient
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient
+  nameWithType: MultiplexedClient
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.#ctor(DotNext.Net.Multiplexing.MultiplexedClient.Options)
+  name: MultiplexedClient(Options)
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.html#DotNext_Net_Multiplexing_MultiplexedClient__ctor_DotNext_Net_Multiplexing_MultiplexedClient_Options_
+  commentId: M:DotNext.Net.Multiplexing.MultiplexedClient.#ctor(DotNext.Net.Multiplexing.MultiplexedClient.Options)
+  name.vb: New(Options)
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.MultiplexedClient(DotNext.Net.Multiplexing.MultiplexedClient.Options)
+  fullName.vb: DotNext.Net.Multiplexing.MultiplexedClient.New(DotNext.Net.Multiplexing.MultiplexedClient.Options)
+  nameWithType: MultiplexedClient.MultiplexedClient(MultiplexedClient.Options)
+  nameWithType.vb: MultiplexedClient.New(MultiplexedClient.Options)
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.#ctor*
+  name: MultiplexedClient
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.html#DotNext_Net_Multiplexing_MultiplexedClient__ctor_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedClient.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.MultiplexedClient
+  fullName.vb: DotNext.Net.Multiplexing.MultiplexedClient.New
+  nameWithType: MultiplexedClient.MultiplexedClient
+  nameWithType.vb: MultiplexedClient.New
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.ConnectAsync(System.Threading.CancellationToken)
+  name: ConnectAsync(CancellationToken)
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.html#DotNext_Net_Multiplexing_MultiplexedClient_ConnectAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Multiplexing.MultiplexedClient.ConnectAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.ConnectAsync(System.Threading.CancellationToken)
+  nameWithType: MultiplexedClient.ConnectAsync(CancellationToken)
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.ConnectAsync*
+  name: ConnectAsync
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.html#DotNext_Net_Multiplexing_MultiplexedClient_ConnectAsync_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedClient.ConnectAsync
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.ConnectAsync
+  nameWithType: MultiplexedClient.ConnectAsync
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.html#DotNext_Net_Multiplexing_MultiplexedClient_Dispose_System_Boolean_
+  commentId: M:DotNext.Net.Multiplexing.MultiplexedClient.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.Dispose(bool)
+  fullName.vb: DotNext.Net.Multiplexing.MultiplexedClient.Dispose(Boolean)
+  nameWithType: MultiplexedClient.Dispose(bool)
+  nameWithType.vb: MultiplexedClient.Dispose(Boolean)
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.Dispose*
+  name: Dispose
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.html#DotNext_Net_Multiplexing_MultiplexedClient_Dispose_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedClient.Dispose
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.Dispose
+  nameWithType: MultiplexedClient.Dispose
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.html#DotNext_Net_Multiplexing_MultiplexedClient_DisposeAsync
+  commentId: M:DotNext.Net.Multiplexing.MultiplexedClient.DisposeAsync
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.DisposeAsync()
+  nameWithType: MultiplexedClient.DisposeAsync()
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.html#DotNext_Net_Multiplexing_MultiplexedClient_DisposeAsync_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedClient.DisposeAsync
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.DisposeAsync
+  nameWithType: MultiplexedClient.DisposeAsync
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.DisposeAsyncCore
+  name: DisposeAsyncCore()
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.html#DotNext_Net_Multiplexing_MultiplexedClient_DisposeAsyncCore
+  commentId: M:DotNext.Net.Multiplexing.MultiplexedClient.DisposeAsyncCore
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.DisposeAsyncCore()
+  nameWithType: MultiplexedClient.DisposeAsyncCore()
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.DisposeAsyncCore*
+  name: DisposeAsyncCore
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.html#DotNext_Net_Multiplexing_MultiplexedClient_DisposeAsyncCore_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedClient.DisposeAsyncCore
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.DisposeAsyncCore
+  nameWithType: MultiplexedClient.DisposeAsyncCore
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.OpenStreamAsync(System.Threading.CancellationToken)
+  name: OpenStreamAsync(CancellationToken)
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.html#DotNext_Net_Multiplexing_MultiplexedClient_OpenStreamAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Multiplexing.MultiplexedClient.OpenStreamAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.OpenStreamAsync(System.Threading.CancellationToken)
+  nameWithType: MultiplexedClient.OpenStreamAsync(CancellationToken)
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.OpenStreamAsync*
+  name: OpenStreamAsync
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.html#DotNext_Net_Multiplexing_MultiplexedClient_OpenStreamAsync_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedClient.OpenStreamAsync
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.OpenStreamAsync
+  nameWithType: MultiplexedClient.OpenStreamAsync
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.Options
+  name: MultiplexedClient.Options
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.Options.html
+  commentId: T:DotNext.Net.Multiplexing.MultiplexedClient.Options
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.Options
+  nameWithType: MultiplexedClient.Options
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.Options.HeartbeatDrift
+  name: HeartbeatDrift
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.Options.html#DotNext_Net_Multiplexing_MultiplexedClient_Options_HeartbeatDrift
+  commentId: P:DotNext.Net.Multiplexing.MultiplexedClient.Options.HeartbeatDrift
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.Options.HeartbeatDrift
+  nameWithType: MultiplexedClient.Options.HeartbeatDrift
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.Options.HeartbeatDrift*
+  name: HeartbeatDrift
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.Options.html#DotNext_Net_Multiplexing_MultiplexedClient_Options_HeartbeatDrift_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedClient.Options.HeartbeatDrift
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.Options.HeartbeatDrift
+  nameWithType: MultiplexedClient.Options.HeartbeatDrift
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.Options.Timeout
+  name: Timeout
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.Options.html#DotNext_Net_Multiplexing_MultiplexedClient_Options_Timeout
+  commentId: P:DotNext.Net.Multiplexing.MultiplexedClient.Options.Timeout
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.Options.Timeout
+  nameWithType: MultiplexedClient.Options.Timeout
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.Options.Timeout*
+  name: Timeout
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.Options.html#DotNext_Net_Multiplexing_MultiplexedClient_Options_Timeout_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedClient.Options.Timeout
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.Options.Timeout
+  nameWithType: MultiplexedClient.Options.Timeout
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.StartAsync(System.Threading.CancellationToken)
+  name: StartAsync(CancellationToken)
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.html#DotNext_Net_Multiplexing_MultiplexedClient_StartAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Multiplexing.MultiplexedClient.StartAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.StartAsync(System.Threading.CancellationToken)
+  nameWithType: MultiplexedClient.StartAsync(CancellationToken)
+- uid: DotNext.Net.Multiplexing.MultiplexedClient.StartAsync*
+  name: StartAsync
+  href: api/DotNext.Net.Multiplexing.MultiplexedClient.html#DotNext_Net_Multiplexing_MultiplexedClient_StartAsync_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedClient.StartAsync
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedClient.StartAsync
+  nameWithType: MultiplexedClient.StartAsync
+- uid: DotNext.Net.Multiplexing.MultiplexedListener
+  name: MultiplexedListener
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html
+  commentId: T:DotNext.Net.Multiplexing.MultiplexedListener
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener
+  nameWithType: MultiplexedListener
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.#ctor(DotNext.Net.Multiplexing.MultiplexedListener.Options)
+  name: MultiplexedListener(Options)
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener__ctor_DotNext_Net_Multiplexing_MultiplexedListener_Options_
+  commentId: M:DotNext.Net.Multiplexing.MultiplexedListener.#ctor(DotNext.Net.Multiplexing.MultiplexedListener.Options)
+  name.vb: New(Options)
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.MultiplexedListener(DotNext.Net.Multiplexing.MultiplexedListener.Options)
+  fullName.vb: DotNext.Net.Multiplexing.MultiplexedListener.New(DotNext.Net.Multiplexing.MultiplexedListener.Options)
+  nameWithType: MultiplexedListener.MultiplexedListener(MultiplexedListener.Options)
+  nameWithType.vb: MultiplexedListener.New(MultiplexedListener.Options)
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.#ctor*
+  name: MultiplexedListener
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener__ctor_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedListener.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.MultiplexedListener
+  fullName.vb: DotNext.Net.Multiplexing.MultiplexedListener.New
+  nameWithType: MultiplexedListener.MultiplexedListener
+  nameWithType.vb: MultiplexedListener.New
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.AcceptAsync(System.Threading.CancellationToken)
+  name: AcceptAsync(CancellationToken)
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener_AcceptAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Multiplexing.MultiplexedListener.AcceptAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.AcceptAsync(System.Threading.CancellationToken)
+  nameWithType: MultiplexedListener.AcceptAsync(CancellationToken)
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.AcceptAsync*
+  name: AcceptAsync
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener_AcceptAsync_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedListener.AcceptAsync
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.AcceptAsync
+  nameWithType: MultiplexedListener.AcceptAsync
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.ConfigureAcceptedSocket(System.Net.Sockets.Socket)
+  name: ConfigureAcceptedSocket(Socket)
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener_ConfigureAcceptedSocket_System_Net_Sockets_Socket_
+  commentId: M:DotNext.Net.Multiplexing.MultiplexedListener.ConfigureAcceptedSocket(System.Net.Sockets.Socket)
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.ConfigureAcceptedSocket(System.Net.Sockets.Socket)
+  nameWithType: MultiplexedListener.ConfigureAcceptedSocket(Socket)
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.ConfigureAcceptedSocket*
+  name: ConfigureAcceptedSocket
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener_ConfigureAcceptedSocket_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedListener.ConfigureAcceptedSocket
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.ConfigureAcceptedSocket
+  nameWithType: MultiplexedListener.ConfigureAcceptedSocket
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.Dispose(System.Boolean)
+  name: Dispose(bool)
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener_Dispose_System_Boolean_
+  commentId: M:DotNext.Net.Multiplexing.MultiplexedListener.Dispose(System.Boolean)
+  name.vb: Dispose(Boolean)
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.Dispose(bool)
+  fullName.vb: DotNext.Net.Multiplexing.MultiplexedListener.Dispose(Boolean)
+  nameWithType: MultiplexedListener.Dispose(bool)
+  nameWithType.vb: MultiplexedListener.Dispose(Boolean)
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.Dispose*
+  name: Dispose
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener_Dispose_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedListener.Dispose
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.Dispose
+  nameWithType: MultiplexedListener.Dispose
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener_DisposeAsync
+  commentId: M:DotNext.Net.Multiplexing.MultiplexedListener.DisposeAsync
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.DisposeAsync()
+  nameWithType: MultiplexedListener.DisposeAsync()
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener_DisposeAsync_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedListener.DisposeAsync
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.DisposeAsync
+  nameWithType: MultiplexedListener.DisposeAsync
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.DisposeAsyncCore
+  name: DisposeAsyncCore()
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener_DisposeAsyncCore
+  commentId: M:DotNext.Net.Multiplexing.MultiplexedListener.DisposeAsyncCore
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.DisposeAsyncCore()
+  nameWithType: MultiplexedListener.DisposeAsyncCore()
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.DisposeAsyncCore*
+  name: DisposeAsyncCore
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener_DisposeAsyncCore_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedListener.DisposeAsyncCore
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.DisposeAsyncCore
+  nameWithType: MultiplexedListener.DisposeAsyncCore
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.Listen
+  name: Listen()
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener_Listen
+  commentId: M:DotNext.Net.Multiplexing.MultiplexedListener.Listen
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.Listen()
+  nameWithType: MultiplexedListener.Listen()
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.Listen*
+  name: Listen
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener_Listen_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedListener.Listen
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.Listen
+  nameWithType: MultiplexedListener.Listen
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.Options
+  name: MultiplexedListener.Options
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.Options.html
+  commentId: T:DotNext.Net.Multiplexing.MultiplexedListener.Options
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.Options
+  nameWithType: MultiplexedListener.Options
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.Options.HeartbeatDrift
+  name: HeartbeatDrift
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.Options.html#DotNext_Net_Multiplexing_MultiplexedListener_Options_HeartbeatDrift
+  commentId: P:DotNext.Net.Multiplexing.MultiplexedListener.Options.HeartbeatDrift
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.Options.HeartbeatDrift
+  nameWithType: MultiplexedListener.Options.HeartbeatDrift
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.Options.HeartbeatDrift*
+  name: HeartbeatDrift
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.Options.html#DotNext_Net_Multiplexing_MultiplexedListener_Options_HeartbeatDrift_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedListener.Options.HeartbeatDrift
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.Options.HeartbeatDrift
+  nameWithType: MultiplexedListener.Options.HeartbeatDrift
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.Options.Timeout
+  name: Timeout
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.Options.html#DotNext_Net_Multiplexing_MultiplexedListener_Options_Timeout
+  commentId: P:DotNext.Net.Multiplexing.MultiplexedListener.Options.Timeout
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.Options.Timeout
+  nameWithType: MultiplexedListener.Options.Timeout
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.Options.Timeout*
+  name: Timeout
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.Options.html#DotNext_Net_Multiplexing_MultiplexedListener_Options_Timeout_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedListener.Options.Timeout
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.Options.Timeout
+  nameWithType: MultiplexedListener.Options.Timeout
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.StartAsync(System.Threading.CancellationToken)
+  name: StartAsync(CancellationToken)
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener_StartAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Multiplexing.MultiplexedListener.StartAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.StartAsync(System.Threading.CancellationToken)
+  nameWithType: MultiplexedListener.StartAsync(CancellationToken)
+- uid: DotNext.Net.Multiplexing.MultiplexedListener.StartAsync*
+  name: StartAsync
+  href: api/DotNext.Net.Multiplexing.MultiplexedListener.html#DotNext_Net_Multiplexing_MultiplexedListener_StartAsync_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexedListener.StartAsync
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexedListener.StartAsync
+  nameWithType: MultiplexedListener.StartAsync
+- uid: DotNext.Net.Multiplexing.MultiplexingOptions
+  name: MultiplexingOptions
+  href: api/DotNext.Net.Multiplexing.MultiplexingOptions.html
+  commentId: T:DotNext.Net.Multiplexing.MultiplexingOptions
+  fullName: DotNext.Net.Multiplexing.MultiplexingOptions
+  nameWithType: MultiplexingOptions
+- uid: DotNext.Net.Multiplexing.MultiplexingOptions.Backlog
+  name: Backlog
+  href: api/DotNext.Net.Multiplexing.MultiplexingOptions.html#DotNext_Net_Multiplexing_MultiplexingOptions_Backlog
+  commentId: P:DotNext.Net.Multiplexing.MultiplexingOptions.Backlog
+  fullName: DotNext.Net.Multiplexing.MultiplexingOptions.Backlog
+  nameWithType: MultiplexingOptions.Backlog
+- uid: DotNext.Net.Multiplexing.MultiplexingOptions.Backlog*
+  name: Backlog
+  href: api/DotNext.Net.Multiplexing.MultiplexingOptions.html#DotNext_Net_Multiplexing_MultiplexingOptions_Backlog_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexingOptions.Backlog
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexingOptions.Backlog
+  nameWithType: MultiplexingOptions.Backlog
+- uid: DotNext.Net.Multiplexing.MultiplexingOptions.BufferOptions
+  name: BufferOptions
+  href: api/DotNext.Net.Multiplexing.MultiplexingOptions.html#DotNext_Net_Multiplexing_MultiplexingOptions_BufferOptions
+  commentId: P:DotNext.Net.Multiplexing.MultiplexingOptions.BufferOptions
+  fullName: DotNext.Net.Multiplexing.MultiplexingOptions.BufferOptions
+  nameWithType: MultiplexingOptions.BufferOptions
+- uid: DotNext.Net.Multiplexing.MultiplexingOptions.BufferOptions*
+  name: BufferOptions
+  href: api/DotNext.Net.Multiplexing.MultiplexingOptions.html#DotNext_Net_Multiplexing_MultiplexingOptions_BufferOptions_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexingOptions.BufferOptions
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexingOptions.BufferOptions
+  nameWithType: MultiplexingOptions.BufferOptions
+- uid: DotNext.Net.Multiplexing.MultiplexingOptions.MeasurementTags
+  name: MeasurementTags
+  href: api/DotNext.Net.Multiplexing.MultiplexingOptions.html#DotNext_Net_Multiplexing_MultiplexingOptions_MeasurementTags
+  commentId: P:DotNext.Net.Multiplexing.MultiplexingOptions.MeasurementTags
+  fullName: DotNext.Net.Multiplexing.MultiplexingOptions.MeasurementTags
+  nameWithType: MultiplexingOptions.MeasurementTags
+- uid: DotNext.Net.Multiplexing.MultiplexingOptions.MeasurementTags*
+  name: MeasurementTags
+  href: api/DotNext.Net.Multiplexing.MultiplexingOptions.html#DotNext_Net_Multiplexing_MultiplexingOptions_MeasurementTags_
+  commentId: Overload:DotNext.Net.Multiplexing.MultiplexingOptions.MeasurementTags
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.MultiplexingOptions.MeasurementTags
+  nameWithType: MultiplexingOptions.MeasurementTags
+- uid: DotNext.Net.Multiplexing.MultiplexingProtocolException
+  name: MultiplexingProtocolException
+  href: api/DotNext.Net.Multiplexing.MultiplexingProtocolException.html
+  commentId: T:DotNext.Net.Multiplexing.MultiplexingProtocolException
+  fullName: DotNext.Net.Multiplexing.MultiplexingProtocolException
+  nameWithType: MultiplexingProtocolException
+- uid: DotNext.Net.Multiplexing.StreamRejectedException
+  name: StreamRejectedException
+  href: api/DotNext.Net.Multiplexing.StreamRejectedException.html
+  commentId: T:DotNext.Net.Multiplexing.StreamRejectedException
+  fullName: DotNext.Net.Multiplexing.StreamRejectedException
+  nameWithType: StreamRejectedException
+- uid: DotNext.Net.Multiplexing.TcpMultiplexedClient
+  name: TcpMultiplexedClient
+  href: api/DotNext.Net.Multiplexing.TcpMultiplexedClient.html
+  commentId: T:DotNext.Net.Multiplexing.TcpMultiplexedClient
+  fullName: DotNext.Net.Multiplexing.TcpMultiplexedClient
+  nameWithType: TcpMultiplexedClient
+- uid: DotNext.Net.Multiplexing.TcpMultiplexedClient.#ctor(System.Net.EndPoint,DotNext.Net.Multiplexing.TcpMultiplexedClient.Options)
+  name: TcpMultiplexedClient(EndPoint, Options)
+  href: api/DotNext.Net.Multiplexing.TcpMultiplexedClient.html#DotNext_Net_Multiplexing_TcpMultiplexedClient__ctor_System_Net_EndPoint_DotNext_Net_Multiplexing_TcpMultiplexedClient_Options_
+  commentId: M:DotNext.Net.Multiplexing.TcpMultiplexedClient.#ctor(System.Net.EndPoint,DotNext.Net.Multiplexing.TcpMultiplexedClient.Options)
+  name.vb: New(EndPoint, Options)
+  fullName: DotNext.Net.Multiplexing.TcpMultiplexedClient.TcpMultiplexedClient(System.Net.EndPoint, DotNext.Net.Multiplexing.TcpMultiplexedClient.Options)
+  fullName.vb: DotNext.Net.Multiplexing.TcpMultiplexedClient.New(System.Net.EndPoint, DotNext.Net.Multiplexing.TcpMultiplexedClient.Options)
+  nameWithType: TcpMultiplexedClient.TcpMultiplexedClient(EndPoint, TcpMultiplexedClient.Options)
+  nameWithType.vb: TcpMultiplexedClient.New(EndPoint, TcpMultiplexedClient.Options)
+- uid: DotNext.Net.Multiplexing.TcpMultiplexedClient.#ctor*
+  name: TcpMultiplexedClient
+  href: api/DotNext.Net.Multiplexing.TcpMultiplexedClient.html#DotNext_Net_Multiplexing_TcpMultiplexedClient__ctor_
+  commentId: Overload:DotNext.Net.Multiplexing.TcpMultiplexedClient.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Net.Multiplexing.TcpMultiplexedClient.TcpMultiplexedClient
+  fullName.vb: DotNext.Net.Multiplexing.TcpMultiplexedClient.New
+  nameWithType: TcpMultiplexedClient.TcpMultiplexedClient
+  nameWithType.vb: TcpMultiplexedClient.New
+- uid: DotNext.Net.Multiplexing.TcpMultiplexedClient.ConnectAsync(System.Threading.CancellationToken)
+  name: ConnectAsync(CancellationToken)
+  href: api/DotNext.Net.Multiplexing.TcpMultiplexedClient.html#DotNext_Net_Multiplexing_TcpMultiplexedClient_ConnectAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Multiplexing.TcpMultiplexedClient.ConnectAsync(System.Threading.CancellationToken)
+  fullName: DotNext.Net.Multiplexing.TcpMultiplexedClient.ConnectAsync(System.Threading.CancellationToken)
+  nameWithType: TcpMultiplexedClient.ConnectAsync(CancellationToken)
+- uid: DotNext.Net.Multiplexing.TcpMultiplexedClient.ConnectAsync*
+  name: ConnectAsync
+  href: api/DotNext.Net.Multiplexing.TcpMultiplexedClient.html#DotNext_Net_Multiplexing_TcpMultiplexedClient_ConnectAsync_
+  commentId: Overload:DotNext.Net.Multiplexing.TcpMultiplexedClient.ConnectAsync
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.TcpMultiplexedClient.ConnectAsync
+  nameWithType: TcpMultiplexedClient.ConnectAsync
+- uid: DotNext.Net.Multiplexing.TcpMultiplexedClient.Options
+  name: TcpMultiplexedClient.Options
+  href: api/DotNext.Net.Multiplexing.TcpMultiplexedClient.Options.html
+  commentId: T:DotNext.Net.Multiplexing.TcpMultiplexedClient.Options
+  fullName: DotNext.Net.Multiplexing.TcpMultiplexedClient.Options
+  nameWithType: TcpMultiplexedClient.Options
+- uid: DotNext.Net.Multiplexing.TcpMultiplexedClient.Options.ConnectTimeout
+  name: ConnectTimeout
+  href: api/DotNext.Net.Multiplexing.TcpMultiplexedClient.Options.html#DotNext_Net_Multiplexing_TcpMultiplexedClient_Options_ConnectTimeout
+  commentId: P:DotNext.Net.Multiplexing.TcpMultiplexedClient.Options.ConnectTimeout
+  fullName: DotNext.Net.Multiplexing.TcpMultiplexedClient.Options.ConnectTimeout
+  nameWithType: TcpMultiplexedClient.Options.ConnectTimeout
+- uid: DotNext.Net.Multiplexing.TcpMultiplexedClient.Options.ConnectTimeout*
+  name: ConnectTimeout
+  href: api/DotNext.Net.Multiplexing.TcpMultiplexedClient.Options.html#DotNext_Net_Multiplexing_TcpMultiplexedClient_Options_ConnectTimeout_
+  commentId: Overload:DotNext.Net.Multiplexing.TcpMultiplexedClient.Options.ConnectTimeout
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.TcpMultiplexedClient.Options.ConnectTimeout
+  nameWithType: TcpMultiplexedClient.Options.ConnectTimeout
+- uid: DotNext.Net.Multiplexing.TcpMultiplexedListener
+  name: TcpMultiplexedListener
+  href: api/DotNext.Net.Multiplexing.TcpMultiplexedListener.html
+  commentId: T:DotNext.Net.Multiplexing.TcpMultiplexedListener
+  fullName: DotNext.Net.Multiplexing.TcpMultiplexedListener
+  nameWithType: TcpMultiplexedListener
+- uid: DotNext.Net.Multiplexing.TcpMultiplexedListener.#ctor(System.Net.EndPoint,DotNext.Net.Multiplexing.MultiplexedListener.Options)
+  name: TcpMultiplexedListener(EndPoint, Options)
+  href: api/DotNext.Net.Multiplexing.TcpMultiplexedListener.html#DotNext_Net_Multiplexing_TcpMultiplexedListener__ctor_System_Net_EndPoint_DotNext_Net_Multiplexing_MultiplexedListener_Options_
+  commentId: M:DotNext.Net.Multiplexing.TcpMultiplexedListener.#ctor(System.Net.EndPoint,DotNext.Net.Multiplexing.MultiplexedListener.Options)
+  name.vb: New(EndPoint, Options)
+  fullName: DotNext.Net.Multiplexing.TcpMultiplexedListener.TcpMultiplexedListener(System.Net.EndPoint, DotNext.Net.Multiplexing.MultiplexedListener.Options)
+  fullName.vb: DotNext.Net.Multiplexing.TcpMultiplexedListener.New(System.Net.EndPoint, DotNext.Net.Multiplexing.MultiplexedListener.Options)
+  nameWithType: TcpMultiplexedListener.TcpMultiplexedListener(EndPoint, MultiplexedListener.Options)
+  nameWithType.vb: TcpMultiplexedListener.New(EndPoint, MultiplexedListener.Options)
+- uid: DotNext.Net.Multiplexing.TcpMultiplexedListener.#ctor*
+  name: TcpMultiplexedListener
+  href: api/DotNext.Net.Multiplexing.TcpMultiplexedListener.html#DotNext_Net_Multiplexing_TcpMultiplexedListener__ctor_
+  commentId: Overload:DotNext.Net.Multiplexing.TcpMultiplexedListener.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Net.Multiplexing.TcpMultiplexedListener.TcpMultiplexedListener
+  fullName.vb: DotNext.Net.Multiplexing.TcpMultiplexedListener.New
+  nameWithType: TcpMultiplexedListener.TcpMultiplexedListener
+  nameWithType.vb: TcpMultiplexedListener.New
+- uid: DotNext.Net.Multiplexing.TcpMultiplexedListener.ConfigureAcceptedSocket(System.Net.Sockets.Socket)
+  name: ConfigureAcceptedSocket(Socket)
+  href: api/DotNext.Net.Multiplexing.TcpMultiplexedListener.html#DotNext_Net_Multiplexing_TcpMultiplexedListener_ConfigureAcceptedSocket_System_Net_Sockets_Socket_
+  commentId: M:DotNext.Net.Multiplexing.TcpMultiplexedListener.ConfigureAcceptedSocket(System.Net.Sockets.Socket)
+  fullName: DotNext.Net.Multiplexing.TcpMultiplexedListener.ConfigureAcceptedSocket(System.Net.Sockets.Socket)
+  nameWithType: TcpMultiplexedListener.ConfigureAcceptedSocket(Socket)
+- uid: DotNext.Net.Multiplexing.TcpMultiplexedListener.ConfigureAcceptedSocket*
+  name: ConfigureAcceptedSocket
+  href: api/DotNext.Net.Multiplexing.TcpMultiplexedListener.html#DotNext_Net_Multiplexing_TcpMultiplexedListener_ConfigureAcceptedSocket_
+  commentId: Overload:DotNext.Net.Multiplexing.TcpMultiplexedListener.ConfigureAcceptedSocket
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.TcpMultiplexedListener.ConfigureAcceptedSocket
+  nameWithType: TcpMultiplexedListener.ConfigureAcceptedSocket
+- uid: DotNext.Net.Multiplexing.TcpMultiplexedListener.Listen
+  name: Listen()
+  href: api/DotNext.Net.Multiplexing.TcpMultiplexedListener.html#DotNext_Net_Multiplexing_TcpMultiplexedListener_Listen
+  commentId: M:DotNext.Net.Multiplexing.TcpMultiplexedListener.Listen
+  fullName: DotNext.Net.Multiplexing.TcpMultiplexedListener.Listen()
+  nameWithType: TcpMultiplexedListener.Listen()
+- uid: DotNext.Net.Multiplexing.TcpMultiplexedListener.Listen*
+  name: Listen
+  href: api/DotNext.Net.Multiplexing.TcpMultiplexedListener.html#DotNext_Net_Multiplexing_TcpMultiplexedListener_Listen_
+  commentId: Overload:DotNext.Net.Multiplexing.TcpMultiplexedListener.Listen
+  isSpec: "True"
+  fullName: DotNext.Net.Multiplexing.TcpMultiplexedListener.Listen
+  nameWithType: TcpMultiplexedListener.Listen
+- uid: DotNext.Net.Multiplexing.UnsupportedVersionException
+  name: UnsupportedVersionException
+  href: api/DotNext.Net.Multiplexing.UnsupportedVersionException.html
+  commentId: T:DotNext.Net.Multiplexing.UnsupportedVersionException
+  fullName: DotNext.Net.Multiplexing.UnsupportedVersionException
+  nameWithType: UnsupportedVersionException
 - uid: DotNext.Net.NetworkInformation
   name: DotNext.Net.NetworkInformation
   href: api/DotNext.Net.NetworkInformation.html
@@ -38793,6 +39530,15 @@ references:
   fullName.vb: DotNext.Result(Of T).Convert(Of TResult)()
   nameWithType: Result<T>.Convert<TResult>(delegate*<T, TResult>)
   nameWithType.vb: Result(Of T).Convert(Of TResult)()
+- uid: DotNext.Result`1.Convert``1(System.Converter{`0,DotNext.Result{``0}})
+  name: Convert<TResult>(Converter<T, Result<TResult>>)
+  href: api/DotNext.Result-1.html#DotNext_Result_1_Convert__1_System_Converter__0_DotNext_Result___0___
+  commentId: M:DotNext.Result`1.Convert``1(System.Converter{`0,DotNext.Result{``0}})
+  name.vb: Convert(Of TResult)(Converter(Of T, Result(Of TResult)))
+  fullName: DotNext.Result<T>.Convert<TResult>(System.Converter<T, DotNext.Result<TResult>>)
+  fullName.vb: DotNext.Result(Of T).Convert(Of TResult)(System.Converter(Of T, DotNext.Result(Of TResult)))
+  nameWithType: Result<T>.Convert<TResult>(Converter<T, Result<TResult>>)
+  nameWithType.vb: Result(Of T).Convert(Of TResult)(Converter(Of T, Result(Of TResult)))
 - uid: DotNext.Result`1.Convert``1(System.Converter{`0,``0})
   name: Convert<TResult>(Converter<T, TResult>)
   href: api/DotNext.Result-1.html#DotNext_Result_1_Convert__1_System_Converter__0___0__
@@ -39243,6 +39989,15 @@ references:
   fullName.vb: DotNext.Result(Of T, TError).Convert(Of TResult)()
   nameWithType: Result<T, TError>.Convert<TResult>(delegate*<T, TResult>)
   nameWithType.vb: Result(Of T, TError).Convert(Of TResult)()
+- uid: DotNext.Result`2.Convert``1(System.Converter{`0,DotNext.Result{``0,`1}})
+  name: Convert<TResult>(Converter<T, Result<TResult, TError>>)
+  href: api/DotNext.Result-2.html#DotNext_Result_2_Convert__1_System_Converter__0_DotNext_Result___0__1___
+  commentId: M:DotNext.Result`2.Convert``1(System.Converter{`0,DotNext.Result{``0,`1}})
+  name.vb: Convert(Of TResult)(Converter(Of T, Result(Of TResult, TError)))
+  fullName: DotNext.Result<T, TError>.Convert<TResult>(System.Converter<T, DotNext.Result<TResult, TError>>)
+  fullName.vb: DotNext.Result(Of T, TError).Convert(Of TResult)(System.Converter(Of T, DotNext.Result(Of TResult, TError)))
+  nameWithType: Result<T, TError>.Convert<TResult>(Converter<T, Result<TResult, TError>>)
+  nameWithType.vb: Result(Of T, TError).Convert(Of TResult)(Converter(Of T, Result(Of TResult, TError)))
 - uid: DotNext.Result`2.Convert``1(System.Converter{`0,``0})
   name: Convert<TResult>(Converter<T, TResult>)
   href: api/DotNext.Result-2.html#DotNext_Result_2_Convert__1_System_Converter__0___0__
@@ -48858,6 +49613,24 @@ references:
   commentId: T:DotNext.Threading.AsyncLockAcquisition
   fullName: DotNext.Threading.AsyncLockAcquisition
   nameWithType: AsyncLockAcquisition
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(System.Object,System.Threading.CancellationToken)
+  name: AcquireLockAsync(object, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync_System_Object_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(System.Object,System.Threading.CancellationToken)
+  name.vb: AcquireLockAsync(Object, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(object, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(Object, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireLockAsync(object, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireLockAsync(Object, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(System.Object,System.TimeSpan,System.Threading.CancellationToken)
+  name: AcquireLockAsync(object, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync_System_Object_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(System.Object,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: AcquireLockAsync(Object, TimeSpan, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(object, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(Object, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireLockAsync(object, TimeSpan, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireLockAsync(Object, TimeSpan, CancellationToken)
 - uid: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync*
   name: AcquireLockAsync
   href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync_
@@ -48865,33 +49638,24 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync
   nameWithType: AsyncLockAcquisition.AcquireLockAsync
-- uid: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync``1(``0,System.Threading.CancellationToken)
-  name: AcquireLockAsync<T>(T, CancellationToken)
-  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync``1(``0,System.Threading.CancellationToken)
-  name.vb: AcquireLockAsync(Of T)(T, CancellationToken)
-  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync<T>(T, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(Of T)(T, System.Threading.CancellationToken)
-  nameWithType: AsyncLockAcquisition.AcquireLockAsync<T>(T, CancellationToken)
-  nameWithType.vb: AsyncLockAcquisition.AcquireLockAsync(Of T)(T, CancellationToken)
-- uid: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync``1(``0,System.TimeSpan)
-  name: AcquireLockAsync<T>(T, TimeSpan)
-  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_
-  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync``1(``0,System.TimeSpan)
-  name.vb: AcquireLockAsync(Of T)(T, TimeSpan)
-  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync<T>(T, System.TimeSpan)
-  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(Of T)(T, System.TimeSpan)
-  nameWithType: AsyncLockAcquisition.AcquireLockAsync<T>(T, TimeSpan)
-  nameWithType.vb: AsyncLockAcquisition.AcquireLockAsync(Of T)(T, TimeSpan)
-- uid: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync``1(``0,System.TimeSpan,System.Threading.CancellationToken)
-  name: AcquireLockAsync<T>(T, TimeSpan, CancellationToken)
-  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync``1(``0,System.TimeSpan,System.Threading.CancellationToken)
-  name.vb: AcquireLockAsync(Of T)(T, TimeSpan, CancellationToken)
-  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync<T>(T, System.TimeSpan, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireLockAsync(Of T)(T, System.TimeSpan, System.Threading.CancellationToken)
-  nameWithType: AsyncLockAcquisition.AcquireLockAsync<T>(T, TimeSpan, CancellationToken)
-  nameWithType.vb: AsyncLockAcquisition.AcquireLockAsync(Of T)(T, TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync(System.Object,System.Threading.CancellationToken)
+  name: AcquireReadLockAsync(object, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync_System_Object_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync(System.Object,System.Threading.CancellationToken)
+  name.vb: AcquireReadLockAsync(Object, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync(object, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync(Object, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireReadLockAsync(object, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireReadLockAsync(Object, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync(System.Object,System.TimeSpan,System.Threading.CancellationToken)
+  name: AcquireReadLockAsync(object, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync_System_Object_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync(System.Object,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: AcquireReadLockAsync(Object, TimeSpan, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync(object, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync(Object, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireReadLockAsync(object, TimeSpan, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireReadLockAsync(Object, TimeSpan, CancellationToken)
 - uid: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync*
   name: AcquireReadLockAsync
   href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync_
@@ -48899,33 +49663,42 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync
   nameWithType: AsyncLockAcquisition.AcquireReadLockAsync
-- uid: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync``1(``0,System.Threading.CancellationToken)
-  name: AcquireReadLockAsync<T>(T, CancellationToken)
-  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync``1(``0,System.Threading.CancellationToken)
-  name.vb: AcquireReadLockAsync(Of T)(T, CancellationToken)
-  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync<T>(T, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync(Of T)(T, System.Threading.CancellationToken)
-  nameWithType: AsyncLockAcquisition.AcquireReadLockAsync<T>(T, CancellationToken)
-  nameWithType.vb: AsyncLockAcquisition.AcquireReadLockAsync(Of T)(T, CancellationToken)
-- uid: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync``1(``0,System.TimeSpan)
-  name: AcquireReadLockAsync<T>(T, TimeSpan)
-  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_
-  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync``1(``0,System.TimeSpan)
-  name.vb: AcquireReadLockAsync(Of T)(T, TimeSpan)
-  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync<T>(T, System.TimeSpan)
-  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync(Of T)(T, System.TimeSpan)
-  nameWithType: AsyncLockAcquisition.AcquireReadLockAsync<T>(T, TimeSpan)
-  nameWithType.vb: AsyncLockAcquisition.AcquireReadLockAsync(Of T)(T, TimeSpan)
-- uid: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync``1(``0,System.TimeSpan,System.Threading.CancellationToken)
-  name: AcquireReadLockAsync<T>(T, TimeSpan, CancellationToken)
-  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync``1(``0,System.TimeSpan,System.Threading.CancellationToken)
-  name.vb: AcquireReadLockAsync(Of T)(T, TimeSpan, CancellationToken)
-  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync<T>(T, System.TimeSpan, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireReadLockAsync(Of T)(T, System.TimeSpan, System.Threading.CancellationToken)
-  nameWithType: AsyncLockAcquisition.AcquireReadLockAsync<T>(T, TimeSpan, CancellationToken)
-  nameWithType.vb: AsyncLockAcquisition.AcquireReadLockAsync(Of T)(T, TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(System.Object,System.Boolean,System.Threading.CancellationToken)
+  name: AcquireWriteLockAsync(object, bool, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync_System_Object_System_Boolean_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(System.Object,System.Boolean,System.Threading.CancellationToken)
+  name.vb: AcquireWriteLockAsync(Object, Boolean, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(object, bool, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Object, Boolean, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync(object, bool, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Object, Boolean, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(System.Object,System.Boolean,System.TimeSpan,System.Threading.CancellationToken)
+  name: AcquireWriteLockAsync(object, bool, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync_System_Object_System_Boolean_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(System.Object,System.Boolean,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: AcquireWriteLockAsync(Object, Boolean, TimeSpan, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(object, bool, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Object, Boolean, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync(object, bool, TimeSpan, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Object, Boolean, TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(System.Object,System.Threading.CancellationToken)
+  name: AcquireWriteLockAsync(object, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync_System_Object_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(System.Object,System.Threading.CancellationToken)
+  name.vb: AcquireWriteLockAsync(Object, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(object, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Object, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync(object, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Object, CancellationToken)
+- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(System.Object,System.TimeSpan,System.Threading.CancellationToken)
+  name: AcquireWriteLockAsync(object, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync_System_Object_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(System.Object,System.TimeSpan,System.Threading.CancellationToken)
+  name.vb: AcquireWriteLockAsync(Object, TimeSpan, CancellationToken)
+  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(object, System.TimeSpan, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Object, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync(object, TimeSpan, CancellationToken)
+  nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Object, TimeSpan, CancellationToken)
 - uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync*
   name: AcquireWriteLockAsync
   href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync_
@@ -48933,51 +49706,6 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync
   nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync
-- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.Boolean,System.Threading.CancellationToken)
-  name: AcquireWriteLockAsync<T>(T, bool, CancellationToken)
-  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Boolean_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.Boolean,System.Threading.CancellationToken)
-  name.vb: AcquireWriteLockAsync(Of T)(T, Boolean, CancellationToken)
-  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, bool, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, Boolean, System.Threading.CancellationToken)
-  nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, bool, CancellationToken)
-  nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, Boolean, CancellationToken)
-- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.Boolean,System.TimeSpan,System.Threading.CancellationToken)
-  name: AcquireWriteLockAsync<T>(T, bool, TimeSpan, CancellationToken)
-  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Boolean_System_TimeSpan_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.Boolean,System.TimeSpan,System.Threading.CancellationToken)
-  name.vb: AcquireWriteLockAsync(Of T)(T, Boolean, TimeSpan, CancellationToken)
-  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, bool, System.TimeSpan, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, Boolean, System.TimeSpan, System.Threading.CancellationToken)
-  nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, bool, TimeSpan, CancellationToken)
-  nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, Boolean, TimeSpan, CancellationToken)
-- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.Threading.CancellationToken)
-  name: AcquireWriteLockAsync<T>(T, CancellationToken)
-  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.Threading.CancellationToken)
-  name.vb: AcquireWriteLockAsync(Of T)(T, CancellationToken)
-  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, System.Threading.CancellationToken)
-  nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, CancellationToken)
-  nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, CancellationToken)
-- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.TimeSpan)
-  name: AcquireWriteLockAsync<T>(T, TimeSpan)
-  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_
-  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.TimeSpan)
-  name.vb: AcquireWriteLockAsync(Of T)(T, TimeSpan)
-  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, System.TimeSpan)
-  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, System.TimeSpan)
-  nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, TimeSpan)
-  nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, TimeSpan)
-- uid: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.TimeSpan,System.Threading.CancellationToken)
-  name: AcquireWriteLockAsync<T>(T, TimeSpan, CancellationToken)
-  href: api/DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync``1(``0,System.TimeSpan,System.Threading.CancellationToken)
-  name.vb: AcquireWriteLockAsync(Of T)(T, TimeSpan, CancellationToken)
-  fullName: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, System.TimeSpan, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, System.TimeSpan, System.Threading.CancellationToken)
-  nameWithType: AsyncLockAcquisition.AcquireWriteLockAsync<T>(T, TimeSpan, CancellationToken)
-  nameWithType.vb: AsyncLockAcquisition.AcquireWriteLockAsync(Of T)(T, TimeSpan, CancellationToken)
 - uid: DotNext.Threading.AsyncManualResetEvent
   name: AsyncManualResetEvent
   href: api/DotNext.Threading.AsyncManualResetEvent.html
@@ -50574,6 +51302,15 @@ references:
   fullName.vb: DotNext.Threading.Atomic.IsAtomic(Of T)()
   nameWithType: Atomic.IsAtomic<T>()
   nameWithType.vb: Atomic.IsAtomic(Of T)()
+- uid: DotNext.Threading.Atomic.Read(System.Double@)
+  name: Read(ref readonly double)
+  href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_Read_System_Double__
+  commentId: M:DotNext.Threading.Atomic.Read(System.Double@)
+  name.vb: Read(Double)
+  fullName: DotNext.Threading.Atomic.Read(ref readonly double)
+  fullName.vb: DotNext.Threading.Atomic.Read(Double)
+  nameWithType: Atomic.Read(ref readonly double)
+  nameWithType.vb: Atomic.Read(Double)
 - uid: DotNext.Threading.Atomic.Read(System.Int64@)
   name: Read(ref readonly long)
   href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_Read_System_Int64__
@@ -50750,6 +51487,15 @@ references:
   fullName.vb: DotNext.Threading.Atomic.UpdateAndGet(Of TUpdater)(System.UIntPtr, TUpdater)
   nameWithType: Atomic.UpdateAndGet<TUpdater>(ref nuint, TUpdater)
   nameWithType.vb: Atomic.UpdateAndGet(Of TUpdater)(UIntPtr, TUpdater)
+- uid: DotNext.Threading.Atomic.Write(System.Double@,System.Double)
+  name: Write(ref double, double)
+  href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_Write_System_Double__System_Double_
+  commentId: M:DotNext.Threading.Atomic.Write(System.Double@,System.Double)
+  name.vb: Write(Double, Double)
+  fullName: DotNext.Threading.Atomic.Write(ref double, double)
+  fullName.vb: DotNext.Threading.Atomic.Write(Double, Double)
+  nameWithType: Atomic.Write(ref double, double)
+  nameWithType.vb: Atomic.Write(Double, Double)
 - uid: DotNext.Threading.Atomic.Write(System.Int64@,System.Int64)
   name: Write(ref long, long)
   href: api/DotNext.Threading.Atomic.html#DotNext_Threading_Atomic_Write_System_Int64__System_Int64_
@@ -52895,6 +53641,24 @@ references:
   commentId: T:DotNext.Threading.LockAcquisition
   fullName: DotNext.Threading.LockAcquisition
   nameWithType: LockAcquisition
+- uid: DotNext.Threading.LockAcquisition.AcquireReadLock(System.Object)
+  name: AcquireReadLock(object)
+  href: api/DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock_System_Object_
+  commentId: M:DotNext.Threading.LockAcquisition.AcquireReadLock(System.Object)
+  name.vb: AcquireReadLock(Object)
+  fullName: DotNext.Threading.LockAcquisition.AcquireReadLock(object)
+  fullName.vb: DotNext.Threading.LockAcquisition.AcquireReadLock(Object)
+  nameWithType: LockAcquisition.AcquireReadLock(object)
+  nameWithType.vb: LockAcquisition.AcquireReadLock(Object)
+- uid: DotNext.Threading.LockAcquisition.AcquireReadLock(System.Object,System.TimeSpan)
+  name: AcquireReadLock(object, TimeSpan)
+  href: api/DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock_System_Object_System_TimeSpan_
+  commentId: M:DotNext.Threading.LockAcquisition.AcquireReadLock(System.Object,System.TimeSpan)
+  name.vb: AcquireReadLock(Object, TimeSpan)
+  fullName: DotNext.Threading.LockAcquisition.AcquireReadLock(object, System.TimeSpan)
+  fullName.vb: DotNext.Threading.LockAcquisition.AcquireReadLock(Object, System.TimeSpan)
+  nameWithType: LockAcquisition.AcquireReadLock(object, TimeSpan)
+  nameWithType.vb: LockAcquisition.AcquireReadLock(Object, TimeSpan)
 - uid: DotNext.Threading.LockAcquisition.AcquireReadLock*
   name: AcquireReadLock
   href: api/DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock_
@@ -52902,24 +53666,24 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.LockAcquisition.AcquireReadLock
   nameWithType: LockAcquisition.AcquireReadLock
-- uid: DotNext.Threading.LockAcquisition.AcquireReadLock``1(``0)
-  name: AcquireReadLock<T>(T)
-  href: api/DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_
-  commentId: M:DotNext.Threading.LockAcquisition.AcquireReadLock``1(``0)
-  name.vb: AcquireReadLock(Of T)(T)
-  fullName: DotNext.Threading.LockAcquisition.AcquireReadLock<T>(T)
-  fullName.vb: DotNext.Threading.LockAcquisition.AcquireReadLock(Of T)(T)
-  nameWithType: LockAcquisition.AcquireReadLock<T>(T)
-  nameWithType.vb: LockAcquisition.AcquireReadLock(Of T)(T)
-- uid: DotNext.Threading.LockAcquisition.AcquireReadLock``1(``0,System.TimeSpan)
-  name: AcquireReadLock<T>(T, TimeSpan)
-  href: api/DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_
-  commentId: M:DotNext.Threading.LockAcquisition.AcquireReadLock``1(``0,System.TimeSpan)
-  name.vb: AcquireReadLock(Of T)(T, TimeSpan)
-  fullName: DotNext.Threading.LockAcquisition.AcquireReadLock<T>(T, System.TimeSpan)
-  fullName.vb: DotNext.Threading.LockAcquisition.AcquireReadLock(Of T)(T, System.TimeSpan)
-  nameWithType: LockAcquisition.AcquireReadLock<T>(T, TimeSpan)
-  nameWithType.vb: LockAcquisition.AcquireReadLock(Of T)(T, TimeSpan)
+- uid: DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock(System.Object)
+  name: AcquireUpgradeableReadLock(object)
+  href: api/DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock_System_Object_
+  commentId: M:DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock(System.Object)
+  name.vb: AcquireUpgradeableReadLock(Object)
+  fullName: DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock(object)
+  fullName.vb: DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock(Object)
+  nameWithType: LockAcquisition.AcquireUpgradeableReadLock(object)
+  nameWithType.vb: LockAcquisition.AcquireUpgradeableReadLock(Object)
+- uid: DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock(System.Object,System.TimeSpan)
+  name: AcquireUpgradeableReadLock(object, TimeSpan)
+  href: api/DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock_System_Object_System_TimeSpan_
+  commentId: M:DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock(System.Object,System.TimeSpan)
+  name.vb: AcquireUpgradeableReadLock(Object, TimeSpan)
+  fullName: DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock(object, System.TimeSpan)
+  fullName.vb: DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock(Object, System.TimeSpan)
+  nameWithType: LockAcquisition.AcquireUpgradeableReadLock(object, TimeSpan)
+  nameWithType.vb: LockAcquisition.AcquireUpgradeableReadLock(Object, TimeSpan)
 - uid: DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock*
   name: AcquireUpgradeableReadLock
   href: api/DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock_
@@ -52927,24 +53691,24 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock
   nameWithType: LockAcquisition.AcquireUpgradeableReadLock
-- uid: DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock``1(``0)
-  name: AcquireUpgradeableReadLock<T>(T)
-  href: api/DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_
-  commentId: M:DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock``1(``0)
-  name.vb: AcquireUpgradeableReadLock(Of T)(T)
-  fullName: DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock<T>(T)
-  fullName.vb: DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock(Of T)(T)
-  nameWithType: LockAcquisition.AcquireUpgradeableReadLock<T>(T)
-  nameWithType.vb: LockAcquisition.AcquireUpgradeableReadLock(Of T)(T)
-- uid: DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock``1(``0,System.TimeSpan)
-  name: AcquireUpgradeableReadLock<T>(T, TimeSpan)
-  href: api/DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_
-  commentId: M:DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock``1(``0,System.TimeSpan)
-  name.vb: AcquireUpgradeableReadLock(Of T)(T, TimeSpan)
-  fullName: DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock<T>(T, System.TimeSpan)
-  fullName.vb: DotNext.Threading.LockAcquisition.AcquireUpgradeableReadLock(Of T)(T, System.TimeSpan)
-  nameWithType: LockAcquisition.AcquireUpgradeableReadLock<T>(T, TimeSpan)
-  nameWithType.vb: LockAcquisition.AcquireUpgradeableReadLock(Of T)(T, TimeSpan)
+- uid: DotNext.Threading.LockAcquisition.AcquireWriteLock(System.Object)
+  name: AcquireWriteLock(object)
+  href: api/DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock_System_Object_
+  commentId: M:DotNext.Threading.LockAcquisition.AcquireWriteLock(System.Object)
+  name.vb: AcquireWriteLock(Object)
+  fullName: DotNext.Threading.LockAcquisition.AcquireWriteLock(object)
+  fullName.vb: DotNext.Threading.LockAcquisition.AcquireWriteLock(Object)
+  nameWithType: LockAcquisition.AcquireWriteLock(object)
+  nameWithType.vb: LockAcquisition.AcquireWriteLock(Object)
+- uid: DotNext.Threading.LockAcquisition.AcquireWriteLock(System.Object,System.TimeSpan)
+  name: AcquireWriteLock(object, TimeSpan)
+  href: api/DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock_System_Object_System_TimeSpan_
+  commentId: M:DotNext.Threading.LockAcquisition.AcquireWriteLock(System.Object,System.TimeSpan)
+  name.vb: AcquireWriteLock(Object, TimeSpan)
+  fullName: DotNext.Threading.LockAcquisition.AcquireWriteLock(object, System.TimeSpan)
+  fullName.vb: DotNext.Threading.LockAcquisition.AcquireWriteLock(Object, System.TimeSpan)
+  nameWithType: LockAcquisition.AcquireWriteLock(object, TimeSpan)
+  nameWithType.vb: LockAcquisition.AcquireWriteLock(Object, TimeSpan)
 - uid: DotNext.Threading.LockAcquisition.AcquireWriteLock*
   name: AcquireWriteLock
   href: api/DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock_
@@ -52952,24 +53716,6 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.LockAcquisition.AcquireWriteLock
   nameWithType: LockAcquisition.AcquireWriteLock
-- uid: DotNext.Threading.LockAcquisition.AcquireWriteLock``1(``0)
-  name: AcquireWriteLock<T>(T)
-  href: api/DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_
-  commentId: M:DotNext.Threading.LockAcquisition.AcquireWriteLock``1(``0)
-  name.vb: AcquireWriteLock(Of T)(T)
-  fullName: DotNext.Threading.LockAcquisition.AcquireWriteLock<T>(T)
-  fullName.vb: DotNext.Threading.LockAcquisition.AcquireWriteLock(Of T)(T)
-  nameWithType: LockAcquisition.AcquireWriteLock<T>(T)
-  nameWithType.vb: LockAcquisition.AcquireWriteLock(Of T)(T)
-- uid: DotNext.Threading.LockAcquisition.AcquireWriteLock``1(``0,System.TimeSpan)
-  name: AcquireWriteLock<T>(T, TimeSpan)
-  href: api/DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_
-  commentId: M:DotNext.Threading.LockAcquisition.AcquireWriteLock``1(``0,System.TimeSpan)
-  name.vb: AcquireWriteLock(Of T)(T, TimeSpan)
-  fullName: DotNext.Threading.LockAcquisition.AcquireWriteLock<T>(T, System.TimeSpan)
-  fullName.vb: DotNext.Threading.LockAcquisition.AcquireWriteLock(Of T)(T, System.TimeSpan)
-  nameWithType: LockAcquisition.AcquireWriteLock<T>(T, TimeSpan)
-  nameWithType.vb: LockAcquisition.AcquireWriteLock(Of T)(T, TimeSpan)
 - uid: DotNext.Threading.PendingTaskInterruptedException
   name: PendingTaskInterruptedException
   href: api/DotNext.Threading.PendingTaskInterruptedException.html
@@ -55564,6 +56310,151 @@ references:
   fullName.vb: DotNext.Threading.Timeout.IsTrue
   nameWithType: Timeout.operator true
   nameWithType.vb: Timeout.IsTrue
+- uid: DotNext.Threading.TimeoutSource
+  name: TimeoutSource
+  href: api/DotNext.Threading.TimeoutSource.html
+  commentId: T:DotNext.Threading.TimeoutSource
+  fullName: DotNext.Threading.TimeoutSource
+  nameWithType: TimeoutSource
+- uid: DotNext.Threading.TimeoutSource.#ctor(System.TimeProvider,System.Threading.CancellationToken)
+  name: TimeoutSource(TimeProvider, CancellationToken)
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource__ctor_System_TimeProvider_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.TimeoutSource.#ctor(System.TimeProvider,System.Threading.CancellationToken)
+  name.vb: New(TimeProvider, CancellationToken)
+  fullName: DotNext.Threading.TimeoutSource.TimeoutSource(System.TimeProvider, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.TimeoutSource.New(System.TimeProvider, System.Threading.CancellationToken)
+  nameWithType: TimeoutSource.TimeoutSource(TimeProvider, CancellationToken)
+  nameWithType.vb: TimeoutSource.New(TimeProvider, CancellationToken)
+- uid: DotNext.Threading.TimeoutSource.#ctor*
+  name: TimeoutSource
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource__ctor_
+  commentId: Overload:DotNext.Threading.TimeoutSource.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Threading.TimeoutSource.TimeoutSource
+  fullName.vb: DotNext.Threading.TimeoutSource.New
+  nameWithType: TimeoutSource.TimeoutSource
+  nameWithType.vb: TimeoutSource.New
+- uid: DotNext.Threading.TimeoutSource.Dispose
+  name: Dispose()
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_Dispose
+  commentId: M:DotNext.Threading.TimeoutSource.Dispose
+  fullName: DotNext.Threading.TimeoutSource.Dispose()
+  nameWithType: TimeoutSource.Dispose()
+- uid: DotNext.Threading.TimeoutSource.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_Dispose_
+  commentId: Overload:DotNext.Threading.TimeoutSource.Dispose
+  isSpec: "True"
+  fullName: DotNext.Threading.TimeoutSource.Dispose
+  nameWithType: TimeoutSource.Dispose
+- uid: DotNext.Threading.TimeoutSource.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_DisposeAsync
+  commentId: M:DotNext.Threading.TimeoutSource.DisposeAsync
+  fullName: DotNext.Threading.TimeoutSource.DisposeAsync()
+  nameWithType: TimeoutSource.DisposeAsync()
+- uid: DotNext.Threading.TimeoutSource.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_DisposeAsync_
+  commentId: Overload:DotNext.Threading.TimeoutSource.DisposeAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.TimeoutSource.DisposeAsync
+  nameWithType: TimeoutSource.DisposeAsync
+- uid: DotNext.Threading.TimeoutSource.Finalize
+  name: ~TimeoutSource()
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_Finalize
+  commentId: M:DotNext.Threading.TimeoutSource.Finalize
+  name.vb: ''
+  fullName: DotNext.Threading.TimeoutSource.~TimeoutSource()
+  fullName.vb: ''
+  nameWithType: TimeoutSource.~TimeoutSource()
+  nameWithType.vb: ''
+- uid: DotNext.Threading.TimeoutSource.Finalize*
+  name: ~TimeoutSource
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_Finalize_
+  commentId: Overload:DotNext.Threading.TimeoutSource.Finalize
+  isSpec: "True"
+  fullName: DotNext.Threading.TimeoutSource.~TimeoutSource
+  nameWithType: TimeoutSource.~TimeoutSource
+- uid: DotNext.Threading.TimeoutSource.IsCanceled
+  name: IsCanceled
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_IsCanceled
+  commentId: P:DotNext.Threading.TimeoutSource.IsCanceled
+  fullName: DotNext.Threading.TimeoutSource.IsCanceled
+  nameWithType: TimeoutSource.IsCanceled
+- uid: DotNext.Threading.TimeoutSource.IsCanceled*
+  name: IsCanceled
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_IsCanceled_
+  commentId: Overload:DotNext.Threading.TimeoutSource.IsCanceled
+  isSpec: "True"
+  fullName: DotNext.Threading.TimeoutSource.IsCanceled
+  nameWithType: TimeoutSource.IsCanceled
+- uid: DotNext.Threading.TimeoutSource.IsTimedOut
+  name: IsTimedOut
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_IsTimedOut
+  commentId: P:DotNext.Threading.TimeoutSource.IsTimedOut
+  fullName: DotNext.Threading.TimeoutSource.IsTimedOut
+  nameWithType: TimeoutSource.IsTimedOut
+- uid: DotNext.Threading.TimeoutSource.IsTimedOut*
+  name: IsTimedOut
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_IsTimedOut_
+  commentId: Overload:DotNext.Threading.TimeoutSource.IsTimedOut
+  isSpec: "True"
+  fullName: DotNext.Threading.TimeoutSource.IsTimedOut
+  nameWithType: TimeoutSource.IsTimedOut
+- uid: DotNext.Threading.TimeoutSource.RootToken
+  name: RootToken
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_RootToken
+  commentId: P:DotNext.Threading.TimeoutSource.RootToken
+  fullName: DotNext.Threading.TimeoutSource.RootToken
+  nameWithType: TimeoutSource.RootToken
+- uid: DotNext.Threading.TimeoutSource.RootToken*
+  name: RootToken
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_RootToken_
+  commentId: Overload:DotNext.Threading.TimeoutSource.RootToken
+  isSpec: "True"
+  fullName: DotNext.Threading.TimeoutSource.RootToken
+  nameWithType: TimeoutSource.RootToken
+- uid: DotNext.Threading.TimeoutSource.Token
+  name: Token
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_Token
+  commentId: P:DotNext.Threading.TimeoutSource.Token
+  fullName: DotNext.Threading.TimeoutSource.Token
+  nameWithType: TimeoutSource.Token
+- uid: DotNext.Threading.TimeoutSource.Token*
+  name: Token
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_Token_
+  commentId: Overload:DotNext.Threading.TimeoutSource.Token
+  isSpec: "True"
+  fullName: DotNext.Threading.TimeoutSource.Token
+  nameWithType: TimeoutSource.Token
+- uid: DotNext.Threading.TimeoutSource.TryReset
+  name: TryReset()
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_TryReset
+  commentId: M:DotNext.Threading.TimeoutSource.TryReset
+  fullName: DotNext.Threading.TimeoutSource.TryReset()
+  nameWithType: TimeoutSource.TryReset()
+- uid: DotNext.Threading.TimeoutSource.TryReset*
+  name: TryReset
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_TryReset_
+  commentId: Overload:DotNext.Threading.TimeoutSource.TryReset
+  isSpec: "True"
+  fullName: DotNext.Threading.TimeoutSource.TryReset
+  nameWithType: TimeoutSource.TryReset
+- uid: DotNext.Threading.TimeoutSource.TryStart(System.TimeSpan)
+  name: TryStart(TimeSpan)
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_TryStart_System_TimeSpan_
+  commentId: M:DotNext.Threading.TimeoutSource.TryStart(System.TimeSpan)
+  fullName: DotNext.Threading.TimeoutSource.TryStart(System.TimeSpan)
+  nameWithType: TimeoutSource.TryStart(TimeSpan)
+- uid: DotNext.Threading.TimeoutSource.TryStart*
+  name: TryStart
+  href: api/DotNext.Threading.TimeoutSource.html#DotNext_Threading_TimeoutSource_TryStart_
+  commentId: Overload:DotNext.Threading.TimeoutSource.TryStart
+  isSpec: "True"
+  fullName: DotNext.Threading.TimeoutSource.TryStart
+  nameWithType: TimeoutSource.TryStart
 - uid: DotNext.TupleExtensions
   name: TupleExtensions
   href: api/DotNext.TupleExtensions.html
