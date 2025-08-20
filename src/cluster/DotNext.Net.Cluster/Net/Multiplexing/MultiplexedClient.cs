@@ -13,7 +13,7 @@ using Buffers;
 [Experimental("DOTNEXT001")]
 public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
 {
-    private readonly TaskCompletionSource readiness;
+    private volatile TaskCompletionSource? readiness;
     private Task dispatcher;
     
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
@@ -46,6 +46,9 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
         output = input.CreateOutput(GC.AllocateArray<byte>(configuration.BufferCapacity, pinned: true), configuration.Timeout);
     }
 
+    private Task WaitForConnectionCoreAsync(CancellationToken token)
+        => readiness?.Task.WaitAsync(token) ?? Task.CompletedTask;
+
     /// <summary>
     /// Connects to the server and starts the dispatching loop.
     /// </summary>
@@ -54,13 +57,26 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">The client is disposed.</exception>
     public ValueTask StartAsync(CancellationToken token = default)
     {
+        var task = WaitForConnectionCoreAsync(token);
         if (ReferenceEquals(dispatcher, Task.CompletedTask))
         {
             dispatcher = DispatchAsync();
         }
 
-        return new(readiness.Task.WaitAsync(token));
+        return new(task);
     }
+
+    /// <summary>
+    /// Waits for the connection to be established.
+    /// </summary>
+    /// <remarks>
+    /// The method can be called to ensure that the connection to the server is established successfully.
+    /// This is useful when the underlying connection is lost to prevent inflation of the stream IDs.
+    /// </remarks>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing connection state.</returns>
+    public ValueTask WaitForConnectionAsync(CancellationToken token = default)
+        => new(WaitForConnectionCoreAsync(token));
 
     /// <summary>
     /// Creates a new multiplexed client stream.
@@ -84,11 +100,16 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     /// <returns>A duplex pipe for data input/output.</returns>
     /// <seealso cref="DotNext.IO.Pipelines.DuplexStream"/>
     public ValueTask<IDuplexPipe> OpenStreamAsync(CancellationToken token = default)
-        => readiness.Task.IsCompletedSuccessfully ? new(OpenStream()) : OpenStreamCoreAsync(token);
-
-    private async ValueTask<IDuplexPipe> OpenStreamCoreAsync(CancellationToken token)
     {
-        await readiness.Task.WaitAsync(token).ConfigureAwait(false);
+        var readinessCopy = readiness;
+        return readinessCopy is null or { Task.IsCompletedSuccessfully: true }
+            ? new(OpenStream())
+            : OpenStreamCoreAsync(readinessCopy.Task, token);
+    }
+
+    private async ValueTask<IDuplexPipe> OpenStreamCoreAsync(Task readinessTask, CancellationToken token)
+    {
+        await readinessTask.WaitAsync(token).ConfigureAwait(false);
         return OpenStream();
     }
 
@@ -130,7 +151,6 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     {
         if (Interlocked.Exchange(ref lifetimeTokenSource, null) is { } cts)
         {
-            readiness.TrySetException(new ObjectDisposedException(GetType().Name));
             using (cts)
             {
                 cts.Cancel();
@@ -143,6 +163,8 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     {
         Cancel();
         await dispatcher.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+        ReportDisposed();
+        
         await input.DisposeAsync().ConfigureAwait(false);
         await output.DisposeAsync().ConfigureAwait(false);
         writeSignal.Dispose();

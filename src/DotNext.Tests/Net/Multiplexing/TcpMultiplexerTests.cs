@@ -239,4 +239,32 @@ public sealed class TcpMultiplexerTests : Test
 
         public Task WaitForZero(TimeSpan timeout) => zeroReached.Task.WaitAsync(timeout);
     }
+
+    [Fact]
+    public static async Task WaitForConnectionAsync()
+    {
+        await using var client = new TcpMultiplexedClient(LocalEndPoint, new() { Timeout = DefaultTimeout });
+        
+        await using var server = new TcpMultiplexedListener(LocalEndPoint, new() { Timeout = DefaultTimeout });
+        await server.StartAsync();
+
+        var task = client.WaitForConnectionAsync().AsTask();
+        False(task.IsCompleted);
+
+        await client.StartAsync();
+        await task;
+        True(task.IsCompletedSuccessfully);
+    }
+
+    [Fact]
+    public static async Task WaitForDisposedConnectionAsync()
+    {
+        Task task;
+        await using (var client = new TcpMultiplexedClient(LocalEndPoint, new() { Timeout = DefaultTimeout }))
+        {
+            task = client.WaitForConnectionAsync().AsTask();
+        }
+
+        await ThrowsAsync<ObjectDisposedException>(Func.Constant(task));
+    }
 }
