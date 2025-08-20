@@ -248,7 +248,7 @@ public sealed class TcpMultiplexerTests : Test
         await using var server = new TcpMultiplexedListener(LocalEndPoint, new() { Timeout = DefaultTimeout });
         await server.StartAsync();
 
-        var task = client.WaitForConnectionAsync().AsTask();
+        var task = client.EnsureConnectedAsync().AsTask();
         False(task.IsCompleted);
 
         await client.StartAsync();
@@ -262,7 +262,7 @@ public sealed class TcpMultiplexerTests : Test
         Task task;
         await using (var client = new TcpMultiplexedClient(LocalEndPoint, new() { Timeout = DefaultTimeout }))
         {
-            task = client.WaitForConnectionAsync().AsTask();
+            task = client.EnsureConnectedAsync().AsTask();
         }
 
         await ThrowsAsync<ObjectDisposedException>(Func.Constant(task));

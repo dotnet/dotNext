@@ -46,7 +46,7 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
         output = input.CreateOutput(GC.AllocateArray<byte>(configuration.BufferCapacity, pinned: true), configuration.Timeout);
     }
 
-    private Task WaitForConnectionCoreAsync(CancellationToken token)
+    private Task EnsureConnectedCoreAsync(CancellationToken token)
         => readiness?.Task.WaitAsync(token) ?? Task.CompletedTask;
 
     /// <summary>
@@ -57,7 +57,7 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">The client is disposed.</exception>
     public ValueTask StartAsync(CancellationToken token = default)
     {
-        var task = WaitForConnectionCoreAsync(token);
+        var task = EnsureConnectedCoreAsync(token);
         if (ReferenceEquals(dispatcher, Task.CompletedTask))
         {
             dispatcher = DispatchAsync();
@@ -75,8 +75,8 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     /// </remarks>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing connection state.</returns>
-    public ValueTask WaitForConnectionAsync(CancellationToken token = default)
-        => new(WaitForConnectionCoreAsync(token));
+    public ValueTask EnsureConnectedAsync(CancellationToken token = default)
+        => new(EnsureConnectedCoreAsync(token));
 
     /// <summary>
     /// Creates a new multiplexed client stream.
