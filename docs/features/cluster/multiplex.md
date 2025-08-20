@@ -25,3 +25,15 @@ The implementation has the following features and limitations:
 Keep the channel alive as long as possible. Don't use the channel just for a single pair of request/response. In the case of TCP connection failure, the implementation tries to reconnect automatically in the background. The channel just reports the error. In that case, the caller needs to request a new channel.
 
 # Client
+[TcpMultiplexedClient](xref:DotNext.Net.Multiplexing.TcpMultiplexedClient) represents client-side API of the multiplexing protocol:
+* `StartAsync` starts the connection to the server asynchronously. The client detects connection failures automatically and triggers reconnection in the background
+* Once the client has started, the stream can be obtained with `OpenStreamAsync` method, which returns [IDuplexPipe](https://learn.microsoft.com/en-us/dotnet/api/system.io.pipelines.iduplexpipe)
+
+When the pipe is no longer needed, then it should be closed by calling `Complete` or `CompleteAsync` methods on its input and output. Otherwise, the protocol considers the channel as opened.
+
+# Server
+[TcpMultiplexedListener](xref:DotNext.Net.Multiplexing.TcpMultiplexedListener) represents server-side API of the multiplexing protocol:
+* `StartAsync` starts listening for incoming connections
+* Once the server has started, the incoming stream can be accepted with `AcceptAsync` method, which returns [IDuplexPipe](https://learn.microsoft.com/en-us/dotnet/api/system.io.pipelines.iduplexpipe)
+
+When the pipe is no longer needed, then it should be closed by calling `Complete` or `CompleteAsync` methods on its input and output. Otherwise, the protocol considers the channel as opened.
