@@ -46,7 +46,7 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
         output = input.CreateOutput(GC.AllocateArray<byte>(configuration.BufferCapacity, pinned: true), configuration.Timeout);
     }
 
-    private Task EnsureConnectedCoreAsync(CancellationToken token)
+    private Task EnsureConnectedAsync(CancellationToken token)
         => readiness?.Task.WaitAsync(token) ?? Task.CompletedTask;
 
     /// <summary>
@@ -57,7 +57,7 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">The client is disposed.</exception>
     public ValueTask StartAsync(CancellationToken token = default)
     {
-        var task = EnsureConnectedCoreAsync(token);
+        var task = EnsureConnectedAsync(token);
         if (ReferenceEquals(dispatcher, Task.CompletedTask))
         {
             dispatcher = DispatchAsync();
@@ -65,18 +65,6 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
 
         return new(task);
     }
-
-    /// <summary>
-    /// Waits for the connection to be established.
-    /// </summary>
-    /// <remarks>
-    /// The method can be called to ensure that the connection to the server is established successfully.
-    /// This is useful when the underlying connection is lost to prevent inflation of the stream IDs.
-    /// </remarks>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing connection state.</returns>
-    public ValueTask EnsureConnectedAsync(CancellationToken token = default)
-        => new(EnsureConnectedCoreAsync(token));
 
     /// <summary>
     /// Creates a new multiplexed client stream.
@@ -99,29 +87,31 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     /// </remarks>
     /// <returns>A duplex pipe for data input/output.</returns>
     /// <seealso cref="DotNext.IO.Pipelines.DuplexStream"/>
-    public ValueTask<IDuplexPipe> OpenStreamAsync(CancellationToken token = default)
+    public async ValueTask<IDuplexPipe> OpenStreamAsync(CancellationToken token = default)
     {
-        var readinessCopy = readiness;
-        return readinessCopy is null or { Task.IsCompletedSuccessfully: true }
-            ? new(OpenStream())
-            : OpenStreamCoreAsync(readinessCopy.Task, token);
+        for (var stream = OpenStream(out var addedStreamId);; token.ThrowIfCancellationRequested())
+        {
+            try
+            {
+                await EnsureConnectedAsync(token).ConfigureAwait(false);
+                return stream;
+            }
+            catch (Exception e)
+            {
+                input.TryRemoveStream(addedStreamId, stream);
+                await stream.AbortAppSideAsync(e).ConfigureAwait(false);
+            }
+        }
     }
 
-    private async ValueTask<IDuplexPipe> OpenStreamCoreAsync(Task readinessTask, CancellationToken token)
-    {
-        await readinessTask.WaitAsync(token).ConfigureAwait(false);
-        return OpenStream();
-    }
-
-    private MultiplexedStream OpenStream()
+    private MultiplexedStream OpenStream(out uint id)
     {
         var stream = new MultiplexedStream(options, writeSignal);
-        uint id;
         do
         {
             id = Interlocked.Increment(ref streamId);
         } while (!input.TryAddStream(id, stream));
-        
+
         return stream;
     }
 

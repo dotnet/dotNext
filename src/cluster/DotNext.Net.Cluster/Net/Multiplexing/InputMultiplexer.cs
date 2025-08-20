@@ -29,7 +29,14 @@ internal sealed class InputMultiplexer(
         ChangeStreamCount(Unsafe.BitCast<bool, byte>(result));
         return result;
     }
-    
+
+    public bool TryRemoveStream(uint streamId, MultiplexedStream stream)
+    {
+        var removed = streams.TryRemove(new(streamId, stream));
+        ChangeStreamCount(-Unsafe.BitCast<bool, byte>(removed));
+        return removed;
+    }
+
     public OutputMultiplexer CreateOutput(Memory<byte> framingBuffer, TimeSpan receiveTimeout)
         => new(streams, writeSignal, commands, framingBuffer, streamCounter, measurementTags, receiveTimeout, RootToken);
 
@@ -52,10 +59,9 @@ internal sealed class InputMultiplexer(
             {
                 var (streamId, stream) = enumerator.Current;
 
-                if (stream.IsCompleted && streams.TryRemove(streamId, out _))
+                if (stream.IsCompleted && TryRemoveStream(streamId, stream))
                 {
                     Protocol.WriteStreamClosed(framingBuffer, streamId);
-                    ChangeStreamCount(-1);
                 }
                 else
                 {
