@@ -126,6 +126,8 @@
       href: cluster/raft.md
     - name: Persistent Log
       href: cluster/wal.md
+    - name: Multiplexing
+      href: cluster/multiplex.md
 - name: Application Maintenance Interface
   href: ami/index.md
   items:
