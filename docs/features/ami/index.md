@@ -69,8 +69,8 @@ Command parsing is implemented on top of [System.CommandLine](https://docs.micro
 using System.Buffers;
 using System.CommandLine;
 using System.CommandLine.Parsing;
+using DotNext.Maintenance;
 using DotNext.Maintenance.CommandLine;
-using DotNext.Maintenance.CommandLine.Binding;
 using Microsoft.Extensions.Hosting;
 
 await new HostBuilder()
@@ -89,14 +89,14 @@ static void ConfigureAddCommand(ApplicationMaintenanceCommand command)
     var argX = new Argument<int>("x")
     {
         Arity = ArgumentArity.ExactlyOne,
-        CustomParser = ParseInteger,
         Description = "The first operand",
+        CustomParser = ParseInteger
     };
     var argY = new Argument<int>("y")
     {
         Arity = ArgumentArity.ExactlyOne,
-        CustomParser = ParseInteger,
         Description = "The second operand",
+        CustomParser = ParseInteger,
     };
 
     command.Add(argX);
@@ -105,16 +105,24 @@ static void ConfigureAddCommand(ApplicationMaintenanceCommand command)
     {
         var x = result.GetRequiredValue(argX);
         var y = result.GetRequiredValue(argY);
-        
         result.Configuration.Output.WriteLine(x + y);
     });
 }
 
-static int ParseInteger(ArgumentResult result)
-    => int.Parse(result.Tokens.FirstOrDefault()?.Value);
+static int ParseInteger(IMaintenanceSession session, ArgumentResult result)
+{
+    var token = result.Tokens.FirstOrDefault()?.Value;
+
+    if (!int.TryParse(token, out var value))
+    {
+        result.AddError($"{token} is not an integer number");
+    }
+
+    return value;
+}
 ```
 
-Registered custom commands will be automatically discovered by AMI host. [DefaultBindings](xref:DotNext.Maintenance.CommandLine.Binding.DefaultBindings) provides extra bindings available for the commands when executing by AMI host.
+Registered custom commands will be automatically discovered by AMI host. The [IMaintenanceSession](xref:DotNext.Maintenance.IMaintenanceSession) object represents AMI session that executes the command. The session is a socket connection. If multiple commands are executed within the same session, the session object remains the same between command handlers. Thus, the session object can be used to keep the state.
 
 # Security
 AMI is based on Unix Domain Sockets. It means that there is no way to have a direct connection to the application remotely. Potential attacker must have direct access to the container or operating system to interact with the app via AMI. In most cases, it should be enough to protect the interface. However, administrator can use the following approaches to improve security:
