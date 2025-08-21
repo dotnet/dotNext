@@ -89,24 +89,14 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
     /// <seealso cref="DotNext.IO.Pipelines.DuplexStream"/>
     public async ValueTask<IDuplexPipe> OpenStreamAsync(CancellationToken token = default)
     {
-        for (var stream = OpenStream(out var addedStreamId);; token.ThrowIfCancellationRequested())
-        {
-            try
-            {
-                await EnsureConnectedAsync(token).ConfigureAwait(false);
-                return stream;
-            }
-            catch (Exception e)
-            {
-                input.TryRemoveStream(addedStreamId, stream);
-                await stream.AbortAppSideAsync(e).ConfigureAwait(false);
-            }
-        }
+        await EnsureConnectedAsync(token).ConfigureAwait(false);
+        return OpenStream();
     }
 
-    private MultiplexedStream OpenStream(out uint id)
+    private MultiplexedStream OpenStream()
     {
         var stream = new MultiplexedStream(options, writeSignal);
+        uint id;
         do
         {
             id = Interlocked.Increment(ref streamId);

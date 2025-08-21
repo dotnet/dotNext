@@ -267,4 +267,11 @@ public sealed class TcpMultiplexerTests : Test
 
         await ThrowsAsync<ObjectDisposedException>(Func.Constant(task));
     }
+    
+    [Fact]
+    public static async Task WaitForCanceledConnectionAsync()
+    {
+        await using var client = new TcpMultiplexedClient(LocalEndPoint, new() { Timeout = DefaultTimeout });
+        await ThrowsAnyAsync<OperationCanceledException>(client.OpenStreamAsync(new CancellationToken(canceled: true)).AsTask);
+    }
 }
