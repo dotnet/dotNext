@@ -11,6 +11,7 @@ internal sealed class OutputMultiplexer<T>(
     where T : IStreamMetrics
 {
     private readonly Memory<byte> framingBuffer;
+    private readonly MultiplexedStreamFactory? factory;
     
     public required AsyncAutoResetEvent TransportSignal { private get; init; }
 
@@ -21,7 +22,10 @@ internal sealed class OutputMultiplexer<T>(
 
     public required TimeSpan Timeout { private get; init; }
 
-    public MultiplexedStreamFactory? Factory { get; init; }
+    public MultiplexedStreamFactory Factory
+    {
+        init => factory = value;
+    }
 
     public Task ProcessAsync(Socket socket)
     {
@@ -68,29 +72,30 @@ internal sealed class OutputMultiplexer<T>(
                 await ResetOperationTimeoutAsync().ConfigureAwait(false);
             }
 
+            MultiplexedStream? stream;
             if (header.Control is FrameControl.Heartbeat)
-                continue;
-
-            if (!Streams.TryGetValue(header.Id, out var stream))
             {
-                if (Factory is null || header.CanBeIgnored)
-                {
+                continue;
+            }
+            else if (Streams.TryGetValue(header.Id, out stream))
+            {
+                if (stream.IsTransportOutputCompleted)
                     continue;
-                }
-
-                if ((stream = Factory(TransportSignal, MeasurementTags)) is null)
-                {
-                    Commands.TryAdd(new StreamRejectedCommand(header.Id));
-                    TransportSignal.Set();
-                    continue;
-                }
-
+            }
+            else if (factory is null || header.CanBeIgnored)
+            {
+                continue;
+            }
+            else if ((stream = factory(TransportSignal, MeasurementTags)) is null)
+            {
+                Commands.TryAdd(new StreamRejectedCommand(header.Id));
+                TransportSignal.Set();
+                continue;
+            }
+            else
+            {
                 Streams[header.Id] = stream;
                 ChangeStreamCount();
-            }
-            else if (stream.IsTransportOutputCompleted)
-            {
-                continue;
             }
 
             // write the frame to the output header
