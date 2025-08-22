@@ -1,8 +1,8 @@
-using System.Diagnostics;
+using System.Diagnostics.Metrics;
 
 namespace DotNext.Net.Multiplexing;
 
 internal interface IStreamMetrics
 {
-    static abstract void ChangeStreamCount(long delta, in TagList measurementTags);
+    static abstract UpDownCounter<long> StreamCount { get; }
 }

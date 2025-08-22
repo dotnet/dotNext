@@ -18,6 +18,5 @@ partial class MultiplexedListener : IStreamMetrics
 
     private readonly TagList measurementTags;
 
-    static void IStreamMetrics.ChangeStreamCount(long delta, in TagList measurementTags)
-        => StreamCount.Add(delta, measurementTags);
+    static UpDownCounter<long> IStreamMetrics.StreamCount => StreamCount;
 }

@@ -32,5 +32,5 @@ internal abstract class Multiplexer<T>(
 {
     public required TagList MeasurementTags;
 
-    protected void ChangeStreamCount(long delta = 1) => T.ChangeStreamCount(delta, MeasurementTags);
+    protected void ChangeStreamCount(long delta = 1) => T.StreamCount.Add(delta, MeasurementTags);
 }
