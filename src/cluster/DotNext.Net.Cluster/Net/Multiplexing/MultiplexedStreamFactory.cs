@@ -4,4 +4,4 @@ namespace DotNext.Net.Multiplexing;
 
 using Threading;
 
-internal delegate MultiplexedStream? MultiplexedStreamFactory(AsyncAutoResetEvent transportSignal, in TagList measurementTags);
+internal delegate MultiplexedStream? MultiplexedStreamFactory(AsyncAutoResetEvent transportSignal, ref readonly TagList measurementTags);

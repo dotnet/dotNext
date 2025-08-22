@@ -193,7 +193,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
 
     private sealed class MultiplexedStreamFactoryImpl(PipeOptions options, ChannelWriter<MultiplexedStream> backlog)
     {
-        private MultiplexedStream? CreateStream(AsyncAutoResetEvent writeSignal, in TagList measurementTags)
+        private MultiplexedStream? CreateStream(AsyncAutoResetEvent writeSignal, ref readonly TagList measurementTags)
         {
             var stream = new MultiplexedStream(options, writeSignal);
             if (backlog.TryWrite(stream))

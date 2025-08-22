@@ -86,7 +86,7 @@ internal sealed class OutputMultiplexer<T>(
             {
                 continue;
             }
-            else if ((stream = factory(TransportSignal, MeasurementTags)) is null)
+            else if ((stream = factory(TransportSignal, in MeasurementTags)) is null)
             {
                 Commands.TryAdd(new StreamRejectedCommand(header.Id));
                 TransportSignal.Set();
