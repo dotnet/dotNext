@@ -1,24 +1,22 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Diagnostics.Metrics;
 using System.Net.Sockets;
 
 namespace DotNext.Net.Multiplexing;
 
 using Threading;
 
-internal sealed class OutputMultiplexer(
+internal sealed class OutputMultiplexer<T>(
     ConcurrentDictionary<uint, MultiplexedStream> streams,
     AsyncAutoResetEvent writeSignal,
     IProducerConsumerCollection<ProtocolCommand> commands,
     Memory<byte> framingBuffer,
-    UpDownCounter<int> streamCounter,
     in TagList measurementTags,
     TimeSpan timeout,
-    CancellationToken token)
-    : Multiplexer(streams, commands, streamCounter, measurementTags, token)
+    CancellationToken token) : Multiplexer<T>(streams, commands, measurementTags, token)
+    where T : IStreamMetrics
 {
-    public Func<AsyncAutoResetEvent, MultiplexedStream?>? HandlerFactory { get; init; }
+    public MultiplexedStreamFactory? Factory { get; init; }
 
     public Task ProcessAsync(Socket socket)
     {
@@ -70,12 +68,12 @@ internal sealed class OutputMultiplexer(
 
             if (!streams.TryGetValue(header.Id, out var stream))
             {
-                if (HandlerFactory is null || header.CanBeIgnored)
+                if (Factory is null || header.CanBeIgnored)
                 {
                     continue;
                 }
 
-                if ((stream = HandlerFactory(writeSignal)) is null)
+                if ((stream = Factory(writeSignal, measurementTags)) is null)
                 {
                     commands.TryAdd(new StreamRejectedCommand(header.Id));
                     writeSignal.Set();

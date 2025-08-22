@@ -4,19 +4,18 @@ using System.Diagnostics.Metrics;
 
 namespace DotNext.Net.Multiplexing;
 
-internal abstract partial class Multiplexer(
+internal abstract partial class Multiplexer<T>(
     ConcurrentDictionary<uint, MultiplexedStream> streams,
     IProducerConsumerCollection<ProtocolCommand> commands,
-    UpDownCounter<int> streamCounter,
     in TagList measurementTags,
     CancellationToken token) : Disposable
+    where T : IStreamMetrics
 {
-    protected readonly UpDownCounter<int> streamCounter = streamCounter;
     protected readonly TagList measurementTags = measurementTags;
     protected readonly ConcurrentDictionary<uint, MultiplexedStream> streams = streams;
     protected readonly IProducerConsumerCollection<ProtocolCommand> commands = commands;
 
-    protected void ChangeStreamCount(int delta = 1) => streamCounter.Add(delta, in measurementTags);
+    protected void ChangeStreamCount(long delta = 1) => T.ChangeStreamCount(delta, measurementTags);
 
     protected override void Dispose(bool disposing)
     {

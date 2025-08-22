@@ -223,15 +223,15 @@ public sealed class TcpMultiplexerTests : Test
         await streamCount.WaitForZero(DefaultTimeout);
     }
 
-    private sealed class StreamCountObserver() : InstrumentObserver<int, UpDownCounter<int>>(static (instr, tags) => IsStreamCount(instr))
+    private sealed class StreamCountObserver() : InstrumentObserver<long, UpDownCounter<long>>(static (instr, tags) => IsStreamCount(instr))
     {
         private readonly TaskCompletionSource zeroReached = new();
-        private int streamCount;
+        private long streamCount;
 
         internal static bool IsStreamCount(Instrument instrument)
             => instrument is { Meter.Name: "DotNext.Net.Multiplexing.Server", Name: "streams-count" };
 
-        protected override void Record(int value)
+        protected override void Record(long value)
         {
             if (Interlocked.Add(ref streamCount, value) is 0)
                 zeroReached.TrySetResult();

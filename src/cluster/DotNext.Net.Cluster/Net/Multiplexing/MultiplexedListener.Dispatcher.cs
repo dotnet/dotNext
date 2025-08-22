@@ -30,12 +30,11 @@ partial class MultiplexedListener
         var writeSignal = new AsyncAutoResetEvent(initialState: false);
         var receiveBuffer = allocator(flushThreshold);
         var framingBuffer = new PoolingBufferWriter<byte>(allocator) { Capacity = flushThreshold };
-        var input = new InputMultiplexer(
+        var input = new InputMultiplexer<MultiplexedListener>(
             new(),
             writeSignal,
             framingBuffer,
             flushThreshold,
-            streamCount,
             CreateMeasurementTags(socket),
             timeout,
             heartbeatTimeout,

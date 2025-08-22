@@ -38,7 +38,6 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
             writeSignal,
             framingBuffer,
             flushThreshold,
-            streamCount,
             configuration.MeasurementTags,
             configuration.Timeout,
             configuration.HeartbeatTimeout,

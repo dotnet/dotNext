@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net.Sockets;
@@ -20,7 +21,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
     private readonly MemoryAllocator<byte> allocator;
     private readonly int flushThreshold;
     private readonly TaskCompletionSource readiness;
-    private readonly Func<AsyncAutoResetEvent, MultiplexedStream?> streamFactory;
+    private readonly MultiplexedStreamFactory streamFactory;
     private Task listener;
 
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
@@ -41,7 +42,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
         });
 
         allocator = configuration.ToAllocator();
-        streamFactory = new MultiplexedStreamFactory(configuration.BufferOptions, backlog.Writer).CreateStream;
+        streamFactory = new MultiplexedStreamFactoryImpl(configuration.BufferOptions, backlog.Writer);
         measurementTags = configuration.MeasurementTags;
         flushThreshold = configuration.BufferCapacity;
         readiness = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -80,6 +81,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
             throw new ObjectDisposedException(GetType().Name);
         }
 
+        PendingStreamCount.Add(-1L);
         return result;
     }
 
@@ -188,15 +190,24 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
 
     /// <inheritdoc/>
     public new ValueTask DisposeAsync() => base.DisposeAsync();
-}
 
-file sealed class MultiplexedStreamFactory(PipeOptions options, ChannelWriter<MultiplexedStream> backlog)
-{
-    public MultiplexedStream? CreateStream(AsyncAutoResetEvent writeSignal)
+    private sealed class MultiplexedStreamFactoryImpl(PipeOptions options, ChannelWriter<MultiplexedStream> backlog)
     {
-        var stream = new MultiplexedStream(options, writeSignal);
-        return backlog.TryWrite(stream)
-            ? stream
-            : null;
+        private MultiplexedStream? CreateStream(AsyncAutoResetEvent writeSignal, in TagList measurementTags)
+        {
+            var stream = new MultiplexedStream(options, writeSignal);
+            if (backlog.TryWrite(stream))
+            {
+                PendingStreamCount.Add(1L, measurementTags);
+            }
+            else
+            {
+                stream = null;
+            }
+
+            return stream;
+        }
+
+        public static implicit operator MultiplexedStreamFactory(MultiplexedStreamFactoryImpl impl) => impl.CreateStream;
     }
 }

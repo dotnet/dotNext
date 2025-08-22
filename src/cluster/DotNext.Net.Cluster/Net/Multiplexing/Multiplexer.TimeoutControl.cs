@@ -2,7 +2,7 @@ namespace DotNext.Net.Multiplexing;
 
 using Threading;
 
-partial class Multiplexer
+partial class Multiplexer<T>
 {
     private TimeoutSource source = new(TimeProvider.System, token);
 

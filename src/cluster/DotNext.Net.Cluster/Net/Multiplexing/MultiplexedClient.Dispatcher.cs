@@ -19,10 +19,10 @@ partial class MultiplexedClient
     private readonly PipeOptions options;
     
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
-    private readonly InputMultiplexer input;
+    private readonly InputMultiplexer<MultiplexedClient> input;
     
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
-    private readonly OutputMultiplexer output;
+    private readonly OutputMultiplexer<MultiplexedClient> output;
     private uint streamId;
 
     private void ReportConnected()

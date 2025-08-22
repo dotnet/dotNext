@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Diagnostics.Metrics;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 
@@ -9,16 +8,16 @@ namespace DotNext.Net.Multiplexing;
 using Buffers;
 using Threading;
 
-internal sealed class InputMultiplexer(
+internal sealed class InputMultiplexer<T>(
     ConcurrentDictionary<uint, MultiplexedStream> streams,
     AsyncAutoResetEvent writeSignal,
     BufferWriter<byte> framingBuffer,
     int flushThreshold,
-    UpDownCounter<int> streamCounter,
     in TagList measurementTags,
     TimeSpan timeout,
     TimeSpan heartbeatTimeout,
-    CancellationToken token) : Multiplexer(streams, new ConcurrentQueue<ProtocolCommand>(), streamCounter, measurementTags, token)
+    CancellationToken token) : Multiplexer<T>(streams, new ConcurrentQueue<ProtocolCommand>(), measurementTags, token)
+    where T : IStreamMetrics
 {
     
     public TimeSpan Timeout => timeout;
@@ -37,13 +36,13 @@ internal sealed class InputMultiplexer(
         return removed;
     }
 
-    public OutputMultiplexer CreateOutput(Memory<byte> framingBuffer, TimeSpan receiveTimeout)
-        => new(streams, writeSignal, commands, framingBuffer, streamCounter, measurementTags, receiveTimeout, RootToken);
+    public OutputMultiplexer<T> CreateOutput(Memory<byte> framingBuffer, TimeSpan receiveTimeout)
+        => new(streams, writeSignal, commands, framingBuffer, measurementTags, receiveTimeout, RootToken);
 
-    public OutputMultiplexer CreateOutput(Memory<byte> framingBuffer, TimeSpan receiveTimeout, Func<AsyncAutoResetEvent, MultiplexedStream?> handlerFactory,
+    public OutputMultiplexer<T> CreateOutput(Memory<byte> framingBuffer, TimeSpan receiveTimeout, MultiplexedStreamFactory handlerFactory,
         CancellationToken token)
-        => new(streams, writeSignal, commands, framingBuffer, streamCounter, measurementTags, receiveTimeout, token)
-            { HandlerFactory = handlerFactory };
+        => new(streams, writeSignal, commands, framingBuffer, measurementTags, receiveTimeout, token)
+            { Factory = handlerFactory };
 
     public async Task ProcessAsync(Func<bool> condition, Socket socket)
     {
