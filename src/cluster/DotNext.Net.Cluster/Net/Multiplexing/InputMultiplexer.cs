@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 
@@ -8,50 +7,61 @@ namespace DotNext.Net.Multiplexing;
 using Buffers;
 using Threading;
 
-internal sealed class InputMultiplexer<T>(
-    ConcurrentDictionary<uint, MultiplexedStream> streams,
-    AsyncAutoResetEvent writeSignal,
-    BufferWriter<byte> framingBuffer,
-    int flushThreshold,
-    in TagList measurementTags,
-    TimeSpan timeout,
-    TimeSpan heartbeatTimeout,
-    CancellationToken token) : Multiplexer<T>(streams, new ConcurrentQueue<ProtocolCommand>(), measurementTags, token)
+internal sealed class InputMultiplexer<T>() : Multiplexer<T>(new(), new ConcurrentQueue<ProtocolCommand>())
     where T : IStreamMetrics
 {
-    
-    public TimeSpan Timeout => timeout;
+    public required TimeSpan Timeout { get; init; }
+
+    public required TimeSpan HeartbeatTimeout { private get; init; }
+
+    public required int FlushThreshold { private get; init; }
+
+    public required BufferWriter<byte> FramingBuffer { private get; init; }
+
+    public required AsyncAutoResetEvent TransportSignal { private get; init; }
 
     public bool TryAddStream(uint streamId, MultiplexedStream stream)
     {
-        var result = streams.TryAdd(streamId, stream);
+        var result = Streams.TryAdd(streamId, stream);
         ChangeStreamCount(Unsafe.BitCast<bool, byte>(result));
         return result;
     }
 
     public bool TryRemoveStream(uint streamId, MultiplexedStream stream)
     {
-        var removed = streams.TryRemove(new(streamId, stream));
+        var removed = Streams.TryRemove(new(streamId, stream));
         ChangeStreamCount(-Unsafe.BitCast<bool, byte>(removed));
         return removed;
     }
 
-    public OutputMultiplexer<T> CreateOutput(Memory<byte> framingBuffer, TimeSpan receiveTimeout)
-        => new(streams, writeSignal, commands, framingBuffer, measurementTags, receiveTimeout, RootToken);
+    public OutputMultiplexer<T> CreateOutput(Memory<byte> framingBuffer, TimeSpan receiveTimeout) => new(Streams, Commands)
+    {
+        MeasurementTags = MeasurementTags,
+        RootToken = RootToken,
+        FramingBuffer = framingBuffer,
+        Timeout = receiveTimeout,
+        TransportSignal = TransportSignal,
+    };
 
     public OutputMultiplexer<T> CreateOutput(Memory<byte> framingBuffer, TimeSpan receiveTimeout, MultiplexedStreamFactory handlerFactory,
-        CancellationToken token)
-        => new(streams, writeSignal, commands, framingBuffer, measurementTags, receiveTimeout, token)
-            { Factory = handlerFactory };
+        CancellationToken token) => new(Streams, Commands)
+    {
+        MeasurementTags = MeasurementTags,
+        RootToken = token,
+        FramingBuffer = framingBuffer,
+        Timeout = receiveTimeout,
+        TransportSignal = TransportSignal,
+        Factory = handlerFactory,
+    };
 
     public async Task ProcessAsync(Func<bool> condition, Socket socket)
     {
-        using var enumerator = streams.GetEnumerator();
+        using var enumerator = Streams.GetEnumerator();
         for (var requiresHeartbeat = false;
              condition();
-             requiresHeartbeat = !await writeSignal.WaitAsync(heartbeatTimeout, RootToken).ConfigureAwait(false))
+             requiresHeartbeat = !await TransportSignal.WaitAsync(HeartbeatTimeout, RootToken).ConfigureAwait(false))
         {
-            framingBuffer.Clear(reuseBuffer: true);
+            FramingBuffer.Clear(reuseBuffer: true);
 
             // combine streams
             while (enumerator.MoveNext())
@@ -60,33 +70,33 @@ internal sealed class InputMultiplexer<T>(
 
                 if (stream.IsCompleted && TryRemoveStream(streamId, stream))
                 {
-                    Protocol.WriteStreamClosed(framingBuffer, streamId);
+                    Protocol.WriteStreamClosed(FramingBuffer, streamId);
                 }
                 else
                 {
-                    await stream.WriteFrameAsync(framingBuffer, streamId).ConfigureAwait(false);
+                    await stream.WriteFrameAsync(FramingBuffer, streamId).ConfigureAwait(false);
                 }
 
                 // write the buffer on overflow
-                if (framingBuffer.WrittenCount >= flushThreshold)
+                if (FramingBuffer.WrittenCount >= FlushThreshold)
                 {
-                    await SendAsync(framingBuffer.WrittenMemory, socket).ConfigureAwait(false);
-                    framingBuffer.Clear(reuseBuffer: true);
+                    await SendAsync(FramingBuffer.WrittenMemory, socket).ConfigureAwait(false);
+                    FramingBuffer.Clear(reuseBuffer: true);
                 }
             }
 
             // process protocol commands
-            commands.Serialize(framingBuffer);
+            Commands.Serialize(FramingBuffer);
 
-            switch (framingBuffer.WrittenCount)
+            switch (FramingBuffer.WrittenCount)
             {
                 case 0 when requiresHeartbeat:
-                    Protocol.WriteHeartbeat(framingBuffer);
+                    Protocol.WriteHeartbeat(FramingBuffer);
                     goto default;
                 case 0:
                     break;
                 default:
-                    await SendAsync(framingBuffer.WrittenMemory, socket).ConfigureAwait(false);
+                    await SendAsync(FramingBuffer.WrittenMemory, socket).ConfigureAwait(false);
                     break;
             }
 
@@ -99,7 +109,7 @@ internal sealed class InputMultiplexer<T>(
     {
         for (int bytesWritten; !buffer.IsEmpty; buffer = buffer.Slice(bytesWritten))
         {
-            StartOperation(timeout);
+            StartOperation(Timeout);
             try
             {
                 bytesWritten = await socket.SendAsync(buffer, TimeBoundedToken).ConfigureAwait(false);
@@ -121,9 +131,9 @@ internal sealed class InputMultiplexer<T>(
 
     public async ValueTask CompleteAllAsync(Exception e)
     {
-        foreach (var id in streams.Keys)
+        foreach (var id in Streams.Keys)
         {
-            if (streams.TryRemove(id, out var stream))
+            if (Streams.TryRemove(id, out var stream))
             {
                 await stream.CompleteTransportOutputAsync(e).ConfigureAwait(false);
                 await stream.CompleteTransportInputAsync(e).ConfigureAwait(false);

@@ -34,14 +34,17 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
         var flushThreshold = configuration.BufferCapacity;
         framingBuffer = new PoolingBufferWriter<byte>(configuration.ToAllocator()) { Capacity = flushThreshold };
 
-        input = new(new(),
-            writeSignal,
-            framingBuffer,
-            flushThreshold,
-            configuration.MeasurementTags,
-            configuration.Timeout,
-            configuration.HeartbeatTimeout,
-            lifetimeToken);
+        input = new()
+        {
+            TransportSignal = writeSignal,
+            FramingBuffer = framingBuffer,
+            FlushThreshold = flushThreshold,
+            MeasurementTags = configuration.MeasurementTags,
+            Timeout = configuration.Timeout,
+            HeartbeatTimeout = configuration.HeartbeatTimeout,
+            RootToken = lifetimeToken,
+        };
+        
         output = input.CreateOutput(GC.AllocateArray<byte>(configuration.BufferCapacity, pinned: true), configuration.Timeout);
     }
 

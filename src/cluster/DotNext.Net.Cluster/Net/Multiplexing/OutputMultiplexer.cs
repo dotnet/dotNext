@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Net.Sockets;
 
 namespace DotNext.Net.Multiplexing;
@@ -8,14 +7,20 @@ using Threading;
 
 internal sealed class OutputMultiplexer<T>(
     ConcurrentDictionary<uint, MultiplexedStream> streams,
-    AsyncAutoResetEvent writeSignal,
-    IProducerConsumerCollection<ProtocolCommand> commands,
-    Memory<byte> framingBuffer,
-    in TagList measurementTags,
-    TimeSpan timeout,
-    CancellationToken token) : Multiplexer<T>(streams, commands, measurementTags, token)
+    IProducerConsumerCollection<ProtocolCommand> commands): Multiplexer<T>(streams, commands)
     where T : IStreamMetrics
 {
+    private readonly Memory<byte> framingBuffer;
+    
+    public required AsyncAutoResetEvent TransportSignal { private get; init; }
+
+    public required Memory<byte> FramingBuffer
+    {
+        init => framingBuffer = value;
+    }
+
+    public required TimeSpan Timeout { private get; init; }
+
     public MultiplexedStreamFactory? Factory { get; init; }
 
     public Task ProcessAsync(Socket socket)
@@ -24,7 +29,7 @@ internal sealed class OutputMultiplexer<T>(
         
         // if output multiplexer is completed due to exception, we need to trigger
         // the input multiplexer to handle the error
-        task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(writeSignal.SetNoResult);
+        task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(TransportSignal.SetNoResult);
         return task;
     }
 
@@ -33,7 +38,7 @@ internal sealed class OutputMultiplexer<T>(
         FrameHeader header;
         for (var bufferedBytes = 0;; AdjustFramingBuffer(ref bufferedBytes, header, framingBuffer.Span))
         {
-            StartOperation(timeout); // resumed by heartbeat
+            StartOperation(Timeout); // resumed by heartbeat
             try
             {
                 // read at least header
@@ -66,21 +71,21 @@ internal sealed class OutputMultiplexer<T>(
             if (header.Control is FrameControl.Heartbeat)
                 continue;
 
-            if (!streams.TryGetValue(header.Id, out var stream))
+            if (!Streams.TryGetValue(header.Id, out var stream))
             {
                 if (Factory is null || header.CanBeIgnored)
                 {
                     continue;
                 }
 
-                if ((stream = Factory(writeSignal, measurementTags)) is null)
+                if ((stream = Factory(TransportSignal, MeasurementTags)) is null)
                 {
-                    commands.TryAdd(new StreamRejectedCommand(header.Id));
-                    writeSignal.Set();
+                    Commands.TryAdd(new StreamRejectedCommand(header.Id));
+                    TransportSignal.Set();
                     continue;
                 }
 
-                streams[header.Id] = stream;
+                Streams[header.Id] = stream;
                 ChangeStreamCount();
             }
             else if (stream.IsTransportOutputCompleted)
