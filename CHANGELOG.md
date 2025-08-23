@@ -1,6 +1,13 @@
 Release Notes
 ====
 
+# 08-23-2025
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.24.1">DotNext.Net.Cluster 5.24.1</a>
+* Fixed stream ID inflation of the multiplexing protocol client if underlying TCP connection is unstable
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.24.1">DotNext.AspNetCore.Cluster 5.24.1</a>
+* Updated dependencies
+
 # 08-19-2025
 <a href="https://www.nuget.org/packages/dotnext/5.24.0">DotNext 5.24.0</a>
 * Merged [258](https://github.com/dotnet/dotNext/pull/258)

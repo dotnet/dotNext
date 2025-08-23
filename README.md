@@ -65,10 +65,10 @@ Release Date: 08-19-2025
 <a href="https://www.nuget.org/packages/dotnext.io/5.24.0">DotNext.IO 5.24.0</a>
 * Improved behavioral compatibility with [Pipe](https://learn.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipe) class by extension methods exposed by `PipeExtensions` class
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.24.0">DotNext.Net.Cluster 5.24.0</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.24.1">DotNext.Net.Cluster 5.24.1</a>
 * Added `DotNext.Net.Multiplexing` namespace that exposes simple unencrypted multiplexing protocol implementation on top of TCP. The multiplexed channel is exposed as [IDuplexPipe](https://learn.microsoft.com/en-us/dotnet/api/system.io.pipelines.iduplexpipe). The main purpose of this implementation is the efficient communication between nodes within the cluster inside the trusted LAN
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.24.0">DotNext.AspNetCore.Cluster 5.24.0</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.24.1">DotNext.AspNetCore.Cluster 5.24.1</a>
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.maintenanceservices/0.6.0">DotNext.MaintenanceServices 0.6.0</a>
