@@ -1,24 +1,31 @@
 using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
 using System.Net.Sockets;
 
 namespace DotNext.Net.Multiplexing;
 
 using Threading;
 
-internal sealed class OutputMultiplexer(
+internal sealed class OutputMultiplexer<T>(
     ConcurrentDictionary<uint, MultiplexedStream> streams,
-    AsyncAutoResetEvent writeSignal,
-    IProducerConsumerCollection<ProtocolCommand> commands,
-    Memory<byte> framingBuffer,
-    UpDownCounter<int> streamCounter,
-    in TagList measurementTags,
-    TimeSpan timeout,
-    CancellationToken token)
-    : Multiplexer(streams, commands, streamCounter, measurementTags, token)
+    IProducerConsumerCollection<ProtocolCommand> commands): Multiplexer<T>(streams, commands)
+    where T : IStreamMetrics
 {
-    public Func<AsyncAutoResetEvent, MultiplexedStream?>? HandlerFactory { get; init; }
+    private readonly Memory<byte> framingBuffer;
+    private readonly MultiplexedStreamFactory? factory;
+    
+    public required AsyncAutoResetEvent TransportSignal { private get; init; }
+
+    public required Memory<byte> FramingBuffer
+    {
+        init => framingBuffer = value;
+    }
+
+    public required TimeSpan Timeout { private get; init; }
+
+    public MultiplexedStreamFactory Factory
+    {
+        init => factory = value;
+    }
 
     public Task ProcessAsync(Socket socket)
     {
@@ -26,7 +33,7 @@ internal sealed class OutputMultiplexer(
         
         // if output multiplexer is completed due to exception, we need to trigger
         // the input multiplexer to handle the error
-        task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(writeSignal.SetNoResult);
+        task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(TransportSignal.SetNoResult);
         return task;
     }
 
@@ -35,7 +42,7 @@ internal sealed class OutputMultiplexer(
         FrameHeader header;
         for (var bufferedBytes = 0;; AdjustFramingBuffer(ref bufferedBytes, header, framingBuffer.Span))
         {
-            StartOperation(timeout); // resumed by heartbeat
+            StartOperation(Timeout); // resumed by heartbeat
             try
             {
                 // read at least header
@@ -65,39 +72,41 @@ internal sealed class OutputMultiplexer(
                 await ResetOperationTimeoutAsync().ConfigureAwait(false);
             }
 
-            if (header.Control is FrameControl.Heartbeat)
-                continue;
-
-            if (!streams.TryGetValue(header.Id, out var stream))
-            {
-                if (HandlerFactory is null || header.CanBeIgnored)
-                {
-                    continue;
-                }
-
-                if ((stream = HandlerFactory(writeSignal)) is null)
-                {
-                    commands.TryAdd(new StreamRejectedCommand(header.Id));
-                    writeSignal.Set();
-                    continue;
-                }
-
-                streams[header.Id] = stream;
-                ChangeStreamCount();
-            }
-            else if (stream.IsTransportOutputCompleted)
-            {
-                continue;
-            }
-
-            // write the frame to the output header
-            await stream
-                .ReadFrameAsync(header.Control, framingBuffer.Slice(FrameHeader.Size, header.Length), RootToken)
-                .ConfigureAwait(false);
+            await ReadFrameAsync(header).ConfigureAwait(false);
         }
     }
 
-    private static void AdjustFramingBuffer(ref int bufferedBytes, in FrameHeader header, Span<byte> framingBuffer)
+    private ValueTask ReadFrameAsync(FrameHeader header)
+        => GetOrCreateStream(header) is { } stream
+            ? stream.ReadFrameAsync(header.Control, framingBuffer.Slice(FrameHeader.Size, header.Length), RootToken)
+            : ValueTask.CompletedTask;
+
+    private MultiplexedStream? GetOrCreateStream(FrameHeader header)
+    {
+        if (header.Control is FrameControl.Heartbeat)
+            return null;
+
+        if (Streams.TryGetValue(header.Id, out var stream))
+            return stream.IsTransportOutputCompleted ? null : stream;
+
+        if (factory is null || header.CanBeIgnored)
+            return null;
+        
+        if ((stream = factory(TransportSignal, in MeasurementTags)) is null)
+        {
+            Commands.TryAdd(new StreamRejectedCommand(header.Id));
+            TransportSignal.Set();
+        }
+        else
+        {
+            Streams[header.Id] = stream;
+            ChangeStreamCount();
+        }
+
+        return stream;
+    }
+
+    private static void AdjustFramingBuffer(ref int bufferedBytes, FrameHeader header, Span<byte> framingBuffer)
     {
         var bytesWritten = header.Length + FrameHeader.Size;
         framingBuffer

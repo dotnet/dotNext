@@ -1,14 +1,21 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext.Net.Multiplexing;
 
 using Threading;
 
 partial class Multiplexer
 {
-    private TimeoutSource source = new(TimeProvider.System, token);
+    private TimeoutSource source;
+
+    public required CancellationToken RootToken
+    {
+        get => source.RootToken;
+
+        [MemberNotNull(nameof(source))] init => source = new(TimeProvider.System, value);
+    }
 
     protected void StartOperation(TimeSpan timeout) => source.TryStart(timeout);
-
-    public CancellationToken RootToken => source.RootToken;
 
     protected CancellationToken TimeBoundedToken => source.Token;
 
