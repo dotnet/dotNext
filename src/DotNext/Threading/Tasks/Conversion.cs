@@ -128,12 +128,36 @@ public static class Conversion
     }
 
     /// <summary>
+    /// Catches the exception that can be raised by the task.
+    /// </summary>
+    /// <param name="task">The task.</param>
+    /// <param name="filter">The filter of the exception to be suspended.</param>
+    /// <returns>The awaitable object that suspends exceptions according to the filter.</returns>
+    public static AwaitableResult CatchException(this Task task, Predicate<Exception>? filter = null)
+    {
+        ArgumentNullException.ThrowIfNull(task);
+
+        return new(task) { Filter = filter };
+    }
+
+    /// <summary>
     /// Suspends the exception that can be raised by the task.
     /// </summary>
     /// <param name="task">The task.</param>
     /// <param name="filter">The filter of the exception to be suspended.</param>
     /// <returns>The awaitable object that suspends exceptions according to the filter.</returns>
     public static SuspendedExceptionTaskAwaitable SuspendException(this ValueTask task, Predicate<Exception>? filter = null)
+        => new(task) { Filter = filter };
+
+
+
+    /// <summary>
+    /// Catches the exception that can be raised by the task.
+    /// </summary>
+    /// <param name="task">The task.</param>
+    /// <param name="filter">The filter of the exception to be suspended.</param>
+    /// <returns>The awaitable object that suspends exceptions according to the filter.</returns>
+    public static AwaitableResult CatchException(this ValueTask task, Predicate<Exception>? filter = null)
         => new(task) { Filter = filter };
 
     /// <summary>

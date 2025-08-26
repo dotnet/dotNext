@@ -3,16 +3,24 @@ namespace DotNext;
 /// <summary>
 /// Represents the common interface for Result monad.
 /// </summary>
-/// <typeparam name="T">The type of the result.</typeparam>
 /// <typeparam name="TError">The type that represents an error.</typeparam>
-public interface IResultMonad<T, out TError> : IOptionMonad<T>
+public interface IResultMonad<out TError>
     where TError : notnull
 {
     /// <summary>
     /// Gets the error.
     /// </summary>
     TError? Error { get; }
+}
 
+/// <summary>
+/// Represents the common interface for Result monad.
+/// </summary>
+/// <typeparam name="T">The type of the result.</typeparam>
+/// <typeparam name="TError">The type that represents an error.</typeparam>
+public interface IResultMonad<T, out TError> : IResultMonad<TError>, IOptionMonad<T>
+    where TError : notnull
+{
     /// <summary>
     /// Returns the value if present; otherwise invoke delegate.
     /// </summary>

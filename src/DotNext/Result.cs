@@ -7,6 +7,8 @@ using System.Text.Json.Serialization;
 
 namespace DotNext;
 
+using System.Threading.Tasks;
+using DotNext.Threading.Tasks;
 using Runtime.CompilerServices;
 using Intrinsics = Runtime.Intrinsics;
 
@@ -100,6 +102,116 @@ public static class Result
         => result.IsNull
             ? FromException<T>(ExceptionDispatchInfo.SetCurrentStackTrace(new TException()))
             : result!;
+}
+
+/// <summary>
+/// Represents a result of operation which can be the actual result or exception.
+/// </summary>
+[StructLayout(LayoutKind.Auto)]
+public readonly struct ActionResult : IResultMonad<Exception>
+{
+    private readonly ExceptionDispatchInfo? exception;
+
+    /// <summary>
+    /// Initializes a new successful result.
+    /// </summary>
+    public ActionResult() { }
+
+    /// <summary>
+    /// Initializes a new unsuccessful result.
+    /// </summary>
+    /// <param name="error">The exception representing error. Cannot be <see langword="null"/>.</param>
+    public ActionResult(Exception error)
+        : this(ExceptionDispatchInfo.Capture(error))
+    {
+    }
+
+    private ActionResult(ExceptionDispatchInfo dispatchInfo)
+    {
+        exception = dispatchInfo;
+    }
+
+    /// <summary>
+    /// Initializes a new unsuccessful result.
+    /// </summary>
+    /// <param name="error">The exception representing error. Cannot be <see langword="null"/>.</param>
+    /// <returns>The unsuccessful result.</returns>
+    static ActionResult FromError(Exception error) => new(error);
+
+    /// <summary>
+    /// Indicates that the result is successful.
+    /// </summary>
+    /// <value><see langword="true"/> if this result is successful; <see langword="false"/> if this result represents exception.</value>
+    [MemberNotNullWhen(false, nameof(Error))]
+    public bool IsSuccessful => exception is null;
+
+    [StackTraceHidden]
+    private void Validate() => exception?.Throw();
+
+    /// <summary>
+    /// Gets exception associated with this result.
+    /// </summary>
+    public Exception? Error => exception?.SourceException;
+
+    /// <summary>
+    /// Converts this result to <see cref="Task{TResult}"/>.
+    /// </summary>
+    /// <returns>The completed task representing the result.</returns>
+    public ValueTask AsTask()
+        => exception?.SourceException switch
+        {
+            null => new(),
+            OperationCanceledException canceledEx => ValueTask.FromCanceled(canceledEx.CancellationToken),
+            { } error => ValueTask.FromException(error),
+        };
+
+    /// <summary>
+    /// Converts the result to <see cref="Task{TResult}"/>.
+    /// </summary>
+    /// <param name="result">The result to be converted.</param>
+    /// <returns>The completed task representing the result.</returns>
+    public static explicit operator ValueTask(in ActionResult result) => result.AsTask();
+
+    /// <summary>
+    /// Indicates that both results are successful.
+    /// </summary>
+    /// <param name="left">The first result to check.</param>
+    /// <param name="right">The second result to check.</param>
+    /// <returns><see langword="true"/> if both results are successful; otherwise, <see langword="false"/>.</returns>
+    public static bool operator &(in ActionResult left, in ActionResult right) => left.exception is null && right.exception is null;
+
+    /// <inheritdoc cref="IOptionMonad{T,TSelf}.op_LogicalNot"/>
+    public static bool operator !(in ActionResult result) => result.exception is not null;
+
+    /// <inheritdoc cref="IOptionMonad{T,TSelf}.op_True"/>
+    public static bool operator true(in ActionResult result) => result.exception is null;
+
+    /// <inheritdoc cref="IOptionMonad{T,TSelf}.op_False"/>
+    public static bool operator false(in ActionResult result) => !result;
+
+    /// <summary>
+    /// Returns textual representation of this object.
+    /// </summary>
+    /// <returns>The textual representation of this object.</returns>
+    public override string ToString() => exception?.SourceException.ToString() ?? "<NULL>";
+
+    /// <summary>
+    /// Executes an <see cref="Action"/> and returns an <see cref="ActionResult"/> indicating if it completed successfully.
+    /// </summary>
+    /// <param name="action">The <see cref="Action"/> to execute</param>
+    /// <returns>An <see cref="ActionResult"/> indicating if the <see cref="Action"/> completed successfully.</returns>
+    public static ActionResult Try(Action action)
+    {
+        try
+        {
+            action.Invoke();
+            return new ActionResult();
+        }
+        catch (Exception ex)
+        {
+            return new ActionResult(ex);
+        }
+    }
 }
 
 /// <summary>
@@ -465,6 +577,24 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// </summary>
     /// <returns>The textual representation of this object.</returns>
     public override string ToString() => exception?.SourceException.ToString() ?? value?.ToString() ?? "<NULL>";
+
+    /// <summary>
+    /// Executes a <see cref="Func{T}"/> and returns a <see cref="Result{T}"/> containing the result.
+    /// </summary>
+    /// <param name="func">The <see cref="Func{T}"/> to execute</param>
+    /// <returns>A <see cref="Result{T}"/> holding the result or an exception.</returns>
+    public static Result<T> Try(Func<T> func)
+    {
+        try
+        {
+            var result = func.Invoke();
+            return new(result);
+        }
+        catch (Exception ex)
+        {
+            return new(ex);
+        }
+    }
 }
 
 /// <summary>
@@ -804,4 +934,23 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     
     /// <inheritdoc cref="IOptionMonad{T,TSelf}.op_False"/>
     public static bool operator false(in Result<T, TError> result) => !result;
+
+    /// <summary>
+    /// Executes a <see cref="Func{T}"/> and returns a <see cref="Result{T, TError}"/> containing the result.
+    /// </summary>
+    /// <param name="func">The <see cref="Func{T}"/> to execute</param>
+    /// <param name="converter">A converter to convert <see cref="Exception"/> into the Error type</param>
+    /// <returns>A <see cref="Result{T}"/> holding the result or an exception.</returns>
+    public static Result<T, TError> Try(Func<T> func, Converter<Exception, TError> converter)
+    {
+        try
+        {
+            var result = func.Invoke();
+            return new(result);
+        }
+        catch (Exception ex)
+        {
+            return new(converter.Invoke(ex));
+        }
+    }
 }

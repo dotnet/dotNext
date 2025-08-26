@@ -190,6 +190,96 @@ public readonly struct SuspendedExceptionTaskAwaitable<TArg>
 /// <summary>
 /// Represents the awaitable object that can suspend the exception raised by the underlying task.
 /// </summary>
+[StructLayout(LayoutKind.Auto)]
+public readonly struct AwaitableResult
+{
+    private readonly ValueTask task;
+
+    internal AwaitableResult(Task task)
+        : this(new ValueTask(task))
+    {
+    }
+
+    internal AwaitableResult(ValueTask task) => this.task = task;
+
+    internal bool ContinueOnCapturedContext
+    {
+        get;
+        init;
+    }
+
+    internal Predicate<Exception>? Filter
+    {
+        get;
+        init;
+    }
+
+    /// <summary>
+    /// Configures an awaiter for this value.
+    /// </summary>
+    /// <param name="continueOnCapturedContext">
+    /// <see langword="true"/> to attempt to marshal the continuation back to the captured context;
+    /// otherwise, <see langword="false"/>.
+    /// </param>
+    /// <returns>The configured object.</returns>
+    public AwaitableResult ConfigureAwait(bool continueOnCapturedContext)
+        => this with { ContinueOnCapturedContext = continueOnCapturedContext };
+
+    /// <summary>
+    /// Gets the awaiter for this object.
+    /// </summary>
+    /// <returns>The awaiter for this object.</returns>
+    public Awaiter GetAwaiter() => new(task, ContinueOnCapturedContext) { Filter = Filter };
+
+    /// <summary>
+    /// Represents the awaiter that suspends exception.
+    /// </summary>
+    [StructLayout(LayoutKind.Auto)]
+    public readonly struct Awaiter : ICriticalNotifyCompletion
+    {
+        private readonly ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter;
+
+        internal Awaiter(in ValueTask task, bool continueOnCapturedContext)
+            => awaiter = task.ConfigureAwait(continueOnCapturedContext).GetAwaiter();
+
+        /// <summary>
+        /// Gets a value indicating that <see cref="AwaitableResult"/> has completed.
+        /// </summary>
+        public bool IsCompleted => awaiter.IsCompleted;
+
+        internal Predicate<Exception>? Filter
+        {
+            private get;
+            init;
+        }
+
+        /// <inheritdoc/>
+        public void OnCompleted(Action action) => awaiter.OnCompleted(action);
+
+        /// <inheritdoc/>
+        public void UnsafeOnCompleted(Action action) => awaiter.UnsafeOnCompleted(action);
+
+        /// <summary>
+        /// Gets a result of asynchronous operation, and suspends exception if needed.
+        /// </summary>
+        public ActionResult GetResult()
+        {
+            try
+            {
+                awaiter.GetResult();
+                return new();
+            }
+            catch (Exception e) when (Filter?.Invoke(e) ?? true)
+            {
+                return new(e);
+            }
+        }
+    }
+}
+
+/// <summary>
+/// Represents the awaitable object that can suspend the exception raised by the underlying task.
+/// </summary>
 /// <typeparam name="T">The type of the task.</typeparam>
 [StructLayout(LayoutKind.Auto)]
 public readonly struct AwaitableResult<T>
