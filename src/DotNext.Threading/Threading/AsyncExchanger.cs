@@ -128,7 +128,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
                 break;
             default:
-                var suspendedCaller = default(ManualResetCompletionSource);
+                ManualResetCompletionSource? suspendedCaller;
                 ISupplier<TimeSpan, CancellationToken, ValueTask<T>> factory;
                 lock (SyncRoot)
                 {
