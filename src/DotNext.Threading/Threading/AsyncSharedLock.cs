@@ -234,16 +234,13 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
             Debug.Assert(current.Next is null or WaitNode);
 
             next = Unsafe.As<WaitNode>(current.Next);
-            switch ((current.IsStrongLock, state.IsStrongLockAllowed))
+            switch (current.IsStrongLock, state.IsStrongLockAllowed)
             {
                 case (true, true):
-                    if (!RemoveAndSignal(current, out var resumable))
+                    if (!RemoveAndSignal(current, ref detachedQueue))
                         continue;
 
                     state.AcquireStrongLock();
-                    if (resumable)
-                        detachedQueue.Add(current);
-
                     goto exit;
                 case (true, false):
                     goto exit;
@@ -252,11 +249,8 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
                     if (!state.IsWeakLockAllowed)
                         goto exit;
 
-                    if (RemoveAndSignal(current, out resumable))
+                    if (RemoveAndSignal(current, ref detachedQueue))
                         state.AcquireWeakLock();
-
-                    if (resumable)
-                        detachedQueue.Add(current);
 
                     continue;
             }

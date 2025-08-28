@@ -2,7 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Versioning;
 
 namespace DotNext.Threading;
 
@@ -586,36 +585,27 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
                     if (!state.IsUpgradeToWriteLockAllowed)
                         goto exit;
 
-                    if (!RemoveAndSignal(current, out var resumable))
+                    if (!RemoveAndSignal(current, ref detachedQueue))
                         continue;
 
                     state.AcquireWriteLock();
-                    if (resumable)
-                        detachedQueue.Add(current);
-
                     goto exit;
                 case LockType.Exclusive:
                     if (!state.IsWriteLockAllowed)
                         goto exit;
 
                     // skip dead node
-                    if (!RemoveAndSignal(current, out resumable))
+                    if (!RemoveAndSignal(current, ref detachedQueue))
                         continue;
 
                     state.AcquireWriteLock();
-                    if (resumable)
-                        detachedQueue.Add(current);
-
                     goto exit;
                 default:
                     if (!state.IsReadLockAllowed)
                         goto exit;
 
-                    if (RemoveAndSignal(current, out resumable))
+                    if (RemoveAndSignal(current, ref detachedQueue))
                         state.AcquireReadLock();
-
-                    if (resumable)
-                        detachedQueue.Add(current);
 
                     continue;
             }
