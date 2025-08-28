@@ -74,16 +74,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         pool = new(OnCompleted);
     }
 
-    private void OnCompleted(DefaultWaitNode node)
-    {
-        lock (SyncRoot)
-        {
-            if (node.NeedsRemoval)
-                RemoveNode(node);
-
-            pool.Return(node);
-        }
-    }
+    private void OnCompleted(DefaultWaitNode node) => RemoveNode(ref pool, node);
 
     /// <summary>
     /// Gets the numbers of signals initially required to set the event.

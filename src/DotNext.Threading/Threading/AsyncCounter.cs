@@ -79,16 +79,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         pool = new(OnCompleted);
     }
 
-    private void OnCompleted(DefaultWaitNode node)
-    {
-        lock (SyncRoot)
-        {
-            if (node.NeedsRemoval)
-                RemoveNode(node);
-
-            pool.Return(node);
-        }
-    }
+    private void OnCompleted(DefaultWaitNode node) => RemoveNode(ref pool, node);
 
     /// <inheritdoc/>
     bool IAsyncEvent.IsSet => Value > 0L;

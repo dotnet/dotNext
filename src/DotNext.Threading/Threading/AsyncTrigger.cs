@@ -48,16 +48,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         pool = new(OnCompleted, concurrencyLevel);
     }
 
-    private void OnCompleted(DefaultWaitNode node)
-    {
-        lock (SyncRoot)
-        {
-            if (node.NeedsRemoval)
-                RemoveNode(node);
-
-            pool.Return(node);
-        }
-    }
+    private void OnCompleted(DefaultWaitNode node) => RemoveNode(ref pool, node);
 
     /// <inheritdoc/>
     bool IAsyncEvent.Reset() => false;

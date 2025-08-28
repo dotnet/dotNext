@@ -38,16 +38,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         all = new(Count == MaxCount ? UInt128.MaxValue : GetBitMask(count) - UInt128.One);
     }
 
-    private void OnCompleted(WaitNode node)
-    {
-        lock (SyncRoot)
-        {
-            if (node.NeedsRemoval)
-                RemoveNode(node);
-
-            pool.Return(node);
-        }
-    }
+    private void OnCompleted(WaitNode node) => RemoveNode(ref pool, node);
 
     /// <summary>
     /// Gets the number of events.

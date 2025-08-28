@@ -141,6 +141,18 @@ public class QueuedSynchronizer : Disposable
         return removed;
     }
 
+    private protected void RemoveNode<TNode>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TNode node)
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
+    {
+        lock (SyncRoot)
+        {
+            if (node.NeedsRemoval)
+                RemoveNode(node);
+
+            pool.Return(node);
+        }
+    }
+
     private protected void EnqueueNode(WaitNode node)
     {
         waitQueue.Add(node);
