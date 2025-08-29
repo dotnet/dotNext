@@ -13,7 +13,7 @@ using Tasks.Pooling;
 public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct LockManager : ILockManager<DefaultWaitNode>
+    private struct LockManager : ILockManager<DefaultWaitNode>, IWaitQueueVisitor<DefaultWaitNode>
     {
         // null - not acquired, Sentinel.Instance - acquired asynchronously, Thread - acquired synchronously
         private bool state;
@@ -28,6 +28,30 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
             => state = true;
 
         internal void ExitLock() => state = false;
+
+        bool IWaitQueueVisitor<DefaultWaitNode>.Visit<TWaitQueue>(DefaultWaitNode node,
+            ref TWaitQueue queue,
+            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
+        {
+            if (!IsLockAllowed)
+            {
+                // nothing to do
+            }
+            else if (!queue.RemoveAndSignal(node, ref detachedQueue))
+            {
+                return true;
+            }
+            else
+            {
+                AcquireLock();
+            }
+
+            return false;
+        }
+
+        void IWaitQueueVisitor<DefaultWaitNode>.EndOfQueueReached()
+        {
+        }
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
@@ -54,20 +78,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         pool = new(OnCompleted);
     }
 
-    private void OnCompleted(DefaultWaitNode node)
-    {
-        ManualResetCompletionSource? suspendedCaller;
-        lock (SyncRoot)
-        {
-            suspendedCaller = node.NeedsRemoval && RemoveNode(node)
-                ? DrainWaitQueue()
-                : null;
-
-            pool.Return(node);
-        }
-
-        suspendedCaller?.Resume();
-    }
+    private void OnCompleted(DefaultWaitNode node) => ReturnNode(ref pool, node, ref manager);
 
     /// <summary>
     /// Indicates that exclusive lock taken.
@@ -227,28 +238,6 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask StealAsync(object? reason = null, CancellationToken token = default)
         => AcquireAsync(ref pool, ref manager, new InterruptionReasonAndCancellationToken(reason, token));
 
-    private ManualResetCompletionSource? DrainWaitQueue()
-    {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-
-        for (LinkedValueTaskCompletionSource<bool>? current = WaitQueueHead, next; current is not null; current = next)
-        {
-            next = current.Next;
-
-            if (!manager.IsLockAllowed)
-                break;
-
-            // skip dead node
-            if (RemoveAndSignal(current, out var resumable))
-            {
-                manager.AcquireLock();
-                return resumable ? current : null;
-            }
-        }
-
-        return null;
-    }
-
     /// <summary>
     /// Releases previously acquired exclusive lock.
     /// </summary>
@@ -266,7 +255,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 
             manager.ExitLock();
             lockOwner = null;
-            suspendedCaller = DrainWaitQueue();
+            suspendedCaller = DrainWaitQueue<DefaultWaitNode, LockManager>(ref manager);
 
             if (IsDisposing && IsReadyToDispose)
             {
@@ -277,5 +266,5 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         suspendedCaller?.Resume();
     }
 
-    private protected sealed override bool IsReadyToDispose => manager is { Value: false } && WaitQueueHead is null;
+    private protected sealed override bool IsReadyToDispose => manager is { Value: false } && IsEmptyQueue;
 }

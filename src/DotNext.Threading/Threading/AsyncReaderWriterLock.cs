@@ -36,7 +36,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     // describes internal state of reader/writer lock
     [StructLayout(LayoutKind.Auto)]
     [SuppressMessage("Usage", "CA1001", Justification = "The disposable field is disposed in the Dispose() method")]
-    internal struct State
+    internal struct State : IWaitQueueVisitor<WaitNode>
     {
         private ulong version;  // version of write lock
 
@@ -83,6 +83,50 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         internal readonly bool IsReadLockAllowed => !writeLock;
 
         internal void AcquireReadLock() => readLocks++;
+
+        bool IWaitQueueVisitor<WaitNode>.Visit<TWaitQueue>(WaitNode node,
+            ref TWaitQueue queue,
+            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
+        {
+            switch (node.Type)
+            {
+                case LockType.Upgrade:
+                    if (!IsUpgradeToWriteLockAllowed)
+                        break;
+
+                    if (!queue.RemoveAndSignal(node, ref detachedQueue))
+                        goto default;
+
+                    AcquireWriteLock();
+                    break;
+                case LockType.Exclusive:
+                    if (!IsWriteLockAllowed)
+                        break;
+
+                    // skip dead node
+                    if (!queue.RemoveAndSignal(node, ref detachedQueue))
+                        goto default;
+
+                    AcquireWriteLock();
+                    break;
+                case LockType.Read:
+                    if (!IsReadLockAllowed)
+                        break;
+
+                    if (queue.RemoveAndSignal(node, ref detachedQueue))
+                        AcquireReadLock();
+
+                    goto default;
+                default:
+                    return true;
+            }
+
+            return false;
+        }
+
+        void IWaitQueueVisitor<WaitNode>.EndOfQueueReached()
+        {
+        }
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -243,20 +287,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         pool = new(OnCompleted);
     }
 
-    private void OnCompleted(WaitNode node)
-    {
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
-        {
-            suspendedCallers = node.NeedsRemoval && RemoveNode(node)
-                ? DrainWaitQueue()
-                : null;
-
-            pool.Return(node);
-        }
-
-        suspendedCallers?.Unwind();
-    }
+    private void OnCompleted(WaitNode node) => ReturnNode(ref pool, node, ref state);
 
     /// <summary>
     /// Gets the total number of unique readers.
@@ -567,54 +598,6 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask StealWriteLockAsync(object? reason = null, CancellationToken token = default)
         => AcquireAsync(ref pool, ref GetLockManager<WriteLockManager>(), new InterruptionReasonAndCancellationToken(reason, token));
 
-    private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
-    {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-        Debug.Assert(WaitQueueHead is null or WaitNode);
-
-        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
-
-        for (WaitNode? current = Unsafe.As<WaitNode>(WaitQueueHead), next; current is not null; current = next)
-        {
-            Debug.Assert(current.Next is null or WaitNode);
-
-            next = Unsafe.As<WaitNode>(current.Next);
-            switch (current.Type)
-            {
-                case LockType.Upgrade:
-                    if (!state.IsUpgradeToWriteLockAllowed)
-                        goto exit;
-
-                    if (!RemoveAndSignal(current, ref detachedQueue))
-                        continue;
-
-                    state.AcquireWriteLock();
-                    goto exit;
-                case LockType.Exclusive:
-                    if (!state.IsWriteLockAllowed)
-                        goto exit;
-
-                    // skip dead node
-                    if (!RemoveAndSignal(current, ref detachedQueue))
-                        continue;
-
-                    state.AcquireWriteLock();
-                    goto exit;
-                default:
-                    if (!state.IsReadLockAllowed)
-                        goto exit;
-
-                    if (RemoveAndSignal(current, ref detachedQueue))
-                        state.AcquireReadLock();
-
-                    continue;
-            }
-        }
-
-    exit:
-        return detachedQueue.First;
-    }
-
     /// <summary>
     /// Exits previously acquired mode.
     /// </summary>
@@ -636,7 +619,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
             state.ExitLock();
             IsLockHelpByCurrentThread = false;
-            suspendedCallers = DrainWaitQueue();
+            suspendedCallers = DrainWaitQueue<WaitNode, State>(ref state);
 
             if (IsDisposing && IsReadyToDispose)
             {
@@ -667,13 +650,13 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.DowngradeFromWriteLock();
-            suspendedCallers = DrainWaitQueue();
+            suspendedCallers = DrainWaitQueue<WaitNode, State>(ref state);
         }
 
         suspendedCallers?.Unwind();
     }
 
-    private protected sealed override bool IsReadyToDispose => state.IsWriteLockAllowed && WaitQueueHead is null;
+    private protected sealed override bool IsReadyToDispose => state.IsWriteLockAllowed && IsEmptyQueue;
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

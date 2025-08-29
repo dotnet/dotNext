@@ -18,10 +18,30 @@ using Tasks.Pooling;
 public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 {
     private static readonly int MaxCount = Unsafe.SizeOf<UInt128>() * 8;
+    
+    [StructLayout(LayoutKind.Auto)]
+    private struct State : IWaitQueueVisitor<WaitNode>
+    {
+        internal UInt128 Value;
+
+        bool IWaitQueueVisitor<WaitNode>.Visit<TWaitQueue>(WaitNode node, ref TWaitQueue queue, ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
+        {
+            if (node.Matches(Value))
+            {
+                queue.RemoveAndSignal(node, ref detachedQueue);
+            }
+
+            return true;
+        }
+
+        void IWaitQueueVisitor<WaitNode>.EndOfQueueReached()
+        {
+        }
+    }
 
     private readonly EventGroup all;
     private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
-    private UInt128 state;
+    private State state;
 
     /// <summary>
     /// Initializes a new collection of asynchronous events.
@@ -37,8 +57,10 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         pool = new(OnCompleted, count);
         all = new(Count == MaxCount ? UInt128.MaxValue : GetBitMask(count) - UInt128.One);
     }
+    
+    private static UInt128 GetBitMask(int index) => UInt128.One << index;
 
-    private void OnCompleted(WaitNode node) => RemoveNode(ref pool, node);
+    private void OnCompleted(WaitNode node) => ReturnNode(ref pool, node);
 
     /// <summary>
     /// Gets the number of events.
@@ -97,23 +119,6 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         }
     }
 
-    private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
-    {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-
-        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
-
-        for (WaitNode? current = Unsafe.As<WaitNode>(WaitQueueHead), next; current is not null; current = next)
-        {
-            next = Unsafe.As<WaitNode>(current.Next);
-
-            if (current.Matches(state) && RemoveAndSignal(current, out var resumable) && resumable)
-                detachedQueue.Add(current);
-        }
-
-        return detachedQueue.First;
-    }
-
     /// <summary>
     /// Turns the specified event into the signaled state and reset all other events.
     /// </summary>
@@ -131,9 +136,9 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            result = (state & newState) == UInt128.Zero;
-            state = newState;
-            suspendedCallers = DrainWaitQueue();
+            result = (state.Value & newState) == UInt128.Zero;
+            state.Value = newState;
+            suspendedCallers = DrainWaitQueue<WaitNode, State>(ref state);
         }
 
         suspendedCallers?.Unwind();
@@ -157,9 +162,9 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            result = (state & mask) == UInt128.Zero;
-            state |= mask;
-            suspendedCallers = DrainWaitQueue();
+            result = (state.Value & mask) == UInt128.Zero;
+            state.Value |= mask;
+            suspendedCallers = DrainWaitQueue<WaitNode, State>(ref state);
         }
 
         suspendedCallers?.Unwind();
@@ -184,9 +189,9 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            result = new(events.Mask & ~state);
-            state = events.Mask;
-            suspendedCallers = DrainWaitQueue();
+            result = new(events.Mask & ~state.Value);
+            state.Value = events.Mask;
+            suspendedCallers = DrainWaitQueue<WaitNode, State>(ref state);
         }
 
         suspendedCallers?.Unwind();
@@ -211,9 +216,9 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            result = new(events.Mask & ~state);
-            state |= events.Mask;
-            suspendedCallers = DrainWaitQueue();
+            result = new(events.Mask & ~state.Value);
+            state.Value |= events.Mask;
+            suspendedCallers = DrainWaitQueue<WaitNode, State>(ref state);
         }
 
         suspendedCallers?.Unwind();
@@ -423,8 +428,6 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     public ValueTask WaitAllAsync(CancellationToken token = default)
         => WaitAllAsync(all, token);
     
-    private static UInt128 GetBitMask(int index) => UInt128.One << index;
-    
     private static void FillIndices(UInt128 events, ICollection<int> indices)
     {
         for (var enumerator = new EventGroup.Enumerator(events); enumerator.MoveNext();)
@@ -538,7 +541,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             Debug.Assert(stateHolder is not null);
 
             mask = GetBitMask(eventIndex);
-            state = new(stateHolder, in stateHolder.state);
+            state = new(stateHolder, in stateHolder.state.Value);
         }
 
         internal WaitAllManager(AsyncEventHub stateHolder, in UInt128 mask)
@@ -546,7 +549,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             Debug.Assert(stateHolder is not null);
 
             this.mask = mask;
-            state = new(stateHolder, in stateHolder.state);
+            state = new(stateHolder, in stateHolder.state.Value);
         }
 
         void IConsumer<WaitNode>.Invoke(WaitNode node) => node.WaitAll(mask);
@@ -572,7 +575,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             Debug.Assert(stateHolder is not null);
 
             this.mask = mask;
-            state = new(stateHolder, in stateHolder.state);
+            state = new(stateHolder, in stateHolder.state.Value);
         }
 
         [DisallowNull]

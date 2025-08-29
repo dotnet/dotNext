@@ -13,7 +13,7 @@ using Tasks.Pooling;
 public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager<DefaultWaitNode>
+    private struct StateManager : ILockManager<DefaultWaitNode>, IWaitQueueVisitor<DefaultWaitNode>
     {
         internal bool Value;
 
@@ -23,6 +23,12 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         readonly bool ILockManager.IsLockAllowed => Value;
 
         void ILockManager.AcquireLock() => Value = false;
+
+        bool IWaitQueueVisitor<DefaultWaitNode>.Visit<TWaitQueue>(DefaultWaitNode node, ref TWaitQueue queue,
+            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
+            => !queue.RemoveAndSignal(node, ref detachedQueue);
+
+        void IWaitQueueVisitor<DefaultWaitNode>.EndOfQueueReached() => Value = true;
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
@@ -52,7 +58,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         pool = new(OnCompleted);
     }
 
-    private void OnCompleted(DefaultWaitNode node) => RemoveNode(ref pool, node);
+    private void OnCompleted(DefaultWaitNode node) => ReturnNode(ref pool, node);
 
     /// <summary>
     /// Indicates whether this event is set.
@@ -84,37 +90,21 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        var suspendedCaller = default(ManualResetCompletionSource);
         bool result;
 
         if (result = !manager.Value)
         {
+            ManualResetCompletionSource? suspendedCaller;
             lock (SyncRoot)
             {
-                if (result = !manager.Value)
-                {
-                    for (LinkedValueTaskCompletionSource<bool>? current = WaitQueueHead, next;; current = next)
-                    {
-                        if (current is null)
-                        {
-                            manager.Value = true;
-                            break;
-                        }
-
-                        next = current.Next;
-
-                        // skip dead node
-                        if (RemoveAndSignal(current, out var resumable))
-                        {
-                            suspendedCaller = resumable ? current : null;
-                            break;
-                        }
-                    }
-                }
+                suspendedCaller = (result = !manager.Value)
+                    ? DrainWaitQueue<DefaultWaitNode, StateManager>(ref manager)
+                    : null;
             }
+
+            suspendedCaller?.Resume();
         }
 
-        suspendedCaller?.Resume();
         return result;
     }
 

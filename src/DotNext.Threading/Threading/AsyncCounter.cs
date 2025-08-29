@@ -19,7 +19,7 @@ using Tasks.Pooling;
 public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager<DefaultWaitNode>
+    private struct StateManager : ILockManager<DefaultWaitNode>, IWaitQueueVisitor<DefaultWaitNode>
     {
         internal required long Value;
 
@@ -46,6 +46,23 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         readonly bool ILockManager.IsLockAllowed => Value > 0L;
 
         void ILockManager.AcquireLock() => Decrement();
+        
+        bool IWaitQueueVisitor<DefaultWaitNode>.Visit<TWaitQueue>(DefaultWaitNode node,
+            ref TWaitQueue queue,
+            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
+        {
+            if (Value <= 0L)
+                return false;
+            
+            if (queue.RemoveAndSignal(node, ref detachedQueue))
+                Decrement();
+
+            return true;
+        }
+
+        void IWaitQueueVisitor<DefaultWaitNode>.EndOfQueueReached()
+        {
+        }
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
@@ -79,7 +96,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         pool = new(OnCompleted);
     }
 
-    private void OnCompleted(DefaultWaitNode node) => RemoveNode(ref pool, node);
+    private void OnCompleted(DefaultWaitNode node) => ReturnNode(ref pool, node);
 
     /// <inheritdoc/>
     bool IAsyncEvent.IsSet => Value > 0L;
@@ -157,44 +174,30 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
         Debug.Assert(delta > 0L);
 
-        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             manager.Increment(delta);
-            DrainWaitQueue(ref detachedQueue);
+            suspendedCallers = DrainWaitQueue<DefaultWaitNode, StateManager>(ref manager);
         }
 
-        detachedQueue.First?.Unwind();
+        suspendedCallers?.Unwind();
     }
 
     private bool TryIncrementCore(long maxValue)
     {
         Debug.Assert(maxValue > 0);
-        
-        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
+
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         bool result;
         lock (SyncRoot)
         {
             result = manager.TryIncrement(maxValue);
-            DrainWaitQueue(ref detachedQueue);
+            suspendedCallers = DrainWaitQueue<DefaultWaitNode, StateManager>(ref manager);
         }
 
-        detachedQueue.First?.Unwind();
+        suspendedCallers?.Unwind();
         return result;
-    }
-
-    private void DrainWaitQueue(ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
-    {
-        for (LinkedValueTaskCompletionSource<bool>? current = WaitQueueHead, next; current is not null && manager.Value > 0L; current = next)
-        {
-            next = current.Next;
-
-            if (RemoveAndSignal(current, out var resumable))
-                manager.Decrement();
-
-            if (resumable)
-                detachedQueue.Add(current);
-        }
     }
 
     /// <inheritdoc/>

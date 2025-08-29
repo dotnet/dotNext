@@ -16,7 +16,7 @@ using Tasks.Pooling;
 public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager<DefaultWaitNode>
+    private struct StateManager : ILockManager<DefaultWaitNode>, IWaitQueueVisitor<DefaultWaitNode>
     {
         internal long Current, Initial;
 
@@ -36,6 +36,18 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         readonly void ILockManager.AcquireLock()
         {
             // nothing to do here
+        }
+
+        bool IWaitQueueVisitor<DefaultWaitNode>.Visit<TWaitQueue>(DefaultWaitNode node,
+            ref TWaitQueue queue,
+            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
+        {
+            queue.RemoveAndSignal(node, ref detachedQueue);
+            return true;
+        }
+
+        void IWaitQueueVisitor<DefaultWaitNode>.EndOfQueueReached()
+        {
         }
     }
 
@@ -74,7 +86,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         pool = new(OnCompleted);
     }
 
-    private void OnCompleted(DefaultWaitNode node) => RemoveNode(ref pool, node);
+    private void OnCompleted(DefaultWaitNode node) => ReturnNode(ref pool, node);
 
     /// <summary>
     /// Gets the numbers of signals initially required to set the event.
@@ -184,7 +196,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         {
             result = manager.Current is 0L;
             manager.Current = manager.Initial;
-            suspendedCallers = DetachWaitQueue()?.SetException(new PendingTaskInterruptedException(), out _);
+            suspendedCallers = Interrupt();
         }
 
         suspendedCallers?.Unwind();
@@ -212,7 +224,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         {
             result = manager.Current is 0L;
             manager.Current = manager.Initial = count;
-            suspendedCallers = DetachWaitQueue()?.SetException(new PendingTaskInterruptedException(), out _);
+            suspendedCallers = Interrupt();
         }
 
         suspendedCallers?.Unwind();
@@ -226,7 +238,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         if (manager.Decrement())
         {
             manager.Current = manager.Initial;
-            suspendedCallers = DetachWaitQueue()?.SetResult(true, out _);
+            suspendedCallers = DrainWaitQueue<DefaultWaitNode, StateManager>(ref manager);
             return true;
         }
 
@@ -363,7 +375,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                 throw new InvalidOperationException();
 
             suspendedCallers = (result = manager.Decrement(signalCount))
-                ? DetachWaitQueue()?.SetResult(true, out _)
+                ? DrainWaitQueue<DefaultWaitNode, StateManager>(ref manager)
                 : null;
         }
 

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading.Tasks;
@@ -59,51 +60,18 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
         }
     }
 
-    internal unsafe LinkedValueTaskCompletionSource<T>? SetResult<TArg>(delegate*<TArg, Result<T>> finalizer, TArg arg, out bool signaled)
+    internal LinkedValueTaskCompletionSource<T>? SetResult(in Result<T> result)
     {
         var detachedQueue = new LinkedList();
-        signaled = false;
 
         for (LinkedValueTaskCompletionSource<T>? current = this, next; current is not null; current = next)
         {
             next = current.CleanupAndGotoNext();
-            if (current.TrySetResult(Sentinel.Instance, completionToken: null, finalizer(arg), out var resumable))
-                signaled = true;
-
-            if (resumable)
+            if (current.TrySetResult(Sentinel.Instance, completionToken: null, in result, out var resumable) && resumable)
                 detachedQueue.Add(current);
         }
 
         return detachedQueue.First;
-    }
-
-    internal LinkedValueTaskCompletionSource<T>? SetCanceled(CancellationToken token, out bool signaled)
-    {
-        Debug.Assert(token.IsCancellationRequested);
-
-        unsafe
-        {
-            return SetResult(&CreateException, token, out signaled);
-        }
-
-        static Result<T> CreateException(CancellationToken token)
-            => new(new OperationCanceledException(token));
-    }
-
-    internal LinkedValueTaskCompletionSource<T>? SetException(Exception e, out bool signaled)
-    {
-        unsafe
-        {
-            return SetResult(&Result.FromException<T>, e, out signaled);
-        }
-    }
-
-    internal LinkedValueTaskCompletionSource<T>? SetResult(T value, out bool signaled)
-    {
-        unsafe
-        {
-            return SetResult(&Result.FromValue<T>, value, out signaled);
-        }
     }
 
     [StructLayout(LayoutKind.Auto)]
