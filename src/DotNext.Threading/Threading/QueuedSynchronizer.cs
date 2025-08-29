@@ -10,7 +10,6 @@ namespace DotNext.Threading;
 
 using Tasks;
 using Tasks.Pooling;
-using Timestamp = Diagnostics.Timestamp;
 
 /// <summary>
 /// Provides a framework for implementing asynchronous locks and related synchronization primitives that rely on first-in-first-out (FIFO) wait queues.
@@ -25,7 +24,6 @@ public class QueuedSynchronizer : Disposable
 {
     private const string LockTypeMeterAttribute = "dotnext.asynclock.type";
     private static readonly UpDownCounter<int> SuspendedCallersMeter;
-    private static readonly Histogram<double> LockDurationMeter;
 
     private readonly TaskCompletionSource disposeTask;
     private CallerInformationStorage? callerInfo;
@@ -35,7 +33,6 @@ public class QueuedSynchronizer : Disposable
     {
         var meter = new Meter("DotNext.Threading.AsyncLock");
         SuspendedCallersMeter = meter.CreateUpDownCounter<int>("suspended-callers-count", description: "Number of Suspended Callers");
-        LockDurationMeter = meter.CreateHistogram<double>("suspension-duration", unit: "ms", description: "Async Lock Duration");
     }
 
     private protected QueuedSynchronizer()
@@ -528,7 +525,6 @@ public class QueuedSynchronizer : Disposable
     private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>, IValueTaskFactory<ValueTask>,
         IValueTaskFactory<ValueTask<bool>>
     {
-        private Timestamp createdAt;
         private WaitNodeFlags flags;
 
         // stores information about suspended caller for debugging purposes
@@ -547,7 +543,6 @@ public class QueuedSynchronizer : Disposable
         {
             this.flags = flags;
             CallerInfo = callerInfo;
-            createdAt = new();
         }
 
         protected sealed override Result<bool> OnTimeout()
@@ -555,16 +550,7 @@ public class QueuedSynchronizer : Disposable
 
         private protected static void AfterConsumed<T>(T node)
             where T : WaitNode, IPooledManualResetCompletionSource<Action<T>>
-        {
-            // report lock duration
-            if (node.OnConsumed is { } callback)
-            {
-                if (callback.Target is QueuedSynchronizer synchronizer)
-                    LockDurationMeter.Record(node.createdAt.ElapsedMilliseconds, synchronizer.waitQueue.MeasurementTags);
-
-                callback(node);
-            }
-        }
+            => node.OnConsumed?.Invoke(node);
 
         static ValueTask IValueTaskFactory<ValueTask>.SuccessfulTask => ValueTask.CompletedTask;
 
