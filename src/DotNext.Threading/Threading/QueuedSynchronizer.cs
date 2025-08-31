@@ -204,13 +204,9 @@ public class QueuedSynchronizer : Disposable
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        if (TLockManager.RequiresEmptyQueue && !IsEmptyQueue || !manager.IsLockAllowed)
-            return false;
-
-        manager.AcquireLock();
-        return true;
+        return waitQueue.TryAcquire(ref manager);
     }
-    
+
     private T AcquireAsync<T, TNode, TInitializer, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, TInitializer initializer, TOptions options)
         where T : struct, IEquatable<T>
         where TNode : WaitNode, IValueTaskFactory<T>, IPooledManualResetCompletionSource<Action<TNode>>, new()
@@ -602,6 +598,16 @@ public class QueuedSynchronizer : Disposable
     {
         internal TagList MeasurementTags;
         private LinkedValueTaskCompletionSource<bool>.LinkedList list;
+
+        public bool TryAcquire<TLockManager>(ref TLockManager manager)
+            where TLockManager : struct, ILockManager
+        {
+            if (TLockManager.RequiresEmptyQueue && Head is not null || !manager.IsLockAllowed)
+                return false;
+
+            manager.AcquireLock();
+            return true;
+        }
 
         private bool RemoveAndSignal(LinkedValueTaskCompletionSource<bool> node,
             ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue,
