@@ -13,7 +13,7 @@ using Tasks.Pooling;
 public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct LockManager : ILockManager<DefaultWaitNode>, IWaitQueueVisitor<DefaultWaitNode>
+    private struct LockManager : ILockManager, IWaitQueueVisitor<DefaultWaitNode>, IConsumer<DefaultWaitNode>
     {
         // null - not acquired, Sentinel.Instance - acquired asynchronously, Thread - acquired synchronously
         private bool state;
@@ -50,6 +50,10 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         }
 
         void IWaitQueueVisitor<DefaultWaitNode>.EndOfQueueReached()
+        {
+        }
+
+        readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
         }
     }

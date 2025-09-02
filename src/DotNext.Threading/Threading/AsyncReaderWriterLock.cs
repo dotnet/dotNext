@@ -130,7 +130,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct ReadLockManager : ILockManager<WaitNode>
+    private struct ReadLockManager : ILockManager, IConsumer<WaitNode>
     {
         private State state;
 
@@ -140,12 +140,12 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         void ILockManager.AcquireLock()
             => state.AcquireReadLock();
 
-        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
             => node.Type = LockType.Read;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct WriteLockManager : ILockManager<WaitNode>
+    private struct WriteLockManager : ILockManager, IConsumer<WaitNode>
     {
         private State state;
 
@@ -155,12 +155,12 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         void ILockManager.AcquireLock()
             => state.AcquireWriteLock();
 
-        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
             => node.Type = LockType.Exclusive;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct UpgradeManager : ILockManager<WaitNode>
+    private struct UpgradeManager : ILockManager, IConsumer<WaitNode>
     {
         private State state;
 
@@ -170,7 +170,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         void ILockManager.AcquireLock()
             => state.AcquireWriteLock();
 
-        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
             => node.Type = LockType.Upgrade;
     }
 
@@ -275,7 +275,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private ref TLockManager GetLockManager<TLockManager>()
-        where TLockManager : struct, ILockManager<WaitNode>
+        where TLockManager : struct, ILockManager, IConsumer<WaitNode>
         => ref Unsafe.As<State, TLockManager>(ref state);
 
     /// <summary>
@@ -351,7 +351,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         => TryEnter<ReadLockManager>(timeout, token);
 
     private bool TryEnter<TLockManager>(TimeSpan timeout, CancellationToken token)
-        where TLockManager : struct, ILockManager<WaitNode>
+        where TLockManager : struct, ILockManager, IConsumer<WaitNode>
     {
         if (IsLockHelpByCurrentThread)
             throw new LockRecursionException();
@@ -508,7 +508,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     private bool TryEnter<TLockManager>()
-        where TLockManager : struct, ILockManager<WaitNode>
+        where TLockManager : struct, ILockManager, IConsumer<WaitNode>
     {
         Monitor.Enter(SyncRoot);
         var result = IsLockHelpByCurrentThread = TryAcquire(ref GetLockManager<TLockManager>());

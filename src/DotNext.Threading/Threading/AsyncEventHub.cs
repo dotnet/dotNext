@@ -84,7 +84,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
 
         var manager = new WaitAllManager(this, eventIndex);
-        return AcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        return AcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
     }
 
     /// <summary>
@@ -102,7 +102,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
 
         var manager = new WaitAllManager(this, eventIndex);
-        return AcquireSpecialAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        return AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
     }
 
     /// <summary>
@@ -251,7 +251,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
         
         var manager = new WaitAnyManager(this, events.Mask);
-        return AcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        return AcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
     }
 
     /// <summary>
@@ -271,7 +271,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
         
         var manager = new WaitAnyManager(this, events.Mask);
-        return AcquireSpecialAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        return AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
     }
     
     /// <summary>
@@ -294,7 +294,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
         
         var manager = new WaitAnyManager(this, events.Mask) { Events = output };
-        return AcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        return AcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
     }
 
     /// <summary>
@@ -315,7 +315,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
         
         var manager = new WaitAnyManager(this, events.Mask) { Events = output };
-        return AcquireSpecialAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        return AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
     }
 
     /// <summary>
@@ -383,7 +383,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
         
         var manager = new WaitAllManager(this, events.Mask);
-        return AcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        return AcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
     }
 
     /// <summary>
@@ -403,7 +403,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
         
         var manager = new WaitAllManager(this, events.Mask);
-        return AcquireSpecialAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        return AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
     }
 
     /// <summary>

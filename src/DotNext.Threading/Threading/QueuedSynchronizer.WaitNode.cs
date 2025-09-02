@@ -17,19 +17,14 @@ partial class QueuedSynchronizer
         static abstract T FromException(Exception e);
 
         static abstract T FromCanceled(CancellationToken token);
-    }
-    
-    [Flags]
-    internal enum WaitNodeFlags
-    {
-        None = 0,
-        ThrowOnTimeout = 1,
+        
+        static abstract bool ThrowOnTimeout { get; }
     }
 
     private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>, IValueTaskFactory<ValueTask>,
         IValueTaskFactory<ValueTask<bool>>
     {
-        private WaitNodeFlags flags;
+        private bool throwOnTimeout;
 
         // stores information about suspended caller for debugging purposes
         internal object? CallerInfo { get; private set; }
@@ -43,14 +38,14 @@ partial class QueuedSynchronizer
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal bool NeedsRemoval => CompletionData is null;
 
-        internal void Initialize(object? callerInfo, WaitNodeFlags flags)
+        internal void Initialize(object? callerInfo, bool throwOnTimeout)
         {
-            this.flags = flags;
+            this.throwOnTimeout = throwOnTimeout;
             CallerInfo = callerInfo;
         }
 
         protected sealed override Result<bool> OnTimeout()
-            => (flags & WaitNodeFlags.ThrowOnTimeout) is not 0 ? base.OnTimeout() : false;
+            => throwOnTimeout ? base.OnTimeout() : false;
 
         private protected static void AfterConsumed<T>(T node)
             where T : WaitNode, IPooledManualResetCompletionSource<Action<T>>
@@ -67,6 +62,8 @@ partial class QueuedSynchronizer
         static ValueTask<bool> IValueTaskFactory<ValueTask<bool>>.FromException(Exception e)
             => ValueTask.FromException<bool>(e);
 
+        static bool IValueTaskFactory<ValueTask<bool>>.ThrowOnTimeout => false;
+
         static ValueTask IValueTaskFactory<ValueTask>.FromException(Exception e)
             => ValueTask.FromException(e);
 
@@ -75,6 +72,8 @@ partial class QueuedSynchronizer
 
         static ValueTask IValueTaskFactory<ValueTask>.FromCanceled(CancellationToken token)
             => ValueTask.FromCanceled(token);
+
+        static bool IValueTaskFactory<ValueTask>.ThrowOnTimeout => true;
     }
 
     private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<Action<DefaultWaitNode>>

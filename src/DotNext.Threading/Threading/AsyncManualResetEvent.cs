@@ -11,7 +11,7 @@ using Tasks.Pooling;
 [DebuggerDisplay($"IsSet = {{{nameof(IsSet)}}}")]
 public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
-    private struct StateManager : ILockManager<DefaultWaitNode>, IWaitQueueVisitor<DefaultWaitNode>
+    private struct StateManager : ILockManager, IWaitQueueVisitor<DefaultWaitNode>, IConsumer<DefaultWaitNode>
     {
         internal bool Value;
 
@@ -44,6 +44,10 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
         }
 
         void IWaitQueueVisitor<DefaultWaitNode>.EndOfQueueReached()
+        {
+        }
+
+        readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
         }
     }

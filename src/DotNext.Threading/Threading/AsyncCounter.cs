@@ -19,7 +19,7 @@ using Tasks.Pooling;
 public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager<DefaultWaitNode>, IWaitQueueVisitor<DefaultWaitNode>
+    private struct StateManager : ILockManager, IWaitQueueVisitor<DefaultWaitNode>, IConsumer<DefaultWaitNode>
     {
         internal required long Value;
 
@@ -61,6 +61,10 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         }
 
         void IWaitQueueVisitor<DefaultWaitNode>.EndOfQueueReached()
+        {
+        }
+
+        readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
         }
     }

@@ -16,7 +16,7 @@ using Tasks.Pooling;
 public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager<DefaultWaitNode>, IWaitQueueVisitor<DefaultWaitNode>
+    private struct StateManager : ILockManager, IWaitQueueVisitor<DefaultWaitNode>, IConsumer<DefaultWaitNode>
     {
         internal long Current, Initial;
 
@@ -47,6 +47,10 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         }
 
         void IWaitQueueVisitor<DefaultWaitNode>.EndOfQueueReached()
+        {
+        }
+
+        readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
         }
     }
@@ -296,7 +300,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                         goto resume_suspended_callers;
                     }
 
-                    factory = EnqueueNode<DefaultWaitNode, StateManager>(ref pool, WaitNodeFlags.None);
+                    factory = EnqueueNode(ref pool);
                 }
 
                 completedSynchronously = false;
@@ -338,7 +342,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                 goto resume_suspended_callers;
             }
 
-            factory = EnqueueNode<DefaultWaitNode, StateManager>(ref pool, WaitNodeFlags.ThrowOnTimeout);
+            factory = EnqueueNodeThrowOnTimeout(ref pool);
         }
 
         completedSynchronously = false;

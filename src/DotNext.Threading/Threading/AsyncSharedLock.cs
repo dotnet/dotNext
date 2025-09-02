@@ -91,7 +91,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct WeakLockManager : ILockManager<WaitNode>
+    private struct WeakLockManager : ILockManager, IConsumer<WaitNode>
     {
         private State state;
 
@@ -101,12 +101,12 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         void ILockManager.AcquireLock()
             => state.AcquireWeakLock();
 
-        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
             => node.IsStrongLock = false;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct StrongLockManager : ILockManager<WaitNode>
+    private struct StrongLockManager : ILockManager, IConsumer<WaitNode>
     {
         private State state;
 
@@ -116,7 +116,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         void ILockManager.AcquireLock()
             => state.AcquireStrongLock();
 
-        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
             => node.IsStrongLock = true;
     }
 
@@ -164,11 +164,11 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private ref TLockManager GetLockManager<TLockManager>()
-        where TLockManager : struct, ILockManager<WaitNode>
+        where TLockManager : struct, ILockManager, IConsumer<WaitNode>
         => ref Unsafe.As<State, TLockManager>(ref state);
 
     private bool TryAcquire<TManager>()
-        where TManager : struct, ILockManager<WaitNode>
+        where TManager : struct, ILockManager, IConsumer<WaitNode>
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 

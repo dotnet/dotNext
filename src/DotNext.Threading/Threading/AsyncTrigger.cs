@@ -15,18 +15,6 @@ using Tasks.Pooling;
 /// </summary>
 public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
 {
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct LockManager : ILockManager<DefaultWaitNode>
-    {
-        bool ILockManager.IsLockAllowed => false;
-
-        void ILockManager.AcquireLock()
-        {
-            // nothing to do here
-        }
-    }
-
-    private static LockManager manager;
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
 
     /// <summary>
@@ -121,7 +109,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="Signal(bool)"/>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        => TryAcquireAsync(ref pool, ref DefaultManager, new TimeoutAndCancellationToken(timeout, token));
 
     /// <summary>
     /// Suspends the caller and waits for the signal.
@@ -135,7 +123,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="Signal(bool)"/>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        => AcquireAsync(ref pool, ref DefaultManager, new CancellationTokenOnly(token));
 
     /// <summary>
     /// Resumes the first suspended caller in the queue and suspends the immediate caller.
@@ -193,7 +181,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                     suspendedCallers = DrainWaitQueue(ref visitor);
                     factory = !visitor.IsSignaled && throwOnEmptyQueue
                         ? EmptyWaitQueueExceptionFactory.Instance
-                        : EnqueueNode<DefaultWaitNode, LockManager>(ref pool, WaitNodeFlags.None);
+                        : EnqueueNode(ref pool);
                 }
 
                 suspendedCallers?.Unwind();
@@ -233,7 +221,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
             suspendedCallers = DrainWaitQueue(ref visitor);
             factory = !visitor.IsSignaled && throwOnEmptyQueue
                 ? EmptyWaitQueueExceptionFactory.Instance
-                : EnqueueNode<DefaultWaitNode, LockManager>(ref pool, WaitNodeFlags.ThrowOnTimeout);
+                : EnqueueNodeThrowOnTimeout(ref pool);
         }
 
         suspendedCallers?.Unwind();
@@ -301,7 +289,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct ConditionalLockManager<TCondition> : ILockManager<DefaultWaitNode>
+    private struct ConditionalLockManager<TCondition> : ILockManager, IConsumer<DefaultWaitNode>
         where TCondition : ISupplier<bool>
     {
         internal required TCondition Condition;
@@ -309,6 +297,10 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         bool ILockManager.IsLockAllowed => Condition.Invoke();
 
         readonly void ILockManager.AcquireLock()
+        {
+        }
+
+        readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
         }
     }

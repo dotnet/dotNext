@@ -165,7 +165,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     protected ValueTask<bool> TryAcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
     {
         var manager = visitor.CreateLockManager(context);
-        return TryAcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        return TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
     }
 
     /// <summary>
@@ -181,7 +181,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     protected ValueTask AcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
     {
         var manager = visitor.CreateLockManager(context);
-        return AcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        return AcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
     }
 
     /// <summary>
@@ -195,7 +195,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     protected ValueTask AcquireAsync(TContext context, CancellationToken token)
     {
         var manager = visitor.CreateLockManager(context);
-        return AcquireSpecialAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        return AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
     }
     
     [StructLayout(LayoutKind.Auto)]

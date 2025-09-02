@@ -13,7 +13,7 @@ using Tasks.Pooling;
 public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager<DefaultWaitNode>, IWaitQueueVisitor<DefaultWaitNode>
+    private struct StateManager : ILockManager, IWaitQueueVisitor<DefaultWaitNode>, IConsumer<DefaultWaitNode>
     {
         internal bool Value;
 
@@ -29,6 +29,10 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
             => !queue.RemoveAndSignal(node, ref detachedQueue);
 
         void IWaitQueueVisitor<DefaultWaitNode>.EndOfQueueReached() => Value = true;
+
+        readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
+        {
+        }
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;

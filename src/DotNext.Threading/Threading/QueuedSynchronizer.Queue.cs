@@ -9,6 +9,11 @@ using Tasks.Pooling;
 
 partial class QueuedSynchronizer
 {
+    /// <summary>
+    /// The default lock manager with no state.
+    /// </summary>
+    private protected static DefaultLockManager<DefaultWaitNode> DefaultManager;
+    
     private WaitQueue waitQueue;
     
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -72,23 +77,27 @@ partial class QueuedSynchronizer
         return DrainWaitQueue<WaitNode, WaitQueueInterruptingVisitor>(ref visitor);
     }
 
-    private TNode EnqueueNode<TNode, TInitializer>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TInitializer initializer)
-        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
-        where TInitializer : struct, INodeInitializer<TNode>
+    private TNode EnqueueNode<T, TNode, TInitializer>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TInitializer initializer)
+        where T : struct, IEquatable<T>
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, IValueTaskFactory<T>, new()
+        where TInitializer : struct, IConsumer<TNode>
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         var node = pool.Get();
         initializer.Invoke(node);
-        node.Initialize(CaptureCallerInformation(), initializer.Flags);
+        node.Initialize(CaptureCallerInformation(), TNode.ThrowOnTimeout);
         waitQueue.Add(node);
         return node;
     }
 
-    private protected TNode EnqueueNode<TNode, TLockManager>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, WaitNodeFlags flags)
-        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
-        where TLockManager : struct, ILockManager<TNode>
-        => EnqueueNode<TNode, StaticInitializer<TNode, TLockManager>>(ref pool, new(flags));
+    private protected ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> EnqueueNode(
+        ref ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool)
+        => EnqueueNode<ValueTask, DefaultWaitNode, DefaultLockManager<DefaultWaitNode>>(ref pool, ref DefaultManager);
+
+    private protected ISupplier<TimeSpan, CancellationToken, ValueTask> EnqueueNodeThrowOnTimeout(
+        ref ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool)
+        => EnqueueNode<ValueTask<bool>, DefaultWaitNode, DefaultLockManager<DefaultWaitNode>>(ref pool, ref DefaultManager);
 
     private protected bool TryAcquire<TLockManager>(ref TLockManager manager)
         where TLockManager : struct, ILockManager
@@ -98,11 +107,13 @@ partial class QueuedSynchronizer
         return waitQueue.TryAcquire(ref manager);
     }
 
-    private T AcquireAsync<T, TNode, TInitializer, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TLockManager manager, TInitializer initializer, TOptions options)
+    private T AcquireAsync<T, TNode, TLockManager, TOptions>(
+        ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
+        ref TLockManager manager,
+        TOptions options)
         where T : struct, IEquatable<T>
         where TNode : WaitNode, IValueTaskFactory<T>, IPooledManualResetCompletionSource<Action<TNode>>, new()
-        where TInitializer : struct, INodeInitializer<TNode>
-        where TLockManager : struct, ILockManager
+        where TLockManager : struct, ILockManager, IConsumer<TNode>
         where TOptions : struct, IAcquisitionOptions
     {
         T task;
@@ -161,7 +172,7 @@ partial class QueuedSynchronizer
                         break;
                     }
 
-                    factory = EnqueueNode(ref pool, initializer);
+                    factory = EnqueueNode<T, TNode, TLockManager>(ref pool, ref manager);
                 }
 
                 interruptedCallers?.Unwind();
@@ -174,49 +185,29 @@ partial class QueuedSynchronizer
         ObjectDisposedException CreateObjectDisposedException()
             => new(GetType().Name);
     }
-    
-    private protected ValueTask AcquireAsync<TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
-        ref TLockManager manager, TOptions options)
+
+    private protected ValueTask AcquireAsync<TNode, TLockManager, TOptions>(
+        ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
+        ref TLockManager manager,
+        TOptions options)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
-        where TLockManager : struct, ILockManager<TNode>
+        where TLockManager : struct, ILockManager, IConsumer<TNode>
         where TOptions : struct, IAcquisitionOptions
-        => AcquireAsync<ValueTask, TNode, StaticInitializer<TNode, TLockManager>, TLockManager, TOptions>(
+        => AcquireAsync<ValueTask, TNode, TLockManager, TOptions>(
             ref pool,
             ref manager,
-            new(WaitNodeFlags.ThrowOnTimeout),
             options);
 
-    private protected ValueTask<bool> TryAcquireAsync<TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
-        ref TLockManager manager, TOptions options)
-        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
-        where TLockManager : struct, ILockManager<TNode>
-        where TOptions : struct, IAcquisitionOptionsWithTimeout
-        => AcquireAsync<ValueTask<bool>, TNode, StaticInitializer<TNode, TLockManager>, TLockManager, TOptions>(
-            ref pool,
-            ref manager,
-            new(WaitNodeFlags.None),
-            options);
-    
-    private protected ValueTask AcquireSpecialAsync<TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
-        ref TLockManager manager, TOptions options)
-        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
-        where TLockManager : struct, ILockManager, IConsumer<TNode>
-        where TOptions : struct, IAcquisitionOptions
-        => AcquireAsync<ValueTask, TNode, NodeInitializer<TNode, TLockManager>, TLockManager, TOptions>(
-            ref pool,
-            ref manager,
-            new(WaitNodeFlags.ThrowOnTimeout, ref manager),
-            options);
-    
-    private protected ValueTask<bool> TryAcquireSpecialAsync<TNode, TLockManager, TOptions>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
-        ref TLockManager manager, TOptions options)
+    private protected ValueTask<bool> TryAcquireAsync<TNode, TLockManager, TOptions>(
+        ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
+        ref TLockManager manager,
+        TOptions options)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
         where TLockManager : struct, ILockManager, IConsumer<TNode>
         where TOptions : struct, IAcquisitionOptionsWithTimeout
-        => AcquireAsync<ValueTask<bool>, TNode, NodeInitializer<TNode, TLockManager>, TLockManager, TOptions>(
+        => AcquireAsync<ValueTask<bool>, TNode, TLockManager, TOptions>(
             ref pool,
             ref manager,
-            new(WaitNodeFlags.None, ref manager),
             options);
     
     [StructLayout(LayoutKind.Auto)]
@@ -308,6 +299,21 @@ partial class QueuedSynchronizer
         }
 
         void IWaitQueueVisitor<WaitNode>.EndOfQueueReached()
+        {
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private protected readonly struct DefaultLockManager<TNode> : ILockManager, IConsumer<TNode>
+        where TNode : WaitNode
+    {
+        void IConsumer<TNode>.Invoke(TNode node)
+        {
+        }
+
+        bool ILockManager.IsLockAllowed => false;
+        
+        void ILockManager.AcquireLock()
         {
         }
     }
