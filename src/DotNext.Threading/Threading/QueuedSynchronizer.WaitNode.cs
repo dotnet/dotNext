@@ -62,8 +62,6 @@ partial class QueuedSynchronizer
         static ValueTask<bool> IValueTaskFactory<ValueTask<bool>>.FromException(Exception e)
             => ValueTask.FromException<bool>(e);
 
-        static bool IValueTaskFactory<ValueTask<bool>>.ThrowOnTimeout => false;
-
         static ValueTask IValueTaskFactory<ValueTask>.FromException(Exception e)
             => ValueTask.FromException(e);
 
@@ -72,7 +70,9 @@ partial class QueuedSynchronizer
 
         static ValueTask IValueTaskFactory<ValueTask>.FromCanceled(CancellationToken token)
             => ValueTask.FromCanceled(token);
-
+        
+        static bool IValueTaskFactory<ValueTask<bool>>.ThrowOnTimeout => false;
+        
         static bool IValueTaskFactory<ValueTask>.ThrowOnTimeout => true;
     }
 
