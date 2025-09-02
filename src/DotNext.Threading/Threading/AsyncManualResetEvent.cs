@@ -43,10 +43,6 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
             return true;
         }
 
-        void IWaitQueueVisitor<DefaultWaitNode>.EndOfQueueReached()
-        {
-        }
-
         readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
         }

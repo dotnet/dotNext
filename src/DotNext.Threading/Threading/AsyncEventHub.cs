@@ -33,10 +33,6 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 
             return true;
         }
-
-        void IWaitQueueVisitor<WaitNode>.EndOfQueueReached()
-        {
-        }
     }
 
     private readonly EventGroup all;

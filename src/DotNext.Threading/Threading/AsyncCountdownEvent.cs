@@ -46,10 +46,6 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             return true;
         }
 
-        void IWaitQueueVisitor<DefaultWaitNode>.EndOfQueueReached()
-        {
-        }
-
         readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
         }

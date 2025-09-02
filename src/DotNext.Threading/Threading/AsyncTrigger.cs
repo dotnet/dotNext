@@ -338,10 +338,6 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
             signaled |= queue.RemoveAndSignal(node, ref detachedQueue);
             return resumeAll;
         }
-
-        void IWaitQueueVisitor<DefaultWaitNode>.EndOfQueueReached()
-        {
-        }
     }
     
     [StructLayout(LayoutKind.Auto)]
@@ -362,10 +358,6 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         {
             signaled |= queue.RemoveAndSignal(node, ref detachedQueue, exception);
             return true;
-        }
-
-        void IWaitQueueVisitor<DefaultWaitNode>.EndOfQueueReached()
-        {
         }
     }
 }

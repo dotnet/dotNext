@@ -49,10 +49,6 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
             return false;
         }
 
-        void IWaitQueueVisitor<DefaultWaitNode>.EndOfQueueReached()
-        {
-        }
-
         readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
         }

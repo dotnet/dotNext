@@ -26,9 +26,12 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
         bool IWaitQueueVisitor<DefaultWaitNode>.Visit<TWaitQueue>(DefaultWaitNode node, ref TWaitQueue queue,
             ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
-            => !queue.RemoveAndSignal(node, ref detachedQueue);
+        {
+            if (!queue.RemoveAndSignal(node, ref detachedQueue))
+                return true;
 
-        void IWaitQueueVisitor<DefaultWaitNode>.EndOfQueueReached() => Value = true;
+            return Value = false;
+        }
 
         readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
@@ -96,14 +99,25 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
         bool result;
 
-        if (result = !manager.Value)
+        if (manager.Value)
+        {
+            result = false;
+        }
+        else
         {
             ManualResetCompletionSource? suspendedCaller;
             lock (SyncRoot)
             {
-                suspendedCaller = (result = !manager.Value)
-                    ? DrainWaitQueue<DefaultWaitNode, StateManager>(ref manager)
-                    : null;
+                if (manager.Value)
+                {
+                    suspendedCaller = null;
+                    result = false;
+                }
+                else
+                {
+                    manager.Value = result = true;
+                    suspendedCaller = DrainWaitQueue<DefaultWaitNode, StateManager>(ref manager);
+                }
             }
 
             suspendedCaller?.Resume();

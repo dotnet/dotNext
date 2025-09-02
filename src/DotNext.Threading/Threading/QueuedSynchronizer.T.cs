@@ -218,10 +218,6 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
             return true;
         }
-
-        void IWaitQueueVisitor<WaitNode>.EndOfQueueReached()
-        {
-        }
     }
     
     [StructLayout(LayoutKind.Auto)]

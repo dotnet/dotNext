@@ -53,7 +53,7 @@ partial class QueuedSynchronizer
         where TVisitor : struct, IWaitQueueVisitor<TNode>
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
-        
+
         var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
         for (TNode? current = Unsafe.As<TNode>(waitQueue.Head), next; current is not null; current = next)
         {
@@ -62,12 +62,9 @@ partial class QueuedSynchronizer
             next = Unsafe.As<TNode>(current.Next);
 
             if (!visitor.Visit(current, ref waitQueue, ref detachedQueue))
-                goto exit;
+                break;
         }
-        
-        visitor.EndOfQueueReached();
 
-        exit:
         return detachedQueue.First;
     }
 
@@ -285,8 +282,6 @@ partial class QueuedSynchronizer
     {
         bool Visit<TWaitQueue>(TNode node, ref TWaitQueue queue, ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
             where TWaitQueue : IWaitQueue;
-
-        void EndOfQueueReached();
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -296,10 +291,6 @@ partial class QueuedSynchronizer
         {
             queue.RemoveAndSignal(node, ref detachedQueue, exception);
             return true;
-        }
-
-        void IWaitQueueVisitor<WaitNode>.EndOfQueueReached()
-        {
         }
     }
 

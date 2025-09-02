@@ -84,10 +84,6 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
             return false;
         }
-
-        void IWaitQueueVisitor<WaitNode>.EndOfQueueReached()
-        {
-        }
     }
 
     [StructLayout(LayoutKind.Auto)]

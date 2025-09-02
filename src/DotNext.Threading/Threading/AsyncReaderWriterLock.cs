@@ -123,10 +123,6 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
             return false;
         }
-
-        void IWaitQueueVisitor<WaitNode>.EndOfQueueReached()
-        {
-        }
     }
 
     [StructLayout(LayoutKind.Auto)]
