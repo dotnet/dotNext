@@ -1,0 +1,236 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+namespace DotNext.Threading;
+
+using Tasks;
+using Tasks.Pooling;
+
+/// <summary>
+/// Provides low-level infrastructure for writing custom synchronization primitives.
+/// </summary>
+/// <typeparam name="TContext">The context to be associated with each suspended caller.</typeparam>
+public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
+{
+    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<Action<WaitNode>>
+    {
+        internal TContext? Context;
+
+        protected override void AfterConsumed() => AfterConsumed(this);
+
+        protected override void CleanUp()
+        {
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<TContext>())
+                Context = default;
+
+            base.CleanUp();
+        }
+
+        Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed { get; set; }
+    }
+
+    private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
+    private WaitQueueVisitor visitor;
+
+    /// <summary>
+    /// Initializes a new synchronization primitive.
+    /// </summary>
+    /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is not <see langword="null"/> and less than 1.</exception>
+    protected QueuedSynchronizer(int? concurrencyLevel)
+    {
+        pool = concurrencyLevel switch
+        {
+            null => new(OnCompleted),
+            { } value when value > 0 => new(OnCompleted, value),
+            _ => throw new ArgumentOutOfRangeException(nameof(concurrencyLevel)),
+        };
+
+        visitor = new(this);
+    }
+
+    /// <summary>
+    /// Tests whether the lock acquisition can be done successfully before calling <see cref="AcquireCore(TContext)"/>.
+    /// </summary>
+    /// <param name="context">The context associated with the suspended caller or supplied externally.</param>
+    /// <returns><see langword="true"/> if acquisition is allowed; otherwise, <see langword="false"/>.</returns>
+    protected abstract bool CanAcquire(TContext context);
+
+    /// <summary>
+    /// Modifies the internal state according to acquisition semantics.
+    /// </summary>
+    /// <remarks>
+    /// By default, this method does nothing.
+    /// </remarks>
+    /// <param name="context">The context associated with the suspended caller or supplied externally.</param>
+    protected virtual void AcquireCore(TContext context)
+    {
+    }
+
+    /// <summary>
+    /// Modifies the internal state according to release semantics.
+    /// </summary>
+    /// <remarks>
+    /// This method is called by <see cref="Release(TContext)"/> method.
+    /// </remarks>
+    /// <param name="context">The context associated with the suspended caller or supplied externally.</param>
+    protected virtual void ReleaseCore(TContext context)
+    {
+    }
+
+    private void OnCompleted(WaitNode node) => ReturnNode(ref pool, node, ref visitor);
+
+    private protected sealed override bool IsReadyToDispose => IsEmptyQueue;
+
+    /// <summary>
+    /// Implements release semantics: attempts to resume the suspended callers.
+    /// </summary>
+    /// <remarks>
+    /// This method doesn't invoke <see cref="ReleaseCore(TContext)"/> method and trying to resume
+    /// suspended callers.
+    /// </remarks>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    protected void Release()
+    {
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
+        lock (SyncRoot)
+        {
+            suspendedCallers = DrainWaitQueue<WaitNode, WaitQueueVisitor>(ref visitor);
+
+            if (IsDisposing && IsReadyToDispose)
+                Dispose(true);
+        }
+
+        suspendedCallers?.Unwind();
+    }
+
+    /// <summary>
+    /// Implements release semantics: attempts to resume the suspended callers.
+    /// </summary>
+    /// <remarks>
+    /// This method invokes <se cref="ReleaseCore(TContext)"/> to modify the internal state
+    /// before resuming all suspended callers.
+    /// </remarks>
+    /// <param name="context">The argument to be passed to <see cref="ReleaseCore(TContext)"/>.</param>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    protected void Release(TContext context)
+    {
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
+        lock (SyncRoot)
+        {
+            ReleaseCore(context);
+            suspendedCallers = DrainWaitQueue<WaitNode, WaitQueueVisitor>(ref visitor);
+
+            if (IsDisposing && IsReadyToDispose)
+                Dispose(true);
+        }
+
+        suspendedCallers?.Unwind();
+    }
+
+    /// <summary>
+    /// Implements acquire semantics: attempts to move this object to acquired state synchronously.
+    /// </summary>
+    /// <remarks>
+    /// This method invokes <see cref="CanAcquire(TContext)"/>, and if it returns <see langword="true"/>,
+    /// invokes <see cref="AcquireCore(TContext)"/> to modify the internal state.
+    /// </remarks>
+    /// <param name="context">The context to be passed to <see cref="CanAcquire(TContext)"/>.</param>
+    /// <returns><see langword="true"/> if this primitive is in acquired state; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    protected bool TryAcquire(TContext context)
+    {
+        ObjectDisposedException.ThrowIf(IsDisposed, this);
+
+        var manager = visitor.CreateLockManager(context);
+        lock (SyncRoot)
+        {
+            return TryAcquire(ref manager);
+        }
+    }
+
+    /// <summary>
+    /// Implements acquire semantics: attempts to move this object to acquired state asynchronously.
+    /// </summary>
+    /// <param name="context">The context to be passed to <see cref="CanAcquire(TContext)"/>.</param>
+    /// <param name="timeout">The time to wait for the acquisition.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if acquisition is successful; <see langword="false"/> if timeout occurred.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    protected ValueTask<bool> TryAcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
+    {
+        var manager = visitor.CreateLockManager(context);
+        return TryAcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+    }
+
+    /// <summary>
+    /// Implements acquire semantics: attempts to move this object to acquired state asynchronously.
+    /// </summary>
+    /// <param name="context">The context to be passed to <see cref="CanAcquire(TContext)"/>.</param>
+    /// <param name="timeout">The time to wait for the acquisition.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if acquisition is successful; <see langword="false"/> if timeout occurred.</returns>
+    /// <exception cref="TimeoutException">The operation cannot be completed within the specified amount of time.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    protected ValueTask AcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
+    {
+        var manager = visitor.CreateLockManager(context);
+        return AcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+    }
+
+    /// <summary>
+    /// Implements acquire semantics: attempts to move this object to acquired state asynchronously.
+    /// </summary>
+    /// <param name="context">The context to be passed to <see cref="CanAcquire(TContext)"/>.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous execution of this method.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    protected ValueTask AcquireAsync(TContext context, CancellationToken token)
+    {
+        var manager = visitor.CreateLockManager(context);
+        return AcquireSpecialAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct WaitQueueVisitor(QueuedSynchronizer<TContext> context) : IWaitQueueVisitor<WaitNode>
+    {
+        private readonly Predicate<TContext> checker = context.CanAcquire;
+        private readonly Action<TContext> acquisition = context.AcquireCore;
+
+        public LockManager CreateLockManager(TContext context) => new(context, checker, acquisition);
+
+        bool IWaitQueueVisitor<WaitNode>.Visit<TWaitQueue>(WaitNode node,
+            ref TWaitQueue queue,
+            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
+        {
+            if (!checker(node.Context!))
+                return false;
+
+            if (queue.RemoveAndSignal(node, ref detachedQueue))
+                acquisition(node.Context!);
+
+            return true;
+        }
+
+        void IWaitQueueVisitor<WaitNode>.EndOfQueueReached()
+        {
+        }
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct LockManager(TContext context, Predicate<TContext> checker, Action<TContext> acquisition) : ILockManager, IConsumer<WaitNode>
+    {
+        bool ILockManager.IsLockAllowed => checker.Invoke(context);
+
+        void ILockManager.AcquireLock() => acquisition.Invoke(context);
+
+        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.Context = context;
+    }
+}
