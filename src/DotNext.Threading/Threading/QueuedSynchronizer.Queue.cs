@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Patterns;
 using Tasks;
 using Tasks.Pooling;
 
@@ -94,7 +95,7 @@ partial class QueuedSynchronizer
         return DrainWaitQueue<WaitNode, ResumingVisitor>(ref visitor);
     }
 
-    private IValueTaskFactory<T> EnqueueNode<T, TNode, TInitializer>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TInitializer initializer)
+    private ISupplier<TimeSpan, CancellationToken, T> EnqueueNode<T, TNode, TInitializer>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TInitializer initializer)
         where T : struct, IEquatable<T>
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, IValueTaskFactory<T>, new()
         where TInitializer : struct, IConsumer<TNode>
@@ -139,66 +140,60 @@ partial class QueuedSynchronizer
     {
         T task;
 
-        switch (options.Timeout.Ticks)
+        if (options.Token.IsCancellationRequested)
         {
-            case Timeout.InfiniteTicks:
-                goto default;
-            case < 0L or > Timeout.MaxTimeoutParameterTicks:
-                task = TNode.FromException(new ArgumentOutOfRangeException("timeout"));
-                break;
-            case 0L: // attempt to acquire synchronously
-                LinkedValueTaskCompletionSource<bool>? interruptedCallers;
-                lock (SyncRoot)
-                {
-                    if (IsDisposingOrDisposed)
-                    {
-                        task = TNode.FromException(CreateObjectDisposedException());
-                        break;
-                    }
-
-                    interruptedCallers = TOptions.InterruptionRequired
-                        ? Interrupt(options.InterruptionReason)
-                        : null;
-
-                    task = TryAcquire(ref manager)
-                        ? TNode.SuccessfulTask
-                        : TNode.TimedOutTask;
-                }
-
-                interruptedCallers?.Unwind();
-                break;
-            default:
-                if (options.Token.IsCancellationRequested)
-                {
-                    task = TNode.FromCanceled(options.Token);
+            task = TNode.FromCanceled(options.Token);
+        }
+        else if (IsDisposingOrDisposed)
+        {
+            task = TNode.FromException(CreateObjectDisposedException());
+        }
+        else
+        {
+            LinkedValueTaskCompletionSource<bool>? interruptedCallers;
+            switch (options.Timeout.Ticks)
+            {
+                case Timeout.InfiniteTicks:
+                    goto default;
+                case < 0L or > Timeout.MaxTimeoutParameterTicks:
+                    task = TNode.FromException(new ArgumentOutOfRangeException("timeout"));
+                    interruptedCallers = null;
                     break;
-                }
-
-                ISupplier<TimeSpan, CancellationToken, T> factory;
-                lock (SyncRoot)
-                {
-                    if (IsDisposingOrDisposed)
+                case 0L: // attempt to acquire synchronously
+                    lock (SyncRoot)
                     {
-                        task = TNode.FromException(CreateObjectDisposedException());
-                        break;
+                        interruptedCallers = TOptions.InterruptionRequired
+                            ? Interrupt(options.InterruptionReason)
+                            : null;
+
+                        task = TryAcquire(ref manager)
+                            ? TNode.SuccessfulTask
+                            : TNode.TimedOutTask;
                     }
 
-                    interruptedCallers = TOptions.InterruptionRequired
-                        ? Interrupt(options.InterruptionReason)
-                        : null;
-
-                    if (TryAcquire(ref manager))
+                    break;
+                default:
+                    ISupplier<TimeSpan, CancellationToken, T> factory;
+                    lock (SyncRoot)
                     {
-                        task = TNode.SuccessfulTask;
-                        break;
+                        interruptedCallers = TOptions.InterruptionRequired
+                            ? Interrupt(options.InterruptionReason)
+                            : null;
+
+                        if (TryAcquire(ref manager))
+                        {
+                            task = TNode.SuccessfulTask;
+                            break;
+                        }
+
+                        factory = EnqueueNode<T, TNode, TLockManager>(ref pool, ref manager);
                     }
 
-                    factory = EnqueueNode<T, TNode, TLockManager>(ref pool, ref manager);
-                }
+                    task = factory.Invoke(options.Timeout, options.Token);
+                    break;
+            }
 
-                interruptedCallers?.Unwind();
-                task = factory.Invoke(options.Timeout, options.Token);
-                break;
+            interruptedCallers?.Unwind();
         }
 
         return task;
