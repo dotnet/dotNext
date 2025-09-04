@@ -24,18 +24,12 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
         void ILockManager.AcquireLock() => Value = false;
 
-        bool IWaitQueueVisitor<DefaultWaitNode>.Visit<TWaitQueue>(DefaultWaitNode node, ref TWaitQueue queue,
-            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
-        {
-            if (!queue.RemoveAndSignal(node, ref detachedQueue))
-                return true;
-
-            return Value = false;
-        }
-
         readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
         }
+
+        bool IWaitQueueVisitor<DefaultWaitNode>.Visit(DefaultWaitNode node, out bool resumable)
+            => node.TrySetResult(ref this, out resumable);
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;

@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Threading;
 
@@ -43,15 +44,16 @@ partial class QueuedSynchronizer
         List<object?> list;
         lock (SyncRoot)
         {
-            var current = waitQueue.Head;
+            var current = waitQueue.First as WaitNode;
             if (current is null)
                 return [];
 
-            for (list = []; current is not null; current = current.Next)
+            list = [];
+            do
             {
-                if (current is WaitNode node)
-                    list.Add(node.CallerInfo);
-            }
+                list.Add(current.CallerInfo);
+                current = current.Next as WaitNode;
+            } while (current is not null);
         }
 
         list.TrimExcess();

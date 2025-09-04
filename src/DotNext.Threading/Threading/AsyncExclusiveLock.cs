@@ -29,25 +29,8 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 
         internal void ExitLock() => state = false;
 
-        bool IWaitQueueVisitor<DefaultWaitNode>.Visit<TWaitQueue>(DefaultWaitNode node,
-            ref TWaitQueue queue,
-            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
-        {
-            if (!IsLockAllowed)
-            {
-                // nothing to do
-            }
-            else if (!queue.RemoveAndSignal(node, ref detachedQueue))
-            {
-                return true;
-            }
-            else
-            {
-                AcquireLock();
-            }
-
-            return false;
-        }
+        bool IWaitQueueVisitor<DefaultWaitNode>.Visit(DefaultWaitNode node, out bool resumable)
+            => node.TrySetResult(ref this, out resumable);
 
         readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {

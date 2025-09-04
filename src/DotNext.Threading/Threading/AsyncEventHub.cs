@@ -24,11 +24,15 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     {
         internal UInt128 Value;
 
-        bool IWaitQueueVisitor<WaitNode>.Visit<TWaitQueue>(WaitNode node, ref TWaitQueue queue, ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
+        bool IWaitQueueVisitor<WaitNode>.Visit(WaitNode node, out bool resumable)
         {
             if (node.Matches(Value))
             {
-                queue.RemoveAndSignal(node, ref detachedQueue);
+                node.TrySetResult(out resumable);
+            }
+            else
+            {
+                resumable = false;
             }
 
             return true;

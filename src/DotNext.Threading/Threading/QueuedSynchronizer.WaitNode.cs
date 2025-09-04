@@ -70,10 +70,31 @@ partial class QueuedSynchronizer
 
         static ValueTask IValueTaskFactory<ValueTask>.FromCanceled(CancellationToken token)
             => ValueTask.FromCanceled(token);
-        
+
         static bool IValueTaskFactory<ValueTask<bool>>.ThrowOnTimeout => false;
-        
+
         static bool IValueTaskFactory<ValueTask>.ThrowOnTimeout => true;
+
+        private bool TrySetResult(in Result<bool> result, out bool resumable)
+            => TrySetResult(Sentinel.Instance, completionToken: null, result, out resumable);
+
+        internal bool TrySetResult(out bool resumable)
+            => TrySetResult(result: true, out resumable);
+
+        internal bool TrySetException(Exception e, out bool resumable)
+            => TrySetResult(new Result<bool>(e), out resumable);
+
+        internal bool TrySetResult<TLockManager>(ref TLockManager manager, out bool resumable)
+            where TLockManager : ILockManager
+        {
+            if (!manager.IsLockAllowed)
+                return resumable = false;
+
+            if (TrySetResult(out resumable))
+                manager.AcquireLock();
+
+            return true;
+        }
     }
 
     private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<Action<DefaultWaitNode>>

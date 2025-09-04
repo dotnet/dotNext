@@ -9,15 +9,10 @@ using Tasks.Pooling;
 
 partial class QueuedSynchronizer
 {
-    /// <summary>
-    /// The default lock manager with no state.
-    /// </summary>
-    private protected static DefaultLockManager<DefaultWaitNode> DefaultManager;
-    
-    private WaitQueue waitQueue;
+    private LinkedValueTaskCompletionSource<bool>.LinkedList waitQueue;
     
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private protected bool IsEmptyQueue => waitQueue.Head is null;
+    private protected bool IsEmptyQueue => waitQueue.First is null;
     
     private protected void ReturnNode<TNode>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, TNode node)
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
@@ -25,7 +20,7 @@ partial class QueuedSynchronizer
         lock (SyncRoot)
         {
             if (node.NeedsRemoval)
-                waitQueue.Remove(node);
+                RemoveNode(node);
 
             pool.Return(node);
         }
@@ -38,7 +33,7 @@ partial class QueuedSynchronizer
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            suspendedCallers = node.NeedsRemoval && waitQueue.Remove(node)
+            suspendedCallers = node.NeedsRemoval && RemoveNode(node)
                 ? DrainWaitQueue<TNode, TVisitor>(ref visitor)
                 : null;
 
@@ -48,6 +43,14 @@ partial class QueuedSynchronizer
         suspendedCallers?.Unwind();
     }
 
+    private protected unsafe void ReturnNode<TOwner, TNode>(
+        ref ValueTaskPool<bool, TNode, Action<TNode>> pool,
+        TNode node,
+        delegate*<TOwner, TNode, out bool, bool> visitor)
+        where TOwner : QueuedSynchronizer
+        where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, new()
+        => ReturnNode(ref pool, node, ref DelegatingVisitor<TNode>.Create(visitor));
+
     private protected LinkedValueTaskCompletionSource<bool>? DrainWaitQueue<TNode, TVisitor>(ref TVisitor visitor)
         where TNode : WaitNode
         where TVisitor : struct, IWaitQueueVisitor<TNode>
@@ -55,26 +58,43 @@ partial class QueuedSynchronizer
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
         var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
-        for (TNode? current = Unsafe.As<TNode>(waitQueue.Head), next; current is not null; current = next)
+        for (var current = Unsafe.As<TNode>(waitQueue.First); current is not null;)
         {
             Debug.Assert(current.Next is null or TNode);
 
-            next = Unsafe.As<TNode>(current.Next);
+            var next = Unsafe.As<TNode>(current.Next);
 
-            if (!visitor.Visit(current, ref waitQueue, ref detachedQueue))
-                break;
+            var iterate = visitor.Visit(current, out var resumable);
+            if (current.IsCompleted)
+            {
+                RemoveNode(current);
+
+                if (resumable)
+                {
+                    detachedQueue.Add(current);
+                }
+            }
+
+            current = iterate ? next : null;
         }
 
         return detachedQueue.First;
     }
 
-    private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue(Exception e)
+    private protected unsafe LinkedValueTaskCompletionSource<bool>? DrainWaitQueue<TOwner, TNode>(delegate*<TOwner, TNode, out bool, bool> visitor)
+        where TOwner : QueuedSynchronizer
+        where TNode : WaitNode, ISupplier<MulticastDelegate?>
     {
-        var visitor = new WaitQueueInterruptingVisitor(e);
-        return DrainWaitQueue<WaitNode, WaitQueueInterruptingVisitor>(ref visitor);
+        return DrainWaitQueue<TNode, DelegatingVisitor<TNode>>(ref DelegatingVisitor<TNode>.Create(visitor));
     }
 
-    private TNode EnqueueNode<T, TNode, TInitializer>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TInitializer initializer)
+    private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue(Exception e)
+    {
+        var visitor = new ResumingVisitor(e);
+        return DrainWaitQueue<WaitNode, ResumingVisitor>(ref visitor);
+    }
+
+    private IValueTaskFactory<T> EnqueueNode<T, TNode, TInitializer>(ref ValueTaskPool<bool, TNode, Action<TNode>> pool, ref TInitializer initializer)
         where T : struct, IEquatable<T>
         where TNode : WaitNode, IPooledManualResetCompletionSource<Action<TNode>>, IValueTaskFactory<T>, new()
         where TInitializer : struct, IConsumer<TNode>
@@ -84,24 +104,28 @@ partial class QueuedSynchronizer
         var node = pool.Get();
         initializer.Invoke(node);
         node.Initialize(CaptureCallerInformation(), TNode.ThrowOnTimeout);
-        waitQueue.Add(node);
+        EnqueueNode(node);
         return node;
     }
 
     private protected ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> EnqueueNode(
         ref ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool)
-        => EnqueueNode<ValueTask, DefaultWaitNode, DefaultLockManager<DefaultWaitNode>>(ref pool, ref DefaultManager);
+        => EnqueueNode<ValueTask<bool>, DefaultWaitNode, DefaultLockManager<DefaultWaitNode>>(ref pool, ref DefaultManager);
 
     private protected ISupplier<TimeSpan, CancellationToken, ValueTask> EnqueueNodeThrowOnTimeout(
         ref ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool)
-        => EnqueueNode<ValueTask<bool>, DefaultWaitNode, DefaultLockManager<DefaultWaitNode>>(ref pool, ref DefaultManager);
+        => EnqueueNode<ValueTask, DefaultWaitNode, DefaultLockManager<DefaultWaitNode>>(ref pool, ref DefaultManager);
 
     private protected bool TryAcquire<TLockManager>(ref TLockManager manager)
         where TLockManager : struct, ILockManager
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        return waitQueue.TryAcquire(ref manager);
+        if (TLockManager.RequiresEmptyQueue && !IsEmptyQueue || !manager.IsLockAllowed)
+            return false;
+
+        manager.AcquireLock();
+        return true;
     }
 
     private T AcquireAsync<T, TNode, TLockManager, TOptions>(
@@ -206,106 +230,50 @@ partial class QueuedSynchronizer
             ref pool,
             ref manager,
             options);
+
+    private bool RemoveNode(LinkedValueTaskCompletionSource<bool> node)
+    {
+        SuspendedCallersMeter.Add(-1, measurementTags);
+        return waitQueue.Remove(node);
+    }
+
+    private void EnqueueNode(WaitNode node)
+    {
+        SuspendedCallersMeter.Add(1, measurementTags);
+        waitQueue.Add(node);
+    }
     
-    [StructLayout(LayoutKind.Auto)]
-    private struct WaitQueue : IWaitQueue
-    {
-        internal TagList MeasurementTags;
-        private LinkedValueTaskCompletionSource<bool>.LinkedList list;
-
-        public bool TryAcquire<TLockManager>(ref TLockManager manager)
-            where TLockManager : struct, ILockManager
-        {
-            if (TLockManager.RequiresEmptyQueue && Head is not null || !manager.IsLockAllowed)
-                return false;
-
-            manager.AcquireLock();
-            return true;
-        }
-
-        private bool RemoveAndSignal(LinkedValueTaskCompletionSource<bool> node,
-            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue,
-            in Result<bool> result)
-        {
-            bool signaled;
-            if (!Remove(node))
-            {
-                signaled = false;
-            }
-            else if ((signaled = node.TrySetResult(Sentinel.Instance, completionToken: null, result, out var resumable)) && resumable)
-            {
-                detachedQueue.Add(node);
-            }
-
-            return signaled;
-        }
-
-        bool IWaitQueue.RemoveAndSignal(LinkedValueTaskCompletionSource<bool> node,
-            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
-            => RemoveAndSignal(node, ref detachedQueue, result: true);
-
-        bool IWaitQueue.RemoveAndSignal(LinkedValueTaskCompletionSource<bool> node,
-            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue,
-            Exception e)
-            => RemoveAndSignal(node, ref detachedQueue, new(e));
-
-        public bool Remove(LinkedValueTaskCompletionSource<bool> node)
-        {
-            bool removed;
-            if (removed = list.Remove(node))
-            {
-                SuspendedCallersMeter.Add(-1, MeasurementTags);
-            }
-
-            return removed;
-        }
-
-        public void Add(WaitNode node)
-        {
-            list.Add(node);
-            SuspendedCallersMeter.Add(1, MeasurementTags);
-        }
-
-        public readonly LinkedValueTaskCompletionSource<bool>? Head => list.First;
-    }
-
-    private protected interface IWaitQueue
-    {
-        bool RemoveAndSignal(LinkedValueTaskCompletionSource<bool> node, ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue);
-
-        bool RemoveAndSignal(LinkedValueTaskCompletionSource<bool> node, ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue,
-            Exception e);
-    }
-
     private protected interface IWaitQueueVisitor<in TNode>
         where TNode : WaitNode
     {
-        bool Visit<TWaitQueue>(TNode node, ref TWaitQueue queue, ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
-            where TWaitQueue : IWaitQueue;
+        bool Visit(TNode node, out bool resumable);
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct WaitQueueInterruptingVisitor(Exception exception) : IWaitQueueVisitor<WaitNode>
+    private readonly struct ResumingVisitor(Exception exception) : IWaitQueueVisitor<WaitNode>
     {
-        bool IWaitQueueVisitor<WaitNode>.Visit<TWaitQueue>(WaitNode node, ref TWaitQueue queue, ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
+        bool IWaitQueueVisitor<WaitNode>.Visit(WaitNode node, out bool resumable)
         {
-            queue.RemoveAndSignal(node, ref detachedQueue, exception);
+            node.TrySetException(exception, out resumable);
             return true;
         }
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private protected readonly struct DefaultLockManager<TNode> : ILockManager, IConsumer<TNode>
-        where TNode : WaitNode
+    private readonly unsafe struct DelegatingVisitor<TNode> : IWaitQueueVisitor<TNode>
+        where TNode : WaitNode, ISupplier<MulticastDelegate?>
     {
-        void IConsumer<TNode>.Invoke(TNode node)
+        bool IWaitQueueVisitor<TNode>.Visit(TNode node, out bool resumable)
         {
+            var visitor = (delegate*<QueuedSynchronizer, TNode, out bool, bool>)Unsafe.AsPointer(ref Unsafe.AsRef(in this));
+
+            return node.Invoke()?.Target is QueuedSynchronizer owner
+                ? visitor(owner, node, out resumable)
+                : node.TrySetResult(out resumable);
         }
 
-        bool ILockManager.IsLockAllowed => false;
-        
-        void ILockManager.AcquireLock()
-        {
-        }
+        public static ref DelegatingVisitor<TNode> Create<TOwner>(delegate*<TOwner, TNode, out bool, bool> visitor)
+            where TOwner : QueuedSynchronizer
+            => ref Unsafe.AsRef<DelegatingVisitor<TNode>>(visitor);
     }
 }

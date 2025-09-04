@@ -21,7 +21,7 @@ public partial class QueuedSynchronizer : Disposable
     private protected QueuedSynchronizer()
     {
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        waitQueue.MeasurementTags = new() { { LockTypeMeterAttribute, GetType().Name } };
+        measurementTags = new() { { LockTypeMeterAttribute, GetType().Name } };
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

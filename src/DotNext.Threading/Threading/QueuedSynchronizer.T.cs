@@ -30,7 +30,6 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     }
 
     private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
-    private WaitQueueVisitor visitor;
 
     /// <summary>
     /// Initializes a new synchronization primitive.
@@ -45,8 +44,6 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
             { } value when value > 0 => new(OnCompleted, value),
             _ => throw new ArgumentOutOfRangeException(nameof(concurrencyLevel)),
         };
-
-        visitor = new(this);
     }
 
     /// <summary>
@@ -78,7 +75,13 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
     }
 
-    private void OnCompleted(WaitNode node) => ReturnNode(ref pool, node, ref visitor);
+    private void OnCompleted(WaitNode node)
+    {
+        unsafe
+        {
+            ReturnNode<QueuedSynchronizer<TContext>, WaitNode>(ref pool, node, &Visit);
+        }
+    }
 
     private protected sealed override bool IsReadyToDispose => IsEmptyQueue;
 
@@ -97,7 +100,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            suspendedCallers = DrainWaitQueue<WaitNode, WaitQueueVisitor>(ref visitor);
+            suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
                 Dispose(true);
@@ -123,7 +126,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
         lock (SyncRoot)
         {
             ReleaseCore(context);
-            suspendedCallers = DrainWaitQueue<WaitNode, WaitQueueVisitor>(ref visitor);
+            suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
                 Dispose(true);
@@ -146,7 +149,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        var manager = visitor.CreateLockManager(context);
+        var manager = new LockManager(this, context);
         lock (SyncRoot)
         {
             return TryAcquire(ref manager);
@@ -164,7 +167,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected ValueTask<bool> TryAcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
     {
-        var manager = visitor.CreateLockManager(context);
+        var manager = new LockManager(this, context);
         return TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
     }
 
@@ -180,7 +183,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected ValueTask AcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
     {
-        var manager = visitor.CreateLockManager(context);
+        var manager = new LockManager(this, context);
         return AcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
     }
 
@@ -194,38 +197,38 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected ValueTask AcquireAsync(TContext context, CancellationToken token)
     {
-        var manager = visitor.CreateLockManager(context);
+        var manager = new LockManager(this, context);
         return AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
     }
-    
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct WaitQueueVisitor(QueuedSynchronizer<TContext> context) : IWaitQueueVisitor<WaitNode>
+
+    private bool Visit(WaitNode node, out bool resumable)
     {
-        private readonly Predicate<TContext> checker = context.CanAcquire;
-        private readonly Action<TContext> acquisition = context.AcquireCore;
+        if (!CanAcquire(node.Context!))
+            return resumable = false;
 
-        public LockManager CreateLockManager(TContext context) => new(context, checker, acquisition);
+        if (node.TrySetResult(out resumable))
+            AcquireCore(node.Context!);
+        
+        return true;
+    }
 
-        bool IWaitQueueVisitor<WaitNode>.Visit<TWaitQueue>(WaitNode node,
-            ref TWaitQueue queue,
-            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
+    private static bool Visit(QueuedSynchronizer<TContext> synchronizer, WaitNode node, out bool resumable)
+        => synchronizer.Visit(node, out resumable);
+
+    private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
+    {
+        unsafe
         {
-            if (!checker(node.Context!))
-                return false;
-
-            if (queue.RemoveAndSignal(node, ref detachedQueue))
-                acquisition(node.Context!);
-
-            return true;
+            return DrainWaitQueue<QueuedSynchronizer<TContext>, WaitNode>(&Visit);
         }
     }
-    
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct LockManager(TContext context, Predicate<TContext> checker, Action<TContext> acquisition) : ILockManager, IConsumer<WaitNode>
-    {
-        bool ILockManager.IsLockAllowed => checker.Invoke(context);
 
-        void ILockManager.AcquireLock() => acquisition.Invoke(context);
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct LockManager(QueuedSynchronizer<TContext> owner, TContext context) : ILockManager, IConsumer<WaitNode>
+    {
+        bool ILockManager.IsLockAllowed => owner.CanAcquire(context);
+
+        void ILockManager.AcquireLock() => owner.AcquireCore(context);
 
         void IConsumer<WaitNode>.Invoke(WaitNode node) => node.Context = context;
     }

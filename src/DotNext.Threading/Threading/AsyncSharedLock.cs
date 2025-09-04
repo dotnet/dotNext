@@ -29,12 +29,12 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct State : IWaitQueueVisitor<WaitNode>
+    private struct State
     {
         private const long ExclusiveMode = -1L;
 
         internal readonly long ConcurrencyLevel;
-        private long remainingLocks;   // -1 means that the lock is acquired in exclusive mode
+        private long remainingLocks; // -1 means that the lock is acquired in exclusive mode
 
         internal State(long concurrencyLevel) => ConcurrencyLevel = remainingLocks = concurrencyLevel;
 
@@ -56,34 +56,6 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         internal readonly bool IsStrongLockAllowed => remainingLocks == ConcurrencyLevel;
 
         internal void AcquireStrongLock() => remainingLocks = ExclusiveMode;
-
-        bool IWaitQueueVisitor<WaitNode>.Visit<TWaitQueue>(WaitNode node,
-            ref TWaitQueue queue,
-            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
-        {
-            switch (node.IsStrongLock, IsStrongLockAllowed)
-            {
-                case (true, true):
-                    if (!queue.RemoveAndSignal(node, ref detachedQueue))
-                        return true;
-
-                    AcquireStrongLock();
-                    break;
-                case (true, false):
-                    break;
-                default:
-                    // no more locks to acquire
-                    if (!IsWeakLockAllowed)
-                        break;
-
-                    if (queue.RemoveAndSignal(node, ref detachedQueue))
-                        AcquireWeakLock();
-
-                    return true;
-            }
-
-            return false;
-        }
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -136,7 +108,13 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         pool = new(OnCompleted, limitedConcurrency ? concurrencyLevel : null);
     }
 
-    private void OnCompleted(WaitNode node) => ReturnNode(ref pool, node, ref state);
+    private void OnCompleted(WaitNode node)
+    {
+        unsafe
+        {
+            ReturnNode<AsyncSharedLock, WaitNode>(ref pool, node, &Visit);
+        }
+    }
 
     /// <summary>
     /// Gets the number of shared locks that can be acquired.
@@ -253,7 +231,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.ExitLock(downgrade: true);
-            suspendedCallers = DrainWaitQueue<WaitNode, State>(ref state);
+            suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
                 Dispose(true);
@@ -278,7 +256,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.ExitLock(downgrade: false);
-            suspendedCallers = DrainWaitQueue<WaitNode, State>(ref state);
+            suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
                 Dispose(true);
@@ -288,4 +266,15 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     private protected sealed override bool IsReadyToDispose => state.IsStrongLockAllowed && IsEmptyQueue;
+
+    private unsafe LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
+        => DrainWaitQueue<AsyncSharedLock, WaitNode>(&Visit);
+
+    private bool Visit(WaitNode node, out bool resumable)
+        => node.IsStrongLock
+            ? node.TrySetResult(ref GetLockManager<StrongLockManager>(), out resumable)
+            : node.TrySetResult(ref GetLockManager<WeakLockManager>(), out resumable);
+
+    private static bool Visit(AsyncSharedLock owner, WaitNode node, out bool resumable)
+        => owner.Visit(node, out resumable);
 }

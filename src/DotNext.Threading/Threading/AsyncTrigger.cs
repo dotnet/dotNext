@@ -42,7 +42,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <inheritdoc/>
     bool IAsyncEvent.Reset() => false;
 
-    private bool Signal<TVisitor>(ref TVisitor visitor)
+    private bool Signal<TVisitor>(TVisitor visitor)
         where TVisitor : struct, IWaitQueueVisitor
     {
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
@@ -59,6 +59,13 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         where TVisitor : struct, IWaitQueueVisitor
         => DrainWaitQueue<DefaultWaitNode, TVisitor>(ref visitor);
 
+    private bool DrainWaitQueue(bool resumeAll, out LinkedValueTaskCompletionSource<bool>? suspendedCallers)
+    {
+        var visitor = new ResumingVisitor(resumeAll);
+        suspendedCallers = DrainWaitQueue(ref visitor);
+        return visitor.IsSignaled;
+    }
+
     /// <summary>
     /// Resumes the first suspended caller in the wait queue.
     /// </summary>
@@ -72,8 +79,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        var visitor = new WaitQueueVisitor(resumeAll);
-        return Signal(ref visitor);
+        return Signal(new ResumingVisitor(resumeAll));
     }
 
     /// <summary>
@@ -86,8 +92,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        var visitor = new WaitQueueInterruption(reason);
-        return Signal(ref visitor);
+        return Signal(new InterruptingVisitor(reason));
     }
 
     /// <inheritdoc/>
@@ -154,8 +159,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                 task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
                 break;
             case 0L:
-                var visitor = new WaitQueueVisitor(resumeAll);
-                task = !Signal(ref visitor) && throwOnEmptyQueue
+                task = !Signal(new ResumingVisitor(resumeAll)) && throwOnEmptyQueue
                     ? ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
                     : new(false);
 
@@ -177,9 +181,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                         break;
                     }
 
-                    visitor = new(resumeAll);
-                    suspendedCallers = DrainWaitQueue(ref visitor);
-                    factory = !visitor.IsSignaled && throwOnEmptyQueue
+                    factory = !DrainWaitQueue(resumeAll, out suspendedCallers) && throwOnEmptyQueue
                         ? EmptyWaitQueueExceptionFactory.Instance
                         : EnqueueNode(ref pool);
                 }
@@ -215,11 +217,9 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
 
         ISupplier<TimeSpan, CancellationToken, ValueTask> factory;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        var visitor = new WaitQueueVisitor(resumeAll);
         lock (SyncRoot)
         {
-            suspendedCallers = DrainWaitQueue(ref visitor);
-            factory = !visitor.IsSignaled && throwOnEmptyQueue
+            factory = !DrainWaitQueue(resumeAll, out suspendedCallers) && throwOnEmptyQueue
                 ? EmptyWaitQueueExceptionFactory.Instance
                 : EnqueueNodeThrowOnTimeout(ref pool);
         }
@@ -326,37 +326,35 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     }
     
     [StructLayout(LayoutKind.Auto)]
-    private struct WaitQueueVisitor(bool resumeAll) : IWaitQueueVisitor
+    private struct ResumingVisitor(bool resumeAll) : IWaitQueueVisitor
     {
         private bool signaled;
 
         public readonly bool IsSignaled => signaled;
 
-        bool IWaitQueueVisitor<DefaultWaitNode>.Visit<TWaitQueue>(DefaultWaitNode node, ref TWaitQueue queue,
-            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
+        bool IWaitQueueVisitor<DefaultWaitNode>.Visit(DefaultWaitNode node, out bool resumable)
         {
-            signaled |= queue.RemoveAndSignal(node, ref detachedQueue);
-            return resumeAll;
+            signaled |= node.TrySetResult(out resumable);
+            return !signaled || resumeAll;
         }
     }
     
     [StructLayout(LayoutKind.Auto)]
-    private struct WaitQueueInterruption : IWaitQueueVisitor
+    private struct InterruptingVisitor : IWaitQueueVisitor
     {
         private readonly PendingTaskInterruptedException exception;
         private bool signaled;
 
-        public WaitQueueInterruption(object? reason)
+        public InterruptingVisitor(object? reason)
         {
             ExceptionDispatchInfo.SetCurrentStackTrace(exception = new() { Reason = reason });
         }
 
         readonly bool IWaitQueueVisitor.IsSignaled => signaled;
 
-        bool IWaitQueueVisitor<DefaultWaitNode>.Visit<TWaitQueue>(DefaultWaitNode node, ref TWaitQueue queue,
-            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
+        bool IWaitQueueVisitor<DefaultWaitNode>.Visit(DefaultWaitNode node, out bool resumable)
         {
-            signaled |= queue.RemoveAndSignal(node, ref detachedQueue, exception);
+            signaled |= node.TrySetException(exception, out resumable);
             return true;
         }
     }

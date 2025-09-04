@@ -8,6 +8,8 @@ partial class QueuedSynchronizer
     private const string LockTypeMeterAttribute = "dotnext.asynclock.type";
     private static readonly UpDownCounter<int> SuspendedCallersMeter;
     
+    private readonly TagList measurementTags;
+    
     static QueuedSynchronizer()
     {
         var meter = new Meter("DotNext.Threading.AsyncLock");
@@ -23,7 +25,7 @@ partial class QueuedSynchronizer
         init
         {
             value.Add(LockTypeMeterAttribute, GetType().Name);
-            waitQueue.MeasurementTags = value;
+            measurementTags = value;
         }
     }
 }

@@ -35,16 +35,14 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
             // nothing to do here
         }
 
-        bool IWaitQueueVisitor<DefaultWaitNode>.Visit<TWaitQueue>(DefaultWaitNode node,
-            ref TWaitQueue queue,
-            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
-        {
-            queue.RemoveAndSignal(node, ref detachedQueue);
-            return true;
-        }
-
         readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
+        }
+        
+        readonly bool IWaitQueueVisitor<DefaultWaitNode>.Visit(DefaultWaitNode node, out bool resumable)
+        {
+            node.TrySetResult(out resumable);
+            return true;
         }
     }
 

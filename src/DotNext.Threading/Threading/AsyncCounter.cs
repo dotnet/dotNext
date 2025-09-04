@@ -34,8 +34,6 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
             return result;
         }
 
-        internal void Decrement() => Value--;
-
         internal bool TryReset()
         {
             var result = Value > 0L;
@@ -45,24 +43,14 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 
         readonly bool ILockManager.IsLockAllowed => Value > 0L;
 
-        void ILockManager.AcquireLock() => Decrement();
-        
-        bool IWaitQueueVisitor<DefaultWaitNode>.Visit<TWaitQueue>(DefaultWaitNode node,
-            ref TWaitQueue queue,
-            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
-        {
-            if (Value <= 0L)
-                return false;
-            
-            if (queue.RemoveAndSignal(node, ref detachedQueue))
-                Decrement();
-
-            return true;
-        }
+        void ILockManager.AcquireLock() => Value--;
 
         readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
         }
+        
+        bool IWaitQueueVisitor<DefaultWaitNode>.Visit(DefaultWaitNode node, out bool resumable)
+            => node.TrySetResult(ref this, out resumable);
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;

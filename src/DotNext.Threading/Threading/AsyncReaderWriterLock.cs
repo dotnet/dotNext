@@ -36,7 +36,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     // describes internal state of reader/writer lock
     [StructLayout(LayoutKind.Auto)]
     [SuppressMessage("Usage", "CA1001", Justification = "The disposable field is disposed in the Dispose() method")]
-    internal struct State : IWaitQueueVisitor<WaitNode>
+    internal struct State
     {
         private ulong version;  // version of write lock
 
@@ -83,46 +83,6 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         internal readonly bool IsReadLockAllowed => !writeLock;
 
         internal void AcquireReadLock() => readLocks++;
-
-        bool IWaitQueueVisitor<WaitNode>.Visit<TWaitQueue>(WaitNode node,
-            ref TWaitQueue queue,
-            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
-        {
-            switch (node.Type)
-            {
-                case LockType.Upgrade:
-                    if (!IsUpgradeToWriteLockAllowed)
-                        break;
-
-                    if (!queue.RemoveAndSignal(node, ref detachedQueue))
-                        goto default;
-
-                    AcquireWriteLock();
-                    break;
-                case LockType.Exclusive:
-                    if (!IsWriteLockAllowed)
-                        break;
-
-                    // skip dead node
-                    if (!queue.RemoveAndSignal(node, ref detachedQueue))
-                        goto default;
-
-                    AcquireWriteLock();
-                    break;
-                case LockType.Read:
-                    if (!IsReadLockAllowed)
-                        break;
-
-                    if (queue.RemoveAndSignal(node, ref detachedQueue))
-                        AcquireReadLock();
-
-                    goto default;
-                default:
-                    return true;
-            }
-
-            return false;
-        }
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -283,7 +243,13 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         pool = new(OnCompleted);
     }
 
-    private void OnCompleted(WaitNode node) => ReturnNode(ref pool, node, ref state);
+    private void OnCompleted(WaitNode node)
+    {
+        unsafe
+        {
+            ReturnNode<AsyncReaderWriterLock, WaitNode>(ref pool, node, &Visit);
+        }
+    }
 
     /// <summary>
     /// Gets the total number of unique readers.
@@ -615,7 +581,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
             state.ExitLock();
             IsLockHelpByCurrentThread = false;
-            suspendedCallers = DrainWaitQueue<WaitNode, State>(ref state);
+            suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
             {
@@ -646,13 +612,27 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.DowngradeFromWriteLock();
-            suspendedCallers = DrainWaitQueue<WaitNode, State>(ref state);
+            suspendedCallers = DrainWaitQueue();
         }
 
         suspendedCallers?.Unwind();
     }
 
     private protected sealed override bool IsReadyToDispose => state.IsWriteLockAllowed && IsEmptyQueue;
+
+    private bool Visit(WaitNode node, out bool resumable) => node.Type switch
+    {
+        LockType.Exclusive => node.TrySetResult(ref GetLockManager<WriteLockManager>(), out resumable),
+        LockType.Read => node.TrySetResult(ref GetLockManager<ReadLockManager>(), out resumable),
+        LockType.Upgrade => node.TrySetResult(ref GetLockManager<UpgradeManager>(), out resumable),
+        _ => resumable = false,
+    };
+
+    private static bool Visit(AsyncReaderWriterLock owner, WaitNode node, out bool resumable)
+        => owner.Visit(node, out resumable);
+
+    private unsafe LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
+        => DrainWaitQueue<AsyncReaderWriterLock, WaitNode>(&Visit);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

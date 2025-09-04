@@ -23,31 +23,30 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         internal StateManager(long initialCount)
             => Current = Initial = initialCount;
 
-        readonly bool ILockManager.IsLockAllowed => Current is 0L;
+        public readonly bool IsLockAllowed => Current is 0L;
 
         internal void Increment(long value) => Current = checked(Current + value);
 
         internal void IncrementInitial(long value)
             => Current = Initial = checked(Current + value);
 
-        internal bool Decrement(long value = 1L)
-            => (Current = Math.Max(0L, Current - value)) is 0L;
+        internal void Decrement(long value = 1L)
+            => Current = Math.Max(0L, Current - value);
 
         readonly void ILockManager.AcquireLock()
         {
             // nothing to do here
         }
 
-        bool IWaitQueueVisitor<DefaultWaitNode>.Visit<TWaitQueue>(DefaultWaitNode node,
-            ref TWaitQueue queue,
-            ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
-        {
-            queue.RemoveAndSignal(node, ref detachedQueue);
-            return true;
-        }
-
         readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
+        }
+        
+        readonly bool IWaitQueueVisitor<DefaultWaitNode>.Visit(DefaultWaitNode node,
+            out bool resumable)
+        {
+            node.TrySetResult(out resumable);
+            return true;
         }
     }
 
@@ -235,7 +234,8 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        if (manager.Decrement())
+        manager.Decrement();
+        if (manager.IsLockAllowed)
         {
             manager.Current = manager.Initial;
             suspendedCallers = DrainWaitQueue<DefaultWaitNode, StateManager>(ref manager);
@@ -374,7 +374,8 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             if (manager.Current is 0L)
                 throw new InvalidOperationException();
 
-            suspendedCallers = (result = manager.Decrement(signalCount))
+            manager.Decrement(signalCount);
+            suspendedCallers = (result = manager.IsLockAllowed)
                 ? DrainWaitQueue<DefaultWaitNode, StateManager>(ref manager)
                 : null;
         }
