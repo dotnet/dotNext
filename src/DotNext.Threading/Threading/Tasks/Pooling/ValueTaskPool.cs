@@ -22,7 +22,9 @@ internal struct ValueTaskPool<T>(long maximumRetained)
     {
     }
 
-    internal void Return(LinkedValueTaskCompletionSource<T> node)
+    public readonly long MaximumRetained => maximumRetained;
+
+    public void Return(LinkedValueTaskCompletionSource<T> node)
     {
         Debug.Assert(node is not null);
         Debug.Assert(count is 0L || first is not null);
@@ -37,7 +39,7 @@ internal struct ValueTaskPool<T>(long maximumRetained)
         }
     }
 
-    internal TNode Get<TNode>()
+    public TNode Get<TNode>()
         where TNode : LinkedValueTaskCompletionSource<T>, new()
     {
         TNode result;

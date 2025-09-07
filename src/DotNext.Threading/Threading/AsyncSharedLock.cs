@@ -103,7 +103,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         state = new(concurrencyLevel);
-        base.ConcurrencyLevel = concurrencyLevel;
+        ConcurrencyLevel = concurrencyLevel;
     }
 
     private bool Signal(ref WaitQueueVisitor waitQueueVisitor, bool strongLock) => strongLock
@@ -122,11 +122,6 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// Gets the number of shared locks that can be acquired.
     /// </summary>
     public long RemainingCount => Math.Max(state.RemainingLocks, 0L);
-
-    /// <summary>
-    /// Gets the maximum number of locks that can be obtained simultaneously.
-    /// </summary>
-    public new long ConcurrencyLevel => state.ConcurrencyLevel;
 
     /// <summary>
     /// Indicates that the lock is acquired in exclusive or shared mode.

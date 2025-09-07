@@ -38,6 +38,7 @@ public abstract partial class QueuedSynchronizer : Disposable
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is not <see langword="null"/> and less than 1.</exception>
     public long ConcurrencyLevel
     {
+        get => pool.MaximumRetained;
         init
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
