@@ -75,7 +75,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
             if (!CanAcquire(context))
                 break;
 
-            if (waitQueueVisitor.Signal())
+            if (waitQueueVisitor.SignalCurrent())
                 AcquireCore(context);
         }
     }

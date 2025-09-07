@@ -331,7 +331,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
             }
             else
             {
-                waitQueueVisitor.SignalOne(out signaled);
+                waitQueueVisitor.SignalFirst(out signaled);
             }
 
             return signaled;

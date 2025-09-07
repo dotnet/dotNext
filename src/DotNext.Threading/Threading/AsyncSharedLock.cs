@@ -111,8 +111,8 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     private bool Signal(ref WaitQueueVisitor waitQueueVisitor, bool strongLock) => strongLock
-        ? waitQueueVisitor.Signal(ref GetLockManager<StrongLockManager>())
-        : waitQueueVisitor.Signal(ref GetLockManager<WeakLockManager>());
+        ? waitQueueVisitor.SignalCurrent(ref GetLockManager<StrongLockManager>())
+        : waitQueueVisitor.SignalCurrent(ref GetLockManager<WeakLockManager>());
 
     private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
     {

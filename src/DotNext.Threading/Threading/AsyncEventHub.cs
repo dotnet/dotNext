@@ -42,7 +42,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         for (; !waitQueueVisitor.IsEndOfQueue<WaitNode, WaitNode>(out var node); waitQueueVisitor.Advance())
         {
             if (node.Matches(state))
-                waitQueueVisitor.Signal();
+                waitQueueVisitor.SignalCurrent();
         }
     }
 

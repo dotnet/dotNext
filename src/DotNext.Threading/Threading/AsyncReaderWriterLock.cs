@@ -252,9 +252,9 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
     private bool Signal(ref WaitQueueVisitor waitQueueVisitor, LockType type) => type switch
     {
-        LockType.Exclusive => waitQueueVisitor.Signal(ref GetLockManager<WriteLockManager>()),
-        LockType.Read => waitQueueVisitor.Signal(ref GetLockManager<ReadLockManager>()),
-        LockType.Upgrade => waitQueueVisitor.Signal(ref GetLockManager<UpgradeManager>()),
+        LockType.Exclusive => waitQueueVisitor.SignalCurrent(ref GetLockManager<WriteLockManager>()),
+        LockType.Read => waitQueueVisitor.SignalCurrent(ref GetLockManager<ReadLockManager>()),
+        LockType.Upgrade => waitQueueVisitor.SignalCurrent(ref GetLockManager<UpgradeManager>()),
         _ => true,
     };
 

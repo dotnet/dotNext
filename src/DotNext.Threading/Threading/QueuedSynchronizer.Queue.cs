@@ -206,7 +206,7 @@ partial class QueuedSynchronizer
 
         public void Advance() => next = (current = next)?.Next;
 
-        private bool Signal(in Result<bool> result)
+        private bool SignalCurrent(in Result<bool> result)
         {
             bool signaled;
             if (current is not null)
@@ -226,17 +226,15 @@ partial class QueuedSynchronizer
             return signaled;
         }
 
-        public bool Signal() => Signal(result: true);
+        public bool SignalCurrent() => SignalCurrent(result: true);
 
-        public bool Signal(Exception e) => Signal(result: new(e));
-
-        public bool Signal<TLockManager>(ref TLockManager manager)
+        public bool SignalCurrent<TLockManager>(ref TLockManager manager)
             where TLockManager : struct, ILockManager
         {
             if (!manager.IsLockAllowed)
                 return false;
 
-            if (Signal())
+            if (SignalCurrent())
                 manager.AcquireLock();
 
             return true;
@@ -245,7 +243,7 @@ partial class QueuedSynchronizer
         public void SignalAll<TLockManager>(ref TLockManager manager)
             where TLockManager : struct, ILockManager
         {
-            while (!EndOfQueue && Signal(ref manager))
+            while (!EndOfQueue && SignalCurrent(ref manager))
             {
                 Advance();
             }
@@ -255,7 +253,7 @@ partial class QueuedSynchronizer
         {
             while (!EndOfQueue)
             {
-                Signal(in result);
+                SignalCurrent(in result);
                 Advance();
             }
         }
@@ -268,7 +266,7 @@ partial class QueuedSynchronizer
         {
             for (signaled = false; !EndOfQueue; Advance())
             {
-                signaled |= Signal(in result);
+                signaled |= SignalCurrent(in result);
             }
         }
 
@@ -278,11 +276,11 @@ partial class QueuedSynchronizer
         public void SignalAll(Exception e, out bool signaled)
             => SignalAll(new Result<bool>(e), out signaled);
 
-        private void SignalOne(in Result<bool> result, out bool signaled)
+        private void SignalFirst(in Result<bool> result, out bool signaled)
         {
             for (signaled = false; !EndOfQueue; Advance())
             {
-                if (Signal(in result))
+                if (SignalCurrent(in result))
                 {
                     signaled = true;
                     break;
@@ -290,8 +288,8 @@ partial class QueuedSynchronizer
             }
         }
         
-        public void SignalOne(out bool signaled)
-            => SignalOne(new Result<bool>(true), out signaled);
+        public void SignalFirst(out bool signaled)
+            => SignalFirst(new Result<bool>(true), out signaled);
     }
     
     [StructLayout(LayoutKind.Auto)]
