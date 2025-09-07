@@ -24,7 +24,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <summary>
     /// Initializes a new pipe.
     /// </summary>
-    public TaskCompletionPipe() => pool = new(OnCompleted);
+    public TaskCompletionPipe() => pool = new(maximumRetained: null);
 
     /// <summary>
     /// Gets or sets a value indicating that this pipe supports <see cref="Completion"/> property.

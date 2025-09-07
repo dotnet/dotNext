@@ -29,7 +29,7 @@ public abstract partial class QueuedSynchronizer : Disposable
             },
         };
 
-        maximumRetained = concurrencyLevel ?? long.MaxValue;
+        pool = new(concurrencyLevel);
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
 
@@ -11,35 +12,26 @@ namespace DotNext.Threading.Tasks.Pooling;
  * Monitor lock.
  */
 [StructLayout(LayoutKind.Auto)]
-internal struct ValueTaskPool<T, TNode, TCallback>
-    where TNode : LinkedValueTaskCompletionSource<T>, IPooledManualResetCompletionSource<TCallback>, new()
-    where TCallback : MulticastDelegate
+internal struct ValueTaskPool<T>
 {
     private readonly long maximumRetained;
-    private readonly TCallback backToPool;
-    private TNode? first;
+    private LinkedValueTaskCompletionSource<T>? first;
     private long count;
 
-    internal ValueTaskPool(TCallback backToPool, long? maximumRetained = null)
+    internal ValueTaskPool(long? maximumRetained)
     {
-        Debug.Assert(backToPool is not null);
-
-        this.backToPool = backToPool;
         first = null;
         count = 0;
         this.maximumRetained = maximumRetained ?? long.MaxValue;
     }
 
-    internal void Return(TNode node)
+    internal void Return(LinkedValueTaskCompletionSource<T> node)
     {
         Debug.Assert(node is not null);
-        Debug.Assert(backToPool.Target is not null);
         Debug.Assert(count is 0L || first is not null);
 
         if (!node.TryReset(out _))
             return;
-
-        node.OnConsumed = null;
 
         if (count < maximumRetained)
         {
@@ -50,10 +42,9 @@ internal struct ValueTaskPool<T, TNode, TCallback>
         }
     }
 
-    internal TNode Get()
+    internal TNode Get<TNode>()
+        where TNode : LinkedValueTaskCompletionSource<T>, new()
     {
-        Debug.Assert(backToPool.Target is not null);
-
         TNode result;
         if (first is null)
         {
@@ -63,8 +54,9 @@ internal struct ValueTaskPool<T, TNode, TCallback>
         }
         else
         {
-            result = first;
-            first = result.Next as TNode;
+            Debug.Assert(first is TNode);
+            result = Unsafe.As<TNode>(first);
+            first = result.Next;
             result.Detach();
             count--;
 
@@ -72,7 +64,6 @@ internal struct ValueTaskPool<T, TNode, TCallback>
             Debug.Assert(count is 0L || first is not null);
         }
 
-        result.OnConsumed = backToPool;
         return result;
     }
 }

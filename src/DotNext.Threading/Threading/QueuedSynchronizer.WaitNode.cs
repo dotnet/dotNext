@@ -20,14 +20,6 @@ partial class QueuedSynchronizer
         static abstract bool ThrowOnTimeout { get; }
     }
 
-    [Flags]
-    private protected enum WaitNodeFlags
-    {
-        None = 0,
-        ThrowOnTimeout = 1,
-        DrainOnReturn = ThrowOnTimeout << 1,
-    }
-
     private protected class WaitNode :
         LinkedValueTaskCompletionSource<bool>,
         IValueTaskFactory<ValueTask>,
@@ -90,6 +82,14 @@ partial class QueuedSynchronizer
         static bool IValueTaskFactory<ValueTask<bool>>.ThrowOnTimeout => false;
 
         static bool IValueTaskFactory<ValueTask>.ThrowOnTimeout => true;
+    }
+    
+    [Flags]
+    private protected enum WaitNodeFlags
+    {
+        None = 0,
+        ThrowOnTimeout = 1,
+        DrainOnReturn = ThrowOnTimeout << 1,
     }
     
     private protected interface INodeMapper<in TNode, out TValue>

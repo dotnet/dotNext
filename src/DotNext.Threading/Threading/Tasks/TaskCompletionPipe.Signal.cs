@@ -6,23 +6,27 @@ using Pooling;
 
 public partial class TaskCompletionPipe<T>
 {
-    private sealed class Signal : LinkedValueTaskCompletionSource<bool>, IPooledManualResetCompletionSource<Action<Signal>>
+    private sealed class Signal : LinkedValueTaskCompletionSource<bool>
     {
-        private Action<Signal>? completionCallback;
+        private TaskCompletionPipe<T>? owner;
 
-        protected override void AfterConsumed() => completionCallback?.Invoke(this);
+        internal void Initialize(TaskCompletionPipe<T> owner)
+        {
+            this.owner = owner;
+        }
+
+        protected override void CleanUp()
+        {
+            owner = null;
+        }
+
+        protected override void AfterConsumed() => owner?.OnCompleted(this);
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal bool NeedsRemoval => CompletionData is null;
-
-        Action<Signal>? IPooledManualResetCompletionSource<Action<Signal>>.OnConsumed
-        {
-            get => completionCallback;
-            set => completionCallback = value;
-        }
     }
 
-    private ValueTaskPool<bool, Signal, Action<Signal>> pool;
+    private ValueTaskPool<bool> pool;
     private LinkedValueTaskCompletionSource<bool>.LinkedList waitQueue;
 
     // detach all suspended callers to process out of the monitor lock
@@ -39,7 +43,8 @@ public partial class TaskCompletionPipe<T>
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        LinkedValueTaskCompletionSource<bool> result = pool.Get();
+        var result = pool.Get<Signal>();
+        result.Initialize(this);
         waitQueue.Add(result);
         return result;
     }

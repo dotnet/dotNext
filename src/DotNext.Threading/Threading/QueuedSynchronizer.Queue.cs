@@ -9,6 +9,7 @@ using Tasks.Pooling;
 
 partial class QueuedSynchronizer
 {
+    private ValueTaskPool<bool> pool;
     private WaitQueue waitQueue;
     
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -44,7 +45,7 @@ partial class QueuedSynchronizer
                 ? DrainWaitQueue()
                 : null;
 
-            BackToPool(node);
+            pool.Return(node);
         }
 
         suspendedCallers?.Unwind();
@@ -57,7 +58,7 @@ partial class QueuedSynchronizer
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        var node = RentFromPool<TNode>();
+        var node = pool.Get<TNode>();
         initializer.Invoke(node);
         node.Initialize(this, CaptureCallerInformation(), TNode.ThrowOnTimeout);
         waitQueue.Add(node);
