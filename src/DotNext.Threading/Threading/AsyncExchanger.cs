@@ -66,7 +66,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// </summary>
     public AsyncExchanger()
     {
-        pool = new(maximumRetained: null);
+        pool = new();
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
     }
 

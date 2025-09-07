@@ -32,20 +32,6 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// Initializes a new asynchronous reset event in the specified state.
     /// </summary>
     /// <param name="initialState"><see langword="true"/> to set the initial state signaled; <see langword="false"/> to set the initial state to non signaled.</param>
-    /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
-    public AsyncAutoResetEvent(bool initialState, long concurrencyLevel)
-        : base(concurrencyLevel)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
-
-        manager = new(initialState);
-    }
-
-    /// <summary>
-    /// Initializes a new asynchronous reset event in the specified state.
-    /// </summary>
-    /// <param name="initialState"><see langword="true"/> to set the initial state signaled; <see langword="false"/> to set the initial state to non signaled.</param>
     public AsyncAutoResetEvent(bool initialState)
     {
         manager = new(initialState);

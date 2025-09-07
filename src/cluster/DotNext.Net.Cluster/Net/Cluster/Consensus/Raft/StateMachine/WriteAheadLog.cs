@@ -46,10 +46,18 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         rootPath.CreateIfNeeded();
 
         context = new(DictionaryConcurrencyLevel, configuration.ConcurrencyLevel);
-        lockManager = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
+        lockManager = new()
+        {
+            ConcurrencyLevel = configuration.ConcurrencyLevel,
+            MeasurementTags = configuration.MeasurementTags,
+        };
         bufferAllocator = configuration.Allocator ?? ArrayPool<byte>.Shared.ToAllocator();
         this.stateMachine = stateMachine;
-        stateLock = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
+        stateLock = new()
+        {
+            ConcurrencyLevel = configuration.ConcurrencyLevel,
+            MeasurementTags = configuration.MeasurementTags,
+        };
         state = new(rootPath);
         measurementTags = configuration.MeasurementTags;
 
@@ -113,7 +121,11 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             appliedIndex = snapshotIndex;
             applyTrigger = new();
             appenderTask = ApplyAsync(lifetimeTokenSource.Token);
-            appliedEvent = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
+            appliedEvent = new()
+            {
+                ConcurrencyLevel = configuration.ConcurrencyLevel,
+                MeasurementTags = configuration.MeasurementTags,
+            };
         }
     }
 

@@ -43,20 +43,6 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// Initializes a new asynchronous reset event in the specified state.
     /// </summary>
     /// <param name="initialState"><see langword="true"/> to set the initial state signaled; <see langword="false"/> to set the initial state to non signaled.</param>
-    /// <param name="concurrencyLevel">The potential number of suspended callers.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
-    public AsyncManualResetEvent(bool initialState, long concurrencyLevel)
-        : base(concurrencyLevel)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
-
-        manager = new(initialState);
-    }
-
-    /// <summary>
-    /// Initializes a new asynchronous reset event in the specified state.
-    /// </summary>
-    /// <param name="initialState"><see langword="true"/> to set the initial state signaled; <see langword="false"/> to set the initial state to non signaled.</param>
     public AsyncManualResetEvent(bool initialState)
     {
         manager = new(initialState);

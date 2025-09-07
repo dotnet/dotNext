@@ -6,7 +6,7 @@ public sealed class AsyncReaderWriterLockTests : Test
     [Fact]
     public static async Task TrivialLock()
     {
-        using var rwLock = new AsyncReaderWriterLock(3);
+        using var rwLock = new AsyncReaderWriterLock { ConcurrencyLevel = 3 };
 
         // read lock
         True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));

@@ -18,7 +18,7 @@ public abstract partial class QueuedSynchronizer : Disposable
 {
     private readonly TaskCompletionSource disposeTask;
 
-    private protected QueuedSynchronizer(long? concurrencyLevel = null)
+    private protected QueuedSynchronizer()
     {
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
         waitQueue = new()
@@ -29,7 +29,21 @@ public abstract partial class QueuedSynchronizer : Disposable
             },
         };
 
-        pool = new(concurrencyLevel);
+        pool = new();
+    }
+
+    /// <summary>
+    /// Sets the expected number of concurrent flows.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is not <see langword="null"/> and less than 1.</exception>
+    public long ConcurrencyLevel
+    {
+        init
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
+
+            pool = new(value);
+        }
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

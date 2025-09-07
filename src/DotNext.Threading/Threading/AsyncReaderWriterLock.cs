@@ -208,15 +208,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <summary>
     /// Initializes a new reader/writer lock.
     /// </summary>
-    /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
-    public AsyncReaderWriterLock(long concurrencyLevel)
-        : base(concurrencyLevel)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
-
-        state = new();
-    }
+    public AsyncReaderWriterLock() => state = new();
     
     private bool IsLockHelpByCurrentThread
     {
@@ -241,14 +233,6 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     private ref TLockManager GetLockManager<TLockManager>()
         where TLockManager : struct, ILockManager, IConsumer<WaitNode>
         => ref Unsafe.As<State, TLockManager>(ref state);
-
-    /// <summary>
-    /// Initializes a new reader/writer lock.
-    /// </summary>
-    public AsyncReaderWriterLock()
-    {
-        state = new();
-    }
 
     private bool Signal(ref WaitQueueVisitor waitQueueVisitor, LockType type) => type switch
     {

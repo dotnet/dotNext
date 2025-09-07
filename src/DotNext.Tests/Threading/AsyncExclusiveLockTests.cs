@@ -8,7 +8,7 @@ public sealed class AsyncExclusiveLockTests : Test
     [Fact]
     public static async Task TrivialLock()
     {
-        using var @lock = new AsyncExclusiveLock(3);
+        using var @lock = new AsyncExclusiveLock { ConcurrencyLevel = 3 };
         True(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(10)));
         False(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(100)));
         await ThrowsAsync<TimeoutException>(@lock.AcquireAsync(TimeSpan.FromMilliseconds(100)).AsTask);

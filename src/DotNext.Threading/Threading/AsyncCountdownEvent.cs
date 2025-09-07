@@ -46,24 +46,6 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// Creates a new countdown event with the specified count.
     /// </summary>
     /// <param name="initialCount">The number of signals initially required to set the event.</param>
-    /// <param name="concurrencyLevel">The expected number of suspended callers.</param>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// <paramref name="initialCount"/> is less than zero;
-    /// or <paramref name="concurrencyLevel"/> is less than or equal to zero.
-    /// </exception>
-    public AsyncCountdownEvent(long initialCount, long concurrencyLevel)
-        : base(concurrencyLevel)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegative(initialCount);
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
-
-        manager = new(initialCount);
-    }
-
-    /// <summary>
-    /// Creates a new countdown event with the specified count.
-    /// </summary>
-    /// <param name="initialCount">The number of signals initially required to set the event.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCount"/> is less than zero.</exception>
     public AsyncCountdownEvent(long initialCount)
     {

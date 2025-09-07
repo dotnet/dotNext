@@ -15,11 +15,6 @@ internal sealed class SingleProducerMultipleConsumersCoordinator : QueuedSynchro
         while ((newState = Interlocked.CompareExchange(ref valve, newState, currentState)) != currentState);
     }
 
-    internal SingleProducerMultipleConsumersCoordinator()
-        : base(concurrencyLevel: null)
-    {
-    }
-
     protected override bool CanAcquire(uint unexpectedState) => unexpectedState != valve;
 
     internal ValueTask WaitAsync(CancellationToken token = default)

@@ -12,17 +12,14 @@ namespace DotNext.Threading.Tasks.Pooling;
  * Monitor lock.
  */
 [StructLayout(LayoutKind.Auto)]
-internal struct ValueTaskPool<T>
+internal struct ValueTaskPool<T>(long maximumRetained)
 {
-    private readonly long maximumRetained;
     private LinkedValueTaskCompletionSource<T>? first;
-    private long count;
+    private long count = 0;
 
-    internal ValueTaskPool(long? maximumRetained)
+    public ValueTaskPool()
+        : this(long.MaxValue)
     {
-        first = null;
-        count = 0;
-        this.maximumRetained = maximumRetained ?? long.MaxValue;
     }
 
     internal void Return(LinkedValueTaskCompletionSource<T> node)
