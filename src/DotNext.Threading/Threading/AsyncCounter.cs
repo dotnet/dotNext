@@ -55,7 +55,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <param name="initialValue">The initial value of the counter.</param>
     /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
-    public AsyncCounter(long initialValue, int concurrencyLevel)
+    public AsyncCounter(long initialValue, long concurrencyLevel)
         : base(concurrencyLevel)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(initialValue, 0L);

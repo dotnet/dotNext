@@ -24,7 +24,7 @@ public sealed class AsyncSharedLockTests : Test
     [Fact]
     public static async Task StrongLocks()
     {
-        using var sharedLock = new AsyncSharedLock(3, false);
+        using var sharedLock = new AsyncSharedLock(3);
         True(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
         False(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
         False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));

@@ -51,7 +51,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <paramref name="initialCount"/> is less than zero;
     /// or <paramref name="concurrencyLevel"/> is less than or equal to zero.
     /// </exception>
-    public AsyncCountdownEvent(long initialCount, int concurrencyLevel)
+    public AsyncCountdownEvent(long initialCount, long concurrencyLevel)
         : base(concurrencyLevel)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(initialCount);

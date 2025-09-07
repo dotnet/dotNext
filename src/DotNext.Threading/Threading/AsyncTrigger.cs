@@ -26,7 +26,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// </summary>
     /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
-    public AsyncTrigger(int concurrencyLevel)
+    public AsyncTrigger(long concurrencyLevel)
         : base(concurrencyLevel)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);

@@ -34,9 +34,11 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// </summary>
     /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is not <see langword="null"/> and less than 1.</exception>
-    protected QueuedSynchronizer(int? concurrencyLevel)
+    protected QueuedSynchronizer(long? concurrencyLevel)
         : base(concurrencyLevel)
     {
+        if (concurrencyLevel.HasValue && concurrencyLevel.GetValueOrDefault() < 1L)
+            throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
     }
 
     /// <summary>

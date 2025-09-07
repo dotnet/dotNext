@@ -39,7 +39,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
-    public AsyncExclusiveLock(int concurrencyLevel)
+    public AsyncExclusiveLock(long concurrencyLevel)
         : base(concurrencyLevel)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);

@@ -97,13 +97,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// Initializes a new shared lock.
     /// </summary>
     /// <param name="concurrencyLevel">The number of unique callers that can obtain shared lock simultaneously.</param>
-    /// <param name="limitedConcurrency">
-    /// <see langword="true"/> if the potential number of concurrent flows will not be greater than <paramref name="concurrencyLevel"/>;
-    /// otherwise, <see langword="false"/>.
-    /// </param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than 1.</exception>
-    public AsyncSharedLock(int concurrencyLevel, bool limitedConcurrency = true)
-        : base(limitedConcurrency ? concurrencyLevel : null)
+    public AsyncSharedLock(long concurrencyLevel)
+        : base(concurrencyLevel)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 

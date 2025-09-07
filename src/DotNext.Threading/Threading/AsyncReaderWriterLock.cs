@@ -210,7 +210,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
-    public AsyncReaderWriterLock(int concurrencyLevel)
+    public AsyncReaderWriterLock(long concurrencyLevel)
         : base(concurrencyLevel)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
