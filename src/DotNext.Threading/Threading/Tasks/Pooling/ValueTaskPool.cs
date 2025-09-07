@@ -29,9 +29,7 @@ internal struct ValueTaskPool<T>
     {
         Debug.Assert(node is not null);
         Debug.Assert(count is 0L || first is not null);
-
-        if (!node.TryReset(out _))
-            return;
+        Debug.Assert(node.Status is ManualResetCompletionSourceStatus.WaitForActivation);
 
         if (count < maximumRetained)
         {

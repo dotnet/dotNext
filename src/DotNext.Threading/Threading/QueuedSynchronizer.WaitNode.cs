@@ -54,7 +54,11 @@ partial class QueuedSynchronizer
             set => flags |= value ? WaitNodeFlags.DrainOnReturn : WaitNodeFlags.None;
         }
 
-        protected sealed override void AfterConsumed() => owner?.ReturnNode(this);
+        protected sealed override void AfterConsumed()
+        {
+            if (owner is { } ownerCopy && TryReset(out _))
+                ownerCopy.ReturnNode(this);
+        }
 
         protected sealed override Result<bool> OnTimeout()
             => (flags & WaitNodeFlags.ThrowOnTimeout) is not 0 ? base.OnTimeout() : false;

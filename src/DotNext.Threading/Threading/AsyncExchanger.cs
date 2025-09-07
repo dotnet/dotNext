@@ -29,15 +29,19 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             this.value = value;
         }
 
-        protected override void AfterConsumed() => owner?.OnCompleted(this);
+        protected override void AfterConsumed()
+        {
+            if (owner is { } ownerCopy && TryReset(out _))
+                ownerCopy.OnCompleted(this);
+        }
 
         protected override void CleanUp()
         {
             if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
                 value = default;
 
-            base.CleanUp();
             owner = null;
+            base.CleanUp();
         }
 
         internal bool TryExchange(ref T value, out bool resumable)
