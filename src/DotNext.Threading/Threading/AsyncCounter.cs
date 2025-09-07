@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 namespace DotNext.Threading;
 
 using Tasks;
-using Tasks.Pooling;
 
 /// <summary>
 /// Represents a synchronization primitive that is signaled when its count becomes non-zero.
@@ -19,7 +18,7 @@ using Tasks.Pooling;
 public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager, IConsumer<DefaultWaitNode>
+    private struct StateManager : ILockManager, IConsumer<WaitNode>
     {
         internal required long Value;
 
@@ -45,12 +44,9 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 
         void ILockManager.AcquireLock() => Value--;
 
-        readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
-        {
-        }
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
     }
 
-    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private StateManager manager;
 
     /// <summary>
@@ -60,12 +56,12 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
     public AsyncCounter(long initialValue, int concurrencyLevel)
+        : base(concurrencyLevel)
     {
         ArgumentOutOfRangeException.ThrowIfLessThan(initialValue, 0L);
         ArgumentOutOfRangeException.ThrowIfLessThan(concurrencyLevel, 1);
 
         manager = new() { Value = initialValue };
-        pool = new(OnCompleted, concurrencyLevel);
     }
 
     /// <summary>
@@ -78,10 +74,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         ArgumentOutOfRangeException.ThrowIfLessThan(initialValue, 0L);
 
         manager = new() { Value = initialValue };
-        pool = new(OnCompleted);
     }
-
-    private void OnCompleted(DefaultWaitNode node) => ReturnNode(ref pool, node);
 
     private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
         => waitQueueVisitor.SignalAll(ref manager);
@@ -205,7 +198,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        => TryAcquireAsync<WaitNode, StateManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
 
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
@@ -216,7 +209,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        => AcquireAsync<WaitNode, StateManager, CancellationTokenOnly>(ref manager, new(token));
 
     /// <summary>
     /// Attempts to decrement the counter synchronously.

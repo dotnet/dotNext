@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 namespace DotNext.Threading;
 
 using Tasks;
-using Tasks.Pooling;
 
 /// <summary>
 /// Provides low-level infrastructure for writing custom synchronization primitives.
@@ -14,13 +13,9 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 {
     private new sealed class WaitNode :
         QueuedSynchronizer.WaitNode,
-        IPooledManualResetCompletionSource<Action<WaitNode>>,
-        INodeMapper<WaitNode, TContext>,
-        IWaitNode
+        INodeMapper<WaitNode, TContext>
     {
         internal TContext? Context;
-
-        protected override void AfterConsumed() => AfterConsumed(this);
 
         protected override void CleanUp()
         {
@@ -30,15 +25,9 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
             base.CleanUp();
         }
 
-        Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed { get; set; }
-
         static TContext INodeMapper<WaitNode, TContext>.GetValue(WaitNode node)
             => node.Context!;
-
-        static bool IWaitNode.DrainOnReturn => true;
     }
-
-    private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
 
     /// <summary>
     /// Initializes a new synchronization primitive.
@@ -46,13 +35,8 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is not <see langword="null"/> and less than 1.</exception>
     protected QueuedSynchronizer(int? concurrencyLevel)
+        : base(concurrencyLevel)
     {
-        pool = concurrencyLevel switch
-        {
-            null => new(OnCompleted),
-            { } value when value > 0 => new(OnCompleted, value),
-            _ => throw new ArgumentOutOfRangeException(nameof(concurrencyLevel)),
-        };
     }
 
     /// <summary>
@@ -83,8 +67,6 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     protected virtual void ReleaseCore(TContext context)
     {
     }
-
-    private void OnCompleted(WaitNode node) => ReturnNode(ref pool, node);
 
     private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
     {
@@ -183,7 +165,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     protected ValueTask<bool> TryAcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
     {
         var manager = new LockManager(this, context);
-        return TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        return TryAcquireAsync<WaitNode, LockManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
     }
 
     /// <summary>
@@ -199,7 +181,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     protected ValueTask AcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
     {
         var manager = new LockManager(this, context);
-        return AcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        return AcquireAsync<WaitNode, LockManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
     }
 
     /// <summary>
@@ -213,7 +195,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     protected ValueTask AcquireAsync(TContext context, CancellationToken token)
     {
         var manager = new LockManager(this, context);
-        return AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        return AcquireAsync<WaitNode, LockManager, CancellationTokenOnly>(ref manager, new(token));
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -223,6 +205,10 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
         void ILockManager.AcquireLock() => owner.AcquireCore(context);
 
-        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.Context = context;
+        void IConsumer<WaitNode>.Invoke(WaitNode node)
+        {
+            node.Context = context;
+            node.DrainOnReturn = true;
+        }
     }
 }

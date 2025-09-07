@@ -18,7 +18,7 @@ public abstract partial class QueuedSynchronizer : Disposable
 {
     private readonly TaskCompletionSource disposeTask;
 
-    private protected QueuedSynchronizer()
+    private protected QueuedSynchronizer(long? concurrencyLevel = null)
     {
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
         waitQueue = new()
@@ -28,6 +28,8 @@ public abstract partial class QueuedSynchronizer : Disposable
                 { LockTypeMeterAttribute, GetType().Name }
             },
         };
+
+        maximumRetained = concurrencyLevel ?? long.MaxValue;
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

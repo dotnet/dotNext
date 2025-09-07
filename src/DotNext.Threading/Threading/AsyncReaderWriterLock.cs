@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 namespace DotNext.Threading;
 
 using Tasks;
-using Tasks.Pooling;
 
 /// <summary>
 /// Represents asynchronous version of <see cref="ReaderWriterLockSlim"/>.
@@ -26,20 +25,12 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
     private new sealed class WaitNode :
         QueuedSynchronizer.WaitNode,
-        IPooledManualResetCompletionSource<Action<WaitNode>>,
-        INodeMapper<WaitNode, LockType>,
-        IWaitNode
+        INodeMapper<WaitNode, LockType>
     {
         internal LockType Type;
 
-        protected override void AfterConsumed() => AfterConsumed(this);
-
-        Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed { get; set; }
-
         static LockType INodeMapper<WaitNode, LockType>.GetValue(WaitNode node)
             => node.Type;
-
-        static bool IWaitNode.DrainOnReturn => true;
     }
 
     // describes internal state of reader/writer lock
@@ -106,7 +97,10 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             => state.AcquireReadLock();
 
         readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
-            => node.Type = LockType.Read;
+        {
+            node.Type = LockType.Read;
+            node.DrainOnReturn = true;
+        }
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -121,7 +115,10 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             => state.AcquireWriteLock();
 
         readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
-            => node.Type = LockType.Exclusive;
+        {
+            node.Type = LockType.Exclusive;
+            node.DrainOnReturn = true;
+        }
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -136,7 +133,10 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             => state.AcquireWriteLock();
 
         readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
-            => node.Type = LockType.Upgrade;
+        {
+            node.Type = LockType.Upgrade;
+            node.DrainOnReturn = true;
+        }
     }
 
     /// <summary>
@@ -203,7 +203,6 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     private State state;
-    private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
     private ThreadLocal<bool>? lockOwnerState;
 
     /// <summary>
@@ -212,11 +211,11 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
     public AsyncReaderWriterLock(int concurrencyLevel)
+        : base(concurrencyLevel)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         state = new();
-        pool = new(OnCompleted, concurrencyLevel);
     }
     
     private bool IsLockHelpByCurrentThread
@@ -249,10 +248,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     public AsyncReaderWriterLock()
     {
         state = new();
-        pool = new(OnCompleted);
     }
-
-    private void OnCompleted(WaitNode node) => ReturnNode(ref pool, node);
 
     private bool Signal(ref WaitQueueVisitor waitQueueVisitor, LockType type) => type switch
     {
@@ -341,7 +337,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         try
         {
             IsLockHelpByCurrentThread = result =
-                TryAcquireAsync(ref pool, ref GetLockManager<TLockManager>(), new TimeoutAndCancellationToken(timeout, token)).Wait();
+                TryAcquireAsync<WaitNode, TLockManager, TimeoutAndCancellationToken>(ref GetLockManager<TLockManager>(), new(timeout, token)).Wait();
         }
         catch (OperationCanceledException e) when (e.CancellationToken == token)
         {
@@ -362,7 +358,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryEnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync(ref pool, ref GetLockManager<ReadLockManager>(), new TimeoutAndCancellationToken(timeout, token));
+        => TryAcquireAsync<WaitNode, ReadLockManager, TimeoutAndCancellationToken>(ref GetLockManager<ReadLockManager>(), new(timeout, token));
 
     /// <summary>
     /// Enters the lock in read mode asynchronously.
@@ -376,7 +372,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync(ref pool, ref GetLockManager<ReadLockManager>(), new TimeoutAndCancellationToken(timeout, token));
+        => AcquireAsync<WaitNode, ReadLockManager, TimeoutAndCancellationToken>(ref GetLockManager<ReadLockManager>(), new(timeout, token));
 
     /// <summary>
     /// Enters the lock in read mode asynchronously.
@@ -388,7 +384,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterReadLockAsync(CancellationToken token = default)
-        => AcquireAsync(ref pool, ref GetLockManager<ReadLockManager>(), new CancellationTokenOnly(token));
+        => AcquireAsync<WaitNode, ReadLockManager, CancellationTokenOnly>(ref GetLockManager<ReadLockManager>(), new(token));
 
     /// <summary>
     /// Attempts to acquire write lock without blocking.
@@ -449,7 +445,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryEnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync(ref pool, ref GetLockManager<WriteLockManager>(), new TimeoutAndCancellationToken(timeout, token));
+        => TryAcquireAsync<WaitNode, WriteLockManager, TimeoutAndCancellationToken>(ref GetLockManager<WriteLockManager>(), new(timeout, token));
 
     /// <summary>
     /// Enters the lock in write mode asynchronously.
@@ -461,7 +457,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterWriteLockAsync(CancellationToken token = default)
-        => AcquireAsync(ref pool, ref GetLockManager<WriteLockManager>(), new CancellationTokenOnly(token));
+        => AcquireAsync<WaitNode, WriteLockManager, CancellationTokenOnly>(ref GetLockManager<WriteLockManager>(), new(token));
 
     /// <summary>
     /// Enters the lock in write mode asynchronously.
@@ -475,7 +471,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync(ref pool, ref GetLockManager<WriteLockManager>(), new TimeoutAndCancellationToken(timeout, token));
+        => AcquireAsync<WaitNode, WriteLockManager, TimeoutAndCancellationToken>(ref GetLockManager<WriteLockManager>(), new(timeout, token));
 
     /// <summary>
     /// Tries to upgrade the read lock to the write lock synchronously without blocking of the caller.
@@ -509,7 +505,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryUpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync(ref pool, ref GetLockManager<UpgradeManager>(), new TimeoutAndCancellationToken(timeout, token));
+        => TryAcquireAsync<WaitNode, UpgradeManager, TimeoutAndCancellationToken>(ref GetLockManager<UpgradeManager>(), new(timeout, token));
 
     /// <summary>
     /// Upgrades the read lock to the write lock asynchronously.
@@ -521,7 +517,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask UpgradeToWriteLockAsync(CancellationToken token = default)
-        => AcquireAsync(ref pool, ref GetLockManager<UpgradeManager>(), new CancellationTokenOnly(token));
+        => AcquireAsync<WaitNode, UpgradeManager, CancellationTokenOnly>(ref GetLockManager<UpgradeManager>(), new(token));
 
     /// <summary>
     /// Upgrades the read lock to the write lock asynchronously.
@@ -535,7 +531,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask UpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync(ref pool, ref GetLockManager<UpgradeManager>(), new TimeoutAndCancellationToken(timeout, token));
+        => AcquireAsync<WaitNode, UpgradeManager, TimeoutAndCancellationToken>(ref GetLockManager<UpgradeManager>(), new(timeout, token));
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires write lock.
@@ -549,7 +545,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask<bool> TryStealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync(ref pool, ref GetLockManager<WriteLockManager>(), new TimeoutAndInterruptionReasonAndCancellationToken(reason, timeout, token));
+        => TryAcquireAsync<WaitNode, WriteLockManager, TimeoutAndInterruptionReasonAndCancellationToken>(ref GetLockManager<WriteLockManager>(), new(reason, timeout, token));
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires write lock.
@@ -564,7 +560,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync(ref pool, ref GetLockManager<WriteLockManager>(), new TimeoutAndInterruptionReasonAndCancellationToken(reason, timeout, token));
+        => AcquireAsync<WaitNode, WriteLockManager, TimeoutAndInterruptionReasonAndCancellationToken>(ref GetLockManager<WriteLockManager>(), new(reason, timeout, token));
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires write lock.
@@ -577,7 +573,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealWriteLockAsync(object? reason = null, CancellationToken token = default)
-        => AcquireAsync(ref pool, ref GetLockManager<WriteLockManager>(), new InterruptionReasonAndCancellationToken(reason, token));
+        => AcquireAsync<WaitNode, WriteLockManager, InterruptionReasonAndCancellationToken>(ref GetLockManager<WriteLockManager>(), new(reason, token));
 
     /// <summary>
     /// Exits previously acquired mode.

@@ -9,7 +9,6 @@ namespace DotNext.Threading;
 using Collections.Generic;
 using Runtime;
 using Tasks;
-using Tasks.Pooling;
 
 /// <summary>
 /// Represents a collection of asynchronous events.
@@ -20,7 +19,6 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     private static readonly int MaxCount = Unsafe.SizeOf<UInt128>() * 8;
 
     private readonly EventGroup all;
-    private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
     private UInt128 state;
 
     /// <summary>
@@ -34,13 +32,10 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)MaxCount, nameof(count));
 
         Count = count;
-        pool = new(OnCompleted, count);
         all = new(Count == MaxCount ? UInt128.MaxValue : GetBitMask(count) - UInt128.One);
     }
     
     private static UInt128 GetBitMask(int index) => UInt128.One << index;
-
-    private void OnCompleted(WaitNode node) => ReturnNode(ref pool, node);
 
     private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
     {
@@ -73,7 +68,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
 
         var manager = new WaitAllManager(this, eventIndex);
-        return AcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        return AcquireAsync<WaitNode, WaitAllManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
     }
 
     /// <summary>
@@ -91,7 +86,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
 
         var manager = new WaitAllManager(this, eventIndex);
-        return AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        return AcquireAsync<WaitNode, WaitAllManager, CancellationTokenOnly>(ref manager, new(token));
     }
 
     /// <summary>
@@ -240,7 +235,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
         
         var manager = new WaitAnyManager(this, events.Mask);
-        return AcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        return AcquireAsync<WaitNode, WaitAnyManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
     }
 
     /// <summary>
@@ -260,7 +255,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
         
         var manager = new WaitAnyManager(this, events.Mask);
-        return AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        return AcquireAsync<WaitNode, WaitAnyManager, CancellationTokenOnly>(ref manager, new(token));
     }
     
     /// <summary>
@@ -283,7 +278,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
         
         var manager = new WaitAnyManager(this, events.Mask) { Events = output };
-        return AcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        return AcquireAsync<WaitNode, WaitAnyManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
     }
 
     /// <summary>
@@ -304,7 +299,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
         
         var manager = new WaitAnyManager(this, events.Mask) { Events = output };
-        return AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        return AcquireAsync<WaitNode, WaitAnyManager, CancellationTokenOnly>(ref manager, new CancellationTokenOnly(token));
     }
 
     /// <summary>
@@ -372,7 +367,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
         
         var manager = new WaitAllManager(this, events.Mask);
-        return AcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        return AcquireAsync<WaitNode, WaitAllManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
     }
 
     /// <summary>
@@ -392,7 +387,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
         
         var manager = new WaitAllManager(this, events.Mask);
-        return AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        return AcquireAsync<WaitNode, WaitAllManager, CancellationTokenOnly>(ref manager, new(token));
     }
 
     /// <summary>
@@ -589,11 +584,8 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 
     private new sealed class WaitNode :
         QueuedSynchronizer.WaitNode,
-        IPooledManualResetCompletionSource<Action<WaitNode>>,
-        INodeMapper<WaitNode, WaitNode>,
-        IWaitNode
+        INodeMapper<WaitNode, WaitNode>
     {
-        private Action<WaitNode>? callback;
         private UInt128 mask;
         private bool waitAll;
         private ICollection<int>? events;
@@ -610,8 +602,6 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             this.mask = mask;
             this.events = events;
         }
-
-        protected override void AfterConsumed() => callback?.Invoke(this);
 
         protected override void CleanUp()
         {
@@ -637,12 +627,6 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             }
 
             return false;
-        }
-
-        Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed
-        {
-            get => callback;
-            set => callback = value;
         }
 
         static WaitNode INodeMapper<WaitNode, WaitNode>.GetValue(WaitNode node)

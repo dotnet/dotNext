@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 namespace DotNext.Threading;
 
 using Tasks;
-using Tasks.Pooling;
 
 /// <summary>
 /// Represents a synchronization primitive that is signaled when its count reaches zero.
@@ -16,7 +15,7 @@ using Tasks.Pooling;
 public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager, IConsumer<DefaultWaitNode>
+    private struct StateManager : ILockManager, IConsumer<WaitNode>
     {
         internal long Current, Initial;
 
@@ -38,12 +37,9 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             // nothing to do here
         }
 
-        readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
-        {
-        }
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
     }
 
-    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private StateManager manager;
 
     /// <summary>
@@ -56,12 +52,12 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// or <paramref name="concurrencyLevel"/> is less than or equal to zero.
     /// </exception>
     public AsyncCountdownEvent(long initialCount, int concurrencyLevel)
+        : base(concurrencyLevel)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(initialCount);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         manager = new(initialCount);
-        pool = new(OnCompleted, concurrencyLevel);
     }
 
     /// <summary>
@@ -71,14 +67,10 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCount"/> is less than zero.</exception>
     public AsyncCountdownEvent(long initialCount)
     {
-        if (initialCount < 0)
-            throw new ArgumentOutOfRangeException(nameof(initialCount));
+        ArgumentOutOfRangeException.ThrowIfNegative(initialCount);
 
         manager = new(initialCount);
-        pool = new(OnCompleted);
     }
-
-    private void OnCompleted(DefaultWaitNode node) => ReturnNode(ref pool, node);
 
     private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor) => waitQueueVisitor.SignalAll();
 
@@ -291,7 +283,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                         goto resume_suspended_callers;
                     }
 
-                    factory = EnqueueNode(ref pool);
+                    factory = EnqueueNode();
                 }
 
                 completedSynchronously = false;
@@ -333,7 +325,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
                 goto resume_suspended_callers;
             }
 
-            factory = EnqueueNodeThrowOnTimeout(ref pool);
+            factory = EnqueueNodeThrowOnTimeout();
         }
 
         completedSynchronously = false;
@@ -392,7 +384,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        => TryAcquireAsync<WaitNode, StateManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -402,5 +394,5 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        => AcquireAsync<WaitNode, StateManager, CancellationTokenOnly>(ref manager, new CancellationTokenOnly(token));
 }

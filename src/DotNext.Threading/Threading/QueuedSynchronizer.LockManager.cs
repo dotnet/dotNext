@@ -7,7 +7,7 @@ partial class QueuedSynchronizer
     /// <summary>
     /// The default lock manager with no state.
     /// </summary>
-    private protected static DefaultLockManager<DefaultWaitNode> DefaultManager;
+    private protected static DefaultLockManager<WaitNode> DefaultManager;
     
     private protected interface ILockManager
     {

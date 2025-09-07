@@ -3,7 +3,6 @@ using System.Diagnostics;
 namespace DotNext.Threading;
 
 using Tasks;
-using Tasks.Pooling;
 
 partial class QueuedSynchronizer
 {
@@ -21,10 +20,21 @@ partial class QueuedSynchronizer
         static abstract bool ThrowOnTimeout { get; }
     }
 
-    private protected abstract class WaitNode : LinkedValueTaskCompletionSource<bool>, IValueTaskFactory<ValueTask>,
+    [Flags]
+    private protected enum WaitNodeFlags
+    {
+        None = 0,
+        ThrowOnTimeout = 1,
+        DrainOnReturn = ThrowOnTimeout << 1,
+    }
+
+    private protected class WaitNode :
+        LinkedValueTaskCompletionSource<bool>,
+        IValueTaskFactory<ValueTask>,
         IValueTaskFactory<ValueTask<bool>>
     {
-        private bool throwOnTimeout;
+        private WaitNodeFlags flags;
+        private QueuedSynchronizer? owner;
 
         // stores information about suspended caller for debugging purposes
         internal object? CallerInfo { get; private set; }
@@ -32,24 +42,30 @@ partial class QueuedSynchronizer
         protected override void CleanUp()
         {
             CallerInfo = null;
+            owner = null;
             base.CleanUp();
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal bool NeedsRemoval => CompletionData is null;
 
-        internal void Initialize(object? callerInfo, bool throwOnTimeout)
+        internal void Initialize(QueuedSynchronizer owner, object? callerInfo, bool throwOnTimeout)
         {
-            this.throwOnTimeout = throwOnTimeout;
+            flags |= throwOnTimeout ? WaitNodeFlags.ThrowOnTimeout : WaitNodeFlags.None;
+            this.owner = owner;
             CallerInfo = callerInfo;
         }
 
-        protected sealed override Result<bool> OnTimeout()
-            => throwOnTimeout ? base.OnTimeout() : false;
+        internal bool DrainOnReturn
+        {
+            get => (flags & WaitNodeFlags.DrainOnReturn) is not 0;
+            set => flags |= value ? WaitNodeFlags.DrainOnReturn : WaitNodeFlags.None;
+        }
 
-        private protected static void AfterConsumed<T>(T node)
-            where T : WaitNode, IPooledManualResetCompletionSource<Action<T>>
-            => node.OnConsumed?.Invoke(node);
+        protected sealed override void AfterConsumed() => owner?.ReturnNode(this);
+
+        protected sealed override Result<bool> OnTimeout()
+            => (flags & WaitNodeFlags.ThrowOnTimeout) is not 0 ? base.OnTimeout() : false;
 
         static ValueTask IValueTaskFactory<ValueTask>.SuccessfulTask => ValueTask.CompletedTask;
 
@@ -74,44 +90,11 @@ partial class QueuedSynchronizer
         static bool IValueTaskFactory<ValueTask<bool>>.ThrowOnTimeout => false;
 
         static bool IValueTaskFactory<ValueTask>.ThrowOnTimeout => true;
-
-        private bool TrySetResult(in Result<bool> result, out bool resumable)
-            => TrySetResult(Sentinel.Instance, completionToken: null, result, out resumable);
-
-        internal bool TrySetResult(out bool resumable)
-            => TrySetResult(result: true, out resumable);
-
-        internal bool TrySetException(Exception e, out bool resumable)
-            => TrySetResult(new Result<bool>(e), out resumable);
-
-        internal bool TrySetResult<TLockManager>(ref TLockManager manager, out bool resumable)
-            where TLockManager : ILockManager
-        {
-            if (!manager.IsLockAllowed)
-                return resumable = false;
-
-            if (TrySetResult(out resumable))
-                manager.AcquireLock();
-
-            return true;
-        }
-    }
-
-    private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<Action<DefaultWaitNode>>, IWaitNode
-    {
-        protected override void AfterConsumed() => AfterConsumed(this);
-
-        Action<DefaultWaitNode>? IPooledManualResetCompletionSource<Action<DefaultWaitNode>>.OnConsumed { get; set; }
     }
     
     private protected interface INodeMapper<in TNode, out TValue>
         where TNode : WaitNode
     {
         public static abstract TValue GetValue(TNode node);
-    }
-    
-    private protected interface IWaitNode : ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>
-    {
-        static virtual bool DrainOnReturn => false;
     }
 }

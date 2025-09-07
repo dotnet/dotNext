@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 namespace DotNext.Threading;
 
 using Tasks;
-using Tasks.Pooling;
 
 /// <summary>
 /// Represents asynchronous version of <see cref="AutoResetEvent"/>.
@@ -13,7 +12,7 @@ using Tasks.Pooling;
 public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager, IConsumer<DefaultWaitNode>
+    private struct StateManager : ILockManager, IConsumer<WaitNode>
     {
         internal bool Value;
 
@@ -24,12 +23,9 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
         void ILockManager.AcquireLock() => Value = false;
 
-        readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
-        {
-        }
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
     }
 
-    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private StateManager manager;
 
     /// <summary>
@@ -39,11 +35,11 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
     public AsyncAutoResetEvent(bool initialState, int concurrencyLevel)
+        : base(concurrencyLevel)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
 
         manager = new(initialState);
-        pool = new(OnCompleted, concurrencyLevel);
     }
 
     /// <summary>
@@ -53,10 +49,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public AsyncAutoResetEvent(bool initialState)
     {
         manager = new(initialState);
-        pool = new(OnCompleted);
     }
-
-    private void OnCompleted(DefaultWaitNode node) => ReturnNode(ref pool, node);
 
     private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
         => waitQueueVisitor.SignalAll(ref manager);
@@ -136,7 +129,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        => TryAcquireAsync<WaitNode, StateManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -146,5 +139,5 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        => AcquireAsync<WaitNode, StateManager, CancellationTokenOnly>(ref manager, new(token));
 }
