@@ -33,10 +33,10 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     {
         private const long ExclusiveMode = -1L;
 
-        internal readonly long ConcurrencyLevel;
+        internal readonly long Threshold;
         private long remainingLocks; // -1 means that the lock is acquired in exclusive mode
 
-        internal State(long concurrencyLevel) => ConcurrencyLevel = remainingLocks = concurrencyLevel;
+        internal State(long concurrencyLevel) => Threshold = remainingLocks = concurrencyLevel;
 
         internal readonly long RemainingLocks => Atomic.Read(in remainingLocks);
 
@@ -47,13 +47,13 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         internal void ExitLock(bool downgrade)
         {
             remainingLocks = remainingLocks < 0L
-                ? ConcurrencyLevel - Unsafe.BitCast<bool, byte>(downgrade)
+                ? Threshold - Unsafe.BitCast<bool, byte>(downgrade)
                 : remainingLocks + 1L;
         }
 
         internal readonly bool IsStrongLockHeld => remainingLocks < 0L;
 
-        internal readonly bool IsStrongLockAllowed => remainingLocks == ConcurrencyLevel;
+        internal readonly bool IsStrongLockAllowed => remainingLocks == Threshold;
 
         internal void AcquireStrongLock() => remainingLocks = ExclusiveMode;
     }
@@ -96,14 +96,14 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <summary>
     /// Initializes a new shared lock.
     /// </summary>
-    /// <param name="concurrencyLevel">The number of unique callers that can obtain shared lock simultaneously.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than 1.</exception>
-    public AsyncSharedLock(long concurrencyLevel)
+    /// <param name="lockUpgradeThreshold">The number of unique callers that can obtain shared lock simultaneously.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lockUpgradeThreshold"/> is less than 1.</exception>
+    public AsyncSharedLock(long lockUpgradeThreshold)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(lockUpgradeThreshold);
 
-        state = new(concurrencyLevel);
-        base.ConcurrencyLevel = concurrencyLevel;
+        state = new(lockUpgradeThreshold);
+        base.ConcurrencyLevel = lockUpgradeThreshold;
     }
 
     private bool Signal(ref WaitQueueVisitor waitQueueVisitor, bool strongLock) => strongLock
@@ -126,12 +126,12 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <summary>
     /// Gets the maximum number of locks that can be obtained simultaneously.
     /// </summary>
-    public new long ConcurrencyLevel => state.ConcurrencyLevel;
+    public long LockUpgradeThreshold => state.Threshold;
 
     /// <summary>
     /// Indicates that the lock is acquired in exclusive or shared mode.
     /// </summary>
-    public bool IsLockHeld => state.RemainingLocks < state.ConcurrencyLevel;
+    public bool IsLockHeld => state.RemainingLocks < state.Threshold;
 
     /// <summary>
     /// Indicates that the lock is acquired in exclusive mode.

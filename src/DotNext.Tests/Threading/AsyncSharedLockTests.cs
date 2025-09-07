@@ -7,7 +7,7 @@ public sealed class AsyncSharedLockTests : Test
     public static async Task WeakLocks()
     {
         using var sharedLock = new AsyncSharedLock(3);
-        Equal(3, sharedLock.ConcurrencyLevel);
+        Equal(3, sharedLock.LockUpgradeThreshold);
         True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
         True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
         Equal(1, sharedLock.RemainingCount);
