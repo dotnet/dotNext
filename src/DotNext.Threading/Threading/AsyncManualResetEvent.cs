@@ -11,7 +11,7 @@ using Tasks.Pooling;
 [DebuggerDisplay($"IsSet = {{{nameof(IsSet)}}}")]
 public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
-    private struct StateManager : ILockManager, IWaitQueueVisitor<DefaultWaitNode>, IConsumer<DefaultWaitNode>
+    private struct StateManager : ILockManager, IConsumer<DefaultWaitNode>
     {
         internal bool Value;
 
@@ -37,12 +37,6 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
         readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
-        }
-        
-        readonly bool IWaitQueueVisitor<DefaultWaitNode>.Visit(DefaultWaitNode node, out bool resumable)
-        {
-            node.TrySetResult(out resumable);
-            return true;
         }
     }
 
@@ -74,6 +68,8 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     }
 
     private void OnCompleted(DefaultWaitNode node) => ReturnNode(ref pool, node);
+
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor) => waitQueueVisitor.SignalAll();
 
     /// <inheritdoc/>
     EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.ManualReset;
@@ -107,7 +103,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
         {
             result = !manager.Value;
             manager.Value = !autoReset;
-            suspendedCallers = DrainWaitQueue<DefaultWaitNode, StateManager>(ref manager);
+            suspendedCallers = DrainWaitQueue();
         }
 
         suspendedCallers?.Unwind();

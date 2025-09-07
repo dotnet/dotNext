@@ -14,14 +14,20 @@ using Tasks;
 /// as many concurrent requests as possible by the cost of the execution time of a single
 /// method for a particular caller.
 /// </remarks>
-public partial class QueuedSynchronizer : Disposable
+public abstract partial class QueuedSynchronizer : Disposable
 {
     private readonly TaskCompletionSource disposeTask;
 
     private protected QueuedSynchronizer()
     {
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
-        measurementTags = new() { { LockTypeMeterAttribute, GetType().Name } };
+        waitQueue = new()
+        {
+            MeasurementTags = new()
+            {
+                { LockTypeMeterAttribute, GetType().Name }
+            },
+        };
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

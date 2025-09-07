@@ -12,7 +12,11 @@ using Tasks.Pooling;
 /// <typeparam name="TContext">The context to be associated with each suspended caller.</typeparam>
 public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 {
-    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<Action<WaitNode>>
+    private new sealed class WaitNode :
+        QueuedSynchronizer.WaitNode,
+        IPooledManualResetCompletionSource<Action<WaitNode>>,
+        INodeMapper<WaitNode, TContext>,
+        IWaitNode
     {
         internal TContext? Context;
 
@@ -27,6 +31,11 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
         }
 
         Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed { get; set; }
+
+        static TContext INodeMapper<WaitNode, TContext>.GetValue(WaitNode node)
+            => node.Context!;
+
+        static bool IWaitNode.DrainOnReturn => true;
     }
 
     private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
@@ -75,11 +84,17 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
     }
 
-    private void OnCompleted(WaitNode node)
+    private void OnCompleted(WaitNode node) => ReturnNode(ref pool, node);
+
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
     {
-        unsafe
+        for (; !waitQueueVisitor.IsEndOfQueue<WaitNode, TContext>(out var context); waitQueueVisitor.Advance())
         {
-            ReturnNode<QueuedSynchronizer<TContext>, WaitNode>(ref pool, node, &Visit);
+            if (!CanAcquire(context))
+                break;
+
+            if (waitQueueVisitor.Signal())
+                AcquireCore(context);
         }
     }
 
@@ -199,28 +214,6 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         var manager = new LockManager(this, context);
         return AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
-    }
-
-    private bool Visit(WaitNode node, out bool resumable)
-    {
-        if (!CanAcquire(node.Context!))
-            return resumable = false;
-
-        if (node.TrySetResult(out resumable))
-            AcquireCore(node.Context!);
-        
-        return true;
-    }
-
-    private static bool Visit(QueuedSynchronizer<TContext> synchronizer, WaitNode node, out bool resumable)
-        => synchronizer.Visit(node, out resumable);
-
-    private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
-    {
-        unsafe
-        {
-            return DrainWaitQueue<QueuedSynchronizer<TContext>, WaitNode>(&Visit);
-        }
     }
 
     [StructLayout(LayoutKind.Auto)]

@@ -16,7 +16,7 @@ using Tasks.Pooling;
 public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager, IWaitQueueVisitor<DefaultWaitNode>, IConsumer<DefaultWaitNode>
+    private struct StateManager : ILockManager, IConsumer<DefaultWaitNode>
     {
         internal long Current, Initial;
 
@@ -40,13 +40,6 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
         readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
-        }
-        
-        readonly bool IWaitQueueVisitor<DefaultWaitNode>.Visit(DefaultWaitNode node,
-            out bool resumable)
-        {
-            node.TrySetResult(out resumable);
-            return true;
         }
     }
 
@@ -86,6 +79,8 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     }
 
     private void OnCompleted(DefaultWaitNode node) => ReturnNode(ref pool, node);
+
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor) => waitQueueVisitor.SignalAll();
 
     /// <summary>
     /// Gets the numbers of signals initially required to set the event.
@@ -238,7 +233,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         if (manager.IsLockAllowed)
         {
             manager.Current = manager.Initial;
-            suspendedCallers = DrainWaitQueue<DefaultWaitNode, StateManager>(ref manager);
+            suspendedCallers = DrainWaitQueue();
             return true;
         }
 
@@ -376,7 +371,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
             manager.Decrement(signalCount);
             suspendedCallers = (result = manager.IsLockAllowed)
-                ? DrainWaitQueue<DefaultWaitNode, StateManager>(ref manager)
+                ? DrainWaitQueue()
                 : null;
         }
 

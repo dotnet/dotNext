@@ -35,7 +35,7 @@ public partial class AsyncEventHub
         EventGroup result;
         lock (SyncRoot)
         {
-            result = new(state.Value);
+            result = new(state);
         }
 
         return result;

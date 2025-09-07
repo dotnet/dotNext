@@ -19,13 +19,22 @@ using Tasks.Pooling;
 [DebuggerDisplay($"AvailableLocks = {{{nameof(RemainingCount)}}}, StrongLockHeld = {{{nameof(IsStrongLockHeld)}}}")]
 public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 {
-    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<Action<WaitNode>>
+    private new sealed class WaitNode :
+        QueuedSynchronizer.WaitNode,
+        IPooledManualResetCompletionSource<Action<WaitNode>>,
+        INodeMapper<WaitNode, bool>,
+        IWaitNode
     {
         internal bool IsStrongLock;
 
         protected override void AfterConsumed() => AfterConsumed(this);
 
         Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed { get; set; }
+
+        static bool INodeMapper<WaitNode, bool>.GetValue(WaitNode node)
+            => node.IsStrongLock;
+
+        static bool IWaitNode.DrainOnReturn => true;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -108,11 +117,17 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         pool = new(OnCompleted, limitedConcurrency ? concurrencyLevel : null);
     }
 
-    private void OnCompleted(WaitNode node)
+    private void OnCompleted(WaitNode node) => ReturnNode(ref pool, node);
+
+    private bool Signal(ref WaitQueueVisitor waitQueueVisitor, bool strongLock) => strongLock
+        ? waitQueueVisitor.Signal(ref GetLockManager<StrongLockManager>())
+        : waitQueueVisitor.Signal(ref GetLockManager<WeakLockManager>());
+
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
     {
-        unsafe
+        while (!waitQueueVisitor.IsEndOfQueue<WaitNode, bool>(out var strongLock) && Signal(ref waitQueueVisitor, strongLock))
         {
-            ReturnNode<AsyncSharedLock, WaitNode>(ref pool, node, &Visit);
+            waitQueueVisitor.Advance();
         }
     }
 
@@ -266,15 +281,4 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     private protected sealed override bool IsReadyToDispose => state.IsStrongLockAllowed && IsEmptyQueue;
-
-    private unsafe LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
-        => DrainWaitQueue<AsyncSharedLock, WaitNode>(&Visit);
-
-    private bool Visit(WaitNode node, out bool resumable)
-        => node.IsStrongLock
-            ? node.TrySetResult(ref GetLockManager<StrongLockManager>(), out resumable)
-            : node.TrySetResult(ref GetLockManager<WeakLockManager>(), out resumable);
-
-    private static bool Visit(AsyncSharedLock owner, WaitNode node, out bool resumable)
-        => owner.Visit(node, out resumable);
 }

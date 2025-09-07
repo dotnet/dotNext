@@ -13,7 +13,7 @@ using Tasks.Pooling;
 public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct LockManager : ILockManager, IWaitQueueVisitor<DefaultWaitNode>, IConsumer<DefaultWaitNode>
+    private struct LockManager : ILockManager, IConsumer<WaitNode>
     {
         // null - not acquired, Sentinel.Instance - acquired asynchronously, Thread - acquired synchronously
         private bool state;
@@ -22,22 +22,19 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 
         internal readonly bool VolatileRead() => Volatile.Read(in state);
 
-        public readonly bool IsLockAllowed => state is false;
+        public readonly bool IsLockAllowed => !state;
 
         public void AcquireLock()
             => state = true;
 
         internal void ExitLock() => state = false;
 
-        bool IWaitQueueVisitor<DefaultWaitNode>.Visit(DefaultWaitNode node, out bool resumable)
-            => node.TrySetResult(ref this, out resumable);
-
-        readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
         {
         }
     }
 
-    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
+    private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
     private LockManager manager;
     private Thread? lockOwner;
 
@@ -61,7 +58,10 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         pool = new(OnCompleted);
     }
 
-    private void OnCompleted(DefaultWaitNode node) => ReturnNode(ref pool, node, ref manager);
+    private void OnCompleted(WaitNode node) => ReturnNode(ref pool, node);
+
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+        => waitQueueVisitor.SignalAll(ref manager);
 
     /// <summary>
     /// Indicates that exclusive lock taken.
@@ -238,7 +238,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 
             manager.ExitLock();
             lockOwner = null;
-            suspendedCaller = DrainWaitQueue<DefaultWaitNode, LockManager>(ref manager);
+            suspendedCaller = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)
             {
@@ -250,4 +250,13 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     private protected sealed override bool IsReadyToDispose => manager is { Value: false } && IsEmptyQueue;
+    
+    private protected new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<Action<WaitNode>>, IWaitNode
+    {
+        protected override void AfterConsumed() => AfterConsumed(this);
+
+        Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed { get; set; }
+
+        static bool IWaitNode.DrainOnReturn => true;
+    }
 }

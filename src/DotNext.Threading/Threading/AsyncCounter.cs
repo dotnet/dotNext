@@ -19,7 +19,7 @@ using Tasks.Pooling;
 public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager, IWaitQueueVisitor<DefaultWaitNode>, IConsumer<DefaultWaitNode>
+    private struct StateManager : ILockManager, IConsumer<DefaultWaitNode>
     {
         internal required long Value;
 
@@ -48,9 +48,6 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
         }
-        
-        bool IWaitQueueVisitor<DefaultWaitNode>.Visit(DefaultWaitNode node, out bool resumable)
-            => node.TrySetResult(ref this, out resumable);
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
@@ -85,6 +82,9 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     }
 
     private void OnCompleted(DefaultWaitNode node) => ReturnNode(ref pool, node);
+
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+        => waitQueueVisitor.SignalAll(ref manager);
 
     /// <inheritdoc/>
     bool IAsyncEvent.IsSet => Value > 0L;
@@ -166,7 +166,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         lock (SyncRoot)
         {
             manager.Increment(delta);
-            suspendedCallers = DrainWaitQueue<DefaultWaitNode, StateManager>(ref manager);
+            suspendedCallers = DrainWaitQueue();
         }
 
         suspendedCallers?.Unwind();
@@ -181,7 +181,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         lock (SyncRoot)
         {
             result = manager.TryIncrement(maxValue);
-            suspendedCallers = DrainWaitQueue<DefaultWaitNode, StateManager>(ref manager);
+            suspendedCallers = DrainWaitQueue();
         }
 
         suspendedCallers?.Unwind();

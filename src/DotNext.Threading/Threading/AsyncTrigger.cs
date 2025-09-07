@@ -39,32 +39,35 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
 
     private void OnCompleted(DefaultWaitNode node) => ReturnNode(ref pool, node);
 
-    /// <inheritdoc/>
-    bool IAsyncEvent.Reset() => false;
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+        => waitQueueVisitor.SignalAll();
 
-    private bool Signal<TVisitor>(TVisitor visitor)
+    private bool SignalCore<TVisitor>(TVisitor visitor)
         where TVisitor : struct, IWaitQueueVisitor
     {
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
+        bool signaled;
         lock (SyncRoot)
         {
-            suspendedCallers = DrainWaitQueue(ref visitor);
+            signaled = DrainWaitQueue(visitor, out suspendedCallers);
         }
 
         suspendedCallers?.Unwind();
-        return visitor.IsSignaled;
+        return signaled;
     }
 
-    private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue<TVisitor>(ref TVisitor visitor)
+    private bool DrainWaitQueue<TVisitor>(TVisitor visitor, out LinkedValueTaskCompletionSource<bool>? suspendedCallers)
         where TVisitor : struct, IWaitQueueVisitor
-        => DrainWaitQueue<DefaultWaitNode, TVisitor>(ref visitor);
-
-    private bool DrainWaitQueue(bool resumeAll, out LinkedValueTaskCompletionSource<bool>? suspendedCallers)
     {
-        var visitor = new ResumingVisitor(resumeAll);
-        suspendedCallers = DrainWaitQueue(ref visitor);
-        return visitor.IsSignaled;
+        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
+        var waitQueue = GetWaitQueue(ref detachedQueue);
+        var signaled = visitor.Visit(ref waitQueue);
+        suspendedCallers = detachedQueue.First;
+        return signaled;
     }
+
+    /// <inheritdoc/>
+    bool IAsyncEvent.Reset() => false;
 
     /// <summary>
     /// Resumes the first suspended caller in the wait queue.
@@ -79,7 +82,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        return Signal(new ResumingVisitor(resumeAll));
+        return SignalCore(new ResumingVisitor(resumeAll));
     }
 
     /// <summary>
@@ -92,7 +95,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        return Signal(new InterruptingVisitor(reason));
+        return SignalCore(new InterruptingVisitor(reason));
     }
 
     /// <inheritdoc/>
@@ -159,7 +162,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                 task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
                 break;
             case 0L:
-                task = !Signal(new ResumingVisitor(resumeAll)) && throwOnEmptyQueue
+                task = !SignalCore(new ResumingVisitor(resumeAll)) && throwOnEmptyQueue
                     ? ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
                     : new(false);
 
@@ -181,7 +184,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                         break;
                     }
 
-                    factory = !DrainWaitQueue(resumeAll, out suspendedCallers) && throwOnEmptyQueue
+                    factory = !DrainWaitQueue(new ResumingVisitor(resumeAll), out suspendedCallers) && throwOnEmptyQueue
                         ? EmptyWaitQueueExceptionFactory.Instance
                         : EnqueueNode(ref pool);
                 }
@@ -219,7 +222,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            factory = !DrainWaitQueue(resumeAll, out suspendedCallers) && throwOnEmptyQueue
+            factory = !DrainWaitQueue(new ResumingVisitor(resumeAll), out suspendedCallers) && throwOnEmptyQueue
                 ? EmptyWaitQueueExceptionFactory.Instance
                 : EnqueueNodeThrowOnTimeout(ref pool);
         }
@@ -320,42 +323,42 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
             => ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
     }
     
-    private interface IWaitQueueVisitor : IWaitQueueVisitor<DefaultWaitNode>
+    private interface IWaitQueueVisitor
     {
-        bool IsSignaled { get; }
+        bool Visit(ref WaitQueueVisitor waitQueueVisitor);
     }
-    
+
     [StructLayout(LayoutKind.Auto)]
-    private struct ResumingVisitor(bool resumeAll) : IWaitQueueVisitor
+    private readonly struct ResumingVisitor(bool resumeAll) : IWaitQueueVisitor
     {
-        private bool signaled;
-
-        public readonly bool IsSignaled => signaled;
-
-        bool IWaitQueueVisitor<DefaultWaitNode>.Visit(DefaultWaitNode node, out bool resumable)
+        bool IWaitQueueVisitor.Visit(ref WaitQueueVisitor waitQueueVisitor)
         {
-            signaled |= node.TrySetResult(out resumable);
-            return !signaled || resumeAll;
+            bool signaled;
+            if (resumeAll)
+            {
+                waitQueueVisitor.SignalAll(out signaled);
+            }
+            else
+            {
+                waitQueueVisitor.SignalOne(out signaled);
+            }
+
+            return signaled;
         }
     }
-    
+
     [StructLayout(LayoutKind.Auto)]
-    private struct InterruptingVisitor : IWaitQueueVisitor
+    private readonly struct InterruptingVisitor : IWaitQueueVisitor
     {
         private readonly PendingTaskInterruptedException exception;
-        private bool signaled;
 
         public InterruptingVisitor(object? reason)
-        {
-            ExceptionDispatchInfo.SetCurrentStackTrace(exception = new() { Reason = reason });
-        }
+            => ExceptionDispatchInfo.SetCurrentStackTrace(exception = new() { Reason = reason });
 
-        readonly bool IWaitQueueVisitor.IsSignaled => signaled;
-
-        bool IWaitQueueVisitor<DefaultWaitNode>.Visit(DefaultWaitNode node, out bool resumable)
+        bool IWaitQueueVisitor.Visit(ref WaitQueueVisitor waitQueueVisitor)
         {
-            signaled |= node.TrySetException(exception, out resumable);
-            return true;
+            waitQueueVisitor.SignalAll(exception, out bool signaled);
+            return signaled;
         }
     }
 }

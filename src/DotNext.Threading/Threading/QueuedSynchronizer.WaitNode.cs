@@ -97,10 +97,21 @@ partial class QueuedSynchronizer
         }
     }
 
-    private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<Action<DefaultWaitNode>>
+    private protected sealed class DefaultWaitNode : WaitNode, IPooledManualResetCompletionSource<Action<DefaultWaitNode>>, IWaitNode
     {
         protected override void AfterConsumed() => AfterConsumed(this);
 
         Action<DefaultWaitNode>? IPooledManualResetCompletionSource<Action<DefaultWaitNode>>.OnConsumed { get; set; }
+    }
+    
+    private protected interface INodeMapper<in TNode, out TValue>
+        where TNode : WaitNode
+    {
+        public static abstract TValue GetValue(TNode node);
+    }
+    
+    private protected interface IWaitNode : ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>
+    {
+        static virtual bool DrainOnReturn => false;
     }
 }

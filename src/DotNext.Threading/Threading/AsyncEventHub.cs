@@ -18,30 +18,10 @@ using Tasks.Pooling;
 public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 {
     private static readonly int MaxCount = Unsafe.SizeOf<UInt128>() * 8;
-    
-    [StructLayout(LayoutKind.Auto)]
-    private struct State : IWaitQueueVisitor<WaitNode>
-    {
-        internal UInt128 Value;
-
-        bool IWaitQueueVisitor<WaitNode>.Visit(WaitNode node, out bool resumable)
-        {
-            if (node.Matches(Value))
-            {
-                node.TrySetResult(out resumable);
-            }
-            else
-            {
-                resumable = false;
-            }
-
-            return true;
-        }
-    }
 
     private readonly EventGroup all;
     private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
-    private State state;
+    private UInt128 state;
 
     /// <summary>
     /// Initializes a new collection of asynchronous events.
@@ -61,6 +41,15 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     private static UInt128 GetBitMask(int index) => UInt128.One << index;
 
     private void OnCompleted(WaitNode node) => ReturnNode(ref pool, node);
+
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+    {
+        for (; !waitQueueVisitor.IsEndOfQueue<WaitNode, WaitNode>(out var node); waitQueueVisitor.Advance())
+        {
+            if (node.Matches(state))
+                waitQueueVisitor.Signal();
+        }
+    }
 
     /// <summary>
     /// Gets the number of events.
@@ -136,9 +125,9 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            result = (state.Value & newState) == UInt128.Zero;
-            state.Value = newState;
-            suspendedCallers = DrainWaitQueue<WaitNode, State>(ref state);
+            result = (state & newState) == UInt128.Zero;
+            state = newState;
+            suspendedCallers = DrainWaitQueue();
         }
 
         suspendedCallers?.Unwind();
@@ -162,9 +151,9 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            result = (state.Value & mask) == UInt128.Zero;
-            state.Value |= mask;
-            suspendedCallers = DrainWaitQueue<WaitNode, State>(ref state);
+            result = (state & mask) == UInt128.Zero;
+            state |= mask;
+            suspendedCallers = DrainWaitQueue();
         }
 
         suspendedCallers?.Unwind();
@@ -189,9 +178,9 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            result = new(events.Mask & ~state.Value);
-            state.Value = events.Mask;
-            suspendedCallers = DrainWaitQueue<WaitNode, State>(ref state);
+            result = new(events.Mask & ~state);
+            state = events.Mask;
+            suspendedCallers = DrainWaitQueue();
         }
 
         suspendedCallers?.Unwind();
@@ -216,9 +205,9 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            result = new(events.Mask & ~state.Value);
-            state.Value |= events.Mask;
-            suspendedCallers = DrainWaitQueue<WaitNode, State>(ref state);
+            result = new(events.Mask & ~state);
+            state |= events.Mask;
+            suspendedCallers = DrainWaitQueue();
         }
 
         suspendedCallers?.Unwind();
@@ -541,7 +530,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             Debug.Assert(stateHolder is not null);
 
             mask = GetBitMask(eventIndex);
-            state = new(stateHolder, in stateHolder.state.Value);
+            state = new(stateHolder, in stateHolder.state);
         }
 
         internal WaitAllManager(AsyncEventHub stateHolder, in UInt128 mask)
@@ -549,7 +538,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             Debug.Assert(stateHolder is not null);
 
             this.mask = mask;
-            state = new(stateHolder, in stateHolder.state.Value);
+            state = new(stateHolder, in stateHolder.state);
         }
 
         void IConsumer<WaitNode>.Invoke(WaitNode node) => node.WaitAll(mask);
@@ -575,7 +564,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             Debug.Assert(stateHolder is not null);
 
             this.mask = mask;
-            state = new(stateHolder, in stateHolder.state.Value);
+            state = new(stateHolder, in stateHolder.state);
         }
 
         [DisallowNull]
@@ -598,7 +587,11 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         static bool ILockManager.RequiresEmptyQueue => false;
     }
 
-    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<Action<WaitNode>>
+    private new sealed class WaitNode :
+        QueuedSynchronizer.WaitNode,
+        IPooledManualResetCompletionSource<Action<WaitNode>>,
+        INodeMapper<WaitNode, WaitNode>,
+        IWaitNode
     {
         private Action<WaitNode>? callback;
         private UInt128 mask;
@@ -651,5 +644,8 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             get => callback;
             set => callback = value;
         }
+
+        static WaitNode INodeMapper<WaitNode, WaitNode>.GetValue(WaitNode node)
+            => node;
     }
 }

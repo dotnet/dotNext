@@ -24,13 +24,22 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         Exclusive,
     }
 
-    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<Action<WaitNode>>
+    private new sealed class WaitNode :
+        QueuedSynchronizer.WaitNode,
+        IPooledManualResetCompletionSource<Action<WaitNode>>,
+        INodeMapper<WaitNode, LockType>,
+        IWaitNode
     {
         internal LockType Type;
 
         protected override void AfterConsumed() => AfterConsumed(this);
 
         Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed { get; set; }
+
+        static LockType INodeMapper<WaitNode, LockType>.GetValue(WaitNode node)
+            => node.Type;
+
+        static bool IWaitNode.DrainOnReturn => true;
     }
 
     // describes internal state of reader/writer lock
@@ -243,11 +252,21 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         pool = new(OnCompleted);
     }
 
-    private void OnCompleted(WaitNode node)
+    private void OnCompleted(WaitNode node) => ReturnNode(ref pool, node);
+
+    private bool Signal(ref WaitQueueVisitor waitQueueVisitor, LockType type) => type switch
     {
-        unsafe
+        LockType.Exclusive => waitQueueVisitor.Signal(ref GetLockManager<WriteLockManager>()),
+        LockType.Read => waitQueueVisitor.Signal(ref GetLockManager<ReadLockManager>()),
+        LockType.Upgrade => waitQueueVisitor.Signal(ref GetLockManager<UpgradeManager>()),
+        _ => true,
+    };
+
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+    {
+        while (!waitQueueVisitor.IsEndOfQueue<WaitNode, LockType>(out var lockType) && Signal(ref waitQueueVisitor, lockType))
         {
-            ReturnNode<AsyncReaderWriterLock, WaitNode>(ref pool, node, &Visit);
+            waitQueueVisitor.Advance();
         }
     }
 
@@ -619,20 +638,6 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     private protected sealed override bool IsReadyToDispose => state.IsWriteLockAllowed && IsEmptyQueue;
-
-    private bool Visit(WaitNode node, out bool resumable) => node.Type switch
-    {
-        LockType.Exclusive => node.TrySetResult(ref GetLockManager<WriteLockManager>(), out resumable),
-        LockType.Read => node.TrySetResult(ref GetLockManager<ReadLockManager>(), out resumable),
-        LockType.Upgrade => node.TrySetResult(ref GetLockManager<UpgradeManager>(), out resumable),
-        _ => resumable = false,
-    };
-
-    private static bool Visit(AsyncReaderWriterLock owner, WaitNode node, out bool resumable)
-        => owner.Visit(node, out resumable);
-
-    private unsafe LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
-        => DrainWaitQueue<AsyncReaderWriterLock, WaitNode>(&Visit);
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

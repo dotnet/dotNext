@@ -13,7 +13,7 @@ using Tasks.Pooling;
 public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager, IWaitQueueVisitor<DefaultWaitNode>, IConsumer<DefaultWaitNode>
+    private struct StateManager : ILockManager, IConsumer<DefaultWaitNode>
     {
         internal bool Value;
 
@@ -27,9 +27,6 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         readonly void IConsumer<DefaultWaitNode>.Invoke(DefaultWaitNode node)
         {
         }
-
-        bool IWaitQueueVisitor<DefaultWaitNode>.Visit(DefaultWaitNode node, out bool resumable)
-            => node.TrySetResult(ref this, out resumable);
     }
 
     private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
@@ -60,6 +57,9 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     }
 
     private void OnCompleted(DefaultWaitNode node) => ReturnNode(ref pool, node);
+
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+        => waitQueueVisitor.SignalAll(ref manager);
 
     /// <summary>
     /// Indicates whether this event is set.
@@ -110,7 +110,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
                 else
                 {
                     manager.Value = result = true;
-                    suspendedCaller = DrainWaitQueue<DefaultWaitNode, StateManager>(ref manager);
+                    suspendedCaller = DrainWaitQueue();
                 }
             }
 
