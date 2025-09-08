@@ -15,7 +15,7 @@ namespace DotNext.Threading.Tasks.Pooling;
 internal struct ValueTaskPool<T>(long maximumRetained)
 {
     private LinkedValueTaskCompletionSource<T>? first;
-    private long count = 0;
+    private long count;
 
     public ValueTaskPool()
         : this(long.MaxValue)
