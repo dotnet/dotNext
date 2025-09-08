@@ -35,6 +35,7 @@ partial class QueuedSynchronizer
         {
             CallerInfo = null;
             owner = null;
+            flags = WaitNodeFlags.None;
             base.CleanUp();
         }
 
