@@ -197,7 +197,7 @@ public readonly struct Timeout
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative and not <see cref="InfiniteTicks"/>; or greater than <see cref="MaxTimeoutParameterTicks"/>.</exception>
     public static void Validate(TimeSpan timeout, [CallerArgumentExpression(nameof(timeout))] string? parameterName = null)
     {
-        if (timeout.Ticks is < 0L and not InfiniteTicks or > MaxTimeoutParameterTicks)
+        if (timeout is { Ticks: < 0L and not InfiniteTicks or > MaxTimeoutParameterTicks })
             Throw(parameterName);
 
         [DoesNotReturn]
