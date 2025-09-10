@@ -136,7 +136,7 @@ public sealed class AsyncSharedLockTests : Test
         True(@lock.TryAcquire(false));
         var task = @lock.DisposeAsync();
         False(task.IsCompleted);
-        await ThrowsAsync<ObjectDisposedException>(@lock.AcquireAsync(true, CancellationToken.None).AsTask);
+        await ThrowsAnyAsync<ObjectDisposedException>(@lock.AcquireAsync(true, CancellationToken.None).AsTask);
         @lock.Release();
         await task;
     }
@@ -149,7 +149,7 @@ public sealed class AsyncSharedLockTests : Test
         True(@lock.TryAcquire(false));
         var task = @lock.DisposeAsync();
         False(task.IsCompleted);
-        await ThrowsAsync<ObjectDisposedException>(@lock.AcquireAsync(true, CancellationToken.None).AsTask);
+        await ThrowsAnyAsync<ObjectDisposedException>(@lock.AcquireAsync(true, CancellationToken.None).AsTask);
         @lock.Downgrade();
         False(task.IsCompleted);
         @lock.Downgrade();

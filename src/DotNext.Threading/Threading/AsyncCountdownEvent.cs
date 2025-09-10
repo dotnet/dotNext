@@ -37,7 +37,9 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             // nothing to do here
         }
 
-        readonly void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node) => Initialize(node);
+
+        public static void Initialize(WaitNode node) => node.DrainOnReturn = false;
     }
 
     private StateManager manager;
@@ -215,110 +217,37 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         return false;
     }
 
-    internal ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
+    private T SignalAndWaitAsync<T, TBuilder>(ref TBuilder builder, out bool completedSynchronously)
+        where T : struct, IEquatable<T>
+        where TBuilder : struct, ITaskBuilder<T>
     {
-        ValueTask<bool> task;
-        completedSynchronously = true;
-
-        switch (timeout.Ticks)
+        var suspendedCallers = default(LinkedValueTaskCompletionSource<bool>);
+        if (!builder.IsCompleted
+            && Acquire<T, TBuilder, WaitNode>(ref builder, SignalAndResetCore(out suspendedCallers)) is { } node)
         {
-            case Timeout.InfiniteTicks:
-                goto default;
-            case < 0L or > Timeout.MaxTimeoutParameterTicks:
-                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-                lock (SyncRoot)
-                {
-                    if (IsDisposingOrDisposed)
-                    {
-                        task = new(GetDisposedTask<bool>());
-                        break;
-                    }
-
-                    SignalAndResetCore(out suspendedCallers);
-                }
-
-                suspendedCallers?.Unwind();
-                task = new(false);
-                break;
-            default:
-                if (token.IsCancellationRequested)
-                {
-                    task = ValueTask.FromCanceled<bool>(token);
-                    break;
-                }
-
-                ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
-                lock (SyncRoot)
-                {
-                    if (IsDisposingOrDisposed)
-                    {
-                        task = new(GetDisposedTask<bool>());
-                        break;
-                    }
-
-                    if (SignalAndResetCore(out suspendedCallers))
-                    {
-                        task = new(true);
-                        goto resume_suspended_callers;
-                    }
-
-                    factory = EnqueueNode();
-                }
-
-                completedSynchronously = false;
-                task = factory.Invoke(timeout, token);
-                break;
-
-            resume_suspended_callers:
-                suspendedCallers?.Unwind();
-                break;
+            completedSynchronously = false;
+            StateManager.Initialize(node);
+        }
+        else
+        {
+            completedSynchronously = true;
         }
 
-        return task;
+        builder.Dispose();
+        suspendedCallers?.Unwind();
+        return builder.Invoke();
+    }
+
+    internal ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
+    {
+        var builder = CreateTaskBuilder(timeout, token);
+        return SignalAndWaitAsync<ValueTask<bool>, TimeoutAndCancellationToken>(ref builder, out completedSynchronously);
     }
 
     internal ValueTask SignalAndWaitAsync(out bool completedSynchronously, CancellationToken token)
     {
-        ValueTask task;
-        completedSynchronously = true;
-
-        if (token.IsCancellationRequested)
-        {
-            task = ValueTask.FromCanceled(token);
-            goto exit;
-        }
-
-        ISupplier<TimeSpan, CancellationToken, ValueTask> factory;
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
-        {
-            if (IsDisposingOrDisposed)
-            {
-                task = new(DisposedTask);
-                goto exit;
-            }
-
-            if (SignalAndResetCore(out suspendedCallers))
-            {
-                task = ValueTask.CompletedTask;
-                goto resume_suspended_callers;
-            }
-
-            factory = EnqueueNodeThrowOnTimeout();
-        }
-
-        completedSynchronously = false;
-        task = factory.Invoke(token);
-        goto exit;
-
-    resume_suspended_callers:
-        suspendedCallers?.Unwind();
-
-    exit:
-        return task;
+        var builder = CreateTaskBuilder(token);
+        return SignalAndWaitAsync<ValueTask, CancellationTokenOnly>(ref builder, out completedSynchronously);
     }
 
     /// <summary>
@@ -366,7 +295,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, StateManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
+        => TryAcquireAsync<WaitNode, StateManager>(ref manager, timeout, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -376,5 +305,5 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, StateManager, CancellationTokenOnly>(ref manager, new CancellationTokenOnly(token));
+        => AcquireAsync<WaitNode, StateManager>(ref manager, token);
 }

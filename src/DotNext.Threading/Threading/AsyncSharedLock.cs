@@ -18,9 +18,7 @@ using Tasks;
 [DebuggerDisplay($"AvailableLocks = {{{nameof(RemainingCount)}}}, StrongLockHeld = {{{nameof(IsStrongLockHeld)}}}")]
 public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 {
-    private new sealed class WaitNode :
-        QueuedSynchronizer.WaitNode,
-        INodeMapper<WaitNode, bool>
+    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, INodeMapper<WaitNode, bool>
     {
         internal bool IsStrongLock;
 
@@ -102,8 +100,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(lockUpgradeThreshold);
 
-        state = new(lockUpgradeThreshold);
-        base.ConcurrencyLevel = lockUpgradeThreshold;
+        state = new(ConcurrencyLevel = lockUpgradeThreshold);
     }
 
     private bool Signal(ref WaitQueueVisitor waitQueueVisitor, bool strongLock) => strongLock
@@ -176,10 +173,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
     {
-        var options = new TimeoutAndCancellationToken(timeout, token);
         return strongLock
-            ? TryAcquireAsync<WaitNode, StrongLockManager, TimeoutAndCancellationToken>(ref GetLockManager<StrongLockManager>(), options)
-            : TryAcquireAsync<WaitNode, WeakLockManager, TimeoutAndCancellationToken>(ref GetLockManager<WeakLockManager>(), options);
+            ? TryAcquireAsync<WaitNode, StrongLockManager>(ref GetLockManager<StrongLockManager>(), timeout, token)
+            : TryAcquireAsync<WaitNode, WeakLockManager>(ref GetLockManager<WeakLockManager>(), timeout, token);
     }
 
     /// <summary>
@@ -195,10 +191,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask AcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
     {
-        var options = new TimeoutAndCancellationToken(timeout, token);
         return strongLock
-            ? AcquireAsync<WaitNode, StrongLockManager, TimeoutAndCancellationToken>(ref GetLockManager<StrongLockManager>(), options)
-            : AcquireAsync<WaitNode, WeakLockManager, TimeoutAndCancellationToken>(ref GetLockManager<WeakLockManager>(), options);
+            ? AcquireAsync<WaitNode, StrongLockManager>(ref GetLockManager<StrongLockManager>(), token)
+            : AcquireAsync<WaitNode, WeakLockManager>(ref GetLockManager<WeakLockManager>(), token);
     }
 
     /// <summary>
@@ -211,10 +206,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask AcquireAsync(bool strongLock, CancellationToken token = default)
     {
-        var options = new CancellationTokenOnly(token);
         return strongLock
-            ? AcquireAsync<WaitNode, StrongLockManager, CancellationTokenOnly>(ref GetLockManager<StrongLockManager>(), options)
-            : AcquireAsync<WaitNode, WeakLockManager, CancellationTokenOnly>(ref GetLockManager<WeakLockManager>(), options);
+            ? AcquireAsync<WaitNode, StrongLockManager>(ref GetLockManager<StrongLockManager>(), token)
+            : AcquireAsync<WaitNode, WeakLockManager>(ref GetLockManager<WeakLockManager>(), token);
     }
 
     /// <summary>

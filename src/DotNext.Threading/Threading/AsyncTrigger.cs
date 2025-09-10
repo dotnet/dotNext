@@ -1,11 +1,11 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using Patterns;
 using Tasks;
 
 /// <summary>
@@ -22,7 +22,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     }
 
     private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
-        => waitQueueVisitor.SignalAll();
+        => Debug.Fail("Should not be called");
 
     private bool SignalCore<TVisitor>(TVisitor visitor)
         where TVisitor : struct, IWaitQueueVisitor
@@ -81,10 +81,29 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     }
 
     /// <inheritdoc/>
-    bool IAsyncEvent.IsSet => IsEmptyQueue;
+    bool IAsyncEvent.IsSet => false;
 
     /// <inheritdoc/>
     bool IAsyncEvent.Signal() => Signal();
+
+    private T WaitAsync<T, TBuilder>(ref TBuilder builder)
+        where T : struct, IEquatable<T>
+        where TBuilder : struct, ITaskBuilder<T>
+    {
+        switch (builder.IsCompleted)
+        {
+            case true:
+                goto default;
+            case false when Acquire<T, TBuilder, WaitNode>(ref builder, acquired: false) is { } node:
+                node.DrainOnReturn = false;
+                goto default;
+            default:
+                builder.Dispose();
+                break;
+        }
+
+        return builder.Invoke();
+    }
 
     /// <summary>
     /// Suspends the caller and waits for the signal.
@@ -99,7 +118,10 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="Signal(bool)"/>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, DefaultLockManager<WaitNode>, TimeoutAndCancellationToken>(ref DefaultManager, new(timeout, token));
+    {
+        var builder = CreateTaskBuilder(timeout, token);
+        return WaitAsync<ValueTask<bool>, TimeoutAndCancellationToken>(ref builder);
+    }
 
     /// <summary>
     /// Suspends the caller and waits for the signal.
@@ -113,7 +135,10 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="Signal(bool)"/>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, DefaultLockManager<WaitNode>, CancellationTokenOnly>(ref DefaultManager, new CancellationTokenOnly(token));
+    {
+        var builder = CreateTaskBuilder(token);
+        return WaitAsync<ValueTask, CancellationTokenOnly>(ref builder);
+    }
 
     /// <summary>
     /// Resumes the first suspended caller in the queue and suspends the immediate caller.
@@ -134,49 +159,12 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
     public ValueTask<bool> SignalAndWaitAsync(bool resumeAll, bool throwOnEmptyQueue, TimeSpan timeout, CancellationToken token = default)
     {
-        ValueTask<bool> task;
-
-        switch (timeout.Ticks)
-        {
-            case Timeout.InfiniteTicks:
-                goto default;
-            case < 0L or > Timeout.MaxTimeoutParameterTicks:
-                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                task = !SignalCore(new ResumingVisitor(resumeAll)) && throwOnEmptyQueue
-                    ? ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue))
-                    : new(false);
-
-                break;
-            default:
-                if (token.IsCancellationRequested)
-                {
-                    task = ValueTask.FromCanceled<bool>(token);
-                    break;
-                }
-
-                ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
-                LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-                lock (SyncRoot)
-                {
-                    if (IsDisposingOrDisposed)
-                    {
-                        task = new(GetDisposedTask<bool>());
-                        break;
-                    }
-
-                    factory = !DrainWaitQueue(new ResumingVisitor(resumeAll), out suspendedCallers) && throwOnEmptyQueue
-                        ? EmptyWaitQueueExceptionFactory.Instance
-                        : EnqueueNode();
-                }
-
-                suspendedCallers?.Unwind();
-                task = factory.Invoke(timeout, token);
-                break;
-        }
-
-        return task;
+        var builder = CreateTaskBuilder(timeout, token);
+        return SignalAndWaitAsync<ValueTask<bool>, TimeoutAndCancellationToken, ResumingVisitor>(
+            ref builder,
+            new(resumeAll),
+            throwOnEmptyQueue
+        );
     }
 
     /// <summary>
@@ -197,20 +185,36 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
     public ValueTask SignalAndWaitAsync(bool resumeAll, bool throwOnEmptyQueue, CancellationToken token = default)
     {
-        if (token.IsCancellationRequested)
-            return ValueTask.FromCanceled(token);
+        var builder = CreateTaskBuilder(token);
+        return SignalAndWaitAsync<ValueTask, CancellationTokenOnly, ResumingVisitor>(
+            ref builder,
+            new(resumeAll),
+            throwOnEmptyQueue);
+    }
 
-        ISupplier<TimeSpan, CancellationToken, ValueTask> factory;
+    private T SignalAndWaitAsync<T, TBuilder, TVisitor>(ref TBuilder builder, TVisitor visitor, bool throwOnEmptyQueue)
+        where T : struct, IEquatable<T>
+        where TBuilder : struct, ITaskBuilder<T>
+        where TVisitor : struct, IWaitQueueVisitor<T>
+    {
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        if (builder.IsCompleted)
         {
-            factory = !DrainWaitQueue(new ResumingVisitor(resumeAll), out suspendedCallers) && throwOnEmptyQueue
-                ? EmptyWaitQueueExceptionFactory.Instance
-                : EnqueueNodeThrowOnTimeout();
+            suspendedCallers = null;
+        }
+        else if (DrainWaitQueue(visitor, out suspendedCallers))
+        {
+            Acquire<T, TBuilder, WaitNode>(ref builder, acquired: false);
+        }
+        else if (throwOnEmptyQueue)
+        {
+            builder.Dispose();
+            return TVisitor.EmptyQueueTask;
         }
 
+        builder.Dispose();
         suspendedCallers?.Unwind();
-        return factory.Invoke(token);
+        return builder.Invoke();
     }
 
     /// <summary>
@@ -241,8 +245,8 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         {
             if (manager.Condition.Invoke())
                 return true;
-        }
-        while (timeout.TryGetRemainingTime(out var remainingTime) && await TryAcquireAsync<WaitNode, ConditionalLockManager<TCondition>, TimeoutAndCancellationToken>(ref manager, new(remainingTime, token)).ConfigureAwait(false));
+        } while (timeout.TryGetRemainingTime(out var remainingTime) &&
+                 await TryAcquireAsync<WaitNode, ConditionalLockManager<TCondition>>(ref manager, remainingTime, token).ConfigureAwait(false));
 
         return false;
     }
@@ -263,14 +267,14 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public ValueTask SpinWaitAsync<TCondition>(TCondition condition, CancellationToken token = default)
         where TCondition : ISupplier<bool>
-        => SpinWaitAsync(new ConditionalLockManager<TCondition> { Condition = condition }, new CancellationTokenOnly(token));
+        => SpinWaitAsync(new ConditionalLockManager<TCondition> { Condition = condition }, token);
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
-    private async ValueTask SpinWaitAsync<TCondition>(ConditionalLockManager<TCondition> manager, CancellationTokenOnly options)
+    private async ValueTask SpinWaitAsync<TCondition>(ConditionalLockManager<TCondition> manager, CancellationToken token)
         where TCondition : ISupplier<bool>
     {
         while (!manager.Condition.Invoke())
-            await AcquireAsync<WaitNode, ConditionalLockManager<TCondition>, CancellationTokenOnly>(ref manager, options).ConfigureAwait(false);
+            await AcquireAsync<WaitNode, ConditionalLockManager<TCondition>>(ref manager, token).ConfigureAwait(false);
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -287,29 +291,20 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
 
         readonly void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
     }
-
-    private sealed class EmptyWaitQueueExceptionFactory : ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>, ISingleton<EmptyWaitQueueExceptionFactory>
-    {
-        public static EmptyWaitQueueExceptionFactory Instance { get; } = new();
-
-        private EmptyWaitQueueExceptionFactory()
-        {
-        }
-
-        ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken tpken)
-            => ValueTask.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
-
-        ValueTask<bool> ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>.Invoke(TimeSpan timeout, CancellationToken tpken)
-            => ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
-    }
     
     private interface IWaitQueueVisitor
     {
         bool Visit(ref WaitQueueVisitor waitQueueVisitor);
     }
+    
+    private interface IWaitQueueVisitor<out T> : IWaitQueueVisitor
+        where T : struct, IEquatable<T>
+    {
+        static abstract T EmptyQueueTask { get; }
+    }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct ResumingVisitor(bool resumeAll) : IWaitQueueVisitor
+    private readonly struct ResumingVisitor(bool resumeAll) : IWaitQueueVisitor<ValueTask>, IWaitQueueVisitor<ValueTask<bool>>
     {
         bool IWaitQueueVisitor.Visit(ref WaitQueueVisitor waitQueueVisitor)
         {
@@ -325,6 +320,12 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
 
             return signaled;
         }
+
+        static ValueTask IWaitQueueVisitor<ValueTask>.EmptyQueueTask
+            => ValueTask.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
+
+        static ValueTask<bool> IWaitQueueVisitor<ValueTask<bool>>.EmptyQueueTask
+            => ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
     }
 
     [StructLayout(LayoutKind.Auto)]

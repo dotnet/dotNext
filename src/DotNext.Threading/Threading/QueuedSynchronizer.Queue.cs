@@ -51,129 +51,37 @@ partial class QueuedSynchronizer
         suspendedCallers?.Unwind();
     }
 
-    private ISupplier<TimeSpan, CancellationToken, T> EnqueueNode<T, TNode, TInitializer>(ref TInitializer initializer)
+    private protected TNode? Acquire<T, TBuilder, TNode>(ref TBuilder builder, bool acquired)
         where T : struct, IEquatable<T>
-        where TNode : WaitNode, IValueTaskFactory<T>, new()
-        where TInitializer : struct, IConsumer<TNode>
+        where TNode : WaitNode, new()
+        where TBuilder : struct, ITaskBuilder<T>
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
+        Debug.Assert(!builder.IsCompleted);
 
-        var node = pool.Get<TNode>();
-        initializer.Invoke(node);
-        node.Initialize(this, CaptureCallerInformation(), TNode.ThrowOnTimeout);
-        waitQueue.Add(node);
-        return node;
-    }
-
-    private protected ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> EnqueueNode()
-        => EnqueueNode<ValueTask<bool>, WaitNode, DefaultLockManager<WaitNode>>(ref DefaultManager);
-
-    private protected ISupplier<TimeSpan, CancellationToken, ValueTask> EnqueueNodeThrowOnTimeout()
-        => EnqueueNode<ValueTask, WaitNode, DefaultLockManager<WaitNode>>(ref DefaultManager);
-
-    private protected bool TryAcquire<TLockManager>(ref TLockManager manager)
-        where TLockManager : struct, ILockManager
-    {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-
-        if (TLockManager.RequiresEmptyQueue && !IsEmptyQueue || !manager.IsLockAllowed)
-            return false;
-
-        manager.AcquireLock();
-        return true;
-    }
-
-    private T AcquireAsync<T, TNode, TLockManager, TOptions>(
-        ref TLockManager manager,
-        TOptions options)
-        where T : struct, IEquatable<T>
-        where TNode : WaitNode, IValueTaskFactory<T>, new()
-        where TLockManager : struct, ILockManager, IConsumer<TNode>
-        where TOptions : struct, IAcquisitionOptions
-    {
-        T task;
-
-        if (options.Token.IsCancellationRequested)
+        if (IsDisposingOrDisposed)
         {
-            task = TNode.FromCanceled(options.Token);
+            builder.CompleteAsDisposed(GetType().Name);
         }
-        else if (IsDisposingOrDisposed)
+        else if (acquired)
         {
-            task = TNode.FromException(CreateObjectDisposedException());
+            builder.Complete();
+        }
+        else if (builder.IsTimedOut)
+        {
+            builder.CompleteAsTimedOut();
         }
         else
         {
-            LinkedValueTaskCompletionSource<bool>? interruptedCallers;
-            switch (options.Timeout.Ticks)
-            {
-                case Timeout.InfiniteTicks:
-                    goto default;
-                case < 0L or > Timeout.MaxTimeoutParameterTicks:
-                    task = TNode.FromException(new ArgumentOutOfRangeException("timeout"));
-                    interruptedCallers = null;
-                    break;
-                case 0L: // attempt to acquire synchronously
-                    lock (SyncRoot)
-                    {
-                        interruptedCallers = TOptions.InterruptionRequired
-                            ? Interrupt(options.InterruptionReason)
-                            : null;
-
-                        task = TryAcquire(ref manager)
-                            ? TNode.SuccessfulTask
-                            : TNode.TimedOutTask;
-                    }
-
-                    break;
-                default:
-                    ISupplier<TimeSpan, CancellationToken, T> factory;
-                    lock (SyncRoot)
-                    {
-                        interruptedCallers = TOptions.InterruptionRequired
-                            ? Interrupt(options.InterruptionReason)
-                            : null;
-
-                        if (TryAcquire(ref manager))
-                        {
-                            task = TNode.SuccessfulTask;
-                            break;
-                        }
-
-                        factory = EnqueueNode<T, TNode, TLockManager>(ref manager);
-                    }
-
-                    task = factory.Invoke(options.Timeout, options.Token);
-                    break;
-            }
-
-            interruptedCallers?.Unwind();
+            var node = pool.Get<TNode>();
+            node.Initialize(this, CaptureCallerInformation(), TBuilder.ThrowOnTimeout);
+            waitQueue.Add(node);
+            builder.Complete(node);
+            return node;
         }
 
-        return task;
-
-        ObjectDisposedException CreateObjectDisposedException()
-            => new(GetType().Name);
+        return null;
     }
-
-    private protected ValueTask AcquireAsync<TNode, TLockManager, TOptions>(
-        ref TLockManager manager,
-        TOptions options)
-        where TNode : WaitNode, new()
-        where TLockManager : struct, ILockManager, IConsumer<TNode>
-        where TOptions : struct, IAcquisitionOptions
-        => AcquireAsync<ValueTask, TNode, TLockManager, TOptions>(
-            ref manager,
-            options);
-
-    private protected ValueTask<bool> TryAcquireAsync<TNode, TLockManager, TOptions>(
-        ref TLockManager manager,
-        TOptions options)
-        where TNode : WaitNode, new()
-        where TLockManager : struct, ILockManager, IConsumer<TNode>
-        where TOptions : struct, IAcquisitionOptionsWithTimeout
-        => AcquireAsync<ValueTask<bool>, TNode, TLockManager, TOptions>(
-            ref manager,
-            options);
 
     [StructLayout(LayoutKind.Auto)]
     private protected ref struct WaitQueueVisitor

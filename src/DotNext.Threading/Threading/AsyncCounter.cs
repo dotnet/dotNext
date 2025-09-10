@@ -183,7 +183,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, StateManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
+        => TryAcquireAsync<WaitNode, StateManager>(ref manager, timeout, token);
 
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
@@ -194,7 +194,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, StateManager, CancellationTokenOnly>(ref manager, new(token));
+        => AcquireAsync<WaitNode, StateManager>(ref manager, token);
 
     /// <summary>
     /// Attempts to decrement the counter synchronously.

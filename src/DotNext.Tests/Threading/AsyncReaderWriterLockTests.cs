@@ -119,7 +119,7 @@ public sealed class AsyncReaderWriterLockTests : Test
         True(@lock.TryEnterReadLock());
         var task = @lock.DisposeAsync();
         False(task.IsCompleted);
-        await ThrowsAsync<ObjectDisposedException>(@lock.EnterWriteLockAsync().AsTask);
+        await ThrowsAnyAsync<ObjectDisposedException>(@lock.EnterWriteLockAsync().AsTask);
         @lock.Release();
         await task;
     }
@@ -134,7 +134,7 @@ public sealed class AsyncReaderWriterLockTests : Test
         var task = @lock.DisposeAsync();
         False(task.IsCompleted);
 
-        await ThrowsAsync<ObjectDisposedException>(@lock.EnterReadLockAsync().AsTask);
+        await ThrowsAnyAsync<ObjectDisposedException>(@lock.EnterReadLockAsync().AsTask);
 
         @lock.Release();
         await acquisition1;

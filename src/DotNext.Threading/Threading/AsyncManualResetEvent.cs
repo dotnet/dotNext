@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
@@ -10,6 +11,7 @@ using Tasks;
 [DebuggerDisplay($"IsSet = {{{nameof(IsSet)}}}")]
 public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
+    [StructLayout(LayoutKind.Auto)]
     private struct StateManager : ILockManager, IConsumer<WaitNode>
     {
         internal bool Value;
@@ -48,7 +50,8 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
         manager = new(initialState);
     }
 
-    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor) => waitQueueVisitor.SignalAll();
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+        => waitQueueVisitor.SignalAll();
 
     /// <inheritdoc/>
     EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.ManualReset;
@@ -118,7 +121,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, StateManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
+        => TryAcquireAsync<WaitNode, StateManager>(ref manager, timeout, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -128,5 +131,5 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, StateManager, CancellationTokenOnly>(ref manager, new(token));
+        => AcquireAsync<WaitNode, StateManager>(ref manager, token);
 }

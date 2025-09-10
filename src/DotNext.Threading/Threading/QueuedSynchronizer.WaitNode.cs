@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using DotNext.Patterns;
 
 namespace DotNext.Threading;
 
@@ -6,24 +7,7 @@ using Tasks;
 
 partial class QueuedSynchronizer
 {
-    private interface IValueTaskFactory<out T> : ISupplier<TimeSpan, CancellationToken, T>
-        where T : struct, IEquatable<T>
-    {
-        static abstract T SuccessfulTask { get; }
-        
-        static abstract T TimedOutTask { get; }
-
-        static abstract T FromException(Exception e);
-
-        static abstract T FromCanceled(CancellationToken token);
-        
-        static abstract bool ThrowOnTimeout { get; }
-    }
-
-    private protected class WaitNode :
-        LinkedValueTaskCompletionSource<bool>,
-        IValueTaskFactory<ValueTask>,
-        IValueTaskFactory<ValueTask<bool>>
+    private protected class WaitNode : LinkedValueTaskCompletionSource<bool>, IValueTaskFactory
     {
         private WaitNodeFlags flags;
         private QueuedSynchronizer? owner;
@@ -63,30 +47,6 @@ partial class QueuedSynchronizer
 
         protected sealed override Result<bool> OnTimeout()
             => (flags & WaitNodeFlags.ThrowOnTimeout) is not 0 ? base.OnTimeout() : false;
-
-        static ValueTask IValueTaskFactory<ValueTask>.SuccessfulTask => ValueTask.CompletedTask;
-
-        static ValueTask<bool> IValueTaskFactory<ValueTask<bool>>.SuccessfulTask => ValueTask.FromResult(true);
-
-        static ValueTask IValueTaskFactory<ValueTask>.TimedOutTask => ValueTask.FromException(new TimeoutException());
-
-        static ValueTask<bool> IValueTaskFactory<ValueTask<bool>>.TimedOutTask => ValueTask.FromResult(false);
-
-        static ValueTask<bool> IValueTaskFactory<ValueTask<bool>>.FromException(Exception e)
-            => ValueTask.FromException<bool>(e);
-
-        static ValueTask IValueTaskFactory<ValueTask>.FromException(Exception e)
-            => ValueTask.FromException(e);
-
-        static ValueTask<bool> IValueTaskFactory<ValueTask<bool>>.FromCanceled(CancellationToken token)
-            => ValueTask.FromCanceled<bool>(token);
-
-        static ValueTask IValueTaskFactory<ValueTask>.FromCanceled(CancellationToken token)
-            => ValueTask.FromCanceled(token);
-
-        static bool IValueTaskFactory<ValueTask<bool>>.ThrowOnTimeout => false;
-
-        static bool IValueTaskFactory<ValueTask>.ThrowOnTimeout => true;
     }
     
     [Flags]

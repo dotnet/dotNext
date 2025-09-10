@@ -10,7 +10,7 @@ using Tasks;
 /// </summary>
 /// <remarks>
 /// This class is designed to provide better throughput rather than optimized response time.
-/// It means that it minimizes contention between concurrent calls and allows to process
+/// It minimizes the contention between concurrent calls and allows to process
 /// as many concurrent requests as possible by the cost of the execution time of a single
 /// method for a particular caller.
 /// </remarks>

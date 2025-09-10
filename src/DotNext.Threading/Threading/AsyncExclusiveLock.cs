@@ -14,16 +14,15 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     [StructLayout(LayoutKind.Auto)]
     private struct LockManager : ILockManager, IConsumer<WaitNode>
     {
-        // null - not acquired, Sentinel.Instance - acquired asynchronously, Thread - acquired synchronously
         private bool state;
 
         internal readonly bool Value => state;
 
         internal readonly bool VolatileRead() => Volatile.Read(in state);
 
-        public readonly bool IsLockAllowed => !state;
+        readonly bool ILockManager.IsLockAllowed => !state;
 
-        public void AcquireLock()
+        void ILockManager.AcquireLock()
             => state = true;
 
         internal void ExitLock() => state = false;
@@ -117,7 +116,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, LockManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
+        => TryAcquireAsync<WaitNode, LockManager>(ref manager, timeout, token);
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -131,7 +130,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync<WaitNode, LockManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
+        => AcquireAsync<WaitNode, LockManager>(ref manager, timeout, token);
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -143,13 +142,13 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, LockManager, CancellationTokenOnly>(ref manager, new(token));
+        => AcquireAsync<WaitNode, LockManager>(ref manager, token);
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires the lock.
     /// </summary>
     /// <remarks>
-    /// <see exception="LockStolenException"/> will be thrown for each suspended caller in the queue.
+    /// <see cref="PendingTaskInterruptedException"/> will be thrown for each suspended caller in the queue.
     /// The method cannot interrupt the caller that has already acquired the lock. If there is no suspended callers
     /// in the queue, this method is equivalent to <see cref="TryAcquireAsync(TimeSpan, CancellationToken)"/>.
     /// </remarks>
@@ -162,13 +161,13 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask<bool> TryStealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, LockManager, TimeoutAndInterruptionReasonAndCancellationToken>(ref manager, new(reason, timeout, token));
+        => TryAcquireAsync<WaitNode, LockManager>(reason, ref manager, timeout, token);
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires the lock.
     /// </summary>
     /// <remarks>
-    /// <see exception="LockStolenException"/> will be thrown for each suspended caller in the queue.
+    /// <see cref="PendingTaskInterruptedException"/> will be thrown for each suspended caller in the queue.
     /// The method cannot interrupt the caller that has already acquired the lock. If there is no suspended callers
     /// in the queue, this method is equivalent to <see cref="TryAcquireAsync(TimeSpan, CancellationToken)"/>.
     /// </remarks>
@@ -182,13 +181,13 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync<WaitNode, LockManager, TimeoutAndInterruptionReasonAndCancellationToken>(ref manager, new(reason, timeout, token));
+        => AcquireAsync<WaitNode, LockManager>(reason, ref manager, timeout, token);
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires the lock.
     /// </summary>
     /// <remarks>
-    /// <see exception="LockStolenException"/> will be thrown for each suspended caller in the queue.
+    /// <see cref="PendingTaskInterruptedException"/> will be thrown for each suspended caller in the queue.
     /// The method cannot interrupt the caller that has already acquired the lock. If there is no suspended callers
     /// in the queue, this method is equivalent to <see cref="TryAcquireAsync(TimeSpan, CancellationToken)"/>.
     /// </remarks>
@@ -200,7 +199,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealAsync(object? reason = null, CancellationToken token = default)
-        => AcquireAsync<WaitNode, LockManager, InterruptionReasonAndCancellationToken>(ref manager, new(reason, token));
+        => AcquireAsync<WaitNode, LockManager>(reason, ref manager, token);
 
     /// <summary>
     /// Releases previously acquired exclusive lock.

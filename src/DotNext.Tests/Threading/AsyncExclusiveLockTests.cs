@@ -92,7 +92,7 @@ public sealed class AsyncExclusiveLockTests : Test
         True(@lock.TryAcquire());
         var task = @lock.DisposeAsync();
         False(task.IsCompleted);
-        await ThrowsAsync<ObjectDisposedException>(@lock.AcquireAsync(CancellationToken.None).AsTask);
+        await ThrowsAnyAsync<ObjectDisposedException>(@lock.AcquireAsync(CancellationToken.None).AsTask);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public sealed class AsyncExclusiveLockTests : Test
         var l = new AsyncExclusiveLock();
         l.Dispose();
         var result = l.TryAcquireAsync(System.Threading.Timeout.InfiniteTimeSpan);
-        await ThrowsAsync<ObjectDisposedException>(result.AsTask);
+        await ThrowsAnyAsync<ObjectDisposedException>(result.AsTask);
     }
 
     [Fact]
@@ -213,7 +213,7 @@ public sealed class AsyncExclusiveLockTests : Test
         var t = Task.Factory.StartNew(() => l.TryAcquire(DefaultTimeout), TaskCreationOptions.LongRunning);
 
         l.Dispose();
-        await ThrowsAsync<ObjectDisposedException>(Func.Constant(t));
+        await ThrowsAnyAsync<ObjectDisposedException>(Func.Constant(t));
     }
 
     [Fact]

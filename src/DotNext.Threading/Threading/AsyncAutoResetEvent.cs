@@ -115,7 +115,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, StateManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
+        => TryAcquireAsync<WaitNode, StateManager>(ref manager, timeout, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -125,5 +125,5 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, StateManager, CancellationTokenOnly>(ref manager, new(token));
+        => AcquireAsync<WaitNode, StateManager>(ref manager, token);
 }

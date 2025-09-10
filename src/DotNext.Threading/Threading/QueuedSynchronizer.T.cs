@@ -1,5 +1,5 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
@@ -143,10 +143,9 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        var manager = new LockManager(this, context);
         lock (SyncRoot)
         {
-            return TryAcquire(ref manager);
+            return TryAcquireCore(context);
         }
     }
 
@@ -161,8 +160,8 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected ValueTask<bool> TryAcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
     {
-        var manager = new LockManager(this, context);
-        return TryAcquireAsync<WaitNode, LockManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
+        var builder = CreateTaskBuilder(timeout, token);
+        return AcquireAsync<ValueTask<bool>, TimeoutAndCancellationToken>(context, ref builder);
     }
 
     /// <summary>
@@ -177,8 +176,8 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected ValueTask AcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
     {
-        var manager = new LockManager(this, context);
-        return AcquireAsync<WaitNode, LockManager, TimeoutAndCancellationToken>(ref manager, new(timeout, token));
+        var builder = CreateTaskBuilder(timeout, token);
+        return AcquireAsync<ValueTask, TimeoutAndCancellationToken>(context, ref builder);
     }
 
     /// <summary>
@@ -191,21 +190,40 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected ValueTask AcquireAsync(TContext context, CancellationToken token)
     {
-        var manager = new LockManager(this, context);
-        return AcquireAsync<WaitNode, LockManager, CancellationTokenOnly>(ref manager, new(token));
+        var builder = CreateTaskBuilder(token);
+        return AcquireAsync<ValueTask, CancellationTokenOnly>(context, ref builder);
     }
 
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct LockManager(QueuedSynchronizer<TContext> owner, TContext context) : ILockManager, IConsumer<WaitNode>
+    private bool TryAcquireCore(TContext context)
     {
-        bool ILockManager.IsLockAllowed => owner.CanAcquire(context);
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        void ILockManager.AcquireLock() => owner.AcquireCore(context);
-
-        void IConsumer<WaitNode>.Invoke(WaitNode node)
+        if (IsEmptyQueue && CanAcquire(context))
         {
-            node.Context = context;
-            node.DrainOnReturn = true;
+            AcquireCore(context);
+            return true;
         }
+
+        return false;
+    }
+
+    private T AcquireAsync<T, TBuilder>(TContext context, ref TBuilder builder)
+        where T : struct, IEquatable<T>
+        where TBuilder : struct, ITaskBuilder<T>
+    {
+        switch (builder.IsCompleted)
+        {
+            case true:
+                goto default;
+            case false when Acquire<T, TBuilder, WaitNode>(ref builder, TryAcquireCore(context)) is { } node:
+                node.DrainOnReturn = true;
+                node.Context = context;
+                goto default;
+            default:
+                builder.Dispose();
+                break;
+        }
+
+        return builder.Invoke();
     }
 }

@@ -1,53 +1,50 @@
 using System.Diagnostics;
-using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading.Tasks;
 
 internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletionSource<T>
 {
-    private LinkedValueTaskCompletionSource<T>? previous, next;
-
     private protected LinkedValueTaskCompletionSource(bool runContinuationsAsynchronously = true)
         : base(runContinuationsAsynchronously)
     {
     }
 
-    internal LinkedValueTaskCompletionSource<T>? Next => next;
+    internal LinkedValueTaskCompletionSource<T>? Next { get; private set; }
 
-    internal LinkedValueTaskCompletionSource<T>? Previous => previous;
+    internal LinkedValueTaskCompletionSource<T>? Previous { get; private set; }
 
     internal void Append(LinkedValueTaskCompletionSource<T> node)
     {
-        Debug.Assert(next is null);
+        Debug.Assert(Next is null);
 
-        node.previous = this;
-        next = node;
+        node.Previous = this;
+        Next = node;
     }
 
     internal void Prepend(LinkedValueTaskCompletionSource<T> node)
     {
-        Debug.Assert(previous is null);
+        Debug.Assert(Previous is null);
 
-        node.next = this;
-        previous = node;
+        node.Next = this;
+        Previous = node;
     }
 
     internal void Detach()
     {
-        if (previous is not null)
-            previous.next = next;
+        if (Previous is not null)
+            Previous.Next = Next;
 
-        if (next is not null)
-            next.previous = previous;
+        if (Next is not null)
+            Next.Previous = Previous;
 
-        next = previous = null;
+        Next = Previous = null;
     }
 
     internal LinkedValueTaskCompletionSource<T>? CleanupAndGotoNext()
     {
-        var next = this.next;
-        this.next = previous = null;
+        var next = this.Next;
+        this.Next = Previous = null;
         return next;
     }
 
@@ -102,20 +99,7 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
             }
         }
 
-        internal LinkedValueTaskCompletionSource<T>? Dequeue()
-        {
-            if (first is { } result)
-            {
-                Remove(result);
-            }
-            else
-            {
-                result = null;
-            }
-
-            return result;
-        }
-
+        // true if the first node in the queue is removed
         internal bool Remove(LinkedValueTaskCompletionSource<T> node)
         {
             bool isFirst;
