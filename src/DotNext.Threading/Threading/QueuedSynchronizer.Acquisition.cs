@@ -17,6 +17,8 @@ partial class QueuedSynchronizer
 
         void CompleteAsTimedOut();
 
+        void CompletedAsFull();
+
         void Complete();
 
         bool IsTimedOut { get; }
@@ -60,6 +62,8 @@ partial class QueuedSynchronizer
         void ITaskBuilder.CompleteAsTimedOut() => taskFactory = TimedOutTaskFactory.Instance;
 
         void ITaskBuilder.Complete() => taskFactory = CompletedTaskFactory.Instance;
+
+        void ITaskBuilder.CompletedAsFull() => taskFactory = ConcurrencyLimitReachedTaskFactory.Instance;
 
         readonly bool ITaskBuilder.IsTimedOut => false;
 
@@ -124,6 +128,8 @@ partial class QueuedSynchronizer
         void ITaskBuilder.CompleteAsTimedOut() => taskFactory = TimedOutTaskFactory.Instance;
 
         void ITaskBuilder.Complete() => taskFactory = CompletedTaskFactory.Instance;
+        
+        void ITaskBuilder.CompletedAsFull() => taskFactory = ConcurrencyLimitReachedTaskFactory.Instance;
 
         readonly bool ITaskBuilder.IsTimedOut => timeout is { Ticks: 0L };
 
@@ -182,6 +188,8 @@ partial class QueuedSynchronizer
         void ITaskBuilder.CompleteAsTimedOut() => Builder.CompleteAsTimedOut();
 
         void ITaskBuilder.Complete() => Builder.Complete();
+
+        void ITaskBuilder.CompletedAsFull() => Builder.CompletedAsFull();
 
         bool ITaskBuilder.IsTimedOut => Builder.IsTimedOut;
 

@@ -241,4 +241,21 @@ public sealed class AsyncExclusiveLockTests : Test
         l.Release();
         True(l.TryAcquire(DefaultTimeout));
     }
+
+    [Fact]
+    public static async Task HardConcurrencyLimit()
+    {
+        using var l = new AsyncExclusiveLock()
+        {
+            ConcurrencyLevel = 1L,
+            HasConcurrencyLimit = true,
+        };
+        
+        True(l.TryAcquire());
+
+        var task = l.AcquireAsync().AsTask();
+        False(task.IsCompleted);
+        
+        await ThrowsAsync<ConcurrencyLimitReachedException > (l.AcquireAsync().AsTask);
+    }
 }

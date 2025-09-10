@@ -71,4 +71,15 @@ partial class QueuedSynchronizer
         ValueTask<bool> ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>.Invoke(TimeSpan timeout, CancellationToken token)
             => ValueTask.FromResult(true);
     }
+    
+    private sealed class ConcurrencyLimitReachedTaskFactory : IValueTaskFactory, ISingleton<ConcurrencyLimitReachedTaskFactory>
+    {
+        public static ConcurrencyLimitReachedTaskFactory Instance { get; } = new();
+
+        ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan arg1, CancellationToken arg2)
+            => ValueTask.FromException(new ConcurrencyLimitReachedException());
+
+        ValueTask<bool> ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>.Invoke(TimeSpan arg1, CancellationToken arg2)
+            => ValueTask.FromException<bool>(new ConcurrencyLimitReachedException());
+    }
 }

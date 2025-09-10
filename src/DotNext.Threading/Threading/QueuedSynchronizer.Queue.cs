@@ -9,11 +9,12 @@ using Tasks.Pooling;
 
 partial class QueuedSynchronizer
 {
+    private readonly bool concurrencyLimited;
     private ValueTaskPool<bool> pool;
     private WaitQueue waitQueue;
-    
+
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private protected bool IsEmptyQueue => waitQueue.First is null;
+    private protected bool IsEmptyQueue => waitQueue.Length is 0L;
 
     private protected abstract void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor);
 
@@ -71,6 +72,10 @@ partial class QueuedSynchronizer
         {
             builder.CompleteAsTimedOut();
         }
+        else if (IsConcurrencyLimitReached)
+        {
+            builder.CompletedAsFull();
+        }
         else
         {
             var node = pool.Get<TNode>();
@@ -81,6 +86,16 @@ partial class QueuedSynchronizer
         }
 
         return null;
+    }
+
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private bool IsConcurrencyLimitReached
+    {
+        get
+        {
+            var length = waitQueue.Length;
+            return length is long.MaxValue || (concurrencyLimited && length == pool.MaximumRetained);
+        }
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -205,17 +220,23 @@ partial class QueuedSynchronizer
     {
         private readonly TagList measurementTags;
         private LinkedValueTaskCompletionSource<bool>.LinkedList waitQueue;
+        private long length;
 
         public TagList MeasurementTags
         {
             init => measurementTags = value;
         }
 
+        public readonly long Length => length;
+
         public readonly LinkedValueTaskCompletionSource<bool>? First => waitQueue.First;
         
         public bool Remove(LinkedValueTaskCompletionSource<bool> node)
         {
             SuspendedCallersMeter.Add(-1, measurementTags);
+            length--;
+
+            Debug.Assert(length >= 0L);
             return waitQueue.Remove(node);
         }
 
@@ -223,6 +244,28 @@ partial class QueuedSynchronizer
         {
             SuspendedCallersMeter.Add(1, measurementTags);
             waitQueue.Add(node);
+            length++;
+        }
+
+        public IReadOnlyList<object?> GetSuspendedCallers()
+        {
+            object?[] result;
+            var current = waitQueue.First as WaitNode;
+            if (current is null)
+            {
+                result = [];
+            }
+            else
+            {
+                result = new object?[length];
+                for (var index = 0L; current is not null && index < length; index++)
+                {
+                    result[index++] = current.CallerInfo;
+                    current = current.Next as WaitNode;
+                }
+            }
+
+            return result;
         }
     }
 }

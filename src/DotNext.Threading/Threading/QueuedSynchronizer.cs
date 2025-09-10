@@ -36,6 +36,7 @@ public abstract partial class QueuedSynchronizer : Disposable
     /// Sets the expected number of concurrent flows.
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is not <see langword="null"/> and less than 1.</exception>
+    /// <seealso cref="HasConcurrencyLimit"/>
     public long ConcurrencyLevel
     {
         get => pool.MaximumRetained;
@@ -45,6 +46,17 @@ public abstract partial class QueuedSynchronizer : Disposable
 
             pool = new(value);
         }
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating that the async caller must get <seealso cref="ConcurrencyLimitReachedException"/>
+    /// instead the suspension if the internal queue has the number of suspended callers larger than <seealso cref="ConcurrencyLevel"/>.
+    /// </summary>
+    /// <seealso cref="ConcurrencyLevel"/>
+    public bool HasConcurrencyLimit
+    {
+        get => concurrencyLimited;
+        init => concurrencyLimited = value;
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

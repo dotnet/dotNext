@@ -40,23 +40,10 @@ partial class QueuedSynchronizer
 
     private IReadOnlyList<object?> GetSuspendedCallersCore()
     {
-        List<object?> list;
         lock (SyncRoot)
         {
-            var current = waitQueue.First as WaitNode;
-            if (current is null)
-                return [];
-
-            list = [];
-            do
-            {
-                list.Add(current.CallerInfo);
-                current = current.Next as WaitNode;
-            } while (current is not null);
+            return waitQueue.GetSuspendedCallers();
         }
-
-        list.TrimExcess();
-        return list;
     }
 
     /// <summary>
