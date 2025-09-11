@@ -1,6 +1,31 @@
 Release Notes
 ====
 
+# 09-11-2025
+<a href="https://www.nuget.org/packages/dotnext/5.25.0">DotNext 5.25.0</a>
+* Added `CatchException` extension method to capture the exception produced by `await` operator instead of raising it at the call site
+* Various performance improvements
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.25.0">DotNext.Metaprogramming 5.25.0</a>
+* Fixed mutability modifiers for properties of `UnmanagedMemory<T>` type
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.25.0">DotNext.Unsafe 5.25.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/5.25.0">DotNext.Threading 5.25.0</a>
+* Added optional hard concurrency limit for async lock primitives
+* Rewritten the internal engine for async lock primitives to decrease the lock contention and increase the response time
+* Async lock primitive no longer produce lock contention time to improve the response time
+
+<a href="https://www.nuget.org/packages/dotnext.io/5.25.0">DotNext.IO 5.25.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.25.0">DotNext.Net.Cluster 5.25.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.25.0">DotNext.AspNetCore.Cluster 5.25.0</a>
+* Updated dependencies
+
 # 08-23-2025
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/5.24.1">DotNext.Net.Cluster 5.24.1</a>
 * Fixed stream ID inflation of the multiplexing protocol client if underlying TCP connection is unstable
