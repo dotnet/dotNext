@@ -1,37 +1,30 @@
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.CompilerServices;
 
 /// <summary>
-/// Represents the awaitable object that can suspend exception raised by the underlying task.
+/// Represents the awaitable object that can suspend the exception raised by the underlying task.
 /// </summary>
+/// <typeparam name="T">The type of the task.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct SuspendedExceptionTaskAwaitable
+public readonly struct AwaitableResult<T>
 {
-    private readonly ValueTask task;
-    private readonly Predicate<Exception> filter;
+    private readonly ValueTask<T> task;
 
-    internal SuspendedExceptionTaskAwaitable(ValueTask task, Predicate<Exception> filter)
-    {
-        Debug.Assert(filter is not null);
-        
-        this.task = task;
-        this.filter = filter;
-    }
-
-    internal SuspendedExceptionTaskAwaitable(Task task, Predicate<Exception> filter)
-        : this(new ValueTask(task), filter)
+    internal AwaitableResult(Task<T> task)
+        : this(new ValueTask<T>(task))
     {
     }
 
+    internal AwaitableResult(ValueTask<T> task) => this.task = task;
+    
     internal bool ContinueOnCapturedContext
     {
         get;
         init;
     }
-
+    
     /// <summary>
     /// Configures an awaiter for this value.
     /// </summary>
@@ -40,14 +33,14 @@ public readonly struct SuspendedExceptionTaskAwaitable
     /// otherwise, <see langword="false"/>.
     /// </param>
     /// <returns>The configured object.</returns>
-    public SuspendedExceptionTaskAwaitable ConfigureAwait(bool continueOnCapturedContext)
+    public AwaitableResult<T> ConfigureAwait(bool continueOnCapturedContext)
         => this with { ContinueOnCapturedContext = continueOnCapturedContext };
 
     /// <summary>
     /// Gets the awaiter for this object.
     /// </summary>
     /// <returns>The awaiter for this object.</returns>
-    public Awaiter GetAwaiter() => new(task, filter, ContinueOnCapturedContext);
+    public Awaiter GetAwaiter() => new(task, ContinueOnCapturedContext);
 
     /// <summary>
     /// Represents the awaiter that suspends exception.
@@ -55,17 +48,13 @@ public readonly struct SuspendedExceptionTaskAwaitable
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Awaiter : ICriticalNotifyCompletion
     {
-        private readonly ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter;
-        private readonly Predicate<Exception> filter;
+        private readonly ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter awaiter;
 
-        internal Awaiter(in ValueTask task, Predicate<Exception> filter, bool continueOnCapturedContext)
-        {
-            awaiter = task.ConfigureAwait(continueOnCapturedContext).GetAwaiter();
-            this.filter = filter;
-        }
+        internal Awaiter(in ValueTask<T> task, bool continueOnCapturedContext)
+            => awaiter = task.ConfigureAwait(continueOnCapturedContext).GetAwaiter();
 
         /// <summary>
-        /// Gets a value indicating that <see cref="SuspendedExceptionTaskAwaitable"/> has completed.
+        /// Gets a value indicating that <see cref="AwaitableResult{T}"/> has completed.
         /// </summary>
         public bool IsCompleted => awaiter.IsCompleted;
 
@@ -78,16 +67,19 @@ public readonly struct SuspendedExceptionTaskAwaitable
         /// <summary>
         /// Gets a result of asynchronous operation, and suspends exception if needed.
         /// </summary>
-        public void GetResult()
+        public Result<T> GetResult()
         {
+            Result<T> result;
             try
             {
-                awaiter.GetResult();
+                result = new(awaiter.GetResult());
             }
-            catch (Exception e) when (filter.Invoke(e))
+            catch (Exception e)
             {
-                // suspend exception
+                result = new(e);
             }
+
+            return result;
         }
     }
 }
@@ -95,34 +87,32 @@ public readonly struct SuspendedExceptionTaskAwaitable
 /// <summary>
 /// Represents the awaitable object that can suspend the exception raised by the underlying task.
 /// </summary>
-/// <typeparam name="TArg">The type of the argument to be passed to the exception filter.</typeparam>
+/// <typeparam name="T">The type of the task.</typeparam>
+/// <typeparam name="TError">The type of the error.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct SuspendedExceptionTaskAwaitable<TArg>
+public readonly struct AwaitableResult<T, TError>
+    where TError : struct, Enum
 {
-    private readonly TArg arg;
-    private readonly ValueTask task;
-    private readonly Func<Exception, TArg, bool> filter;
+    private readonly ValueTask<T> task;
+    private readonly Converter<Exception, TError> converter;
 
-    internal SuspendedExceptionTaskAwaitable(ValueTask task, TArg arg, Func<Exception, TArg, bool> filter)
+    internal AwaitableResult(Task<T> task, Converter<Exception, TError> converter)
+        : this(new ValueTask<T>(task), converter)
     {
-        Debug.Assert(filter is not null);
-        
+    }
+
+    internal AwaitableResult(ValueTask<T> task, Converter<Exception, TError> converter)
+    {
         this.task = task;
-        this.arg = arg;
-        this.filter = filter;
+        this.converter = converter;
     }
-
-    internal SuspendedExceptionTaskAwaitable(Task task, TArg arg, Func<Exception, TArg, bool> filter)
-        : this(new ValueTask(task), arg, filter)
-    {
-    }
-
+    
     internal bool ContinueOnCapturedContext
     {
         get;
         init;
     }
-
+    
     /// <summary>
     /// Configures an awaiter for this value.
     /// </summary>
@@ -131,14 +121,14 @@ public readonly struct SuspendedExceptionTaskAwaitable<TArg>
     /// otherwise, <see langword="false"/>.
     /// </param>
     /// <returns>The configured object.</returns>
-    public SuspendedExceptionTaskAwaitable<TArg> ConfigureAwait(bool continueOnCapturedContext)
+    public AwaitableResult<T, TError> ConfigureAwait(bool continueOnCapturedContext)
         => this with { ContinueOnCapturedContext = continueOnCapturedContext };
 
     /// <summary>
     /// Gets the awaiter for this object.
     /// </summary>
     /// <returns>The awaiter for this object.</returns>
-    public Awaiter GetAwaiter() => new(task, arg, filter, ContinueOnCapturedContext);
+    public Awaiter GetAwaiter() => new(task, converter, ContinueOnCapturedContext);
 
     /// <summary>
     /// Represents the awaiter that suspends exception.
@@ -146,19 +136,17 @@ public readonly struct SuspendedExceptionTaskAwaitable<TArg>
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Awaiter : ICriticalNotifyCompletion
     {
-        private readonly ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter;
-        private readonly TArg arg;
-        private readonly Func<Exception, TArg, bool> filter;
+        private readonly ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter awaiter;
+        private readonly Converter<Exception, TError> converter;
 
-        internal Awaiter(in ValueTask task, TArg arg, Func<Exception, TArg, bool> filter, bool continueOnCapturedContext)
+        internal Awaiter(in ValueTask<T> task, Converter<Exception, TError> converter, bool continueOnCapturedContext)
         {
             awaiter = task.ConfigureAwait(continueOnCapturedContext).GetAwaiter();
-            this.arg = arg;
-            this.filter = filter;
+            this.converter = converter;
         }
 
         /// <summary>
-        /// Gets a value indicating that <see cref="SuspendedExceptionTaskAwaitable"/> has completed.
+        /// Gets a value indicating that <see cref="AwaitableResult{T}"/> has completed.
         /// </summary>
         public bool IsCompleted => awaiter.IsCompleted;
 
@@ -171,16 +159,19 @@ public readonly struct SuspendedExceptionTaskAwaitable<TArg>
         /// <summary>
         /// Gets a result of asynchronous operation, and suspends exception if needed.
         /// </summary>
-        public void GetResult()
+        public Result<T, TError> GetResult()
         {
+            Result<T, TError> result;
             try
             {
-                awaiter.GetResult();
+                result = new(awaiter.GetResult());
             }
-            catch (Exception e) when (filter.Invoke(e, arg))
+            catch (Exception e)
             {
-                // suspend exception
+                result = new(converter(e));
             }
+
+            return result;
         }
     }
 }

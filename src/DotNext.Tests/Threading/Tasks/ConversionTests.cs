@@ -47,8 +47,8 @@ public sealed class ConversionTests : Test
     [Fact]
     public static async Task SuspendException()
     {
-        await Task.FromException(new Exception()).SuspendException().ConfigureAwait(true);
-        await ValueTask.FromException(new Exception()).SuspendException().ConfigureAwait(true);
+        await Task.FromException(new Exception()).SuspendException(Predicate.Constant<Exception>(true)).ConfigureAwait(true);
+        await ValueTask.FromException(new Exception()).SuspendException(Predicate.Constant<Exception>(true)).ConfigureAwait(true);
 
         var result = await Task.FromException<int>(new ArithmeticException()).SuspendException().ConfigureAwait(true);
         False(result.IsSuccessful);
@@ -57,6 +57,12 @@ public sealed class ConversionTests : Test
         result = await ValueTask.FromException<int>(new ArithmeticException()).SuspendException().ConfigureAwait(true);
         False(result.IsSuccessful);
         IsType<ArithmeticException>(result.Error);
+
+        NotNull(await Task.FromException(new Exception()).SuspendException());
+        NotNull(await ValueTask.FromException(new Exception()).SuspendException());
+        
+        Null(await Task.CompletedTask.SuspendException());
+        Null(await ValueTask.CompletedTask.SuspendException());
     }
 
     [Fact]
