@@ -57,12 +57,16 @@ public sealed class ConversionTests : Test
         result = await ValueTask.FromException<int>(new ArithmeticException()).SuspendException().ConfigureAwait(true);
         False(result.IsSuccessful);
         IsType<ArithmeticException>(result.Error);
+    }
 
-        NotNull(await Task.FromException(new Exception()).SuspendException());
-        NotNull(await ValueTask.FromException(new Exception()).SuspendException());
+    [Fact]
+    public static async Task CatchException()
+    {
+        NotNull(await Task.FromException(new Exception()).CatchException());
+        NotNull(await ValueTask.FromException(new Exception()).CatchException());
         
-        Null(await Task.CompletedTask.SuspendException());
-        Null(await ValueTask.CompletedTask.SuspendException());
+        Null(await Task.CompletedTask.CatchException());
+        Null(await ValueTask.CompletedTask.CatchException());
     }
 
     [Fact]

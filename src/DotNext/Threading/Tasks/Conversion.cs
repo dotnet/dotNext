@@ -175,14 +175,14 @@ public static class Conversion
     /// </summary>
     /// <param name="task">The task.</param>
     /// <returns>The awaitable object that returns the exception if it was raised by the underlying task.</returns>
-    public static SilentAwaitable SuspendException(this ValueTask task) => new(task);
+    public static ExceptionCapturingAwaitable CatchException(this ValueTask task) => new(task);
 
     /// <summary>
     /// Suspends the exception that can be raised by the task, and return it as an object if raised.
     /// </summary>
     /// <param name="task">The task.</param>
     /// <returns>The awaitable object that returns the exception if it was raised by the underlying task.</returns>
-    public static SilentAwaitable SuspendException(this Task task)
+    public static ExceptionCapturingAwaitable CatchException(this Task task)
     {
         ArgumentNullException.ThrowIfNull(task);
 

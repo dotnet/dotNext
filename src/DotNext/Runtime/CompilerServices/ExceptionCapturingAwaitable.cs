@@ -7,16 +7,16 @@ namespace DotNext.Runtime.CompilerServices;
 /// Represents the awaitable object that returns an exception if it was thrown by the task, or <see langword="null"/>.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct SilentAwaitable
+public readonly struct ExceptionCapturingAwaitable
 {
     private readonly ValueTask task;
 
-    internal SilentAwaitable(Task task)
+    internal ExceptionCapturingAwaitable(Task task)
         : this(new ValueTask(task))
     {
     }
 
-    internal SilentAwaitable(ValueTask task) => this.task = task;
+    internal ExceptionCapturingAwaitable(ValueTask task) => this.task = task;
     
     internal bool ContinueOnCapturedContext
     {
@@ -32,7 +32,7 @@ public readonly struct SilentAwaitable
     /// otherwise, <see langword="false"/>.
     /// </param>
     /// <returns>The configured object.</returns>
-    public SilentAwaitable ConfigureAwait(bool continueOnCapturedContext)
+    public ExceptionCapturingAwaitable ConfigureAwait(bool continueOnCapturedContext)
         => this with { ContinueOnCapturedContext = continueOnCapturedContext };
 
     /// <summary>
