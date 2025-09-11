@@ -206,10 +206,10 @@ partial class QueuedSynchronizer
     private protected TimeoutAndCancellationToken CreateTaskBuilder(TimeSpan timeout, CancellationToken token)
         => new(SyncRoot, timeout, token);
 
-    private void Interrupt<T, TBuilder>(ref InterruptingTaskBuilder<T, TBuilder> builder, object? interruptionReason)
+    private void DrainWaitQueue<T, TBuilder>(ref InterruptingTaskBuilder<T, TBuilder> builder, Exception e)
         where T : struct, IEquatable<T>
         where TBuilder : struct, ITaskBuilder<T>
         => builder.InterruptedCallers = builder.IsCompleted
             ? null
-            : Interrupt(interruptionReason);
+            : DrainWaitQueue(e);
 }

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
@@ -160,13 +161,17 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     public bool Reset()
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
+        
+        var e = new PendingTaskInterruptedException();
+        ExceptionDispatchInfo.SetCurrentStackTrace(e);
+        
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             result = manager.Current is 0L;
             manager.Current = manager.Initial;
-            suspendedCallers = Interrupt();
+            suspendedCallers = DrainWaitQueue(e);
         }
 
         suspendedCallers?.Unwind();
@@ -188,13 +193,16 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         ArgumentOutOfRangeException.ThrowIfNegative(count);
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
+        var e = new PendingTaskInterruptedException();
+        ExceptionDispatchInfo.SetCurrentStackTrace(e);
+
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             result = manager.Current is 0L;
             manager.Current = manager.Initial = count;
-            suspendedCallers = Interrupt();
+            suspendedCallers = DrainWaitQueue(e);
         }
 
         suspendedCallers?.Unwind();

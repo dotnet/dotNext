@@ -73,7 +73,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <param name="reason">The interruption reason.</param>
     /// <returns><see langword="true"/> if at least one suspended caller has been resumed; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-    public new bool Interrupt(object? reason)
+    public bool Interrupt(object? reason)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 

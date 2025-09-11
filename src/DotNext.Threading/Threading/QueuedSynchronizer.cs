@@ -103,16 +103,6 @@ public abstract partial class QueuedSynchronizer : Disposable
         suspendedCallers?.Unwind();
     }
 
-    private protected LinkedValueTaskCompletionSource<bool>? Interrupt(object? reason = null)
-    {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-        
-        var exception = new PendingTaskInterruptedException { Reason = reason };
-        ExceptionDispatchInfo.SetCurrentStackTrace(exception);
-
-        return DrainWaitQueue(exception);
-    }
-
     private void Dispose(bool disposing, Exception? reason)
     {
         if (disposing)

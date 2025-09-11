@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 
 namespace DotNext.Threading;
 
@@ -71,12 +72,15 @@ partial class QueuedSynchronizer
         where TNode : WaitNode, new()
         where TLockManager : struct, ILockManager, IConsumer<TNode>
     {
+        var e = new PendingTaskInterruptedException { Reason = interruptionReason };
+        ExceptionDispatchInfo.SetCurrentStackTrace(e);
+        
         var builder = new InterruptingTaskBuilder<ValueTask, TimeoutAndCancellationToken>
         {
             Builder = CreateTaskBuilder(timeout, token),
         };
 
-        Interrupt(ref builder, interruptionReason);
+        DrainWaitQueue(ref builder, e);
         return AcquireAsync<ValueTask, InterruptingTaskBuilder<ValueTask, TimeoutAndCancellationToken>, TNode, TLockManager>(
             ref builder,
             ref manager);
@@ -89,12 +93,15 @@ partial class QueuedSynchronizer
         where TNode : WaitNode, new()
         where TLockManager : struct, ILockManager, IConsumer<TNode>
     {
+        var e = new PendingTaskInterruptedException { Reason = interruptionReason };
+        ExceptionDispatchInfo.SetCurrentStackTrace(e);
+        
         var builder = new InterruptingTaskBuilder<ValueTask, CancellationTokenOnly>
         {
             Builder = CreateTaskBuilder(token),
         };
 
-        Interrupt(ref builder, interruptionReason);
+        DrainWaitQueue(ref builder, e);
         return AcquireAsync<ValueTask, InterruptingTaskBuilder<ValueTask, CancellationTokenOnly>, TNode, TLockManager>(
             ref builder,
             ref manager);
@@ -119,12 +126,15 @@ partial class QueuedSynchronizer
         where TNode : WaitNode, new()
         where TLockManager : struct, ILockManager, IConsumer<TNode>
     {
+        var e = new PendingTaskInterruptedException { Reason = interruptionReason };
+        ExceptionDispatchInfo.SetCurrentStackTrace(e);
+        
         var builder = new InterruptingTaskBuilder<ValueTask<bool>, TimeoutAndCancellationToken>
         {
             Builder = CreateTaskBuilder(timeout, token),
         };
 
-        Interrupt(ref builder, interruptionReason);
+        DrainWaitQueue(ref builder, e);
         return AcquireAsync<ValueTask<bool>, InterruptingTaskBuilder<ValueTask<bool>, TimeoutAndCancellationToken>, TNode, TLockManager>(
             ref builder,
             ref manager);

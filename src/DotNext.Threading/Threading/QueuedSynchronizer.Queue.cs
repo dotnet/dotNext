@@ -29,7 +29,7 @@ partial class QueuedSynchronizer
         return detachedQueue.First;
     }
 
-    private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue(Exception e)
+    private protected LinkedValueTaskCompletionSource<bool>? DrainWaitQueue(Exception e)
     {
         var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
         GetWaitQueue(ref detachedQueue).SignalAll(e);
