@@ -37,20 +37,25 @@ partial class QueuedSynchronizer
         return detachedQueue.First;
     }
 
-    private void ReturnNode(WaitNode node)
+    private void ReturnNode<TStrategy>(TStrategy strategy)
+        where TStrategy : struct, IRemovalStrategy
     {
+        var returnToPool = strategy.Node.TryReset(out _);
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
-            suspendedCallers = node.NeedsRemoval && waitQueue.Remove(node) && node.DrainOnReturn
+            suspendedCallers = strategy.Remove(ref waitQueue)
                 ? DrainWaitQueue()
                 : null;
 
-            pool.Return(node);
+            if (returnToPool)
+                pool.Return(strategy.Node);
         }
 
         suspendedCallers?.Unwind();
     }
+    
+    
 
     private protected TNode? Acquire<T, TBuilder, TNode>(ref TBuilder builder, bool acquired)
         where T : struct, IEquatable<T>
@@ -267,5 +272,12 @@ partial class QueuedSynchronizer
 
             return result;
         }
+    }
+    
+    private interface IRemovalStrategy
+    {
+        bool Remove(ref WaitQueue queue);
+        
+        LinkedValueTaskCompletionSource<bool> Node { get; }
     }
 }

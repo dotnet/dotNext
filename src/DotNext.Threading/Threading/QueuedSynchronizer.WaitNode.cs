@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using DotNext.Patterns;
 
 namespace DotNext.Threading;
@@ -41,12 +42,55 @@ partial class QueuedSynchronizer
 
         protected sealed override void AfterConsumed()
         {
-            if (owner is { } ownerCopy && TryReset(out _))
-                ownerCopy.ReturnNode(this);
+            if (owner is null)
+            {
+                // nothing to do
+            }
+            else if (!NeedsRemoval)
+            {
+                owner.ReturnNode<DoNotRemoveStrategy>(new(this));
+            }
+            else if (DrainOnReturn)
+            {
+                owner.ReturnNode<RemoveAndDrainStrategy>(new(this));
+            }
+            else
+            {
+                owner.ReturnNode<RemoveStrategy>(new(this));
+            }
         }
 
         protected sealed override Result<bool> OnTimeout()
             => (flags & WaitNodeFlags.ThrowOnTimeout) is not 0 ? base.OnTimeout() : false;
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct DoNotRemoveStrategy(WaitNode node) : IRemovalStrategy
+        {
+            bool IRemovalStrategy.Remove(ref WaitQueue queue) => false;
+
+            LinkedValueTaskCompletionSource<bool> IRemovalStrategy.Node => node;
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct RemoveStrategy(WaitNode node) : IRemovalStrategy
+        {
+            bool IRemovalStrategy.Remove(ref WaitQueue queue)
+            {
+                queue.Remove(node);
+                return false;
+            }
+
+            LinkedValueTaskCompletionSource<bool> IRemovalStrategy.Node => node;
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct RemoveAndDrainStrategy(WaitNode node) : IRemovalStrategy
+        {
+            bool IRemovalStrategy.Remove(ref WaitQueue queue)
+                => queue.Remove(node);
+
+            LinkedValueTaskCompletionSource<bool> IRemovalStrategy.Node => node;
+        }
     }
     
     [Flags]
