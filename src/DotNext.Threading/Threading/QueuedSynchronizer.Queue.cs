@@ -42,7 +42,6 @@ partial class QueuedSynchronizer
     private void ReturnNode<TStrategy>(TStrategy strategy)
         where TStrategy : struct, IRemovalStrategy
     {
-        var returnToPool = strategy.Node.TryReset(out _);
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
@@ -50,7 +49,7 @@ partial class QueuedSynchronizer
                 ? DrainWaitQueue()
                 : null;
 
-            if (returnToPool)
+            if (strategy.Node.TryReset(out _))
                 pool.Return(strategy.Node);
         }
 
