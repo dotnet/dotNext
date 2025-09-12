@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
@@ -39,25 +40,37 @@ partial class QueuedSynchronizer
         return detachedQueue.First;
     }
 
-    private void ReturnNode<TStrategy>(TStrategy strategy)
-        where TStrategy : struct, IRemovalStrategy
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private void ReturnNode(WaitNode node)
     {
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        var syncRoot = SyncRoot;
+        if (node.NeedsRemoval)
         {
-            suspendedCallers = strategy.Remove(ref waitQueue)
-                ? DrainWaitQueue()
-                : null;
-
-            if (strategy.Node.TryReset(out _))
-                pool.Return(strategy.Node);
+            var suspendedCallers = default(LinkedValueTaskCompletionSource<bool>);
+            Monitor.Enter(syncRoot);
+            try
+            {
+                suspendedCallers = waitQueue.Remove(node) && node.DrainOnReturn
+                    ? DrainWaitQueue()
+                    : null;
+            }
+            finally
+            {
+                Monitor.Exit(syncRoot);
+                suspendedCallers?.Unwind();
+            }
         }
 
-        suspendedCallers?.Unwind();
+        // the node is removed for sure, it can be returned back to the pool
+        if (node.TryReset(out _))
+        {
+            lock (syncRoot)
+            {
+                pool.Return(node);
+            }
+        }
     }
     
-    
-
     private protected TNode? Acquire<T, TBuilder, TNode>(ref TBuilder builder, bool acquired)
         where T : struct, IEquatable<T>
         where TNode : WaitNode, new()
@@ -138,18 +151,20 @@ partial class QueuedSynchronizer
         private bool SignalCurrent(in Result<bool> result)
         {
             bool signaled;
-            if (current is not null)
+            if (current is null)
             {
+                signaled = false;
+            }
+            else if (signaled = current.TrySetResult(Sentinel.Instance, completionToken: null, result, out var resumable))
+            {
+                // Remove here only if the node is signaled by the visitor.
+                // Otherwise, the node is signaled by the timeout or cancellation token
                 queue.Remove(current);
-                signaled = current.TrySetResult(Sentinel.Instance, completionToken: null, result, out var resumable);
+
                 if (resumable)
                 {
                     detachedQueue.Add(current);
                 }
-            }
-            else
-            {
-                signaled = false;
             }
 
             return signaled;
@@ -236,7 +251,7 @@ partial class QueuedSynchronizer
         public readonly long Length => length;
 
         public readonly LinkedValueTaskCompletionSource<bool>? First => waitQueue.First;
-        
+
         public bool Remove(LinkedValueTaskCompletionSource<bool> node)
         {
             SuspendedCallersMeter.Add(-1, measurementTags);
@@ -273,12 +288,5 @@ partial class QueuedSynchronizer
 
             return result;
         }
-    }
-    
-    private interface IRemovalStrategy
-    {
-        bool Remove(ref WaitQueue queue);
-        
-        LinkedValueTaskCompletionSource<bool> Node { get; }
     }
 }
