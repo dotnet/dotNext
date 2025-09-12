@@ -23,6 +23,8 @@ partial class QueuedSynchronizer
 
     private protected LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
     {
+        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        
         var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
         var visitor = GetWaitQueue(ref detachedQueue);
         DrainWaitQueue(ref visitor);
