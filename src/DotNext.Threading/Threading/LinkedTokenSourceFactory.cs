@@ -1,4 +1,3 @@
-using System.Buffers;
 using DotNext.Buffers;
 using Debug = System.Diagnostics.Debug;
 
@@ -129,8 +128,9 @@ public static class LinkedTokenSourceFactory
     /// <param name="e">The exception to analyze.</param>
     /// <param name="token">The token to check</param>
     /// <returns><see langword="true"/> indicates that the cancellation caused by <paramref name="source"/> and <see cref="LinkedCancellationTokenSource.CancellationOrigin"/> is <paramref name="token"/> ;or by <paramref name="token"/>.</returns>
-    public static bool CausedBy(this OperationCanceledException e, LinkedCancellationTokenSource? source, CancellationToken token)
-        => source is null ? e.CancellationToken == token : (e.CancellationToken == source.Token && source.CancellationOrigin == token);
+    public static bool CausedBy<TSource>(this OperationCanceledException e, TSource? source, CancellationToken token)
+        where TSource : IMultiplexedCancellationTokenSource?
+        => source is null ? e.CancellationToken == token : e.CancellationToken == source.Token && source.CancellationOrigin == token;
 
     private sealed class Linked2CancellationTokenSource : LinkedCancellationTokenSource
     {
