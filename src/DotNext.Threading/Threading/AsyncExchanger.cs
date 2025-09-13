@@ -29,11 +29,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             this.value = value;
         }
 
-        protected override void AfterConsumed()
-        {
-            if (owner is { } ownerCopy && TryReset(out _))
-                ownerCopy.OnCompleted(this);
-        }
+        protected override void AfterConsumed() => owner?.OnCompleted(this);
 
         protected override void CleanUp()
         {
@@ -80,7 +76,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        var result = pool.Get<ExchangePoint>();
+        var result = pool.Rent<ExchangePoint>();
         result.Initialize(this, value);
         return result;
     }
@@ -89,10 +85,16 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
         Monitor.Enter(SyncRoot);
         if (ReferenceEquals(this.point, point))
+        {
             this.point = null;
+        }
 
-        pool.Return(point);
         Monitor.Exit(SyncRoot);
+
+        if (point.TryReset(out _))
+        {
+            pool.Return(point);
+        }
     }
 
     /// <summary>

@@ -45,7 +45,7 @@ public partial class TaskCompletionPipe<T>
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        var result = pool.Get<Signal>();
+        var result = pool.Rent<Signal>();
         result.Initialize(this);
         waitQueue.Add(result);
         return result;

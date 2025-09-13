@@ -7,15 +7,13 @@ namespace DotNext.Threading.Tasks.Pooling;
 /*
  * Represents a pool without any allocations. Assuming that wait queues are organized using
  * linked nodes where each node is a completion source. If so, the node pointers (next/previous)
- * can be used to keep completion sources in the pool. Moreover, access to the pool is synchronized
- * by the caller (see QueuedSynchronizer). Thus, it doesn't require explicit synchronization such as
- * Monitor lock.
+ * can be used to keep completion sources in the pool. The implementation is thread-safe.
  */
 [StructLayout(LayoutKind.Auto)]
 internal struct ValueTaskPool<T>(long maximumRetained)
 {
-    private LinkedValueTaskCompletionSource<T>? first;
-    private long count;
+    private volatile LinkedValueTaskCompletionSource<T>? first;
+    private long count; // volatile
 
     public ValueTaskPool()
         : this(long.MaxValue)
@@ -26,41 +24,57 @@ internal struct ValueTaskPool<T>(long maximumRetained)
 
     public void Return(LinkedValueTaskCompletionSource<T> node)
     {
-        Debug.Assert(node is not null);
-        Debug.Assert(count is 0L || first is not null);
-        Debug.Assert(node.Status is ManualResetCompletionSourceStatus.WaitForActivation);
+        Debug.Assert(node is { Status: ManualResetCompletionSourceStatus.WaitForActivation });
+        Debug.Assert(node is { Next: null, Previous: null });
 
-        if (count < maximumRetained)
+        // try to increment the counter
+        for (long current = Atomic.Read(in count), tmp; current < maximumRetained; current = tmp)
         {
-            first?.Prepend(node);
-            first = node;
-            count++;
-            Debug.Assert(count > 0L);
+            tmp = Interlocked.CompareExchange(ref count, current + 1L, current);
+            if (tmp == current)
+            {
+                ReturnCore(node);
+                break;
+            }
         }
     }
 
-    public TNode Get<TNode>()
+    private void ReturnCore(LinkedValueTaskCompletionSource<T> node)
+    {
+        for (LinkedValueTaskCompletionSource<T>? current = first, tmp;; current = tmp)
+        {
+            node.Next = current;
+
+            tmp = Interlocked.CompareExchange(ref first, node, current);
+            if (ReferenceEquals(tmp, current))
+                break;
+        }
+    }
+
+    public TNode Rent<TNode>()
         where TNode : LinkedValueTaskCompletionSource<T>, new()
     {
-        TNode result;
-        if (first is null)
+        var current = first;
+        for (LinkedValueTaskCompletionSource<T>? tmp;; current = Unsafe.As<TNode>(tmp))
         {
-            Debug.Assert(count == 0L);
+            if (current is null)
+            {
+                current = new TNode();
+                break;
+            }
 
-            result = new();
+            tmp = Interlocked.CompareExchange(ref first, current.Next, current);
+            if (!ReferenceEquals(tmp, current))
+                continue;
+
+            current.Next = null;
+            var actualCount = Interlocked.Decrement(ref count);
+            Debug.Assert(actualCount >= 0L);
+            break;
         }
-        else
-        {
-            Debug.Assert(first is TNode);
-            result = Unsafe.As<TNode>(first);
-            first = result.Next;
-            result.Detach();
-            count--;
 
-            Debug.Assert(count >= 0L);
-            Debug.Assert(count is 0L || first is not null);
-        }
-
-        return result;
+        Debug.Assert(current is TNode);
+        Debug.Assert(current is { Next: null, Previous: null });
+        return Unsafe.As<TNode>(current);
     }
 }

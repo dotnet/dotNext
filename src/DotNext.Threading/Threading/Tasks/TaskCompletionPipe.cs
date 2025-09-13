@@ -46,11 +46,16 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
 
     private void OnCompleted(Signal signal)
     {
-        lock (SyncRoot)
+        if (signal.NeedsRemoval)
         {
-            if (signal.NeedsRemoval)
+            lock (SyncRoot)
+            {
                 waitQueue.Remove(signal);
+            }
+        }
 
+        if (signal.TryReset(out _))
+        {
             pool.Return(signal);
         }
     }
