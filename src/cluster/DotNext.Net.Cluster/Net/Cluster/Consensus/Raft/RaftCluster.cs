@@ -558,7 +558,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 };
             }
         }
-        catch (OperationCanceledException e)
+        catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
         {
             throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
         }
