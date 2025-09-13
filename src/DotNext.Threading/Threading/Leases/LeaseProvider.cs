@@ -70,11 +70,11 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
             {
                 CreatedAt = provider.GetUtcNow(),
                 Identity = state.Identity.BumpVersion(),
-                Metadata = await updater.Invoke(state.Metadata, token).ConfigureAwait(false),
+                Metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false),
             };
 
             var ts = new Timestamp(provider);
-            if (!await TryUpdateStateAsync(state, token).ConfigureAwait(false))
+            if (!await TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false))
                 return null;
 
             remainingTime = TimeToLive - ts.GetElapsedTime(provider);
@@ -151,7 +151,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                     return new AcquisitionResult(in state, remainingTime, provider);
                 }
 
-                await Task.Delay(remainingTime, provider, token).ConfigureAwait(false);
+                await Task.Delay(remainingTime, provider, cts.Token).ConfigureAwait(false);
             }
         }
         catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))

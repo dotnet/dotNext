@@ -227,7 +227,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         var tokenSource = CombineTokens([token, leadershipToken]);
         try
         {
-            await ReceiveMessageAsync(sender, message, response, token).ConfigureAwait(false);
+            await ReceiveMessageAsync(sender, message, response, tokenSource.Token).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
