@@ -35,7 +35,7 @@ internal partial class RaftHttpCluster
             }
             else
             {
-                member = await RemoveMemberAsync(ClusterMemberId.FromEndPoint(eventInfo.Item1), LifecycleToken).ConfigureAwait(false);
+                member = await RemoveMemberAsync(ClusterMemberId.FromEndPoint(eventInfo.Item1), CancellationToken.None).ConfigureAwait(false);
                 if (member is not null)
                 {
                     member.CancelPendingRequests();
