@@ -49,7 +49,7 @@ internal partial class RaftHttpCluster : IOutputChannel
             }
             catch (OperationCanceledException e) when (tokenSource.Token == e.CancellationToken)
             {
-                throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+                break;
             }
         } while (tokenSource.Token is { IsCancellationRequested: false });
 
