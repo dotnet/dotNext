@@ -111,7 +111,7 @@ partial class CancellationTokenMultiplexer
 
         private static void Return(CancellationTokenMultiplexer multiplexer, PooledCancellationTokenSource source)
         {
-            source.Clear();
+            source.Reset();
             if (source.IsCancellationRequested)
             {
                 source.Dispose();

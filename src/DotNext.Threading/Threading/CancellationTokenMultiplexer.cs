@@ -85,6 +85,7 @@ public sealed partial class CancellationTokenMultiplexer
     private PooledCancellationTokenSource Rent(ReadOnlySpan<CancellationToken> tokens)
     {
         var source = Rent();
+        Debug.Assert(source.Count is 0);
 
         foreach (var token in tokens)
         {

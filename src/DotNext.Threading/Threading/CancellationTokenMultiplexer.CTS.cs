@@ -4,7 +4,7 @@ namespace DotNext.Threading;
 
 partial class CancellationTokenMultiplexer
 {
-    private sealed class PooledCancellationTokenSource : LinkedCancellationTokenSource
+    private sealed class PooledCancellationTokenSource : LinkedCancellationTokenSource, IResettable
     {
         private const int Capacity = 3;
         private (CancellationTokenRegistration, CancellationTokenRegistration, CancellationTokenRegistration) inlineList;
@@ -56,8 +56,9 @@ partial class CancellationTokenMultiplexer
             }
         }
 
-        public void Clear()
+        public void Reset()
         {
+            tokenCount = 0;
             inlineList = default;
             extraTokens?.Clear();
         }
