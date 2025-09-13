@@ -107,7 +107,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
     }
 
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    public override async ValueTask<T> ReadAsync(CancellationToken token)
+    public override async ValueTask<T> ReadAsync(CancellationToken token = default)
     {
         var task = await Task.WhenAny(reader.WaitToReadAsync(token), reader.Completion).ConfigureAwait(false);
 

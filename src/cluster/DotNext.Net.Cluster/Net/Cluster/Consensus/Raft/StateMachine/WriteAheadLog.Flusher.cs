@@ -103,21 +103,21 @@ partial class WriteAheadLog
     {
         Debug.Assert(flushCompleted is not null);
 
-        var linkedTokenSource = token.LinkTo(lifetimeToken);
-        var registration = token.UnsafeRegister(Signal, flushCompleted);
+        var linkedTokenSource = cancellationTokens.Combine([token, lifetimeToken]);
+        var registration = linkedTokenSource.Token.UnsafeRegister(Signal, flushCompleted);
         try
         {
             while (Atomic.Read(in flusherPreviousIndex) < LastCommittedEntryIndex)
             {
                 await flushCompleted.WaitAsync().ConfigureAwait(false);
-                if (token.IsCancellationRequested)
-                    ThrowWhenCanceled(linkedTokenSource, token);
+                if (linkedTokenSource.Token.IsCancellationRequested)
+                    ThrowWhenCanceled(linkedTokenSource);
             }
         }
         finally
         {
             await registration.DisposeAsync().ConfigureAwait(false);
-            linkedTokenSource?.Dispose();
+            await linkedTokenSource.DisposeAsync().ConfigureAwait(false);
         }
 
         static void Signal(object? state)
@@ -127,25 +127,13 @@ partial class WriteAheadLog
             Unsafe.As<AsyncAutoResetEventSlim>(state).Set();
         }
     }
-    
-    [DoesNotReturn]
-    private void ThrowWhenCanceled(LinkedCancellationTokenSource? cts, CancellationToken token)
-    {
-        CancellationToken sourceToken;
-        if (cts is null)
-        {
-            sourceToken = token;
-        }
-        else if (cts.CancellationOrigin == lifetimeToken)
-        {
-            throw new ObjectDisposedException(GetType().Name);
-        }
-        else
-        {
-            sourceToken = cts.CancellationOrigin;
-        }
 
-        throw new OperationCanceledException(sourceToken);
+    [DoesNotReturn]
+    private void ThrowWhenCanceled(CancellationTokenMultiplexer.Scope cts)
+    {
+        ObjectDisposedException.ThrowIf(cts.CancellationOrigin == lifetimeToken, this);
+
+        throw new OperationCanceledException(cts.CancellationOrigin);
     }
 
     /// <summary>

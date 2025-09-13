@@ -23,6 +23,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     private readonly MemoryAllocator<byte> bufferAllocator;
     private readonly IStateMachine stateMachine;
     private readonly CancellationToken lifetimeToken;
+    private readonly CancellationTokenMultiplexer cancellationTokens;
     
     private volatile ExceptionDispatchInfo? backgroundTaskFailure;
     private long lastEntryIndex; // Append lock protects modification of this field
@@ -42,6 +43,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         ArgumentNullException.ThrowIfNull(stateMachine);
 
         lifetimeToken = (lifetimeTokenSource = new()).Token;
+        cancellationTokens = new();
         var rootPath = new DirectoryInfo(configuration.Location);
         rootPath.CreateIfNeeded();
 

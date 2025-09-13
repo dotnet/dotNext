@@ -7,7 +7,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using Messaging;
 using Runtime.Serialization;
-using static Threading.LinkedTokenSourceFactory;
 
 internal partial class RaftHttpCluster : IOutputChannel
 {
@@ -28,15 +27,15 @@ internal partial class RaftHttpCluster : IOutputChannel
         ArgumentNullException.ThrowIfNull(message);
         ArgumentNullException.ThrowIfNull(responseReader);
 
-        using var tokenSource = token.LinkTo(LifecycleToken);
+        var tokenSource = CombineTokens([LifecycleToken, token]);
         do
         {
             var leader = Leader ?? throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
             try
             {
-                return await (leader.IsRemote ?
-                    leader.SendMessageAsync(message, responseReader, true, token) :
-                    TryReceiveMessage(leader, message, messageHandlers, responseReader, token))
+                return await (leader.IsRemote
+                        ? leader.SendMessageAsync(message, responseReader, true, tokenSource.Token)
+                        : TryReceiveMessage(leader, message, messageHandlers, responseReader, tokenSource.Token))
                     .ConfigureAwait(false);
             }
             catch (MemberUnavailableException e)
@@ -48,14 +47,13 @@ internal partial class RaftHttpCluster : IOutputChannel
                 // keep in sync with ReceiveMessage behavior
                 Logger.FailedToRouteMessage(message.Name, e);
             }
-            catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
+            catch (OperationCanceledException e) when (tokenSource.Token == e.CancellationToken)
             {
                 throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }
-        }
-        while (!token.IsCancellationRequested);
+        } while (tokenSource.Token is { IsCancellationRequested: false });
 
-        throw new OperationCanceledException(tokenSource?.CancellationOrigin ?? token);
+        throw new OperationCanceledException(tokenSource.CancellationOrigin);
 
         static async Task<TResponse> TryReceiveMessage(RaftClusterMember sender, IMessage message, IEnumerable<IInputChannel> handlers, MessageReader<TResponse> responseReader, CancellationToken token)
         {
@@ -68,15 +66,15 @@ internal partial class RaftHttpCluster : IOutputChannel
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        using var tokenSource = token.LinkTo(LifecycleToken);
+        using var tokenSource = CombineTokens([token, LifecycleToken]);
         do
         {
             var leader = Leader ?? throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
             try
             {
-                return await (leader.IsRemote ?
-                    leader.SendMessageAsync<TResponse>(message, true, token) :
-                    TryReceiveMessage(leader, message, messageHandlers, token))
+                return await (leader.IsRemote
+                        ? leader.SendMessageAsync<TResponse>(message, true, tokenSource.Token)
+                        : TryReceiveMessage(leader, message, messageHandlers, tokenSource.Token))
                     .ConfigureAwait(false);
             }
             catch (MemberUnavailableException e)
@@ -88,14 +86,13 @@ internal partial class RaftHttpCluster : IOutputChannel
                 // keep in sync with ReceiveMessage behavior
                 Logger.FailedToRouteMessage(message.Name, e);
             }
-            catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
+            catch (OperationCanceledException e) when (tokenSource.Token == e.CancellationToken)
             {
                 throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }
-        }
-        while (!token.IsCancellationRequested);
+        } while (tokenSource.Token is { IsCancellationRequested: false });
 
-        throw new OperationCanceledException(tokenSource?.CancellationOrigin ?? token);
+        throw new OperationCanceledException(tokenSource.CancellationOrigin);
 
         static async Task<TResponse> TryReceiveMessage(RaftClusterMember sender, IMessage message, IEnumerable<IInputChannel> handlers, CancellationToken token)
         {
@@ -110,15 +107,16 @@ internal partial class RaftHttpCluster : IOutputChannel
 
         // keep the same message between retries for correct identification of duplicate messages
         var signal = new CustomMessage(LocalMemberId, message, true) { RespectLeadership = true };
-        using var tokenSource = token.LinkTo(LifecycleToken);
+        using var tokenSource = CombineTokens([token, LifecycleToken]);
         do
         {
             var leader = Leader ?? throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
             try
             {
-                var response = leader.IsRemote ?
-                    leader.SendSignalAsync(signal, token) :
-                    (messageHandlers.TryReceiveSignal(leader, signal.Message, null, token) ?? throw new UnexpectedStatusCodeException(new NotImplementedException()));
+                var response = leader.IsRemote
+                    ? leader.SendSignalAsync(signal, tokenSource.Token)
+                    : (messageHandlers.TryReceiveSignal(leader, signal.Message, null, tokenSource.Token) ??
+                       throw new UnexpectedStatusCodeException(new NotImplementedException()));
                 await response.ConfigureAwait(false);
                 return;
             }
@@ -131,14 +129,13 @@ internal partial class RaftHttpCluster : IOutputChannel
                 // keep in sync with ReceiveMessage behavior
                 Logger.FailedToRouteMessage(message.Name, e);
             }
-            catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
+            catch (OperationCanceledException e) when (tokenSource.Token == e.CancellationToken)
             {
                 throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }
-        }
-        while (!token.IsCancellationRequested);
+        } while (tokenSource.Token is { IsCancellationRequested: false });
 
-        throw new OperationCanceledException(tokenSource?.CancellationOrigin ?? token);
+        throw new OperationCanceledException(tokenSource.CancellationOrigin);
     }
 
     IOutputChannel IMessageBus.LeaderRouter => this;
@@ -221,9 +218,13 @@ internal partial class RaftHttpCluster : IOutputChannel
         return result;
     }
 
-    private async Task ReceiveMessageAsync(RaftClusterMember sender, CustomMessage message, HttpResponse response, CancellationToken leadershipToken, CancellationToken token)
+    private async Task ReceiveMessageAsync(RaftClusterMember sender,
+        CustomMessage message,
+        HttpResponse response,
+        CancellationToken leadershipToken,
+        CancellationToken token)
     {
-        var tokenSource = token.LinkTo(leadershipToken);
+        var tokenSource = CombineTokens([token, leadershipToken]);
         try
         {
             await ReceiveMessageAsync(sender, message, response, token).ConfigureAwait(false);
@@ -234,7 +235,7 @@ internal partial class RaftHttpCluster : IOutputChannel
         }
         finally
         {
-            tokenSource?.Dispose();
+            await tokenSource.DisposeAsync().ConfigureAwait(false);
         }
     }
 

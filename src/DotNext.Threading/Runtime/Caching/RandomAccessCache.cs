@@ -25,6 +25,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     private readonly CancellationToken lifetimeToken;
     private readonly IEqualityComparer<TKey>? keyComparer;
     private readonly bool growable;
+    private readonly CancellationTokenMultiplexer cancellationTokens;
     private Task evictionTask;
 
     [SuppressMessage("Usage", "CA2213", Justification = "False positive.")]
@@ -50,6 +51,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(collisionThreshold, thresholdName);
 
         dictionarySize = PrimeNumber.GetPrime(dictionarySize);
+        cancellationTokens = new() { MaximumRetained = 100 };
         maxCacheCapacity = (growable = collisionThreshold is not int.MaxValue)
             ? collisionThreshold
             : dictionarySize;
@@ -89,11 +91,11 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     {
         var hashCode = keyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
-        var cts = token.LinkTo(lifetimeToken);
+        var cts = cancellationTokens.Combine([token, lifetimeToken]);
         var bucketLock = default(AsyncExclusiveLock);
         try
         {
-            for (BucketList bucketsCopy;; await GrowAsync(bucketsCopy, timeout, token).ConfigureAwait(false))
+            for (BucketList bucketsCopy;; await GrowAsync(bucketsCopy, timeout, cts.Token).ConfigureAwait(false))
             {
                 Bucket.Ref bucket;
 
@@ -101,7 +103,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 for (BucketList newCopy;; bucketsCopy = newCopy)
                 {
                     bucketsCopy.GetByHash(hashCode, out bucket);
-                    await bucket.Value.Lock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
+                    await bucket.Value.Lock.AcquireAsync(timeout.GetRemainingTimeOrZero(), cts.Token).ConfigureAwait(false);
                     bucketLock = bucket.Value.Lock;
 
                     newCopy = buckets;
@@ -123,20 +125,18 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 bucketLockCopy.Release();
             }
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
-        {
-            throw cts.CancellationOrigin == lifetimeToken
-                ? CreateException()
-                : new OperationCanceledException(cts.CancellationOrigin);
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
+        catch (OperationCanceledException e) when (e.CausedBy(cts, lifetimeToken))
         {
             throw CreateException();
         }
+        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
+        }
         finally
         {
-            cts?.Dispose();
             bucketLock?.Release();
+            await cts.DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -177,11 +177,11 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     {
         var hashCode = keyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
-        var cts = token.LinkTo(lifetimeToken);
+        var cts = cancellationTokens.Combine([token, lifetimeToken]);
         var bucketLock = default(AsyncExclusiveLock);
         try
         {
-            for (BucketList bucketsCopy;; await GrowAsync(bucketsCopy, timeout, token).ConfigureAwait(false))
+            for (BucketList bucketsCopy;; await GrowAsync(bucketsCopy, timeout, cts.Token).ConfigureAwait(false))
             {
                 Bucket.Ref bucket;
 
@@ -189,7 +189,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 for (BucketList newCopy;; bucketsCopy = newCopy)
                 {
                     bucketsCopy.GetByHash(hashCode, out bucket);
-                    await bucket.Value.Lock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
+                    await bucket.Value.Lock.AcquireAsync(timeout.GetRemainingTimeOrZero(), cts.Token).ConfigureAwait(false);
                     bucketLock = bucket.Value.Lock;
 
                     newCopy = buckets;
@@ -206,27 +206,25 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 {
                     if (bucket.Value.TryRemove(keyComparer, key, hashCode) is { } removedPair && removedPair.ReleaseCounter() is false)
                         OnRemoved(removedPair);
-                    
+
                     return new(this, in bucket, bucketLockCopy, key, hashCode);
                 }
 
                 bucketLockCopy.Release();
             }
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
-        {
-            throw cts.CancellationOrigin == lifetimeToken
-                ? CreateException()
-                : new OperationCanceledException(cts.CancellationOrigin);
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
+        catch (OperationCanceledException e) when (e.CausedBy(cts, lifetimeToken))
         {
             throw CreateException();
         }
+        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
+        }
         finally
         {
-            cts?.Dispose();
             bucketLock?.Release();
+            await cts.DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -299,7 +297,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     {
         var hashCode = keyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
-        var cts = token.LinkTo(lifetimeToken);
+        var cts = cancellationTokens.Combine([token, lifetimeToken]);
         var bucketLock = default(AsyncExclusiveLock);
         try
         {
@@ -307,13 +305,13 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             for (BucketList bucketsCopy = buckets, newCopy;; bucketsCopy = newCopy)
             {
                 bucketsCopy.GetByHash(hashCode, out bucket);
-                await bucket.Value.Lock.AcquireAsync(timeout, token).ConfigureAwait(false);
+                await bucket.Value.Lock.AcquireAsync(timeout, cts.Token).ConfigureAwait(false);
                 bucketLock = bucket.Value.Lock;
 
                 newCopy = buckets;
                 if (ReferenceEquals(newCopy, bucketsCopy))
                     break;
-                
+
                 bucketLock.Release();
                 bucketLock = null;
             }
@@ -322,19 +320,18 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 ? new ReadSession(this, removedPair)
                 : null;
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
-        {
-            throw cts.CancellationOrigin == lifetimeToken
-                ? CreateException()
-                : new OperationCanceledException(cts.CancellationOrigin);
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
+        catch (OperationCanceledException e) when (e.CausedBy(cts, lifetimeToken))
         {
             throw CreateException();
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
         }
         finally
         {
             bucketLock?.Release();
+            await cts.DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -374,7 +371,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     {
         var hashCode = keyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
-        var cts = token.LinkTo(lifetimeToken);
+        var cts = cancellationTokens.Combine([token, lifetimeToken]);
         var bucketLock = default(AsyncExclusiveLock);
         KeyValuePair? removedPair;
         try
@@ -383,32 +380,31 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             for (BucketList bucketsCopy = buckets, newCopy;; bucketsCopy = newCopy)
             {
                 bucketsCopy.GetByHash(hashCode, out bucket);
-                await bucket.Value.Lock.AcquireAsync(timeout, token).ConfigureAwait(false);
+                await bucket.Value.Lock.AcquireAsync(timeout, cts.Token).ConfigureAwait(false);
                 bucketLock = bucket.Value.Lock;
 
                 newCopy = buckets;
                 if (ReferenceEquals(newCopy, bucketsCopy))
                     break;
-                
+
                 bucketLock.Release();
                 bucketLock = null;
             }
-            
+
             removedPair = bucket.Value.TryRemove(keyComparer, key, hashCode);
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
-        {
-            throw cts.CancellationOrigin == lifetimeToken
-                ? CreateException()
-                : new OperationCanceledException(cts.CancellationOrigin);
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
+        catch (OperationCanceledException e) when (e.CausedBy(cts, lifetimeToken))
         {
             throw CreateException();
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
         }
         finally
         {
             bucketLock?.Release();
+            await cts.DisposeAsync().ConfigureAwait(false);
         }
         
         if (removedPair is null)
@@ -456,18 +452,18 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
     public async ValueTask InvalidateAsync(CancellationToken token = default)
     {
-        var cts = token.LinkTo(lifetimeToken);
+        var cts = cancellationTokens.Combine([token, lifetimeToken]);
         var bucketsCopy = buckets;
         var lockCount = 0;
         try
         {
             AsyncExclusiveLock bucketLock;
-            
+
             // take first lock
             for (BucketList newCopy;; bucketsCopy = newCopy)
             {
                 bucketLock = bucketsCopy.GetByIndex(0).Lock;
-                await bucketLock.AcquireAsync(token).ConfigureAwait(false);
+                await bucketLock.AcquireAsync(cts.Token).ConfigureAwait(false);
 
                 newCopy = buckets;
                 if (ReferenceEquals(newCopy, bucketsCopy))
@@ -480,26 +476,24 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
             for (lockCount = 1; lockCount < bucketsCopy.Count; lockCount++)
             {
                 bucketLock = bucketsCopy.GetByIndex(lockCount).Lock;
-                await bucketLock.AcquireAsync(token).ConfigureAwait(false);
+                await bucketLock.AcquireAsync(cts.Token).ConfigureAwait(false);
             }
 
             // invalidate all buckets
             bucketsCopy.Invalidate(OnRemoved);
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
-        {
-            throw cts.CancellationOrigin == lifetimeToken
-                ? CreateException()
-                : new OperationCanceledException(cts.CancellationOrigin);
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == lifetimeToken)
+        catch (OperationCanceledException e) when (e.CausedBy(cts, lifetimeToken))
         {
             throw CreateException();
         }
+        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
+        }
         finally
         {
-            cts?.Dispose();
             bucketsCopy.Release(lockCount);
+            await cts.DisposeAsync().ConfigureAwait(false);
         }
     }
 

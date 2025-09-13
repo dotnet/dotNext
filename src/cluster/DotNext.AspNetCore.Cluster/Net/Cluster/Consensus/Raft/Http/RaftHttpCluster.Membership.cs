@@ -30,7 +30,7 @@ internal partial class RaftHttpCluster
             if (eventInfo.Item2)
             {
                 member = CreateMember(eventInfo.Item1);
-                if (!await AddMemberAsync(member, LifecycleToken).ConfigureAwait(false))
+                if (!await AddMemberAsync(member, CancellationToken.None).ConfigureAwait(false))
                     member.Dispose();
             }
             else
