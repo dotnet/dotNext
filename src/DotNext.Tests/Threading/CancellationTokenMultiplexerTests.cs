@@ -38,4 +38,19 @@ public class CancellationTokenMultiplexerTests : Test
             Equal(token, scope.Token);
         }
     }
+
+    [Fact]
+    public static void ExtraListOverflow()
+    {
+        Span<CancellationToken> tokens = new CancellationToken[20];
+        foreach (ref var token in tokens)
+        {
+            token = new(true);
+        }
+        
+        var multiplexer = new CancellationTokenMultiplexer();
+        
+        using var scope = multiplexer.Combine(tokens);
+        True(scope.Token.IsCancellationRequested);
+    }
 }
