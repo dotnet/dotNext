@@ -29,7 +29,7 @@ public sealed partial class CancellationTokenMultiplexer
     /// </summary>
     /// <param name="tokens">The tokens to be combined.</param>
     /// <returns>The scope that contains a single multiplexed token.</returns>
-    public Scope Combine(ReadOnlySpan<CancellationToken> tokens)
+    public Scope Combine(ReadOnlySpan<CancellationToken> tokens) // TODO: use params
         => new(this, tokens);
 
     private void Return(PooledCancellationTokenSource source)
@@ -80,5 +80,17 @@ public sealed partial class CancellationTokenMultiplexer
         }
 
         return current;
+    }
+
+    private PooledCancellationTokenSource Rent(ReadOnlySpan<CancellationToken> tokens)
+    {
+        var source = Rent();
+
+        foreach (var token in tokens)
+        {
+            source.Add(token);
+        }
+
+        return source;
     }
 }

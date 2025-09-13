@@ -9,7 +9,7 @@ public class CancellationTokenMultiplexerTests : Test
         using var scope = multiplexer.Combine([new(true), new(true)]);
         True(scope.Token.IsCancellationRequested);
         Equal(new(true), scope.CancellationOrigin);
-        NotEqual(new(true), scope.Token);
+        Equal(new(true), scope.Token);
     }
     
     [Fact]
@@ -19,21 +19,22 @@ public class CancellationTokenMultiplexerTests : Test
         await using var scope = multiplexer.Combine([new(true), new(true)]);
         True(scope.Token.IsCancellationRequested);
         Equal(new(true), scope.CancellationOrigin);
-        NotEqual(new(true), scope.Token);
+        Equal(new(true), scope.Token);
     }
 
     [Fact]
     public static void CheckPooling()
     {
+        using var cts = new CancellationTokenSource();
         CancellationToken token;
         var multiplexer = new CancellationTokenMultiplexer { MaximumRetained = int.MaxValue };
-        using (var scope = multiplexer.Combine([new(false)]))
+        using (var scope = multiplexer.Combine([cts.Token, cts.Token, cts.Token]))
         {
             token = scope.Token;
         }
         
         // rent again
-        using (var scope = multiplexer.Combine([new(false)]))
+        using (var scope = multiplexer.Combine([cts.Token, cts.Token, cts.Token]))
         {
             Equal(token, scope.Token);
         }

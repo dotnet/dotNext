@@ -1,6 +1,10 @@
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
+
+using Runtime;
 
 partial class CancellationTokenMultiplexer
 {
@@ -10,44 +14,90 @@ partial class CancellationTokenMultiplexer
     [StructLayout(LayoutKind.Auto)]
     public readonly struct Scope : IMultiplexedCancellationTokenSource, IDisposable, IAsyncDisposable
     {
-        private readonly CancellationTokenMultiplexer multiplexer;
-        private readonly PooledCancellationTokenSource source;
+        // CancellationToken is just a wrapper over CancellationTokenSource.
+        // For optimization purposes, if only one token is passed to the scope, we can inline the underlying CTS
+        // to this structure.
+        private readonly ValueTuple<object> multiplexerOrToken;
+        private readonly PooledCancellationTokenSource? source;
 
         internal Scope(CancellationTokenMultiplexer multiplexer, ReadOnlySpan<CancellationToken> tokens)
         {
-            this.multiplexer = multiplexer;
-            source = multiplexer.Rent();
-
-            foreach (var token in tokens)
+            switch (tokens)
             {
-                source.Add(token);
+                case []:
+                    source = null;
+                    multiplexerOrToken = InlineToken(new(canceled: false));
+                    break;
+                case [var token]:
+                    source = null;
+                    multiplexerOrToken = InlineToken(token);
+                    break;
+                case [var token1, var token2]:
+                    source = null;
+                    if (!token1.CanBeCanceled || token1 == token2)
+                    {
+                        multiplexerOrToken = InlineToken(token2);
+                    }
+                    else if (!token2.CanBeCanceled)
+                    {
+                        multiplexerOrToken = InlineToken(token1);
+                    }
+                    else
+                    {
+                        goto default;
+                    }
+
+                    break;
+                default:
+                    multiplexerOrToken = new(multiplexer);
+                    source = multiplexer.Rent(tokens);
+                    break;
             }
         }
+
+        private static ValueTuple<object> InlineToken(CancellationToken token)
+            => CanInlineToken ? Unsafe.BitCast<CancellationToken, ValueTuple<object>>(token) : new(token);
+
+        private static CancellationToken GetToken(ValueTuple<object> value)
+            => CanInlineToken ? Unsafe.BitCast<ValueTuple<object>, CancellationToken>(value) : (CancellationToken)value.Item1;
+
+        // This property checks whether the reinterpret cast CancellationToken => CancellationTokenSource
+        // is safe. If not, just box the token.
+        private static bool CanInlineToken => Intrinsics.AreCompatible<CancellationToken, ValueTuple<object>>()
+                                              && RuntimeHelpers.IsReferenceOrContainsReferences<CancellationToken>();
 
         /// <summary>
         /// Gets the cancellation token that can be canceled by any of the multiplexed tokens.
         /// </summary>
-        public CancellationToken Token => source.Token;
+        public CancellationToken Token => source?.Token ?? GetToken(multiplexerOrToken);
 
         /// <summary>
         /// Gets the cancellation origin if <see cref="Token"/> is in canceled state.
         /// </summary>
-        public CancellationToken CancellationOrigin => source.CancellationOrigin;
+        public CancellationToken CancellationOrigin => source?.Token ?? GetToken(multiplexerOrToken);
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            for (var i = 0; i < source.Count; i++)
+            if (source is not null)
             {
-                source[i].Dispose();
-            }
+                Debug.Assert(multiplexerOrToken.Item1 is CancellationTokenMultiplexer);
 
-            // now we sure that no one can cancel the source concurrently
-            Return(multiplexer, source);
+                for (var i = 0; i < source.Count; i++)
+                {
+                    source[i].Dispose();
+                }
+
+                // now we sure that no one can cancel the source concurrently
+                Return(Unsafe.As<CancellationTokenMultiplexer>(multiplexerOrToken.Item1), source);
+            }
         }
 
         /// <inheritdoc/>
-        public ValueTask DisposeAsync() => ReturnAsync(multiplexer, source);
+        public ValueTask DisposeAsync()
+            => source is not null
+                ? ReturnAsync(Unsafe.As<CancellationTokenMultiplexer>(multiplexerOrToken.Item1), source)
+                : ValueTask.CompletedTask;
 
         private static async ValueTask ReturnAsync(CancellationTokenMultiplexer multiplexer, PooledCancellationTokenSource source)
         {
