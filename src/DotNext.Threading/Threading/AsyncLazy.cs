@@ -87,7 +87,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
             {
                 Debug.Assert(factory is not null);
 
-                task = t = System.Threading.Tasks.Task.Run(CreateAsyncFunc(factory, token));
+                task = t = Task.Run(CreateAsyncFunc(factory, token));
                 fastExit = false;
             }
         }
