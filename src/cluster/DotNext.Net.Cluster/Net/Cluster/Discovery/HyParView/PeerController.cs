@@ -118,7 +118,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
         var tokenSource = cancellationTokens.Combine([token, LifecycleToken]);
         try
         {
-            await queue.Writer.WriteAsync(command, token).ConfigureAwait(false);
+            await queue.Writer.WriteAsync(command, tokenSource.Token).ConfigureAwait(false);
         }
         catch (OperationCanceledException e) when (e.CausedBy(tokenSource, LifecycleToken))
         {
