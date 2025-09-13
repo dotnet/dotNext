@@ -7,9 +7,9 @@ partial class CancellationTokenMultiplexer
     private sealed class PooledCancellationTokenSource : LinkedCancellationTokenSource, IResettable
     {
         private const int Capacity = 3;
-        private (CancellationTokenRegistration, CancellationTokenRegistration, CancellationTokenRegistration) inlineList;
+        private (CancellationTokenRegistration, CancellationTokenRegistration, CancellationTokenRegistration) inlinedList;
+        private byte inlinedTokenCount;
         private List<CancellationTokenRegistration>? extraTokens;
-        private int tokenCount;
         internal PooledCancellationTokenSource? Next;
 
         public void Add(CancellationToken token)
@@ -18,24 +18,24 @@ partial class CancellationTokenMultiplexer
         private ref CancellationTokenRegistration Add()
         {
             Span<CancellationTokenRegistration> registrations;
-            var index = tokenCount;
-            if (tokenCount < Capacity)
+            int index;
+            if (inlinedTokenCount < Capacity)
             {
-                registrations = inlineList.AsSpan();
+                index = inlinedTokenCount++;
+                registrations = inlinedList.AsSpan();
             }
             else
             {
                 extraTokens ??= new();
+                index = extraTokens.Count;
                 extraTokens.Add(default);
                 registrations = CollectionsMarshal.AsSpan(extraTokens);
-                index -= Capacity;
             }
 
-            tokenCount++;
             return ref registrations[index];
         }
 
-        public int Count => tokenCount;
+        public int Count => inlinedTokenCount + extraTokens?.Count ?? 0;
 
         public ref CancellationTokenRegistration this[int index]
         {
@@ -44,7 +44,7 @@ partial class CancellationTokenMultiplexer
                 Span<CancellationTokenRegistration> registrations;
                 if (index < Capacity)
                 {
-                    registrations = inlineList.AsSpan();
+                    registrations = inlinedList.AsSpan();
                 }
                 else
                 {
@@ -58,8 +58,8 @@ partial class CancellationTokenMultiplexer
 
         public void Reset()
         {
-            tokenCount = 0;
-            inlineList = default;
+            inlinedTokenCount = 0;
+            inlinedList = default;
             extraTokens?.Clear();
         }
 
