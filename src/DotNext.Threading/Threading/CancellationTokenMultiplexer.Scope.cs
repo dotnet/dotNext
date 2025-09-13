@@ -74,7 +74,7 @@ partial class CancellationTokenMultiplexer
         /// <summary>
         /// Gets the cancellation origin if <see cref="Token"/> is in canceled state.
         /// </summary>
-        public CancellationToken CancellationOrigin => source?.Token ?? GetToken(multiplexerOrToken);
+        public CancellationToken CancellationOrigin => source?.CancellationOrigin ?? GetToken(multiplexerOrToken);
 
         /// <inheritdoc/>
         public void Dispose()
