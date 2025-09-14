@@ -27,11 +27,14 @@ internal struct ValueTaskPool<T>(long maximumRetained)
         Debug.Assert(node is { Next: null, Previous: null });
 
         if (count < maximumRetained)
-        {
-            node.Next = first;
-            first = node;
-            count++;
-        }
+            ReturnCore(node);
+    }
+
+    private void ReturnCore(LinkedValueTaskCompletionSource<T> node)
+    {
+        node.Next = first;
+        first = node;
+        count++;
     }
 
     public TNode Rent<TNode>()
