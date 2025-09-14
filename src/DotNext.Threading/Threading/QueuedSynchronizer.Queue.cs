@@ -40,7 +40,6 @@ partial class QueuedSynchronizer
         return detachedQueue.First;
     }
 
-    [MethodImpl(MethodImplOptions.NoInlining)]
     private void ReturnNode(WaitNode node)
     {
         if (node.NeedsRemoval)
@@ -51,10 +50,15 @@ partial class QueuedSynchronizer
         // the node is removed for sure, it can be returned back to the pool
         if (node.TryReset(out _) && !IsDisposingOrDisposed)
         {
-            lock (SyncRoot)
-            {
-                pool.Return(node);
-            }
+            BackToPool(node);
+        }
+    }
+
+    private void BackToPool(WaitNode node)
+    {
+        lock (SyncRoot)
+        {
+            pool.Return(node);
         }
     }
 
