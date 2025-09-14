@@ -289,7 +289,7 @@ partial class QueuedSynchronizer
                 result = new object?[length];
                 for (var index = 0L; current is not null && index < length; index++)
                 {
-                    result[index++] = current.CallerInfo;
+                    result[index] = current.CallerInfo;
                     current = current.Next as WaitNode;
                 }
             }
