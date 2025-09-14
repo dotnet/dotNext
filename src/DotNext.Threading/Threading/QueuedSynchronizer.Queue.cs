@@ -49,7 +49,7 @@ partial class QueuedSynchronizer
         }
 
         // the node is removed for sure, it can be returned back to the pool
-        if (node.TryReset(out _))
+        if (node.TryReset(out _) && !IsDisposingOrDisposed)
         {
             pool.Return(node);
         }
