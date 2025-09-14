@@ -35,6 +35,8 @@ internal struct ValueTaskPool<T>(long maximumRetained)
         node.Next = first;
         first = node;
         count++;
+
+        Debug.Assert(count >= 0L);
     }
 
     public TNode Rent<TNode>()
