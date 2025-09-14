@@ -72,14 +72,13 @@ partial class QueuedSynchronizer
 
         internal object? Capture()
         {
-            var result = Value;
-            if (result is null)
+            if (Value is { } result)
             {
-                result = Activity.Current ?? Trace.CorrelationManager.LogicalOperationStack.Peek();
+                Value = null;
             }
             else
             {
-                Value = null;
+                result = Activity.Current ?? Trace.CorrelationManager.LogicalOperationStack.Peek();
             }
 
             return result;
