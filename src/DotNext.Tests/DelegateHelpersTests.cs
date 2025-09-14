@@ -21,8 +21,8 @@ public sealed class DelegateHelpersTests : Test
     [Fact]
     public static void ChangeDelegateType()
     {
-        WaitCallback callback = static obj => { };
-        callback += static obj => { };
+        WaitCallback callback = static _ => { };
+        callback += static _ => { };
         var result = callback.ChangeType<SendOrPostCallback>();
         NotNull(result);
         var list1 = callback.GetInvocationList().Select(static d => d.Method);
@@ -602,5 +602,40 @@ public sealed class DelegateHelpersTests : Test
         Equal(42, box.Value);
         
         int ChangeValue(int value) => box.Value = value;
+    }
+    
+    [Fact]
+    public static void TryInvokeAction()
+    {
+        static MethodInfo GetMethod(int argCount)
+        {
+            const BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
+            return Single(typeof(DelegateHelpers).GetMethods(flags),
+                candidate => candidate.Name == nameof(DelegateHelpers.TryInvoke) && candidate.GetParameters().Length == argCount + 1);
+        }
+
+        var successValue = Expression.Empty();
+        var failedValue = Expression.Throw(Expression.New(typeof(ArithmeticException)), typeof(void));
+        for (var argCount = 0; argCount <= 10; argCount++)
+        {
+            var types = new Type[argCount];
+            Array.Fill(types, typeof(string));
+            var actionType = Expression.GetActionType(types);
+            var parameters = new ParameterExpression[argCount];
+            parameters.AsSpan().ForEach(static (ref ParameterExpression p, int _) => p = Expression.Parameter(typeof(string)));
+            //prepare args
+            var args = new object[parameters.LongLength + 1];
+            Array.Fill(args, string.Empty);
+            //find method to test
+            var method = types is [] ? GetMethod(argCount) : GetMethod(argCount).MakeGenericMethod(types);
+            //check success scenario
+            args[0] = Expression.Lambda(actionType, successValue, parameters).Compile();
+            var result = (Exception)method.Invoke(null, args);
+            Null(result);
+            //check failure
+            args[0] = Expression.Lambda(actionType, failedValue, parameters).Compile();
+            result = (Exception)method.Invoke(null, args);
+            IsType<ArithmeticException>(result);
+        }
     }
 }
