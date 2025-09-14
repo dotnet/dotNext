@@ -276,7 +276,7 @@ partial class QueuedSynchronizer
             length++;
         }
 
-        public IReadOnlyList<object?> GetSuspendedCallers()
+        public readonly IReadOnlyList<object?> GetSuspendedCallers()
         {
             object?[] result;
             var current = waitQueue.First as WaitNode;
