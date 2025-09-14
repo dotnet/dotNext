@@ -1,9 +1,7 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext;
-
-using ITuple = System.Runtime.CompilerServices.ITuple;
 
 /// <summary>
 /// Provides extension methods for tuples.
@@ -36,7 +34,7 @@ public static class TupleExtensions
 
     private static Span<T> TupleToSpan<T, TTuple>(ref TTuple tuple)
         where TTuple : struct, ITuple
-        => MemoryMarshal.CreateSpan(ref As<TTuple, T>(ref tuple), tuple.Length);
+        => MemoryMarshal.CreateSpan(ref Unsafe.As<TTuple, T>(ref tuple), tuple.Length);
 
     /// <summary>
     /// Obtains a span over tuple items.
@@ -90,7 +88,7 @@ public static class TupleExtensions
     /// <typeparam name="T">The type of items in the tuple.</typeparam>
     /// <returns>The span over items in the tuple.</returns>
     public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ref readonly (T, T) tuple)
-        => TupleToSpan<T, ValueTuple<T, T>>(ref AsRef(in tuple));
+        => TupleToSpan<T, ValueTuple<T, T>>(ref Unsafe.AsRef(in tuple));
 
     /// <summary>
     /// Obtains a span over tuple items.
@@ -108,7 +106,7 @@ public static class TupleExtensions
     /// <typeparam name="T">The type of items in the tuple.</typeparam>
     /// <returns>The span over items in the tuple.</returns>
     public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ref readonly (T, T, T) tuple)
-        => TupleToSpan<T, (T, T, T)>(ref AsRef(in tuple));
+        => TupleToSpan<T, (T, T, T)>(ref Unsafe.AsRef(in tuple));
 
     /// <summary>
     /// Obtains a span over tuple items.
@@ -126,7 +124,7 @@ public static class TupleExtensions
     /// <typeparam name="T">The type of items in the tuple.</typeparam>
     /// <returns>The span over items in the tuple.</returns>
     public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ref readonly (T, T, T, T) tuple)
-        => TupleToSpan<T, (T, T, T, T)>(ref AsRef(in tuple));
+        => TupleToSpan<T, (T, T, T, T)>(ref Unsafe.AsRef(in tuple));
 
     /// <summary>
     /// Obtains a span over tuple items.
@@ -144,7 +142,7 @@ public static class TupleExtensions
     /// <typeparam name="T">The type of items in the tuple.</typeparam>
     /// <returns>The span over items in the tuple.</returns>
     public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ref readonly (T, T, T, T, T) tuple)
-        => TupleToSpan<T, (T, T, T, T, T)>(ref AsRef(in tuple));
+        => TupleToSpan<T, (T, T, T, T, T)>(ref Unsafe.AsRef(in tuple));
 
     /// <summary>
     /// Obtains a span over tuple items.
@@ -162,7 +160,7 @@ public static class TupleExtensions
     /// <typeparam name="T">The type of items in the tuple.</typeparam>
     /// <returns>The span over items in the tuple.</returns>
     public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ref readonly (T, T, T, T, T, T) tuple)
-        => TupleToSpan<T, (T, T, T, T, T, T)>(ref AsRef(in tuple));
+        => TupleToSpan<T, (T, T, T, T, T, T)>(ref Unsafe.AsRef(in tuple));
 
     /// <summary>
     /// Obtains a span over tuple items.
@@ -180,5 +178,5 @@ public static class TupleExtensions
     /// <typeparam name="T">The type of items in the tuple.</typeparam>
     /// <returns>The span over items in the tuple.</returns>
     public static ReadOnlySpan<T> AsReadOnlySpan<T>(this ref readonly (T, T, T, T, T, T, T) tuple)
-        => TupleToSpan<T, (T, T, T, T, T, T, T)>(ref AsRef(in tuple));
+        => TupleToSpan<T, (T, T, T, T, T, T, T)>(ref Unsafe.AsRef(in tuple));
 }
