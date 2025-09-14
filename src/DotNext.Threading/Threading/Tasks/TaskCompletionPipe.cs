@@ -56,7 +56,10 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
 
         if (signal.TryReset(out _))
         {
-            pool.Return(signal);
+            lock (SyncRoot)
+            {
+                pool.Return(signal);
+            }
         }
     }
 

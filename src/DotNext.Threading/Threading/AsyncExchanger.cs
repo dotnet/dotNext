@@ -83,17 +83,20 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
     private void OnCompleted(ExchangePoint point)
     {
-        Monitor.Enter(SyncRoot);
-        if (ReferenceEquals(this.point, point))
+        lock (SyncRoot)
         {
-            this.point = null;
+            if (ReferenceEquals(this.point, point))
+            {
+                this.point = null;
+            }
         }
-
-        Monitor.Exit(SyncRoot);
 
         if (point.TryReset(out _))
         {
-            pool.Return(point);
+            lock (SyncRoot)
+            {
+                pool.Return(point);
+            }
         }
     }
 
