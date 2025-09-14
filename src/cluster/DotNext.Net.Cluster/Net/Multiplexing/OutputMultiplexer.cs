@@ -27,52 +27,51 @@ internal sealed class OutputMultiplexer<T>(
         init => factory = value;
     }
 
-    public Task ProcessAsync(Socket socket)
+    public async Task ProcessAsync(Socket socket)
     {
-        var task = ProcessCoreAsync(socket);
-        
-        // if output multiplexer is completed due to exception, we need to trigger
-        // the input multiplexer to handle the error
-        task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(TransportSignal.SetNoResult);
-        return task;
-    }
-
-    private async Task ProcessCoreAsync(Socket socket)
-    {
-        FrameHeader header;
-        for (var bufferedBytes = 0;; AdjustFramingBuffer(ref bufferedBytes, header, framingBuffer.Span))
+        try
         {
-            StartOperation(Timeout); // resumed by heartbeat
-            try
+            FrameHeader header;
+            for (var bufferedBytes = 0;; AdjustFramingBuffer(ref bufferedBytes, header, framingBuffer.Span))
             {
-                // read at least header
-                while (bufferedBytes < FrameHeader.Size)
+                StartOperation(Timeout); // resumed by heartbeat
+                try
                 {
-                    bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), TimeBoundedToken).ConfigureAwait(false);
+                    // read at least header
+                    while (bufferedBytes < FrameHeader.Size)
+                    {
+                        bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), TimeBoundedToken).ConfigureAwait(false);
+                    }
+
+                    header = FrameHeader.Parse(framingBuffer.Span);
+
+                    // read the fragment
+                    while (bufferedBytes < header.Length + FrameHeader.Size)
+                    {
+                        bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), TimeBoundedToken).ConfigureAwait(false);
+                    }
+                }
+                catch (OperationCanceledException e) when (IsOperationCanceled(e))
+                {
+                    throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, RootToken);
+                }
+                catch (OperationCanceledException e) when (IsOperationTimedOut(e))
+                {
+                    throw new TimeoutException(ExceptionMessages.ConnectionTimedOut, e);
+                }
+                finally
+                {
+                    await ResetOperationTimeoutAsync().ConfigureAwait(false);
                 }
 
-                header = FrameHeader.Parse(framingBuffer.Span);
-
-                // read the fragment
-                while (bufferedBytes < header.Length + FrameHeader.Size)
-                {
-                    bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), TimeBoundedToken).ConfigureAwait(false);
-                }
+                await ReadFrameAsync(header).ConfigureAwait(false);
             }
-            catch (OperationCanceledException e) when (IsOperationCanceled(e))
-            {
-                throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, RootToken);
-            }
-            catch (OperationCanceledException e) when (IsOperationTimedOut(e))
-            {
-                throw new TimeoutException(ExceptionMessages.ConnectionTimedOut, e);
-            }
-            finally
-            {
-                await ResetOperationTimeoutAsync().ConfigureAwait(false);
-            }
-
-            await ReadFrameAsync(header).ConfigureAwait(false);
+        }
+        finally
+        {
+            // if output multiplexer is completed due to exception, we need to trigger
+            // the input multiplexer to handle the error
+            TransportSignal.Set();
         }
     }
 
@@ -113,9 +112,4 @@ internal sealed class OutputMultiplexer<T>(
             .Slice(bytesWritten, bufferedBytes -= bytesWritten)
             .CopyTo(framingBuffer);
     }
-}
-
-file static class AsyncAutoResetEventExtensions
-{
-    public static void SetNoResult(this AsyncAutoResetEvent resetEvent) => resetEvent.Set();
 }
