@@ -44,18 +44,18 @@ These methods allow to turn any thread-unsafe object into thread-safe object wit
 
 ```csharp
 using System.Text;
-using DotNext.Threading;
+using static DotNext.Threading.LockAcquisition;
 
 var builder = new StringBuilder();
 
 //reader
-using (builder.AcquireReadLock())
+using (AcquireReadLock(builder))
 {
     Console.WriteLine(builder.ToString());
 }
 
 //writer
-using (builder.AcquireWriteLock())
+using (AcquireWriteLock(builder))
 {
     builder.Append("Hello, world!");
 }
