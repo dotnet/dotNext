@@ -90,16 +90,10 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_MeasurementTags">QueuedSynchronizer.MeasurementTags</a>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_ConcurrencyLevel">QueuedSynchronizer.ConcurrencyLevel</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object__">QueuedSynchronizer.TrackSuspendedCallers(Func&lt;object&gt;)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object_">QueuedSynchronizer.SetCallerInformation(object)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers">QueuedSynchronizer.GetSuspendedCallers()</a>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_HasConcurrencyLimit">QueuedSynchronizer.HasConcurrencyLimit</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_CancelSuspendedCallers_System_Threading_CancellationToken_">QueuedSynchronizer.CancelSuspendedCallers(CancellationToken)</a>
@@ -115,6 +109,18 @@
     </div>
     <div>
       <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_DisposeAsync">QueuedSynchronizer.DisposeAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object__">QueuedSynchronizer.TrackSuspendedCallers(Func&lt;object&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object_">QueuedSynchronizer.SetCallerInformation(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers">QueuedSynchronizer.GetSuspendedCallers()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_MeasurementTags">QueuedSynchronizer.MeasurementTags</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
@@ -193,7 +199,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncManualResetEvent__ctor_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncManualResetEvent.%23ctor(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L60">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L48">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncManualResetEvent__ctor_" data-uid="DotNext.Threading.AsyncManualResetEvent.#ctor*"></a>
   <h4 id="DotNext_Threading_AsyncManualResetEvent__ctor_System_Boolean_" data-uid="DotNext.Threading.AsyncManualResetEvent.#ctor(System.Boolean)">AsyncManualResetEvent(bool)</h4>
@@ -222,62 +228,6 @@
       </tr>
     </tbody>
   </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncManualResetEvent__ctor_System_Boolean_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncManualResetEvent.%23ctor(System.Boolean%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L48">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncManualResetEvent__ctor_" data-uid="DotNext.Threading.AsyncManualResetEvent.#ctor*"></a>
-  <h4 id="DotNext_Threading_AsyncManualResetEvent__ctor_System_Boolean_System_Int32_" data-uid="DotNext.Threading.AsyncManualResetEvent.#ctor(System.Boolean,System.Int32)">AsyncManualResetEvent(bool, int)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new asynchronous reset event in the specified state.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AsyncManualResetEvent(bool initialState, int concurrencyLevel)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">initialState</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to set the initial state signaled; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to set the initial state to non signaled.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">concurrencyLevel</span></td>
-        <td><p>The potential number of suspended callers.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">concurrencyLevel</code> is less than or equal to zero.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="properties">Properties
 </h3>
   <span class="small pull-right mobile-hide">
@@ -285,7 +235,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncManualResetEvent_IsSet.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncManualResetEvent.IsSet%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L83">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L62">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncManualResetEvent_IsSet_" data-uid="DotNext.Threading.AsyncManualResetEvent.IsSet*"></a>
   <h4 id="DotNext_Threading_AsyncManualResetEvent_IsSet" data-uid="DotNext.Threading.AsyncManualResetEvent.IsSet">IsSet</h4>
@@ -318,7 +268,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncManualResetEvent_Reset.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncManualResetEvent.Reset%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L121">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L100">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncManualResetEvent_Reset_" data-uid="DotNext.Threading.AsyncManualResetEvent.Reset*"></a>
   <h4 id="DotNext_Threading_AsyncManualResetEvent_Reset" data-uid="DotNext.Threading.AsyncManualResetEvent.Reset">Reset()</h4>
@@ -366,7 +316,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncManualResetEvent_Set.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncManualResetEvent.Set%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L90">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L69">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncManualResetEvent_Set_" data-uid="DotNext.Threading.AsyncManualResetEvent.Set*"></a>
   <h4 id="DotNext_Threading_AsyncManualResetEvent_Set" data-uid="DotNext.Threading.AsyncManualResetEvent.Set">Set()</h4>
@@ -414,7 +364,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncManualResetEvent_Set_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncManualResetEvent.Set(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L99">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L78">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncManualResetEvent_Set_" data-uid="DotNext.Threading.AsyncManualResetEvent.Set*"></a>
   <h4 id="DotNext_Threading_AsyncManualResetEvent_Set_System_Boolean_" data-uid="DotNext.Threading.AsyncManualResetEvent.Set(System.Boolean)">Set(bool)</h4>
@@ -481,7 +431,7 @@ and, optionally, reverts the state of the event to initial state.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncManualResetEvent_WaitAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncManualResetEvent.WaitAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L154">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L133">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncManualResetEvent_WaitAsync_" data-uid="DotNext.Threading.AsyncManualResetEvent.WaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncManualResetEvent_WaitAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncManualResetEvent.WaitAsync(System.Threading.CancellationToken)">WaitAsync(CancellationToken)</h4>
@@ -552,7 +502,7 @@ and, optionally, reverts the state of the event to initial state.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncManualResetEvent_WaitAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncManualResetEvent.WaitAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L144">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncManualResetEvent.cs/#L123">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncManualResetEvent_WaitAsync_" data-uid="DotNext.Threading.AsyncManualResetEvent.WaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncManualResetEvent_WaitAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncManualResetEvent.WaitAsync(System.TimeSpan,System.Threading.CancellationToken)">WaitAsync(TimeSpan, CancellationToken)</h4>

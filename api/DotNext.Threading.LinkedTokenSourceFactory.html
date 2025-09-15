@@ -112,19 +112,19 @@
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_LinkedTokenSourceFactory_CausedBy_System_OperationCanceledException_DotNext_Threading_LinkedCancellationTokenSource_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LinkedTokenSourceFactory.CausedBy(System.OperationCanceledException%2CDotNext.Threading.LinkedCancellationTokenSource%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_LinkedTokenSourceFactory_CausedBy__1_System_OperationCanceledException___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LinkedTokenSourceFactory.CausedBy%60%601(System.OperationCanceledException%2C%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/LinkedTokenSourceFactory.cs/#L132">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/LinkedTokenSourceFactory.cs/#L131">View Source</a>
   </span>
   <a id="DotNext_Threading_LinkedTokenSourceFactory_CausedBy_" data-uid="DotNext.Threading.LinkedTokenSourceFactory.CausedBy*"></a>
-  <h4 id="DotNext_Threading_LinkedTokenSourceFactory_CausedBy_System_OperationCanceledException_DotNext_Threading_LinkedCancellationTokenSource_System_Threading_CancellationToken_" data-uid="DotNext.Threading.LinkedTokenSourceFactory.CausedBy(System.OperationCanceledException,DotNext.Threading.LinkedCancellationTokenSource,System.Threading.CancellationToken)">CausedBy(OperationCanceledException, LinkedCancellationTokenSource?, CancellationToken)</h4>
+  <h4 id="DotNext_Threading_LinkedTokenSourceFactory_CausedBy__1_System_OperationCanceledException___0_System_Threading_CancellationToken_" data-uid="DotNext.Threading.LinkedTokenSourceFactory.CausedBy``1(System.OperationCanceledException,``0,System.Threading.CancellationToken)">CausedBy&lt;TSource&gt;(OperationCanceledException, TSource?, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Determines whether the operation was canceled by the specified source.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool CausedBy(this OperationCanceledException e, LinkedCancellationTokenSource? source, CancellationToken token)</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool CausedBy&lt;TSource&gt;(this OperationCanceledException e, TSource? source, CancellationToken token) where TSource : IMultiplexedCancellationTokenSource?</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -143,7 +143,7 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.LinkedCancellationTokenSource.html">LinkedCancellationTokenSource</a></td>
+        <td><span class="xref">TSource</span></td>
         <td><span class="parametername">source</span></td>
         <td><p>The linked token source.</p>
 </td>
@@ -172,12 +172,27 @@
       </tr>
     </tbody>
   </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TSource</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_LinkedTokenSourceFactory_LinkTo_System_Threading_CancellationToken__System_ReadOnlySpan_System_Threading_CancellationToken__.md&amp;value=---%0Auid%3A%20DotNext.Threading.LinkedTokenSourceFactory.LinkTo(System.Threading.CancellationToken%40%2CSystem.ReadOnlySpan%7BSystem.Threading.CancellationToken%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/LinkedTokenSourceFactory.cs/#L45">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/LinkedTokenSourceFactory.cs/#L44">View Source</a>
   </span>
   <a id="DotNext_Threading_LinkedTokenSourceFactory_LinkTo_" data-uid="DotNext.Threading.LinkedTokenSourceFactory.LinkTo*"></a>
   <h4 id="DotNext_Threading_LinkedTokenSourceFactory_LinkTo_System_Threading_CancellationToken__System_ReadOnlySpan_System_Threading_CancellationToken__" data-uid="DotNext.Threading.LinkedTokenSourceFactory.LinkTo(System.Threading.CancellationToken@,System.ReadOnlySpan{System.Threading.CancellationToken})">LinkTo(ref CancellationToken, ReadOnlySpan&lt;CancellationToken&gt;)</h4>
@@ -233,7 +248,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_LinkedTokenSourceFactory_LinkTo_System_Threading_CancellationToken__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LinkedTokenSourceFactory.LinkTo(System.Threading.CancellationToken%40%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/LinkedTokenSourceFactory.cs/#L18">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/LinkedTokenSourceFactory.cs/#L17">View Source</a>
   </span>
   <a id="DotNext_Threading_LinkedTokenSourceFactory_LinkTo_" data-uid="DotNext.Threading.LinkedTokenSourceFactory.LinkTo*"></a>
   <h4 id="DotNext_Threading_LinkedTokenSourceFactory_LinkTo_System_Threading_CancellationToken__System_Threading_CancellationToken_" data-uid="DotNext.Threading.LinkedTokenSourceFactory.LinkTo(System.Threading.CancellationToken@,System.Threading.CancellationToken)">LinkTo(ref CancellationToken, CancellationToken)</h4>
@@ -289,7 +304,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_LinkedTokenSourceFactory_LinkTo_System_Threading_CancellationToken__System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LinkedTokenSourceFactory.LinkTo(System.Threading.CancellationToken%40%2CSystem.TimeSpan)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/LinkedTokenSourceFactory.cs/#L75">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/LinkedTokenSourceFactory.cs/#L74">View Source</a>
   </span>
   <a id="DotNext_Threading_LinkedTokenSourceFactory_LinkTo_" data-uid="DotNext.Threading.LinkedTokenSourceFactory.LinkTo*"></a>
   <h4 id="DotNext_Threading_LinkedTokenSourceFactory_LinkTo_System_Threading_CancellationToken__System_TimeSpan_" data-uid="DotNext.Threading.LinkedTokenSourceFactory.LinkTo(System.Threading.CancellationToken@,System.TimeSpan)">LinkTo(ref CancellationToken, TimeSpan)</h4>
@@ -345,7 +360,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_LinkedTokenSourceFactory_LinkTo_System_Threading_CancellationToken__System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.LinkedTokenSourceFactory.LinkTo(System.Threading.CancellationToken%40%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/LinkedTokenSourceFactory.cs/#L100">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/LinkedTokenSourceFactory.cs/#L99">View Source</a>
   </span>
   <a id="DotNext_Threading_LinkedTokenSourceFactory_LinkTo_" data-uid="DotNext.Threading.LinkedTokenSourceFactory.LinkTo*"></a>
   <h4 id="DotNext_Threading_LinkedTokenSourceFactory_LinkTo_System_Threading_CancellationToken__System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.LinkedTokenSourceFactory.LinkTo(System.Threading.CancellationToken@,System.TimeSpan,System.Threading.CancellationToken)">LinkTo(ref CancellationToken, TimeSpan, CancellationToken)</h4>
@@ -414,7 +429,7 @@
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_LinkedTokenSourceFactory.md&amp;value=---%0Auid%3A%20DotNext.Threading.LinkedTokenSourceFactory%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/LinkedTokenSourceFactory.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/LinkedTokenSourceFactory.cs/#L9" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

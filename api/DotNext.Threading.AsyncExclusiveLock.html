@@ -88,16 +88,10 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_MeasurementTags">QueuedSynchronizer.MeasurementTags</a>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_ConcurrencyLevel">QueuedSynchronizer.ConcurrencyLevel</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object__">QueuedSynchronizer.TrackSuspendedCallers(Func&lt;object&gt;)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object_">QueuedSynchronizer.SetCallerInformation(object)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers">QueuedSynchronizer.GetSuspendedCallers()</a>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_HasConcurrencyLimit">QueuedSynchronizer.HasConcurrencyLimit</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_CancelSuspendedCallers_System_Threading_CancellationToken_">QueuedSynchronizer.CancelSuspendedCallers(CancellationToken)</a>
@@ -113,6 +107,18 @@
     </div>
     <div>
       <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_DisposeAsync">QueuedSynchronizer.DisposeAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object__">QueuedSynchronizer.TrackSuspendedCallers(Func&lt;object&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object_">QueuedSynchronizer.SetCallerInformation(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers">QueuedSynchronizer.GetSuspendedCallers()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_MeasurementTags">QueuedSynchronizer.MeasurementTags</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
@@ -191,7 +197,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncExclusiveLock__ctor.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.%23ctor%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L52">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L39">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncExclusiveLock__ctor_" data-uid="DotNext.Threading.AsyncExclusiveLock.#ctor*"></a>
   <h4 id="DotNext_Threading_AsyncExclusiveLock__ctor" data-uid="DotNext.Threading.AsyncExclusiveLock.#ctor">AsyncExclusiveLock()</h4>
@@ -202,56 +208,6 @@
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public AsyncExclusiveLock()</code></pre>
   </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncExclusiveLock__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.%23ctor(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L42">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncExclusiveLock__ctor_" data-uid="DotNext.Threading.AsyncExclusiveLock.#ctor*"></a>
-  <h4 id="DotNext_Threading_AsyncExclusiveLock__ctor_System_Int32_" data-uid="DotNext.Threading.AsyncExclusiveLock.#ctor(System.Int32)">AsyncExclusiveLock(int)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new asynchronous exclusive lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AsyncExclusiveLock(int concurrencyLevel)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">concurrencyLevel</span></td>
-        <td><p>The expected number of concurrent flows.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">concurrencyLevel</code> is less than or equal to zero.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="properties">Properties
 </h3>
   <span class="small pull-right mobile-hide">
@@ -259,7 +215,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncExclusiveLock_IsLockHeld.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.IsLockHeld%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L75">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L49">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncExclusiveLock_IsLockHeld_" data-uid="DotNext.Threading.AsyncExclusiveLock.IsLockHeld*"></a>
   <h4 id="DotNext_Threading_AsyncExclusiveLock_IsLockHeld" data-uid="DotNext.Threading.AsyncExclusiveLock.IsLockHeld">IsLockHeld</h4>
@@ -292,7 +248,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncExclusiveLock_AcquireAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.AcquireAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L170">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L144">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncExclusiveLock_AcquireAsync_" data-uid="DotNext.Threading.AsyncExclusiveLock.AcquireAsync*"></a>
   <h4 id="DotNext_Threading_AsyncExclusiveLock_AcquireAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncExclusiveLock.AcquireAsync(System.Threading.CancellationToken)">AcquireAsync(CancellationToken)</h4>
@@ -373,7 +329,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncExclusiveLock_AcquireAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.AcquireAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L158">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L132">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncExclusiveLock_AcquireAsync_" data-uid="DotNext.Threading.AsyncExclusiveLock.AcquireAsync*"></a>
   <h4 id="DotNext_Threading_AsyncExclusiveLock_AcquireAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncExclusiveLock.AcquireAsync(System.TimeSpan,System.Threading.CancellationToken)">AcquireAsync(TimeSpan, CancellationToken)</h4>
@@ -465,7 +421,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncExclusiveLock_Release.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.Release%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L257">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L209">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncExclusiveLock_Release_" data-uid="DotNext.Threading.AsyncExclusiveLock.Release*"></a>
   <h4 id="DotNext_Threading_AsyncExclusiveLock_Release" data-uid="DotNext.Threading.AsyncExclusiveLock.Release">Release()</h4>
@@ -502,7 +458,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncExclusiveLock_StealAsync_System_Object_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.StealAsync(System.Object%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L227">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L201">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncExclusiveLock_StealAsync_" data-uid="DotNext.Threading.AsyncExclusiveLock.StealAsync*"></a>
   <h4 id="DotNext_Threading_AsyncExclusiveLock_StealAsync_System_Object_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncExclusiveLock.StealAsync(System.Object,System.Threading.CancellationToken)">StealAsync(object?, CancellationToken)</h4>
@@ -554,7 +510,7 @@
     </tbody>
   </table>
   <h5 id="DotNext_Threading_AsyncExclusiveLock_StealAsync_System_Object_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p><see exception="LockStolenException"></see> will be thrown for each suspended caller in the queue.
+  <div class="markdown level1 remarks"><p><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a> will be thrown for each suspended caller in the queue.
 The method cannot interrupt the caller that has already acquired the lock. If there is no suspended callers
 in the queue, this method is equivalent to <a class="xref" href="DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_TryAcquireAsync_System_TimeSpan_System_Threading_CancellationToken_">TryAcquireAsync(TimeSpan, CancellationToken)</a>.</p>
 </div>
@@ -593,7 +549,7 @@ in the queue, this method is equivalent to <a class="xref" href="DotNext.Threadi
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncExclusiveLock_StealAsync_System_Object_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.StealAsync(System.Object%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L209">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L183">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncExclusiveLock_StealAsync_" data-uid="DotNext.Threading.AsyncExclusiveLock.StealAsync*"></a>
   <h4 id="DotNext_Threading_AsyncExclusiveLock_StealAsync_System_Object_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncExclusiveLock.StealAsync(System.Object,System.TimeSpan,System.Threading.CancellationToken)">StealAsync(object?, TimeSpan, CancellationToken)</h4>
@@ -651,7 +607,7 @@ in the queue, this method is equivalent to <a class="xref" href="DotNext.Threadi
     </tbody>
   </table>
   <h5 id="DotNext_Threading_AsyncExclusiveLock_StealAsync_System_Object_System_TimeSpan_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p><see exception="LockStolenException"></see> will be thrown for each suspended caller in the queue.
+  <div class="markdown level1 remarks"><p><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a> will be thrown for each suspended caller in the queue.
 The method cannot interrupt the caller that has already acquired the lock. If there is no suspended callers
 in the queue, this method is equivalent to <a class="xref" href="DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_TryAcquireAsync_System_TimeSpan_System_Threading_CancellationToken_">TryAcquireAsync(TimeSpan, CancellationToken)</a>.</p>
 </div>
@@ -695,7 +651,7 @@ in the queue, this method is equivalent to <a class="xref" href="DotNext.Threadi
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncExclusiveLock_TryAcquire.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.TryAcquire%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L82">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L56">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncExclusiveLock_TryAcquire_" data-uid="DotNext.Threading.AsyncExclusiveLock.TryAcquire*"></a>
   <h4 id="DotNext_Threading_AsyncExclusiveLock_TryAcquire" data-uid="DotNext.Threading.AsyncExclusiveLock.TryAcquire">TryAcquire()</h4>
@@ -743,7 +699,7 @@ in the queue, this method is equivalent to <a class="xref" href="DotNext.Threadi
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncExclusiveLock_TryAcquire_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L116">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L90">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncExclusiveLock_TryAcquire_" data-uid="DotNext.Threading.AsyncExclusiveLock.TryAcquire*"></a>
   <h4 id="DotNext_Threading_AsyncExclusiveLock_TryAcquire_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan,System.Threading.CancellationToken)">TryAcquire(TimeSpan, CancellationToken)</h4>
@@ -825,7 +781,7 @@ in the queue, this method is equivalent to <a class="xref" href="DotNext.Threadi
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncExclusiveLock_TryAcquireAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.TryAcquireAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L144">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L118">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncExclusiveLock_TryAcquireAsync_" data-uid="DotNext.Threading.AsyncExclusiveLock.TryAcquireAsync*"></a>
   <h4 id="DotNext_Threading_AsyncExclusiveLock_TryAcquireAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncExclusiveLock.TryAcquireAsync(System.TimeSpan,System.Threading.CancellationToken)">TryAcquireAsync(TimeSpan, CancellationToken)</h4>
@@ -912,7 +868,7 @@ in the queue, this method is equivalent to <a class="xref" href="DotNext.Threadi
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncExclusiveLock_TryStealAsync_System_Object_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.TryStealAsync(System.Object%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L189">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L163">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncExclusiveLock_TryStealAsync_" data-uid="DotNext.Threading.AsyncExclusiveLock.TryStealAsync*"></a>
   <h4 id="DotNext_Threading_AsyncExclusiveLock_TryStealAsync_System_Object_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncExclusiveLock.TryStealAsync(System.Object,System.TimeSpan,System.Threading.CancellationToken)">TryStealAsync(object?, TimeSpan, CancellationToken)</h4>
@@ -970,7 +926,7 @@ in the queue, this method is equivalent to <a class="xref" href="DotNext.Threadi
     </tbody>
   </table>
   <h5 id="DotNext_Threading_AsyncExclusiveLock_TryStealAsync_System_Object_System_TimeSpan_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p><see exception="LockStolenException"></see> will be thrown for each suspended caller in the queue.
+  <div class="markdown level1 remarks"><p><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a> will be thrown for each suspended caller in the queue.
 The method cannot interrupt the caller that has already acquired the lock. If there is no suspended callers
 in the queue, this method is equivalent to <a class="xref" href="DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_TryAcquireAsync_System_TimeSpan_System_Threading_CancellationToken_">TryAcquireAsync(TimeSpan, CancellationToken)</a>.</p>
 </div>
@@ -1039,7 +995,7 @@ in the queue, this method is equivalent to <a class="xref" href="DotNext.Threadi
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncExclusiveLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L12" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L11" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

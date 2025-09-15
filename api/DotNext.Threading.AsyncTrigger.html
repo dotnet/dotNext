@@ -90,16 +90,10 @@ concurrent flows.</p>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_MeasurementTags">QueuedSynchronizer.MeasurementTags</a>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_ConcurrencyLevel">QueuedSynchronizer.ConcurrencyLevel</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object__">QueuedSynchronizer.TrackSuspendedCallers(Func&lt;object&gt;)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object_">QueuedSynchronizer.SetCallerInformation(object)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers">QueuedSynchronizer.GetSuspendedCallers()</a>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_HasConcurrencyLimit">QueuedSynchronizer.HasConcurrencyLimit</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_CancelSuspendedCallers_System_Threading_CancellationToken_">QueuedSynchronizer.CancelSuspendedCallers(CancellationToken)</a>
@@ -115,6 +109,18 @@ concurrent flows.</p>
     </div>
     <div>
       <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_DisposeAsync">QueuedSynchronizer.DisposeAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object__">QueuedSynchronizer.TrackSuspendedCallers(Func&lt;object&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object_">QueuedSynchronizer.SetCallerInformation(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers">QueuedSynchronizer.GetSuspendedCallers()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_MeasurementTags">QueuedSynchronizer.MeasurementTags</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
@@ -193,7 +199,7 @@ concurrent flows.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncTrigger__ctor.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.%23ctor%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L34">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L20">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTrigger__ctor_" data-uid="DotNext.Threading.AsyncTrigger.#ctor*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger__ctor" data-uid="DotNext.Threading.AsyncTrigger.#ctor">AsyncTrigger()</h4>
@@ -204,56 +210,6 @@ concurrent flows.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public AsyncTrigger()</code></pre>
   </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncTrigger__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.%23ctor(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L44">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncTrigger__ctor_" data-uid="DotNext.Threading.AsyncTrigger.#ctor*"></a>
-  <h4 id="DotNext_Threading_AsyncTrigger__ctor_System_Int32_" data-uid="DotNext.Threading.AsyncTrigger.#ctor(System.Int32)">AsyncTrigger(int)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new trigger.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public AsyncTrigger(int concurrencyLevel)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">concurrencyLevel</span></td>
-        <td><p>The expected number of concurrent flows.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">concurrencyLevel</code> is less than or equal to zero.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="methods">Methods
 </h3>
   <span class="small pull-right mobile-hide">
@@ -261,7 +217,7 @@ concurrent flows.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncTrigger_Interrupt_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.Interrupt(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L100">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L76">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_Interrupt_" data-uid="DotNext.Threading.AsyncTrigger.Interrupt*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_Interrupt_System_Object_" data-uid="DotNext.Threading.AsyncTrigger.Interrupt(System.Object)">Interrupt(object?)</h4>
@@ -327,7 +283,7 @@ concurrent flows.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncTrigger_Signal_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.Signal(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L78">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L63">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_Signal_" data-uid="DotNext.Threading.AsyncTrigger.Signal*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_Signal_System_Boolean_" data-uid="DotNext.Threading.AsyncTrigger.Signal(System.Boolean)">Signal(bool)</h4>
@@ -394,7 +350,7 @@ concurrent flows.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_System_Boolean_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.SignalAndWaitAsync(System.Boolean%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L242">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L186">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_System_Boolean_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync(System.Boolean,System.Boolean,System.Threading.CancellationToken)">SignalAndWaitAsync(bool, bool, CancellationToken)</h4>
@@ -484,7 +440,7 @@ concurrent flows.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_System_Boolean_System_Boolean_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.SignalAndWaitAsync(System.Boolean%2CSystem.Boolean%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L169">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L160">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_SignalAndWaitAsync_System_Boolean_System_Boolean_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncTrigger.SignalAndWaitAsync(System.Boolean,System.Boolean,System.TimeSpan,System.Threading.CancellationToken)">SignalAndWaitAsync(bool, bool, TimeSpan, CancellationToken)</h4>
@@ -580,7 +536,7 @@ concurrent flows.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncTrigger_SpinWaitAsync__1___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.SpinWaitAsync%60%601(%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L309">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L267">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_SpinWaitAsync_" data-uid="DotNext.Threading.AsyncTrigger.SpinWaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_SpinWaitAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncTrigger.SpinWaitAsync``1(``0,System.Threading.CancellationToken)">SpinWaitAsync&lt;TCondition&gt;(TCondition, CancellationToken)</h4>
@@ -681,7 +637,7 @@ concurrent flows.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncTrigger_SpinWaitAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.SpinWaitAsync%60%601(%60%600%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L277">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L235">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_SpinWaitAsync_" data-uid="DotNext.Threading.AsyncTrigger.SpinWaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_SpinWaitAsync__1___0_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncTrigger.SpinWaitAsync``1(``0,System.TimeSpan,System.Threading.CancellationToken)">SpinWaitAsync&lt;TCondition&gt;(TCondition, TimeSpan, CancellationToken)</h4>
@@ -793,7 +749,7 @@ concurrent flows.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncTrigger_WaitAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.WaitAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L149">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L137">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_WaitAsync_" data-uid="DotNext.Threading.AsyncTrigger.WaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_WaitAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncTrigger.WaitAsync(System.Threading.CancellationToken)">WaitAsync(CancellationToken)</h4>
@@ -871,7 +827,7 @@ concurrent flows.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_AsyncTrigger_WaitAsync_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTrigger.WaitAsync(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L135">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTrigger.cs/#L120">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTrigger_WaitAsync_" data-uid="DotNext.Threading.AsyncTrigger.WaitAsync*"></a>
   <h4 id="DotNext_Threading_AsyncTrigger_WaitAsync_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncTrigger.WaitAsync(System.TimeSpan,System.Threading.CancellationToken)">WaitAsync(TimeSpan, CancellationToken)</h4>

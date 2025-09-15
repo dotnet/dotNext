@@ -163,11 +163,11 @@
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
   <h5 id="DotNext_Threading_QueuedSynchronizer_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class QueuedSynchronizer : Disposable, IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class QueuedSynchronizer : Disposable, IDisposable</code></pre>
   </div>
   <h5 id="DotNext_Threading_QueuedSynchronizer_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This class is designed to provide better throughput rather than optimized response time.
-It means that it minimizes contention between concurrent calls and allows to process
+It minimizes the contention between concurrent calls and allows to process
 as many concurrent requests as possible by the cost of the execution time of a single
 method for a particular caller.</p>
 </div>
@@ -175,10 +175,97 @@ method for a particular caller.</p>
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_ConcurrencyLevel.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.ConcurrencyLevel%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L40">View Source</a>
+  </span>
+  <a id="DotNext_Threading_QueuedSynchronizer_ConcurrencyLevel_" data-uid="DotNext.Threading.QueuedSynchronizer.ConcurrencyLevel*"></a>
+  <h4 id="DotNext_Threading_QueuedSynchronizer_ConcurrencyLevel" data-uid="DotNext.Threading.QueuedSynchronizer.ConcurrencyLevel">ConcurrencyLevel</h4>
+  <div class="markdown level1 summary"><p>Sets the expected number of concurrent flows.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long ConcurrencyLevel { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">value</code> is not <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> and less than 1.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_QueuedSynchronizer_ConcurrencyLevel_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_HasConcurrencyLimit">HasConcurrencyLimit</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_HasConcurrencyLimit.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.HasConcurrencyLimit%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L56">View Source</a>
+  </span>
+  <a id="DotNext_Threading_QueuedSynchronizer_HasConcurrencyLimit_" data-uid="DotNext.Threading.QueuedSynchronizer.HasConcurrencyLimit*"></a>
+  <h4 id="DotNext_Threading_QueuedSynchronizer_HasConcurrencyLimit" data-uid="DotNext.Threading.QueuedSynchronizer.HasConcurrencyLimit">HasConcurrencyLimit</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating that the async caller must get <a class="xref" href="DotNext.Threading.ConcurrencyLimitReachedException.html">ConcurrencyLimitReachedException</a>
+instead the suspension if the internal queue has the number of suspended callers larger than <a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_ConcurrencyLevel">ConcurrencyLevel</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool HasConcurrencyLimit { get; init; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_QueuedSynchronizer_HasConcurrencyLimit_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_ConcurrencyLevel">ConcurrencyLevel</a></div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_MeasurementTags.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.MeasurementTags%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L55">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.Metrics.cs/#L20">View Source</a>
   </span>
   <a id="DotNext_Threading_QueuedSynchronizer_MeasurementTags_" data-uid="DotNext.Threading.QueuedSynchronizer.MeasurementTags*"></a>
   <h4 id="DotNext_Threading_QueuedSynchronizer_MeasurementTags" data-uid="DotNext.Threading.QueuedSynchronizer.MeasurementTags">MeasurementTags</h4>
@@ -212,7 +299,7 @@ public TagList MeasurementTags { init; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_CancelSuspendedCallers_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.CancelSuspendedCallers(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L296">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L71">View Source</a>
   </span>
   <a id="DotNext_Threading_QueuedSynchronizer_CancelSuspendedCallers_" data-uid="DotNext.Threading.QueuedSynchronizer.CancelSuspendedCallers*"></a>
   <h4 id="DotNext_Threading_QueuedSynchronizer_CancelSuspendedCallers_System_Threading_CancellationToken_" data-uid="DotNext.Threading.QueuedSynchronizer.CancelSuspendedCallers(System.Threading.CancellationToken)">CancelSuspendedCallers(CancellationToken)</h4>
@@ -267,7 +354,7 @@ public TagList MeasurementTags { init; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L373">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L125">View Source</a>
   </span>
   <a id="DotNext_Threading_QueuedSynchronizer_Dispose_" data-uid="DotNext.Threading.QueuedSynchronizer.Dispose*"></a>
   <h4 id="DotNext_Threading_QueuedSynchronizer_Dispose_System_Boolean_" data-uid="DotNext.Threading.QueuedSynchronizer.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -306,7 +393,7 @@ public TagList MeasurementTags { init; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_Dispose_System_Exception_.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.Dispose(System.Exception)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L380">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L132">View Source</a>
   </span>
   <a id="DotNext_Threading_QueuedSynchronizer_Dispose_" data-uid="DotNext.Threading.QueuedSynchronizer.Dispose*"></a>
   <h4 id="DotNext_Threading_QueuedSynchronizer_Dispose_System_Exception_" data-uid="DotNext.Threading.QueuedSynchronizer.Dispose(System.Exception)">Dispose(Exception?)</h4>
@@ -330,7 +417,7 @@ public TagList MeasurementTags { init; }</code></pre>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
         <td><span class="parametername">reason</span></td>
-        <td><p>The exeption to be passed to all suspended callers.</p>
+        <td><p>The exception to be passed to all suspended callers.</p>
 </td>
       </tr>
     </tbody>
@@ -340,7 +427,7 @@ public TagList MeasurementTags { init; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.DisposeAsync%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L413">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L165">View Source</a>
   </span>
   <a id="DotNext_Threading_QueuedSynchronizer_DisposeAsync_" data-uid="DotNext.Threading.QueuedSynchronizer.DisposeAsync*"></a>
   <h4 id="DotNext_Threading_QueuedSynchronizer_DisposeAsync" data-uid="DotNext.Threading.QueuedSynchronizer.DisposeAsync">DisposeAsync()</h4>
@@ -372,7 +459,7 @@ public TagList MeasurementTags { init; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_DisposeAsyncCore.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.DisposeAsyncCore%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L389">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L141">View Source</a>
   </span>
   <a id="DotNext_Threading_QueuedSynchronizer_DisposeAsyncCore_" data-uid="DotNext.Threading.QueuedSynchronizer.DisposeAsyncCore*"></a>
   <h4 id="DotNext_Threading_QueuedSynchronizer_DisposeAsyncCore" data-uid="DotNext.Threading.QueuedSynchronizer.DisposeAsyncCore">DisposeAsyncCore()</h4>
@@ -409,7 +496,7 @@ public TagList MeasurementTags { init; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.GetSuspendedCallers%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L129">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.DebugSupport.cs/#L57">View Source</a>
   </span>
   <a id="DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers_" data-uid="DotNext.Threading.QueuedSynchronizer.GetSuspendedCallers*"></a>
   <h4 id="DotNext_Threading_QueuedSynchronizer_GetSuspendedCallers" data-uid="DotNext.Threading.QueuedSynchronizer.GetSuspendedCallers">GetSuspendedCallers()</h4>
@@ -448,7 +535,7 @@ public TagList MeasurementTags { init; }</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.SetCallerInformation(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L89">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.DebugSupport.cs/#L29">View Source</a>
   </span>
   <a id="DotNext_Threading_QueuedSynchronizer_SetCallerInformation_" data-uid="DotNext.Threading.QueuedSynchronizer.SetCallerInformation*"></a>
   <h4 id="DotNext_Threading_QueuedSynchronizer_SetCallerInformation_System_Object_" data-uid="DotNext.Threading.QueuedSynchronizer.SetCallerInformation(System.Object)">SetCallerInformation(object)</h4>
@@ -486,7 +573,7 @@ public void SetCallerInformation(object information)</code></pre>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object__.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer.TrackSuspendedCallers(System.Func%7BSystem.Object%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L77">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.DebugSupport.cs/#L17">View Source</a>
   </span>
   <a id="DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_" data-uid="DotNext.Threading.QueuedSynchronizer.TrackSuspendedCallers*"></a>
   <h4 id="DotNext_Threading_QueuedSynchronizer_TrackSuspendedCallers_System_Func_System_Object__" data-uid="DotNext.Threading.QueuedSynchronizer.TrackSuspendedCallers(System.Func{System.Object})">TrackSuspendedCallers(Func&lt;object&gt;?)</h4>
@@ -551,7 +638,7 @@ public void TrackSuspendedCallers(Func&lt;object&gt;? callerInfoProvider = null)
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_QueuedSynchronizer.md&amp;value=---%0Auid%3A%20DotNext.Threading.QueuedSynchronizer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.cs/#L22" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/QueuedSynchronizer.WaitNode.cs/#L7" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

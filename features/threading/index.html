@@ -120,24 +120,24 @@ using (await asyncLock.AcquireAsync(CancellationToken.None))
 <li><code>AcquireWriteLockAsync</code> acquires exclusive lock asynchronously</li>
 </ul>
 <p>These methods allow to turn any thread-unsafe object into thread-safe object with precise control in context of multithreading access.</p>
-<pre><code class="lang-csharp">using DotNext.Threading;
-using System.Text;
+<pre><code class="lang-csharp">using System.Text;
+using static DotNext.Threading.AsyncLockAcquisition;
 
 var builder = new StringBuilder();
 
 //reader
-using (builder.AcquireReadLockAsync(CancellationToken.None))
+using (AcquireReadLockAsync(builder, CancellationToken.None))
 {
     Console.WriteLine(builder.ToString());
 }
 
 //writer
-using (builder.AcquireWriteLockAsync(CancellationToken.None))
+using (AcquireWriteLockAsync(builder, CancellationToken.None))
 {
     builder.Append(&quot;Hello, world!&quot;);
 }
 </code></pre>
-<p>For more information check extension methods inside of <a class="xref" href="../../api/DotNext.Threading.LockAcquisition.html">AsyncLockAcquisition</a> class.</p>
+<p>For more information check extension methods inside the <a class="xref" href="../../api/DotNext.Threading.AsyncLockAcquisition.html">AsyncLockAcquisition</a> class.</p>
 <h1 id="custom-synchronization-primitive">Custom synchronization primitive</h1>
 <p><a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer-1.html">QueuedSynchronizer&lt;TContext&gt;</a> provides low-level infrastructure for writing custom synchronization primitives for asynchronous code. It uses the same <a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer.html">synchronization engine</a> as other primitives shipped with the library: <a class="xref" href="../../api/DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a>, <a class="xref" href="../../api/DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a>, etc. The following example demonstrates how to write custom async-aware reader-writer lock:</p>
 <pre><code class="lang-csharp">using DotNext.Threading;
@@ -180,14 +180,22 @@ class MyExclusiveLock : QueuedSynchronizer&lt;bool&gt;
         =&gt; readersCount = writeLock ? 0 : readersCount - 1;
 }
 </code></pre>
+<h1 id="concurrency-limit">Concurrency Limit</h1>
+<p><code>AcquireAsync</code> or <code>WaitAsync</code> methods exposed by async synchronization primitives, suspend the caller. The suspended caller is a slot within the internal wait queue maintained by <a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer.html">QueuedSynchronizer</a> class. By default, the number of suspended callers in the queue is unlimited. For rate limiting purposes, the limit on the queue size can be established:</p>
+<pre><code class="lang-csharp">var exclusiveLock = new AsyncExclusiveLock()
+{
+    ConcurrencyLevel = 10, // the number of the suspended callers in the queue
+    HasConcurrencyLimit = true, // tells that the queue size is limited
+};
+</code></pre>
+<p>In the example above, if 11th caller cannot acquire the lock immediately, <code>AcquireAsync</code> method throws <a class="xref" href="../../api/DotNext.Threading.ConcurrencyLimitReachedException.html">ConcurrencyLimitReachedException</a> exception. If <code>HasConcurrencyLimit</code> is set to <strong>false</strong>, the <code>ConcurrencyLevel</code> only limits the internal pool of the wait nodes, but not the queue size.</p>
 <h1 id="diagnostics">Diagnostics</h1>
-<p>All synchronization primitives for asynchronous code mostly derive from <a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer.html">QueuedSynchronized</a> class that exposes a set of important diagnostics counters:</p>
+<p>All synchronization primitives for asynchronous code mostly derive from <a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer.html">QueuedSynchronizer</a> class that exposes a set of important diagnostics counters:</p>
 <ul>
 <li><code>LockContentionCounter</code> allows to measure a number of lock contentions detected in the specified time period</li>
-<li><code>LockDurationCounter</code> allows to measure the amount of time spend by the suspended caller in the suspended state</li>
 </ul>
 <h1 id="debugging">Debugging</h1>
-<p>In addition to diagnostics tools, <a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer.html">QueuedSynchronized</a> and all its derived classes support a rich set of debugging tools:</p>
+<p>In addition to diagnostics tools, <a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer.html">QueuedSynchronizer</a> and all its derived classes support a rich set of debugging tools:</p>
 <ul>
 <li><code>TrackSuspendedCallers</code> method allows to enable tracking information about suspended caller. This method has effect only when building project using <code>Debug</code> configuration</li>
 <li><code>SetCallerInformation</code> method allows to associate information with the caller if it will be suspended during the call of <code>WaitAsync</code>. This method has effect only when building project using <code>Debug</code> configuration</li>

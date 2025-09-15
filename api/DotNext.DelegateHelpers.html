@@ -5827,6 +5827,1271 @@ in expression tree.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_TryInvoke_System_Action_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.TryInvoke(System.Action)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Action.cs/#L10">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_TryInvoke_" data-uid="DotNext.DelegateHelpers.TryInvoke*"></a>
+  <h4 id="DotNext_DelegateHelpers_TryInvoke_System_Action_" data-uid="DotNext.DelegateHelpers.TryInvoke(System.Action)">TryInvoke(Action)</h4>
+  <div class="markdown level1 summary"><p>Invokes the action without throwing the exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Exception? TryInvoke(this Action action)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action">Action</a></td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The action to be invoked.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><p>The exception caused by <code class="paramref">action</code>; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if the delegate is called successfully.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_TryInvoke__1_System_Action___0____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.TryInvoke%60%601(System.Action%7B%60%600%7D%2C%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Action.cs/#L32">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_TryInvoke_" data-uid="DotNext.DelegateHelpers.TryInvoke*"></a>
+  <h4 id="DotNext_DelegateHelpers_TryInvoke__1_System_Action___0____0_" data-uid="DotNext.DelegateHelpers.TryInvoke``1(System.Action{``0},``0)">TryInvoke&lt;T&gt;(Action&lt;T&gt;, T)</h4>
+  <div class="markdown level1 summary"><p>Invokes the action without throwing the exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Exception? TryInvoke&lt;T&gt;(this Action&lt;T&gt; action, T arg)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;T&gt;</td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The action to be invoked.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">arg</span></td>
+        <td><p>The first action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><p>The exception caused by <code class="paramref">action</code>; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if the delegate is called successfully.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the first action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_TryInvoke__10_System_Action___0___1___2___3___4___5___6___7___8___9____0___1___2___3___4___5___6___7___8___9_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.TryInvoke%60%6010(System.Action%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%2C%60%609)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Action.cs/#L324">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_TryInvoke_" data-uid="DotNext.DelegateHelpers.TryInvoke*"></a>
+  <h4 id="DotNext_DelegateHelpers_TryInvoke__10_System_Action___0___1___2___3___4___5___6___7___8___9____0___1___2___3___4___5___6___7___8___9_" data-uid="DotNext.DelegateHelpers.TryInvoke``10(System.Action{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9},``0,``1,``2,``3,``4,``5,``6,``7,``8,``9)">TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;(Action&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)</h4>
+  <div class="markdown level1 summary"><p>Invokes the action without throwing the exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Exception? TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;(this Action&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt; action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-10">Action</a>&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9, T10&gt;</td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The action to be invoked.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T6</span></td>
+        <td><span class="parametername">arg6</span></td>
+        <td><p>The sixth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T7</span></td>
+        <td><span class="parametername">arg7</span></td>
+        <td><p>The seventh action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T8</span></td>
+        <td><span class="parametername">arg8</span></td>
+        <td><p>The seventh action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T9</span></td>
+        <td><span class="parametername">arg9</span></td>
+        <td><p>The ninth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T10</span></td>
+        <td><span class="parametername">arg10</span></td>
+        <td><p>The tenth action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><p>The exception caused by <code class="paramref">action</code>; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if the delegate is called successfully.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T6</span></td>
+        <td><p>The type of the sixth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T7</span></td>
+        <td><p>The type of the seventh action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T8</span></td>
+        <td><p>The type of the eighth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T9</span></td>
+        <td><p>The type of the ninth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T10</span></td>
+        <td><p>The type of the tenth action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_TryInvoke__2_System_Action___0___1____0___1_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.TryInvoke%60%602(System.Action%7B%60%600%2C%60%601%7D%2C%60%600%2C%60%601)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Action.cs/#L56">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_TryInvoke_" data-uid="DotNext.DelegateHelpers.TryInvoke*"></a>
+  <h4 id="DotNext_DelegateHelpers_TryInvoke__2_System_Action___0___1____0___1_" data-uid="DotNext.DelegateHelpers.TryInvoke``2(System.Action{``0,``1},``0,``1)">TryInvoke&lt;T1, T2&gt;(Action&lt;T1, T2&gt;, T1, T2)</h4>
+  <div class="markdown level1 summary"><p>Invokes the action without throwing the exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Exception? TryInvoke&lt;T1, T2&gt;(this Action&lt;T1, T2&gt; action, T1 arg1, T2 arg2)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-2">Action</a>&lt;T1, T2&gt;</td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The action to be invoked.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><p>The exception caused by <code class="paramref">action</code>; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if the delegate is called successfully.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_TryInvoke__3_System_Action___0___1___2____0___1___2_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.TryInvoke%60%603(System.Action%7B%60%600%2C%60%601%2C%60%602%7D%2C%60%600%2C%60%601%2C%60%602)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Action.cs/#L82">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_TryInvoke_" data-uid="DotNext.DelegateHelpers.TryInvoke*"></a>
+  <h4 id="DotNext_DelegateHelpers_TryInvoke__3_System_Action___0___1___2____0___1___2_" data-uid="DotNext.DelegateHelpers.TryInvoke``3(System.Action{``0,``1,``2},``0,``1,``2)">TryInvoke&lt;T1, T2, T3&gt;(Action&lt;T1, T2, T3&gt;, T1, T2, T3)</h4>
+  <div class="markdown level1 summary"><p>Invokes the action without throwing the exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Exception? TryInvoke&lt;T1, T2, T3&gt;(this Action&lt;T1, T2, T3&gt; action, T1 arg1, T2 arg2, T3 arg3)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-3">Action</a>&lt;T1, T2, T3&gt;</td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The action to be invoked.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><p>The exception caused by <code class="paramref">action</code>; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if the delegate is called successfully.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_TryInvoke__4_System_Action___0___1___2___3____0___1___2___3_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.TryInvoke%60%604(System.Action%7B%60%600%2C%60%601%2C%60%602%2C%60%603%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Action.cs/#L110">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_TryInvoke_" data-uid="DotNext.DelegateHelpers.TryInvoke*"></a>
+  <h4 id="DotNext_DelegateHelpers_TryInvoke__4_System_Action___0___1___2___3____0___1___2___3_" data-uid="DotNext.DelegateHelpers.TryInvoke``4(System.Action{``0,``1,``2,``3},``0,``1,``2,``3)">TryInvoke&lt;T1, T2, T3, T4&gt;(Action&lt;T1, T2, T3, T4&gt;, T1, T2, T3, T4)</h4>
+  <div class="markdown level1 summary"><p>Invokes the action without throwing the exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Exception? TryInvoke&lt;T1, T2, T3, T4&gt;(this Action&lt;T1, T2, T3, T4&gt; action, T1 arg1, T2 arg2, T3 arg3, T4 arg4)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-4">Action</a>&lt;T1, T2, T3, T4&gt;</td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The action to be invoked.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><p>The exception caused by <code class="paramref">action</code>; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if the delegate is called successfully.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_TryInvoke__5_System_Action___0___1___2___3___4____0___1___2___3___4_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.TryInvoke%60%605(System.Action%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Action.cs/#L140">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_TryInvoke_" data-uid="DotNext.DelegateHelpers.TryInvoke*"></a>
+  <h4 id="DotNext_DelegateHelpers_TryInvoke__5_System_Action___0___1___2___3___4____0___1___2___3___4_" data-uid="DotNext.DelegateHelpers.TryInvoke``5(System.Action{``0,``1,``2,``3,``4},``0,``1,``2,``3,``4)">TryInvoke&lt;T1, T2, T3, T4, T5&gt;(Action&lt;T1, T2, T3, T4, T5&gt;, T1, T2, T3, T4, T5)</h4>
+  <div class="markdown level1 summary"><p>Invokes the action without throwing the exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Exception? TryInvoke&lt;T1, T2, T3, T4, T5&gt;(this Action&lt;T1, T2, T3, T4, T5&gt; action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-5">Action</a>&lt;T1, T2, T3, T4, T5&gt;</td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The action to be invoked.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><p>The exception caused by <code class="paramref">action</code>; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if the delegate is called successfully.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_TryInvoke__6_System_Action___0___1___2___3___4___5____0___1___2___3___4___5_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.TryInvoke%60%606(System.Action%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Action.cs/#L172">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_TryInvoke_" data-uid="DotNext.DelegateHelpers.TryInvoke*"></a>
+  <h4 id="DotNext_DelegateHelpers_TryInvoke__6_System_Action___0___1___2___3___4___5____0___1___2___3___4___5_" data-uid="DotNext.DelegateHelpers.TryInvoke``6(System.Action{``0,``1,``2,``3,``4,``5},``0,``1,``2,``3,``4,``5)">TryInvoke&lt;T1, T2, T3, T4, T5, T6&gt;(Action&lt;T1, T2, T3, T4, T5, T6&gt;, T1, T2, T3, T4, T5, T6)</h4>
+  <div class="markdown level1 summary"><p>Invokes the action without throwing the exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Exception? TryInvoke&lt;T1, T2, T3, T4, T5, T6&gt;(this Action&lt;T1, T2, T3, T4, T5, T6&gt; action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-6">Action</a>&lt;T1, T2, T3, T4, T5, T6&gt;</td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The action to be invoked.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T6</span></td>
+        <td><span class="parametername">arg6</span></td>
+        <td><p>The sixth action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><p>The exception caused by <code class="paramref">action</code>; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if the delegate is called successfully.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T6</span></td>
+        <td><p>The type of the sixth action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_TryInvoke__7_System_Action___0___1___2___3___4___5___6____0___1___2___3___4___5___6_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.TryInvoke%60%607(System.Action%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Action.cs/#L207">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_TryInvoke_" data-uid="DotNext.DelegateHelpers.TryInvoke*"></a>
+  <h4 id="DotNext_DelegateHelpers_TryInvoke__7_System_Action___0___1___2___3___4___5___6____0___1___2___3___4___5___6_" data-uid="DotNext.DelegateHelpers.TryInvoke``7(System.Action{``0,``1,``2,``3,``4,``5,``6},``0,``1,``2,``3,``4,``5,``6)">TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7&gt;(Action&lt;T1, T2, T3, T4, T5, T6, T7&gt;, T1, T2, T3, T4, T5, T6, T7)</h4>
+  <div class="markdown level1 summary"><p>Invokes the action without throwing the exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Exception? TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7&gt;(this Action&lt;T1, T2, T3, T4, T5, T6, T7&gt; action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-7">Action</a>&lt;T1, T2, T3, T4, T5, T6, T7&gt;</td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The action to be invoked.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T6</span></td>
+        <td><span class="parametername">arg6</span></td>
+        <td><p>The sixth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T7</span></td>
+        <td><span class="parametername">arg7</span></td>
+        <td><p>The seventh action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><p>The exception caused by <code class="paramref">action</code>; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if the delegate is called successfully.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T6</span></td>
+        <td><p>The type of the sixth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T7</span></td>
+        <td><p>The type of the seventh action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_TryInvoke__8_System_Action___0___1___2___3___4___5___6___7____0___1___2___3___4___5___6___7_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.TryInvoke%60%608(System.Action%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Action.cs/#L244">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_TryInvoke_" data-uid="DotNext.DelegateHelpers.TryInvoke*"></a>
+  <h4 id="DotNext_DelegateHelpers_TryInvoke__8_System_Action___0___1___2___3___4___5___6___7____0___1___2___3___4___5___6___7_" data-uid="DotNext.DelegateHelpers.TryInvoke``8(System.Action{``0,``1,``2,``3,``4,``5,``6,``7},``0,``1,``2,``3,``4,``5,``6,``7)">TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;(Action&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;, T1, T2, T3, T4, T5, T6, T7, T8)</h4>
+  <div class="markdown level1 summary"><p>Invokes the action without throwing the exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Exception? TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;(this Action&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt; action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-8">Action</a>&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;</td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The action to be invoked.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T6</span></td>
+        <td><span class="parametername">arg6</span></td>
+        <td><p>The sixth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T7</span></td>
+        <td><span class="parametername">arg7</span></td>
+        <td><p>The seventh action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T8</span></td>
+        <td><span class="parametername">arg8</span></td>
+        <td><p>The seventh action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><p>The exception caused by <code class="paramref">action</code>; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if the delegate is called successfully.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T6</span></td>
+        <td><p>The type of the sixth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T7</span></td>
+        <td><p>The type of the seventh action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T8</span></td>
+        <td><p>The type of the eighth action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_TryInvoke__9_System_Action___0___1___2___3___4___5___6___7___8____0___1___2___3___4___5___6___7___8_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.TryInvoke%60%609(System.Action%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608%7D%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/DelegateHelpers.Action.cs/#L283">View Source</a>
+  </span>
+  <a id="DotNext_DelegateHelpers_TryInvoke_" data-uid="DotNext.DelegateHelpers.TryInvoke*"></a>
+  <h4 id="DotNext_DelegateHelpers_TryInvoke__9_System_Action___0___1___2___3___4___5___6___7___8____0___1___2___3___4___5___6___7___8_" data-uid="DotNext.DelegateHelpers.TryInvoke``9(System.Action{``0,``1,``2,``3,``4,``5,``6,``7,``8},``0,``1,``2,``3,``4,``5,``6,``7,``8)">TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(Action&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;, T1, T2, T3, T4, T5, T6, T7, T8, T9)</h4>
+  <div class="markdown level1 summary"><p>Invokes the action without throwing the exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Exception? TryInvoke&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(this Action&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt; action, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.action-9">Action</a>&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;</td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The action to be invoked.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T1</span></td>
+        <td><span class="parametername">arg1</span></td>
+        <td><p>The first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T2</span></td>
+        <td><span class="parametername">arg2</span></td>
+        <td><p>The second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T3</span></td>
+        <td><span class="parametername">arg3</span></td>
+        <td><p>The third action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T4</span></td>
+        <td><span class="parametername">arg4</span></td>
+        <td><p>The fourth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T5</span></td>
+        <td><span class="parametername">arg5</span></td>
+        <td><p>The fifth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T6</span></td>
+        <td><span class="parametername">arg6</span></td>
+        <td><p>The sixth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T7</span></td>
+        <td><span class="parametername">arg7</span></td>
+        <td><p>The seventh action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T8</span></td>
+        <td><span class="parametername">arg8</span></td>
+        <td><p>The seventh action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T9</span></td>
+        <td><span class="parametername">arg9</span></td>
+        <td><p>The ninth action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><p>The exception caused by <code class="paramref">action</code>; or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>, if the delegate is called successfully.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T6</span></td>
+        <td><p>The type of the sixth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T7</span></td>
+        <td><p>The type of the seventh action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T8</span></td>
+        <td><p>The type of the eighth action argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T9</span></td>
+        <td><p>The type of the ninth action argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_DelegateHelpers_Unbind__1_System_Action_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%601(System.Action)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">

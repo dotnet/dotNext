@@ -10453,6 +10453,109 @@ references:
   fullName.vb: DotNext.DelegateHelpers.ToAsync(Of T1, T2, TResult)(System.Func(Of T1, T2, TResult))
   nameWithType: DelegateHelpers.ToAsync<T1, T2, TResult>(Func<T1, T2, TResult>)
   nameWithType.vb: DelegateHelpers.ToAsync(Of T1, T2, TResult)(Func(Of T1, T2, TResult))
+- uid: DotNext.DelegateHelpers.TryInvoke(System.Action)
+  name: TryInvoke(Action)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_TryInvoke_System_Action_
+  commentId: M:DotNext.DelegateHelpers.TryInvoke(System.Action)
+  fullName: DotNext.DelegateHelpers.TryInvoke(System.Action)
+  nameWithType: DelegateHelpers.TryInvoke(Action)
+- uid: DotNext.DelegateHelpers.TryInvoke*
+  name: TryInvoke
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_TryInvoke_
+  commentId: Overload:DotNext.DelegateHelpers.TryInvoke
+  isSpec: "True"
+  fullName: DotNext.DelegateHelpers.TryInvoke
+  nameWithType: DelegateHelpers.TryInvoke
+- uid: DotNext.DelegateHelpers.TryInvoke``1(System.Action{``0},``0)
+  name: TryInvoke<T>(Action<T>, T)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_TryInvoke__1_System_Action___0____0_
+  commentId: M:DotNext.DelegateHelpers.TryInvoke``1(System.Action{``0},``0)
+  name.vb: TryInvoke(Of T)(Action(Of T), T)
+  fullName: DotNext.DelegateHelpers.TryInvoke<T>(System.Action<T>, T)
+  fullName.vb: DotNext.DelegateHelpers.TryInvoke(Of T)(System.Action(Of T), T)
+  nameWithType: DelegateHelpers.TryInvoke<T>(Action<T>, T)
+  nameWithType.vb: DelegateHelpers.TryInvoke(Of T)(Action(Of T), T)
+- uid: DotNext.DelegateHelpers.TryInvoke``10(System.Action{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9},``0,``1,``2,``3,``4,``5,``6,``7,``8,``9)
+  name: TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_TryInvoke__10_System_Action___0___1___2___3___4___5___6___7___8___9____0___1___2___3___4___5___6___7___8___9_
+  commentId: M:DotNext.DelegateHelpers.TryInvoke``10(System.Action{``0,``1,``2,``3,``4,``5,``6,``7,``8,``9},``0,``1,``2,``3,``4,``5,``6,``7,``8,``9)
+  name.vb: TryInvoke(Of T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)(Action(Of T1, T2, T3, T4, T5, T6, T7, T8, T9, T10), T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)
+  fullName: DotNext.DelegateHelpers.TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(System.Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)
+  fullName.vb: DotNext.DelegateHelpers.TryInvoke(Of T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)(System.Action(Of T1, T2, T3, T4, T5, T6, T7, T8, T9, T10), T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)
+  nameWithType: DelegateHelpers.TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)
+  nameWithType.vb: DelegateHelpers.TryInvoke(Of T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)(Action(Of T1, T2, T3, T4, T5, T6, T7, T8, T9, T10), T1, T2, T3, T4, T5, T6, T7, T8, T9, T10)
+- uid: DotNext.DelegateHelpers.TryInvoke``2(System.Action{``0,``1},``0,``1)
+  name: TryInvoke<T1, T2>(Action<T1, T2>, T1, T2)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_TryInvoke__2_System_Action___0___1____0___1_
+  commentId: M:DotNext.DelegateHelpers.TryInvoke``2(System.Action{``0,``1},``0,``1)
+  name.vb: TryInvoke(Of T1, T2)(Action(Of T1, T2), T1, T2)
+  fullName: DotNext.DelegateHelpers.TryInvoke<T1, T2>(System.Action<T1, T2>, T1, T2)
+  fullName.vb: DotNext.DelegateHelpers.TryInvoke(Of T1, T2)(System.Action(Of T1, T2), T1, T2)
+  nameWithType: DelegateHelpers.TryInvoke<T1, T2>(Action<T1, T2>, T1, T2)
+  nameWithType.vb: DelegateHelpers.TryInvoke(Of T1, T2)(Action(Of T1, T2), T1, T2)
+- uid: DotNext.DelegateHelpers.TryInvoke``3(System.Action{``0,``1,``2},``0,``1,``2)
+  name: TryInvoke<T1, T2, T3>(Action<T1, T2, T3>, T1, T2, T3)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_TryInvoke__3_System_Action___0___1___2____0___1___2_
+  commentId: M:DotNext.DelegateHelpers.TryInvoke``3(System.Action{``0,``1,``2},``0,``1,``2)
+  name.vb: TryInvoke(Of T1, T2, T3)(Action(Of T1, T2, T3), T1, T2, T3)
+  fullName: DotNext.DelegateHelpers.TryInvoke<T1, T2, T3>(System.Action<T1, T2, T3>, T1, T2, T3)
+  fullName.vb: DotNext.DelegateHelpers.TryInvoke(Of T1, T2, T3)(System.Action(Of T1, T2, T3), T1, T2, T3)
+  nameWithType: DelegateHelpers.TryInvoke<T1, T2, T3>(Action<T1, T2, T3>, T1, T2, T3)
+  nameWithType.vb: DelegateHelpers.TryInvoke(Of T1, T2, T3)(Action(Of T1, T2, T3), T1, T2, T3)
+- uid: DotNext.DelegateHelpers.TryInvoke``4(System.Action{``0,``1,``2,``3},``0,``1,``2,``3)
+  name: TryInvoke<T1, T2, T3, T4>(Action<T1, T2, T3, T4>, T1, T2, T3, T4)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_TryInvoke__4_System_Action___0___1___2___3____0___1___2___3_
+  commentId: M:DotNext.DelegateHelpers.TryInvoke``4(System.Action{``0,``1,``2,``3},``0,``1,``2,``3)
+  name.vb: TryInvoke(Of T1, T2, T3, T4)(Action(Of T1, T2, T3, T4), T1, T2, T3, T4)
+  fullName: DotNext.DelegateHelpers.TryInvoke<T1, T2, T3, T4>(System.Action<T1, T2, T3, T4>, T1, T2, T3, T4)
+  fullName.vb: DotNext.DelegateHelpers.TryInvoke(Of T1, T2, T3, T4)(System.Action(Of T1, T2, T3, T4), T1, T2, T3, T4)
+  nameWithType: DelegateHelpers.TryInvoke<T1, T2, T3, T4>(Action<T1, T2, T3, T4>, T1, T2, T3, T4)
+  nameWithType.vb: DelegateHelpers.TryInvoke(Of T1, T2, T3, T4)(Action(Of T1, T2, T3, T4), T1, T2, T3, T4)
+- uid: DotNext.DelegateHelpers.TryInvoke``5(System.Action{``0,``1,``2,``3,``4},``0,``1,``2,``3,``4)
+  name: TryInvoke<T1, T2, T3, T4, T5>(Action<T1, T2, T3, T4, T5>, T1, T2, T3, T4, T5)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_TryInvoke__5_System_Action___0___1___2___3___4____0___1___2___3___4_
+  commentId: M:DotNext.DelegateHelpers.TryInvoke``5(System.Action{``0,``1,``2,``3,``4},``0,``1,``2,``3,``4)
+  name.vb: TryInvoke(Of T1, T2, T3, T4, T5)(Action(Of T1, T2, T3, T4, T5), T1, T2, T3, T4, T5)
+  fullName: DotNext.DelegateHelpers.TryInvoke<T1, T2, T3, T4, T5>(System.Action<T1, T2, T3, T4, T5>, T1, T2, T3, T4, T5)
+  fullName.vb: DotNext.DelegateHelpers.TryInvoke(Of T1, T2, T3, T4, T5)(System.Action(Of T1, T2, T3, T4, T5), T1, T2, T3, T4, T5)
+  nameWithType: DelegateHelpers.TryInvoke<T1, T2, T3, T4, T5>(Action<T1, T2, T3, T4, T5>, T1, T2, T3, T4, T5)
+  nameWithType.vb: DelegateHelpers.TryInvoke(Of T1, T2, T3, T4, T5)(Action(Of T1, T2, T3, T4, T5), T1, T2, T3, T4, T5)
+- uid: DotNext.DelegateHelpers.TryInvoke``6(System.Action{``0,``1,``2,``3,``4,``5},``0,``1,``2,``3,``4,``5)
+  name: TryInvoke<T1, T2, T3, T4, T5, T6>(Action<T1, T2, T3, T4, T5, T6>, T1, T2, T3, T4, T5, T6)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_TryInvoke__6_System_Action___0___1___2___3___4___5____0___1___2___3___4___5_
+  commentId: M:DotNext.DelegateHelpers.TryInvoke``6(System.Action{``0,``1,``2,``3,``4,``5},``0,``1,``2,``3,``4,``5)
+  name.vb: TryInvoke(Of T1, T2, T3, T4, T5, T6)(Action(Of T1, T2, T3, T4, T5, T6), T1, T2, T3, T4, T5, T6)
+  fullName: DotNext.DelegateHelpers.TryInvoke<T1, T2, T3, T4, T5, T6>(System.Action<T1, T2, T3, T4, T5, T6>, T1, T2, T3, T4, T5, T6)
+  fullName.vb: DotNext.DelegateHelpers.TryInvoke(Of T1, T2, T3, T4, T5, T6)(System.Action(Of T1, T2, T3, T4, T5, T6), T1, T2, T3, T4, T5, T6)
+  nameWithType: DelegateHelpers.TryInvoke<T1, T2, T3, T4, T5, T6>(Action<T1, T2, T3, T4, T5, T6>, T1, T2, T3, T4, T5, T6)
+  nameWithType.vb: DelegateHelpers.TryInvoke(Of T1, T2, T3, T4, T5, T6)(Action(Of T1, T2, T3, T4, T5, T6), T1, T2, T3, T4, T5, T6)
+- uid: DotNext.DelegateHelpers.TryInvoke``7(System.Action{``0,``1,``2,``3,``4,``5,``6},``0,``1,``2,``3,``4,``5,``6)
+  name: TryInvoke<T1, T2, T3, T4, T5, T6, T7>(Action<T1, T2, T3, T4, T5, T6, T7>, T1, T2, T3, T4, T5, T6, T7)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_TryInvoke__7_System_Action___0___1___2___3___4___5___6____0___1___2___3___4___5___6_
+  commentId: M:DotNext.DelegateHelpers.TryInvoke``7(System.Action{``0,``1,``2,``3,``4,``5,``6},``0,``1,``2,``3,``4,``5,``6)
+  name.vb: TryInvoke(Of T1, T2, T3, T4, T5, T6, T7)(Action(Of T1, T2, T3, T4, T5, T6, T7), T1, T2, T3, T4, T5, T6, T7)
+  fullName: DotNext.DelegateHelpers.TryInvoke<T1, T2, T3, T4, T5, T6, T7>(System.Action<T1, T2, T3, T4, T5, T6, T7>, T1, T2, T3, T4, T5, T6, T7)
+  fullName.vb: DotNext.DelegateHelpers.TryInvoke(Of T1, T2, T3, T4, T5, T6, T7)(System.Action(Of T1, T2, T3, T4, T5, T6, T7), T1, T2, T3, T4, T5, T6, T7)
+  nameWithType: DelegateHelpers.TryInvoke<T1, T2, T3, T4, T5, T6, T7>(Action<T1, T2, T3, T4, T5, T6, T7>, T1, T2, T3, T4, T5, T6, T7)
+  nameWithType.vb: DelegateHelpers.TryInvoke(Of T1, T2, T3, T4, T5, T6, T7)(Action(Of T1, T2, T3, T4, T5, T6, T7), T1, T2, T3, T4, T5, T6, T7)
+- uid: DotNext.DelegateHelpers.TryInvoke``8(System.Action{``0,``1,``2,``3,``4,``5,``6,``7},``0,``1,``2,``3,``4,``5,``6,``7)
+  name: TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8>(Action<T1, T2, T3, T4, T5, T6, T7, T8>, T1, T2, T3, T4, T5, T6, T7, T8)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_TryInvoke__8_System_Action___0___1___2___3___4___5___6___7____0___1___2___3___4___5___6___7_
+  commentId: M:DotNext.DelegateHelpers.TryInvoke``8(System.Action{``0,``1,``2,``3,``4,``5,``6,``7},``0,``1,``2,``3,``4,``5,``6,``7)
+  name.vb: TryInvoke(Of T1, T2, T3, T4, T5, T6, T7, T8)(Action(Of T1, T2, T3, T4, T5, T6, T7, T8), T1, T2, T3, T4, T5, T6, T7, T8)
+  fullName: DotNext.DelegateHelpers.TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8>(System.Action<T1, T2, T3, T4, T5, T6, T7, T8>, T1, T2, T3, T4, T5, T6, T7, T8)
+  fullName.vb: DotNext.DelegateHelpers.TryInvoke(Of T1, T2, T3, T4, T5, T6, T7, T8)(System.Action(Of T1, T2, T3, T4, T5, T6, T7, T8), T1, T2, T3, T4, T5, T6, T7, T8)
+  nameWithType: DelegateHelpers.TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8>(Action<T1, T2, T3, T4, T5, T6, T7, T8>, T1, T2, T3, T4, T5, T6, T7, T8)
+  nameWithType.vb: DelegateHelpers.TryInvoke(Of T1, T2, T3, T4, T5, T6, T7, T8)(Action(Of T1, T2, T3, T4, T5, T6, T7, T8), T1, T2, T3, T4, T5, T6, T7, T8)
+- uid: DotNext.DelegateHelpers.TryInvoke``9(System.Action{``0,``1,``2,``3,``4,``5,``6,``7,``8},``0,``1,``2,``3,``4,``5,``6,``7,``8)
+  name: TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8, T9>(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>, T1, T2, T3, T4, T5, T6, T7, T8, T9)
+  href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_TryInvoke__9_System_Action___0___1___2___3___4___5___6___7___8____0___1___2___3___4___5___6___7___8_
+  commentId: M:DotNext.DelegateHelpers.TryInvoke``9(System.Action{``0,``1,``2,``3,``4,``5,``6,``7,``8},``0,``1,``2,``3,``4,``5,``6,``7,``8)
+  name.vb: TryInvoke(Of T1, T2, T3, T4, T5, T6, T7, T8, T9)(Action(Of T1, T2, T3, T4, T5, T6, T7, T8, T9), T1, T2, T3, T4, T5, T6, T7, T8, T9)
+  fullName: DotNext.DelegateHelpers.TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8, T9>(System.Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>, T1, T2, T3, T4, T5, T6, T7, T8, T9)
+  fullName.vb: DotNext.DelegateHelpers.TryInvoke(Of T1, T2, T3, T4, T5, T6, T7, T8, T9)(System.Action(Of T1, T2, T3, T4, T5, T6, T7, T8, T9), T1, T2, T3, T4, T5, T6, T7, T8, T9)
+  nameWithType: DelegateHelpers.TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8, T9>(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>, T1, T2, T3, T4, T5, T6, T7, T8, T9)
+  nameWithType.vb: DelegateHelpers.TryInvoke(Of T1, T2, T3, T4, T5, T6, T7, T8, T9)(Action(Of T1, T2, T3, T4, T5, T6, T7, T8, T9), T1, T2, T3, T4, T5, T6, T7, T8, T9)
 - uid: DotNext.DelegateHelpers.Unbind*
   name: Unbind
   href: api/DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_Unbind_
@@ -31900,6 +32003,24 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).AuditTrail
   nameWithType: RaftCluster<TMember>.AuditTrail
   nameWithType.vb: RaftCluster(Of TMember).AuditTrail
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.CombineTokens(System.ReadOnlySpan{System.Threading.CancellationToken})
+  name: CombineTokens(ReadOnlySpan<CancellationToken>)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_CombineTokens_System_ReadOnlySpan_System_Threading_CancellationToken__
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.CombineTokens(System.ReadOnlySpan{System.Threading.CancellationToken})
+  name.vb: CombineTokens(ReadOnlySpan(Of CancellationToken))
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.CombineTokens(System.ReadOnlySpan<System.Threading.CancellationToken>)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).CombineTokens(System.ReadOnlySpan(Of System.Threading.CancellationToken))
+  nameWithType: RaftCluster<TMember>.CombineTokens(ReadOnlySpan<CancellationToken>)
+  nameWithType.vb: RaftCluster(Of TMember).CombineTokens(ReadOnlySpan(Of CancellationToken))
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.CombineTokens*
+  name: CombineTokens
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_CombineTokens_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.CombineTokens
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.CombineTokens
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).CombineTokens
+  nameWithType: RaftCluster<TMember>.CombineTokens
+  nameWithType.vb: RaftCluster(Of TMember).CombineTokens
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.ConcurrentMembershipModificationException
   name: RaftCluster<TMember>.ConcurrentMembershipModificationException
   href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.ConcurrentMembershipModificationException.html
@@ -42004,6 +42125,99 @@ references:
   fullName.vb: DotNext.Runtime.CompilerServices.AwaitableResult(Of T, TError).GetAwaiter
   nameWithType: AwaitableResult<T, TError>.GetAwaiter
   nameWithType.vb: AwaitableResult(Of T, TError).GetAwaiter
+- uid: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable
+  name: ExceptionCapturingAwaitable
+  href: api/DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.html
+  commentId: T:DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable
+  fullName: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable
+  nameWithType: ExceptionCapturingAwaitable
+- uid: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter
+  name: ExceptionCapturingAwaitable.Awaiter
+  href: api/DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.html
+  commentId: T:DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter
+  fullName: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter
+  nameWithType: ExceptionCapturingAwaitable.Awaiter
+- uid: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.GetResult
+  name: GetResult()
+  href: api/DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ExceptionCapturingAwaitable_Awaiter_GetResult
+  commentId: M:DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.GetResult
+  fullName: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.GetResult()
+  nameWithType: ExceptionCapturingAwaitable.Awaiter.GetResult()
+- uid: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.GetResult*
+  name: GetResult
+  href: api/DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ExceptionCapturingAwaitable_Awaiter_GetResult_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.GetResult
+  isSpec: "True"
+  fullName: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.GetResult
+  nameWithType: ExceptionCapturingAwaitable.Awaiter.GetResult
+- uid: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.IsCompleted
+  name: IsCompleted
+  href: api/DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ExceptionCapturingAwaitable_Awaiter_IsCompleted
+  commentId: P:DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.IsCompleted
+  fullName: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.IsCompleted
+  nameWithType: ExceptionCapturingAwaitable.Awaiter.IsCompleted
+- uid: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.IsCompleted*
+  name: IsCompleted
+  href: api/DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ExceptionCapturingAwaitable_Awaiter_IsCompleted_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.IsCompleted
+  isSpec: "True"
+  fullName: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.IsCompleted
+  nameWithType: ExceptionCapturingAwaitable.Awaiter.IsCompleted
+- uid: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.OnCompleted(System.Action)
+  name: OnCompleted(Action)
+  href: api/DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ExceptionCapturingAwaitable_Awaiter_OnCompleted_System_Action_
+  commentId: M:DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.OnCompleted(System.Action)
+  fullName: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.OnCompleted(System.Action)
+  nameWithType: ExceptionCapturingAwaitable.Awaiter.OnCompleted(Action)
+- uid: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.OnCompleted*
+  name: OnCompleted
+  href: api/DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ExceptionCapturingAwaitable_Awaiter_OnCompleted_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.OnCompleted
+  isSpec: "True"
+  fullName: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.OnCompleted
+  nameWithType: ExceptionCapturingAwaitable.Awaiter.OnCompleted
+- uid: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.UnsafeOnCompleted(System.Action)
+  name: UnsafeOnCompleted(Action)
+  href: api/DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ExceptionCapturingAwaitable_Awaiter_UnsafeOnCompleted_System_Action_
+  commentId: M:DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.UnsafeOnCompleted(System.Action)
+  fullName: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.UnsafeOnCompleted(System.Action)
+  nameWithType: ExceptionCapturingAwaitable.Awaiter.UnsafeOnCompleted(Action)
+- uid: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.UnsafeOnCompleted*
+  name: UnsafeOnCompleted
+  href: api/DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.html#DotNext_Runtime_CompilerServices_ExceptionCapturingAwaitable_Awaiter_UnsafeOnCompleted_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.UnsafeOnCompleted
+  isSpec: "True"
+  fullName: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.Awaiter.UnsafeOnCompleted
+  nameWithType: ExceptionCapturingAwaitable.Awaiter.UnsafeOnCompleted
+- uid: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.ConfigureAwait(System.Boolean)
+  name: ConfigureAwait(bool)
+  href: api/DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.html#DotNext_Runtime_CompilerServices_ExceptionCapturingAwaitable_ConfigureAwait_System_Boolean_
+  commentId: M:DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.ConfigureAwait(System.Boolean)
+  name.vb: ConfigureAwait(Boolean)
+  fullName: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.ConfigureAwait(bool)
+  fullName.vb: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.ConfigureAwait(Boolean)
+  nameWithType: ExceptionCapturingAwaitable.ConfigureAwait(bool)
+  nameWithType.vb: ExceptionCapturingAwaitable.ConfigureAwait(Boolean)
+- uid: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.ConfigureAwait*
+  name: ConfigureAwait
+  href: api/DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.html#DotNext_Runtime_CompilerServices_ExceptionCapturingAwaitable_ConfigureAwait_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.ConfigureAwait
+  isSpec: "True"
+  fullName: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.ConfigureAwait
+  nameWithType: ExceptionCapturingAwaitable.ConfigureAwait
+- uid: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.GetAwaiter
+  name: GetAwaiter()
+  href: api/DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.html#DotNext_Runtime_CompilerServices_ExceptionCapturingAwaitable_GetAwaiter
+  commentId: M:DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.GetAwaiter
+  fullName: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.GetAwaiter()
+  nameWithType: ExceptionCapturingAwaitable.GetAwaiter()
+- uid: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.GetAwaiter*
+  name: GetAwaiter
+  href: api/DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.html#DotNext_Runtime_CompilerServices_ExceptionCapturingAwaitable_GetAwaiter_
+  commentId: Overload:DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.GetAwaiter
+  isSpec: "True"
+  fullName: DotNext.Runtime.CompilerServices.ExceptionCapturingAwaitable.GetAwaiter
+  nameWithType: ExceptionCapturingAwaitable.GetAwaiter
 - uid: DotNext.Runtime.CompilerServices.IFunctional`1
   name: IFunctional<TDelegate>
   href: api/DotNext.Runtime.CompilerServices.IFunctional-1.html
@@ -47735,15 +47949,6 @@ references:
   fullName.vb: DotNext.Threading.AsyncAutoResetEvent.New(Boolean)
   nameWithType: AsyncAutoResetEvent.AsyncAutoResetEvent(bool)
   nameWithType.vb: AsyncAutoResetEvent.New(Boolean)
-- uid: DotNext.Threading.AsyncAutoResetEvent.#ctor(System.Boolean,System.Int32)
-  name: AsyncAutoResetEvent(bool, int)
-  href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent__ctor_System_Boolean_System_Int32_
-  commentId: M:DotNext.Threading.AsyncAutoResetEvent.#ctor(System.Boolean,System.Int32)
-  name.vb: New(Boolean, Integer)
-  fullName: DotNext.Threading.AsyncAutoResetEvent.AsyncAutoResetEvent(bool, int)
-  fullName.vb: DotNext.Threading.AsyncAutoResetEvent.New(Boolean, Integer)
-  nameWithType: AsyncAutoResetEvent.AsyncAutoResetEvent(bool, int)
-  nameWithType.vb: AsyncAutoResetEvent.New(Boolean, Integer)
 - uid: DotNext.Threading.AsyncAutoResetEvent.#ctor*
   name: AsyncAutoResetEvent
   href: api/DotNext.Threading.AsyncAutoResetEvent.html#DotNext_Threading_AsyncAutoResetEvent__ctor_
@@ -48248,15 +48453,6 @@ references:
   fullName.vb: DotNext.Threading.AsyncCountdownEvent.New(Long)
   nameWithType: AsyncCountdownEvent.AsyncCountdownEvent(long)
   nameWithType.vb: AsyncCountdownEvent.New(Long)
-- uid: DotNext.Threading.AsyncCountdownEvent.#ctor(System.Int64,System.Int32)
-  name: AsyncCountdownEvent(long, int)
-  href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent__ctor_System_Int64_System_Int32_
-  commentId: M:DotNext.Threading.AsyncCountdownEvent.#ctor(System.Int64,System.Int32)
-  name.vb: New(Long, Integer)
-  fullName: DotNext.Threading.AsyncCountdownEvent.AsyncCountdownEvent(long, int)
-  fullName.vb: DotNext.Threading.AsyncCountdownEvent.New(Long, Integer)
-  nameWithType: AsyncCountdownEvent.AsyncCountdownEvent(long, int)
-  nameWithType.vb: AsyncCountdownEvent.New(Long, Integer)
 - uid: DotNext.Threading.AsyncCountdownEvent.#ctor*
   name: AsyncCountdownEvent
   href: api/DotNext.Threading.AsyncCountdownEvent.html#DotNext_Threading_AsyncCountdownEvent__ctor_
@@ -48422,15 +48618,6 @@ references:
   fullName.vb: DotNext.Threading.AsyncCounter.New(Long)
   nameWithType: AsyncCounter.AsyncCounter(long)
   nameWithType.vb: AsyncCounter.New(Long)
-- uid: DotNext.Threading.AsyncCounter.#ctor(System.Int64,System.Int32)
-  name: AsyncCounter(long, int)
-  href: api/DotNext.Threading.AsyncCounter.html#DotNext_Threading_AsyncCounter__ctor_System_Int64_System_Int32_
-  commentId: M:DotNext.Threading.AsyncCounter.#ctor(System.Int64,System.Int32)
-  name.vb: New(Long, Integer)
-  fullName: DotNext.Threading.AsyncCounter.AsyncCounter(long, int)
-  fullName.vb: DotNext.Threading.AsyncCounter.New(Long, Integer)
-  nameWithType: AsyncCounter.AsyncCounter(long, int)
-  nameWithType.vb: AsyncCounter.New(Long, Integer)
 - uid: DotNext.Threading.AsyncCounter.#ctor*
   name: AsyncCounter
   href: api/DotNext.Threading.AsyncCounter.html#DotNext_Threading_AsyncCounter__ctor_
@@ -49058,15 +49245,6 @@ references:
   fullName.vb: DotNext.Threading.AsyncExclusiveLock.New()
   nameWithType: AsyncExclusiveLock.AsyncExclusiveLock()
   nameWithType.vb: AsyncExclusiveLock.New()
-- uid: DotNext.Threading.AsyncExclusiveLock.#ctor(System.Int32)
-  name: AsyncExclusiveLock(int)
-  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock__ctor_System_Int32_
-  commentId: M:DotNext.Threading.AsyncExclusiveLock.#ctor(System.Int32)
-  name.vb: New(Integer)
-  fullName: DotNext.Threading.AsyncExclusiveLock.AsyncExclusiveLock(int)
-  fullName.vb: DotNext.Threading.AsyncExclusiveLock.New(Integer)
-  nameWithType: AsyncExclusiveLock.AsyncExclusiveLock(int)
-  nameWithType.vb: AsyncExclusiveLock.New(Integer)
 - uid: DotNext.Threading.AsyncExclusiveLock.#ctor*
   name: AsyncExclusiveLock
   href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock__ctor_
@@ -49721,15 +49899,6 @@ references:
   fullName.vb: DotNext.Threading.AsyncManualResetEvent.New(Boolean)
   nameWithType: AsyncManualResetEvent.AsyncManualResetEvent(bool)
   nameWithType.vb: AsyncManualResetEvent.New(Boolean)
-- uid: DotNext.Threading.AsyncManualResetEvent.#ctor(System.Boolean,System.Int32)
-  name: AsyncManualResetEvent(bool, int)
-  href: api/DotNext.Threading.AsyncManualResetEvent.html#DotNext_Threading_AsyncManualResetEvent__ctor_System_Boolean_System_Int32_
-  commentId: M:DotNext.Threading.AsyncManualResetEvent.#ctor(System.Boolean,System.Int32)
-  name.vb: New(Boolean, Integer)
-  fullName: DotNext.Threading.AsyncManualResetEvent.AsyncManualResetEvent(bool, int)
-  fullName.vb: DotNext.Threading.AsyncManualResetEvent.New(Boolean, Integer)
-  nameWithType: AsyncManualResetEvent.AsyncManualResetEvent(bool, int)
-  nameWithType.vb: AsyncManualResetEvent.New(Boolean, Integer)
 - uid: DotNext.Threading.AsyncManualResetEvent.#ctor*
   name: AsyncManualResetEvent
   href: api/DotNext.Threading.AsyncManualResetEvent.html#DotNext_Threading_AsyncManualResetEvent__ctor_
@@ -49822,15 +49991,6 @@ references:
   fullName.vb: DotNext.Threading.AsyncReaderWriterLock.New()
   nameWithType: AsyncReaderWriterLock.AsyncReaderWriterLock()
   nameWithType.vb: AsyncReaderWriterLock.New()
-- uid: DotNext.Threading.AsyncReaderWriterLock.#ctor(System.Int32)
-  name: AsyncReaderWriterLock(int)
-  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock__ctor_System_Int32_
-  commentId: M:DotNext.Threading.AsyncReaderWriterLock.#ctor(System.Int32)
-  name.vb: New(Integer)
-  fullName: DotNext.Threading.AsyncReaderWriterLock.AsyncReaderWriterLock(int)
-  fullName.vb: DotNext.Threading.AsyncReaderWriterLock.New(Integer)
-  nameWithType: AsyncReaderWriterLock.AsyncReaderWriterLock(int)
-  nameWithType.vb: AsyncReaderWriterLock.New(Integer)
 - uid: DotNext.Threading.AsyncReaderWriterLock.#ctor*
   name: AsyncReaderWriterLock
   href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock__ctor_
@@ -50233,15 +50393,15 @@ references:
   commentId: T:DotNext.Threading.AsyncSharedLock
   fullName: DotNext.Threading.AsyncSharedLock
   nameWithType: AsyncSharedLock
-- uid: DotNext.Threading.AsyncSharedLock.#ctor(System.Int64,System.Boolean)
-  name: AsyncSharedLock(long, bool)
-  href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock__ctor_System_Int64_System_Boolean_
-  commentId: M:DotNext.Threading.AsyncSharedLock.#ctor(System.Int64,System.Boolean)
-  name.vb: New(Long, Boolean)
-  fullName: DotNext.Threading.AsyncSharedLock.AsyncSharedLock(long, bool)
-  fullName.vb: DotNext.Threading.AsyncSharedLock.New(Long, Boolean)
-  nameWithType: AsyncSharedLock.AsyncSharedLock(long, bool)
-  nameWithType.vb: AsyncSharedLock.New(Long, Boolean)
+- uid: DotNext.Threading.AsyncSharedLock.#ctor(System.Int64)
+  name: AsyncSharedLock(long)
+  href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock__ctor_System_Int64_
+  commentId: M:DotNext.Threading.AsyncSharedLock.#ctor(System.Int64)
+  name.vb: New(Long)
+  fullName: DotNext.Threading.AsyncSharedLock.AsyncSharedLock(long)
+  fullName.vb: DotNext.Threading.AsyncSharedLock.New(Long)
+  nameWithType: AsyncSharedLock.AsyncSharedLock(long)
+  nameWithType.vb: AsyncSharedLock.New(Long)
 - uid: DotNext.Threading.AsyncSharedLock.#ctor*
   name: AsyncSharedLock
   href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock__ctor_
@@ -50277,19 +50437,6 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncSharedLock.AcquireAsync
   nameWithType: AsyncSharedLock.AcquireAsync
-- uid: DotNext.Threading.AsyncSharedLock.ConcurrencyLevel
-  name: ConcurrencyLevel
-  href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock_ConcurrencyLevel
-  commentId: P:DotNext.Threading.AsyncSharedLock.ConcurrencyLevel
-  fullName: DotNext.Threading.AsyncSharedLock.ConcurrencyLevel
-  nameWithType: AsyncSharedLock.ConcurrencyLevel
-- uid: DotNext.Threading.AsyncSharedLock.ConcurrencyLevel*
-  name: ConcurrencyLevel
-  href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock_ConcurrencyLevel_
-  commentId: Overload:DotNext.Threading.AsyncSharedLock.ConcurrencyLevel
-  isSpec: "True"
-  fullName: DotNext.Threading.AsyncSharedLock.ConcurrencyLevel
-  nameWithType: AsyncSharedLock.ConcurrencyLevel
 - uid: DotNext.Threading.AsyncSharedLock.Downgrade
   name: Downgrade()
   href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock_Downgrade
@@ -50329,6 +50476,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncSharedLock.IsStrongLockHeld
   nameWithType: AsyncSharedLock.IsStrongLockHeld
+- uid: DotNext.Threading.AsyncSharedLock.LockUpgradeThreshold
+  name: LockUpgradeThreshold
+  href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock_LockUpgradeThreshold
+  commentId: P:DotNext.Threading.AsyncSharedLock.LockUpgradeThreshold
+  fullName: DotNext.Threading.AsyncSharedLock.LockUpgradeThreshold
+  nameWithType: AsyncSharedLock.LockUpgradeThreshold
+- uid: DotNext.Threading.AsyncSharedLock.LockUpgradeThreshold*
+  name: LockUpgradeThreshold
+  href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock_LockUpgradeThreshold_
+  commentId: Overload:DotNext.Threading.AsyncSharedLock.LockUpgradeThreshold
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncSharedLock.LockUpgradeThreshold
+  nameWithType: AsyncSharedLock.LockUpgradeThreshold
 - uid: DotNext.Threading.AsyncSharedLock.Release
   name: Release()
   href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock_Release
@@ -50402,15 +50562,6 @@ references:
   fullName.vb: DotNext.Threading.AsyncTrigger.New()
   nameWithType: AsyncTrigger.AsyncTrigger()
   nameWithType.vb: AsyncTrigger.New()
-- uid: DotNext.Threading.AsyncTrigger.#ctor(System.Int32)
-  name: AsyncTrigger(int)
-  href: api/DotNext.Threading.AsyncTrigger.html#DotNext_Threading_AsyncTrigger__ctor_System_Int32_
-  commentId: M:DotNext.Threading.AsyncTrigger.#ctor(System.Int32)
-  name.vb: New(Integer)
-  fullName: DotNext.Threading.AsyncTrigger.AsyncTrigger(int)
-  fullName.vb: DotNext.Threading.AsyncTrigger.New(Integer)
-  nameWithType: AsyncTrigger.AsyncTrigger(int)
-  nameWithType.vb: AsyncTrigger.New(Integer)
 - uid: DotNext.Threading.AsyncTrigger.#ctor*
   name: AsyncTrigger
   href: api/DotNext.Threading.AsyncTrigger.html#DotNext_Threading_AsyncTrigger__ctor_
@@ -51824,6 +51975,99 @@ references:
   fullName.vb: DotNext.Threading.Atomic(Of T).Write
   nameWithType: Atomic<T>.Write
   nameWithType.vb: Atomic(Of T).Write
+- uid: DotNext.Threading.CancellationTokenMultiplexer
+  name: CancellationTokenMultiplexer
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.html
+  commentId: T:DotNext.Threading.CancellationTokenMultiplexer
+  fullName: DotNext.Threading.CancellationTokenMultiplexer
+  nameWithType: CancellationTokenMultiplexer
+- uid: DotNext.Threading.CancellationTokenMultiplexer.Combine(System.ReadOnlySpan{System.Threading.CancellationToken})
+  name: Combine(ReadOnlySpan<CancellationToken>)
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.html#DotNext_Threading_CancellationTokenMultiplexer_Combine_System_ReadOnlySpan_System_Threading_CancellationToken__
+  commentId: M:DotNext.Threading.CancellationTokenMultiplexer.Combine(System.ReadOnlySpan{System.Threading.CancellationToken})
+  name.vb: Combine(ReadOnlySpan(Of CancellationToken))
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.Combine(System.ReadOnlySpan<System.Threading.CancellationToken>)
+  fullName.vb: DotNext.Threading.CancellationTokenMultiplexer.Combine(System.ReadOnlySpan(Of System.Threading.CancellationToken))
+  nameWithType: CancellationTokenMultiplexer.Combine(ReadOnlySpan<CancellationToken>)
+  nameWithType.vb: CancellationTokenMultiplexer.Combine(ReadOnlySpan(Of CancellationToken))
+- uid: DotNext.Threading.CancellationTokenMultiplexer.Combine*
+  name: Combine
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.html#DotNext_Threading_CancellationTokenMultiplexer_Combine_
+  commentId: Overload:DotNext.Threading.CancellationTokenMultiplexer.Combine
+  isSpec: "True"
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.Combine
+  nameWithType: CancellationTokenMultiplexer.Combine
+- uid: DotNext.Threading.CancellationTokenMultiplexer.MaximumRetained
+  name: MaximumRetained
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.html#DotNext_Threading_CancellationTokenMultiplexer_MaximumRetained
+  commentId: P:DotNext.Threading.CancellationTokenMultiplexer.MaximumRetained
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.MaximumRetained
+  nameWithType: CancellationTokenMultiplexer.MaximumRetained
+- uid: DotNext.Threading.CancellationTokenMultiplexer.MaximumRetained*
+  name: MaximumRetained
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.html#DotNext_Threading_CancellationTokenMultiplexer_MaximumRetained_
+  commentId: Overload:DotNext.Threading.CancellationTokenMultiplexer.MaximumRetained
+  isSpec: "True"
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.MaximumRetained
+  nameWithType: CancellationTokenMultiplexer.MaximumRetained
+- uid: DotNext.Threading.CancellationTokenMultiplexer.Scope
+  name: CancellationTokenMultiplexer.Scope
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.Scope.html
+  commentId: T:DotNext.Threading.CancellationTokenMultiplexer.Scope
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.Scope
+  nameWithType: CancellationTokenMultiplexer.Scope
+- uid: DotNext.Threading.CancellationTokenMultiplexer.Scope.CancellationOrigin
+  name: CancellationOrigin
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.Scope.html#DotNext_Threading_CancellationTokenMultiplexer_Scope_CancellationOrigin
+  commentId: P:DotNext.Threading.CancellationTokenMultiplexer.Scope.CancellationOrigin
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.Scope.CancellationOrigin
+  nameWithType: CancellationTokenMultiplexer.Scope.CancellationOrigin
+- uid: DotNext.Threading.CancellationTokenMultiplexer.Scope.CancellationOrigin*
+  name: CancellationOrigin
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.Scope.html#DotNext_Threading_CancellationTokenMultiplexer_Scope_CancellationOrigin_
+  commentId: Overload:DotNext.Threading.CancellationTokenMultiplexer.Scope.CancellationOrigin
+  isSpec: "True"
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.Scope.CancellationOrigin
+  nameWithType: CancellationTokenMultiplexer.Scope.CancellationOrigin
+- uid: DotNext.Threading.CancellationTokenMultiplexer.Scope.Dispose
+  name: Dispose()
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.Scope.html#DotNext_Threading_CancellationTokenMultiplexer_Scope_Dispose
+  commentId: M:DotNext.Threading.CancellationTokenMultiplexer.Scope.Dispose
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.Scope.Dispose()
+  nameWithType: CancellationTokenMultiplexer.Scope.Dispose()
+- uid: DotNext.Threading.CancellationTokenMultiplexer.Scope.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.Scope.html#DotNext_Threading_CancellationTokenMultiplexer_Scope_Dispose_
+  commentId: Overload:DotNext.Threading.CancellationTokenMultiplexer.Scope.Dispose
+  isSpec: "True"
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.Scope.Dispose
+  nameWithType: CancellationTokenMultiplexer.Scope.Dispose
+- uid: DotNext.Threading.CancellationTokenMultiplexer.Scope.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.Scope.html#DotNext_Threading_CancellationTokenMultiplexer_Scope_DisposeAsync
+  commentId: M:DotNext.Threading.CancellationTokenMultiplexer.Scope.DisposeAsync
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.Scope.DisposeAsync()
+  nameWithType: CancellationTokenMultiplexer.Scope.DisposeAsync()
+- uid: DotNext.Threading.CancellationTokenMultiplexer.Scope.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.Scope.html#DotNext_Threading_CancellationTokenMultiplexer_Scope_DisposeAsync_
+  commentId: Overload:DotNext.Threading.CancellationTokenMultiplexer.Scope.DisposeAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.Scope.DisposeAsync
+  nameWithType: CancellationTokenMultiplexer.Scope.DisposeAsync
+- uid: DotNext.Threading.CancellationTokenMultiplexer.Scope.Token
+  name: Token
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.Scope.html#DotNext_Threading_CancellationTokenMultiplexer_Scope_Token
+  commentId: P:DotNext.Threading.CancellationTokenMultiplexer.Scope.Token
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.Scope.Token
+  nameWithType: CancellationTokenMultiplexer.Scope.Token
+- uid: DotNext.Threading.CancellationTokenMultiplexer.Scope.Token*
+  name: Token
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.Scope.html#DotNext_Threading_CancellationTokenMultiplexer_Scope_Token_
+  commentId: Overload:DotNext.Threading.CancellationTokenMultiplexer.Scope.Token
+  isSpec: "True"
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.Scope.Token
+  nameWithType: CancellationTokenMultiplexer.Scope.Token
 - uid: DotNext.Threading.Channels
   name: DotNext.Threading.Channels
   href: api/DotNext.Threading.Channels.html
@@ -52071,6 +52315,12 @@ references:
   fullName.vb: DotNext.Threading.Channels.PersistentChannel(Of TInput, TOutput).Throughput
   nameWithType: PersistentChannel<TInput, TOutput>.Throughput
   nameWithType.vb: PersistentChannel(Of TInput, TOutput).Throughput
+- uid: DotNext.Threading.ConcurrencyLimitReachedException
+  name: ConcurrencyLimitReachedException
+  href: api/DotNext.Threading.ConcurrencyLimitReachedException.html
+  commentId: T:DotNext.Threading.ConcurrencyLimitReachedException
+  fullName: DotNext.Threading.ConcurrencyLimitReachedException
+  nameWithType: ConcurrencyLimitReachedException
 - uid: DotNext.Threading.Epoch
   name: Epoch
   href: api/DotNext.Threading.Epoch.html
@@ -52448,6 +52698,38 @@ references:
   fullName.vb: DotNext.Threading.IInterlockedOperations(Of T).VolatileWrite
   nameWithType: IInterlockedOperations<T>.VolatileWrite
   nameWithType.vb: IInterlockedOperations(Of T).VolatileWrite
+- uid: DotNext.Threading.IMultiplexedCancellationTokenSource
+  name: IMultiplexedCancellationTokenSource
+  href: api/DotNext.Threading.IMultiplexedCancellationTokenSource.html
+  commentId: T:DotNext.Threading.IMultiplexedCancellationTokenSource
+  fullName: DotNext.Threading.IMultiplexedCancellationTokenSource
+  nameWithType: IMultiplexedCancellationTokenSource
+- uid: DotNext.Threading.IMultiplexedCancellationTokenSource.CancellationOrigin
+  name: CancellationOrigin
+  href: api/DotNext.Threading.IMultiplexedCancellationTokenSource.html#DotNext_Threading_IMultiplexedCancellationTokenSource_CancellationOrigin
+  commentId: P:DotNext.Threading.IMultiplexedCancellationTokenSource.CancellationOrigin
+  fullName: DotNext.Threading.IMultiplexedCancellationTokenSource.CancellationOrigin
+  nameWithType: IMultiplexedCancellationTokenSource.CancellationOrigin
+- uid: DotNext.Threading.IMultiplexedCancellationTokenSource.CancellationOrigin*
+  name: CancellationOrigin
+  href: api/DotNext.Threading.IMultiplexedCancellationTokenSource.html#DotNext_Threading_IMultiplexedCancellationTokenSource_CancellationOrigin_
+  commentId: Overload:DotNext.Threading.IMultiplexedCancellationTokenSource.CancellationOrigin
+  isSpec: "True"
+  fullName: DotNext.Threading.IMultiplexedCancellationTokenSource.CancellationOrigin
+  nameWithType: IMultiplexedCancellationTokenSource.CancellationOrigin
+- uid: DotNext.Threading.IMultiplexedCancellationTokenSource.Token
+  name: Token
+  href: api/DotNext.Threading.IMultiplexedCancellationTokenSource.html#DotNext_Threading_IMultiplexedCancellationTokenSource_Token
+  commentId: P:DotNext.Threading.IMultiplexedCancellationTokenSource.Token
+  fullName: DotNext.Threading.IMultiplexedCancellationTokenSource.Token
+  nameWithType: IMultiplexedCancellationTokenSource.Token
+- uid: DotNext.Threading.IMultiplexedCancellationTokenSource.Token*
+  name: Token
+  href: api/DotNext.Threading.IMultiplexedCancellationTokenSource.html#DotNext_Threading_IMultiplexedCancellationTokenSource_Token_
+  commentId: Overload:DotNext.Threading.IMultiplexedCancellationTokenSource.Token
+  isSpec: "True"
+  fullName: DotNext.Threading.IMultiplexedCancellationTokenSource.Token
+  nameWithType: IMultiplexedCancellationTokenSource.Token
 - uid: DotNext.Threading.Leases
   name: DotNext.Threading.Leases
   href: api/DotNext.Threading.Leases.html
@@ -53287,15 +53569,6 @@ references:
   commentId: T:DotNext.Threading.LinkedTokenSourceFactory
   fullName: DotNext.Threading.LinkedTokenSourceFactory
   nameWithType: LinkedTokenSourceFactory
-- uid: DotNext.Threading.LinkedTokenSourceFactory.CausedBy(System.OperationCanceledException,DotNext.Threading.LinkedCancellationTokenSource,System.Threading.CancellationToken)
-  name: CausedBy(OperationCanceledException, LinkedCancellationTokenSource?, CancellationToken)
-  href: api/DotNext.Threading.LinkedTokenSourceFactory.html#DotNext_Threading_LinkedTokenSourceFactory_CausedBy_System_OperationCanceledException_DotNext_Threading_LinkedCancellationTokenSource_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.LinkedTokenSourceFactory.CausedBy(System.OperationCanceledException,DotNext.Threading.LinkedCancellationTokenSource,System.Threading.CancellationToken)
-  name.vb: CausedBy(OperationCanceledException, LinkedCancellationTokenSource, CancellationToken)
-  fullName: DotNext.Threading.LinkedTokenSourceFactory.CausedBy(System.OperationCanceledException, DotNext.Threading.LinkedCancellationTokenSource?, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.LinkedTokenSourceFactory.CausedBy(System.OperationCanceledException, DotNext.Threading.LinkedCancellationTokenSource, System.Threading.CancellationToken)
-  nameWithType: LinkedTokenSourceFactory.CausedBy(OperationCanceledException, LinkedCancellationTokenSource?, CancellationToken)
-  nameWithType.vb: LinkedTokenSourceFactory.CausedBy(OperationCanceledException, LinkedCancellationTokenSource, CancellationToken)
 - uid: DotNext.Threading.LinkedTokenSourceFactory.CausedBy*
   name: CausedBy
   href: api/DotNext.Threading.LinkedTokenSourceFactory.html#DotNext_Threading_LinkedTokenSourceFactory_CausedBy_
@@ -53303,6 +53576,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.LinkedTokenSourceFactory.CausedBy
   nameWithType: LinkedTokenSourceFactory.CausedBy
+- uid: DotNext.Threading.LinkedTokenSourceFactory.CausedBy``1(System.OperationCanceledException,``0,System.Threading.CancellationToken)
+  name: CausedBy<TSource>(OperationCanceledException, TSource?, CancellationToken)
+  href: api/DotNext.Threading.LinkedTokenSourceFactory.html#DotNext_Threading_LinkedTokenSourceFactory_CausedBy__1_System_OperationCanceledException___0_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.LinkedTokenSourceFactory.CausedBy``1(System.OperationCanceledException,``0,System.Threading.CancellationToken)
+  name.vb: CausedBy(Of TSource)(OperationCanceledException, TSource, CancellationToken)
+  fullName: DotNext.Threading.LinkedTokenSourceFactory.CausedBy<TSource>(System.OperationCanceledException, TSource?, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Threading.LinkedTokenSourceFactory.CausedBy(Of TSource)(System.OperationCanceledException, TSource, System.Threading.CancellationToken)
+  nameWithType: LinkedTokenSourceFactory.CausedBy<TSource>(OperationCanceledException, TSource?, CancellationToken)
+  nameWithType.vb: LinkedTokenSourceFactory.CausedBy(Of TSource)(OperationCanceledException, TSource, CancellationToken)
 - uid: DotNext.Threading.LinkedTokenSourceFactory.LinkTo(System.Threading.CancellationToken@,System.ReadOnlySpan{System.Threading.CancellationToken})
   name: LinkTo(ref CancellationToken, ReadOnlySpan<CancellationToken>)
   href: api/DotNext.Threading.LinkedTokenSourceFactory.html#DotNext_Threading_LinkedTokenSourceFactory_LinkTo_System_Threading_CancellationToken__System_ReadOnlySpan_System_Threading_CancellationToken__
@@ -53773,6 +54055,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.QueuedSynchronizer.CancelSuspendedCallers
   nameWithType: QueuedSynchronizer.CancelSuspendedCallers
+- uid: DotNext.Threading.QueuedSynchronizer.ConcurrencyLevel
+  name: ConcurrencyLevel
+  href: api/DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_ConcurrencyLevel
+  commentId: P:DotNext.Threading.QueuedSynchronizer.ConcurrencyLevel
+  fullName: DotNext.Threading.QueuedSynchronizer.ConcurrencyLevel
+  nameWithType: QueuedSynchronizer.ConcurrencyLevel
+- uid: DotNext.Threading.QueuedSynchronizer.ConcurrencyLevel*
+  name: ConcurrencyLevel
+  href: api/DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_ConcurrencyLevel_
+  commentId: Overload:DotNext.Threading.QueuedSynchronizer.ConcurrencyLevel
+  isSpec: "True"
+  fullName: DotNext.Threading.QueuedSynchronizer.ConcurrencyLevel
+  nameWithType: QueuedSynchronizer.ConcurrencyLevel
 - uid: DotNext.Threading.QueuedSynchronizer.Dispose(System.Boolean)
   name: Dispose(bool)
   href: api/DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_Dispose_System_Boolean_
@@ -53837,6 +54132,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.QueuedSynchronizer.GetSuspendedCallers
   nameWithType: QueuedSynchronizer.GetSuspendedCallers
+- uid: DotNext.Threading.QueuedSynchronizer.HasConcurrencyLimit
+  name: HasConcurrencyLimit
+  href: api/DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_HasConcurrencyLimit
+  commentId: P:DotNext.Threading.QueuedSynchronizer.HasConcurrencyLimit
+  fullName: DotNext.Threading.QueuedSynchronizer.HasConcurrencyLimit
+  nameWithType: QueuedSynchronizer.HasConcurrencyLimit
+- uid: DotNext.Threading.QueuedSynchronizer.HasConcurrencyLimit*
+  name: HasConcurrencyLimit
+  href: api/DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_HasConcurrencyLimit_
+  commentId: Overload:DotNext.Threading.QueuedSynchronizer.HasConcurrencyLimit
+  isSpec: "True"
+  fullName: DotNext.Threading.QueuedSynchronizer.HasConcurrencyLimit
+  nameWithType: QueuedSynchronizer.HasConcurrencyLimit
 - uid: DotNext.Threading.QueuedSynchronizer.MeasurementTags
   name: MeasurementTags
   href: api/DotNext.Threading.QueuedSynchronizer.html#DotNext_Threading_QueuedSynchronizer_MeasurementTags
@@ -53891,15 +54199,15 @@ references:
   fullName.vb: DotNext.Threading.QueuedSynchronizer(Of TContext)
   nameWithType: QueuedSynchronizer<TContext>
   nameWithType.vb: QueuedSynchronizer(Of TContext)
-- uid: DotNext.Threading.QueuedSynchronizer`1.#ctor(System.Nullable{System.Int32})
-  name: QueuedSynchronizer(int?)
-  href: api/DotNext.Threading.QueuedSynchronizer-1.html#DotNext_Threading_QueuedSynchronizer_1__ctor_System_Nullable_System_Int32__
-  commentId: M:DotNext.Threading.QueuedSynchronizer`1.#ctor(System.Nullable{System.Int32})
-  name.vb: New(Integer?)
-  fullName: DotNext.Threading.QueuedSynchronizer<TContext>.QueuedSynchronizer(int?)
-  fullName.vb: DotNext.Threading.QueuedSynchronizer(Of TContext).New(Integer?)
-  nameWithType: QueuedSynchronizer<TContext>.QueuedSynchronizer(int?)
-  nameWithType.vb: QueuedSynchronizer(Of TContext).New(Integer?)
+- uid: DotNext.Threading.QueuedSynchronizer`1.#ctor
+  name: QueuedSynchronizer()
+  href: api/DotNext.Threading.QueuedSynchronizer-1.html#DotNext_Threading_QueuedSynchronizer_1__ctor
+  commentId: M:DotNext.Threading.QueuedSynchronizer`1.#ctor
+  name.vb: New()
+  fullName: DotNext.Threading.QueuedSynchronizer<TContext>.QueuedSynchronizer()
+  fullName.vb: DotNext.Threading.QueuedSynchronizer(Of TContext).New()
+  nameWithType: QueuedSynchronizer<TContext>.QueuedSynchronizer()
+  nameWithType.vb: QueuedSynchronizer(Of TContext).New()
 - uid: DotNext.Threading.QueuedSynchronizer`1.#ctor*
   name: QueuedSynchronizer
   href: api/DotNext.Threading.QueuedSynchronizer-1.html#DotNext_Threading_QueuedSynchronizer_1__ctor_
@@ -54517,6 +54825,25 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.Tasks.Conversion.AsDynamic
   nameWithType: Conversion.AsDynamic
+- uid: DotNext.Threading.Tasks.Conversion.CatchException(System.Threading.Tasks.Task)
+  name: CatchException(Task)
+  href: api/DotNext.Threading.Tasks.Conversion.html#DotNext_Threading_Tasks_Conversion_CatchException_System_Threading_Tasks_Task_
+  commentId: M:DotNext.Threading.Tasks.Conversion.CatchException(System.Threading.Tasks.Task)
+  fullName: DotNext.Threading.Tasks.Conversion.CatchException(System.Threading.Tasks.Task)
+  nameWithType: Conversion.CatchException(Task)
+- uid: DotNext.Threading.Tasks.Conversion.CatchException(System.Threading.Tasks.ValueTask)
+  name: CatchException(ValueTask)
+  href: api/DotNext.Threading.Tasks.Conversion.html#DotNext_Threading_Tasks_Conversion_CatchException_System_Threading_Tasks_ValueTask_
+  commentId: M:DotNext.Threading.Tasks.Conversion.CatchException(System.Threading.Tasks.ValueTask)
+  fullName: DotNext.Threading.Tasks.Conversion.CatchException(System.Threading.Tasks.ValueTask)
+  nameWithType: Conversion.CatchException(ValueTask)
+- uid: DotNext.Threading.Tasks.Conversion.CatchException*
+  name: CatchException
+  href: api/DotNext.Threading.Tasks.Conversion.html#DotNext_Threading_Tasks_Conversion_CatchException_
+  commentId: Overload:DotNext.Threading.Tasks.Conversion.CatchException
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.Conversion.CatchException
+  nameWithType: Conversion.CatchException
 - uid: DotNext.Threading.Tasks.Conversion.Convert*
   name: Convert
   href: api/DotNext.Threading.Tasks.Conversion.html#DotNext_Threading_Tasks_Conversion_Convert_
@@ -54552,22 +54879,22 @@ references:
   nameWithType: Conversion.Convert<TInput, TOutput>(Task<TInput>, Converter<TInput, TOutput>)
   nameWithType.vb: Conversion.Convert(Of TInput, TOutput)(Task(Of TInput), Converter(Of TInput, TOutput))
 - uid: DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.Task,System.Predicate{System.Exception})
-  name: SuspendException(Task, Predicate<Exception>?)
+  name: SuspendException(Task, Predicate<Exception>)
   href: api/DotNext.Threading.Tasks.Conversion.html#DotNext_Threading_Tasks_Conversion_SuspendException_System_Threading_Tasks_Task_System_Predicate_System_Exception__
   commentId: M:DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.Task,System.Predicate{System.Exception})
   name.vb: SuspendException(Task, Predicate(Of Exception))
-  fullName: DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.Task, System.Predicate<System.Exception>?)
+  fullName: DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.Task, System.Predicate<System.Exception>)
   fullName.vb: DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.Task, System.Predicate(Of System.Exception))
-  nameWithType: Conversion.SuspendException(Task, Predicate<Exception>?)
+  nameWithType: Conversion.SuspendException(Task, Predicate<Exception>)
   nameWithType.vb: Conversion.SuspendException(Task, Predicate(Of Exception))
 - uid: DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.ValueTask,System.Predicate{System.Exception})
-  name: SuspendException(ValueTask, Predicate<Exception>?)
+  name: SuspendException(ValueTask, Predicate<Exception>)
   href: api/DotNext.Threading.Tasks.Conversion.html#DotNext_Threading_Tasks_Conversion_SuspendException_System_Threading_Tasks_ValueTask_System_Predicate_System_Exception__
   commentId: M:DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.ValueTask,System.Predicate{System.Exception})
   name.vb: SuspendException(ValueTask, Predicate(Of Exception))
-  fullName: DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.ValueTask, System.Predicate<System.Exception>?)
+  fullName: DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.ValueTask, System.Predicate<System.Exception>)
   fullName.vb: DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.ValueTask, System.Predicate(Of System.Exception))
-  nameWithType: Conversion.SuspendException(ValueTask, Predicate<Exception>?)
+  nameWithType: Conversion.SuspendException(ValueTask, Predicate<Exception>)
   nameWithType.vb: Conversion.SuspendException(ValueTask, Predicate(Of Exception))
 - uid: DotNext.Threading.Tasks.Conversion.SuspendException*
   name: SuspendException

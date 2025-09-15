@@ -107,18 +107,18 @@ if (@lock.TryAcquire(out Lock.Holder holder))
 </ul>
 <p>These methods allow to turn any thread-unsafe object into thread-safe object with precise control in context of multithreading access.</p>
 <pre><code class="lang-csharp">using System.Text;
-using DotNext.Threading;
+using static DotNext.Threading.LockAcquisition;
 
 var builder = new StringBuilder();
 
 //reader
-using (builder.AcquireReadLock())
+using (AcquireReadLock(builder))
 {
     Console.WriteLine(builder.ToString());
 }
 
 //writer
-using (builder.AcquireWriteLock())
+using (AcquireWriteLock(builder))
 {
     builder.Append(&quot;Hello, world!&quot;);
 }
