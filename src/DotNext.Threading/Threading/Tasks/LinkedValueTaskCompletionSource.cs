@@ -5,48 +5,38 @@ namespace DotNext.Threading.Tasks;
 
 internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletionSource<T>
 {
-    private LinkedValueTaskCompletionSource<T>? previous, next;
-
     private protected LinkedValueTaskCompletionSource(bool runContinuationsAsynchronously = true)
         : base(runContinuationsAsynchronously)
     {
     }
 
-    internal LinkedValueTaskCompletionSource<T>? Next => next;
+    internal LinkedValueTaskCompletionSource<T>? Next { get; set; }
 
-    internal LinkedValueTaskCompletionSource<T>? Previous => previous;
+    internal LinkedValueTaskCompletionSource<T>? Previous { get; private set; }
 
     internal void Append(LinkedValueTaskCompletionSource<T> node)
     {
-        Debug.Assert(next is null);
+        Debug.Assert(Next is null);
 
-        node.previous = this;
-        next = node;
-    }
-
-    internal void Prepend(LinkedValueTaskCompletionSource<T> node)
-    {
-        Debug.Assert(previous is null);
-
-        node.next = this;
-        previous = node;
+        node.Previous = this;
+        Next = node;
     }
 
     internal void Detach()
     {
-        if (previous is not null)
-            previous.next = next;
+        if (Previous is not null)
+            Previous.Next = Next;
 
-        if (next is not null)
-            next.previous = previous;
+        if (Next is not null)
+            Next.Previous = Previous;
 
-        next = previous = null;
+        Next = Previous = null;
     }
 
     internal LinkedValueTaskCompletionSource<T>? CleanupAndGotoNext()
     {
-        var next = this.next;
-        this.next = previous = null;
+        var next = Next;
+        Next = Previous = null;
         return next;
     }
 
@@ -59,51 +49,18 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
         }
     }
 
-    internal unsafe LinkedValueTaskCompletionSource<T>? SetResult<TArg>(delegate*<TArg, Result<T>> finalizer, TArg arg, out bool signaled)
+    internal LinkedValueTaskCompletionSource<T>? SetResult(in Result<T> result)
     {
         var detachedQueue = new LinkedList();
-        signaled = false;
 
         for (LinkedValueTaskCompletionSource<T>? current = this, next; current is not null; current = next)
         {
             next = current.CleanupAndGotoNext();
-            if (current.TrySetResult(Sentinel.Instance, completionToken: null, finalizer(arg), out var resumable))
-                signaled = true;
-
-            if (resumable)
+            if (current.TrySetResult(Sentinel.Instance, completionToken: null, in result, out var resumable) && resumable)
                 detachedQueue.Add(current);
         }
 
         return detachedQueue.First;
-    }
-
-    internal LinkedValueTaskCompletionSource<T>? SetCanceled(CancellationToken token, out bool signaled)
-    {
-        Debug.Assert(token.IsCancellationRequested);
-
-        unsafe
-        {
-            return SetResult(&CreateException, token, out signaled);
-        }
-
-        static Result<T> CreateException(CancellationToken token)
-            => new(new OperationCanceledException(token));
-    }
-
-    internal LinkedValueTaskCompletionSource<T>? SetException(Exception e, out bool signaled)
-    {
-        unsafe
-        {
-            return SetResult(&Result.FromException<T>, e, out signaled);
-        }
-    }
-
-    internal LinkedValueTaskCompletionSource<T>? SetResult(T value, out bool signaled)
-    {
-        unsafe
-        {
-            return SetResult(&Result.FromValue<T>, value, out signaled);
-        }
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -134,20 +91,7 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
             }
         }
 
-        internal LinkedValueTaskCompletionSource<T>? Dequeue()
-        {
-            if (first is { } result)
-            {
-                Remove(result);
-            }
-            else
-            {
-                result = null;
-            }
-
-            return result;
-        }
-
+        // true if the first node in the queue is removed
         internal bool Remove(LinkedValueTaskCompletionSource<T> node)
         {
             bool isFirst;

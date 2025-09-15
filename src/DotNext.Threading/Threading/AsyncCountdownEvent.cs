@@ -1,10 +1,10 @@
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
 using Tasks;
-using Tasks.Pooling;
 
 /// <summary>
 /// Represents a synchronization primitive that is signaled when its count reaches zero.
@@ -16,49 +16,34 @@ using Tasks.Pooling;
 public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager<DefaultWaitNode>
+    private struct StateManager : ILockManager, IConsumer<WaitNode>
     {
         internal long Current, Initial;
 
         internal StateManager(long initialCount)
             => Current = Initial = initialCount;
 
-        readonly bool ILockManager.IsLockAllowed => Current is 0L;
+        public readonly bool IsLockAllowed => Current is 0L;
 
         internal void Increment(long value) => Current = checked(Current + value);
 
         internal void IncrementInitial(long value)
             => Current = Initial = checked(Current + value);
 
-        internal bool Decrement(long value = 1L)
-            => (Current = Math.Max(0L, Current - value)) is 0L;
+        internal void Decrement(long value = 1L)
+            => Current = Math.Max(0L, Current - value);
 
         readonly void ILockManager.AcquireLock()
         {
             // nothing to do here
         }
+
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node) => Initialize(node);
+
+        public static void Initialize(WaitNode node) => node.DrainOnReturn = false;
     }
 
-    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private StateManager manager;
-
-    /// <summary>
-    /// Creates a new countdown event with the specified count.
-    /// </summary>
-    /// <param name="initialCount">The number of signals initially required to set the event.</param>
-    /// <param name="concurrencyLevel">The expected number of suspended callers.</param>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// <paramref name="initialCount"/> is less than zero;
-    /// or <paramref name="concurrencyLevel"/> is less than or equal to zero.
-    /// </exception>
-    public AsyncCountdownEvent(long initialCount, int concurrencyLevel)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegative(initialCount);
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
-
-        manager = new(initialCount);
-        pool = new(OnCompleted, concurrencyLevel);
-    }
 
     /// <summary>
     /// Creates a new countdown event with the specified count.
@@ -67,23 +52,12 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCount"/> is less than zero.</exception>
     public AsyncCountdownEvent(long initialCount)
     {
-        if (initialCount < 0)
-            throw new ArgumentOutOfRangeException(nameof(initialCount));
+        ArgumentOutOfRangeException.ThrowIfNegative(initialCount);
 
         manager = new(initialCount);
-        pool = new(OnCompleted);
     }
 
-    private void OnCompleted(DefaultWaitNode node)
-    {
-        lock (SyncRoot)
-        {
-            if (node.NeedsRemoval)
-                RemoveNode(node);
-
-            pool.Return(node);
-        }
-    }
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor) => waitQueueVisitor.SignalAll();
 
     /// <summary>
     /// Gets the numbers of signals initially required to set the event.
@@ -187,13 +161,17 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     public bool Reset()
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
+        
+        var e = new PendingTaskInterruptedException();
+        ExceptionDispatchInfo.SetCurrentStackTrace(e);
+        
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             result = manager.Current is 0L;
             manager.Current = manager.Initial;
-            suspendedCallers = DetachWaitQueue()?.SetException(new PendingTaskInterruptedException(), out _);
+            suspendedCallers = DrainWaitQueue(e);
         }
 
         suspendedCallers?.Unwind();
@@ -215,13 +193,16 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         ArgumentOutOfRangeException.ThrowIfNegative(count);
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
+        var e = new PendingTaskInterruptedException();
+        ExceptionDispatchInfo.SetCurrentStackTrace(e);
+
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             result = manager.Current is 0L;
             manager.Current = manager.Initial = count;
-            suspendedCallers = DetachWaitQueue()?.SetException(new PendingTaskInterruptedException(), out _);
+            suspendedCallers = DrainWaitQueue(e);
         }
 
         suspendedCallers?.Unwind();
@@ -232,10 +213,11 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        if (manager.Decrement())
+        manager.Decrement();
+        if (manager.IsLockAllowed)
         {
             manager.Current = manager.Initial;
-            suspendedCallers = DetachWaitQueue()?.SetResult(true, out _);
+            suspendedCallers = DrainWaitQueue();
             return true;
         }
 
@@ -243,110 +225,37 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         return false;
     }
 
-    internal ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
+    private T SignalAndWaitAsync<T, TBuilder>(ref TBuilder builder, out bool completedSynchronously)
+        where T : struct, IEquatable<T>
+        where TBuilder : struct, ITaskBuilder<T>
     {
-        ValueTask<bool> task;
-        completedSynchronously = true;
-
-        switch (timeout.Ticks)
+        var suspendedCallers = default(LinkedValueTaskCompletionSource<bool>);
+        if (!builder.IsCompleted
+            && Acquire<T, TBuilder, WaitNode>(ref builder, SignalAndResetCore(out suspendedCallers)) is { } node)
         {
-            case Timeout.InfiniteTicks:
-                goto default;
-            case < 0L or > Timeout.MaxTimeoutParameterTicks:
-                task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
-                break;
-            case 0L:
-                LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-                lock (SyncRoot)
-                {
-                    if (IsDisposingOrDisposed)
-                    {
-                        task = new(GetDisposedTask<bool>());
-                        break;
-                    }
-
-                    SignalAndResetCore(out suspendedCallers);
-                }
-
-                suspendedCallers?.Unwind();
-                task = new(false);
-                break;
-            default:
-                if (token.IsCancellationRequested)
-                {
-                    task = ValueTask.FromCanceled<bool>(token);
-                    break;
-                }
-
-                ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
-                lock (SyncRoot)
-                {
-                    if (IsDisposingOrDisposed)
-                    {
-                        task = new(GetDisposedTask<bool>());
-                        break;
-                    }
-
-                    if (SignalAndResetCore(out suspendedCallers))
-                    {
-                        task = new(true);
-                        goto resume_suspended_callers;
-                    }
-
-                    factory = EnqueueNode<DefaultWaitNode, StateManager>(ref pool, WaitNodeFlags.None);
-                }
-
-                completedSynchronously = false;
-                task = factory.Invoke(timeout, token);
-                break;
-
-            resume_suspended_callers:
-                suspendedCallers?.Unwind();
-                break;
+            completedSynchronously = false;
+            StateManager.Initialize(node);
+        }
+        else
+        {
+            completedSynchronously = true;
         }
 
-        return task;
+        builder.Dispose();
+        suspendedCallers?.Unwind();
+        return builder.Invoke();
+    }
+
+    internal ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)
+    {
+        var builder = CreateTaskBuilder(timeout, token);
+        return SignalAndWaitAsync<ValueTask<bool>, TimeoutAndCancellationToken>(ref builder, out completedSynchronously);
     }
 
     internal ValueTask SignalAndWaitAsync(out bool completedSynchronously, CancellationToken token)
     {
-        ValueTask task;
-        completedSynchronously = true;
-
-        if (token.IsCancellationRequested)
-        {
-            task = ValueTask.FromCanceled(token);
-            goto exit;
-        }
-
-        ISupplier<TimeSpan, CancellationToken, ValueTask> factory;
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
-        {
-            if (IsDisposingOrDisposed)
-            {
-                task = new(DisposedTask);
-                goto exit;
-            }
-
-            if (SignalAndResetCore(out suspendedCallers))
-            {
-                task = ValueTask.CompletedTask;
-                goto resume_suspended_callers;
-            }
-
-            factory = EnqueueNode<DefaultWaitNode, StateManager>(ref pool, WaitNodeFlags.ThrowOnTimeout);
-        }
-
-        completedSynchronously = false;
-        task = factory.Invoke(token);
-        goto exit;
-
-    resume_suspended_callers:
-        suspendedCallers?.Unwind();
-
-    exit:
-        return task;
+        var builder = CreateTaskBuilder(token);
+        return SignalAndWaitAsync<ValueTask, CancellationTokenOnly>(ref builder, out completedSynchronously);
     }
 
     /// <summary>
@@ -371,8 +280,9 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             if (manager.Current is 0L)
                 throw new InvalidOperationException();
 
-            suspendedCallers = (result = manager.Decrement(signalCount))
-                ? DetachWaitQueue()?.SetResult(true, out _)
+            manager.Decrement(signalCount);
+            suspendedCallers = (result = manager.IsLockAllowed)
+                ? DrainWaitQueue()
                 : null;
         }
 
@@ -393,7 +303,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        => TryAcquireAsync<WaitNode, StateManager>(ref manager, timeout, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -403,5 +313,5 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        => AcquireAsync<WaitNode, StateManager>(ref manager, token);
 }

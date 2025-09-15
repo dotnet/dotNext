@@ -28,4 +28,6 @@ internal static class ExceptionMessages
     internal static string AsyncTaskInterrupted => (string)Resources.Get();
 
     internal static string LeaseExpired => (string)Resources.Get();
+    
+    internal static string ConcurrencyLimitReached => (string)Resources.Get();
 }

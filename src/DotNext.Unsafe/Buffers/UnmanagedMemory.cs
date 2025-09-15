@@ -208,9 +208,6 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
         address = null;
         Length = 0;
     }
-
-    [SuppressMessage("Reliability", "CA2015", Justification = "The caller must hold the reference to the memory object.")]
-    ~UnmanagedMemory() => Dispose(disposing: false);
 }
 
 internal class UnmanagedMemoryOwner<T, TAllocator> : UnmanagedMemory<T>, IUnmanagedMemory<T>

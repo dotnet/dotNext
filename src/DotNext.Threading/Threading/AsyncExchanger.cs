@@ -18,18 +18,25 @@ using Tasks.Pooling;
 [DebuggerDisplay($"CanBeCompletedSynchronously = {{{nameof(CanBeCompletedSynchronously)}}}, Terminated = {{{nameof(IsTerminated)}}}")]
 public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 {
-    private sealed class ExchangePoint : LinkedValueTaskCompletionSource<T>, IPooledManualResetCompletionSource<Action<ExchangePoint>>
+    private sealed class ExchangePoint : LinkedValueTaskCompletionSource<T>
     {
-        private Action<ExchangePoint>? consumedCallback;
-        internal T? Value;
+        private AsyncExchanger<T>? owner;
+        private T? value;
 
-        protected override void AfterConsumed() => consumedCallback?.Invoke(this);
+        internal void Initialize(AsyncExchanger<T> owner, T value)
+        {
+            this.owner = owner;
+            this.value = value;
+        }
+
+        protected override void AfterConsumed() => owner?.OnCompleted(this);
 
         protected override void CleanUp()
         {
             if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
-                Value = default;
+                value = default;
 
+            owner = null;
             base.CleanUp();
         }
 
@@ -37,22 +44,16 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
         {
             if (TrySetResult(completionData: null, completionToken: null, value, out resumable))
             {
-                value = Value!;
+                value = this.value!;
                 return true;
             }
 
             return false;
         }
-
-        Action<ExchangePoint>? IPooledManualResetCompletionSource<Action<ExchangePoint>>.OnConsumed
-        {
-            get => consumedCallback;
-            set => consumedCallback = value;
-        }
     }
 
     private readonly TaskCompletionSource disposeTask;
-    private ValueTaskPool<T, ExchangePoint, Action<ExchangePoint>> pool;
+    private ValueTaskPool<T> pool;
     private ExchangePoint? point;
     private volatile ExchangeTerminatedException? termination;
 
@@ -61,7 +62,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// </summary>
     public AsyncExchanger()
     {
-        pool = new(RemoveExchangePoint);
+        pool = new();
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
     }
 
@@ -75,19 +76,28 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
 
-        var result = pool.Get();
-        result.Value = value;
+        var result = pool.Rent<ExchangePoint>();
+        result.Initialize(this, value);
         return result;
     }
 
-    private void RemoveExchangePoint(ExchangePoint point)
+    private void OnCompleted(ExchangePoint point)
     {
-        Monitor.Enter(SyncRoot);
-        if (ReferenceEquals(this.point, point))
-            this.point = null;
+        lock (SyncRoot)
+        {
+            if (ReferenceEquals(this.point, point))
+            {
+                this.point = null;
+            }
+        }
 
-        pool.Return(point);
-        Monitor.Exit(SyncRoot);
+        if (point.TryReset(out _))
+        {
+            lock (SyncRoot)
+            {
+                pool.Return(point);
+            }
+        }
     }
 
     /// <summary>
@@ -128,7 +138,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
                 break;
             default:
-                var suspendedCaller = default(ManualResetCompletionSource);
+                ManualResetCompletionSource? suspendedCaller;
                 ISupplier<TimeSpan, CancellationToken, ValueTask<T>> factory;
                 lock (SyncRoot)
                 {

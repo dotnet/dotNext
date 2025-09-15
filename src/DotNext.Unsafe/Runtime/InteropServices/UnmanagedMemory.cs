@@ -25,7 +25,7 @@ public struct UnmanagedMemory<T>() : IUnmanagedMemory
         => Pointer.Value = value;
 
     /// <inheritdoc/>
-    Pointer<byte> IUnmanagedMemory.Pointer => Pointer.As<byte>();
+    readonly Pointer<byte> IUnmanagedMemory.Pointer => Pointer.As<byte>();
 
     /// <summary>
     /// Releases the unmanaged memory.
@@ -37,11 +37,11 @@ public struct UnmanagedMemory<T>() : IUnmanagedMemory
     }
 
     /// <inheritdoc/>
-    unsafe nuint IUnmanagedMemory.Size => (uint)sizeof(T);
+    readonly unsafe nuint IUnmanagedMemory.Size => (uint)sizeof(T);
 
     /// <inheritdoc/>
     readonly Span<byte> IUnmanagedMemory.Bytes => Pointer.Bytes;
 
     /// <inheritdoc/>
-    public override string ToString() => Pointer.ToString();
+    public readonly override string ToString() => Pointer.ToString();
 }

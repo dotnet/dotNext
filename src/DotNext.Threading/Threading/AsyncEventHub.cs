@@ -1,15 +1,12 @@
 using System.Collections;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
 using Collections.Generic;
-using Runtime;
 using Tasks;
-using Tasks.Pooling;
 
 /// <summary>
 /// Represents a collection of asynchronous events.
@@ -20,7 +17,6 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     private static readonly int MaxCount = Unsafe.SizeOf<UInt128>() * 8;
 
     private readonly EventGroup all;
-    private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
     private UInt128 state;
 
     /// <summary>
@@ -34,18 +30,17 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)MaxCount, nameof(count));
 
         Count = count;
-        pool = new(OnCompleted, count);
         all = new(Count == MaxCount ? UInt128.MaxValue : GetBitMask(count) - UInt128.One);
     }
+    
+    private static UInt128 GetBitMask(int index) => UInt128.One << index;
 
-    private void OnCompleted(WaitNode node)
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
     {
-        lock (SyncRoot)
+        for (; !waitQueueVisitor.IsEndOfQueue<WaitNode, WaitNode>(out var node); waitQueueVisitor.Advance())
         {
-            if (node.NeedsRemoval)
-                RemoveNode(node);
-
-            pool.Return(node);
+            if (node.Matches(state))
+                waitQueueVisitor.SignalCurrent();
         }
     }
 
@@ -70,8 +65,8 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         if ((uint)eventIndex > (uint)Count)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
 
-        var manager = new WaitAllManager(this, eventIndex);
-        return AcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        var builder = CreateTaskBuilder(timeout, token);
+        return WaitAllAsync<ValueTask, TimeoutAndCancellationToken>(ref builder, GetBitMask(eventIndex));
     }
 
     /// <summary>
@@ -88,8 +83,8 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         if ((uint)eventIndex > (uint)Count)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
 
-        var manager = new WaitAllManager(this, eventIndex);
-        return AcquireSpecialAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        var builder = CreateTaskBuilder(token);
+        return WaitAllAsync<ValueTask, CancellationTokenOnly>(ref builder, GetBitMask(eventIndex));
     }
 
     /// <summary>
@@ -104,23 +99,6 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         {
             state = default;
         }
-    }
-
-    private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
-    {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-
-        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
-
-        for (WaitNode? current = Unsafe.As<WaitNode>(WaitQueueHead), next; current is not null; current = next)
-        {
-            next = Unsafe.As<WaitNode>(current.Next);
-
-            if (current.Matches(state) && RemoveAndSignal(current, out var resumable) && resumable)
-                detachedQueue.Add(current);
-        }
-
-        return detachedQueue.First;
     }
 
     /// <summary>
@@ -253,9 +231,9 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     {
         if (events.Mask > all.Mask)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
-        
-        var manager = new WaitAnyManager(this, events.Mask);
-        return AcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+
+        var builder = CreateTaskBuilder(timeout, token);
+        return WaitAnyAsync<ValueTask, TimeoutAndCancellationToken>(ref builder, events.Mask);
     }
 
     /// <summary>
@@ -273,11 +251,11 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     {
         if (events.Mask > all.Mask)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
-        
-        var manager = new WaitAnyManager(this, events.Mask);
-        return AcquireSpecialAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+
+        var builder = CreateTaskBuilder(token);
+        return WaitAnyAsync<ValueTask, CancellationTokenOnly>(ref builder, events.Mask);
     }
-    
+
     /// <summary>
     /// Waits for any of the specified events.
     /// </summary>
@@ -296,9 +274,9 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     {
         if (events.Mask > all.Mask)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
-        
-        var manager = new WaitAnyManager(this, events.Mask) { Events = output };
-        return AcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+
+        var builder = CreateTaskBuilder(timeout, token);
+        return WaitAnyAsync<ValueTask, TimeoutAndCancellationToken>(ref builder, events.Mask, output);
     }
 
     /// <summary>
@@ -317,9 +295,32 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     {
         if (events.Mask > all.Mask)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
-        
-        var manager = new WaitAnyManager(this, events.Mask) { Events = output };
-        return AcquireSpecialAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+
+        var builder = CreateTaskBuilder(token);
+        return WaitAnyAsync<ValueTask, CancellationTokenOnly>(ref builder, events.Mask, output);
+    }
+    
+    private T WaitAnyAsync<T, TBuilder>(ref TBuilder builder, UInt128 mask, ICollection<int>? output = null)
+        where T : struct, IEquatable<T>
+        where TBuilder : struct, ITaskBuilder<T>
+    {
+        var events = state & mask;
+        switch (builder.IsCompleted)
+        {
+            case true:
+                goto default;
+            case false when Acquire<T, TBuilder, WaitNode>(ref builder, events != UInt128.Zero) is { } node:
+                node.WaitAny(mask, output);
+                goto default;
+            case false when output is not null:
+                FillIndices(events, output);
+                goto default;
+            default:
+                builder.Dispose();
+                break;
+        }
+
+        return builder.Invoke();
     }
 
     /// <summary>
@@ -385,9 +386,9 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     {
         if (events.Mask > all.Mask)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
-        
-        var manager = new WaitAllManager(this, events.Mask);
-        return AcquireSpecialAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+
+        var builder = CreateTaskBuilder(timeout, token);
+        return WaitAllAsync<ValueTask, TimeoutAndCancellationToken>(ref builder, events.Mask);
     }
 
     /// <summary>
@@ -405,9 +406,9 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     {
         if (events.Mask > all.Mask)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
-        
-        var manager = new WaitAllManager(this, events.Mask);
-        return AcquireSpecialAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+
+        var builder = CreateTaskBuilder(token);
+        return WaitAllAsync<ValueTask, CancellationTokenOnly>(ref builder, events.Mask);
     }
 
     /// <summary>
@@ -431,9 +432,27 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
     public ValueTask WaitAllAsync(CancellationToken token = default)
         => WaitAllAsync(all, token);
-    
-    private static UInt128 GetBitMask(int index) => UInt128.One << index;
-    
+
+    private T WaitAllAsync<T, TBuilder>(ref TBuilder builder, UInt128 mask)
+        where T : struct, IEquatable<T>
+        where TBuilder : struct, ITaskBuilder<T>
+    {
+        var events = state & mask;
+        switch (builder.IsCompleted)
+        {
+            case true:
+                goto default;
+            case false when Acquire<T, TBuilder, WaitNode>(ref builder, events == mask) is { } node:
+                node.WaitAll(mask);
+                goto default;
+            default:
+                builder.Dispose();
+                break;
+        }
+
+        return builder.Invoke();
+    }
+
     private static void FillIndices(UInt128 events, ICollection<int> indices)
     {
         for (var enumerator = new EventGroup.Enumerator(events); enumerator.MoveNext();)
@@ -535,78 +554,8 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         }
     }
 
-    // TODO: Move to ref struct in .NET 10
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct WaitAllManager : ILockManager, IConsumer<WaitNode>
+    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, INodeMapper<WaitNode, WaitNode>
     {
-        private readonly ReadOnlyValueReference<UInt128> state;
-        private readonly UInt128 mask;
-
-        internal WaitAllManager(AsyncEventHub stateHolder, int eventIndex)
-        {
-            Debug.Assert(stateHolder is not null);
-
-            mask = GetBitMask(eventIndex);
-            state = new(stateHolder, in stateHolder.state);
-        }
-
-        internal WaitAllManager(AsyncEventHub stateHolder, in UInt128 mask)
-        {
-            Debug.Assert(stateHolder is not null);
-
-            this.mask = mask;
-            state = new(stateHolder, in stateHolder.state);
-        }
-
-        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.WaitAll(mask);
-
-        bool ILockManager.IsLockAllowed => (state.Value & mask) == mask;
-
-        void ILockManager.AcquireLock()
-        {
-            // no need to reset events
-        }
-
-        static bool ILockManager.RequiresEmptyQueue => false;
-    }
-    
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct WaitAnyManager : ILockManager, IConsumer<WaitNode>
-    {
-        private readonly ReadOnlyValueReference<UInt128> state;
-        private readonly UInt128 mask;
-
-        internal WaitAnyManager(AsyncEventHub stateHolder, in UInt128 mask)
-        {
-            Debug.Assert(stateHolder is not null);
-
-            this.mask = mask;
-            state = new(stateHolder, in stateHolder.state);
-        }
-
-        [DisallowNull]
-        internal ICollection<int>? Events
-        {
-            get;
-            init;
-        }
-
-        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.WaitAny(mask, Events);
-
-        bool ILockManager.IsLockAllowed => (state.Value & mask) != UInt128.Zero;
-
-        void ILockManager.AcquireLock()
-        {
-            if (Events is { } collection)
-                FillIndices(state.Value & mask, collection);
-        }
-
-        static bool ILockManager.RequiresEmptyQueue => false;
-    }
-
-    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<Action<WaitNode>>
-    {
-        private Action<WaitNode>? callback;
         private UInt128 mask;
         private bool waitAll;
         private ICollection<int>? events;
@@ -623,8 +572,6 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             this.mask = mask;
             this.events = events;
         }
-
-        protected override void AfterConsumed() => callback?.Invoke(this);
 
         protected override void CleanUp()
         {
@@ -652,10 +599,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return false;
         }
 
-        Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed
-        {
-            get => callback;
-            set => callback = value;
-        }
+        static WaitNode INodeMapper<WaitNode, WaitNode>.GetValue(WaitNode node)
+            => node;
     }
 }

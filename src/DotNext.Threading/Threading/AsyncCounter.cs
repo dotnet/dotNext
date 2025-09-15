@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 namespace DotNext.Threading;
 
 using Tasks;
-using Tasks.Pooling;
 
 /// <summary>
 /// Represents a synchronization primitive that is signaled when its count becomes non-zero.
@@ -19,7 +18,7 @@ using Tasks.Pooling;
 public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager<DefaultWaitNode>
+    private struct StateManager : ILockManager, IConsumer<WaitNode>
     {
         internal required long Value;
 
@@ -34,8 +33,6 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
             return result;
         }
 
-        internal void Decrement() => Value--;
-
         internal bool TryReset()
         {
             var result = Value > 0L;
@@ -45,26 +42,12 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 
         readonly bool ILockManager.IsLockAllowed => Value > 0L;
 
-        void ILockManager.AcquireLock() => Decrement();
+        void ILockManager.AcquireLock() => Value--;
+
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
     }
 
-    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private StateManager manager;
-
-    /// <summary>
-    /// Initializes a new asynchronous counter.
-    /// </summary>
-    /// <param name="initialValue">The initial value of the counter.</param>
-    /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
-    public AsyncCounter(long initialValue, int concurrencyLevel)
-    {
-        ArgumentOutOfRangeException.ThrowIfLessThan(initialValue, 0L);
-        ArgumentOutOfRangeException.ThrowIfLessThan(concurrencyLevel, 1);
-
-        manager = new() { Value = initialValue };
-        pool = new(OnCompleted, concurrencyLevel);
-    }
 
     /// <summary>
     /// Initializes a new asynchronous counter.
@@ -76,19 +59,10 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         ArgumentOutOfRangeException.ThrowIfLessThan(initialValue, 0L);
 
         manager = new() { Value = initialValue };
-        pool = new(OnCompleted);
     }
 
-    private void OnCompleted(DefaultWaitNode node)
-    {
-        lock (SyncRoot)
-        {
-            if (node.NeedsRemoval)
-                RemoveNode(node);
-
-            pool.Return(node);
-        }
-    }
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+        => waitQueueVisitor.SignalAll(ref manager);
 
     /// <inheritdoc/>
     bool IAsyncEvent.IsSet => Value > 0L;
@@ -166,44 +140,30 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
         Debug.Assert(delta > 0L);
 
-        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (SyncRoot)
         {
             manager.Increment(delta);
-            DrainWaitQueue(ref detachedQueue);
+            suspendedCallers = DrainWaitQueue();
         }
 
-        detachedQueue.First?.Unwind();
+        suspendedCallers?.Unwind();
     }
 
     private bool TryIncrementCore(long maxValue)
     {
         Debug.Assert(maxValue > 0);
-        
-        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
+
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         bool result;
         lock (SyncRoot)
         {
             result = manager.TryIncrement(maxValue);
-            DrainWaitQueue(ref detachedQueue);
+            suspendedCallers = DrainWaitQueue();
         }
 
-        detachedQueue.First?.Unwind();
+        suspendedCallers?.Unwind();
         return result;
-    }
-
-    private void DrainWaitQueue(ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
-    {
-        for (LinkedValueTaskCompletionSource<bool>? current = WaitQueueHead, next; current is not null && manager.Value > 0L; current = next)
-        {
-            next = current.Next;
-
-            if (RemoveAndSignal(current, out var resumable))
-                manager.Decrement();
-
-            if (resumable)
-                detachedQueue.Add(current);
-        }
     }
 
     /// <inheritdoc/>
@@ -223,7 +183,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        => TryAcquireAsync<WaitNode, StateManager>(ref manager, timeout, token);
 
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
@@ -234,7 +194,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        => AcquireAsync<WaitNode, StateManager>(ref manager, token);
 
     /// <summary>
     /// Attempts to decrement the counter synchronously.

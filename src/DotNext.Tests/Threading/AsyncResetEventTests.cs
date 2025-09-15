@@ -48,7 +48,7 @@ public sealed class AsyncResetEventTests : Test
     [Fact]
     public static async Task AutoresetForManualEvent()
     {
-        using var resetEvent = new AsyncManualResetEvent(false, 3);
+        using var resetEvent = new AsyncManualResetEvent(false) { ConcurrencyLevel = 3 };
         False(resetEvent.IsSet);
         var t = resetEvent.WaitAsync(DefaultTimeout);
 

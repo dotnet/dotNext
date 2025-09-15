@@ -20,7 +20,7 @@ public sealed class WriteAheadLogTests : Test
     [Fact]
     public static async Task LockManager()
     {
-        await using var lockManager = new WriteAheadLog.LockManager(3);
+        await using var lockManager = new WriteAheadLog.LockManager();
         await lockManager.AcquireReadLockAsync();
 
         var readBarrierTask = lockManager.AcquireReadBarrierAsync().AsTask();
@@ -35,7 +35,7 @@ public sealed class WriteAheadLogTests : Test
         IPersistentState state;
         var member = ClusterMemberId.FromEndPoint(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
 
-        var options = new WriteAheadLog.Options()
+        var options = new WriteAheadLog.Options
         {
             Location = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
         };

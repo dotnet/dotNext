@@ -1,9 +1,9 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
 using Tasks;
-using Tasks.Pooling;
 
 /// <summary>
 /// Represents asynchronous version of <see cref="ManualResetEvent"/>.
@@ -11,7 +11,8 @@ using Tasks.Pooling;
 [DebuggerDisplay($"IsSet = {{{nameof(IsSet)}}}")]
 public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
-    private struct StateManager : ILockManager<DefaultWaitNode>
+    [StructLayout(LayoutKind.Auto)]
+    private struct StateManager : ILockManager, IConsumer<WaitNode>
     {
         internal bool Value;
 
@@ -34,24 +35,11 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
         {
             // nothing to do here
         }
+
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
     }
 
-    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private StateManager manager;
-
-    /// <summary>
-    /// Initializes a new asynchronous reset event in the specified state.
-    /// </summary>
-    /// <param name="initialState"><see langword="true"/> to set the initial state signaled; <see langword="false"/> to set the initial state to non signaled.</param>
-    /// <param name="concurrencyLevel">The potential number of suspended callers.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
-    public AsyncManualResetEvent(bool initialState, int concurrencyLevel)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
-
-        manager = new(initialState);
-        pool = new(OnCompleted, concurrencyLevel);
-    }
 
     /// <summary>
     /// Initializes a new asynchronous reset event in the specified state.
@@ -60,19 +48,10 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public AsyncManualResetEvent(bool initialState)
     {
         manager = new(initialState);
-        pool = new(OnCompleted);
     }
 
-    private void OnCompleted(DefaultWaitNode node)
-    {
-        lock (SyncRoot)
-        {
-            if (node.NeedsRemoval)
-                RemoveNode(node);
-
-            pool.Return(node);
-        }
-    }
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+        => waitQueueVisitor.SignalAll();
 
     /// <inheritdoc/>
     EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.ManualReset;
@@ -106,7 +85,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
         {
             result = !manager.Value;
             manager.Value = !autoReset;
-            suspendedCallers = DetachWaitQueue()?.SetResult(true, out _);
+            suspendedCallers = DrainWaitQueue();
         }
 
         suspendedCallers?.Unwind();
@@ -142,7 +121,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        => TryAcquireAsync<WaitNode, StateManager>(ref manager, timeout, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -152,5 +131,5 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        => AcquireAsync<WaitNode, StateManager>(ref manager, token);
 }

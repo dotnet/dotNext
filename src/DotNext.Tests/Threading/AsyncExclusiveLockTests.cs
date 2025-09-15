@@ -8,7 +8,7 @@ public sealed class AsyncExclusiveLockTests : Test
     [Fact]
     public static async Task TrivialLock()
     {
-        using var @lock = new AsyncExclusiveLock(3);
+        using var @lock = new AsyncExclusiveLock { ConcurrencyLevel = 3 };
         True(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(10)));
         False(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(100)));
         await ThrowsAsync<TimeoutException>(@lock.AcquireAsync(TimeSpan.FromMilliseconds(100)).AsTask);
@@ -92,7 +92,7 @@ public sealed class AsyncExclusiveLockTests : Test
         True(@lock.TryAcquire());
         var task = @lock.DisposeAsync();
         False(task.IsCompleted);
-        await ThrowsAsync<ObjectDisposedException>(@lock.AcquireAsync(CancellationToken.None).AsTask);
+        await ThrowsAnyAsync<ObjectDisposedException>(@lock.AcquireAsync(CancellationToken.None).AsTask);
     }
 
     [Fact]
@@ -101,7 +101,7 @@ public sealed class AsyncExclusiveLockTests : Test
         var l = new AsyncExclusiveLock();
         l.Dispose();
         var result = l.TryAcquireAsync(System.Threading.Timeout.InfiniteTimeSpan);
-        await ThrowsAsync<ObjectDisposedException>(result.AsTask);
+        await ThrowsAnyAsync<ObjectDisposedException>(result.AsTask);
     }
 
     [Fact]
@@ -213,7 +213,7 @@ public sealed class AsyncExclusiveLockTests : Test
         var t = Task.Factory.StartNew(() => l.TryAcquire(DefaultTimeout), TaskCreationOptions.LongRunning);
 
         l.Dispose();
-        await ThrowsAsync<ObjectDisposedException>(Func.Constant(t));
+        await ThrowsAnyAsync<ObjectDisposedException>(Func.Constant(t));
     }
 
     [Fact]
@@ -240,5 +240,22 @@ public sealed class AsyncExclusiveLockTests : Test
         
         l.Release();
         True(l.TryAcquire(DefaultTimeout));
+    }
+
+    [Fact]
+    public static async Task HardConcurrencyLimit()
+    {
+        using var l = new AsyncExclusiveLock()
+        {
+            ConcurrencyLevel = 1L,
+            HasConcurrencyLimit = true,
+        };
+        
+        True(l.TryAcquire());
+
+        var task = l.AcquireAsync().AsTask();
+        False(task.IsCompleted);
+        
+        await ThrowsAsync<ConcurrencyLimitReachedException > (l.AcquireAsync().AsTask);
     }
 }

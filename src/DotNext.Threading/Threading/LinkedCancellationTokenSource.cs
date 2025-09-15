@@ -11,7 +11,7 @@ namespace DotNext.Threading;
 /// This source is not resettable. Calling of <see cref="CancellationTokenSource.TryReset"/>
 /// may lead to unpredictable results.
 /// </remarks>
-public abstract class LinkedCancellationTokenSource : CancellationTokenSource
+public abstract class LinkedCancellationTokenSource : CancellationTokenSource, IMultiplexedCancellationTokenSource
 {
     private Atomic.Boolean status;
 

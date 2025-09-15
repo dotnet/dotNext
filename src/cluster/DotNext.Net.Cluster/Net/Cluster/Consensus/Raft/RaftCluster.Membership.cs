@@ -143,14 +143,14 @@ public partial class RaftCluster<TMember>
     /// </remarks>
     /// <param name="member">The member to add.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns><see langword="true"/> if the member is addedd successfully; <see langword="false"/> if the member is already in the list.</returns>
+    /// <returns><see langword="true"/> if the member is added successfully; <see langword="false"/> if the member is already in the list.</returns>
     public async ValueTask<bool> AddMemberAsync(TMember member, CancellationToken token)
     {
-        var tokenHolder = token.LinkTo(LifecycleToken);
+        var tokenHolder = CombineTokens([token, LifecycleToken]);
         var lockTaken = false;
         try
         {
-            await transitionLock.AcquireAsync(token).ConfigureAwait(false);
+            await transitionLock.AcquireAsync(tokenHolder.Token).ConfigureAwait(false);
             lockTaken = true;
 
             // assuming that the member is in sync with the leader
@@ -162,15 +162,16 @@ public partial class RaftCluster<TMember>
             // synchronize with reader thread
             Interlocked.MemoryBarrierProcessWide();
         }
-        catch (OperationCanceledException e) when (tokenHolder?.Token == e.CancellationToken)
+        catch (OperationCanceledException e) when (tokenHolder.Token == e.CancellationToken)
         {
             throw new OperationCanceledException(e.Message, e, tokenHolder.CancellationOrigin);
         }
         finally
         {
-            tokenHolder?.Dispose();
             if (lockTaken)
                 transitionLock.Release();
+
+            await tokenHolder.DisposeAsync().ConfigureAwait(false);
         }
 
         OnMemberAdded(member);
@@ -190,11 +191,11 @@ public partial class RaftCluster<TMember>
     public async ValueTask<TMember?> RemoveMemberAsync(ClusterMemberId id, CancellationToken token)
     {
         TMember? result;
-        var tokenHolder = token.LinkTo(LifecycleToken);
+        var tokenHolder = CombineTokens([token, LifecycleToken]);
         var lockTaken = false;
         try
         {
-            await transitionLock.AcquireAsync(token).ConfigureAwait(false);
+            await transitionLock.AcquireAsync(tokenHolder.Token).ConfigureAwait(false);
             lockTaken = true;
 
             if ((result = members.TryRemove(id, out members)) is not null)
@@ -202,7 +203,7 @@ public partial class RaftCluster<TMember>
                 // synchronize with reader thread
                 Interlocked.MemoryBarrierProcessWide();
 
-                if (result.IsRemote is false && state is not null)
+                if (result is { IsRemote: false } && state is not StandbyState<TMember>)
                 {
                     // local member is removed, downgrade it
                     await MoveToStandbyState(resumable: false).ConfigureAwait(false);
@@ -212,15 +213,16 @@ public partial class RaftCluster<TMember>
                     Leader = null;
             }
         }
-        catch (OperationCanceledException e) when (tokenHolder?.Token == e.CancellationToken)
+        catch (OperationCanceledException e) when (tokenHolder.Token == e.CancellationToken)
         {
             throw new OperationCanceledException(e.Message, e, tokenHolder.CancellationOrigin);
         }
         finally
         {
-            tokenHolder?.Dispose();
             if (lockTaken)
                 transitionLock.Release();
+
+            await tokenHolder.DisposeAsync().ConfigureAwait(false);
         }
 
         if (result is not null)
@@ -255,7 +257,7 @@ public partial class RaftCluster<TMember>
             throw new ConcurrentMembershipModificationException();
 
         var leaderState = LeaderStateOrException;
-        var tokenSource = token.LinkTo(leaderState.Token);
+        var tokenSource = CombineTokens([token, leaderState.Token]);
         try
         {
             // catch up node
@@ -266,40 +268,40 @@ public partial class RaftCluster<TMember>
                 var commitIndex = auditTrail.LastCommittedEntryIndex;
                 currentIndex = auditTrail.LastEntryIndex;
                 var precedingIndex = member.State.PrecedingIndex;
-                var precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false);
+                var precedingTerm = await auditTrail.GetTermAsync(precedingIndex, tokenSource.Token).ConfigureAwait(false);
                 var term = Term;
 
                 // do replication
-                var result = await CatchUpAsync(member, commitIndex, term, precedingIndex, precedingTerm, currentIndex, token).ConfigureAwait(false);
+                var result = await CatchUpAsync(member, commitIndex, term, precedingIndex, precedingTerm, currentIndex, tokenSource.Token).ConfigureAwait(false);
 
                 if (!result.Value && result.Term > term)
                     return false;
-            }
-            while (--rounds > 0 && currentIndex >= member.State.NextIndex);
+            } while (--rounds > 0 && currentIndex >= member.State.NextIndex);
 
             // ensure that previous configuration has been committed
-            await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
+            await configurationStorage.WaitForApplyAsync(tokenSource.Token).ConfigureAwait(false);
 
             // proposes a new member
-            if (await configurationStorage.AddMemberAsync(addressProvider(member), token).ConfigureAwait(false))
+            if (await configurationStorage.AddMemberAsync(addressProvider(member), tokenSource.Token).ConfigureAwait(false))
             {
-                await ReplicateAsync(leaderState, token).ConfigureAwait(false);
+                await ReplicateAsync(leaderState, tokenSource.Token).ConfigureAwait(false);
 
                 // ensure that the newly added member has been committed
-                await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
+                await configurationStorage.WaitForApplyAsync(tokenSource.Token).ConfigureAwait(false);
                 return true;
             }
         }
-        catch (OperationCanceledException e)
+        catch (OperationCanceledException e) when (e.CausedBy(tokenSource, leaderState.Token))
         {
-            token = tokenSource?.CancellationOrigin ?? e.CancellationToken;
-            throw token == leaderState.Token
-                ? new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e)
-                : new OperationCanceledException(e.Message, e, token);
+            throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e);
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
         }
         finally
         {
-            tokenSource?.Dispose();
+            await tokenSource.DisposeAsync().ConfigureAwait(false);
             membershipState.Value = false;
         }
 
@@ -337,32 +339,33 @@ public partial class RaftCluster<TMember>
         if (members.TryGetValue(id, out var member))
         {
             var leaderState = LeaderStateOrException;
-            var tokenSource = token.LinkTo(leaderState.Token);
+            var tokenSource = CombineTokens([token, leaderState.Token]);
             try
             {
                 // ensure that previous configuration has been committed
-                await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
+                await configurationStorage.WaitForApplyAsync(tokenSource.Token).ConfigureAwait(false);
 
                 // remove the existing member
-                if (await configurationStorage.RemoveMemberAsync(addressProvider(member), token).ConfigureAwait(false))
+                if (await configurationStorage.RemoveMemberAsync(addressProvider(member), tokenSource.Token).ConfigureAwait(false))
                 {
-                    await ReplicateAsync(leaderState, token).ConfigureAwait(false);
+                    await ReplicateAsync(leaderState, tokenSource.Token).ConfigureAwait(false);
 
                     // ensure that the removed member has been committed
-                    await configurationStorage.WaitForApplyAsync(token).ConfigureAwait(false);
+                    await configurationStorage.WaitForApplyAsync(tokenSource.Token).ConfigureAwait(false);
                     return true;
                 }
             }
-            catch (OperationCanceledException e)
+            catch (OperationCanceledException e) when (e.CausedBy(tokenSource, leaderState.Token))
             {
-                token = tokenSource?.CancellationOrigin ?? e.CancellationToken;
-                throw token == leaderState.Token
-                    ? new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e)
-                    : new OperationCanceledException(e.Message, e, token);
+                throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e);
+            }
+            catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
+            {
+                throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }
             finally
             {
-                tokenSource?.Dispose();
+                await tokenSource.DisposeAsync().ConfigureAwait(false);
                 membershipState.Value = false;
             }
         }

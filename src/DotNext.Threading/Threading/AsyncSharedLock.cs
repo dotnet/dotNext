@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 namespace DotNext.Threading;
 
 using Tasks;
-using Tasks.Pooling;
 
 /// <summary>
 /// Represents a lock that can be acquired in exclusive or weak mode.
@@ -19,13 +18,12 @@ using Tasks.Pooling;
 [DebuggerDisplay($"AvailableLocks = {{{nameof(RemainingCount)}}}, StrongLockHeld = {{{nameof(IsStrongLockHeld)}}}")]
 public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 {
-    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IPooledManualResetCompletionSource<Action<WaitNode>>
+    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, INodeMapper<WaitNode, bool>
     {
         internal bool IsStrongLock;
 
-        protected override void AfterConsumed() => AfterConsumed(this);
-
-        Action<WaitNode>? IPooledManualResetCompletionSource<Action<WaitNode>>.OnConsumed { get; set; }
+        static bool INodeMapper<WaitNode, bool>.GetValue(WaitNode node)
+            => node.IsStrongLock;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -33,10 +31,10 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     {
         private const long ExclusiveMode = -1L;
 
-        internal readonly long ConcurrencyLevel;
-        private long remainingLocks;   // -1 means that the lock is acquired in exclusive mode
+        internal readonly long Threshold;
+        private long remainingLocks; // -1 means that the lock is acquired in exclusive mode
 
-        internal State(long concurrencyLevel) => ConcurrencyLevel = remainingLocks = concurrencyLevel;
+        internal State(long concurrencyLevel) => Threshold = remainingLocks = concurrencyLevel;
 
         internal readonly long RemainingLocks => Atomic.Read(in remainingLocks);
 
@@ -47,19 +45,19 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         internal void ExitLock(bool downgrade)
         {
             remainingLocks = remainingLocks < 0L
-                ? ConcurrencyLevel - Unsafe.BitCast<bool, byte>(downgrade)
+                ? Threshold - Unsafe.BitCast<bool, byte>(downgrade)
                 : remainingLocks + 1L;
         }
 
         internal readonly bool IsStrongLockHeld => remainingLocks < 0L;
 
-        internal readonly bool IsStrongLockAllowed => remainingLocks == ConcurrencyLevel;
+        internal readonly bool IsStrongLockAllowed => remainingLocks == Threshold;
 
         internal void AcquireStrongLock() => remainingLocks = ExclusiveMode;
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct WeakLockManager : ILockManager<WaitNode>
+    private struct WeakLockManager : ILockManager, IConsumer<WaitNode>
     {
         private State state;
 
@@ -69,12 +67,15 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         void ILockManager.AcquireLock()
             => state.AcquireWeakLock();
 
-        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
-            => node.IsStrongLock = false;
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
+        {
+            node.IsStrongLock = false;
+            node.DrainOnReturn = true;
+        }
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct StrongLockManager : ILockManager<WaitNode>
+    private struct StrongLockManager : ILockManager, IConsumer<WaitNode>
     {
         private State state;
 
@@ -84,43 +85,34 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         void ILockManager.AcquireLock()
             => state.AcquireStrongLock();
 
-        static void ILockManager<WaitNode>.InitializeNode(WaitNode node)
-            => node.IsStrongLock = true;
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
+            => node.IsStrongLock = node.DrainOnReturn = true;
     }
 
     private State state;
-    private ValueTaskPool<bool, WaitNode, Action<WaitNode>> pool;
 
     /// <summary>
     /// Initializes a new shared lock.
     /// </summary>
-    /// <param name="concurrencyLevel">The number of unique callers that can obtain shared lock simultaneously.</param>
-    /// <param name="limitedConcurrency">
-    /// <see langword="true"/> if the potential number of concurrent flows will not be greater than <paramref name="concurrencyLevel"/>;
-    /// otherwise, <see langword="false"/>.
-    /// </param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than 1.</exception>
-    public AsyncSharedLock(long concurrencyLevel, bool limitedConcurrency = true)
+    /// <param name="lockUpgradeThreshold">The number of unique callers that can obtain shared lock simultaneously.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="lockUpgradeThreshold"/> is less than 1.</exception>
+    public AsyncSharedLock(long lockUpgradeThreshold)
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(lockUpgradeThreshold);
 
-        state = new(concurrencyLevel);
-        pool = new(OnCompleted, limitedConcurrency ? concurrencyLevel : null);
+        state = new(ConcurrencyLevel = lockUpgradeThreshold);
     }
 
-    private void OnCompleted(WaitNode node)
+    private bool Signal(ref WaitQueueVisitor waitQueueVisitor, bool strongLock) => strongLock
+        ? waitQueueVisitor.SignalCurrent(ref GetLockManager<StrongLockManager>())
+        : waitQueueVisitor.SignalCurrent(ref GetLockManager<WeakLockManager>());
+
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
     {
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        while (!waitQueueVisitor.IsEndOfQueue<WaitNode, bool>(out var strongLock) && Signal(ref waitQueueVisitor, strongLock))
         {
-            suspendedCallers = node.NeedsRemoval && RemoveNode(node)
-                ? DrainWaitQueue()
-                : null;
-
-            pool.Return(node);
+            waitQueueVisitor.Advance();
         }
-
-        suspendedCallers?.Unwind();
     }
 
     /// <summary>
@@ -131,12 +123,12 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <summary>
     /// Gets the maximum number of locks that can be obtained simultaneously.
     /// </summary>
-    public long ConcurrencyLevel => state.ConcurrencyLevel;
+    public long LockUpgradeThreshold => state.Threshold;
 
     /// <summary>
     /// Indicates that the lock is acquired in exclusive or shared mode.
     /// </summary>
-    public bool IsLockHeld => state.RemainingLocks < state.ConcurrencyLevel;
+    public bool IsLockHeld => state.RemainingLocks < state.Threshold;
 
     /// <summary>
     /// Indicates that the lock is acquired in exclusive mode.
@@ -145,11 +137,11 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private ref TLockManager GetLockManager<TLockManager>()
-        where TLockManager : struct, ILockManager<WaitNode>
+        where TLockManager : struct, ILockManager, IConsumer<WaitNode>
         => ref Unsafe.As<State, TLockManager>(ref state);
 
     private bool TryAcquire<TManager>()
-        where TManager : struct, ILockManager<WaitNode>
+        where TManager : struct, ILockManager, IConsumer<WaitNode>
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
@@ -181,10 +173,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
     {
-        var options = new TimeoutAndCancellationToken(timeout, token);
         return strongLock
-            ? TryAcquireAsync(ref pool, ref GetLockManager<StrongLockManager>(), options)
-            : TryAcquireAsync(ref pool, ref GetLockManager<WeakLockManager>(), options);
+            ? TryAcquireAsync<WaitNode, StrongLockManager>(ref GetLockManager<StrongLockManager>(), timeout, token)
+            : TryAcquireAsync<WaitNode, WeakLockManager>(ref GetLockManager<WeakLockManager>(), timeout, token);
     }
 
     /// <summary>
@@ -200,10 +191,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask AcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
     {
-        var options = new TimeoutAndCancellationToken(timeout, token);
         return strongLock
-            ? AcquireAsync(ref pool, ref GetLockManager<StrongLockManager>(), options)
-            : AcquireAsync(ref pool, ref GetLockManager<WeakLockManager>(), options);
+            ? AcquireAsync<WaitNode, StrongLockManager>(ref GetLockManager<StrongLockManager>(), token)
+            : AcquireAsync<WaitNode, WeakLockManager>(ref GetLockManager<WeakLockManager>(), token);
     }
 
     /// <summary>
@@ -216,54 +206,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask AcquireAsync(bool strongLock, CancellationToken token = default)
     {
-        var options = new CancellationTokenOnly(token);
         return strongLock
-            ? AcquireAsync(ref pool, ref GetLockManager<StrongLockManager>(), options)
-            : AcquireAsync(ref pool, ref GetLockManager<WeakLockManager>(), options);
-    }
-
-    private LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
-    {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-        Debug.Assert(WaitQueueHead is null or WaitNode);
-
-        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
-
-        for (WaitNode? current = Unsafe.As<WaitNode>(WaitQueueHead), next; current is not null; current = next)
-        {
-            Debug.Assert(current.Next is null or WaitNode);
-
-            next = Unsafe.As<WaitNode>(current.Next);
-            switch ((current.IsStrongLock, state.IsStrongLockAllowed))
-            {
-                case (true, true):
-                    if (!RemoveAndSignal(current, out var resumable))
-                        continue;
-
-                    state.AcquireStrongLock();
-                    if (resumable)
-                        detachedQueue.Add(current);
-
-                    goto exit;
-                case (true, false):
-                    goto exit;
-                default:
-                    // no more locks to acquire
-                    if (!state.IsWeakLockAllowed)
-                        goto exit;
-
-                    if (RemoveAndSignal(current, out resumable))
-                        state.AcquireWeakLock();
-
-                    if (resumable)
-                        detachedQueue.Add(current);
-
-                    continue;
-            }
-        }
-
-    exit:
-        return detachedQueue.First;
+            ? AcquireAsync<WaitNode, StrongLockManager>(ref GetLockManager<StrongLockManager>(), token)
+            : AcquireAsync<WaitNode, WeakLockManager>(ref GetLockManager<WeakLockManager>(), token);
     }
 
     /// <summary>
@@ -316,5 +261,5 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         suspendedCallers?.Unwind();
     }
 
-    private protected sealed override bool IsReadyToDispose => state.IsStrongLockAllowed && WaitQueueHead is null;
+    private protected sealed override bool IsReadyToDispose => state.IsStrongLockAllowed && IsEmptyQueue;
 }

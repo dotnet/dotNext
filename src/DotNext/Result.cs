@@ -270,7 +270,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// forward the exception.
     /// </summary>
     /// <param name="converter">A mapping function to be applied to the value, if present.</param>
-    /// <typeparam name="TResult">The type of the mapping function result.</typeparam>
+    /// <typeparam name="TResult">The type of the result of the mapping function.</typeparam>
     /// <returns>The conversion result.</returns>
     public Result<TResult> Convert<TResult>(Converter<T, Result<TResult>> converter)
         => FlatConvert<TResult, DelegatingConverter<T, Result<TResult>>>(converter);

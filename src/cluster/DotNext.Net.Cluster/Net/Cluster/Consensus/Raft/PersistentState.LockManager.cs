@@ -36,10 +36,10 @@ public partial class PersistentState
         // maximum possible number of concurrent locks is max readers count + 1 because WriteLock can be acquired
         // when all readers are active
         internal LockManager(int concurrencyLevel)
-            : base(concurrencyLevel + 1) // + write lock or compaction lock
         {
             maxReadCount = (uint)concurrencyLevel;
             allowWrite = true;
+            base.ConcurrencyLevel = concurrencyLevel + 1; // + write lock or compaction lock
         }
 
         protected override bool CanAcquire(LockType type) => type switch

@@ -223,12 +223,12 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
             if (eventInfo.Item2)
             {
                 member = CreateMember(eventInfo.Item1);
-                if (!await AddMemberAsync(member, LifecycleToken).ConfigureAwait(false))
+                if (!await AddMemberAsync(member, CancellationToken.None).ConfigureAwait(false))
                     member.Dispose();
             }
             else
             {
-                member = await RemoveMemberAsync(ClusterMemberId.FromEndPoint(eventInfo.Item1), LifecycleToken).ConfigureAwait(false);
+                member = await RemoveMemberAsync(ClusterMemberId.FromEndPoint(eventInfo.Item1), CancellationToken.None).ConfigureAwait(false);
                 if (member is not null)
                 {
                     await member.CancelPendingRequestsAsync().ConfigureAwait(false);

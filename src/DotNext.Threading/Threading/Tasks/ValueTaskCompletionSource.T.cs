@@ -16,7 +16,7 @@ namespace DotNext.Threading.Tasks;
 /// for more information.
 /// The instance of this type typically used in combination with object pool pattern because
 /// the instance can be reused for multiple tasks.
-/// <see cref="ManualResetCompletionSource.AfterConsumed"/> method allows to capture the point in
+/// <see cref="ManualResetCompletionSource.AfterConsumed()"/> method allows to capture the point in
 /// time when the source can be reused, e.g. returned to the pool.
 /// </remarks>
 /// <typeparam name="T">>The type the task result.</typeparam>
@@ -210,7 +210,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
         => Activate(timeout, token) is { } version ? new(this, version) : throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
 
-    private protected T GetResult(short token)
+    private T GetResult(short token)
     {
         // ensure that instance field access before returning to the pool to avoid
         // concurrency with Reset()

@@ -23,6 +23,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     private readonly MemoryAllocator<byte> bufferAllocator;
     private readonly IStateMachine stateMachine;
     private readonly CancellationToken lifetimeToken;
+    private readonly CancellationTokenMultiplexer cancellationTokens;
     
     private volatile ExceptionDispatchInfo? backgroundTaskFailure;
     private long lastEntryIndex; // Append lock protects modification of this field
@@ -42,14 +43,23 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         ArgumentNullException.ThrowIfNull(stateMachine);
 
         lifetimeToken = (lifetimeTokenSource = new()).Token;
+        cancellationTokens = new();
         var rootPath = new DirectoryInfo(configuration.Location);
         rootPath.CreateIfNeeded();
 
         context = new(DictionaryConcurrencyLevel, configuration.ConcurrencyLevel);
-        lockManager = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
+        lockManager = new()
+        {
+            ConcurrencyLevel = configuration.ConcurrencyLevel,
+            MeasurementTags = configuration.MeasurementTags,
+        };
         bufferAllocator = configuration.Allocator ?? ArrayPool<byte>.Shared.ToAllocator();
         this.stateMachine = stateMachine;
-        stateLock = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
+        stateLock = new()
+        {
+            ConcurrencyLevel = configuration.ConcurrencyLevel,
+            MeasurementTags = configuration.MeasurementTags,
+        };
         state = new(rootPath);
         measurementTags = configuration.MeasurementTags;
 
@@ -113,7 +123,11 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             appliedIndex = snapshotIndex;
             applyTrigger = new();
             appenderTask = ApplyAsync(lifetimeTokenSource.Token);
-            appliedEvent = new(configuration.ConcurrencyLevel) { MeasurementTags = configuration.MeasurementTags };
+            appliedEvent = new()
+            {
+                ConcurrencyLevel = configuration.ConcurrencyLevel,
+                MeasurementTags = configuration.MeasurementTags,
+            };
         }
     }
 

@@ -8,10 +8,9 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace DotNext.Net.Cluster.Discovery.HyParView;
 
 using Buffers;
-using Collections.Generic;
 using Collections.Specialized;
 using Runtime.CompilerServices;
-using static Threading.LinkedTokenSourceFactory;
+using Threading;
 
 /// <summary>
 /// Represents local peer supporting HyParView membership
@@ -30,6 +29,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
     private readonly Random random;
     private readonly CancellationTokenSource lifecycleTokenSource;
     private readonly Channel<Command> queue;
+    private readonly CancellationTokenMultiplexer cancellationTokens;
     private ImmutableHashSet<EndPoint> activeView, passiveView;
     private InvocationList<Action<PeerController, PeerEventArgs>> peerDiscoveredHandlers, peerGoneHandlers;
     private Task queueLoopTask;
@@ -61,6 +61,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
         shuffleRandomWalkLength = configuration.ShuffleRandomWalkLength;
         shufflePeriod = configuration.ShufflePeriod;
         random = new();
+        cancellationTokens = new() { MaximumRetained = 100 };
         queue = Channel.CreateBounded<Command>(new BoundedChannelOptions(configuration.QueueCapacity) { FullMode = BoundedChannelFullMode.Wait });
         PeerComparer = configuration.EndPointComparer ?? EqualityComparer<EndPoint>.Default;
         activeView = ImmutableHashSet.Create(PeerComparer);
@@ -114,18 +115,22 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
 
     private async ValueTask EnqueueAsync(Command command, CancellationToken token)
     {
-        var tokenSource = token.LinkTo(LifecycleToken);
+        var tokenSource = cancellationTokens.Combine([token, LifecycleToken]);
         try
         {
-            await queue.Writer.WriteAsync(command, token).ConfigureAwait(false);
+            await queue.Writer.WriteAsync(command, tokenSource.Token).ConfigureAwait(false);
         }
-        catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
+        catch (OperationCanceledException e) when (e.CausedBy(tokenSource, LifecycleToken))
+        {
+            throw CreateException();
+        }
+        catch (OperationCanceledException e) when (tokenSource.Token == e.CancellationToken)
         {
             throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
         }
         finally
         {
-            tokenSource?.Dispose();
+            await tokenSource.DisposeAsync().ConfigureAwait(false);
         }
     }
 
