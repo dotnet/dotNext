@@ -122,12 +122,24 @@ class MyExclusiveLock : QueuedSynchronizer<bool>
 }
 ```
 
+# Concurrency Limit
+`AcquireAsync` or `WaitAsync` methods exposed by async synchronization primitives, suspend the caller. The suspended caller is a slot within the internal wait queue maintained by [QueuedSynchronizer](xref:DotNext.Threading.QueuedSynchronizer) class. By default, the number of suspended callers in the queue is unlimited. For rate limiting purposes, the limit on the queue size can be established:
+```csharp
+var exclusiveLock = new AsyncExclusiveLock()
+{
+    ConcurrencyLevel = 10, // the number of the suspended callers in the queue
+    HasConcurrencyLimit = true, // tells that the queue size is limited
+};
+```
+
+In the example above, if 11th caller cannot acquire the lock immediately, `AcquireAsync` method throws [ConcurrencyLimitReachedException](xref:DotNext.Threading.ConcurrencyLimitReachedException) exception. If `HasConcurrencyLimit` is set to **false**, the `ConcurrencyLevel` only limits the internal pool of the wait nodes, but not the queue size. 
+
 # Diagnostics
-All synchronization primitives for asynchronous code mostly derive from [QueuedSynchronized](xref:DotNext.Threading.QueuedSynchronizer) class that exposes a set of important diagnostics counters:
+All synchronization primitives for asynchronous code mostly derive from [QueuedSynchronizer](xref:DotNext.Threading.QueuedSynchronizer) class that exposes a set of important diagnostics counters:
 * `LockContentionCounter` allows to measure a number of lock contentions detected in the specified time period
 
 # Debugging
-In addition to diagnostics tools, [QueuedSynchronized](xref:DotNext.Threading.QueuedSynchronizer) and all its derived classes support a rich set of debugging tools:
+In addition to diagnostics tools, [QueuedSynchronizer](xref:DotNext.Threading.QueuedSynchronizer) and all its derived classes support a rich set of debugging tools:
 * `TrackSuspendedCallers` method allows to enable tracking information about suspended caller. This method has effect only when building project using `Debug` configuration
 * `SetCallerInformation` method allows to associate information with the caller if it will be suspended during the call of `WaitAsync`. This method has effect only when building project using `Debug` configuration
 * `GetSuspendedCallers` method allows to capture a list of all suspended callers. The method is working only if tracking is enabled via `TrackSuspendedCallers` method. Typically, this method should be used in debugger's _Watch_ window when all threads are paused
