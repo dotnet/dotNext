@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 09-11-2025
+# 09-15-2025
 <a href="https://www.nuget.org/packages/dotnext/5.25.0">DotNext 5.25.0</a>
 * Added `CatchException` extension method to capture the exception produced by `await` operator instead of raising it at the call site
 * Various performance improvements

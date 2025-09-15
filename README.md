@@ -44,7 +44,7 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 09-11-2025
+Release Date: 09-15-2025
 
 <a href="https://www.nuget.org/packages/dotnext/5.25.0">DotNext 5.25.0</a>
 * Added `CatchException` extension method to capture the exception produced by `await` operator instead of raising it at the call site
