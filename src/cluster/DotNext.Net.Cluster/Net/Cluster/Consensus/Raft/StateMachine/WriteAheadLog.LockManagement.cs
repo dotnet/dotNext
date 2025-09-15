@@ -64,7 +64,7 @@ partial class WriteAheadLog
 #else 
     private
 #endif
-    sealed class LockManager(int concurrencyLevel) : QueuedSynchronizer<LockType>(concurrencyLevel)
+    sealed class LockManager : QueuedSynchronizer<LockType>
     {
         private ulong readersCount;
         private bool appendLockState, overwriteLockState, commitLockState;

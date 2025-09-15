@@ -24,7 +24,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <summary>
     /// Initializes a new pipe.
     /// </summary>
-    public TaskCompletionPipe() => pool = new(OnCompleted);
+    public TaskCompletionPipe() => pool = new();
 
     /// <summary>
     /// Gets or sets a value indicating that this pipe supports <see cref="Completion"/> property.
@@ -46,12 +46,20 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
 
     private void OnCompleted(Signal signal)
     {
-        lock (SyncRoot)
+        if (signal.NeedsRemoval)
         {
-            if (signal.NeedsRemoval)
+            lock (SyncRoot)
+            {
                 waitQueue.Remove(signal);
+            }
+        }
 
-            pool.Return(signal);
+        if (signal.TryReset(out _))
+        {
+            lock (SyncRoot)
+            {
+                pool.Return(signal);
+            }
         }
     }
 
@@ -71,7 +79,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             if (scheduledTasksCount is 0U)
             {
                 completedAll?.TrySetResult();
-                suspendedCallers = DetachWaitQueue()?.SetResult(false, out _);
+                suspendedCallers = DetachWaitQueue()?.SetResult(false);
             }
             else
             {
@@ -186,7 +194,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             if (scheduledTasksCount is 0U && complete)
             {
                 completedAll?.TrySetResult();
-                suspendedCaller = DetachWaitQueue()?.SetResult(false, out _);
+                suspendedCaller = DetachWaitQueue()?.SetResult(false);
             }
             else if (completionDetected)
             {
@@ -217,7 +225,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             scheduledTasksCount = 0U;
             completionRequested = false;
             ClearTaskQueue();
-            suspendedCallers = DetachWaitQueue()?.SetResult(false, out _);
+            suspendedCallers = DetachWaitQueue()?.SetResult(false);
             if (completedAll is not null)
             {
                 completedAll.TrySetException(new PendingTaskInterruptedException());

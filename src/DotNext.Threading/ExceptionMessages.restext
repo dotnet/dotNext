@@ -7,3 +7,4 @@ InvalidSourceState=The object is in invalid state
 InvalidSourceToken=The token of the task is invalid
 AsyncTaskInterrupted=Asynchronous task has been interrupted
 LeaseExpired=Lease expired
+ConcurrencyLimitReached=The maximum number of suspended callers is reached

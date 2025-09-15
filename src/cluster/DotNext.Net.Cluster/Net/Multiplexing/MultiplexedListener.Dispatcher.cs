@@ -30,16 +30,16 @@ partial class MultiplexedListener
         var writeSignal = new AsyncAutoResetEvent(initialState: false);
         var receiveBuffer = allocator(flushThreshold);
         var framingBuffer = new PoolingBufferWriter<byte>(allocator) { Capacity = flushThreshold };
-        var input = new InputMultiplexer(
-            new(),
-            writeSignal,
-            framingBuffer,
-            flushThreshold,
-            streamCount,
-            CreateMeasurementTags(socket),
-            timeout,
-            heartbeatTimeout,
-            lifetimeToken);
+        var input = new InputMultiplexer<MultiplexedListener>
+        {
+            TransportSignal = writeSignal,
+            FramingBuffer = framingBuffer,
+            MeasurementTags = CreateMeasurementTags(socket),
+            FlushThreshold = flushThreshold,
+            Timeout = timeout,
+            HeartbeatTimeout = heartbeatTimeout,
+            RootToken = lifetimeToken,
+        };
         var receiveTokenSource = CancellationTokenSource.CreateLinkedTokenSource(lifetimeToken);
         var output = input.CreateOutput(
             receiveBuffer.Memory,

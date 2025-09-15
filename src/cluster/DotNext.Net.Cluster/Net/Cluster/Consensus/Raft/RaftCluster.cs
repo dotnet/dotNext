@@ -3,7 +3,6 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using static System.Linq.Enumerable;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -32,6 +31,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     private readonly bool standbyNode;
     private readonly AsyncExclusiveLock transitionLock; // used to synchronize state transitions
     private readonly TagList measurementTags;
+    private readonly CancellationTokenMultiplexer cancellationTokens;
 
     private volatile RaftState<TMember> state;
     private volatile TaskCompletionSource<TMember> electionEvent;
@@ -80,7 +80,16 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         state = new StandbyState<TMember>(this, TimeSpan.FromMilliseconds(electionTimeout));
         EndPointComparer = config.EndPointComparer;
         this.measurementTags = measurementTags;
+        cancellationTokens = new();
     }
+
+    /// <summary>
+    /// Combines multiple cancellation tokens.
+    /// </summary>
+    /// <param name="tokens">The tokens to be combined.</param>
+    /// <returns>The lifetime of the combined token.</returns>
+    protected CancellationTokenMultiplexer.Scope CombineTokens(ReadOnlySpan<CancellationToken> tokens)
+        => cancellationTokens.Combine(tokens);
 
     /// <summary>
     /// Gets or sets failure detector to be used by the leader node to detect and remove unresponsive followers.
@@ -349,31 +358,32 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
         if (TryGetLocalMember() is not null && state is StandbyState<TMember> { Resumable: true } standbyState)
         {
-            var tokenSource = token.LinkTo(LifecycleToken);
+            var tokenSource = CombineTokens([token, LifecycleToken]);
             var lockTaken = false;
             try
             {
-                await transitionLock.AcquireAsync(token).ConfigureAwait(false);
+                await transitionLock.AcquireAsync(tokenSource.Token).ConfigureAwait(false);
                 lockTaken = true;
 
-                // ensure that we trying to update the same state
+                // ensure that we're trying to update the same state
                 if (TryGetLocalMember() is not null && ReferenceEquals(state, standbyState))
                 {
-                    var newState = new FollowerState<TMember>(this, consensusReached: standbyState.Token.IsCancellationRequested is false);
+                    var newState = new FollowerState<TMember>(this, consensusReached: standbyState.Token is { IsCancellationRequested: false });
                     await UpdateStateAsync(newState).ConfigureAwait(false);
                     newState.StartServing(ElectionTimeout);
                     return true;
                 }
             }
-            catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
+            catch (OperationCanceledException e) when (tokenSource.Token == e.CancellationToken)
             {
                 throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }
             finally
             {
-                tokenSource?.Dispose();
                 if (lockTaken)
                     transitionLock.Release();
+
+                await tokenSource.DisposeAsync().ConfigureAwait(false);
             }
         }
 
@@ -388,29 +398,30 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         RaftState<TMember> currentState;
         if ((currentState = state) is not StandbyState<TMember>)
         {
-            var tokenSource = token.LinkTo(LifecycleToken);
+            var tokenSource = CombineTokens([token, LifecycleToken]);
             var lockTaken = false;
             try
             {
-                await transitionLock.AcquireAsync(token).ConfigureAwait(false);
+                await transitionLock.AcquireAsync(tokenSource.Token).ConfigureAwait(false);
                 lockTaken = true;
 
-                // ensure that we trying to update the same state
+                // ensure that we're trying to update the same state
                 if (ReferenceEquals(state, currentState))
                 {
                     await UpdateStateAsync(new StandbyState<TMember>(this, LeaderLeaseDuration)).ConfigureAwait(false);
                     return true;
                 }
             }
-            catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
+            catch (OperationCanceledException e) when (tokenSource.Token == e.CancellationToken)
             {
                 throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }
             finally
             {
-                tokenSource?.Dispose();
                 if (lockTaken)
                     transitionLock.Release();
+                
+                await tokenSource.DisposeAsync().ConfigureAwait(false);
             }
         }
 
@@ -528,10 +539,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     {
         Result<HeartbeatResult> result;
         var lockTaken = false;
-        var tokenSource = token.LinkTo(LifecycleToken);
+        var tokenSource = CombineTokens([token, LifecycleToken]);
         try
         {
-            await transitionLock.AcquireAsync(token).ConfigureAwait(false);
+            await transitionLock.AcquireAsync(tokenSource.Token).ConfigureAwait(false);
             lockTaken = true;
 
             result = new() { Term = Term };
@@ -540,18 +551,23 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 Timestamp.Refresh(ref lastUpdated);
                 await StepDownAsync(senderTerm, consensusReached: true).ConfigureAwait(false);
                 Leader = TryGetMember(sender);
-                await auditTrail.AppendAsync(snapshot, snapshotIndex, token).ConfigureAwait(false);
+                await auditTrail.AppendAsync(snapshot, snapshotIndex, tokenSource.Token).ConfigureAwait(false);
                 result = result with
                 {
                     Value = senderTerm == snapshot.Term ? HeartbeatResult.ReplicatedWithLeaderTerm : HeartbeatResult.Replicated
                 };
             }
         }
+        catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+        }
         finally
         {
-            tokenSource?.Dispose();
             if (lockTaken)
                 transitionLock.Release();
+
+            await tokenSource.DisposeAsync().ConfigureAwait(false);
         }
 
         return result;
@@ -580,10 +596,10 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     {
         Result<HeartbeatResult> result;
         var lockTaken = false;
-        var tokenSource = token.LinkTo(LifecycleToken);
+        var tokenSource = CombineTokens([token, LifecycleToken]);
         try
         {
-            await transitionLock.AcquireAsync(token).ConfigureAwait(false);
+            await transitionLock.AcquireAsync(tokenSource.Token).ConfigureAwait(false);
             lockTaken = true;
 
             result = new() { Term = Term };
@@ -593,7 +609,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 await StepDownAsync(senderTerm, consensusReached: true).ConfigureAwait(false);
                 var senderMember = TryGetMember(sender);
                 Leader = senderMember;
-                if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, token).ConfigureAwait(false))
+                if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, tokenSource.Token).ConfigureAwait(false))
                 {
                     bool emptySet;
 
@@ -611,13 +627,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     using (new RefreshableState<TMember>.TransitionSuppressionScope(state as RefreshableState<TMember>))
                     {
                         /*
-                        * AppendAsync is called with skipCommitted=true because HTTP response from the previous
-                        * replication might fail but the log entry was committed by the local node.
-                        * In this case the leader repeat its replication from the same prevLogIndex which is already committed locally.
-                        * skipCommitted=true allows to skip the passed committed entry and append uncommitted entries.
-                        * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
-                        */
-                        await auditTrail.AppendAndCommitAsync(entries, prevLogIndex + 1L, true, commitIndex, token).ConfigureAwait(false);
+                         * AppendAsync is called with skipCommitted=true because HTTP response from the previous
+                         * replication might fail but the log entry was committed by the local node.
+                         * In this case the leader repeat its replication from the same prevLogIndex which is already committed locally.
+                         * skipCommitted=true allows to skip the passed committed entry and append uncommitted entries.
+                         * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
+                         */
+                        await auditTrail.AppendAndCommitAsync(entries, prevLogIndex + 1L, true, commitIndex, tokenSource.Token).ConfigureAwait(false);
                         result = result with
                         {
                             Value = entries is ReplicationWithSenderTermDetector<TEntry> { IsReplicatedWithExpectedTerm: true }
@@ -634,13 +650,13 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                                 // Perf: avoid calling ApplyAsync if configuration remains unchanged
                                 if (!configurationReplicated)
                                 {
-                                    await ConfigurationStorage.ApplyAsync(token).ConfigureAwait(false);
+                                    await ConfigurationStorage.ApplyAsync(tokenSource.Token).ConfigureAwait(false);
                                     configurationReplicated = true;
                                 }
 
                                 break;
                             case (false, false):
-                                await ConfigurationStorage.ProposeAsync(config, token).ConfigureAwait(false);
+                                await ConfigurationStorage.ProposeAsync(config, tokenSource.Token).ConfigureAwait(false);
                                 goto default;
                             case (false, true):
                                 result = result with { Value = HeartbeatResult.Rejected };
@@ -660,11 +676,16 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 }
             }
         }
+        catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+        }
         finally
         {
-            tokenSource?.Dispose();
             if (lockTaken)
                 transitionLock.Release();
+
+            await tokenSource.DisposeAsync().ConfigureAwait(false);
         }
 
         return result;
@@ -684,7 +705,8 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         Result<PreVoteResult> result;
 
         // PreVote doesn't cause transition to another Raft state so locking not needed
-        using (var tokenSource = token.LinkTo(LifecycleToken))
+        var tokenSource = CombineTokens([token, LifecycleToken]);
+        try
         {
             result = new() { Term = Term };
 
@@ -693,10 +715,19 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             {
                 result = result with { Value = PreVoteResult.RejectedByLeader };
             }
-            else if (members.ContainsKey(sender) && Timestamp.VolatileRead(ref lastUpdated).Elapsed >= ElectionTimeout && result.Term <= nextTerm && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
+            else if (members.ContainsKey(sender) && Timestamp.VolatileRead(ref lastUpdated).Elapsed >= ElectionTimeout && result.Term <= nextTerm &&
+                     await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, tokenSource.Token).ConfigureAwait(false))
             {
                 result = result with { Value = PreVoteResult.Accepted };
             }
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+        }
+        finally
+        {
+            await tokenSource.DisposeAsync().ConfigureAwait(false);
         }
 
         return result;
@@ -767,17 +798,17 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
     protected async ValueTask<Result<bool>> VoteAsync(ClusterMemberId sender, long senderTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
     {
-        var result = new Result<bool>() { Term = Term };
+        var result = new Result<bool> { Term = Term };
 
         // provide leader stickiness
         if (result.Term > senderTerm || Timestamp.VolatileRead(ref lastUpdated).Elapsed < ElectionTimeout || !members.ContainsKey(sender))
             goto exit;
 
-        var tokenSource = token.LinkTo(LifecycleToken);
+        var tokenSource = CombineTokens([token, LifecycleToken]);
         var lockTaken = false;
         try
         {
-            await transitionLock.AcquireAsync(token).ConfigureAwait(false);
+            await transitionLock.AcquireAsync(tokenSource.Token).ConfigureAwait(false);
             lockTaken = true;
 
             result = result with { Term = Term };
@@ -800,17 +831,22 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 goto exit;
             }
 
-            if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
+            if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, tokenSource.Token).ConfigureAwait(false))
             {
-                await auditTrail.UpdateVotedForAsync(sender, token).ConfigureAwait(false);
+                await auditTrail.UpdateVotedForAsync(sender, tokenSource.Token).ConfigureAwait(false);
                 result = result with { Value = true };
             }
         }
+        catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+        }
         finally
         {
-            tokenSource?.Dispose();
             if (lockTaken)
                 transitionLock.Release();
+
+            await tokenSource.DisposeAsync().ConfigureAwait(false);
         }
 
     exit:
@@ -826,11 +862,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     {
         if (state is LeaderState<TMember> leaderState)
         {
-            var tokenSource = token.LinkTo(LifecycleToken);
+            var tokenSource = CombineTokens([token, LifecycleToken]);
             var lockTaken = false;
             try
             {
-                await transitionLock.AcquireAsync(token).ConfigureAwait(false);
+                await transitionLock.AcquireAsync(tokenSource.Token).ConfigureAwait(false);
                 lockTaken = true;
 
                 if (ReferenceEquals(state, leaderState))
@@ -842,15 +878,16 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                     return true;
                 }
             }
-            catch (OperationCanceledException e) when (tokenSource?.Token == e.CancellationToken)
+            catch (OperationCanceledException e) when (tokenSource.Token == e.CancellationToken)
             {
                 throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
             }
             finally
             {
-                tokenSource?.Dispose();
                 if (lockTaken)
                     transitionLock.Release();
+
+                await tokenSource.DisposeAsync().ConfigureAwait(false);
             }
         }
 
@@ -1222,28 +1259,29 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         var leaderState = LeaderStateOrException;
-        var tokenSource = token.LinkTo(leaderState.Token);
+        var tokenSource = CombineTokens([token, leaderState.Token]);
         try
         {
             // 1 - append entry to the log
-            var index = await auditTrail.AppendAsync(entry, token).ConfigureAwait(false);
+            var index = await auditTrail.AppendAsync(entry, tokenSource.Token).ConfigureAwait(false);
 
             // 2 - force replication
             leaderState.ForceReplication();
 
             // 3 - wait for commit
-            await auditTrail.WaitForApplyAsync(index, token).ConfigureAwait(false);
+            await auditTrail.WaitForApplyAsync(index, tokenSource.Token).ConfigureAwait(false);
         }
-        catch (OperationCanceledException e)
+        catch (OperationCanceledException e) when (e.CausedBy(tokenSource, leaderState.Token))
         {
-            token = tokenSource?.CancellationOrigin ?? e.CancellationToken;
-            throw token == leaderState.Token
-                ? new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e)
-                : new OperationCanceledException(e.Message, e, token);
+            throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e);
+        }
+        catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
         }
         finally
         {
-            tokenSource?.Dispose();
+            await tokenSource.DisposeAsync().ConfigureAwait(false);
         }
 
         return Term == entry.Term;

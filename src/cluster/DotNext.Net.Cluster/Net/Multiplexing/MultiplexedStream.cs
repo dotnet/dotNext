@@ -85,10 +85,12 @@ internal sealed partial class MultiplexedStream : IDuplexPipe, IApplicationSideS
         return (stateCopy & TransportInputCompletedState) is not 0U;
     }
 
-    public async ValueTask AbortAppSideAsync()
+    public async ValueTask AbortAppSideAsync(Exception? e = null)
     {
-        var e = new ConnectionAbortedException();
-        ExceptionDispatchInfo.SetCurrentStackTrace(e);
+        if (e is null)
+        {
+            ExceptionDispatchInfo.SetCurrentStackTrace(e = new ConnectionAbortedException());
+        }
 
         await appWriter.CompleteAsync(e).ConfigureAwait(false);
         await appReader.CompleteAsync(e).ConfigureAwait(false);

@@ -77,7 +77,7 @@ public sealed class AsyncCounterTests : Test
     public static void IncrementWithUpperBound()
     {
         const long maxValue = 2L;
-        using var counter = new AsyncCounter(0);
+        using var counter = new AsyncCounter();
         True(counter.TryIncrement(maxValue));
         True(counter.TryIncrement(maxValue));
         False(counter.TryIncrement(maxValue));

@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks;
@@ -293,7 +294,7 @@ public static partial class Synchronization
 
         return result;
     }
-    
+
     /// <summary>
     /// Waits for the task synchronously.
     /// </summary>
@@ -305,15 +306,8 @@ public static partial class Synchronization
     {
         var awaiter = task.ConfigureAwait(false).GetAwaiter();
 
-        unsafe
-        {
-            Wait(ref awaiter, &IsCompleted);
-        }
-        
+        Wait<ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter, ValueTaskStateProvider>(ref awaiter);
         awaiter.GetResult();
-
-        static bool IsCompleted(ref ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter)
-            => awaiter.IsCompleted;
     }
 
     /// <summary>
@@ -328,36 +322,30 @@ public static partial class Synchronization
     {
         var awaiter = task.ConfigureAwait(false).GetAwaiter();
 
-        unsafe
-        {
-            Wait(ref awaiter, &IsCompleted);
-        }
-
+        Wait<ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter, ValueTaskStateProvider<T>>(ref awaiter);
         return awaiter.GetResult();
-
-        static bool IsCompleted(ref ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter awaiter)
-            => awaiter.IsCompleted;
     }
 
-    private static unsafe void Wait<TAwaiter>(ref TAwaiter awaiter, delegate*<ref TAwaiter, bool> isCompleted)
+    private static void Wait<TAwaiter, TProvider>(ref TAwaiter awaiter)
         where TAwaiter : struct, ICriticalNotifyCompletion
+        where TProvider : struct, IAwaiterStateProvider<TAwaiter>
     {
-        if (!SpinWait(ref awaiter, isCompleted))
-            BlockingWait(ref awaiter, isCompleted);
+        if (!SpinWait(ref awaiter))
+            BlockingWait(ref awaiter);
         
-        static bool SpinWait(ref TAwaiter awaiter, delegate*<ref TAwaiter, bool> isCompleted)
+        static bool SpinWait(ref TAwaiter awaiter)
         {
             bool result;
             for (var spinner = new SpinWait();; spinner.SpinOnce())
             {
-                if ((result = isCompleted(ref awaiter)) || spinner.NextSpinWillYield)
+                if ((result = TProvider.IsCompleted(ref awaiter)) || spinner.NextSpinWillYield)
                     break;
             }
 
             return result;
         }
 
-        static void BlockingWait(ref TAwaiter awaiter, delegate*<ref TAwaiter, bool> isCompleted)
+        static void BlockingWait(ref TAwaiter awaiter)
         {
             awaiter.UnsafeOnCompleted(Thread.CurrentThread.Interrupt);
             try
@@ -365,10 +353,32 @@ public static partial class Synchronization
                 // park thread
                 Thread.Sleep(Infinite);
             }
-            catch (ThreadInterruptedException) when (isCompleted(ref awaiter))
+            catch (ThreadInterruptedException) when (TProvider.IsCompleted(ref awaiter))
             {
                 // suppress exception
             }
         }
+    }
+
+    private interface IAwaiterStateProvider<TAwaiter>
+        where TAwaiter : struct, ICriticalNotifyCompletion
+    {
+        static abstract bool IsCompleted(ref TAwaiter awaiter);
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct ValueTaskStateProvider : IAwaiterStateProvider<ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter>
+    {
+        static bool IAwaiterStateProvider<ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter>.IsCompleted(
+            ref ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter)
+            => awaiter.IsCompleted;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly struct ValueTaskStateProvider<T> : IAwaiterStateProvider<ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter>
+    {
+        static bool IAwaiterStateProvider<ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter>.IsCompleted(
+            ref ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter awaiter)
+            => awaiter.IsCompleted;
     }
 }

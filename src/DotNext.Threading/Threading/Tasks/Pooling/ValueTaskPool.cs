@@ -6,73 +6,58 @@ namespace DotNext.Threading.Tasks.Pooling;
 /*
  * Represents a pool without any allocations. Assuming that wait queues are organized using
  * linked nodes where each node is a completion source. If so, the node pointers (next/previous)
- * can be used to keep completion sources in the pool. Moreover, access to the pool is synchronized
- * by the caller (see QueuedSynchronizer). Thus, it doesn't require explicit synchronization such as
- * Monitor lock.
+ * can be used to keep completion sources in the pool. The access must be synchronized.
  */
 [StructLayout(LayoutKind.Auto)]
-internal struct ValueTaskPool<T, TNode, TCallback>
-    where TNode : LinkedValueTaskCompletionSource<T>, IPooledManualResetCompletionSource<TCallback>, new()
-    where TCallback : MulticastDelegate
+internal struct ValueTaskPool<T>(long maximumRetained)
 {
-    private readonly long maximumRetained;
-    private readonly TCallback backToPool;
-    private TNode? first;
+    private LinkedValueTaskCompletionSource<T>? first;
     private long count;
 
-    internal ValueTaskPool(TCallback backToPool, long? maximumRetained = null)
+    public ValueTaskPool()
+        : this(long.MaxValue)
     {
-        Debug.Assert(backToPool is not null);
-
-        this.backToPool = backToPool;
-        first = null;
-        count = 0;
-        this.maximumRetained = maximumRetained ?? long.MaxValue;
     }
 
-    internal void Return(TNode node)
+    public readonly long MaximumRetained => maximumRetained;
+
+    public void Return(LinkedValueTaskCompletionSource<T> node)
     {
-        Debug.Assert(node is not null);
-        Debug.Assert(backToPool.Target is not null);
-        Debug.Assert(count is 0L || first is not null);
-
-        if (!node.TryReset(out _))
-            return;
-
-        node.OnConsumed = null;
+        Debug.Assert(node is { Status: ManualResetCompletionSourceStatus.WaitForActivation });
+        Debug.Assert(node is { Next: null, Previous: null });
 
         if (count < maximumRetained)
-        {
-            first?.Prepend(node);
-            first = node;
-            count++;
-            Debug.Assert(count > 0L);
-        }
+            ReturnCore(node);
     }
 
-    internal TNode Get()
+    private void ReturnCore(LinkedValueTaskCompletionSource<T> node)
     {
-        Debug.Assert(backToPool.Target is not null);
+        node.Next = first;
+        first = node;
+        count++;
 
-        TNode result;
-        if (first is null)
-        {
-            Debug.Assert(count == 0L);
+        Debug.Assert(count >= 0L);
+    }
 
-            result = new();
-        }
-        else
+    public TNode Rent<TNode>()
+        where TNode : LinkedValueTaskCompletionSource<T>, new()
+    {
+        if (first is TNode result)
         {
-            result = first;
-            first = result.Next as TNode;
-            result.Detach();
+            first = result.Next;
+            result.Next = null;
             count--;
 
             Debug.Assert(count >= 0L);
             Debug.Assert(count is 0L || first is not null);
         }
+        else
+        {
+            Debug.Assert(count is 0L);
 
-        result.OnConsumed = backToPool;
+            result = new();
+        }
+
         return result;
     }
 }

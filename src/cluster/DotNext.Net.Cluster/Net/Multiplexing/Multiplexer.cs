@@ -1,22 +1,14 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Diagnostics.Metrics;
 
 namespace DotNext.Net.Multiplexing;
 
 internal abstract partial class Multiplexer(
     ConcurrentDictionary<uint, MultiplexedStream> streams,
-    IProducerConsumerCollection<ProtocolCommand> commands,
-    UpDownCounter<int> streamCounter,
-    in TagList measurementTags,
-    CancellationToken token) : Disposable
+    IProducerConsumerCollection<ProtocolCommand> commands) : Disposable
 {
-    protected readonly UpDownCounter<int> streamCounter = streamCounter;
-    protected readonly TagList measurementTags = measurementTags;
-    protected readonly ConcurrentDictionary<uint, MultiplexedStream> streams = streams;
-    protected readonly IProducerConsumerCollection<ProtocolCommand> commands = commands;
-
-    protected void ChangeStreamCount(int delta = 1) => streamCounter.Add(delta, in measurementTags);
+    protected readonly IProducerConsumerCollection<ProtocolCommand> Commands = commands;
+    protected readonly ConcurrentDictionary<uint, MultiplexedStream> Streams = streams;
 
     protected override void Dispose(bool disposing)
     {
@@ -24,11 +16,21 @@ internal abstract partial class Multiplexer(
         {
             source.Dispose();
         }
-        
+
         base.Dispose(disposing);
     }
 
     protected override ValueTask DisposeAsyncCore() => source.DisposeAsync();
 
     public new ValueTask DisposeAsync() => base.DisposeAsync();
+}
+
+internal abstract class Multiplexer<T>(
+    ConcurrentDictionary<uint, MultiplexedStream> streams,
+    IProducerConsumerCollection<ProtocolCommand> commands) : Multiplexer(streams, commands)
+    where T : IStreamMetrics
+{
+    public required TagList MeasurementTags;
+
+    protected void ChangeStreamCount(long delta = 1) => T.StreamCount.Add(delta, MeasurementTags);
 }

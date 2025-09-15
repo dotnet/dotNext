@@ -223,20 +223,55 @@ public sealed class TcpMultiplexerTests : Test
         await streamCount.WaitForZero(DefaultTimeout);
     }
 
-    private sealed class StreamCountObserver() : InstrumentObserver<int, UpDownCounter<int>>(static (instr, tags) => IsStreamCount(instr))
+    private sealed class StreamCountObserver() : InstrumentObserver<long, UpDownCounter<long>>(static (instr, tags) => IsStreamCount(instr))
     {
         private readonly TaskCompletionSource zeroReached = new();
-        private int streamCount;
+        private long streamCount;
 
         internal static bool IsStreamCount(Instrument instrument)
             => instrument is { Meter.Name: "DotNext.Net.Multiplexing.Server", Name: "streams-count" };
 
-        protected override void Record(int value)
+        protected override void Record(long value)
         {
             if (Interlocked.Add(ref streamCount, value) is 0)
                 zeroReached.TrySetResult();
         }
 
         public Task WaitForZero(TimeSpan timeout) => zeroReached.Task.WaitAsync(timeout);
+    }
+
+    [Fact]
+    public static async Task WaitForConnectionAsync()
+    {
+        await using var client = new TcpMultiplexedClient(LocalEndPoint, new() { Timeout = DefaultTimeout });
+        
+        await using var server = new TcpMultiplexedListener(LocalEndPoint, new() { Timeout = DefaultTimeout });
+        await server.StartAsync();
+
+        var task = client.OpenStreamAsync().AsTask();
+        False(task.IsCompleted);
+
+        await client.StartAsync();
+        await task;
+        True(task.IsCompletedSuccessfully);
+    }
+
+    [Fact]
+    public static async Task WaitForDisposedConnectionAsync()
+    {
+        Task task;
+        await using (var client = new TcpMultiplexedClient(LocalEndPoint, new() { Timeout = DefaultTimeout }))
+        {
+            task = client.OpenStreamAsync().AsTask();
+        }
+
+        await ThrowsAsync<ObjectDisposedException>(Func.Constant(task));
+    }
+    
+    [Fact]
+    public static async Task WaitForCanceledConnectionAsync()
+    {
+        await using var client = new TcpMultiplexedClient(LocalEndPoint, new() { Timeout = DefaultTimeout });
+        await ThrowsAnyAsync<OperationCanceledException>(client.OpenStreamAsync(new CancellationToken(canceled: true)).AsTask);
     }
 }

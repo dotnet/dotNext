@@ -37,12 +37,12 @@ public sealed class SoftReferenceTests : Test
     {
         var reference = CreateReference();
 
-        for (var i = 0; i < 30; i++)
+        do
         {
-            new object();
+            GC.KeepAlive(new());
             GC.Collect();
             GC.WaitForPendingFinalizers();
-        }
+        } while (reference.As<IOptionMonad<Target>>().HasValue);
 
         Null((Target)reference);
 

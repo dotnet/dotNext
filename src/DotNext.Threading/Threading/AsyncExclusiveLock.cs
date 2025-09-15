@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 namespace DotNext.Threading;
 
 using Tasks;
-using Tasks.Pooling;
 
 /// <summary>
 /// Represents asynchronous mutually exclusive lock.
@@ -13,61 +12,36 @@ using Tasks.Pooling;
 public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct LockManager : ILockManager<DefaultWaitNode>
+    private struct LockManager : ILockManager, IConsumer<WaitNode>
     {
-        // null - not acquired, Sentinel.Instance - acquired asynchronously, Thread - acquired synchronously
         private bool state;
 
         internal readonly bool Value => state;
 
         internal readonly bool VolatileRead() => Volatile.Read(in state);
 
-        public readonly bool IsLockAllowed => state is false;
+        readonly bool ILockManager.IsLockAllowed => !state;
 
-        public void AcquireLock()
+        void ILockManager.AcquireLock()
             => state = true;
 
         internal void ExitLock() => state = false;
+
+        readonly void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = true;
     }
 
-    private ValueTaskPool<bool, DefaultWaitNode, Action<DefaultWaitNode>> pool;
     private LockManager manager;
     private Thread? lockOwner;
 
     /// <summary>
     /// Initializes a new asynchronous exclusive lock.
     /// </summary>
-    /// <param name="concurrencyLevel">The expected number of concurrent flows.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="concurrencyLevel"/> is less than or equal to zero.</exception>
-    public AsyncExclusiveLock(int concurrencyLevel)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(concurrencyLevel);
-
-        pool = new(OnCompleted, concurrencyLevel);
-    }
-
-    /// <summary>
-    /// Initializes a new asynchronous exclusive lock.
-    /// </summary>
     public AsyncExclusiveLock()
     {
-        pool = new(OnCompleted);
     }
 
-    private void OnCompleted(DefaultWaitNode node)
-    {
-        ManualResetCompletionSource? suspendedCaller;
-        lock (SyncRoot)
-        {
-            suspendedCaller = node.NeedsRemoval && RemoveNode(node)
-                ? DrainWaitQueue()
-                : null;
-
-            pool.Return(node);
-        }
-
-        suspendedCaller?.Resume();
-    }
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+        => waitQueueVisitor.SignalAll(ref manager);
 
     /// <summary>
     /// Indicates that exclusive lock taken.
@@ -142,7 +116,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        => TryAcquireAsync<WaitNode, LockManager>(ref manager, timeout, token);
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -156,7 +130,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync(ref pool, ref manager, new TimeoutAndCancellationToken(timeout, token));
+        => AcquireAsync<WaitNode, LockManager>(ref manager, timeout, token);
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -168,13 +142,13 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(CancellationToken token = default)
-        => AcquireAsync(ref pool, ref manager, new CancellationTokenOnly(token));
+        => AcquireAsync<WaitNode, LockManager>(ref manager, token);
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires the lock.
     /// </summary>
     /// <remarks>
-    /// <see exception="LockStolenException"/> will be thrown for each suspended caller in the queue.
+    /// <see cref="PendingTaskInterruptedException"/> will be thrown for each suspended caller in the queue.
     /// The method cannot interrupt the caller that has already acquired the lock. If there is no suspended callers
     /// in the queue, this method is equivalent to <see cref="TryAcquireAsync(TimeSpan, CancellationToken)"/>.
     /// </remarks>
@@ -187,13 +161,13 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask<bool> TryStealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync(ref pool, ref manager, new TimeoutAndInterruptionReasonAndCancellationToken(reason, timeout, token));
+        => TryAcquireAsync<WaitNode, LockManager>(reason, ref manager, timeout, token);
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires the lock.
     /// </summary>
     /// <remarks>
-    /// <see exception="LockStolenException"/> will be thrown for each suspended caller in the queue.
+    /// <see cref="PendingTaskInterruptedException"/> will be thrown for each suspended caller in the queue.
     /// The method cannot interrupt the caller that has already acquired the lock. If there is no suspended callers
     /// in the queue, this method is equivalent to <see cref="TryAcquireAsync(TimeSpan, CancellationToken)"/>.
     /// </remarks>
@@ -207,13 +181,13 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync(ref pool, ref manager, new TimeoutAndInterruptionReasonAndCancellationToken(reason, timeout, token));
+        => AcquireAsync<WaitNode, LockManager>(reason, ref manager, timeout, token);
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires the lock.
     /// </summary>
     /// <remarks>
-    /// <see exception="LockStolenException"/> will be thrown for each suspended caller in the queue.
+    /// <see cref="PendingTaskInterruptedException"/> will be thrown for each suspended caller in the queue.
     /// The method cannot interrupt the caller that has already acquired the lock. If there is no suspended callers
     /// in the queue, this method is equivalent to <see cref="TryAcquireAsync(TimeSpan, CancellationToken)"/>.
     /// </remarks>
@@ -225,29 +199,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealAsync(object? reason = null, CancellationToken token = default)
-        => AcquireAsync(ref pool, ref manager, new InterruptionReasonAndCancellationToken(reason, token));
-
-    private ManualResetCompletionSource? DrainWaitQueue()
-    {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-
-        for (LinkedValueTaskCompletionSource<bool>? current = WaitQueueHead, next; current is not null; current = next)
-        {
-            next = current.Next;
-
-            if (!manager.IsLockAllowed)
-                break;
-
-            // skip dead node
-            if (RemoveAndSignal(current, out var resumable))
-            {
-                manager.AcquireLock();
-                return resumable ? current : null;
-            }
-        }
-
-        return null;
-    }
+        => AcquireAsync<WaitNode, LockManager>(reason, ref manager, token);
 
     /// <summary>
     /// Releases previously acquired exclusive lock.
@@ -277,5 +229,5 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         suspendedCaller?.Resume();
     }
 
-    private protected sealed override bool IsReadyToDispose => manager is { Value: false } && WaitQueueHead is null;
+    private protected sealed override bool IsReadyToDispose => manager is { Value: false } && IsEmptyQueue;
 }

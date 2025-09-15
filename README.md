@@ -44,31 +44,30 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-19-2025
+Release Date: 09-15-2025
 
-<a href="https://www.nuget.org/packages/dotnext/5.24.0">DotNext 5.24.0</a>
-* Merged [258](https://github.com/dotnet/dotNext/pull/258)
-* Added `CopyTo` extension method overload for [ReadOnlySequence&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) data type that returns the position within the sequence
-* Fixed correctness of atomic read/write operations exposed by `Atomic` static class for **double** data type on 32-bit platforms
-* `LockAcquisition` static methods are no longer extension methods to avoid ambiguity (see [267](https://github.com/dotnet/dotNext/discussions/267))
+<a href="https://www.nuget.org/packages/dotnext/5.25.0">DotNext 5.25.0</a>
+* Added `CatchException` extension method to capture the exception produced by `await` operator instead of raising it at the call site
+* Various performance improvements
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.24.0">DotNext.Metaprogramming 5.24.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.25.0">DotNext.Metaprogramming 5.25.0</a>
+* Fixed mutability modifiers for properties of `UnmanagedMemory<T>` type
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.25.0">DotNext.Unsafe 5.25.0</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/5.24.0">DotNext.Unsafe 5.24.0</a>
-* Added custom marshallers for `IUnmanagedMemory<T>` interface and `Pointer<T>` data type that are compatible with PInvoke source generator
+<a href="https://www.nuget.org/packages/dotnext.threading/5.25.0">DotNext.Threading 5.25.0</a>
+* Added optional hard concurrency limit for async lock primitives
+* Rewritten the internal engine for async lock primitives to decrease the lock contention and increase the response time
+* Async lock primitive no longer produce lock contention time to improve the response time
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.24.0">DotNext.Threading 5.24.0</a>
-* `AsyncLockAcquisition` static methods are no longer extension methods to avoid ambiguity (see [267](https://github.com/dotnet/dotNext/discussions/267))
-* Lock contention reported by all async lock primitives is now an up-down counter rather than regular counter
+<a href="https://www.nuget.org/packages/dotnext.io/5.25.0">DotNext.IO 5.25.0</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.24.0">DotNext.IO 5.24.0</a>
-* Improved behavioral compatibility with [Pipe](https://learn.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipe) class by extension methods exposed by `PipeExtensions` class
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.25.0">DotNext.Net.Cluster 5.25.0</a>
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.24.0">DotNext.Net.Cluster 5.24.0</a>
-* Added `DotNext.Net.Multiplexing` namespace that exposes simple unencrypted multiplexing protocol implementation on top of TCP. The multiplexed channel is exposed as [IDuplexPipe](https://learn.microsoft.com/en-us/dotnet/api/system.io.pipelines.iduplexpipe). The main purpose of this implementation is the efficient communication between nodes within the cluster inside the trusted LAN
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.24.0">DotNext.AspNetCore.Cluster 5.24.0</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.25.0">DotNext.AspNetCore.Cluster 5.25.0</a>
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.maintenanceservices/0.6.0">DotNext.MaintenanceServices 0.6.0</a>

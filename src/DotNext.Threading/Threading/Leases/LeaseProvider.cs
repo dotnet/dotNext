@@ -18,6 +18,7 @@ using Diagnostics;
 public abstract partial class LeaseProvider<TMetadata> : Disposable
 {
     private readonly TimeProvider provider;
+    private readonly CancellationTokenMultiplexer cancellationTokens;
 
     [SuppressMessage("Usage", "CA2213", Justification = "Disposed using DestroyLease() method")]
     private volatile CancellationTokenSource? lifetimeTokenSource;
@@ -37,6 +38,7 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         TimeToLive = ttl;
         lifetimeTokenSource = new();
         LifetimeToken = lifetimeTokenSource.Token;
+        cancellationTokens = new() { MaximumRetained = 100 };
     }
 
     /// <summary>
@@ -56,10 +58,10 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         where TCondition : ITransitionCondition
         where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
     {
-        var cts = token.LinkTo(LifetimeToken);
+        var cts = cancellationTokens.Combine([token, LifetimeToken]);
         try
         {
-            var state = await GetStateAsync(token).ConfigureAwait(false);
+            var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
 
             if (!condition.Invoke(in state, provider, TimeToLive, out var remainingTime))
                 return null;
@@ -68,11 +70,11 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
             {
                 CreatedAt = provider.GetUtcNow(),
                 Identity = state.Identity.BumpVersion(),
-                Metadata = await updater.Invoke(state.Metadata, token).ConfigureAwait(false),
+                Metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false),
             };
 
             var ts = new Timestamp(provider);
-            if (!await TryUpdateStateAsync(state, token).ConfigureAwait(false))
+            if (!await TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false))
                 return null;
 
             remainingTime = TimeToLive - ts.GetElapsedTime(provider);
@@ -80,19 +82,17 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                 ? new AcquisitionResult(in state, remainingTime, provider)
                 : null;
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
-        {
-            throw cts.CancellationOrigin == LifetimeToken
-                ? CreateException()
-                : new OperationCanceledException(cts.CancellationOrigin);
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == LifetimeToken)
+        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
         {
             throw CreateException();
         }
+        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
+        }
         finally
         {
-            cts?.Dispose();
+            await cts.DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -123,12 +123,12 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     private async ValueTask<AcquisitionResult> AcquireAsync<TUpdater>(TUpdater updater, CancellationToken token)
         where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
     {
-        var cts = token.LinkTo(LifetimeToken);
+        var cts = cancellationTokens.Combine([token, LifetimeToken]);
         try
         {
             while (true)
             {
-                var state = await GetStateAsync(token).ConfigureAwait(false);
+                var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
 
                 if (state.IsExpired(provider, TimeToLive, out var remainingTime))
                 {
@@ -136,11 +136,11 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                     {
                         CreatedAt = provider.GetUtcNow(),
                         Identity = state.Identity.BumpVersion(),
-                        Metadata = await updater.Invoke(state.Metadata, token).ConfigureAwait(false),
+                        Metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false),
                     };
 
                     var ts = new Timestamp(provider);
-                    if (!await TryUpdateStateAsync(state, token).ConfigureAwait(false))
+                    if (!await TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false))
                         continue;
 
                     remainingTime = TimeToLive - ts.GetElapsedTime(provider);
@@ -151,22 +151,20 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
                     return new AcquisitionResult(in state, remainingTime, provider);
                 }
 
-                await Task.Delay(remainingTime, provider, token).ConfigureAwait(false);
+                await Task.Delay(remainingTime, provider, cts.Token).ConfigureAwait(false);
             }
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
-        {
-            throw cts.CancellationOrigin == LifetimeToken
-                ? CreateException()
-                : new OperationCanceledException(cts.CancellationOrigin);
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == LifetimeToken)
+        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
         {
             throw CreateException();
         }
+        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
+        }
         finally
         {
-            cts?.Dispose();
+            await cts.DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -228,10 +226,10 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
         if (identity.Version is LeaseIdentity.InitialVersion)
             return null;
 
-        var cts = token.LinkTo(LifetimeToken);
+        var cts = cancellationTokens.Combine([token, LifetimeToken]);
         try
         {
-            var state = await GetStateAsync(token).ConfigureAwait(false);
+            var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
 
             if (state.IsExpired(provider, TimeToLive, out _) || state.Identity != identity)
                 return null;
@@ -240,24 +238,22 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
             {
                 CreatedAt = default,
                 Identity = identity.BumpVersion(),
-                Metadata = await updater.Invoke(state.Metadata, token).ConfigureAwait(false),
+                Metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false),
             };
 
-            return await TryUpdateStateAsync(state, token).ConfigureAwait(false) ? state.Identity : null;
+            return await TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false) ? state.Identity : null;
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
-        {
-            throw cts.CancellationOrigin == LifetimeToken
-                ? CreateException()
-                : new OperationCanceledException(cts.CancellationOrigin);
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == LifetimeToken)
+        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
         {
             throw CreateException();
         }
+        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
+        }
         finally
         {
-            cts?.Dispose();
+            await cts.DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -290,33 +286,31 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     private async ValueTask<LeaseIdentity?> UnsafeTryReleaseAsync<TUpdater>(TUpdater updater, CancellationToken token)
         where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
     {
-        var cts = token.LinkTo(LifetimeToken);
+        var cts = cancellationTokens.Combine([token, LifetimeToken]);
         try
         {
-            var state = await GetStateAsync(token).ConfigureAwait(false);
+            var state = await GetStateAsync(cts.Token).ConfigureAwait(false);
 
             state = new()
             {
                 CreatedAt = default,
                 Identity = state.Identity.BumpVersion(),
-                Metadata = await updater.Invoke(state.Metadata, token).ConfigureAwait(false),
+                Metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false),
             };
 
-            return await TryUpdateStateAsync(state, token).ConfigureAwait(false) ? state.Identity : null;
+            return await TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false) ? state.Identity : null;
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
-        {
-            throw cts.CancellationOrigin == LifetimeToken
-                ? CreateException()
-                : new OperationCanceledException(cts.CancellationOrigin);
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == LifetimeToken)
+        catch (OperationCanceledException e) when (e.CausedBy(cts,LifetimeToken))
         {
             throw CreateException();
         }
+        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
+        }
         finally
         {
-            cts?.Dispose();
+            await cts.DisposeAsync().ConfigureAwait(false);
         }
     }
 
@@ -355,37 +349,35 @@ public abstract partial class LeaseProvider<TMetadata> : Disposable
     private async ValueTask<LeaseIdentity> UnsafeReleaseAsync<TUpdater>(TUpdater updater, CancellationToken token)
         where TUpdater : ISupplier<TMetadata, CancellationToken, ValueTask<TMetadata>>
     {
-        var cts = token.LinkTo(LifetimeToken);
+        var cts = cancellationTokens.Combine([token, LifetimeToken]);
         try
         {
             State state;
             do
             {
-                state = await GetStateAsync(token).ConfigureAwait(false);
+                state = await GetStateAsync(cts.Token).ConfigureAwait(false);
 
                 state = new()
                 {
                     CreatedAt = default,
                     Identity = state.Identity.BumpVersion(),
-                    Metadata = await updater.Invoke(state.Metadata, token).ConfigureAwait(false),
+                    Metadata = await updater.Invoke(state.Metadata, cts.Token).ConfigureAwait(false),
                 };
-            } while (!await TryUpdateStateAsync(state, token).ConfigureAwait(false));
+            } while (!await TryUpdateStateAsync(state, cts.Token).ConfigureAwait(false));
 
             return state.Identity;
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts?.Token)
-        {
-            throw cts.CancellationOrigin == LifetimeToken
-                ? CreateException()
-                : new OperationCanceledException(cts.CancellationOrigin);
-        }
-        catch (OperationCanceledException e) when (e.CancellationToken == LifetimeToken)
+        catch (OperationCanceledException e) when (e.CausedBy(cts, LifetimeToken))
         {
             throw CreateException();
         }
+        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token)
+        {
+            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
+        }
         finally
         {
-            cts?.Dispose();
+            await cts.DisposeAsync().ConfigureAwait(false);
         }
     }
 

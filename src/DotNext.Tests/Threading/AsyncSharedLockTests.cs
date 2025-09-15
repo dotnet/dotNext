@@ -7,7 +7,7 @@ public sealed class AsyncSharedLockTests : Test
     public static async Task WeakLocks()
     {
         using var sharedLock = new AsyncSharedLock(3);
-        Equal(3, sharedLock.ConcurrencyLevel);
+        Equal(3, sharedLock.LockUpgradeThreshold);
         True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
         True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
         Equal(1, sharedLock.RemainingCount);
@@ -24,7 +24,7 @@ public sealed class AsyncSharedLockTests : Test
     [Fact]
     public static async Task StrongLocks()
     {
-        using var sharedLock = new AsyncSharedLock(3, false);
+        using var sharedLock = new AsyncSharedLock(3);
         True(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
         False(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
         False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
@@ -136,7 +136,7 @@ public sealed class AsyncSharedLockTests : Test
         True(@lock.TryAcquire(false));
         var task = @lock.DisposeAsync();
         False(task.IsCompleted);
-        await ThrowsAsync<ObjectDisposedException>(@lock.AcquireAsync(true, CancellationToken.None).AsTask);
+        await ThrowsAnyAsync<ObjectDisposedException>(@lock.AcquireAsync(true, CancellationToken.None).AsTask);
         @lock.Release();
         await task;
     }
@@ -149,7 +149,7 @@ public sealed class AsyncSharedLockTests : Test
         True(@lock.TryAcquire(false));
         var task = @lock.DisposeAsync();
         False(task.IsCompleted);
-        await ThrowsAsync<ObjectDisposedException>(@lock.AcquireAsync(true, CancellationToken.None).AsTask);
+        await ThrowsAnyAsync<ObjectDisposedException>(@lock.AcquireAsync(true, CancellationToken.None).AsTask);
         @lock.Downgrade();
         False(task.IsCompleted);
         @lock.Downgrade();

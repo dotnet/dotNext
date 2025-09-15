@@ -1,112 +1,115 @@
 using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
 using System.Net.Sockets;
 
 namespace DotNext.Net.Multiplexing;
 
 using Threading;
 
-internal sealed class OutputMultiplexer(
+internal sealed class OutputMultiplexer<T>(
     ConcurrentDictionary<uint, MultiplexedStream> streams,
-    AsyncAutoResetEvent writeSignal,
-    IProducerConsumerCollection<ProtocolCommand> commands,
-    Memory<byte> framingBuffer,
-    UpDownCounter<int> streamCounter,
-    in TagList measurementTags,
-    TimeSpan timeout,
-    CancellationToken token)
-    : Multiplexer(streams, commands, streamCounter, measurementTags, token)
+    IProducerConsumerCollection<ProtocolCommand> commands): Multiplexer<T>(streams, commands)
+    where T : IStreamMetrics
 {
-    public Func<AsyncAutoResetEvent, MultiplexedStream?>? HandlerFactory { get; init; }
+    private readonly Memory<byte> framingBuffer;
+    private readonly MultiplexedStreamFactory? factory;
+    
+    public required AsyncAutoResetEvent TransportSignal { private get; init; }
 
-    public Task ProcessAsync(Socket socket)
+    public required Memory<byte> FramingBuffer
     {
-        var task = ProcessCoreAsync(socket);
-        
-        // if output multiplexer is completed due to exception, we need to trigger
-        // the input multiplexer to handle the error
-        task.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(writeSignal.SetNoResult);
-        return task;
+        init => framingBuffer = value;
     }
 
-    private async Task ProcessCoreAsync(Socket socket)
+    public required TimeSpan Timeout { private get; init; }
+
+    public MultiplexedStreamFactory Factory
     {
-        FrameHeader header;
-        for (var bufferedBytes = 0;; AdjustFramingBuffer(ref bufferedBytes, header, framingBuffer.Span))
+        init => factory = value;
+    }
+
+    public async Task ProcessAsync(Socket socket)
+    {
+        try
         {
-            StartOperation(timeout); // resumed by heartbeat
-            try
+            FrameHeader header;
+            for (var bufferedBytes = 0;; AdjustFramingBuffer(ref bufferedBytes, header, framingBuffer.Span))
             {
-                // read at least header
-                while (bufferedBytes < FrameHeader.Size)
+                StartOperation(Timeout); // resumed by heartbeat
+                try
                 {
-                    bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), TimeBoundedToken).ConfigureAwait(false);
+                    // read at least header
+                    while (bufferedBytes < FrameHeader.Size)
+                    {
+                        bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), TimeBoundedToken).ConfigureAwait(false);
+                    }
+
+                    header = FrameHeader.Parse(framingBuffer.Span);
+
+                    // read the fragment
+                    while (bufferedBytes < header.Length + FrameHeader.Size)
+                    {
+                        bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), TimeBoundedToken).ConfigureAwait(false);
+                    }
+                }
+                catch (OperationCanceledException e) when (IsOperationCanceled(e))
+                {
+                    throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, RootToken);
+                }
+                catch (OperationCanceledException e) when (IsOperationTimedOut(e))
+                {
+                    throw new TimeoutException(ExceptionMessages.ConnectionTimedOut, e);
+                }
+                finally
+                {
+                    await ResetOperationTimeoutAsync().ConfigureAwait(false);
                 }
 
-                header = FrameHeader.Parse(framingBuffer.Span);
-
-                // read the fragment
-                while (bufferedBytes < header.Length + FrameHeader.Size)
-                {
-                    bufferedBytes += await socket.ReceiveAsync(framingBuffer.Slice(bufferedBytes), TimeBoundedToken).ConfigureAwait(false);
-                }
+                await ReadFrameAsync(header).ConfigureAwait(false);
             }
-            catch (OperationCanceledException e) when (IsOperationCanceled(e))
-            {
-                throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, RootToken);
-            }
-            catch (OperationCanceledException e) when (IsOperationTimedOut(e))
-            {
-                throw new TimeoutException(ExceptionMessages.ConnectionTimedOut, e);
-            }
-            finally
-            {
-                await ResetOperationTimeoutAsync().ConfigureAwait(false);
-            }
-
-            if (header.Control is FrameControl.Heartbeat)
-                continue;
-
-            if (!streams.TryGetValue(header.Id, out var stream))
-            {
-                if (HandlerFactory is null || header.CanBeIgnored)
-                {
-                    continue;
-                }
-
-                if ((stream = HandlerFactory(writeSignal)) is null)
-                {
-                    commands.TryAdd(new StreamRejectedCommand(header.Id));
-                    writeSignal.Set();
-                    continue;
-                }
-
-                streams[header.Id] = stream;
-                ChangeStreamCount();
-            }
-            else if (stream.IsTransportOutputCompleted)
-            {
-                continue;
-            }
-
-            // write the frame to the output header
-            await stream
-                .ReadFrameAsync(header.Control, framingBuffer.Slice(FrameHeader.Size, header.Length), RootToken)
-                .ConfigureAwait(false);
+        }
+        finally
+        {
+            // if output multiplexer is completed due to exception, we need to trigger
+            // the input multiplexer to handle the error
+            TransportSignal.Set();
         }
     }
 
-    private static void AdjustFramingBuffer(ref int bufferedBytes, in FrameHeader header, Span<byte> framingBuffer)
+    private ValueTask ReadFrameAsync(FrameHeader header)
+        => GetOrCreateStream(header) is { } stream
+            ? stream.ReadFrameAsync(header.Control, framingBuffer.Slice(FrameHeader.Size, header.Length), RootToken)
+            : ValueTask.CompletedTask;
+
+    private MultiplexedStream? GetOrCreateStream(FrameHeader header)
+    {
+        if (header.Control is FrameControl.Heartbeat)
+            return null;
+
+        if (Streams.TryGetValue(header.Id, out var stream))
+            return stream.IsTransportOutputCompleted ? null : stream;
+
+        if (factory is null || header.CanBeIgnored)
+            return null;
+        
+        if ((stream = factory(TransportSignal, in MeasurementTags)) is null)
+        {
+            Commands.TryAdd(new StreamRejectedCommand(header.Id));
+            TransportSignal.Set();
+        }
+        else
+        {
+            Streams[header.Id] = stream;
+            ChangeStreamCount();
+        }
+
+        return stream;
+    }
+
+    private static void AdjustFramingBuffer(ref int bufferedBytes, FrameHeader header, Span<byte> framingBuffer)
     {
         var bytesWritten = header.Length + FrameHeader.Size;
         framingBuffer
             .Slice(bytesWritten, bufferedBytes -= bytesWritten)
             .CopyTo(framingBuffer);
     }
-}
-
-file static class AsyncAutoResetEventExtensions
-{
-    public static void SetNoResult(this AsyncAutoResetEvent resetEvent) => resetEvent.Set();
 }
