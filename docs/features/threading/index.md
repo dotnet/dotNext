@@ -58,25 +58,25 @@ Exclusive lock may not be applicable due to performance reasons for some data ty
 These methods allow to turn any thread-unsafe object into thread-safe object with precise control in context of multithreading access.
 
 ```csharp
-using DotNext.Threading;
 using System.Text;
+using static DotNext.Threading.AsyncLockAcquisition;
 
 var builder = new StringBuilder();
 
 //reader
-using (builder.AcquireReadLockAsync(CancellationToken.None))
+using (AcquireReadLockAsync(builder, CancellationToken.None))
 {
     Console.WriteLine(builder.ToString());
 }
 
 //writer
-using (builder.AcquireWriteLockAsync(CancellationToken.None))
+using (AcquireWriteLockAsync(builder, CancellationToken.None))
 {
     builder.Append("Hello, world!");
 }
 ```
 
-For more information check extension methods inside of [AsyncLockAcquisition](xref:DotNext.Threading.LockAcquisition) class.
+For more information check extension methods inside the [AsyncLockAcquisition](xref:DotNext.Threading.AsyncLockAcquisition) class.
 
 # Custom synchronization primitive
 [QueuedSynchronizer&lt;TContext&gt;](xref:DotNext.Threading.QueuedSynchronizer`1) provides low-level infrastructure for writing custom synchronization primitives for asynchronous code. It uses the same [synchronization engine](xref:DotNext.Threading.QueuedSynchronizer) as other primitives shipped with the library: [AsyncExclusiveLock](xref:DotNext.Threading.AsyncExclusiveLock), [AsyncReaderWriterLock](xref:DotNext.Threading.AsyncReaderWriterLock), etc. The following example demonstrates how to write custom async-aware reader-writer lock:
@@ -125,7 +125,6 @@ class MyExclusiveLock : QueuedSynchronizer<bool>
 # Diagnostics
 All synchronization primitives for asynchronous code mostly derive from [QueuedSynchronized](xref:DotNext.Threading.QueuedSynchronizer) class that exposes a set of important diagnostics counters:
 * `LockContentionCounter` allows to measure a number of lock contentions detected in the specified time period
-* `LockDurationCounter` allows to measure the amount of time spend by the suspended caller in the suspended state
 
 # Debugging
 In addition to diagnostics tools, [QueuedSynchronized](xref:DotNext.Threading.QueuedSynchronizer) and all its derived classes support a rich set of debugging tools:
