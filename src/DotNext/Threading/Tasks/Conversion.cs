@@ -73,7 +73,17 @@ public static class Conversion
     /// <param name="task">The task to convert.</param>
     /// <typeparam name="T">The type of the task.</typeparam>
     /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
+    [Obsolete("Use CatchException() instead.")]
     public static AwaitableResult<T> SuspendException<T>(this Task<T> task)
+        => CatchException(task);
+
+    /// <summary>
+    /// Returns a task that never throws an exception.
+    /// </summary>
+    /// <param name="task">The task to convert.</param>
+    /// <typeparam name="T">The type of the task.</typeparam>
+    /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
+    public static AwaitableResult<T> CatchException<T>(this Task<T> task)
     {
         ArgumentNullException.ThrowIfNull(task);
 
@@ -86,7 +96,16 @@ public static class Conversion
     /// <param name="task">The task to convert.</param>
     /// <typeparam name="T">The type of the task.</typeparam>
     /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
-    public static AwaitableResult<T> SuspendException<T>(this ValueTask<T> task) => new(task);
+    [Obsolete("Use CatchException() instead.")]
+    public static AwaitableResult<T> SuspendException<T>(this ValueTask<T> task) => CatchException(task);
+
+    /// <summary>
+    /// Returns a task that never throws an exception.
+    /// </summary>
+    /// <param name="task">The task to convert.</param>
+    /// <typeparam name="T">The type of the task.</typeparam>
+    /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
+    public static AwaitableResult<T> CatchException<T>(this ValueTask<T> task) => new(task);
 
     /// <summary>
     /// Returns a task that never throws an exception.
@@ -96,9 +115,23 @@ public static class Conversion
     /// <typeparam name="T">The type of the task.</typeparam>
     /// <typeparam name="TError">The type of the error.</typeparam>
     /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
+    [Obsolete("Use CatchException() instead.")]
     public static AwaitableResult<T, TError> SuspendException<T, TError>(this ValueTask<T> task,
         Converter<Exception, TError> converter)
         where TError : struct, Enum
+        => CatchException(task, converter);
+    
+    /// <summary>
+    /// Returns a task that never throws an exception.
+    /// </summary>
+    /// <param name="task">The task to convert.</param>
+    /// <param name="converter">The exception converter.</param>
+    /// <typeparam name="T">The type of the task.</typeparam>
+    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
+    public static AwaitableResult<T, TError> CatchException<T, TError>(this ValueTask<T> task,
+        Converter<Exception, TError> converter)
+        where TError : struct, Enum
         => new(task, converter);
 
     /// <summary>
@@ -109,10 +142,28 @@ public static class Conversion
     /// <typeparam name="T">The type of the task.</typeparam>
     /// <typeparam name="TError">The type of the error.</typeparam>
     /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
+    [Obsolete("Use CatchException() instead.")]
     public static AwaitableResult<T, TError> SuspendException<T, TError>(this Task<T> task,
         Converter<Exception, TError> converter)
         where TError : struct, Enum
-        => new(task, converter);
+        => CatchException(task, converter);
+
+    /// <summary>
+    /// Returns a task that never throws an exception.
+    /// </summary>
+    /// <param name="task">The task to convert.</param>
+    /// <param name="converter">The exception converter.</param>
+    /// <typeparam name="T">The type of the task.</typeparam>
+    /// <typeparam name="TError">The type of the error.</typeparam>
+    /// <returns>The task that never throws an exception. Instead, the <see cref="Result{T}"/> contains an exception.</returns>
+    public static AwaitableResult<T, TError> CatchException<T, TError>(this Task<T> task,
+        Converter<Exception, TError> converter)
+        where TError : struct, Enum
+    {
+        ArgumentNullException.ThrowIfNull(task);
+        
+        return new(task, converter);
+    }
 
     /// <summary>
     /// Suspends the exception that can be raised by the task.
