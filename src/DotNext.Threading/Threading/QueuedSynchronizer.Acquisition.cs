@@ -30,6 +30,8 @@ partial class QueuedSynchronizer
         where TOutput : struct, IEquatable<TOutput>
     {
         static abstract bool ThrowOnTimeout { get; }
+
+        static abstract TOutput FromException(Exception e);
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -84,6 +86,8 @@ partial class QueuedSynchronizer
         }
 
         static bool ITaskBuilder<ValueTask>.ThrowOnTimeout => true;
+
+        static ValueTask ITaskBuilder<ValueTask>.FromException(Exception e) => ValueTask.FromException(e);
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -164,6 +168,10 @@ partial class QueuedSynchronizer
         static bool ITaskBuilder<ValueTask>.ThrowOnTimeout => true;
 
         static bool ITaskBuilder<ValueTask<bool>>.ThrowOnTimeout => false;
+        
+        static ValueTask ITaskBuilder<ValueTask>.FromException(Exception e) => ValueTask.FromException(e);
+        
+        static ValueTask<bool> ITaskBuilder<ValueTask<bool>>.FromException(Exception e) => ValueTask.FromException<bool>(e);
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -198,6 +206,8 @@ partial class QueuedSynchronizer
         T ISupplier<T>.Invoke() => Builder.Invoke();
 
         static bool ITaskBuilder<T>.ThrowOnTimeout => TBuilder.ThrowOnTimeout;
+
+        static T ITaskBuilder<T>.FromException(Exception e) => TBuilder.FromException(e);
     }
 
     private protected CancellationTokenOnly CreateTaskBuilder(CancellationToken token)
