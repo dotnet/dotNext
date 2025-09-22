@@ -150,7 +150,7 @@ public abstract partial class ManualResetCompletionSource
     /// <summary>
     /// Invokes continuation callback and cleanup state of this source.
     /// </summary>
-    internal void Resume()
+    protected internal void Resume()
     {
         state.Detach().Dispose();
 
@@ -261,7 +261,8 @@ public abstract partial class ManualResetCompletionSource
     /// <param name="token">The canceled token.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TrySetCanceled(CancellationToken token) => TrySetCanceled(null, token);
+    public bool TrySetCanceled(CancellationToken token)
+        => TrySetException(new OperationCanceledException(token));
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
@@ -269,7 +270,8 @@ public abstract partial class ManualResetCompletionSource
     /// <param name="completionData">The data to be saved in <see cref="CompletionData"/> property that can be accessed from within <see cref="AfterConsumed"/> method.</param>
     /// <param name="token">The canceled token.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public abstract bool TrySetCanceled(object? completionData, CancellationToken token);
+    public bool TrySetCanceled(object? completionData, CancellationToken token)
+        => TrySetException(completionData, new OperationCanceledException(token));
 
     /// <summary>
     /// Gets the status of this source.

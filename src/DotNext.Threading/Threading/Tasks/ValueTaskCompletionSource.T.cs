@@ -34,9 +34,6 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     {
     }
 
-    private static Result<T> FromCanceled(CancellationToken token)
-        => new(new OperationCanceledException(token));
-
     /// <summary>
     /// Attempts to complete the task successfully.
     /// </summary>
@@ -52,18 +49,8 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="completionData">The data to be saved in <see cref="ManualResetCompletionSource.CompletionData"/> property that can be accessed from within <see cref="ManualResetCompletionSource.AfterConsumed"/> method.</param>
     /// <param name="value">The value to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public unsafe bool TrySetResult(object? completionData, T value)
-        => SetResult(completionData, completionToken: null, &Result.FromValue, value);
-
-    /// <summary>
-    /// Attempts to complete the task successfully.
-    /// </summary>
-    /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
-    /// <param name="value">The value to be returned to the consumer.</param>
-    /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TrySetResult(short completionToken, T value)
-        => TrySetResult(null, completionToken, value);
+    public bool TrySetResult(object? completionData, T value)
+        => TrySetResult(completionData, completionToken: null, new Result<T>(value));
 
     /// <summary>
     /// Attempts to complete the task successfully.
@@ -72,22 +59,12 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
     /// <param name="value">The value to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public unsafe bool TrySetResult(object? completionData, short completionToken, T value)
-        => SetResult(completionData, completionToken, &Result.FromValue, value);
+    public bool TrySetResult(object? completionData, short completionToken, T value)
+        => TrySetResult(completionData, completionToken, new Result<T>(value));
 
     /// <inheritdoc />
-    public sealed override unsafe bool TrySetException(object? completionData, Exception e)
-        => SetResult(completionData, completionToken: null, &Result.FromException<T>, e);
-
-    /// <summary>
-    /// Attempts to complete the task unsuccessfully.
-    /// </summary>
-    /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
-    /// <param name="e">The exception to be returned to the consumer.</param>
-    /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TrySetException(short completionToken, Exception e)
-        => TrySetException(null, completionToken, e);
+    public sealed override bool TrySetException(object? completionData, Exception e)
+        => TrySetResult(completionData, completionToken: null, new Result<T>(e));
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
@@ -96,22 +73,8 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
     /// <param name="e">The exception to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public unsafe bool TrySetException(object? completionData, short completionToken, Exception e)
-        => SetResult(completionData, completionToken, &Result.FromException<T>, e);
-
-    /// <inheritdoc />
-    public sealed override unsafe bool TrySetCanceled(object? completionData, CancellationToken token)
-        => SetResult(completionData, completionToken: null, &FromCanceled, token);
-
-    /// <summary>
-    /// Attempts to complete the task unsuccessfully.
-    /// </summary>
-    /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
-    /// <param name="token">The canceled token.</param>
-    /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TrySetCanceled(short completionToken, CancellationToken token)
-        => TrySetCanceled(null, completionToken, token);
+    public bool TrySetException(object? completionData, short completionToken, Exception e)
+        => TrySetResult(completionData, completionToken, new Result<T>(e));
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
@@ -120,8 +83,8 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
     /// <param name="token">The canceled token.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public unsafe bool TrySetCanceled(object? completionData, short completionToken, CancellationToken token)
-        => SetResult(completionData, completionToken, &FromCanceled, token);
+    public bool TrySetCanceled(object? completionData, short completionToken, CancellationToken token)
+        => TrySetException(completionData, completionToken, new OperationCanceledException(token));
 
     private protected sealed override bool CompleteAsTimedOut()
         => SetResult(OnTimeout());
@@ -129,22 +92,15 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     private protected sealed override bool CompleteAsCanceled(CancellationToken token)
         => SetResult(OnCanceled(token));
 
-    private unsafe bool SetResult<TArg>(object? completionData, short? completionToken, delegate*<TArg, Result<T>> func, TArg arg)
+    private bool TrySetResult(object? completionData, short? completionToken, in Result<T> result)
     {
-        Debug.Assert(func != null);
-
-        bool result;
-        lock (SyncRoot)
+        var completed = TrySetResult(completionData, completionToken, in result, out var resumable);
+        if (resumable)
         {
-            result = versionAndStatus.CanBeCompleted(completionToken);
-            if (!result || !SetResult(func(arg), completionData))
-                goto exit;
+            Resume();
         }
 
-        Resume();
-
-        exit:
-        return result;
+        return completed;
     }
 
     private bool SetResult(in Result<T> result, object? completionData = null)
@@ -155,15 +111,29 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         return SetResult(completionData);
     }
 
-    internal bool TrySetResult(object? completionData, short? completionToken, in Result<T> result, out bool resumable)
+    /// <summary>
+    /// Tries to set the result of this source without resuming the <see cref="ValueTask{TResult}"/> consumer.
+    /// </summary>
+    /// <param name="completionData">The completion data to be assigned to <see cref="ManualResetCompletionSource.CompletionData"/> property.</param>
+    /// <param name="completionToken">The optional completion token.</param>
+    /// <param name="result">The result to be stored as the result of <see cref="ValueTask{TResult}"/>.</param>
+    /// <param name="resumable">
+    /// <see langword="true"/> if <see cref="ManualResetCompletionSource.Resume()"/> needs to be called to resume
+    /// the consumer of <see cref="ValueTask{TResult}"/>.
+    /// </param>
+    /// <returns>
+    /// <see langword="true"/> if this source is completed successfully;
+    /// <see langword="false"/> if this source was completed previously.
+    /// </returns>
+    protected internal bool TrySetResult(object? completionData, short? completionToken, in Result<T> result, out bool resumable)
     {
-        bool successful;
+        bool completed;
         lock (SyncRoot)
         {
-            resumable = (successful = versionAndStatus.CanBeCompleted(completionToken)) && SetResult(in result, completionData);
+            resumable = (completed = versionAndStatus.CanBeCompleted(completionToken)) && SetResult(in result, completionData);
         }
 
-        return successful;
+        return completed;
     }
 
     /// <inheritdoc />
