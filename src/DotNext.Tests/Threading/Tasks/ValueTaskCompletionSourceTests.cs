@@ -61,7 +61,7 @@ public sealed class ValueTaskCompletionSourceTests : Test
         var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
         var completionToken = source.Reset();
         var task = source.CreateTask(InfiniteTimeSpan, default);
-        False(source.TrySetResult(short.MaxValue));
+        False(source.TrySetResult(completionData: null, short.MaxValue));
         False(task.IsCompleted);
         True(source.TrySetResult(completionToken));
         await task;
