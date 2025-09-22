@@ -96,7 +96,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         var completed = TrySetResult(completionData, completionToken, in result, out var resumable);
         if (resumable)
         {
-            Resume();
+            NotifyConsumer();
         }
 
         return completed;
@@ -117,7 +117,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="completionToken">The optional completion token.</param>
     /// <param name="result">The result to be stored as the result of <see cref="ValueTask{TResult}"/>.</param>
     /// <param name="resumable">
-    /// <see langword="true"/> if <see cref="ManualResetCompletionSource.Resume()"/> needs to be called to resume
+    /// <see langword="true"/> if <see cref="ManualResetCompletionSource.NotifyConsumer"/> needs to be called to resume
     /// the consumer of <see cref="ValueTask{TResult}"/>.
     /// </param>
     /// <returns>

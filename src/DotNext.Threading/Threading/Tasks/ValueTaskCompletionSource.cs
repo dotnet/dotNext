@@ -73,16 +73,19 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// </summary>
     /// <param name="completionData">The completion data to be assigned to <see cref="ManualResetCompletionSource.CompletionData"/> property.</param>
     /// <param name="completionToken">The optional completion token.</param>
-    /// <param name="dispatchInfo">The exception to be stored as the result of <see cref="ValueTask"/>.</param>
+    /// <param name="e">The exception to be stored as the result of <see cref="ValueTask"/>.</param>
     /// <param name="resumable">
-    /// <see langword="true"/> if <see cref="ManualResetCompletionSource.Resume()"/> needs to be called to resume
+    /// <see langword="true"/> if <see cref="ManualResetCompletionSource.NotifyConsumer"/> needs to be called to resume
     /// the consumer of <see cref="ValueTask"/>.
     /// </param>
     /// <returns>
     /// <see langword="true"/> if this source is completed successfully;
     /// <see langword="false"/> if this source was completed previously.
     /// </returns>
-    protected internal bool TrySetResult(object? completionData, short? completionToken, ExceptionDispatchInfo? dispatchInfo, out bool resumable)
+    protected internal bool TrySetResult(object? completionData, short? completionToken, Exception? e, out bool resumable)
+        => TrySetResult(completionData, completionToken, e is null ? null : ExceptionDispatchInfo.Capture(e), out resumable);
+    
+    private bool TrySetResult(object? completionData, short? completionToken, ExceptionDispatchInfo? dispatchInfo, out bool resumable)
     {
         bool completed;
         lock (SyncRoot)
@@ -98,7 +101,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         var completed = TrySetResult(completionData, completionToken, dispatchInfo, out var resumable);
         if (resumable)
         {
-            Resume();
+            NotifyConsumer();
         }
 
         return completed;

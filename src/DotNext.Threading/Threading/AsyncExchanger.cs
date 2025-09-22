@@ -172,7 +172,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
                 break;
 
             resume_callers:
-                suspendedCaller?.Resume();
+                suspendedCaller?.NotifyConsumer();
                 break;
 
             create_task:
@@ -236,7 +236,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             }
         }
 
-        suspendedCaller?.Resume();
+        suspendedCaller?.NotifyConsumer();
         return result;
     }
 

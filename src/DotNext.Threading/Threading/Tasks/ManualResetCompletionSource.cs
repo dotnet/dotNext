@@ -58,7 +58,7 @@ public abstract partial class ManualResetCompletionSource
             Debug.Assert(versionAndStatus.Status is ManualResetCompletionSourceStatus.WaitForConsumption);
         }
 
-        Resume();
+        NotifyConsumer();
 
         exit:
         return;
@@ -150,7 +150,7 @@ public abstract partial class ManualResetCompletionSource
     /// <summary>
     /// Invokes continuation callback and cleanup state of this source.
     /// </summary>
-    protected internal void Resume()
+    protected internal void NotifyConsumer()
     {
         state.Detach().Dispose();
 
@@ -166,8 +166,8 @@ public abstract partial class ManualResetCompletionSource
     /// </summary>
     /// <param name="completionData">Custom data to be record to <see cref="CompletionData"/> property.</param>
     /// <returns>
-    /// <see langword="true"/> if the immediate caller must call <see cref="Resume"/> to execute the callback;
-    /// <see langword="false"/> to ignore invocation of <see cref="Resume"/> method because the callback
+    /// <see langword="true"/> if the immediate caller must call <see cref="NotifyConsumer"/> to execute the callback;
+    /// <see langword="false"/> to ignore invocation of <see cref="NotifyConsumer"/> method because the callback
     /// is not provided.
     /// </returns>
     private protected bool SetResult(object? completionData)
