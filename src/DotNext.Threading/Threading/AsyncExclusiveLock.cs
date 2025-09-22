@@ -226,7 +226,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
             }
         }
 
-        suspendedCaller?.Resume();
+        suspendedCaller?.NotifyConsumer();
     }
 
     private protected sealed override bool IsReadyToDispose => manager is { Value: false } && IsEmptyQueue;

@@ -122,7 +122,7 @@ public partial class TaskCompletionPipe<T>
                 : null;
         }
 
-        suspendedCaller?.Resume();
+        suspendedCaller?.NotifyConsumer();
     }
 
     private bool TryDequeueCompletedTask([NotNullWhen(true)] out T? task, out object? userData)

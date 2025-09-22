@@ -45,7 +45,7 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
         for (LinkedValueTaskCompletionSource<T>? current = this, next; current is not null; current = next)
         {
             next = current.CleanupAndGotoNext();
-            current.Resume();
+            current.NotifyConsumer();
         }
     }
 

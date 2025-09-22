@@ -77,7 +77,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             userData = node.UserData;
             result = node.TrySetResult(Sentinel.Instance, completionToken, in value, out var resumable);
             if (resumable)
-                node.Resume();
+                node.NotifyConsumer();
         }
         else
         {

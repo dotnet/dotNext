@@ -149,7 +149,8 @@ public sealed class DelegateHelpersTests : Test
         static MethodInfo GetMethod(int argCount)
         {
             const BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
-            return Single(typeof(Func).GetMethods(flags), candidate => candidate.Name == nameof(Func.TryInvoke) && candidate.GetParameters().Length == argCount + 1);
+            return Single(typeof(Func).GetMethods(flags),
+                candidate => candidate.Name is nameof(Func.TryInvoke) && candidate.GetParameters().Length == argCount + 1);
         }
 
         var successValue = Expression.Constant(42, typeof(int));
@@ -611,7 +612,7 @@ public sealed class DelegateHelpersTests : Test
         {
             const BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
             return Single(typeof(DelegateHelpers).GetMethods(flags),
-                candidate => candidate.Name == nameof(DelegateHelpers.TryInvoke) && candidate.GetParameters().Length == argCount + 1);
+                candidate => candidate.Name is nameof(DelegateHelpers.TryInvoke) && candidate.GetParameters().Length == argCount + 1);
         }
 
         var successValue = Expression.Empty();

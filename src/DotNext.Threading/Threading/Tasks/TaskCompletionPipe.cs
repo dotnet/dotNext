@@ -119,7 +119,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
         }
 
         // decouple producer thread from consumer thread
-        suspendedCaller?.Resume();
+        suspendedCaller?.NotifyConsumer();
         return result;
     }
 
