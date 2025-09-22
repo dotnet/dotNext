@@ -54277,6 +54277,23 @@ references:
   fullName.vb: DotNext.Threading.QueuedSynchronizer(Of TContext).CanAcquire
   nameWithType: QueuedSynchronizer<TContext>.CanAcquire
   nameWithType.vb: QueuedSynchronizer(Of TContext).CanAcquire
+- uid: DotNext.Threading.QueuedSynchronizer`1.GetAcquisitionException(`0)
+  name: GetAcquisitionException(TContext)
+  href: api/DotNext.Threading.QueuedSynchronizer-1.html#DotNext_Threading_QueuedSynchronizer_1_GetAcquisitionException__0_
+  commentId: M:DotNext.Threading.QueuedSynchronizer`1.GetAcquisitionException(`0)
+  fullName: DotNext.Threading.QueuedSynchronizer<TContext>.GetAcquisitionException(TContext)
+  fullName.vb: DotNext.Threading.QueuedSynchronizer(Of TContext).GetAcquisitionException(TContext)
+  nameWithType: QueuedSynchronizer<TContext>.GetAcquisitionException(TContext)
+  nameWithType.vb: QueuedSynchronizer(Of TContext).GetAcquisitionException(TContext)
+- uid: DotNext.Threading.QueuedSynchronizer`1.GetAcquisitionException*
+  name: GetAcquisitionException
+  href: api/DotNext.Threading.QueuedSynchronizer-1.html#DotNext_Threading_QueuedSynchronizer_1_GetAcquisitionException_
+  commentId: Overload:DotNext.Threading.QueuedSynchronizer`1.GetAcquisitionException
+  isSpec: "True"
+  fullName: DotNext.Threading.QueuedSynchronizer<TContext>.GetAcquisitionException
+  fullName.vb: DotNext.Threading.QueuedSynchronizer(Of TContext).GetAcquisitionException
+  nameWithType: QueuedSynchronizer<TContext>.GetAcquisitionException
+  nameWithType.vb: QueuedSynchronizer(Of TContext).GetAcquisitionException
 - uid: DotNext.Threading.QueuedSynchronizer`1.Release
   name: Release()
   href: api/DotNext.Threading.QueuedSynchronizer-1.html#DotNext_Threading_QueuedSynchronizer_1_Release
@@ -54844,6 +54861,42 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.Tasks.Conversion.CatchException
   nameWithType: Conversion.CatchException
+- uid: DotNext.Threading.Tasks.Conversion.CatchException``1(System.Threading.Tasks.Task{``0})
+  name: CatchException<T>(Task<T>)
+  href: api/DotNext.Threading.Tasks.Conversion.html#DotNext_Threading_Tasks_Conversion_CatchException__1_System_Threading_Tasks_Task___0__
+  commentId: M:DotNext.Threading.Tasks.Conversion.CatchException``1(System.Threading.Tasks.Task{``0})
+  name.vb: CatchException(Of T)(Task(Of T))
+  fullName: DotNext.Threading.Tasks.Conversion.CatchException<T>(System.Threading.Tasks.Task<T>)
+  fullName.vb: DotNext.Threading.Tasks.Conversion.CatchException(Of T)(System.Threading.Tasks.Task(Of T))
+  nameWithType: Conversion.CatchException<T>(Task<T>)
+  nameWithType.vb: Conversion.CatchException(Of T)(Task(Of T))
+- uid: DotNext.Threading.Tasks.Conversion.CatchException``1(System.Threading.Tasks.ValueTask{``0})
+  name: CatchException<T>(ValueTask<T>)
+  href: api/DotNext.Threading.Tasks.Conversion.html#DotNext_Threading_Tasks_Conversion_CatchException__1_System_Threading_Tasks_ValueTask___0__
+  commentId: M:DotNext.Threading.Tasks.Conversion.CatchException``1(System.Threading.Tasks.ValueTask{``0})
+  name.vb: CatchException(Of T)(ValueTask(Of T))
+  fullName: DotNext.Threading.Tasks.Conversion.CatchException<T>(System.Threading.Tasks.ValueTask<T>)
+  fullName.vb: DotNext.Threading.Tasks.Conversion.CatchException(Of T)(System.Threading.Tasks.ValueTask(Of T))
+  nameWithType: Conversion.CatchException<T>(ValueTask<T>)
+  nameWithType.vb: Conversion.CatchException(Of T)(ValueTask(Of T))
+- uid: DotNext.Threading.Tasks.Conversion.CatchException``2(System.Threading.Tasks.Task{``0},System.Converter{System.Exception,``1})
+  name: CatchException<T, TError>(Task<T>, Converter<Exception, TError>)
+  href: api/DotNext.Threading.Tasks.Conversion.html#DotNext_Threading_Tasks_Conversion_CatchException__2_System_Threading_Tasks_Task___0__System_Converter_System_Exception___1__
+  commentId: M:DotNext.Threading.Tasks.Conversion.CatchException``2(System.Threading.Tasks.Task{``0},System.Converter{System.Exception,``1})
+  name.vb: CatchException(Of T, TError)(Task(Of T), Converter(Of Exception, TError))
+  fullName: DotNext.Threading.Tasks.Conversion.CatchException<T, TError>(System.Threading.Tasks.Task<T>, System.Converter<System.Exception, TError>)
+  fullName.vb: DotNext.Threading.Tasks.Conversion.CatchException(Of T, TError)(System.Threading.Tasks.Task(Of T), System.Converter(Of System.Exception, TError))
+  nameWithType: Conversion.CatchException<T, TError>(Task<T>, Converter<Exception, TError>)
+  nameWithType.vb: Conversion.CatchException(Of T, TError)(Task(Of T), Converter(Of Exception, TError))
+- uid: DotNext.Threading.Tasks.Conversion.CatchException``2(System.Threading.Tasks.ValueTask{``0},System.Converter{System.Exception,``1})
+  name: CatchException<T, TError>(ValueTask<T>, Converter<Exception, TError>)
+  href: api/DotNext.Threading.Tasks.Conversion.html#DotNext_Threading_Tasks_Conversion_CatchException__2_System_Threading_Tasks_ValueTask___0__System_Converter_System_Exception___1__
+  commentId: M:DotNext.Threading.Tasks.Conversion.CatchException``2(System.Threading.Tasks.ValueTask{``0},System.Converter{System.Exception,``1})
+  name.vb: CatchException(Of T, TError)(ValueTask(Of T), Converter(Of Exception, TError))
+  fullName: DotNext.Threading.Tasks.Conversion.CatchException<T, TError>(System.Threading.Tasks.ValueTask<T>, System.Converter<System.Exception, TError>)
+  fullName.vb: DotNext.Threading.Tasks.Conversion.CatchException(Of T, TError)(System.Threading.Tasks.ValueTask(Of T), System.Converter(Of System.Exception, TError))
+  nameWithType: Conversion.CatchException<T, TError>(ValueTask<T>, Converter<Exception, TError>)
+  nameWithType.vb: Conversion.CatchException(Of T, TError)(ValueTask(Of T), Converter(Of Exception, TError))
 - uid: DotNext.Threading.Tasks.Conversion.Convert*
   name: Convert
   href: api/DotNext.Threading.Tasks.Conversion.html#DotNext_Threading_Tasks_Conversion_Convert_
@@ -55136,6 +55189,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.Tasks.ManualResetCompletionSource.IsCompleted
   nameWithType: ManualResetCompletionSource.IsCompleted
+- uid: DotNext.Threading.Tasks.ManualResetCompletionSource.NotifyConsumer
+  name: NotifyConsumer()
+  href: api/DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_NotifyConsumer
+  commentId: M:DotNext.Threading.Tasks.ManualResetCompletionSource.NotifyConsumer
+  fullName: DotNext.Threading.Tasks.ManualResetCompletionSource.NotifyConsumer()
+  nameWithType: ManualResetCompletionSource.NotifyConsumer()
+- uid: DotNext.Threading.Tasks.ManualResetCompletionSource.NotifyConsumer*
+  name: NotifyConsumer
+  href: api/DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_NotifyConsumer_
+  commentId: Overload:DotNext.Threading.Tasks.ManualResetCompletionSource.NotifyConsumer
+  isSpec: "True"
+  fullName: DotNext.Threading.Tasks.ManualResetCompletionSource.NotifyConsumer
+  nameWithType: ManualResetCompletionSource.NotifyConsumer
 - uid: DotNext.Threading.Tasks.ManualResetCompletionSource.Reset
   name: Reset()
   href: api/DotNext.Threading.Tasks.ManualResetCompletionSource.html#DotNext_Threading_Tasks_ManualResetCompletionSource_Reset
@@ -56004,15 +56070,6 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource.OnTimeout
   nameWithType: ValueTaskCompletionSource.OnTimeout
-- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled(System.Int16,System.Threading.CancellationToken)
-  name: TrySetCanceled(short, CancellationToken)
-  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetCanceled_System_Int16_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled(System.Int16,System.Threading.CancellationToken)
-  name.vb: TrySetCanceled(Short, CancellationToken)
-  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled(short, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled(Short, System.Threading.CancellationToken)
-  nameWithType: ValueTaskCompletionSource.TrySetCanceled(short, CancellationToken)
-  nameWithType.vb: ValueTaskCompletionSource.TrySetCanceled(Short, CancellationToken)
 - uid: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled(System.Object,System.Int16,System.Threading.CancellationToken)
   name: TrySetCanceled(object?, short, CancellationToken)
   href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetCanceled_System_Object_System_Int16_System_Threading_CancellationToken_
@@ -56022,15 +56079,6 @@ references:
   fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled(Object, Short, System.Threading.CancellationToken)
   nameWithType: ValueTaskCompletionSource.TrySetCanceled(object?, short, CancellationToken)
   nameWithType.vb: ValueTaskCompletionSource.TrySetCanceled(Object, Short, CancellationToken)
-- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled(System.Object,System.Threading.CancellationToken)
-  name: TrySetCanceled(object?, CancellationToken)
-  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetCanceled_System_Object_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled(System.Object,System.Threading.CancellationToken)
-  name.vb: TrySetCanceled(Object, CancellationToken)
-  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled(object?, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled(Object, System.Threading.CancellationToken)
-  nameWithType: ValueTaskCompletionSource.TrySetCanceled(object?, CancellationToken)
-  nameWithType.vb: ValueTaskCompletionSource.TrySetCanceled(Object, CancellationToken)
 - uid: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled*
   name: TrySetCanceled
   href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetCanceled_
@@ -56038,15 +56086,6 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetCanceled
   nameWithType: ValueTaskCompletionSource.TrySetCanceled
-- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetException(System.Int16,System.Exception)
-  name: TrySetException(short, Exception)
-  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetException_System_Int16_System_Exception_
-  commentId: M:DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetException(System.Int16,System.Exception)
-  name.vb: TrySetException(Short, Exception)
-  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetException(short, System.Exception)
-  fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetException(Short, System.Exception)
-  nameWithType: ValueTaskCompletionSource.TrySetException(short, Exception)
-  nameWithType.vb: ValueTaskCompletionSource.TrySetException(Short, Exception)
 - uid: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetException(System.Object,System.Exception)
   name: TrySetException(object?, Exception)
   href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetException_System_Object_System_Exception_
@@ -56078,15 +56117,6 @@ references:
   commentId: M:DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult
   fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult()
   nameWithType: ValueTaskCompletionSource.TrySetResult()
-- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult(System.Int16)
-  name: TrySetResult(short)
-  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetResult_System_Int16_
-  commentId: M:DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult(System.Int16)
-  name.vb: TrySetResult(Short)
-  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult(short)
-  fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult(Short)
-  nameWithType: ValueTaskCompletionSource.TrySetResult(short)
-  nameWithType.vb: ValueTaskCompletionSource.TrySetResult(Short)
 - uid: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult(System.Object)
   name: TrySetResult(object?)
   href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetResult_System_Object_
@@ -56105,6 +56135,15 @@ references:
   fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult(Object, Short)
   nameWithType: ValueTaskCompletionSource.TrySetResult(object?, short)
   nameWithType.vb: ValueTaskCompletionSource.TrySetResult(Object, Short)
+- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult(System.Object,System.Nullable{System.Int16},System.Exception,System.Boolean@)
+  name: TrySetResult(object?, short?, Exception?, out bool)
+  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetResult_System_Object_System_Nullable_System_Int16__System_Exception_System_Boolean__
+  commentId: M:DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult(System.Object,System.Nullable{System.Int16},System.Exception,System.Boolean@)
+  name.vb: TrySetResult(Object, Short?, Exception, Boolean)
+  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult(object?, short?, System.Exception?, out bool)
+  fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult(Object, Short?, System.Exception, Boolean)
+  nameWithType: ValueTaskCompletionSource.TrySetResult(object?, short?, Exception?, out bool)
+  nameWithType.vb: ValueTaskCompletionSource.TrySetResult(Object, Short?, Exception, Boolean)
 - uid: DotNext.Threading.Tasks.ValueTaskCompletionSource.TrySetResult*
   name: TrySetResult
   href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_TrySetResult_
@@ -56226,15 +56265,6 @@ references:
   fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource(Of T).OnTimeout
   nameWithType: ValueTaskCompletionSource<T>.OnTimeout
   nameWithType.vb: ValueTaskCompletionSource(Of T).OnTimeout
-- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1.TrySetCanceled(System.Int16,System.Threading.CancellationToken)
-  name: TrySetCanceled(short, CancellationToken)
-  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_1_TrySetCanceled_System_Int16_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.Tasks.ValueTaskCompletionSource`1.TrySetCanceled(System.Int16,System.Threading.CancellationToken)
-  name.vb: TrySetCanceled(Short, CancellationToken)
-  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource<T>.TrySetCanceled(short, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource(Of T).TrySetCanceled(Short, System.Threading.CancellationToken)
-  nameWithType: ValueTaskCompletionSource<T>.TrySetCanceled(short, CancellationToken)
-  nameWithType.vb: ValueTaskCompletionSource(Of T).TrySetCanceled(Short, CancellationToken)
 - uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1.TrySetCanceled(System.Object,System.Int16,System.Threading.CancellationToken)
   name: TrySetCanceled(object?, short, CancellationToken)
   href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_1_TrySetCanceled_System_Object_System_Int16_System_Threading_CancellationToken_
@@ -56244,15 +56274,6 @@ references:
   fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource(Of T).TrySetCanceled(Object, Short, System.Threading.CancellationToken)
   nameWithType: ValueTaskCompletionSource<T>.TrySetCanceled(object?, short, CancellationToken)
   nameWithType.vb: ValueTaskCompletionSource(Of T).TrySetCanceled(Object, Short, CancellationToken)
-- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1.TrySetCanceled(System.Object,System.Threading.CancellationToken)
-  name: TrySetCanceled(object?, CancellationToken)
-  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_1_TrySetCanceled_System_Object_System_Threading_CancellationToken_
-  commentId: M:DotNext.Threading.Tasks.ValueTaskCompletionSource`1.TrySetCanceled(System.Object,System.Threading.CancellationToken)
-  name.vb: TrySetCanceled(Object, CancellationToken)
-  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource<T>.TrySetCanceled(object?, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource(Of T).TrySetCanceled(Object, System.Threading.CancellationToken)
-  nameWithType: ValueTaskCompletionSource<T>.TrySetCanceled(object?, CancellationToken)
-  nameWithType.vb: ValueTaskCompletionSource(Of T).TrySetCanceled(Object, CancellationToken)
 - uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1.TrySetCanceled*
   name: TrySetCanceled
   href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_1_TrySetCanceled_
@@ -56262,15 +56283,6 @@ references:
   fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource(Of T).TrySetCanceled
   nameWithType: ValueTaskCompletionSource<T>.TrySetCanceled
   nameWithType.vb: ValueTaskCompletionSource(Of T).TrySetCanceled
-- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1.TrySetException(System.Int16,System.Exception)
-  name: TrySetException(short, Exception)
-  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_1_TrySetException_System_Int16_System_Exception_
-  commentId: M:DotNext.Threading.Tasks.ValueTaskCompletionSource`1.TrySetException(System.Int16,System.Exception)
-  name.vb: TrySetException(Short, Exception)
-  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource<T>.TrySetException(short, System.Exception)
-  fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource(Of T).TrySetException(Short, System.Exception)
-  nameWithType: ValueTaskCompletionSource<T>.TrySetException(short, Exception)
-  nameWithType.vb: ValueTaskCompletionSource(Of T).TrySetException(Short, Exception)
 - uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1.TrySetException(System.Object,System.Exception)
   name: TrySetException(object?, Exception)
   href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_1_TrySetException_System_Object_System_Exception_
@@ -56298,15 +56310,6 @@ references:
   fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource(Of T).TrySetException
   nameWithType: ValueTaskCompletionSource<T>.TrySetException
   nameWithType.vb: ValueTaskCompletionSource(Of T).TrySetException
-- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1.TrySetResult(System.Int16,`0)
-  name: TrySetResult(short, T)
-  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_1_TrySetResult_System_Int16__0_
-  commentId: M:DotNext.Threading.Tasks.ValueTaskCompletionSource`1.TrySetResult(System.Int16,`0)
-  name.vb: TrySetResult(Short, T)
-  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource<T>.TrySetResult(short, T)
-  fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource(Of T).TrySetResult(Short, T)
-  nameWithType: ValueTaskCompletionSource<T>.TrySetResult(short, T)
-  nameWithType.vb: ValueTaskCompletionSource(Of T).TrySetResult(Short, T)
 - uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1.TrySetResult(System.Object,System.Int16,`0)
   name: TrySetResult(object?, short, T)
   href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_1_TrySetResult_System_Object_System_Int16__0_
@@ -56316,6 +56319,15 @@ references:
   fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource(Of T).TrySetResult(Object, Short, T)
   nameWithType: ValueTaskCompletionSource<T>.TrySetResult(object?, short, T)
   nameWithType.vb: ValueTaskCompletionSource(Of T).TrySetResult(Object, Short, T)
+- uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1.TrySetResult(System.Object,System.Nullable{System.Int16},DotNext.Result{`0}@,System.Boolean@)
+  name: TrySetResult(object?, short?, in Result<T>, out bool)
+  href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_1_TrySetResult_System_Object_System_Nullable_System_Int16__DotNext_Result__0___System_Boolean__
+  commentId: M:DotNext.Threading.Tasks.ValueTaskCompletionSource`1.TrySetResult(System.Object,System.Nullable{System.Int16},DotNext.Result{`0}@,System.Boolean@)
+  name.vb: TrySetResult(Object, Short?, Result(Of T), Boolean)
+  fullName: DotNext.Threading.Tasks.ValueTaskCompletionSource<T>.TrySetResult(object?, short?, in DotNext.Result<T>, out bool)
+  fullName.vb: DotNext.Threading.Tasks.ValueTaskCompletionSource(Of T).TrySetResult(Object, Short?, DotNext.Result(Of T), Boolean)
+  nameWithType: ValueTaskCompletionSource<T>.TrySetResult(object?, short?, in Result<T>, out bool)
+  nameWithType.vb: ValueTaskCompletionSource(Of T).TrySetResult(Object, Short?, Result(Of T), Boolean)
 - uid: DotNext.Threading.Tasks.ValueTaskCompletionSource`1.TrySetResult(System.Object,`0)
   name: TrySetResult(object?, T)
   href: api/DotNext.Threading.Tasks.ValueTaskCompletionSource-1.html#DotNext_Threading_Tasks_ValueTaskCompletionSource_1_TrySetResult_System_Object__0_
