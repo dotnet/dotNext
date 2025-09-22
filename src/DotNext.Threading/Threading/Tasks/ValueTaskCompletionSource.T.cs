@@ -39,7 +39,6 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// </summary>
     /// <param name="value">The value to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TrySetResult(T value)
         => TrySetResult(null, value);
 

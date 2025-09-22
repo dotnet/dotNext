@@ -140,7 +140,6 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// Attempts to complete the task successfully.
     /// </summary>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TrySetResult()
         => TrySetResult(null);
 
