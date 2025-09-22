@@ -61,7 +61,7 @@ public sealed class ValueTaskCompletionSourceTests : Test
         var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
         var completionToken = source.Reset();
         var task = source.CreateTask(InfiniteTimeSpan, default);
-        False(source.TrySetResult(short.MaxValue));
+        False(source.TrySetResult(completionData: null, short.MaxValue));
         False(task.IsCompleted);
         True(source.TrySetResult(completionToken));
         await task;
@@ -166,5 +166,30 @@ public sealed class ValueTaskCompletionSourceTests : Test
         var source = new ValueTaskCompletionSource();
         var task = source.CreateTask(InfiniteTimeSpan, new(true)).AsTask();
         await ThrowsAsync<OperationCanceledException>(Func.Constant(task));
+    }
+
+    [Fact]
+    public static async Task LazyCompletion()
+    {
+        var source = new TestCompletionSource();
+        var task = source.CreateTask(InfiniteTimeSpan, CancellationToken.None).AsTask();
+        
+        True(source.TrySetResult(string.Empty, completionToken: null, e: null, out var resumable));
+        True(resumable);
+        Same(string.Empty, source.CompletionData);
+        False(task.IsCompleted);
+        
+        source.NotifyConsumer();
+        await task;
+    }
+    
+    private sealed class TestCompletionSource : ValueTaskCompletionSource
+    {
+        public new bool TrySetResult(object completionData, short? completionToken, Exception e, out bool resumable)
+            => base.TrySetResult(completionData, completionToken, e, out resumable);
+
+        public new object CompletionData => base.CompletionData;
+
+        public new void NotifyConsumer() => base.NotifyConsumer();
     }
 }

@@ -41,7 +41,15 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// </summary>
     /// <param name="context">The context associated with the suspended caller or supplied externally.</param>
     /// <returns><see langword="true"/> if acquisition is allowed; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="Exception">A custom exception is thrown.</exception>
     protected abstract bool CanAcquire(TContext context);
+
+    /// <summary>
+    /// Returns an optional exception if <see cref="CanAcquire"/> returns <see langword="false"/>.
+    /// </summary>
+    /// <param name="context">The acquisition context.</param>
+    /// <returns>The exception; or <see langword="null"/>.</returns>
+    protected virtual Exception? GetAcquisitionException(TContext context) => null;
 
     /// <summary>
     /// Modifies the internal state according to acquisition semantics.
@@ -69,11 +77,19 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         for (; !waitQueueVisitor.IsEndOfQueue<WaitNode, TContext>(out var context); waitQueueVisitor.Advance())
         {
-            if (!CanAcquire(context))
-                break;
-
-            if (waitQueueVisitor.SignalCurrent())
-                AcquireCore(context);
+            switch (CanAcquire(context))
+            {
+                case false when GetAcquisitionException(context) is { } e:
+                    waitQueueVisitor.SignalCurrent(e);
+                    goto default;
+                case false:
+                    return;
+                case true when waitQueueVisitor.SignalCurrent():
+                    AcquireCore(context);
+                    goto default;
+                default:
+                    continue;
+            }
         }
     }
 
@@ -194,6 +210,34 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
         return AcquireAsync<ValueTask, CancellationTokenOnly>(context, ref builder);
     }
 
+    private T AcquireAsync<T, TBuilder>(TContext context, ref TBuilder builder)
+        where T : struct, IEquatable<T>
+        where TBuilder : struct, ITaskBuilder<T>
+    {
+        T result;
+        if (!builder.IsCompleted)
+        {
+            var acquired = TryAcquireCore(context);
+            if (!acquired && GetAcquisitionException(context) is { } e)
+            {
+                result = TBuilder.FromException(e);
+                goto exit;
+            }
+
+            if (Acquire<T, TBuilder, WaitNode>(ref builder, acquired) is { } node)
+            {
+                node.DrainOnReturn = true;
+                node.Context = context;
+            }
+        }
+
+        result = builder.Invoke();
+
+        exit:
+        builder.Dispose();
+        return result;
+    }
+
     private bool TryAcquireCore(TContext context)
     {
         Debug.Assert(Monitor.IsEntered(SyncRoot));
@@ -205,25 +249,5 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
         }
 
         return false;
-    }
-
-    private T AcquireAsync<T, TBuilder>(TContext context, ref TBuilder builder)
-        where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>
-    {
-        switch (builder.IsCompleted)
-        {
-            case true:
-                goto default;
-            case false when Acquire<T, TBuilder, WaitNode>(ref builder, TryAcquireCore(context)) is { } node:
-                node.DrainOnReturn = true;
-                node.Context = context;
-                goto default;
-            default:
-                builder.Dispose();
-                break;
-        }
-
-        return builder.Invoke();
     }
 }

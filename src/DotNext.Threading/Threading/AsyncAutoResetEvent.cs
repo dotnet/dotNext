@@ -93,7 +93,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
                 }
             }
 
-            suspendedCaller?.Resume();
+            suspendedCaller?.NotifyConsumer();
         }
 
         return result;

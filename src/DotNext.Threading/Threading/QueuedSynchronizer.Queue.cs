@@ -180,6 +180,8 @@ partial class QueuedSynchronizer
 
         public bool SignalCurrent() => SignalCurrent(result: true);
 
+        public void SignalCurrent(Exception e) => SignalCurrent(result: new(e));
+
         public bool SignalCurrent<TLockManager>(ref TLockManager manager)
             where TLockManager : struct, ILockManager
         {

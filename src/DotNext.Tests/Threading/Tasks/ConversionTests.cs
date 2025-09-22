@@ -50,11 +50,11 @@ public sealed class ConversionTests : Test
         await Task.FromException(new Exception()).SuspendException(Predicate.Constant<Exception>(true)).ConfigureAwait(true);
         await ValueTask.FromException(new Exception()).SuspendException(Predicate.Constant<Exception>(true)).ConfigureAwait(true);
 
-        var result = await Task.FromException<int>(new ArithmeticException()).SuspendException().ConfigureAwait(true);
+        var result = await Task.FromException<int>(new ArithmeticException()).CatchException().ConfigureAwait(true);
         False(result.IsSuccessful);
         IsType<ArithmeticException>(result.Error);
 
-        result = await ValueTask.FromException<int>(new ArithmeticException()).SuspendException().ConfigureAwait(true);
+        result = await ValueTask.FromException<int>(new ArithmeticException()).CatchException().ConfigureAwait(true);
         False(result.IsSuccessful);
         IsType<ArithmeticException>(result.Error);
     }
@@ -80,11 +80,11 @@ public sealed class ConversionTests : Test
     [Fact]
     public static async Task ConvertExceptionToError()
     {
-        var result = await Task.FromException<int>(new Exception()).SuspendException(ToError).ConfigureAwait(true);
+        var result = await Task.FromException<int>(new Exception()).CatchException(ToError).ConfigureAwait(true);
         False(result.IsSuccessful);
         Equal(EnvironmentVariableTarget.Machine, result.Error);
         
-        result = await ValueTask.FromException<int>(new Exception()).SuspendException(ToError).ConfigureAwait(true);
+        result = await ValueTask.FromException<int>(new Exception()).CatchException(ToError).ConfigureAwait(true);
         False(result.IsSuccessful);
         Equal(EnvironmentVariableTarget.Machine, result.Error);
 
