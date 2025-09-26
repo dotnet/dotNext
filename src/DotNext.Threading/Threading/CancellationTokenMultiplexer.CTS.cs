@@ -37,7 +37,7 @@ partial class CancellationTokenMultiplexer
         private ref CancellationTokenRegistration FirstInlinedRegistration
             => ref Unsafe.As<InlinedTokenList, CancellationTokenRegistration>(ref inlinedList);
 
-        public int Count => inlinedTokenCount + extraTokens?.Count ?? 0;
+        public int Count => inlinedTokenCount + (extraTokens?.Count ?? 0);
 
         public ref CancellationTokenRegistration this[int index]
         {
