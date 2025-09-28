@@ -79,11 +79,11 @@ partial class CancellationTokenMultiplexer
         /// <inheritdoc/>
         public void Dispose()
         {
-            if (source is not null)
+            if (source?.Count is { } count)
             {
                 Debug.Assert(multiplexerOrToken.Item1 is CancellationTokenMultiplexer);
 
-                for (var i = 0; i < source.Count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     source[i].Dispose();
                 }
@@ -101,7 +101,7 @@ partial class CancellationTokenMultiplexer
 
         private static async ValueTask ReturnAsync(CancellationTokenMultiplexer multiplexer, PooledCancellationTokenSource source)
         {
-            for (var i = 0; i < source.Count; i++)
+            for (int i = 0, count = source.Count; i < count; i++)
             {
                 await source[i].DisposeAsync().ConfigureAwait(false);
             }

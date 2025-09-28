@@ -39,7 +39,7 @@ partial class CancellationTokenMultiplexer
 
         public int Count => inlinedTokenCount + (extraTokens?.Count ?? 0);
 
-        public ref CancellationTokenRegistration this[int index]
+        public ref readonly CancellationTokenRegistration this[int index]
         {
             get
             {
