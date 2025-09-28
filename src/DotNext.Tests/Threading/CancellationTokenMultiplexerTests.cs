@@ -41,6 +41,23 @@ public class CancellationTokenMultiplexerTests : Test
     }
 
     [Fact]
+    public async Task CheckPoolingNonInterference()
+    {
+        var multiplexer = new CancellationTokenMultiplexer();
+
+        using var cts = new CancellationTokenSource();
+
+        await multiplexer.Combine([cts.Token, cts.Token, cts.Token]).DisposeAsync();
+
+        // same source is reused from pool, but should now not be associated with cts.
+        await using var combined = multiplexer.Combine([new(), new(), new()]);
+
+        cts.Cancel();
+
+        False(combined.Token.IsCancellationRequested);
+    }
+
+    [Fact]
     public static void ExtraListOverflow()
     {
         Span<CancellationToken> tokens = new CancellationToken[20];
