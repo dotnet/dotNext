@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
@@ -13,49 +12,46 @@ partial class CancellationTokenMultiplexer
         private static readonly int InlinedListCapacity = GetCapacity<InlinedTokenList>();
         
         private InlinedTokenList inlinedList;
-        private int inlinedTokenCount;
-        private List<CancellationTokenRegistration>? extraTokens;
+        private int count;
+        private CancellationTokenRegistration[]? extraTokens;
         internal PooledCancellationTokenSource? Next;
 
         public void AddRange(ReadOnlySpan<CancellationToken> tokens)
         {
             // register inlined tokens
             var inlinedRegistrations = inlinedList.AsSpan();
-            inlinedTokenCount = Math.Min(inlinedRegistrations.Length, tokens.Length);
+            var inlinedCount = Math.Min(inlinedRegistrations.Length, tokens.Length);
 
-            for (var i = 0; i < inlinedTokenCount; i++)
+            for (var i = 0; i < inlinedCount; i++)
             {
                 inlinedRegistrations[i] = Attach(tokens[i]);
             }
 
             // register extra tokens
-            tokens = tokens.Slice(inlinedTokenCount);
+            tokens = tokens.Slice(inlinedCount);
+            count = inlinedCount + tokens.Length;
             if (tokens.IsEmpty)
                 return;
 
-            if (extraTokens is null)
+            if (extraTokens is null || extraTokens.Length < tokens.Length)
             {
-                extraTokens = new(tokens.Length);
-            }
-            else
-            {
-                extraTokens.EnsureCapacity(tokens.Length);
+                extraTokens = new CancellationTokenRegistration[tokens.Length];
             }
 
-            foreach (var token in tokens)
+            for (var i = 0; i < tokens.Length; i++)
             {
-                extraTokens.Add(Attach(token));
+                extraTokens[i] = Attach(tokens[i]);
             }
         }
 
-        public int Count => inlinedTokenCount + (extraTokens?.Count ?? 0);
+        public int Count => count;
 
         public ref readonly CancellationTokenRegistration this[int index]
         {
             get
             {
-                Debug.Assert((uint)index < (uint)Count);
-                
+                Debug.Assert((uint)index < (uint)count);
+
                 Span<CancellationTokenRegistration> registrations;
                 if (index < InlinedListCapacity)
                 {
@@ -63,7 +59,7 @@ partial class CancellationTokenMultiplexer
                 }
                 else
                 {
-                    registrations = CollectionsMarshal.AsSpan(extraTokens);
+                    registrations = extraTokens;
                     index -= InlinedListCapacity;
                 }
 
@@ -73,9 +69,14 @@ partial class CancellationTokenMultiplexer
 
         public void Reset()
         {
-            inlinedTokenCount = 0;
             inlinedList = default;
-            extraTokens?.Clear();
+
+            if (extraTokens is not null && count > InlinedListCapacity)
+            {
+                Array.Clear(extraTokens, 0, count - InlinedListCapacity);
+            }
+
+            count = 0;
         }
 
         private static int GetCapacity<T>()
