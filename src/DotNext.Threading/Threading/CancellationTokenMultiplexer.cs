@@ -87,11 +87,7 @@ public sealed partial class CancellationTokenMultiplexer
         var source = Rent();
         Debug.Assert(source.Count is 0);
 
-        foreach (var token in tokens)
-        {
-            source.Add(token);
-        }
-
+        source.AddRange(tokens);
         return source;
     }
 }

@@ -17,25 +17,36 @@ partial class CancellationTokenMultiplexer
         private List<CancellationTokenRegistration>? extraTokens;
         internal PooledCancellationTokenSource? Next;
 
-        public void Add(CancellationToken token)
-            => Add(Attach(token));
-
-        private void Add(CancellationTokenRegistration registration)
+        public void AddRange(ReadOnlySpan<CancellationToken> tokens)
         {
-            if (inlinedTokenCount < InlinedListCapacity)
+            // register inlined tokens
+            var inlinedRegistrations = inlinedList.AsSpan();
+            inlinedTokenCount = Math.Min(inlinedRegistrations.Length, tokens.Length);
+
+            for (var i = 0; i < inlinedTokenCount; i++)
             {
-                Unsafe.Add(ref FirstInlinedRegistration, inlinedTokenCount++) = registration;
+                inlinedRegistrations[i] = Attach(tokens[i]);
+            }
+
+            // register extra tokens
+            tokens = tokens.Slice(inlinedTokenCount);
+            if (tokens.IsEmpty)
+                return;
+
+            if (extraTokens is null)
+            {
+                extraTokens = new(tokens.Length);
             }
             else
             {
-                extraTokens ??= new();
-                extraTokens.Add(registration);
+                extraTokens.EnsureCapacity(tokens.Length);
+            }
+
+            foreach (var token in tokens)
+            {
+                extraTokens.Add(Attach(token));
             }
         }
-
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private ref CancellationTokenRegistration FirstInlinedRegistration
-            => ref Unsafe.As<InlinedTokenList, CancellationTokenRegistration>(ref inlinedList);
 
         public int Count => inlinedTokenCount + (extraTokens?.Count ?? 0);
 
