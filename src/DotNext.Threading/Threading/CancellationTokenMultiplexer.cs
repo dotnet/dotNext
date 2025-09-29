@@ -63,6 +63,24 @@ public sealed partial class CancellationTokenMultiplexer
         return scope;
     }
 
+    /// <summary>
+    /// Combines the multiple tokens and the timeout.
+    /// </summary>
+    /// <remarks>
+    /// The cancellation triggered by the timeout can be detected by comparing <see cref="Scope.Token"/> with <see cref="Scope.CancellationOrigin"/>.
+    /// </remarks>
+    /// <param name="timeout">The timeout that could trigger the cancellation.</param>
+    /// <param name="tokens">The tokens to be combined.</param>
+    /// <returns>The scope that represents the multiplexed token.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative or too large.</exception>
+    public Scope Combine(TimeSpan timeout, ReadOnlySpan<CancellationToken> tokens) => timeout.Ticks switch
+    {
+        0L => new(new CancellationToken(canceled: true)),
+        Timeout.InfiniteTicks => Combine(tokens),
+        < 0L or > Timeout.MaxTimeoutParameterTicks => throw new ArgumentOutOfRangeException(nameof(timeout)),
+        _ => new(this, timeout, tokens)
+    };
+
     private void Return(PooledCancellationTokenSource source)
     {
         // try to increment the counter
