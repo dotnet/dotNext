@@ -51990,6 +51990,15 @@ references:
   fullName.vb: DotNext.Threading.CancellationTokenMultiplexer.Combine(System.ReadOnlySpan(Of System.Threading.CancellationToken))
   nameWithType: CancellationTokenMultiplexer.Combine(ReadOnlySpan<CancellationToken>)
   nameWithType.vb: CancellationTokenMultiplexer.Combine(ReadOnlySpan(Of CancellationToken))
+- uid: DotNext.Threading.CancellationTokenMultiplexer.Combine(System.TimeSpan,System.ReadOnlySpan{System.Threading.CancellationToken})
+  name: Combine(TimeSpan, ReadOnlySpan<CancellationToken>)
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.html#DotNext_Threading_CancellationTokenMultiplexer_Combine_System_TimeSpan_System_ReadOnlySpan_System_Threading_CancellationToken__
+  commentId: M:DotNext.Threading.CancellationTokenMultiplexer.Combine(System.TimeSpan,System.ReadOnlySpan{System.Threading.CancellationToken})
+  name.vb: Combine(TimeSpan, ReadOnlySpan(Of CancellationToken))
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.Combine(System.TimeSpan, System.ReadOnlySpan<System.Threading.CancellationToken>)
+  fullName.vb: DotNext.Threading.CancellationTokenMultiplexer.Combine(System.TimeSpan, System.ReadOnlySpan(Of System.Threading.CancellationToken))
+  nameWithType: CancellationTokenMultiplexer.Combine(TimeSpan, ReadOnlySpan<CancellationToken>)
+  nameWithType.vb: CancellationTokenMultiplexer.Combine(TimeSpan, ReadOnlySpan(Of CancellationToken))
 - uid: DotNext.Threading.CancellationTokenMultiplexer.Combine*
   name: Combine
   href: api/DotNext.Threading.CancellationTokenMultiplexer.html#DotNext_Threading_CancellationTokenMultiplexer_Combine_
