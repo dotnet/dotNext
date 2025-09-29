@@ -1,6 +1,16 @@
 Release Notes
 ====
 
+# 09-29-2025
+<a href="https://www.nuget.org/packages/dotnext.threading/5.25.2">DotNext.Threading 5.25.2</a>
+* Fixed [272](https://github.com/dotnet/dotNext/pull/272)
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.25.2">DotNext.Net.Cluster 5.25.2</a>
+* Forced upgrade to newer `DotNext.Threading` library
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.25.2">DotNext.AspNetCore.Cluster 5.25.2</a>
+* Forced upgrade to newer `DotNext.Threading` library
+
 # 09-15-2025
 <a href="https://www.nuget.org/packages/dotnext/5.25.0">DotNext 5.25.0</a>
 * Added `CatchException` extension method to capture the exception produced by `await` operator instead of raising it at the call site

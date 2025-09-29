@@ -44,36 +44,16 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 09-15-2025
+Release Date: 09-29-2025
 
-<a href="https://www.nuget.org/packages/dotnext/5.25.0">DotNext 5.25.0</a>
-* Added `CatchException` extension method to capture the exception produced by `await` operator instead of raising it at the call site
-* Various performance improvements
+<a href="https://www.nuget.org/packages/dotnext.threading/5.25.2">DotNext.Threading 5.25.2</a>
+* Fixed [272](https://github.com/dotnet/dotNext/pull/272)
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.25.0">DotNext.Metaprogramming 5.25.0</a>
-* Fixed mutability modifiers for properties of `UnmanagedMemory<T>` type
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.25.2">DotNext.Net.Cluster 5.25.2</a>
+* Forced upgrade to newer `DotNext.Threading` library
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/5.25.0">DotNext.Unsafe 5.25.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.threading/5.25.0">DotNext.Threading 5.25.0</a>
-* Added optional hard concurrency limit for async lock primitives
-* Rewritten the internal engine for async lock primitives to decrease the lock contention and increase the response time
-* Async lock primitive no longer produce lock contention time to improve the response time
-
-<a href="https://www.nuget.org/packages/dotnext.io/5.25.0">DotNext.IO 5.25.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.25.0">DotNext.Net.Cluster 5.25.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.25.0">DotNext.AspNetCore.Cluster 5.25.0</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/0.6.0">DotNext.MaintenanceServices 0.6.0</a>
-* Upgrade to newer `System.CommandLine` library
-* Interactive session now prints `>` in the prompt
-* Fixed buffer leak caused by interactive session
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.25.2">DotNext.AspNetCore.Cluster 5.25.2</a>
+* Forced upgrade to newer `DotNext.Threading` library
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
