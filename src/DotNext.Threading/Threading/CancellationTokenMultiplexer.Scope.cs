@@ -26,6 +26,13 @@ partial class CancellationTokenMultiplexer
             source = multiplexer.Rent(tokens);
         }
 
+        internal Scope(CancellationTokenMultiplexer multiplexer, TimeSpan timeout, ReadOnlySpan<CancellationToken> tokens)
+        {
+            multiplexerOrToken = new(multiplexer);
+            source = multiplexer.Rent(tokens);
+            source.CancelAfter(timeout);
+        }
+
         internal Scope(CancellationToken token)
             => multiplexerOrToken = InlineToken(token);
 
@@ -86,13 +93,13 @@ partial class CancellationTokenMultiplexer
         private static void Return(CancellationTokenMultiplexer multiplexer, PooledCancellationTokenSource source)
         {
             source.Reset();
-            if (source.IsCancellationRequested)
+            if (source.TryReset())
             {
-                source.Dispose();
+                multiplexer.Return(source);
             }
             else
             {
-                multiplexer.Return(source);
+                source.Dispose();
             }
         }
     }

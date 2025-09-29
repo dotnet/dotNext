@@ -71,4 +71,17 @@ public class CancellationTokenMultiplexerTests : Test
         using var scope = multiplexer.Combine(tokens);
         True(scope.Token.IsCancellationRequested);
     }
+
+    [Fact]
+    public static async Task TimeOut()
+    {
+        using var cts = new CancellationTokenSource();
+        var multiplexer = new CancellationTokenMultiplexer();
+
+        await using var scope = multiplexer.Combine(TimeSpan.FromMilliseconds(1), [cts.Token]);
+        await scope.Token.WaitAsync();
+
+        Equal(scope.Token, scope.CancellationOrigin);
+        NotEqual(scope.Token, cts.Token);
+    }
 }
