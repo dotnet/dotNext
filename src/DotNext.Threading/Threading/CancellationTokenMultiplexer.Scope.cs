@@ -22,38 +22,19 @@ partial class CancellationTokenMultiplexer
 
         internal Scope(CancellationTokenMultiplexer multiplexer, ReadOnlySpan<CancellationToken> tokens)
         {
-            switch (tokens)
-            {
-                case []:
-                    source = null;
-                    multiplexerOrToken = InlineToken(new(canceled: false));
-                    break;
-                case [var token]:
-                    source = null;
-                    multiplexerOrToken = InlineToken(token);
-                    break;
-                case [var token1, var token2]:
-                    source = null;
-                    if (!token1.CanBeCanceled || token1 == token2)
-                    {
-                        multiplexerOrToken = InlineToken(token2);
-                    }
-                    else if (!token2.CanBeCanceled)
-                    {
-                        multiplexerOrToken = InlineToken(token1);
-                    }
-                    else
-                    {
-                        goto default;
-                    }
-
-                    break;
-                default:
-                    multiplexerOrToken = new(multiplexer);
-                    source = multiplexer.Rent(tokens);
-                    break;
-            }
+            multiplexerOrToken = new(multiplexer);
+            source = multiplexer.Rent(tokens);
         }
+
+        internal Scope(CancellationTokenMultiplexer multiplexer, TimeSpan timeout, ReadOnlySpan<CancellationToken> tokens)
+        {
+            multiplexerOrToken = new(multiplexer);
+            source = multiplexer.Rent(tokens);
+            source.CancelAfter(timeout);
+        }
+
+        internal Scope(CancellationToken token)
+            => multiplexerOrToken = InlineToken(token);
 
         private static ValueTuple<object> InlineToken(CancellationToken token)
             => CanInlineToken ? Unsafe.BitCast<CancellationToken, ValueTuple<object>>(token) : new(token);
@@ -112,13 +93,13 @@ partial class CancellationTokenMultiplexer
         private static void Return(CancellationTokenMultiplexer multiplexer, PooledCancellationTokenSource source)
         {
             source.Reset();
-            if (source.IsCancellationRequested)
+            if (source.TryReset())
             {
-                source.Dispose();
+                multiplexer.Return(source);
             }
             else
             {
-                multiplexer.Return(source);
+                source.Dispose();
             }
         }
     }
