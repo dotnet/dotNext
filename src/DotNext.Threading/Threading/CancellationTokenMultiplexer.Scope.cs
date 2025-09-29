@@ -22,38 +22,12 @@ partial class CancellationTokenMultiplexer
 
         internal Scope(CancellationTokenMultiplexer multiplexer, ReadOnlySpan<CancellationToken> tokens)
         {
-            switch (tokens)
-            {
-                case []:
-                    source = null;
-                    multiplexerOrToken = InlineToken(new(canceled: false));
-                    break;
-                case [var token]:
-                    source = null;
-                    multiplexerOrToken = InlineToken(token);
-                    break;
-                case [var token1, var token2]:
-                    source = null;
-                    if (!token1.CanBeCanceled || token1 == token2)
-                    {
-                        multiplexerOrToken = InlineToken(token2);
-                    }
-                    else if (!token2.CanBeCanceled)
-                    {
-                        multiplexerOrToken = InlineToken(token1);
-                    }
-                    else
-                    {
-                        goto default;
-                    }
-
-                    break;
-                default:
-                    multiplexerOrToken = new(multiplexer);
-                    source = multiplexer.Rent(tokens);
-                    break;
-            }
+            multiplexerOrToken = new(multiplexer);
+            source = multiplexer.Rent(tokens);
         }
+
+        internal Scope(CancellationToken token)
+            => multiplexerOrToken = InlineToken(token);
 
         private static ValueTuple<object> InlineToken(CancellationToken token)
             => CanInlineToken ? Unsafe.BitCast<CancellationToken, ValueTuple<object>>(token) : new(token);
@@ -79,11 +53,11 @@ partial class CancellationTokenMultiplexer
         /// <inheritdoc/>
         public void Dispose()
         {
-            if (source?.Count is { } count)
+            if (source is not null)
             {
                 Debug.Assert(multiplexerOrToken.Item1 is CancellationTokenMultiplexer);
 
-                for (var i = 0; i < count; i++)
+                for (var i = 0; i < source.Count; i++)
                 {
                     source[i].Dispose();
                 }
@@ -101,7 +75,7 @@ partial class CancellationTokenMultiplexer
 
         private static async ValueTask ReturnAsync(CancellationTokenMultiplexer multiplexer, PooledCancellationTokenSource source)
         {
-            for (int i = 0, count = source.Count; i < count; i++)
+            for (var i = 0; i < source.Count; i++)
             {
                 await source[i].DisposeAsync().ConfigureAwait(false);
             }

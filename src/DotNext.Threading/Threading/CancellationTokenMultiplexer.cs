@@ -30,7 +30,38 @@ public sealed partial class CancellationTokenMultiplexer
     /// <param name="tokens">The tokens to be combined.</param>
     /// <returns>The scope that contains a single multiplexed token.</returns>
     public Scope Combine(ReadOnlySpan<CancellationToken> tokens) // TODO: use params
-        => new(this, tokens);
+    {
+        Scope scope;
+        switch (tokens)
+        {
+            case []:
+                scope = new();
+                break;
+            case [var token]:
+                scope = new(token);
+                break;
+            case [var token1, var token2]:
+                if (!token1.CanBeCanceled || token1 == token2)
+                {
+                    scope = new(token2);
+                }
+                else if (!token2.CanBeCanceled)
+                {
+                    scope = new(token1);
+                }
+                else
+                {
+                    goto default;
+                }
+
+                break;
+            default:
+                scope = new(this, tokens);
+                break;
+        }
+
+        return scope;
+    }
 
     private void Return(PooledCancellationTokenSource source)
     {
@@ -88,6 +119,8 @@ public sealed partial class CancellationTokenMultiplexer
         Debug.Assert(source.Count is 0);
 
         source.AddRange(tokens);
+        Debug.Assert(source.Count == tokens.Length);
+        
         return source;
     }
 }
