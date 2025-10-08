@@ -1,11 +1,9 @@
-using System.Runtime.CompilerServices;
-
 namespace DotNext.IO;
 
 /// <summary>
 /// Represents a stream over the storage that supports random access.
 /// </summary>
-public abstract partial class RandomAccessStream : Stream, IFlushable
+public abstract partial class RandomAccessStream : ModernStream
 {
     private long position;
     
@@ -40,36 +38,15 @@ public abstract partial class RandomAccessStream : Stream, IFlushable
     protected abstract ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, long offset, CancellationToken token);
 
     /// <inheritdoc/>
-    public sealed override void Write(byte[] buffer, int offset, int count)
-    {
-        ValidateBufferArguments(buffer, offset, count);
-        
-        Write(new ReadOnlySpan<byte>(buffer, offset, count));
-    }
-
-    /// <inheritdoc/>
     public sealed override void Write(ReadOnlySpan<byte> buffer)
     {
         Write(buffer, position);
         Advance(buffer.Length);
     }
-
-    /// <inheritdoc/>
-    public sealed override void WriteByte(byte value)
-        => Write(new ReadOnlySpan<byte>(in value));
     
     /// <inheritdoc/>
     public sealed override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token = default)
         => SubmitWrite(WriteAsync(buffer, position, token), buffer.Length);
-
-    /// <inheritdoc/>
-    public sealed override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token)
-    {
-        ValidateBufferArguments(buffer, offset, count);
-
-        await WriteAsync(buffer, position, token).ConfigureAwait(false);
-        Advance(count);
-    }
 
     /// <summary>
     /// Reads bytes to the specified buffer.
@@ -89,42 +66,16 @@ public abstract partial class RandomAccessStream : Stream, IFlushable
     protected abstract ValueTask<int> ReadAsync(Memory<byte> buffer, long offset, CancellationToken token);
 
     /// <inheritdoc/>
-    public sealed override int Read(byte[] buffer, int offset, int count)
-    {
-        ValidateBufferArguments(buffer, offset, count);
-
-        return Read(buffer.AsSpan(offset, count));
-    }
-
-    /// <inheritdoc/>
     public sealed override int Read(Span<byte> buffer)
     {
         var bytesRead = Read(buffer, position);
         Advance(bytesRead);
         return bytesRead;
     }
-    
-    /// <inheritdoc/>
-    public sealed override int ReadByte()
-    {
-        Unsafe.SkipInit(out byte result);
-
-        return Read(new Span<byte>(ref result)) is not 0 ? result : -1;
-    }
 
     /// <inheritdoc/>
     public sealed override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
         => SubmitRead(ReadAsync(buffer, position, token));
-    
-    /// <inheritdoc/>
-    public sealed override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
-    {
-        ValidateBufferArguments(buffer, offset, count);
-
-        var bytesRead = await ReadAsync(buffer, position, token).ConfigureAwait(false);
-        Advance(bytesRead);
-        return bytesRead;
-    }
     
     /// <inheritdoc/>
     public override long Seek(long offset, SeekOrigin origin)

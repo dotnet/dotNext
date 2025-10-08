@@ -1,6 +1,6 @@
 namespace DotNext.IO;
 
-internal abstract class WriterStream<TOutput> : Stream, IFlushable
+internal abstract class WriterStream<TOutput> : ModernStream, IFlushable
     where TOutput : IFlushable
 {
     // not readonly to avoid defensive copying
@@ -29,27 +29,6 @@ internal abstract class WriterStream<TOutput> : Stream, IFlushable
 
     public sealed override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
 
-    public abstract override void Write(ReadOnlySpan<byte> buffer);
-
-    public sealed override void Write(byte[] buffer, int offset, int count)
-    {
-        ValidateBufferArguments(buffer, offset, count);
-
-        Write(new ReadOnlySpan<byte>(buffer, offset, count));
-    }
-
-    public sealed override void WriteByte(byte value) => Write(new(ref value));
-
-    public abstract override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token);
-
-    public sealed override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token)
-        => WriteAsync(buffer.AsMemory(offset, count), token).AsTask();
-
-    public sealed override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-        => TaskToAsyncResult.Begin(WriteAsync(buffer, offset, count), callback, state);
-
-    public override void EndWrite(IAsyncResult ar) => TaskToAsyncResult.End(ar);
-
     public sealed override void CopyTo(Stream destination, int bufferSize) => throw new NotSupportedException();
 
     public sealed override Task CopyToAsync(Stream destination, int bufferSize, CancellationToken token)
@@ -59,19 +38,7 @@ internal abstract class WriterStream<TOutput> : Stream, IFlushable
 
     public sealed override Task FlushAsync(CancellationToken token) => output.FlushAsync(token);
 
-    public sealed override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-        => throw new NotSupportedException();
-
-    public sealed override int EndRead(IAsyncResult ar) => throw new InvalidOperationException();
-
     public sealed override int Read(Span<byte> buffer) => throw new NotSupportedException();
-
-    public sealed override int ReadByte() => throw new NotSupportedException();
-
-    public sealed override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
-
-    public sealed override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
-        => token.IsCancellationRequested ? Task.FromCanceled<int>(token) : Task.FromException<int>(new NotSupportedException());
 
     public sealed override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
         => token.IsCancellationRequested ? ValueTask.FromCanceled<int>(token) : ValueTask.FromException<int>(new NotSupportedException());

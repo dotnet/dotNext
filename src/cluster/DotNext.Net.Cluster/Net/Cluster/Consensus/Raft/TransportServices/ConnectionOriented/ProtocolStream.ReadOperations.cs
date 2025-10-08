@@ -5,9 +5,6 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
-using Buffers;
-using IO;
-
 internal partial class ProtocolStream
 {
     private enum ReadState
@@ -186,12 +183,6 @@ internal partial class ProtocolStream
         }
     }
 
-    public sealed override int Read(byte[] buffer, int offset, int count)
-    {
-        ValidateBufferArguments(buffer, offset, count);
-        return Read(buffer.AsSpan(offset, count));
-    }
-
     private ValueTask StartFrameReadAsync(CancellationToken token)
     {
         BeginReadFrameHeader();
@@ -237,9 +228,6 @@ internal partial class ProtocolStream
             }
         }
     }
-
-    public sealed override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
-        => ReadAsync(buffer.AsMemory(offset, count), token).AsTask();
 
     internal async ValueTask SkipAsync(CancellationToken token)
     {

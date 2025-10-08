@@ -12,7 +12,7 @@ using Buffers;
 /// <remarks>
 /// The stream is available for read-only operations.
 /// </remarks>
-internal abstract class SparseStream(bool leaveOpen) : Stream, IFlushable
+internal abstract class SparseStream(bool leaveOpen) : ModernStream
 {
     private int runningIndex;
     
@@ -26,22 +26,6 @@ internal abstract class SparseStream(bool leaveOpen) : Stream, IFlushable
 
             return (uint)runningIndex < (uint)streams.Length ? streams[runningIndex] : null;
         }
-    }
-
-    /// <inheritdoc />
-    public sealed override int ReadByte()
-    {
-        var result = -1;
-
-        for (; Current is { } current; runningIndex++)
-        {
-            result = current.ReadByte();
-
-            if (result >= 0)
-                break;
-        }
-
-        return result;
     }
 
     /// <inheritdoc />
@@ -60,14 +44,6 @@ internal abstract class SparseStream(bool leaveOpen) : Stream, IFlushable
     }
 
     /// <inheritdoc />
-    public sealed override int Read(byte[] buffer, int offset, int count)
-    {
-        ValidateBufferArguments(buffer, offset, count);
-
-        return Read(buffer.AsSpan(offset, count));
-    }
-
-    /// <inheritdoc />
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public sealed override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
     {
@@ -82,16 +58,6 @@ internal abstract class SparseStream(bool leaveOpen) : Stream, IFlushable
 
         return count;
     }
-
-    /// <inheritdoc />
-    public sealed override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
-        => ReadAsync(buffer.AsMemory(offset, count), token).AsTask();
-
-    public sealed override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-        => TaskToAsyncResult.Begin(ReadAsync(buffer, offset, count), callback, state);
-
-    public sealed override int EndRead(IAsyncResult asyncResult)
-        => TaskToAsyncResult.End<int>(asyncResult);
 
     /// <inheritdoc />
     public sealed override void CopyTo(Stream destination, int bufferSize)
@@ -157,27 +123,11 @@ internal abstract class SparseStream(bool leaveOpen) : Stream, IFlushable
     public sealed override void SetLength(long value) => throw new NotSupportedException();
 
     /// <inheritdoc/>
-    public sealed override void WriteByte(byte value) => throw new NotSupportedException();
-
-    /// <inheritdoc/>
-    public sealed override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
-
-    /// <inheritdoc/>
     public sealed override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
-
-    /// <inheritdoc/>
-    public sealed override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token) => Task.FromException(new NotSupportedException());
 
     /// <inheritdoc/>
     public sealed override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
         => ValueTask.FromException(new NotSupportedException());
-
-    /// <inheritdoc/>
-    public sealed override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-        => throw new NotSupportedException();
-
-    /// <inheritdoc/>
-    public sealed override void EndWrite(IAsyncResult asyncResult) => throw new InvalidOperationException();
 
     protected override void Dispose(bool disposing)
     {
