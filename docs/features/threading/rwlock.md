@@ -43,12 +43,14 @@ finally
 }
 
 //or with 'using statement'
-using (await rwlock.AcquireReadLockAsync(CancellationToken.None))
+using static DotNext.Threading.AsyncLockAcquisition;
+
+using (await AcquireReadLockAsync(rwlock, CancellationToken.None))
 {
     //reader stuff here
 }
 
-using (await rwlock.AcquireWriteLockAsync(TimeSpan.FromSecond(2)))
+using (await AcquireWriteLockAsync(rwlock, TimeSpan.FromSecond(2)))
 {
     //writer stuff here
 }

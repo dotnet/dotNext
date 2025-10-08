@@ -85,7 +85,9 @@ finally
 }
 
 //or with 'using' statement:
-using(await @lock.AcquireLockAsync(CancellationToken.None))
+using static DotNext.Threading.AsyncLockAcquisition;
+
+using(await AcquireLockAsync(@lock, CancellationToken.None))
 {
     //synchronized access to the resource
 }
