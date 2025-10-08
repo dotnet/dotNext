@@ -73,11 +73,11 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
 
     private long RemainingBytes => length - Position;
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="Stream.Flush()"/>
     public override void Flush() => stream.Flush();
 
-    /// <inheritdoc/>
-    public override Task FlushAsync(CancellationToken token = default) => stream.FlushAsync(token);
+    /// <inheritdoc cref="Stream.FlushAsync(CancellationToken)"/>
+    public override Task FlushAsync(CancellationToken token) => stream.FlushAsync(token);
 
     /// <inheritdoc/>
     public override bool CanTimeout => stream.CanTimeout;
@@ -112,7 +112,7 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
     public override int EndRead(IAsyncResult asyncResult) => stream.EndRead(asyncResult);
 
     /// <inheritdoc/>
-    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
+    public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
         => stream.ReadAsync(buffer, offset, (int)Math.Min(count, RemainingBytes), token);
 
     /// <inheritdoc/>
@@ -154,7 +154,8 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
     public override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
 
     /// <inheritdoc/>
-    public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token = default) => Task.FromException(new NotSupportedException());
+    public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token)
+        => Task.FromException(new NotSupportedException());
 
     /// <inheritdoc/>
     public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
