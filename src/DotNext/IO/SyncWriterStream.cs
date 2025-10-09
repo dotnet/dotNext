@@ -13,7 +13,7 @@ internal sealed class SyncWriterStream<TOutput>(TOutput output) : WriterStream<T
         writtenBytes += buffer.Length;
     }
 
-    public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
+    public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token = default)
     {
         await output.Invoke(buffer, token).ConfigureAwait(false);
         writtenBytes += buffer.Length;
