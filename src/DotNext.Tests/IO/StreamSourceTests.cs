@@ -537,7 +537,7 @@ public sealed class StreamSourceTests : Test
 
         var writer = new ArrayBufferWriter<byte>();
         ReadOnlySpanAction<byte, ArrayBufferWriter<byte>> callback = WriteToBuffer;
-        using var stream = callback.AsStream(writer);
+        await using var stream = callback.AsStream(writer);
         byte[] content = { 1, 2, 3 };
         await stream.WriteAsync(content);
         await stream.FlushAsync();
