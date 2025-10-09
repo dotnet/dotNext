@@ -1,6 +1,6 @@
 namespace DotNext.IO;
 
-internal abstract class WriterStream<TOutput> : ModernStream, IFlushable
+internal abstract class WriterStream<TOutput> : ModernStream
     where TOutput : IFlushable
 {
     // not readonly to avoid defensive copying
