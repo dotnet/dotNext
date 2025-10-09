@@ -1,13 +1,11 @@
 namespace DotNext.IO;
 
-internal abstract partial class WriterStream<TOutput> : ModernStream
+internal abstract partial class WriterStream<TOutput>(TOutput output) : ModernStream
     where TOutput : IFlushable
 {
     // not readonly to avoid defensive copying
-    private protected TOutput output;
+    private protected TOutput output = output;
     private protected long writtenBytes;
-
-    private protected WriterStream(TOutput output) => this.output = output;
 
     public sealed override bool CanRead => false;
 
