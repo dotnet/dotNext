@@ -17,11 +17,8 @@ internal sealed class AsyncWriterStream<TOutput>(TOutput output) : WriterStream<
 
     public override bool CanTimeout => true;
 
-    public override async ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
-    {
-        await output.Invoke(buffer, token).ConfigureAwait(false);
-        writtenBytes += buffer.Length;
-    }
+    public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token = default)
+        => SubmitWrite(buffer.Length, output.Invoke(buffer, token));
 
     public override void Write(ReadOnlySpan<byte> buffer)
     {
