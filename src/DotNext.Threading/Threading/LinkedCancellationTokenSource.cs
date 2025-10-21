@@ -99,4 +99,50 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource, I
     // is safe. If not, just box the token.
     internal static bool CanInlineToken => Intrinsics.AreCompatible<CancellationToken, ValueTuple<object>>()
                                            && RuntimeHelpers.IsReferenceOrContainsReferences<CancellationToken>();
+
+    internal static LinkedCancellationTokenSource? Combine(ref CancellationToken first, CancellationToken second)
+    {
+        var result = default(LinkedCancellationTokenSource);
+
+        if (first == second)
+        {
+            // nothing to do, just return from this method
+        }
+        else if (!first.CanBeCanceled || second.IsCancellationRequested)
+        {
+            first = second;
+        }
+        else if (second.CanBeCanceled && !first.IsCancellationRequested)
+        {
+            result = new Linked2CancellationTokenSource(in first, in second);
+            first = result.Token;
+        }
+
+        return result;
+    }
+}
+
+file sealed class Linked2CancellationTokenSource : LinkedCancellationTokenSource
+{
+    private readonly CancellationTokenRegistration registration1, registration2;
+
+    internal Linked2CancellationTokenSource(in CancellationToken token1, in CancellationToken token2)
+    {
+        Debug.Assert(token1.CanBeCanceled);
+        Debug.Assert(token2.CanBeCanceled);
+
+        registration1 = Attach(token1);
+        registration2 = Attach(token2);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            registration1.Unregister();
+            registration2.Unregister();
+        }
+
+        base.Dispose(disposing);
+    }
 }
