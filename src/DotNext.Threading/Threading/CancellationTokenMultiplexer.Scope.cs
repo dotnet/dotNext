@@ -4,8 +4,6 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using Runtime;
-
 partial class CancellationTokenMultiplexer
 {
     /// <summary>
@@ -30,6 +28,7 @@ partial class CancellationTokenMultiplexer
         {
             multiplexerOrToken = new(multiplexer);
             source = multiplexer.Rent(tokens);
+            source.AttachTimeoutHandler();
             source.CancelAfter(timeout);
         }
 
@@ -37,15 +36,14 @@ partial class CancellationTokenMultiplexer
             => multiplexerOrToken = InlineToken(token);
 
         private static ValueTuple<object> InlineToken(CancellationToken token)
-            => CanInlineToken ? Unsafe.BitCast<CancellationToken, ValueTuple<object>>(token) : new(token);
+            => LinkedCancellationTokenSource.CanInlineToken
+                ? Unsafe.BitCast<CancellationToken, ValueTuple<object>>(token)
+                : new(token);
 
         private static CancellationToken GetToken(ValueTuple<object> value)
-            => CanInlineToken ? Unsafe.BitCast<ValueTuple<object>, CancellationToken>(value) : (CancellationToken)value.Item1;
-
-        // This property checks whether the reinterpret cast CancellationToken => CancellationTokenSource
-        // is safe. If not, just box the token.
-        private static bool CanInlineToken => Intrinsics.AreCompatible<CancellationToken, ValueTuple<object>>()
-                                              && RuntimeHelpers.IsReferenceOrContainsReferences<CancellationToken>();
+            => LinkedCancellationTokenSource.CanInlineToken
+                ? Unsafe.BitCast<ValueTuple<object>, CancellationToken>(value)
+                : (CancellationToken)value.Item1;
 
         /// <summary>
         /// Gets the cancellation token that can be canceled by any of the multiplexed tokens.
@@ -56,6 +54,11 @@ partial class CancellationTokenMultiplexer
         /// Gets the cancellation origin if <see cref="Token"/> is in canceled state.
         /// </summary>
         public CancellationToken CancellationOrigin => source?.CancellationOrigin ?? GetToken(multiplexerOrToken);
+
+        /// <summary>
+        /// Gets a value indicating that the 
+        /// </summary>
+        public bool IsTimedOut => source?.IsRootCause ?? false;
 
         /// <inheritdoc/>
         public void Dispose()

@@ -67,7 +67,7 @@ public sealed partial class CancellationTokenMultiplexer
     /// Combines the multiple tokens and the timeout.
     /// </summary>
     /// <remarks>
-    /// The cancellation triggered by the timeout can be detected by comparing <see cref="Scope.Token"/> with <see cref="Scope.CancellationOrigin"/>.
+    /// The cancellation triggered by the timeout can be detected by checking <see cref="Scope.IsTimedOut"/>.
     /// </remarks>
     /// <param name="timeout">The timeout that could trigger the cancellation.</param>
     /// <param name="tokens">The tokens to be combined.</param>

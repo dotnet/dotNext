@@ -82,6 +82,7 @@ public class CancellationTokenMultiplexerTests : Test
         await scope.Token.WaitAsync();
 
         Equal(scope.Token, scope.CancellationOrigin);
+        True(scope.IsTimedOut);
         NotEqual(scope.Token, cts.Token);
     }
 }
