@@ -85,4 +85,54 @@ public class CancellationTokenMultiplexerTests : Test
         True(scope.IsTimedOut);
         NotEqual(scope.Token, cts.Token);
     }
+
+    [Fact]
+    public static async Task LazyTimeout()
+    {
+        var multiplexer = new CancellationTokenMultiplexer();
+
+        await using var scope = multiplexer.CombineAndSetTimeoutLater([]);
+        False(scope.Token.IsCancellationRequested);
+
+        scope.Timeout = TimeSpan.FromMilliseconds(1);
+        await scope.Token.WaitAsync();
+        
+        Equal(scope.Token, scope.CancellationOrigin);
+        True(scope.IsTimedOut);
+    }
+
+    [Fact]
+    public static void DefaultScope()
+    {
+        using var scope = default(CancellationTokenMultiplexer.Scope);
+        CheckDefaultScope(scope);
+    }
+    
+    [Fact]
+    public static async Task DefaultScopeAsync()
+    {
+        await using var scope = default(CancellationTokenMultiplexer.Scope);
+        False(scope.IsTimedOut);
+    }
+
+    [Fact]
+    public static void DefaultScopeWithTimeout()
+    {
+        using var scope = default(CancellationTokenMultiplexer.ScopeWithTimeout);
+        CheckDefaultScope(scope);
+    }
+    
+    [Fact]
+    public static async Task DefaultScopeWithTimeoutAsync()
+    {
+        await using var scope = default(CancellationTokenMultiplexer.ScopeWithTimeout);
+        False(scope.IsTimedOut);
+    }
+
+    private static void CheckDefaultScope<TScope>(TScope scope)
+        where TScope : struct, IMultiplexedCancellationTokenSource
+    {
+        False(scope.Token.IsCancellationRequested);
+        Equal(scope.Token, scope.CancellationOrigin);
+    }
 }

@@ -1,16 +1,24 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using static Timeout;
+
 partial class CancellationTokenMultiplexer
 {
+    private interface IMultiplexedTokenScope : IMultiplexedCancellationTokenSource, IDisposable, IAsyncDisposable
+    {
+        bool IsTimedOut { get; }
+    }
+    
     /// <summary>
     /// Represents a scope that controls the lifetime of the multiplexed cancellation token.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct Scope : IMultiplexedCancellationTokenSource, IDisposable, IAsyncDisposable
+    public readonly struct Scope : IMultiplexedTokenScope
     {
         // CancellationToken is just a wrapper over CancellationTokenSource.
         // For optimization purposes, if only one token is passed to the scope, we can inline the underlying CTS
@@ -28,7 +36,7 @@ partial class CancellationTokenMultiplexer
         {
             multiplexerOrToken = new(multiplexer);
             source = multiplexer.Rent(tokens);
-            source.AttachTimeoutHandler();
+            source.RegisterTimeoutHandler();
             source.CancelAfter(timeout);
         }
 
@@ -45,20 +53,25 @@ partial class CancellationTokenMultiplexer
                 ? Unsafe.BitCast<ValueTuple<object>, CancellationToken>(value)
                 : (CancellationToken)value.Item1;
 
-        /// <summary>
-        /// Gets the cancellation token that can be canceled by any of the multiplexed tokens.
-        /// </summary>
+        /// <inheritdoc cref="IMultiplexedCancellationTokenSource.Token"/>
         public CancellationToken Token => source?.Token ?? GetToken(multiplexerOrToken);
 
-        /// <summary>
-        /// Gets the cancellation origin if <see cref="Token"/> is in canceled state.
-        /// </summary>
+        /// <inheritdoc cref="IMultiplexedCancellationTokenSource.CancellationOrigin"/>
         public CancellationToken CancellationOrigin => source?.CancellationOrigin ?? GetToken(multiplexerOrToken);
 
         /// <summary>
-        /// Gets a value indicating that the 
+        /// Gets a value indicating that the multiplexed token is cancelled by the timeout.
         /// </summary>
         public bool IsTimedOut => source?.IsRootCause ?? false;
+
+        internal void SetTimeout(TimeSpan value)
+        {
+            if (source is not null)
+            {
+                source.RegisterTimeoutHandler();
+                source.CancelAfter(value);
+            }
+        }
 
         /// <inheritdoc/>
         public void Dispose()
@@ -105,5 +118,47 @@ partial class CancellationTokenMultiplexer
                 source.Dispose();
             }
         }
+    }
+    
+    /// <summary>
+    /// Represents a scope that controls the lifetime of the multiplexed cancellation token and allows to specify the timeout.
+    /// </summary>
+    [StructLayout(LayoutKind.Auto)]
+    public readonly struct ScopeWithTimeout : IMultiplexedTokenScope
+    {
+        private readonly Scope scope;
+
+        internal ScopeWithTimeout(CancellationTokenMultiplexer multiplexer, ReadOnlySpan<CancellationToken> tokens)
+            => scope = new(multiplexer, tokens);
+
+        /// <summary>
+        /// Sets the optional timeout.
+        /// </summary>
+        /// <seealso cref="CancellationTokenMultiplexer.CombineAndSetTimeoutLater"/>
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
+        public TimeSpan Timeout
+        {
+            set
+            {
+                Validate(value);
+
+                scope.SetTimeout(value);
+            }
+        }
+
+        /// <inheritdoc cref="IMultiplexedCancellationTokenSource.Token"/>
+        public CancellationToken Token => scope.Token;
+
+        /// <inheritdoc cref="IMultiplexedCancellationTokenSource.CancellationOrigin"/>
+        public CancellationToken CancellationOrigin => scope.CancellationOrigin;
+
+        /// <inheritdoc cref="Scope.IsTimedOut"/>
+        public bool IsTimedOut => scope.IsTimedOut;
+
+        /// <inheritdoc/>
+        public void Dispose() => scope.Dispose();
+
+        /// <inheritdoc/>
+        public ValueTask DisposeAsync() => scope.DisposeAsync();
     }
 }

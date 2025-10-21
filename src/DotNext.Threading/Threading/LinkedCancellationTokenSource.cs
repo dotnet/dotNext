@@ -20,7 +20,9 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource, I
     // represents inlined CancellationToken
     private ValueTuple<object?> cancellationOrigin;
 
-    private protected LinkedCancellationTokenSource() => CancellationOrigin = Token;
+    private protected LinkedCancellationTokenSource()
+    {
+    }
     
     private protected CancellationTokenRegistration Attach(CancellationToken token)
     {
@@ -38,7 +40,7 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource, I
         ? Unsafe.BitCast<CancellationToken, ValueTuple<object?>>(token)
         : new(token);
     
-    internal void AttachTimeoutHandler()
+    internal void RegisterTimeoutHandler()
     {
         Token.UnsafeRegister(OnTimeout, this);
 

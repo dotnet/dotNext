@@ -81,6 +81,14 @@ public sealed partial class CancellationTokenMultiplexer
         _ => new(this, timeout, tokens)
     };
 
+    /// <summary>
+    /// Combines the multiple tokens and sets the timeout later.
+    /// </summary>
+    /// <param name="tokens">The tokens to be combined.</param>
+    /// <returns>The scope that represents the multiplexed token.</returns>
+    public ScopeWithTimeout CombineAndSetTimeoutLater(ReadOnlySpan<CancellationToken> tokens) // TODO: use params
+        => new(this, tokens);
+
     private void Return(PooledCancellationTokenSource source)
     {
         // try to increment the counter

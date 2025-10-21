@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using DotNext.Threading;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.Extensions.Logging;
@@ -10,12 +11,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.CustomTransport;
 using Buffers;
 using TransportServices;
 using TransportServices.ConnectionOriented;
-using static Threading.LinkedTokenSourceFactory;
 
 internal sealed class GenericServer : Server
 {
     private readonly IConnectionListenerFactory factory;
     private readonly CancellationToken lifecycleToken;
+    private readonly CancellationTokenMultiplexer multiplexer;
 
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private volatile CancellationTokenSource? transmissionState;
@@ -31,6 +32,8 @@ internal sealed class GenericServer : Server
         lifecycleToken = transmissionState.Token; // cache token here to avoid ObjectDisposedException in HandleConnection
         factory = listenerFactory;
         BufferAllocator = defaultAllocator;
+
+        multiplexer = new() { MaximumRetained = 100 };
     }
 
     public override TimeSpan ReceiveTimeout
@@ -49,24 +52,23 @@ internal sealed class GenericServer : Server
             ReadTimeout = (int)ReceiveTimeout.TotalMilliseconds,
         };
 
-        var token = lifecycleToken;
-        var tokenSource = token.LinkTo(connection.ConnectionClosed);
+        var cts = default(CancellationTokenMultiplexer.ScopeWithTimeout);
         try
         {
-            while (!IsDisposingOrDisposed && !token.IsCancellationRequested)
+            while (!IsDisposingOrDisposed && !lifecycleToken.IsCancellationRequested)
             {
-                var messageType = await protocol.ReadMessageTypeAsync(token).ConfigureAwait(false);
+                cts = multiplexer.CombineAndSetTimeoutLater([lifecycleToken, connection.ConnectionClosed]);
+                var messageType = await protocol.ReadMessageTypeAsync(cts.Token).ConfigureAwait(false);
                 if (messageType is MessageType.None)
                     break;
 
-                tokenSource?.CancelAfter(ReceiveTimeout);
-                await ProcessRequestAsync(messageType, protocol, token).ConfigureAwait(false);
+                cts.Timeout = ReceiveTimeout;
+                await ProcessRequestAsync(messageType, protocol, cts.Token).ConfigureAwait(false);
                 protocol.Reset();
 
                 // reset cancellation token
-                tokenSource?.Dispose();
-                token = lifecycleToken;
-                tokenSource = token.LinkTo(connection.ConnectionClosed);
+                await cts.DisposeAsync().ConfigureAwait(false);
+                cts = default; // to avoid duplicate call in finally block
             }
         }
         catch (ConnectionResetException)
@@ -74,12 +76,12 @@ internal sealed class GenericServer : Server
             // reset by client
             logger.ConnectionWasResetByClient(clientAddress);
         }
-        catch (OperationCanceledException e) when (e.CausedBy(tokenSource, connection.ConnectionClosed))
+        catch (OperationCanceledException e) when (e.CausedBy(cts, connection.ConnectionClosed))
         {
             // closed by client
             logger.ConnectionWasResetByClient(clientAddress);
         }
-        catch (OperationCanceledException e) when (e.CausedBy(tokenSource, lifecycleToken))
+        catch (OperationCanceledException e) when (e.CausedBy(cts, lifecycleToken))
         {
             // server stopped, suppress exception
         }
@@ -96,7 +98,7 @@ internal sealed class GenericServer : Server
         {
             await connection.DisposeAsync().ConfigureAwait(false);
             await protocol.DisposeAsync().ConfigureAwait(false);
-            tokenSource?.Dispose();
+            await cts.DisposeAsync().ConfigureAwait(false);
         }
     }
 
