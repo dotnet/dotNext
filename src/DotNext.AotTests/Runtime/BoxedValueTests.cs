@@ -23,7 +23,7 @@ public class BoxedValueTests
         Assert.AreEqual(42, BoxedValue<int>.GetTypedReference(obj));
     
         obj = string.Empty;
-        Assert.ThrowsException<ArgumentException>(() => BoxedValue<int>.GetTypedReference(obj));
+        Assert.Throws<ArgumentException>(() => BoxedValue<int>.GetTypedReference(obj));
     }
     
     [TestMethod]

@@ -20,10 +20,11 @@ partial class ApplicationMaintenanceCommand
 
         static Task EnterInteractiveMode(ParseResult result, CancellationToken token)
         {
-            if (result.Configuration is CommandContext context)
-                context.Session.IsInteractive = true;
+            // TODO: Replace with null-conditional assignment
+            if (CommandContext.TryGetSession(result) is { } session)
+                session.IsInteractive = true;
 
-            return result.Configuration.Output.WriteLineAsync(
+            return result.InvocationConfiguration.Output.WriteLineAsync(
                 CommandResources.WelcomeMessage(RootCommand.ExecutableName).AsMemory(),
                 token);
         }
@@ -42,8 +43,8 @@ partial class ApplicationMaintenanceCommand
 
         command.SetAction(static result =>
         {
-            if (result.Configuration is CommandContext context)
-                context.Session.IsInteractive = false;
+            if (CommandContext.TryGetSession(result) is { } session)
+                session.IsInteractive = false;
         });
         
         return command;

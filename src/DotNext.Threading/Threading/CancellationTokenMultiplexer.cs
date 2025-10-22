@@ -67,7 +67,7 @@ public sealed partial class CancellationTokenMultiplexer
     /// Combines the multiple tokens and the timeout.
     /// </summary>
     /// <remarks>
-    /// The cancellation triggered by the timeout can be detected by comparing <see cref="Scope.Token"/> with <see cref="Scope.CancellationOrigin"/>.
+    /// The cancellation triggered by the timeout can be detected by checking <see cref="Scope.IsTimedOut"/>.
     /// </remarks>
     /// <param name="timeout">The timeout that could trigger the cancellation.</param>
     /// <param name="tokens">The tokens to be combined.</param>
@@ -75,11 +75,19 @@ public sealed partial class CancellationTokenMultiplexer
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative or too large.</exception>
     public Scope Combine(TimeSpan timeout, ReadOnlySpan<CancellationToken> tokens) => timeout.Ticks switch
     {
-        0L => new(new CancellationToken(canceled: true)),
+        0L => new(TimedOutToken),
         Timeout.InfiniteTicks => Combine(tokens),
         < 0L or > Timeout.MaxTimeoutParameterTicks => throw new ArgumentOutOfRangeException(nameof(timeout)),
         _ => new(this, timeout, tokens)
     };
+
+    /// <summary>
+    /// Combines the multiple tokens and sets the timeout later.
+    /// </summary>
+    /// <param name="tokens">The tokens to be combined.</param>
+    /// <returns>The scope that represents the multiplexed token.</returns>
+    public ScopeWithTimeout CombineAndSetTimeoutLater(ReadOnlySpan<CancellationToken> tokens) // TODO: use params
+        => new(this, tokens);
 
     private void Return(PooledCancellationTokenSource source)
     {

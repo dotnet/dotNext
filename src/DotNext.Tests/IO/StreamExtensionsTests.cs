@@ -10,7 +10,7 @@ public sealed class StreamExtensionsTests : Test
 {
     private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, int bufferSize, LengthFormat lengthEnc)
     {
-        Memory<byte> buffer = new byte[16];
+        Memory<byte> buffer = new byte[bufferSize];
         using var ms = new MemoryStream();
         await ms.EncodeAsync(value.AsMemory(), encoding, lengthEnc, buffer);
         ms.Position = 0;

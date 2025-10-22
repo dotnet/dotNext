@@ -1,5 +1,6 @@
 namespace DotNext;
 
+[TestClass]
 public class DelegateHelpersTests
 {
     [TestMethod]

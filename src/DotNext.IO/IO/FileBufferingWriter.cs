@@ -21,7 +21,7 @@ using Buffers;
 /// returned <see cref="Memory{T}"/> instance references bytes in memory. Otherwise,
 /// it references memory-mapped file.
 /// </remarks>
-public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, IGrowableBuffer<byte>, IFlushable
+public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<byte>, IGrowableBuffer<byte>
 {
     [StructLayout(LayoutKind.Auto)]
     private readonly struct ReadSession : IDisposable
@@ -472,28 +472,6 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
     [MemberNotNull(nameof(fileBackend))]
     private void EnsureBackingStore() => fileBackend ??= fileProvider.CreateBackingFileHandle(position, out fileName);
 
-    /// <inheritdoc/>
-    public override void Write(byte[] data, int offset, int count)
-    {
-        ValidateBufferArguments(data, offset, count);
-        Write(new ReadOnlySpan<byte>(data, offset, count));
-    }
-
-    /// <inheritdoc/>
-    public override Task WriteAsync(byte[] data, int offset, int count, CancellationToken token)
-        => WriteAsync(new ReadOnlyMemory<byte>(data, offset, count), token).AsTask();
-
-    /// <inheritdoc/>
-    public override void WriteByte(byte value)
-        => Write(new(ref value));
-
-    /// <inheritdoc/>
-    public override IAsyncResult BeginWrite(byte[] data, int offset, int count, AsyncCallback? callback, object? state)
-        => TaskToAsyncResult.Begin(WriteAsync(data, offset, count), callback, state);
-
-    /// <inheritdoc/>
-    public override void EndWrite(IAsyncResult ar) => TaskToAsyncResult.End(ar);
-
     /// <inheritdoc cref="Stream.Flush()"/>
     public override void Flush() => Flush(flushToDisk: false);
 
@@ -558,32 +536,12 @@ public sealed partial class FileBufferingWriter : Stream, IBufferWriter<byte>, I
         => FlushAsync(flushToDisk: false, token).AsTask();
 
     /// <inheritdoc/>
-    public override int ReadByte()
-        => throw new NotSupportedException();
-
-    /// <inheritdoc/>
-    public override int Read(byte[] data, int offset, int count)
-        => throw new NotSupportedException();
-
-    /// <inheritdoc/>
     public override int Read(Span<byte> data)
         => throw new NotSupportedException();
 
     /// <inheritdoc/>
-    public override Task<int> ReadAsync(byte[] data, int offset, int count, CancellationToken token)
-        => Task.FromException<int>(new NotSupportedException());
-
-    /// <inheritdoc/>
     public override ValueTask<int> ReadAsync(Memory<byte> data, CancellationToken token = default)
         => ValueTask.FromException<int>(new NotSupportedException());
-
-    /// <inheritdoc/>
-    public override IAsyncResult BeginRead(byte[] data, int offset, int count, AsyncCallback? callback, object? state)
-        => throw new NotSupportedException();
-
-    /// <inheritdoc/>
-    public override int EndRead(IAsyncResult asyncResult)
-        => throw new InvalidOperationException();
 
     /// <inheritdoc/>
     public override void SetLength(long value)

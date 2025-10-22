@@ -3,13 +3,14 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices.ConnectionOriented;
 
 using Buffers;
+using IO;
 using static Threading.Tasks.Synchronization;
 
 /// <summary>
 /// Provides encoding/decoding routines for transmitting Raft-specific
 /// RPC calls over stream-oriented network transports.
 /// </summary>
-internal abstract partial class ProtocolStream : Stream, IResettable
+internal abstract partial class ProtocolStream : ModernStream, IResettable
 {
     private const int FrameHeadersSize = sizeof(int);
 
@@ -104,7 +105,7 @@ internal abstract partial class ProtocolStream : Stream, IResettable
         return result;
     }
 
-    internal Memory<byte> RemainingBuffer => buffer.Memory.Slice(bufferEnd);
+    private Memory<byte> RemainingBuffer => buffer.Memory.Slice(bufferEnd);
 
     internal Span<byte> RemainingBufferSpan => buffer.Span.Slice(bufferEnd);
 

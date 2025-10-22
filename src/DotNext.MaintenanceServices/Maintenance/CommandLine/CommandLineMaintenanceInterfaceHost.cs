@@ -23,6 +23,7 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
     private readonly RootCommand root;
     private readonly IAuthenticationHandler? authentication;
     private readonly AuthorizationCallback? authorization;
+    private readonly ParserConfiguration configuration;
 
     /// <summary>
     /// Initializes a new host.
@@ -31,17 +32,22 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
     /// <param name="commands">A set of commands to be available for execution.</param>
     /// <param name="authentication">Optional authentication handler.</param>
     /// <param name="authorization">A set of global authorization rules to be applied to all commands.</param>
+    /// <param name="configuration">Command-line parser configuration.</param>
     /// <param name="loggerFactory">Optional logger factory.</param>
     public CommandLineMaintenanceInterfaceHost(
         UnixDomainSocketEndPoint endPoint,
         IEnumerable<ApplicationMaintenanceCommand> commands,
         IAuthenticationHandler? authentication = null,
         AuthorizationCallback? authorization = null,
+        ParserConfiguration? configuration = null,
         ILoggerFactory? loggerFactory = null)
         : base(endPoint, loggerFactory)
     {
-        root = new RootCommand(RootCommand.ExecutableName + " Maintenance Interface");
-        root.Action = new MyAction();
+        root = new(RootCommand.ExecutableName + " Maintenance Interface")
+        {
+            Action = new MyAction()
+        };
+        
         foreach (var subCommand in commands)
             root.Add(subCommand);
 
@@ -52,15 +58,13 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
 
         this.authentication = authentication;
         this.authorization = authorization;
+        this.configuration = configuration ?? new();
     }
     
     private sealed class MyAction : SynchronousCommandLineAction
     {
-        public MyAction()
-        {
-            Terminating = false;
-        }
-        
+        public override bool Terminating => false;
+
         public override int Invoke(ParseResult parseResult)
         {
             return 0;
@@ -74,10 +78,12 @@ public sealed class CommandLineMaintenanceInterfaceHost : ApplicationMaintenance
         var error = new PoolingBufferWriter<char>(CharBufferAllocator) { Capacity = BufferSize };
         var outputWriter = output.AsTextWriter();
         var errorWriter = error.AsTextWriter();
-        var context = new CommandContext(root, session) { Error = errorWriter, Output = outputWriter };
+        var context = new CommandContext(session) { Error = errorWriter, Output = outputWriter };
         try
         {
-            var exitCode = await context.InvokeAsync(command.ToString(), authentication, authorization, token).ConfigureAwait(false);
+            var exitCode = await context
+                .InvokeAsync(root, command.ToString(), configuration, authentication, authorization, token)
+                .ConfigureAwait(false);
             context.Exit(exitCode, output, error);
         }
         catch (Exception e)

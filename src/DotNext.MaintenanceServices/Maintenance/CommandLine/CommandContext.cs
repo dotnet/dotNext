@@ -12,8 +12,9 @@ using Buffers;
 /// <summary>
 /// Represents command invocation context.
 /// </summary>
-internal sealed partial class CommandContext : CommandLineConfiguration
+internal sealed partial class CommandContext : InvocationConfiguration
 {
+    public const int GenericErrorExitCode = -1;
     private const int InvalidArgumentExitCode = 64; // EX_USAGE from sysexits.h
     private const int ForbiddenExitCode = 77; // EX_NOPERM
     
@@ -24,10 +25,8 @@ internal sealed partial class CommandContext : CommandLineConfiguration
     private bool suppressOutputBuffer;
     private bool suppressErrorBuffer;
     
-    internal CommandContext(RootCommand root, IMaintenanceSession session)
-        : base(root)
+    internal CommandContext(IMaintenanceSession session)
     {
-        Debug.Assert(root is not null);
         Debug.Assert(session is not null);
 
         Session = session;
@@ -40,35 +39,37 @@ internal sealed partial class CommandContext : CommandLineConfiguration
     /// </summary>
     public IMaintenanceSession Session { get; }
 
-    internal async ValueTask<int> InvokeAsync(string input,
+    internal async ValueTask<int> InvokeAsync(RootCommand root,
+        string input,
+        ParserConfiguration configuration,
         IAuthenticationHandler? authentication,
         AuthorizationCallback? authorization,
         CancellationToken token)
     {
         int exitCode;
-        var result = Parse(input);
+        var result = root.Parse(input, configuration);
         
         if (result.Errors is { Count: > 0 } errors)
         {
-            exitCode = ProcessParseErrors(errors, result.Tokens);
+            exitCode = ProcessParseErrors(root, errors, result.Tokens);
         }
         else if (await AuthenticateAsync(Session, result, authentication, token).ConfigureAwait(false)
                  && await authorization.AuthorizeAsync(Session, result.CommandResult, token).ConfigureAwait(false)
                  && await AuthorizeAsync(Session, result.CommandResult, token).ConfigureAwait(false))
         {
-            exitCode = await result.InvokeAsync(token).ConfigureAwait(false);
+            exitCode = await result.InvokeAsync(this, token).ConfigureAwait(false);
         }
         else
         {
-            exitCode = Forbid(result.Tokens);
+            exitCode = Forbid(root, result.Tokens);
         }
 
         return exitCode;
     }
 
-    private void ExecuteDirectives(IEnumerable<Token> tokens)
+    private void ExecuteDirectives(RootCommand root, IEnumerable<Token> tokens)
     {
-        var actions = from directive in (RootCommand as RootCommand)?.Directives ?? []
+        var actions = from directive in root.Directives
             from token in tokens
             where Matches(token, directive)
             let action = (directive.Action as DirectiveAction)?.Action
@@ -141,9 +142,9 @@ internal sealed partial class CommandContext : CommandLineConfiguration
         }
     }
 
-    private int ProcessParseErrors(IReadOnlyList<ParseError> errors, IReadOnlyList<Token> tokens)
+    private int ProcessParseErrors(RootCommand root, IReadOnlyList<ParseError> errors, IReadOnlyList<Token> tokens)
     {
-        ExecuteDirectives(tokens);
+        ExecuteDirectives(root, tokens);
         
         foreach (var parseError in errors)
         {
@@ -153,13 +154,13 @@ internal sealed partial class CommandContext : CommandLineConfiguration
         return InvalidArgumentExitCode;
     }
 
-    private int Forbid(IReadOnlyList<Token> tokens)
+    private int Forbid(RootCommand root, IReadOnlyList<Token> tokens)
     {
-        ExecuteDirectives(tokens);
+        ExecuteDirectives(root, tokens);
         Error.WriteLine(CommandResources.AccessDenied);
         return ForbiddenExitCode;
     }
 
     internal static IMaintenanceSession? TryGetSession(ParseResult result)
-        => (result.Configuration as CommandContext)?.Session;
+        => (result.InvocationConfiguration as CommandContext)?.Session;
 }

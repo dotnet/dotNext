@@ -1,3 +1,4 @@
+using System.CommandLine;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -148,5 +149,11 @@ public static class HostingServices
         => services.AddSingleton<IHostedService, CommandLineMaintenanceInterfaceHost>(unixDomainSocketPath.CreateHost);
 
     private static CommandLineMaintenanceInterfaceHost CreateHost(this string unixDomainSocketPath, IServiceProvider services)
-        => new(new(unixDomainSocketPath), services.GetServices<ApplicationMaintenanceCommand>(), authentication: services.GetService<IAuthenticationHandler>(), authorization: Delegate.Combine(services.GetServices<AuthorizationCallback>().ToArray()) as AuthorizationCallback, loggerFactory: services.GetService<ILoggerFactory>());
+        => new(
+            new(unixDomainSocketPath),
+            services.GetServices<ApplicationMaintenanceCommand>(),
+            authentication: services.GetService<IAuthenticationHandler>(),
+            authorization: Delegate.Combine(services.GetServices<AuthorizationCallback>().ToArray()) as AuthorizationCallback,
+            configuration: services.GetService<ParserConfiguration>(),
+            loggerFactory: services.GetService<ILoggerFactory>());
 }

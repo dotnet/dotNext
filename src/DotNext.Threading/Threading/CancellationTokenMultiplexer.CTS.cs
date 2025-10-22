@@ -77,6 +77,7 @@ partial class CancellationTokenMultiplexer
             }
 
             count = 0;
+            CancellationOrigin = CancellationToken.None;
         }
 
         private static int GetCapacity<T>()
