@@ -108,7 +108,7 @@ partial class CancellationTokenMultiplexer
             source.Reset();
             if (source.TryReset())
             {
-                source.Dispose();
+                multiplexer.Return(source);
             }
             else
             {
