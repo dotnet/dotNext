@@ -14,6 +14,7 @@ public static class LinkedTokenSourceFactory
     /// <param name="first">The first cancellation token. Can be modified by this method.</param>
     /// <param name="second">The second cancellation token.</param>
     /// <returns>The linked token source; or <see langword="null"/> if <paramref name="first"/> or <paramref name="second"/> is not cancelable.</returns>
+    [Obsolete("Use CancellationTokenMultiplexer class instead.")]
     public static LinkedCancellationTokenSource? LinkTo(this ref CancellationToken first, CancellationToken second)
         => LinkedCancellationTokenSource.Combine(ref first, second);
 
@@ -23,6 +24,7 @@ public static class LinkedTokenSourceFactory
     /// <param name="first">The first cancellation token. Can be modified by this method.</param>
     /// <param name="tokens">A list of cancellation tokens to link together.</param>
     /// <returns>The linked token source; or <see langword="null"/> if <paramref name="first"/> or <paramref name="tokens"/> are not cancelable.</returns>
+    [Obsolete("Use CancellationTokenMultiplexer class instead.")]
     public static LinkedCancellationTokenSource? LinkTo(this ref CancellationToken first, ReadOnlySpan<CancellationToken> tokens)
     {
         LinkedCancellationTokenSource? result;
@@ -53,6 +55,7 @@ public static class LinkedTokenSourceFactory
     /// <param name="token">The first cancellation token. Can be modified by this method.</param>
     /// <param name="timeout">The timeout to link.</param>
     /// <returns>The linked token source; or <see langword="null"/> if <paramref name="token"/> is canceled or <paramref name="timeout"/> is <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</returns>
+    [Obsolete("Use CancellationTokenMultiplexer class instead.")]
     public static CancellationTokenSource? LinkTo(this ref CancellationToken token, TimeSpan timeout)
     {
         CancellationTokenSource? result;
@@ -78,6 +81,7 @@ public static class LinkedTokenSourceFactory
     /// <param name="timeout">The timeout to link.</param>
     /// <param name="second">The second cancellation token.</param>
     /// <returns>The linked token source; or <see langword="null"/> if not needed.</returns>
+    [Obsolete("Use CancellationTokenMultiplexer class instead.")]
     public static CancellationTokenSource? LinkTo(this ref CancellationToken first, TimeSpan timeout, CancellationToken second)
     {
         CancellationTokenSource? result;
@@ -114,6 +118,7 @@ public static class LinkedTokenSourceFactory
         where TSource : IMultiplexedCancellationTokenSource?
         => source is null ? e.CancellationToken == token : e.CancellationToken == source.Token && source.CancellationOrigin == token;
     
+    [Obsolete]
     private sealed class MultipleLinkedCancellationTokenSource : LinkedCancellationTokenSource
     {
         private MemoryOwner<CancellationTokenRegistration> registrations;
