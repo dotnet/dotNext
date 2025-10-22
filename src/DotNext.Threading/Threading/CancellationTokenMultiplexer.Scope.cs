@@ -26,10 +26,13 @@ partial class CancellationTokenMultiplexer
         private readonly ValueTuple<object> multiplexerOrToken;
         private readonly PooledCancellationTokenSource? source;
 
-        internal Scope(CancellationTokenMultiplexer multiplexer, ReadOnlySpan<CancellationToken> tokens)
+        internal Scope(CancellationTokenMultiplexer multiplexer, ReadOnlySpan<CancellationToken> tokens, bool timeoutSupport = false)
         {
             multiplexerOrToken = new(multiplexer);
             source = multiplexer.Rent(tokens);
+
+            if (timeoutSupport)
+                source.RegisterTimeoutHandler();
         }
 
         internal Scope(CancellationTokenMultiplexer multiplexer, TimeSpan timeout, ReadOnlySpan<CancellationToken> tokens)
@@ -64,14 +67,7 @@ partial class CancellationTokenMultiplexer
         /// </summary>
         public bool IsTimedOut => source?.IsRootCause ?? false;
 
-        internal void SetTimeout(TimeSpan value)
-        {
-            if (source is not null)
-            {
-                source.RegisterTimeoutHandler();
-                source.CancelAfter(value);
-            }
-        }
+        internal void SetTimeout(TimeSpan value) => source?.CancelAfter(value);
 
         /// <inheritdoc/>
         public void Dispose()
@@ -129,7 +125,7 @@ partial class CancellationTokenMultiplexer
         private readonly Scope scope;
 
         internal ScopeWithTimeout(CancellationTokenMultiplexer multiplexer, ReadOnlySpan<CancellationToken> tokens)
-            => scope = new(multiplexer, tokens);
+            => scope = new(multiplexer, tokens, timeoutSupport: true);
 
         /// <summary>
         /// Sets the optional timeout.
