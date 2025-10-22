@@ -78,7 +78,8 @@
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
     <div class="level1"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.marshalbyrefobject">MarshalByRefObject</a></div>
     <div class="level2"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></div>
-    <div class="level3"><span class="xref">RandomAccessStream</span></div>
+    <div class="level3"><a class="xref" href="DotNext.IO.ModernStream.html">ModernStream</a></div>
+    <div class="level4"><span class="xref">RandomAccessStream</span></div>
   </div>
   <div class="implements">
     <h5>Implements</h5>
@@ -91,13 +92,37 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_Read_System_Byte___System_Int32_System_Int32_">ModernStream.Read(byte[], int, int)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_">ModernStream.ReadAsync(byte[], int, int, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_">ModernStream.BeginRead(byte[], int, int, AsyncCallback, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_EndRead_System_IAsyncResult_">ModernStream.EndRead(IAsyncResult)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_ReadByte">ModernStream.ReadByte()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_Write_System_Byte___System_Int32_System_Int32_">ModernStream.Write(byte[], int, int)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_WriteByte_System_Byte_">ModernStream.WriteByte(byte)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_">ModernStream.WriteAsync(byte[], int, int, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_">ModernStream.BeginWrite(byte[], int, int, AsyncCallback, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_EndWrite_System_IAsyncResult_">ModernStream.EndWrite(IAsyncResult)</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.null">Stream.Null</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.beginread">Stream.BeginRead(byte[], int, int, AsyncCallback, object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.beginwrite">Stream.BeginWrite(byte[], int, int, AsyncCallback, object)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.close">Stream.Close()</a>
@@ -128,12 +153,6 @@
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.disposeasync">Stream.DisposeAsync()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.endread">Stream.EndRead(IAsyncResult)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.endwrite">Stream.EndWrite(IAsyncResult)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.flush">Stream.Flush()</a>
@@ -236,7 +255,7 @@
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_IO_RandomAccessStream_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class RandomAccessStream : Stream, IAsyncDisposable, IDisposable, IFlushable, IValueTaskSource, IValueTaskSource&lt;int&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class RandomAccessStream : ModernStream, IAsyncDisposable, IDisposable, IFlushable, IValueTaskSource, IValueTaskSource&lt;int&gt;</code></pre>
   </div>
   <h3 id="properties">Properties
 </h3>
@@ -245,7 +264,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_CanSeek.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.CanSeek%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L146">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L97">View Source</a>
   </span>
   <a id="DotNext_IO_RandomAccessStream_CanSeek_" data-uid="DotNext.IO.RandomAccessStream.CanSeek*"></a>
   <h4 id="DotNext_IO_RandomAccessStream_CanSeek" data-uid="DotNext.IO.RandomAccessStream.CanSeek">CanSeek</h4>
@@ -279,7 +298,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_Position.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.Position%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L13">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L11">View Source</a>
   </span>
   <a id="DotNext_IO_RandomAccessStream_Position_" data-uid="DotNext.IO.RandomAccessStream.Position*"></a>
   <h4 id="DotNext_IO_RandomAccessStream_Position" data-uid="DotNext.IO.RandomAccessStream.Position">Position</h4>
@@ -341,7 +360,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L149">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L100">View Source</a>
   </span>
   <a id="DotNext_IO_RandomAccessStream_Dispose_" data-uid="DotNext.IO.RandomAccessStream.Dispose*"></a>
   <h4 id="DotNext_IO_RandomAccessStream_Dispose_System_Boolean_" data-uid="DotNext.IO.RandomAccessStream.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -374,115 +393,10 @@
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.dispose#system-io-stream-dispose(system-boolean)">Stream.Dispose(bool)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_Read_System_Byte___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.Read(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L92">View Source</a>
-  </span>
-  <a id="DotNext_IO_RandomAccessStream_Read_" data-uid="DotNext.IO.RandomAccessStream.Read*"></a>
-  <h4 id="DotNext_IO_RandomAccessStream_Read_System_Byte___System_Int32_System_Int32_" data-uid="DotNext.IO.RandomAccessStream.Read(System.Byte[],System.Int32,System.Int32)">Read(byte[], int, int)</h4>
-  <div class="markdown level1 summary"><p>When overridden in a derived class, reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override sealed int Read(byte[] buffer, int offset, int count)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>An array of bytes. When this method returns, the buffer contains the specified byte array with the values between <code class="paramref">offset</code> and (<code class="paramref">offset</code> + <code class="paramref">count</code> - 1) replaced by the bytes read from the current source.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td><p>The zero-based byte offset in <code class="paramref">buffer</code> at which to begin storing the data read from the current stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">count</span></td>
-        <td><p>The maximum number of bytes to be read from the current stream.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if <code class="paramref">count</code> is 0 or the end of the stream has been reached.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.read#system-io-stream-read(system-byte()-system-int32-system-int32)">Stream.Read(byte[], int, int)</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>The sum of <code class="paramref">offset</code> and <code class="paramref">count</code> is larger than the buffer length.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">buffer</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">offset</code> or <code class="paramref">count</code> is negative.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.ioexception">IOException</a></td>
-        <td><p>An I/O error occurs.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>The stream does not support reading.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>Methods were called after the stream was closed.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_Read_System_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.Read(System.Span%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L100">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L69">View Source</a>
   </span>
   <a id="DotNext_IO_RandomAccessStream_Read_" data-uid="DotNext.IO.RandomAccessStream.Read*"></a>
   <h4 id="DotNext_IO_RandomAccessStream_Read_System_Span_System_Byte__" data-uid="DotNext.IO.RandomAccessStream.Read(System.Span{System.Byte})">Read(Span&lt;byte&gt;)</h4>
@@ -528,13 +442,13 @@
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.read#system-io-stream-read(system-span((system-byte)))">Stream.Read(Span&lt;byte&gt;)</a></div>
+  <div><a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_Read_System_Span_System_Byte__">ModernStream.Read(Span&lt;byte&gt;)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_Read_System_Span_System_Byte__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.Read(System.Span%7BSystem.Byte%7D%2CSystem.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L80">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L57">View Source</a>
   </span>
   <a id="DotNext_IO_RandomAccessStream_Read_" data-uid="DotNext.IO.RandomAccessStream.Read*"></a>
   <h4 id="DotNext_IO_RandomAccessStream_Read_System_Span_System_Byte__System_Int64_" data-uid="DotNext.IO.RandomAccessStream.Read(System.Span{System.Byte},System.Int64)">Read(Span&lt;byte&gt;, long)</h4>
@@ -587,120 +501,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.ReadAsync(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L120">View Source</a>
-  </span>
-  <a id="DotNext_IO_RandomAccessStream_ReadAsync_" data-uid="DotNext.IO.RandomAccessStream.ReadAsync*"></a>
-  <h4 id="DotNext_IO_RandomAccessStream_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.RandomAccessStream.ReadAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)">ReadAsync(byte[], int, int, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Asynchronously reads a sequence of bytes from the current stream, advances the position within the stream by the number of bytes read, and monitors cancellation requests.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override sealed Task&lt;int&gt; ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>The buffer to write the data into.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td><p>The byte offset in <code class="paramref">buffer</code> at which to begin writing data from the stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">count</span></td>
-        <td><p>The maximum number of bytes to read.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</td>
-        <td><p>A task that represents the asynchronous read operation. The value of the <code class="paramref">TResult</code> parameter contains the total number of bytes read into the buffer. The result value can be less than the number of bytes requested if the number of bytes currently available is less than the requested number, or it can be 0 (zero) if <code class="paramref">count</code> is 0 or if the end of the stream has been reached.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readasync#system-io-stream-readasync(system-byte()-system-int32-system-int32-system-threading-cancellationtoken)">Stream.ReadAsync(byte[], int, int, CancellationToken)</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">buffer</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">offset</code> or <code class="paramref">count</code> is negative.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>The sum of <code class="paramref">offset</code> and <code class="paramref">count</code> is larger than the buffer length.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>The stream does not support reading.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>The stream has been disposed.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>The stream is currently in use by a previous read operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_ReadAsync_System_Memory_System_Byte__System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.ReadAsync(System.Memory%7BSystem.Byte%7D%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L89">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L66">View Source</a>
   </span>
   <a id="DotNext_IO_RandomAccessStream_ReadAsync_" data-uid="DotNext.IO.RandomAccessStream.ReadAsync*"></a>
   <h4 id="DotNext_IO_RandomAccessStream_ReadAsync_System_Memory_System_Byte__System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.RandomAccessStream.ReadAsync(System.Memory{System.Byte},System.Int64,System.Threading.CancellationToken)">ReadAsync(Memory&lt;byte&gt;, long, CancellationToken)</h4>
@@ -762,7 +566,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.ReadAsync(System.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L116">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L77">View Source</a>
   </span>
   <a id="DotNext_IO_RandomAccessStream_ReadAsync_" data-uid="DotNext.IO.RandomAccessStream.ReadAsync*"></a>
   <h4 id="DotNext_IO_RandomAccessStream_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.RandomAccessStream.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">ReadAsync(Memory&lt;byte&gt;, CancellationToken)</h4>
@@ -813,68 +617,13 @@
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readasync#system-io-stream-readasync(system-memory((system-byte))-system-threading-cancellationtoken)">Stream.ReadAsync(Memory&lt;byte&gt;, CancellationToken)</a></div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_ReadByte.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.ReadByte%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L108">View Source</a>
-  </span>
-  <a id="DotNext_IO_RandomAccessStream_ReadByte_" data-uid="DotNext.IO.RandomAccessStream.ReadByte*"></a>
-  <h4 id="DotNext_IO_RandomAccessStream_ReadByte" data-uid="DotNext.IO.RandomAccessStream.ReadByte">ReadByte()</h4>
-  <div class="markdown level1 summary"><p>Reads a byte from the stream and advances the position within the stream by one byte, or returns -1 if at the end of the stream.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override sealed int ReadByte()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The unsigned byte cast to an <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>, or -1 if at the end of the stream.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readbyte">Stream.ReadByte()</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>The stream does not support reading.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>Methods were called after the stream was closed.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
+  <div><a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_">ModernStream.ReadAsync(Memory&lt;byte&gt;, CancellationToken)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_Seek_System_Int64_System_IO_SeekOrigin_.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.Seek(System.Int64%2CSystem.IO.SeekOrigin)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L130">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L81">View Source</a>
   </span>
   <a id="DotNext_IO_RandomAccessStream_Seek_" data-uid="DotNext.IO.RandomAccessStream.Seek*"></a>
   <h4 id="DotNext_IO_RandomAccessStream_Seek_System_Int64_System_IO_SeekOrigin_" data-uid="DotNext.IO.RandomAccessStream.Seek(System.Int64,System.IO.SeekOrigin)">Seek(long, SeekOrigin)</h4>
@@ -955,99 +704,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_Write_System_Byte___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.Write(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L43">View Source</a>
-  </span>
-  <a id="DotNext_IO_RandomAccessStream_Write_" data-uid="DotNext.IO.RandomAccessStream.Write*"></a>
-  <h4 id="DotNext_IO_RandomAccessStream_Write_System_Byte___System_Int32_System_Int32_" data-uid="DotNext.IO.RandomAccessStream.Write(System.Byte[],System.Int32,System.Int32)">Write(byte[], int, int)</h4>
-  <div class="markdown level1 summary"><p>When overridden in a derived class, writes a sequence of bytes to the current stream and advances the current position within this stream by the number of bytes written.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override sealed void Write(byte[] buffer, int offset, int count)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>An array of bytes. This method copies <code class="paramref">count</code> bytes from <code class="paramref">buffer</code> to the current stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td><p>The zero-based byte offset in <code class="paramref">buffer</code> at which to begin copying bytes to the current stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">count</span></td>
-        <td><p>The number of bytes to be written to the current stream.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.write#system-io-stream-write(system-byte()-system-int32-system-int32)">Stream.Write(byte[], int, int)</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>The sum of <code class="paramref">offset</code> and <code class="paramref">count</code> is greater than the buffer length.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">buffer</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">offset</code> or <code class="paramref">count</code> is negative.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.ioexception">IOException</a></td>
-        <td><p>An I/O error occurred, such as the specified file cannot be found.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>The stream does not support writing.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.write#system-io-stream-write(system-byte()-system-int32-system-int32)">Write(byte[], int, int)</a> was called after the stream was closed.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_Write_System_ReadOnlySpan_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.Write(System.ReadOnlySpan%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L51">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L41">View Source</a>
   </span>
   <a id="DotNext_IO_RandomAccessStream_Write_" data-uid="DotNext.IO.RandomAccessStream.Write*"></a>
   <h4 id="DotNext_IO_RandomAccessStream_Write_System_ReadOnlySpan_System_Byte__" data-uid="DotNext.IO.RandomAccessStream.Write(System.ReadOnlySpan{System.Byte})">Write(ReadOnlySpan&lt;byte&gt;)</h4>
@@ -1077,13 +737,13 @@
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.write#system-io-stream-write(system-readonlyspan((system-byte)))">Stream.Write(ReadOnlySpan&lt;byte&gt;)</a></div>
+  <div><a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_Write_System_ReadOnlySpan_System_Byte__">ModernStream.Write(ReadOnlySpan&lt;byte&gt;)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_Write_System_ReadOnlySpan_System_Byte__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.Write(System.ReadOnlySpan%7BSystem.Byte%7D%2CSystem.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L31">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L29">View Source</a>
   </span>
   <a id="DotNext_IO_RandomAccessStream_Write_" data-uid="DotNext.IO.RandomAccessStream.Write*"></a>
   <h4 id="DotNext_IO_RandomAccessStream_Write_System_ReadOnlySpan_System_Byte__System_Int64_" data-uid="DotNext.IO.RandomAccessStream.Write(System.ReadOnlySpan{System.Byte},System.Int64)">Write(ReadOnlySpan&lt;byte&gt;, long)</h4>
@@ -1120,120 +780,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.WriteAsync(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L66">View Source</a>
-  </span>
-  <a id="DotNext_IO_RandomAccessStream_WriteAsync_" data-uid="DotNext.IO.RandomAccessStream.WriteAsync*"></a>
-  <h4 id="DotNext_IO_RandomAccessStream_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.RandomAccessStream.WriteAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)">WriteAsync(byte[], int, int, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Asynchronously writes a sequence of bytes to the current stream, advances the current position within this stream by the number of bytes written, and monitors cancellation requests.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override sealed Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>The buffer to write data from.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td><p>The zero-based byte offset in <code class="paramref">buffer</code> from which to begin copying bytes to the stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">count</span></td>
-        <td><p>The maximum number of bytes to write.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>A task that represents the asynchronous write operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.writeasync#system-io-stream-writeasync(system-byte()-system-int32-system-int32-system-threading-cancellationtoken)">Stream.WriteAsync(byte[], int, int, CancellationToken)</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">buffer</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">offset</code> or <code class="paramref">count</code> is negative.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>The sum of <code class="paramref">offset</code> and <code class="paramref">count</code> is larger than the buffer length.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>The stream does not support writing.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>The stream has been disposed.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>The stream is currently in use by a previous write operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.WriteAsync(System.ReadOnlyMemory%7BSystem.Byte%7D%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L40">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L38">View Source</a>
   </span>
   <a id="DotNext_IO_RandomAccessStream_WriteAsync_" data-uid="DotNext.IO.RandomAccessStream.WriteAsync*"></a>
   <h4 id="DotNext_IO_RandomAccessStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.RandomAccessStream.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Int64,System.Threading.CancellationToken)">WriteAsync(ReadOnlyMemory&lt;byte&gt;, long, CancellationToken)</h4>
@@ -1295,7 +845,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.WriteAsync(System.ReadOnlyMemory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L62">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L48">View Source</a>
   </span>
   <a id="DotNext_IO_RandomAccessStream_WriteAsync_" data-uid="DotNext.IO.RandomAccessStream.WriteAsync*"></a>
   <h4 id="DotNext_IO_RandomAccessStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.RandomAccessStream.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)">WriteAsync(ReadOnlyMemory&lt;byte&gt;, CancellationToken)</h4>
@@ -1346,69 +896,7 @@
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.writeasync#system-io-stream-writeasync(system-readonlymemory((system-byte))-system-threading-cancellationtoken)">Stream.WriteAsync(ReadOnlyMemory&lt;byte&gt;, CancellationToken)</a></div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_RandomAccessStream_WriteByte_System_Byte_.md&amp;value=---%0Auid%3A%20DotNext.IO.RandomAccessStream.WriteByte(System.Byte)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/RandomAccessStream.cs/#L58">View Source</a>
-  </span>
-  <a id="DotNext_IO_RandomAccessStream_WriteByte_" data-uid="DotNext.IO.RandomAccessStream.WriteByte*"></a>
-  <h4 id="DotNext_IO_RandomAccessStream_WriteByte_System_Byte_" data-uid="DotNext.IO.RandomAccessStream.WriteByte(System.Byte)">WriteByte(byte)</h4>
-  <div class="markdown level1 summary"><p>Writes a byte to the current position in the stream and advances the position within the stream by one byte.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override sealed void WriteByte(byte value)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The byte to write to the stream.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.writebyte">Stream.WriteByte(byte)</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.ioexception">IOException</a></td>
-        <td><p>An I/O error occurs.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>The stream does not support writing, or the stream is already closed.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>Methods were called after the stream was closed.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
+  <div><a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_">ModernStream.WriteAsync(ReadOnlyMemory&lt;byte&gt;, CancellationToken)</a></div>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a>

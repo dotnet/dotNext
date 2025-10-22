@@ -13157,38 +13157,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileBufferingWriter.Advance
   nameWithType: FileBufferingWriter.Advance
-- uid: DotNext.IO.FileBufferingWriter.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
-  name: BeginRead(byte[], int, int, AsyncCallback?, object?)
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_
-  commentId: M:DotNext.IO.FileBufferingWriter.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
-  name.vb: BeginRead(Byte(), Integer, Integer, AsyncCallback, Object)
-  fullName: DotNext.IO.FileBufferingWriter.BeginRead(byte[], int, int, System.AsyncCallback?, object?)
-  fullName.vb: DotNext.IO.FileBufferingWriter.BeginRead(Byte(), Integer, Integer, System.AsyncCallback, Object)
-  nameWithType: FileBufferingWriter.BeginRead(byte[], int, int, AsyncCallback?, object?)
-  nameWithType.vb: FileBufferingWriter.BeginRead(Byte(), Integer, Integer, AsyncCallback, Object)
-- uid: DotNext.IO.FileBufferingWriter.BeginRead*
-  name: BeginRead
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_BeginRead_
-  commentId: Overload:DotNext.IO.FileBufferingWriter.BeginRead
-  isSpec: "True"
-  fullName: DotNext.IO.FileBufferingWriter.BeginRead
-  nameWithType: FileBufferingWriter.BeginRead
-- uid: DotNext.IO.FileBufferingWriter.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
-  name: BeginWrite(byte[], int, int, AsyncCallback?, object?)
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_
-  commentId: M:DotNext.IO.FileBufferingWriter.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
-  name.vb: BeginWrite(Byte(), Integer, Integer, AsyncCallback, Object)
-  fullName: DotNext.IO.FileBufferingWriter.BeginWrite(byte[], int, int, System.AsyncCallback?, object?)
-  fullName.vb: DotNext.IO.FileBufferingWriter.BeginWrite(Byte(), Integer, Integer, System.AsyncCallback, Object)
-  nameWithType: FileBufferingWriter.BeginWrite(byte[], int, int, AsyncCallback?, object?)
-  nameWithType.vb: FileBufferingWriter.BeginWrite(Byte(), Integer, Integer, AsyncCallback, Object)
-- uid: DotNext.IO.FileBufferingWriter.BeginWrite*
-  name: BeginWrite
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_BeginWrite_
-  commentId: Overload:DotNext.IO.FileBufferingWriter.BeginWrite
-  isSpec: "True"
-  fullName: DotNext.IO.FileBufferingWriter.BeginWrite
-  nameWithType: FileBufferingWriter.BeginWrite
 - uid: DotNext.IO.FileBufferingWriter.CanRead
   name: CanRead
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_CanRead
@@ -13364,32 +13332,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileBufferingWriter.Dispose
   nameWithType: FileBufferingWriter.Dispose
-- uid: DotNext.IO.FileBufferingWriter.EndRead(System.IAsyncResult)
-  name: EndRead(IAsyncResult)
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_EndRead_System_IAsyncResult_
-  commentId: M:DotNext.IO.FileBufferingWriter.EndRead(System.IAsyncResult)
-  fullName: DotNext.IO.FileBufferingWriter.EndRead(System.IAsyncResult)
-  nameWithType: FileBufferingWriter.EndRead(IAsyncResult)
-- uid: DotNext.IO.FileBufferingWriter.EndRead*
-  name: EndRead
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_EndRead_
-  commentId: Overload:DotNext.IO.FileBufferingWriter.EndRead
-  isSpec: "True"
-  fullName: DotNext.IO.FileBufferingWriter.EndRead
-  nameWithType: FileBufferingWriter.EndRead
-- uid: DotNext.IO.FileBufferingWriter.EndWrite(System.IAsyncResult)
-  name: EndWrite(IAsyncResult)
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_EndWrite_System_IAsyncResult_
-  commentId: M:DotNext.IO.FileBufferingWriter.EndWrite(System.IAsyncResult)
-  fullName: DotNext.IO.FileBufferingWriter.EndWrite(System.IAsyncResult)
-  nameWithType: FileBufferingWriter.EndWrite(IAsyncResult)
-- uid: DotNext.IO.FileBufferingWriter.EndWrite*
-  name: EndWrite
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_EndWrite_
-  commentId: Overload:DotNext.IO.FileBufferingWriter.EndWrite
-  isSpec: "True"
-  fullName: DotNext.IO.FileBufferingWriter.EndWrite
-  nameWithType: FileBufferingWriter.EndWrite
 - uid: DotNext.IO.FileBufferingWriter.Flush
   name: Flush()
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_Flush
@@ -13701,15 +13643,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileBufferingWriter.Position
   nameWithType: FileBufferingWriter.Position
-- uid: DotNext.IO.FileBufferingWriter.Read(System.Byte[],System.Int32,System.Int32)
-  name: Read(byte[], int, int)
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_Read_System_Byte___System_Int32_System_Int32_
-  commentId: M:DotNext.IO.FileBufferingWriter.Read(System.Byte[],System.Int32,System.Int32)
-  name.vb: Read(Byte(), Integer, Integer)
-  fullName: DotNext.IO.FileBufferingWriter.Read(byte[], int, int)
-  fullName.vb: DotNext.IO.FileBufferingWriter.Read(Byte(), Integer, Integer)
-  nameWithType: FileBufferingWriter.Read(byte[], int, int)
-  nameWithType.vb: FileBufferingWriter.Read(Byte(), Integer, Integer)
 - uid: DotNext.IO.FileBufferingWriter.Read(System.Span{System.Byte})
   name: Read(Span<byte>)
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_Read_System_Span_System_Byte__
@@ -13726,15 +13659,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileBufferingWriter.Read
   nameWithType: FileBufferingWriter.Read
-- uid: DotNext.IO.FileBufferingWriter.ReadAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
-  name: ReadAsync(byte[], int, int, CancellationToken)
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_
-  commentId: M:DotNext.IO.FileBufferingWriter.ReadAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
-  name.vb: ReadAsync(Byte(), Integer, Integer, CancellationToken)
-  fullName: DotNext.IO.FileBufferingWriter.ReadAsync(byte[], int, int, System.Threading.CancellationToken)
-  fullName.vb: DotNext.IO.FileBufferingWriter.ReadAsync(Byte(), Integer, Integer, System.Threading.CancellationToken)
-  nameWithType: FileBufferingWriter.ReadAsync(byte[], int, int, CancellationToken)
-  nameWithType.vb: FileBufferingWriter.ReadAsync(Byte(), Integer, Integer, CancellationToken)
 - uid: DotNext.IO.FileBufferingWriter.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)
   name: ReadAsync(Memory<byte>, CancellationToken)
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_
@@ -13751,19 +13675,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileBufferingWriter.ReadAsync
   nameWithType: FileBufferingWriter.ReadAsync
-- uid: DotNext.IO.FileBufferingWriter.ReadByte
-  name: ReadByte()
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_ReadByte
-  commentId: M:DotNext.IO.FileBufferingWriter.ReadByte
-  fullName: DotNext.IO.FileBufferingWriter.ReadByte()
-  nameWithType: FileBufferingWriter.ReadByte()
-- uid: DotNext.IO.FileBufferingWriter.ReadByte*
-  name: ReadByte
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_ReadByte_
-  commentId: Overload:DotNext.IO.FileBufferingWriter.ReadByte
-  isSpec: "True"
-  fullName: DotNext.IO.FileBufferingWriter.ReadByte
-  nameWithType: FileBufferingWriter.ReadByte
 - uid: DotNext.IO.FileBufferingWriter.Seek(System.Int64,System.IO.SeekOrigin)
   name: Seek(long, SeekOrigin)
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_Seek_System_Int64_System_IO_SeekOrigin_
@@ -13821,15 +13732,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileBufferingWriter.TryGetWrittenContent
   nameWithType: FileBufferingWriter.TryGetWrittenContent
-- uid: DotNext.IO.FileBufferingWriter.Write(System.Byte[],System.Int32,System.Int32)
-  name: Write(byte[], int, int)
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_Write_System_Byte___System_Int32_System_Int32_
-  commentId: M:DotNext.IO.FileBufferingWriter.Write(System.Byte[],System.Int32,System.Int32)
-  name.vb: Write(Byte(), Integer, Integer)
-  fullName: DotNext.IO.FileBufferingWriter.Write(byte[], int, int)
-  fullName.vb: DotNext.IO.FileBufferingWriter.Write(Byte(), Integer, Integer)
-  nameWithType: FileBufferingWriter.Write(byte[], int, int)
-  nameWithType.vb: FileBufferingWriter.Write(Byte(), Integer, Integer)
 - uid: DotNext.IO.FileBufferingWriter.Write(System.ReadOnlySpan{System.Byte})
   name: Write(ReadOnlySpan<byte>)
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_Write_System_ReadOnlySpan_System_Byte__
@@ -13846,15 +13748,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileBufferingWriter.Write
   nameWithType: FileBufferingWriter.Write
-- uid: DotNext.IO.FileBufferingWriter.WriteAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
-  name: WriteAsync(byte[], int, int, CancellationToken)
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_
-  commentId: M:DotNext.IO.FileBufferingWriter.WriteAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
-  name.vb: WriteAsync(Byte(), Integer, Integer, CancellationToken)
-  fullName: DotNext.IO.FileBufferingWriter.WriteAsync(byte[], int, int, System.Threading.CancellationToken)
-  fullName.vb: DotNext.IO.FileBufferingWriter.WriteAsync(Byte(), Integer, Integer, System.Threading.CancellationToken)
-  nameWithType: FileBufferingWriter.WriteAsync(byte[], int, int, CancellationToken)
-  nameWithType.vb: FileBufferingWriter.WriteAsync(Byte(), Integer, Integer, CancellationToken)
 - uid: DotNext.IO.FileBufferingWriter.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)
   name: WriteAsync(ReadOnlyMemory<byte>, CancellationToken)
   href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_
@@ -13871,22 +13764,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.FileBufferingWriter.WriteAsync
   nameWithType: FileBufferingWriter.WriteAsync
-- uid: DotNext.IO.FileBufferingWriter.WriteByte(System.Byte)
-  name: WriteByte(byte)
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_WriteByte_System_Byte_
-  commentId: M:DotNext.IO.FileBufferingWriter.WriteByte(System.Byte)
-  name.vb: WriteByte(Byte)
-  fullName: DotNext.IO.FileBufferingWriter.WriteByte(byte)
-  fullName.vb: DotNext.IO.FileBufferingWriter.WriteByte(Byte)
-  nameWithType: FileBufferingWriter.WriteByte(byte)
-  nameWithType.vb: FileBufferingWriter.WriteByte(Byte)
-- uid: DotNext.IO.FileBufferingWriter.WriteByte*
-  name: WriteByte
-  href: api/DotNext.IO.FileBufferingWriter.html#DotNext_IO_FileBufferingWriter_WriteByte_
-  commentId: Overload:DotNext.IO.FileBufferingWriter.WriteByte
-  isSpec: "True"
-  fullName: DotNext.IO.FileBufferingWriter.WriteByte
-  nameWithType: FileBufferingWriter.WriteByte
 - uid: DotNext.IO.FileReader
   name: FileReader
   href: api/DotNext.IO.FileReader.html
@@ -16378,6 +16255,199 @@ references:
   fullName.vb: DotNext.IO.MemoryTransferObject.WriteToAsync(Of TWriter)(TWriter, System.Threading.CancellationToken)
   nameWithType: MemoryTransferObject.WriteToAsync<TWriter>(TWriter, CancellationToken)
   nameWithType.vb: MemoryTransferObject.WriteToAsync(Of TWriter)(TWriter, CancellationToken)
+- uid: DotNext.IO.ModernStream
+  name: ModernStream
+  href: api/DotNext.IO.ModernStream.html
+  commentId: T:DotNext.IO.ModernStream
+  fullName: DotNext.IO.ModernStream
+  nameWithType: ModernStream
+- uid: DotNext.IO.ModernStream.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
+  name: BeginRead(byte[], int, int, AsyncCallback?, object?)
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_
+  commentId: M:DotNext.IO.ModernStream.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
+  name.vb: BeginRead(Byte(), Integer, Integer, AsyncCallback, Object)
+  fullName: DotNext.IO.ModernStream.BeginRead(byte[], int, int, System.AsyncCallback?, object?)
+  fullName.vb: DotNext.IO.ModernStream.BeginRead(Byte(), Integer, Integer, System.AsyncCallback, Object)
+  nameWithType: ModernStream.BeginRead(byte[], int, int, AsyncCallback?, object?)
+  nameWithType.vb: ModernStream.BeginRead(Byte(), Integer, Integer, AsyncCallback, Object)
+- uid: DotNext.IO.ModernStream.BeginRead*
+  name: BeginRead
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_BeginRead_
+  commentId: Overload:DotNext.IO.ModernStream.BeginRead
+  isSpec: "True"
+  fullName: DotNext.IO.ModernStream.BeginRead
+  nameWithType: ModernStream.BeginRead
+- uid: DotNext.IO.ModernStream.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
+  name: BeginWrite(byte[], int, int, AsyncCallback?, object?)
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_
+  commentId: M:DotNext.IO.ModernStream.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
+  name.vb: BeginWrite(Byte(), Integer, Integer, AsyncCallback, Object)
+  fullName: DotNext.IO.ModernStream.BeginWrite(byte[], int, int, System.AsyncCallback?, object?)
+  fullName.vb: DotNext.IO.ModernStream.BeginWrite(Byte(), Integer, Integer, System.AsyncCallback, Object)
+  nameWithType: ModernStream.BeginWrite(byte[], int, int, AsyncCallback?, object?)
+  nameWithType.vb: ModernStream.BeginWrite(Byte(), Integer, Integer, AsyncCallback, Object)
+- uid: DotNext.IO.ModernStream.BeginWrite*
+  name: BeginWrite
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_BeginWrite_
+  commentId: Overload:DotNext.IO.ModernStream.BeginWrite
+  isSpec: "True"
+  fullName: DotNext.IO.ModernStream.BeginWrite
+  nameWithType: ModernStream.BeginWrite
+- uid: DotNext.IO.ModernStream.EndRead(System.IAsyncResult)
+  name: EndRead(IAsyncResult)
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_EndRead_System_IAsyncResult_
+  commentId: M:DotNext.IO.ModernStream.EndRead(System.IAsyncResult)
+  fullName: DotNext.IO.ModernStream.EndRead(System.IAsyncResult)
+  nameWithType: ModernStream.EndRead(IAsyncResult)
+- uid: DotNext.IO.ModernStream.EndRead*
+  name: EndRead
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_EndRead_
+  commentId: Overload:DotNext.IO.ModernStream.EndRead
+  isSpec: "True"
+  fullName: DotNext.IO.ModernStream.EndRead
+  nameWithType: ModernStream.EndRead
+- uid: DotNext.IO.ModernStream.EndWrite(System.IAsyncResult)
+  name: EndWrite(IAsyncResult)
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_EndWrite_System_IAsyncResult_
+  commentId: M:DotNext.IO.ModernStream.EndWrite(System.IAsyncResult)
+  fullName: DotNext.IO.ModernStream.EndWrite(System.IAsyncResult)
+  nameWithType: ModernStream.EndWrite(IAsyncResult)
+- uid: DotNext.IO.ModernStream.EndWrite*
+  name: EndWrite
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_EndWrite_
+  commentId: Overload:DotNext.IO.ModernStream.EndWrite
+  isSpec: "True"
+  fullName: DotNext.IO.ModernStream.EndWrite
+  nameWithType: ModernStream.EndWrite
+- uid: DotNext.IO.ModernStream.Read(System.Byte[],System.Int32,System.Int32)
+  name: Read(byte[], int, int)
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_Read_System_Byte___System_Int32_System_Int32_
+  commentId: M:DotNext.IO.ModernStream.Read(System.Byte[],System.Int32,System.Int32)
+  name.vb: Read(Byte(), Integer, Integer)
+  fullName: DotNext.IO.ModernStream.Read(byte[], int, int)
+  fullName.vb: DotNext.IO.ModernStream.Read(Byte(), Integer, Integer)
+  nameWithType: ModernStream.Read(byte[], int, int)
+  nameWithType.vb: ModernStream.Read(Byte(), Integer, Integer)
+- uid: DotNext.IO.ModernStream.Read(System.Span{System.Byte})
+  name: Read(Span<byte>)
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_Read_System_Span_System_Byte__
+  commentId: M:DotNext.IO.ModernStream.Read(System.Span{System.Byte})
+  name.vb: Read(Span(Of Byte))
+  fullName: DotNext.IO.ModernStream.Read(System.Span<byte>)
+  fullName.vb: DotNext.IO.ModernStream.Read(System.Span(Of Byte))
+  nameWithType: ModernStream.Read(Span<byte>)
+  nameWithType.vb: ModernStream.Read(Span(Of Byte))
+- uid: DotNext.IO.ModernStream.Read*
+  name: Read
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_Read_
+  commentId: Overload:DotNext.IO.ModernStream.Read
+  isSpec: "True"
+  fullName: DotNext.IO.ModernStream.Read
+  nameWithType: ModernStream.Read
+- uid: DotNext.IO.ModernStream.ReadAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
+  name: ReadAsync(byte[], int, int, CancellationToken)
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.ModernStream.ReadAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
+  name.vb: ReadAsync(Byte(), Integer, Integer, CancellationToken)
+  fullName: DotNext.IO.ModernStream.ReadAsync(byte[], int, int, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.ModernStream.ReadAsync(Byte(), Integer, Integer, System.Threading.CancellationToken)
+  nameWithType: ModernStream.ReadAsync(byte[], int, int, CancellationToken)
+  nameWithType.vb: ModernStream.ReadAsync(Byte(), Integer, Integer, CancellationToken)
+- uid: DotNext.IO.ModernStream.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)
+  name: ReadAsync(Memory<byte>, CancellationToken)
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.ModernStream.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)
+  name.vb: ReadAsync(Memory(Of Byte), CancellationToken)
+  fullName: DotNext.IO.ModernStream.ReadAsync(System.Memory<byte>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.ModernStream.ReadAsync(System.Memory(Of Byte), System.Threading.CancellationToken)
+  nameWithType: ModernStream.ReadAsync(Memory<byte>, CancellationToken)
+  nameWithType.vb: ModernStream.ReadAsync(Memory(Of Byte), CancellationToken)
+- uid: DotNext.IO.ModernStream.ReadAsync*
+  name: ReadAsync
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_ReadAsync_
+  commentId: Overload:DotNext.IO.ModernStream.ReadAsync
+  isSpec: "True"
+  fullName: DotNext.IO.ModernStream.ReadAsync
+  nameWithType: ModernStream.ReadAsync
+- uid: DotNext.IO.ModernStream.ReadByte
+  name: ReadByte()
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_ReadByte
+  commentId: M:DotNext.IO.ModernStream.ReadByte
+  fullName: DotNext.IO.ModernStream.ReadByte()
+  nameWithType: ModernStream.ReadByte()
+- uid: DotNext.IO.ModernStream.ReadByte*
+  name: ReadByte
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_ReadByte_
+  commentId: Overload:DotNext.IO.ModernStream.ReadByte
+  isSpec: "True"
+  fullName: DotNext.IO.ModernStream.ReadByte
+  nameWithType: ModernStream.ReadByte
+- uid: DotNext.IO.ModernStream.Write(System.Byte[],System.Int32,System.Int32)
+  name: Write(byte[], int, int)
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_Write_System_Byte___System_Int32_System_Int32_
+  commentId: M:DotNext.IO.ModernStream.Write(System.Byte[],System.Int32,System.Int32)
+  name.vb: Write(Byte(), Integer, Integer)
+  fullName: DotNext.IO.ModernStream.Write(byte[], int, int)
+  fullName.vb: DotNext.IO.ModernStream.Write(Byte(), Integer, Integer)
+  nameWithType: ModernStream.Write(byte[], int, int)
+  nameWithType.vb: ModernStream.Write(Byte(), Integer, Integer)
+- uid: DotNext.IO.ModernStream.Write(System.ReadOnlySpan{System.Byte})
+  name: Write(ReadOnlySpan<byte>)
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_Write_System_ReadOnlySpan_System_Byte__
+  commentId: M:DotNext.IO.ModernStream.Write(System.ReadOnlySpan{System.Byte})
+  name.vb: Write(ReadOnlySpan(Of Byte))
+  fullName: DotNext.IO.ModernStream.Write(System.ReadOnlySpan<byte>)
+  fullName.vb: DotNext.IO.ModernStream.Write(System.ReadOnlySpan(Of Byte))
+  nameWithType: ModernStream.Write(ReadOnlySpan<byte>)
+  nameWithType.vb: ModernStream.Write(ReadOnlySpan(Of Byte))
+- uid: DotNext.IO.ModernStream.Write*
+  name: Write
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_Write_
+  commentId: Overload:DotNext.IO.ModernStream.Write
+  isSpec: "True"
+  fullName: DotNext.IO.ModernStream.Write
+  nameWithType: ModernStream.Write
+- uid: DotNext.IO.ModernStream.WriteAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
+  name: WriteAsync(byte[], int, int, CancellationToken)
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.ModernStream.WriteAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
+  name.vb: WriteAsync(Byte(), Integer, Integer, CancellationToken)
+  fullName: DotNext.IO.ModernStream.WriteAsync(byte[], int, int, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.ModernStream.WriteAsync(Byte(), Integer, Integer, System.Threading.CancellationToken)
+  nameWithType: ModernStream.WriteAsync(byte[], int, int, CancellationToken)
+  nameWithType.vb: ModernStream.WriteAsync(Byte(), Integer, Integer, CancellationToken)
+- uid: DotNext.IO.ModernStream.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)
+  name: WriteAsync(ReadOnlyMemory<byte>, CancellationToken)
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.ModernStream.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)
+  name.vb: WriteAsync(ReadOnlyMemory(Of Byte), CancellationToken)
+  fullName: DotNext.IO.ModernStream.WriteAsync(System.ReadOnlyMemory<byte>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.ModernStream.WriteAsync(System.ReadOnlyMemory(Of Byte), System.Threading.CancellationToken)
+  nameWithType: ModernStream.WriteAsync(ReadOnlyMemory<byte>, CancellationToken)
+  nameWithType.vb: ModernStream.WriteAsync(ReadOnlyMemory(Of Byte), CancellationToken)
+- uid: DotNext.IO.ModernStream.WriteAsync*
+  name: WriteAsync
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_WriteAsync_
+  commentId: Overload:DotNext.IO.ModernStream.WriteAsync
+  isSpec: "True"
+  fullName: DotNext.IO.ModernStream.WriteAsync
+  nameWithType: ModernStream.WriteAsync
+- uid: DotNext.IO.ModernStream.WriteByte(System.Byte)
+  name: WriteByte(byte)
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_WriteByte_System_Byte_
+  commentId: M:DotNext.IO.ModernStream.WriteByte(System.Byte)
+  name.vb: WriteByte(Byte)
+  fullName: DotNext.IO.ModernStream.WriteByte(byte)
+  fullName.vb: DotNext.IO.ModernStream.WriteByte(Byte)
+  nameWithType: ModernStream.WriteByte(byte)
+  nameWithType.vb: ModernStream.WriteByte(Byte)
+- uid: DotNext.IO.ModernStream.WriteByte*
+  name: WriteByte
+  href: api/DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_WriteByte_
+  commentId: Overload:DotNext.IO.ModernStream.WriteByte
+  isSpec: "True"
+  fullName: DotNext.IO.ModernStream.WriteByte
+  nameWithType: ModernStream.WriteByte
 - uid: DotNext.IO.Pipelines
   name: DotNext.IO.Pipelines
   href: api/DotNext.IO.Pipelines.html
@@ -17182,38 +17252,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.PoolingBufferedStream.BaseStream
   nameWithType: PoolingBufferedStream.BaseStream
-- uid: DotNext.IO.PoolingBufferedStream.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
-  name: BeginRead(byte[], int, int, AsyncCallback?, object?)
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_
-  commentId: M:DotNext.IO.PoolingBufferedStream.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
-  name.vb: BeginRead(Byte(), Integer, Integer, AsyncCallback, Object)
-  fullName: DotNext.IO.PoolingBufferedStream.BeginRead(byte[], int, int, System.AsyncCallback?, object?)
-  fullName.vb: DotNext.IO.PoolingBufferedStream.BeginRead(Byte(), Integer, Integer, System.AsyncCallback, Object)
-  nameWithType: PoolingBufferedStream.BeginRead(byte[], int, int, AsyncCallback?, object?)
-  nameWithType.vb: PoolingBufferedStream.BeginRead(Byte(), Integer, Integer, AsyncCallback, Object)
-- uid: DotNext.IO.PoolingBufferedStream.BeginRead*
-  name: BeginRead
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_BeginRead_
-  commentId: Overload:DotNext.IO.PoolingBufferedStream.BeginRead
-  isSpec: "True"
-  fullName: DotNext.IO.PoolingBufferedStream.BeginRead
-  nameWithType: PoolingBufferedStream.BeginRead
-- uid: DotNext.IO.PoolingBufferedStream.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
-  name: BeginWrite(byte[], int, int, AsyncCallback?, object?)
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_
-  commentId: M:DotNext.IO.PoolingBufferedStream.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)
-  name.vb: BeginWrite(Byte(), Integer, Integer, AsyncCallback, Object)
-  fullName: DotNext.IO.PoolingBufferedStream.BeginWrite(byte[], int, int, System.AsyncCallback?, object?)
-  fullName.vb: DotNext.IO.PoolingBufferedStream.BeginWrite(Byte(), Integer, Integer, System.AsyncCallback, Object)
-  nameWithType: PoolingBufferedStream.BeginWrite(byte[], int, int, AsyncCallback?, object?)
-  nameWithType.vb: PoolingBufferedStream.BeginWrite(Byte(), Integer, Integer, AsyncCallback, Object)
-- uid: DotNext.IO.PoolingBufferedStream.BeginWrite*
-  name: BeginWrite
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_BeginWrite_
-  commentId: Overload:DotNext.IO.PoolingBufferedStream.BeginWrite
-  isSpec: "True"
-  fullName: DotNext.IO.PoolingBufferedStream.BeginWrite
-  nameWithType: PoolingBufferedStream.BeginWrite
 - uid: DotNext.IO.PoolingBufferedStream.CanRead
   name: CanRead
   href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_CanRead
@@ -17327,32 +17365,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.PoolingBufferedStream.DisposeAsync
   nameWithType: PoolingBufferedStream.DisposeAsync
-- uid: DotNext.IO.PoolingBufferedStream.EndRead(System.IAsyncResult)
-  name: EndRead(IAsyncResult)
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_EndRead_System_IAsyncResult_
-  commentId: M:DotNext.IO.PoolingBufferedStream.EndRead(System.IAsyncResult)
-  fullName: DotNext.IO.PoolingBufferedStream.EndRead(System.IAsyncResult)
-  nameWithType: PoolingBufferedStream.EndRead(IAsyncResult)
-- uid: DotNext.IO.PoolingBufferedStream.EndRead*
-  name: EndRead
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_EndRead_
-  commentId: Overload:DotNext.IO.PoolingBufferedStream.EndRead
-  isSpec: "True"
-  fullName: DotNext.IO.PoolingBufferedStream.EndRead
-  nameWithType: PoolingBufferedStream.EndRead
-- uid: DotNext.IO.PoolingBufferedStream.EndWrite(System.IAsyncResult)
-  name: EndWrite(IAsyncResult)
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_EndWrite_System_IAsyncResult_
-  commentId: M:DotNext.IO.PoolingBufferedStream.EndWrite(System.IAsyncResult)
-  fullName: DotNext.IO.PoolingBufferedStream.EndWrite(System.IAsyncResult)
-  nameWithType: PoolingBufferedStream.EndWrite(IAsyncResult)
-- uid: DotNext.IO.PoolingBufferedStream.EndWrite*
-  name: EndWrite
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_EndWrite_
-  commentId: Overload:DotNext.IO.PoolingBufferedStream.EndWrite
-  isSpec: "True"
-  fullName: DotNext.IO.PoolingBufferedStream.EndWrite
-  nameWithType: PoolingBufferedStream.EndWrite
 - uid: DotNext.IO.PoolingBufferedStream.Finalize
   name: ~PoolingBufferedStream()
   href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_Finalize
@@ -17466,15 +17478,6 @@ references:
   commentId: M:DotNext.IO.PoolingBufferedStream.Read
   fullName: DotNext.IO.PoolingBufferedStream.Read()
   nameWithType: PoolingBufferedStream.Read()
-- uid: DotNext.IO.PoolingBufferedStream.Read(System.Byte[],System.Int32,System.Int32)
-  name: Read(byte[], int, int)
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_Read_System_Byte___System_Int32_System_Int32_
-  commentId: M:DotNext.IO.PoolingBufferedStream.Read(System.Byte[],System.Int32,System.Int32)
-  name.vb: Read(Byte(), Integer, Integer)
-  fullName: DotNext.IO.PoolingBufferedStream.Read(byte[], int, int)
-  fullName.vb: DotNext.IO.PoolingBufferedStream.Read(Byte(), Integer, Integer)
-  nameWithType: PoolingBufferedStream.Read(byte[], int, int)
-  nameWithType.vb: PoolingBufferedStream.Read(Byte(), Integer, Integer)
 - uid: DotNext.IO.PoolingBufferedStream.Read(System.Span{System.Byte})
   name: Read(Span<byte>)
   href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_Read_System_Span_System_Byte__
@@ -17491,15 +17494,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.PoolingBufferedStream.Read
   nameWithType: PoolingBufferedStream.Read
-- uid: DotNext.IO.PoolingBufferedStream.ReadAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
-  name: ReadAsync(byte[], int, int, CancellationToken)
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_
-  commentId: M:DotNext.IO.PoolingBufferedStream.ReadAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
-  name.vb: ReadAsync(Byte(), Integer, Integer, CancellationToken)
-  fullName: DotNext.IO.PoolingBufferedStream.ReadAsync(byte[], int, int, System.Threading.CancellationToken)
-  fullName.vb: DotNext.IO.PoolingBufferedStream.ReadAsync(Byte(), Integer, Integer, System.Threading.CancellationToken)
-  nameWithType: PoolingBufferedStream.ReadAsync(byte[], int, int, CancellationToken)
-  nameWithType.vb: PoolingBufferedStream.ReadAsync(Byte(), Integer, Integer, CancellationToken)
 - uid: DotNext.IO.PoolingBufferedStream.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)
   name: ReadAsync(Memory<byte>, CancellationToken)
   href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_
@@ -17522,19 +17516,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.PoolingBufferedStream.ReadAsync
   nameWithType: PoolingBufferedStream.ReadAsync
-- uid: DotNext.IO.PoolingBufferedStream.ReadByte
-  name: ReadByte()
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_ReadByte
-  commentId: M:DotNext.IO.PoolingBufferedStream.ReadByte
-  fullName: DotNext.IO.PoolingBufferedStream.ReadByte()
-  nameWithType: PoolingBufferedStream.ReadByte()
-- uid: DotNext.IO.PoolingBufferedStream.ReadByte*
-  name: ReadByte
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_ReadByte_
-  commentId: Overload:DotNext.IO.PoolingBufferedStream.ReadByte
-  isSpec: "True"
-  fullName: DotNext.IO.PoolingBufferedStream.ReadByte
-  nameWithType: PoolingBufferedStream.ReadByte
 - uid: DotNext.IO.PoolingBufferedStream.ReadTimeout
   name: ReadTimeout
   href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_ReadTimeout
@@ -17599,15 +17580,6 @@ references:
   commentId: M:DotNext.IO.PoolingBufferedStream.Write
   fullName: DotNext.IO.PoolingBufferedStream.Write()
   nameWithType: PoolingBufferedStream.Write()
-- uid: DotNext.IO.PoolingBufferedStream.Write(System.Byte[],System.Int32,System.Int32)
-  name: Write(byte[], int, int)
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_Write_System_Byte___System_Int32_System_Int32_
-  commentId: M:DotNext.IO.PoolingBufferedStream.Write(System.Byte[],System.Int32,System.Int32)
-  name.vb: Write(Byte(), Integer, Integer)
-  fullName: DotNext.IO.PoolingBufferedStream.Write(byte[], int, int)
-  fullName.vb: DotNext.IO.PoolingBufferedStream.Write(Byte(), Integer, Integer)
-  nameWithType: PoolingBufferedStream.Write(byte[], int, int)
-  nameWithType.vb: PoolingBufferedStream.Write(Byte(), Integer, Integer)
 - uid: DotNext.IO.PoolingBufferedStream.Write(System.ReadOnlySpan{System.Byte})
   name: Write(ReadOnlySpan<byte>)
   href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_Write_System_ReadOnlySpan_System_Byte__
@@ -17624,15 +17596,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.PoolingBufferedStream.Write
   nameWithType: PoolingBufferedStream.Write
-- uid: DotNext.IO.PoolingBufferedStream.WriteAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
-  name: WriteAsync(byte[], int, int, CancellationToken)
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_
-  commentId: M:DotNext.IO.PoolingBufferedStream.WriteAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
-  name.vb: WriteAsync(Byte(), Integer, Integer, CancellationToken)
-  fullName: DotNext.IO.PoolingBufferedStream.WriteAsync(byte[], int, int, System.Threading.CancellationToken)
-  fullName.vb: DotNext.IO.PoolingBufferedStream.WriteAsync(Byte(), Integer, Integer, System.Threading.CancellationToken)
-  nameWithType: PoolingBufferedStream.WriteAsync(byte[], int, int, CancellationToken)
-  nameWithType.vb: PoolingBufferedStream.WriteAsync(Byte(), Integer, Integer, CancellationToken)
 - uid: DotNext.IO.PoolingBufferedStream.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)
   name: WriteAsync(ReadOnlyMemory<byte>, CancellationToken)
   href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_
@@ -17655,22 +17618,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.PoolingBufferedStream.WriteAsync
   nameWithType: PoolingBufferedStream.WriteAsync
-- uid: DotNext.IO.PoolingBufferedStream.WriteByte(System.Byte)
-  name: WriteByte(byte)
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_WriteByte_System_Byte_
-  commentId: M:DotNext.IO.PoolingBufferedStream.WriteByte(System.Byte)
-  name.vb: WriteByte(Byte)
-  fullName: DotNext.IO.PoolingBufferedStream.WriteByte(byte)
-  fullName.vb: DotNext.IO.PoolingBufferedStream.WriteByte(Byte)
-  nameWithType: PoolingBufferedStream.WriteByte(byte)
-  nameWithType.vb: PoolingBufferedStream.WriteByte(Byte)
-- uid: DotNext.IO.PoolingBufferedStream.WriteByte*
-  name: WriteByte
-  href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_WriteByte_
-  commentId: Overload:DotNext.IO.PoolingBufferedStream.WriteByte
-  isSpec: "True"
-  fullName: DotNext.IO.PoolingBufferedStream.WriteByte
-  nameWithType: PoolingBufferedStream.WriteByte
 - uid: DotNext.IO.PoolingBufferedStream.WriteTimeout
   name: WriteTimeout
   href: api/DotNext.IO.PoolingBufferedStream.html#DotNext_IO_PoolingBufferedStream_WriteTimeout
@@ -17732,15 +17679,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.RandomAccessStream.Position
   nameWithType: RandomAccessStream.Position
-- uid: DotNext.IO.RandomAccessStream.Read(System.Byte[],System.Int32,System.Int32)
-  name: Read(byte[], int, int)
-  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Read_System_Byte___System_Int32_System_Int32_
-  commentId: M:DotNext.IO.RandomAccessStream.Read(System.Byte[],System.Int32,System.Int32)
-  name.vb: Read(Byte(), Integer, Integer)
-  fullName: DotNext.IO.RandomAccessStream.Read(byte[], int, int)
-  fullName.vb: DotNext.IO.RandomAccessStream.Read(Byte(), Integer, Integer)
-  nameWithType: RandomAccessStream.Read(byte[], int, int)
-  nameWithType.vb: RandomAccessStream.Read(Byte(), Integer, Integer)
 - uid: DotNext.IO.RandomAccessStream.Read(System.Span{System.Byte})
   name: Read(Span<byte>)
   href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Read_System_Span_System_Byte__
@@ -17766,15 +17704,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.RandomAccessStream.Read
   nameWithType: RandomAccessStream.Read
-- uid: DotNext.IO.RandomAccessStream.ReadAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
-  name: ReadAsync(byte[], int, int, CancellationToken)
-  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_
-  commentId: M:DotNext.IO.RandomAccessStream.ReadAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
-  name.vb: ReadAsync(Byte(), Integer, Integer, CancellationToken)
-  fullName: DotNext.IO.RandomAccessStream.ReadAsync(byte[], int, int, System.Threading.CancellationToken)
-  fullName.vb: DotNext.IO.RandomAccessStream.ReadAsync(Byte(), Integer, Integer, System.Threading.CancellationToken)
-  nameWithType: RandomAccessStream.ReadAsync(byte[], int, int, CancellationToken)
-  nameWithType.vb: RandomAccessStream.ReadAsync(Byte(), Integer, Integer, CancellationToken)
 - uid: DotNext.IO.RandomAccessStream.ReadAsync(System.Memory{System.Byte},System.Int64,System.Threading.CancellationToken)
   name: ReadAsync(Memory<byte>, long, CancellationToken)
   href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_ReadAsync_System_Memory_System_Byte__System_Int64_System_Threading_CancellationToken_
@@ -17800,19 +17729,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.RandomAccessStream.ReadAsync
   nameWithType: RandomAccessStream.ReadAsync
-- uid: DotNext.IO.RandomAccessStream.ReadByte
-  name: ReadByte()
-  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_ReadByte
-  commentId: M:DotNext.IO.RandomAccessStream.ReadByte
-  fullName: DotNext.IO.RandomAccessStream.ReadByte()
-  nameWithType: RandomAccessStream.ReadByte()
-- uid: DotNext.IO.RandomAccessStream.ReadByte*
-  name: ReadByte
-  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_ReadByte_
-  commentId: Overload:DotNext.IO.RandomAccessStream.ReadByte
-  isSpec: "True"
-  fullName: DotNext.IO.RandomAccessStream.ReadByte
-  nameWithType: RandomAccessStream.ReadByte
 - uid: DotNext.IO.RandomAccessStream.Seek(System.Int64,System.IO.SeekOrigin)
   name: Seek(long, SeekOrigin)
   href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Seek_System_Int64_System_IO_SeekOrigin_
@@ -17829,15 +17745,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.RandomAccessStream.Seek
   nameWithType: RandomAccessStream.Seek
-- uid: DotNext.IO.RandomAccessStream.Write(System.Byte[],System.Int32,System.Int32)
-  name: Write(byte[], int, int)
-  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Write_System_Byte___System_Int32_System_Int32_
-  commentId: M:DotNext.IO.RandomAccessStream.Write(System.Byte[],System.Int32,System.Int32)
-  name.vb: Write(Byte(), Integer, Integer)
-  fullName: DotNext.IO.RandomAccessStream.Write(byte[], int, int)
-  fullName.vb: DotNext.IO.RandomAccessStream.Write(Byte(), Integer, Integer)
-  nameWithType: RandomAccessStream.Write(byte[], int, int)
-  nameWithType.vb: RandomAccessStream.Write(Byte(), Integer, Integer)
 - uid: DotNext.IO.RandomAccessStream.Write(System.ReadOnlySpan{System.Byte})
   name: Write(ReadOnlySpan<byte>)
   href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_Write_System_ReadOnlySpan_System_Byte__
@@ -17863,15 +17770,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.RandomAccessStream.Write
   nameWithType: RandomAccessStream.Write
-- uid: DotNext.IO.RandomAccessStream.WriteAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
-  name: WriteAsync(byte[], int, int, CancellationToken)
-  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_
-  commentId: M:DotNext.IO.RandomAccessStream.WriteAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)
-  name.vb: WriteAsync(Byte(), Integer, Integer, CancellationToken)
-  fullName: DotNext.IO.RandomAccessStream.WriteAsync(byte[], int, int, System.Threading.CancellationToken)
-  fullName.vb: DotNext.IO.RandomAccessStream.WriteAsync(Byte(), Integer, Integer, System.Threading.CancellationToken)
-  nameWithType: RandomAccessStream.WriteAsync(byte[], int, int, CancellationToken)
-  nameWithType.vb: RandomAccessStream.WriteAsync(Byte(), Integer, Integer, CancellationToken)
 - uid: DotNext.IO.RandomAccessStream.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Int64,System.Threading.CancellationToken)
   name: WriteAsync(ReadOnlyMemory<byte>, long, CancellationToken)
   href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Int64_System_Threading_CancellationToken_
@@ -17897,22 +17795,6 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.RandomAccessStream.WriteAsync
   nameWithType: RandomAccessStream.WriteAsync
-- uid: DotNext.IO.RandomAccessStream.WriteByte(System.Byte)
-  name: WriteByte(byte)
-  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_WriteByte_System_Byte_
-  commentId: M:DotNext.IO.RandomAccessStream.WriteByte(System.Byte)
-  name.vb: WriteByte(Byte)
-  fullName: DotNext.IO.RandomAccessStream.WriteByte(byte)
-  fullName.vb: DotNext.IO.RandomAccessStream.WriteByte(Byte)
-  nameWithType: RandomAccessStream.WriteByte(byte)
-  nameWithType.vb: RandomAccessStream.WriteByte(Byte)
-- uid: DotNext.IO.RandomAccessStream.WriteByte*
-  name: WriteByte
-  href: api/DotNext.IO.RandomAccessStream.html#DotNext_IO_RandomAccessStream_WriteByte_
-  commentId: Overload:DotNext.IO.RandomAccessStream.WriteByte
-  isSpec: "True"
-  fullName: DotNext.IO.RandomAccessStream.WriteByte
-  nameWithType: RandomAccessStream.WriteByte
 - uid: DotNext.IO.SequenceReader
   name: SequenceReader
   href: api/DotNext.IO.SequenceReader.html
@@ -24169,15 +24051,15 @@ references:
   commentId: T:DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost
   fullName: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost
   nameWithType: CommandLineMaintenanceInterfaceHost
-- uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.#ctor(System.Net.Sockets.UnixDomainSocketEndPoint,System.Collections.Generic.IEnumerable{DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand},DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler,DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback,Microsoft.Extensions.Logging.ILoggerFactory)
-  name: CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint, IEnumerable<ApplicationMaintenanceCommand>, IAuthenticationHandler?, AuthorizationCallback?, ILoggerFactory?)
-  href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html#DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost__ctor_System_Net_Sockets_UnixDomainSocketEndPoint_System_Collections_Generic_IEnumerable_DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__DotNext_Maintenance_CommandLine_Authentication_IAuthenticationHandler_DotNext_Maintenance_CommandLine_Authorization_AuthorizationCallback_Microsoft_Extensions_Logging_ILoggerFactory_
-  commentId: M:DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.#ctor(System.Net.Sockets.UnixDomainSocketEndPoint,System.Collections.Generic.IEnumerable{DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand},DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler,DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback,Microsoft.Extensions.Logging.ILoggerFactory)
-  name.vb: New(UnixDomainSocketEndPoint, IEnumerable(Of ApplicationMaintenanceCommand), IAuthenticationHandler, AuthorizationCallback, ILoggerFactory)
-  fullName: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.CommandLineMaintenanceInterfaceHost(System.Net.Sockets.UnixDomainSocketEndPoint, System.Collections.Generic.IEnumerable<DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand>, DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler?, DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback?, Microsoft.Extensions.Logging.ILoggerFactory?)
-  fullName.vb: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.New(System.Net.Sockets.UnixDomainSocketEndPoint, System.Collections.Generic.IEnumerable(Of DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand), DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler, DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback, Microsoft.Extensions.Logging.ILoggerFactory)
-  nameWithType: CommandLineMaintenanceInterfaceHost.CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint, IEnumerable<ApplicationMaintenanceCommand>, IAuthenticationHandler?, AuthorizationCallback?, ILoggerFactory?)
-  nameWithType.vb: CommandLineMaintenanceInterfaceHost.New(UnixDomainSocketEndPoint, IEnumerable(Of ApplicationMaintenanceCommand), IAuthenticationHandler, AuthorizationCallback, ILoggerFactory)
+- uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.#ctor(System.Net.Sockets.UnixDomainSocketEndPoint,System.Collections.Generic.IEnumerable{DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand},DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler,DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback,System.CommandLine.ParserConfiguration,Microsoft.Extensions.Logging.ILoggerFactory)
+  name: CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint, IEnumerable<ApplicationMaintenanceCommand>, IAuthenticationHandler?, AuthorizationCallback?, ParserConfiguration?, ILoggerFactory?)
+  href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html#DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost__ctor_System_Net_Sockets_UnixDomainSocketEndPoint_System_Collections_Generic_IEnumerable_DotNext_Maintenance_CommandLine_ApplicationMaintenanceCommand__DotNext_Maintenance_CommandLine_Authentication_IAuthenticationHandler_DotNext_Maintenance_CommandLine_Authorization_AuthorizationCallback_System_CommandLine_ParserConfiguration_Microsoft_Extensions_Logging_ILoggerFactory_
+  commentId: M:DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.#ctor(System.Net.Sockets.UnixDomainSocketEndPoint,System.Collections.Generic.IEnumerable{DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand},DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler,DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback,System.CommandLine.ParserConfiguration,Microsoft.Extensions.Logging.ILoggerFactory)
+  name.vb: New(UnixDomainSocketEndPoint, IEnumerable(Of ApplicationMaintenanceCommand), IAuthenticationHandler, AuthorizationCallback, ParserConfiguration, ILoggerFactory)
+  fullName: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.CommandLineMaintenanceInterfaceHost(System.Net.Sockets.UnixDomainSocketEndPoint, System.Collections.Generic.IEnumerable<DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand>, DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler?, DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback?, System.CommandLine.ParserConfiguration?, Microsoft.Extensions.Logging.ILoggerFactory?)
+  fullName.vb: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.New(System.Net.Sockets.UnixDomainSocketEndPoint, System.Collections.Generic.IEnumerable(Of DotNext.Maintenance.CommandLine.ApplicationMaintenanceCommand), DotNext.Maintenance.CommandLine.Authentication.IAuthenticationHandler, DotNext.Maintenance.CommandLine.Authorization.AuthorizationCallback, System.CommandLine.ParserConfiguration, Microsoft.Extensions.Logging.ILoggerFactory)
+  nameWithType: CommandLineMaintenanceInterfaceHost.CommandLineMaintenanceInterfaceHost(UnixDomainSocketEndPoint, IEnumerable<ApplicationMaintenanceCommand>, IAuthenticationHandler?, AuthorizationCallback?, ParserConfiguration?, ILoggerFactory?)
+  nameWithType.vb: CommandLineMaintenanceInterfaceHost.New(UnixDomainSocketEndPoint, IEnumerable(Of ApplicationMaintenanceCommand), IAuthenticationHandler, AuthorizationCallback, ParserConfiguration, ILoggerFactory)
 - uid: DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.#ctor*
   name: CommandLineMaintenanceInterfaceHost
   href: api/DotNext.Maintenance.CommandLine.CommandLineMaintenanceInterfaceHost.html#DotNext_Maintenance_CommandLine_CommandLineMaintenanceInterfaceHost__ctor_
@@ -52006,6 +51888,22 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.CancellationTokenMultiplexer.Combine
   nameWithType: CancellationTokenMultiplexer.Combine
+- uid: DotNext.Threading.CancellationTokenMultiplexer.CombineAndSetTimeoutLater(System.ReadOnlySpan{System.Threading.CancellationToken})
+  name: CombineAndSetTimeoutLater(ReadOnlySpan<CancellationToken>)
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.html#DotNext_Threading_CancellationTokenMultiplexer_CombineAndSetTimeoutLater_System_ReadOnlySpan_System_Threading_CancellationToken__
+  commentId: M:DotNext.Threading.CancellationTokenMultiplexer.CombineAndSetTimeoutLater(System.ReadOnlySpan{System.Threading.CancellationToken})
+  name.vb: CombineAndSetTimeoutLater(ReadOnlySpan(Of CancellationToken))
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.CombineAndSetTimeoutLater(System.ReadOnlySpan<System.Threading.CancellationToken>)
+  fullName.vb: DotNext.Threading.CancellationTokenMultiplexer.CombineAndSetTimeoutLater(System.ReadOnlySpan(Of System.Threading.CancellationToken))
+  nameWithType: CancellationTokenMultiplexer.CombineAndSetTimeoutLater(ReadOnlySpan<CancellationToken>)
+  nameWithType.vb: CancellationTokenMultiplexer.CombineAndSetTimeoutLater(ReadOnlySpan(Of CancellationToken))
+- uid: DotNext.Threading.CancellationTokenMultiplexer.CombineAndSetTimeoutLater*
+  name: CombineAndSetTimeoutLater
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.html#DotNext_Threading_CancellationTokenMultiplexer_CombineAndSetTimeoutLater_
+  commentId: Overload:DotNext.Threading.CancellationTokenMultiplexer.CombineAndSetTimeoutLater
+  isSpec: "True"
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.CombineAndSetTimeoutLater
+  nameWithType: CancellationTokenMultiplexer.CombineAndSetTimeoutLater
 - uid: DotNext.Threading.CancellationTokenMultiplexer.MaximumRetained
   name: MaximumRetained
   href: api/DotNext.Threading.CancellationTokenMultiplexer.html#DotNext_Threading_CancellationTokenMultiplexer_MaximumRetained
@@ -52064,6 +51962,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.CancellationTokenMultiplexer.Scope.DisposeAsync
   nameWithType: CancellationTokenMultiplexer.Scope.DisposeAsync
+- uid: DotNext.Threading.CancellationTokenMultiplexer.Scope.IsTimedOut
+  name: IsTimedOut
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.Scope.html#DotNext_Threading_CancellationTokenMultiplexer_Scope_IsTimedOut
+  commentId: P:DotNext.Threading.CancellationTokenMultiplexer.Scope.IsTimedOut
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.Scope.IsTimedOut
+  nameWithType: CancellationTokenMultiplexer.Scope.IsTimedOut
+- uid: DotNext.Threading.CancellationTokenMultiplexer.Scope.IsTimedOut*
+  name: IsTimedOut
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.Scope.html#DotNext_Threading_CancellationTokenMultiplexer_Scope_IsTimedOut_
+  commentId: Overload:DotNext.Threading.CancellationTokenMultiplexer.Scope.IsTimedOut
+  isSpec: "True"
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.Scope.IsTimedOut
+  nameWithType: CancellationTokenMultiplexer.Scope.IsTimedOut
 - uid: DotNext.Threading.CancellationTokenMultiplexer.Scope.Token
   name: Token
   href: api/DotNext.Threading.CancellationTokenMultiplexer.Scope.html#DotNext_Threading_CancellationTokenMultiplexer_Scope_Token
@@ -52077,6 +51988,90 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.CancellationTokenMultiplexer.Scope.Token
   nameWithType: CancellationTokenMultiplexer.Scope.Token
+- uid: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout
+  name: CancellationTokenMultiplexer.ScopeWithTimeout
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.html
+  commentId: T:DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout
+  nameWithType: CancellationTokenMultiplexer.ScopeWithTimeout
+- uid: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.CancellationOrigin
+  name: CancellationOrigin
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.html#DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_CancellationOrigin
+  commentId: P:DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.CancellationOrigin
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.CancellationOrigin
+  nameWithType: CancellationTokenMultiplexer.ScopeWithTimeout.CancellationOrigin
+- uid: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.CancellationOrigin*
+  name: CancellationOrigin
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.html#DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_CancellationOrigin_
+  commentId: Overload:DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.CancellationOrigin
+  isSpec: "True"
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.CancellationOrigin
+  nameWithType: CancellationTokenMultiplexer.ScopeWithTimeout.CancellationOrigin
+- uid: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Dispose
+  name: Dispose()
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.html#DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Dispose
+  commentId: M:DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Dispose
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Dispose()
+  nameWithType: CancellationTokenMultiplexer.ScopeWithTimeout.Dispose()
+- uid: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Dispose*
+  name: Dispose
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.html#DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Dispose_
+  commentId: Overload:DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Dispose
+  isSpec: "True"
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Dispose
+  nameWithType: CancellationTokenMultiplexer.ScopeWithTimeout.Dispose
+- uid: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.DisposeAsync
+  name: DisposeAsync()
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.html#DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_DisposeAsync
+  commentId: M:DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.DisposeAsync
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.DisposeAsync()
+  nameWithType: CancellationTokenMultiplexer.ScopeWithTimeout.DisposeAsync()
+- uid: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.DisposeAsync*
+  name: DisposeAsync
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.html#DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_DisposeAsync_
+  commentId: Overload:DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.DisposeAsync
+  isSpec: "True"
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.DisposeAsync
+  nameWithType: CancellationTokenMultiplexer.ScopeWithTimeout.DisposeAsync
+- uid: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.IsTimedOut
+  name: IsTimedOut
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.html#DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_IsTimedOut
+  commentId: P:DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.IsTimedOut
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.IsTimedOut
+  nameWithType: CancellationTokenMultiplexer.ScopeWithTimeout.IsTimedOut
+- uid: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.IsTimedOut*
+  name: IsTimedOut
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.html#DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_IsTimedOut_
+  commentId: Overload:DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.IsTimedOut
+  isSpec: "True"
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.IsTimedOut
+  nameWithType: CancellationTokenMultiplexer.ScopeWithTimeout.IsTimedOut
+- uid: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Timeout
+  name: Timeout
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.html#DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Timeout
+  commentId: P:DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Timeout
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Timeout
+  nameWithType: CancellationTokenMultiplexer.ScopeWithTimeout.Timeout
+- uid: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Timeout*
+  name: Timeout
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.html#DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Timeout_
+  commentId: Overload:DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Timeout
+  isSpec: "True"
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Timeout
+  nameWithType: CancellationTokenMultiplexer.ScopeWithTimeout.Timeout
+- uid: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Token
+  name: Token
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.html#DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Token
+  commentId: P:DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Token
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Token
+  nameWithType: CancellationTokenMultiplexer.ScopeWithTimeout.Token
+- uid: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Token*
+  name: Token
+  href: api/DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.html#DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Token_
+  commentId: Overload:DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Token
+  isSpec: "True"
+  fullName: DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Token
+  nameWithType: CancellationTokenMultiplexer.ScopeWithTimeout.Token
 - uid: DotNext.Threading.Channels
   name: DotNext.Threading.Channels
   href: api/DotNext.Threading.Channels.html

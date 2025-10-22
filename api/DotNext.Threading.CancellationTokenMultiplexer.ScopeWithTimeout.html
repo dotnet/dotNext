@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Struct CancellationTokenMultiplexer.Scope | .NEXT </title>
+    <title>Struct CancellationTokenMultiplexer.ScopeWithTimeout | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Struct CancellationTokenMultiplexer.Scope | .NEXT ">
+    <meta name="title" content="Struct CancellationTokenMultiplexer.ScopeWithTimeout | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,12 +65,12 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Scope">
+            <article class="content wrap" id="_content" data-uid="DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout">
 
 
 
-  <h1 id="DotNext_Threading_CancellationTokenMultiplexer_Scope" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Scope" class="text-break">Struct CancellationTokenMultiplexer.Scope</h1>
-  <div class="markdown level0 summary"><p>Represents a scope that controls the lifetime of the multiplexed cancellation token.</p>
+  <h1 id="DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout" data-uid="DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout" class="text-break">Struct CancellationTokenMultiplexer.ScopeWithTimeout</h1>
+  <div class="markdown level0 summary"><p>Represents a scope that controls the lifetime of the multiplexed cancellation token and allows to specify the timeout.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="implements">
@@ -102,21 +102,21 @@
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
-  <h5 id="DotNext_Threading_CancellationTokenMultiplexer_Scope_syntax">Syntax</h5>
+  <h5 id="DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct CancellationTokenMultiplexer.Scope : IMultiplexedCancellationTokenSource, IDisposable, IAsyncDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct CancellationTokenMultiplexer.ScopeWithTimeout : IMultiplexedCancellationTokenSource, IDisposable, IAsyncDisposable</code></pre>
   </div>
   <h3 id="properties">Properties
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_Scope_CancellationOrigin.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.Scope.CancellationOrigin%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_CancellationOrigin.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.CancellationOrigin%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.Scope.cs/#L64">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.Scope.cs/#L150">View Source</a>
   </span>
-  <a id="DotNext_Threading_CancellationTokenMultiplexer_Scope_CancellationOrigin_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Scope.CancellationOrigin*"></a>
-  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_Scope_CancellationOrigin" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Scope.CancellationOrigin">CancellationOrigin</h4>
+  <a id="DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_CancellationOrigin_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.CancellationOrigin*"></a>
+  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_CancellationOrigin" data-uid="DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.CancellationOrigin">CancellationOrigin</h4>
   <div class="markdown level1 summary"><p>Gets the cancellation origin.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -141,13 +141,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_Scope_IsTimedOut.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.Scope.IsTimedOut%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_IsTimedOut.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.IsTimedOut%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.Scope.cs/#L69">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.Scope.cs/#L153">View Source</a>
   </span>
-  <a id="DotNext_Threading_CancellationTokenMultiplexer_Scope_IsTimedOut_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Scope.IsTimedOut*"></a>
-  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_Scope_IsTimedOut" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Scope.IsTimedOut">IsTimedOut</h4>
+  <a id="DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_IsTimedOut_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.IsTimedOut*"></a>
+  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_IsTimedOut" data-uid="DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.IsTimedOut">IsTimedOut</h4>
   <div class="markdown level1 summary"><p>Gets a value indicating that the multiplexed token is cancelled by the timeout.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -172,13 +172,48 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_Scope_Token.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.Scope.Token%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Timeout.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Timeout%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.Scope.cs/#L61">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.Scope.cs/#L135">View Source</a>
   </span>
-  <a id="DotNext_Threading_CancellationTokenMultiplexer_Scope_Token_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Scope.Token*"></a>
-  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_Scope_Token" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Scope.Token">Token</h4>
+  <a id="DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Timeout_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Timeout*"></a>
+  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Timeout" data-uid="DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Timeout">Timeout</h4>
+  <div class="markdown level1 summary"><p>Sets the optional timeout.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public TimeSpan Timeout { set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Timeout_seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="DotNext.Threading.CancellationTokenMultiplexer.html#DotNext_Threading_CancellationTokenMultiplexer_CombineAndSetTimeoutLater_System_ReadOnlySpan_System_Threading_CancellationToken__">CombineAndSetTimeoutLater</a>(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>&gt;)</div>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Token.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Token%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.Scope.cs/#L147">View Source</a>
+  </span>
+  <a id="DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Token_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Token*"></a>
+  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Token" data-uid="DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Token">Token</h4>
   <div class="markdown level1 summary"><p>Gets the multiplexed token.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -205,13 +240,13 @@
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_Scope_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.Scope.Dispose%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Dispose%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.Scope.cs/#L74">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.Scope.cs/#L156">View Source</a>
   </span>
-  <a id="DotNext_Threading_CancellationTokenMultiplexer_Scope_Dispose_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Scope.Dispose*"></a>
-  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_Scope_Dispose" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Scope.Dispose">Dispose()</h4>
+  <a id="DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Dispose_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Dispose*"></a>
+  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_Dispose" data-uid="DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.Dispose">Dispose()</h4>
   <div class="markdown level1 summary"><p>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -221,13 +256,13 @@
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_Scope_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.Scope.DisposeAsync%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.DisposeAsync%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.Scope.cs/#L91">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.Scope.cs/#L159">View Source</a>
   </span>
-  <a id="DotNext_Threading_CancellationTokenMultiplexer_Scope_DisposeAsync_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Scope.DisposeAsync*"></a>
-  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_Scope_DisposeAsync" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Scope.DisposeAsync">DisposeAsync()</h4>
+  <a id="DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_DisposeAsync_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.DisposeAsync*"></a>
+  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout_DisposeAsync" data-uid="DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout.DisposeAsync">DisposeAsync()</h4>
   <div class="markdown level1 summary"><p>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources asynchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -289,10 +324,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_Scope.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.Scope%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_ScopeWithTimeout.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.ScopeWithTimeout%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.Scope.cs/#L21" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.Scope.cs/#L123" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -79,8 +79,8 @@ in the form of the writer to <a class="xref" href="https://learn.microsoft.com/d
     <div><a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</div>
     <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;</div>
     <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;&gt;</div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.IO.StreamConsumer.html">StreamConsumer</a>&gt;</div>
     <div><a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.IO.StreamConsumer.html">StreamConsumer</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -104,7 +104,7 @@ in the form of the writer to <a class="xref" href="https://learn.microsoft.com/d
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_IO_StreamConsumer_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly record struct StreamConsumer : IReadOnlySpanConsumer&lt;byte&gt;, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;&gt;, IEquatable&lt;StreamConsumer&gt;, IFlushable</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly record struct StreamConsumer : IReadOnlySpanConsumer&lt;byte&gt;, ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;&gt;, IFlushable, IEquatable&lt;StreamConsumer&gt;</code></pre>
   </div>
   <h3 id="constructors">Constructors
 </h3>
@@ -291,10 +291,10 @@ in the form of the writer to <a class="xref" href="https://learn.microsoft.com/d
       <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>
+      <a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

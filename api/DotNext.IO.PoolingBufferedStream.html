@@ -79,14 +79,15 @@ memory pooling.</p>
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
     <div class="level1"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.marshalbyrefobject">MarshalByRefObject</a></div>
     <div class="level2"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></div>
-    <div class="level3"><span class="xref">PoolingBufferedStream</span></div>
+    <div class="level3"><a class="xref" href="DotNext.IO.ModernStream.html">ModernStream</a></div>
+    <div class="level4"><span class="xref">PoolingBufferedStream</span></div>
   </div>
   <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
+    <div><a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a></div>
     <div><a class="xref" href="DotNext.Buffers.IBufferedWriter.html">IBufferedWriter</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</div>
-    <div><a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a></div>
     <div><a class="xref" href="DotNext.Buffers.IBufferedReader.html">IBufferedReader</a></div>
     <div><a class="xref" href="DotNext.Buffers.IBufferedChannel.html">IBufferedChannel</a></div>
     <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
@@ -94,6 +95,36 @@ memory pooling.</p>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_Read_System_Byte___System_Int32_System_Int32_">ModernStream.Read(byte[], int, int)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_">ModernStream.ReadAsync(byte[], int, int, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_">ModernStream.BeginRead(byte[], int, int, AsyncCallback, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_EndRead_System_IAsyncResult_">ModernStream.EndRead(IAsyncResult)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_ReadByte">ModernStream.ReadByte()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_Write_System_Byte___System_Int32_System_Int32_">ModernStream.Write(byte[], int, int)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_WriteByte_System_Byte_">ModernStream.WriteByte(byte)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_">ModernStream.WriteAsync(byte[], int, int, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_">ModernStream.BeginWrite(byte[], int, int, AsyncCallback, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_EndWrite_System_IAsyncResult_">ModernStream.EndWrite(IAsyncResult)</a>
+    </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.null">Stream.Null</a>
     </div>
@@ -174,7 +205,7 @@ memory pooling.</p>
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_IO_PoolingBufferedStream_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class PoolingBufferedStream : Stream, IAsyncDisposable, IBufferedWriter, IBufferWriter&lt;byte&gt;, IFlushable, IBufferedReader, IBufferedChannel, IResettable, IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class PoolingBufferedStream : ModernStream, IAsyncDisposable, IFlushable, IBufferedWriter, IBufferWriter&lt;byte&gt;, IBufferedReader, IBufferedChannel, IResettable, IDisposable</code></pre>
   </div>
   <h5 id="DotNext_IO_PoolingBufferedStream_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>The stream implements lazy buffer pattern. It means that the stream releases the buffer when there is no buffered data.</p>
@@ -186,7 +217,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream__ctor_System_IO_Stream_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.%23ctor(System.IO.Stream%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L18">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L17">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream__ctor_" data-uid="DotNext.IO.PoolingBufferedStream.#ctor*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream__ctor_System_IO_Stream_System_Boolean_" data-uid="DotNext.IO.PoolingBufferedStream.#ctor(System.IO.Stream,System.Boolean)">PoolingBufferedStream(Stream, bool)</h4>
@@ -232,7 +263,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_Allocator.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.Allocator%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L31">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L30">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_Allocator_" data-uid="DotNext.IO.PoolingBufferedStream.Allocator*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_Allocator" data-uid="DotNext.IO.PoolingBufferedStream.Allocator">Allocator</h4>
@@ -263,7 +294,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_BaseStream.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.BaseStream%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L40">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L39">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_BaseStream_" data-uid="DotNext.IO.PoolingBufferedStream.BaseStream*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_BaseStream" data-uid="DotNext.IO.PoolingBufferedStream.BaseStream">BaseStream</h4>
@@ -294,7 +325,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_CanRead.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.CanRead%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L59">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L58">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_CanRead_" data-uid="DotNext.IO.PoolingBufferedStream.CanRead*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_CanRead" data-uid="DotNext.IO.PoolingBufferedStream.CanRead">CanRead</h4>
@@ -328,7 +359,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_CanSeek.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.CanSeek%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L65">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L64">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_CanSeek_" data-uid="DotNext.IO.PoolingBufferedStream.CanSeek*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_CanSeek" data-uid="DotNext.IO.PoolingBufferedStream.CanSeek">CanSeek</h4>
@@ -362,7 +393,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_CanTimeout.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.CanTimeout%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L68">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L67">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_CanTimeout_" data-uid="DotNext.IO.PoolingBufferedStream.CanTimeout*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_CanTimeout" data-uid="DotNext.IO.PoolingBufferedStream.CanTimeout">CanTimeout</h4>
@@ -396,7 +427,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_CanWrite.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.CanWrite%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L62">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L61">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_CanWrite_" data-uid="DotNext.IO.PoolingBufferedStream.CanWrite*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_CanWrite" data-uid="DotNext.IO.PoolingBufferedStream.CanWrite">CanWrite</h4>
@@ -430,7 +461,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_HasBufferedDataToRead.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.HasBufferedDataToRead%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L454">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L430">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_HasBufferedDataToRead_" data-uid="DotNext.IO.PoolingBufferedStream.HasBufferedDataToRead*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_HasBufferedDataToRead" data-uid="DotNext.IO.PoolingBufferedStream.HasBufferedDataToRead">HasBufferedDataToRead</h4>
@@ -461,7 +492,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_HasBufferedDataToWrite.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.HasBufferedDataToWrite%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L190">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L189">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_HasBufferedDataToWrite_" data-uid="DotNext.IO.PoolingBufferedStream.HasBufferedDataToWrite*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_HasBufferedDataToWrite" data-uid="DotNext.IO.PoolingBufferedStream.HasBufferedDataToWrite">HasBufferedDataToWrite</h4>
@@ -492,7 +523,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_Length.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.Length%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L97">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L96">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_Length_" data-uid="DotNext.IO.PoolingBufferedStream.Length*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_Length" data-uid="DotNext.IO.PoolingBufferedStream.Length">Length</h4>
@@ -547,7 +578,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_MaxBufferSize.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.MaxBufferSize%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L52">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L51">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_MaxBufferSize_" data-uid="DotNext.IO.PoolingBufferedStream.MaxBufferSize*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_MaxBufferSize" data-uid="DotNext.IO.PoolingBufferedStream.MaxBufferSize">MaxBufferSize</h4>
@@ -578,7 +609,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_Position.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.Position%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L124">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L123">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_Position_" data-uid="DotNext.IO.PoolingBufferedStream.Position*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_Position" data-uid="DotNext.IO.PoolingBufferedStream.Position">Position</h4>
@@ -638,7 +669,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_ReadTimeout.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.ReadTimeout%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L71">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L70">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_ReadTimeout_" data-uid="DotNext.IO.PoolingBufferedStream.ReadTimeout*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_ReadTimeout" data-uid="DotNext.IO.PoolingBufferedStream.ReadTimeout">ReadTimeout</h4>
@@ -688,7 +719,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_WriteTimeout.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.WriteTimeout%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L84">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L83">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_WriteTimeout_" data-uid="DotNext.IO.PoolingBufferedStream.WriteTimeout*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_WriteTimeout" data-uid="DotNext.IO.PoolingBufferedStream.WriteTimeout">WriteTimeout</h4>
@@ -737,222 +768,10 @@ memory pooling.</p>
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.BeginRead(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.AsyncCallback%2CSystem.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L667">View Source</a>
-  </span>
-  <a id="DotNext_IO_PoolingBufferedStream_BeginRead_" data-uid="DotNext.IO.PoolingBufferedStream.BeginRead*"></a>
-  <h4 id="DotNext_IO_PoolingBufferedStream_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_" data-uid="DotNext.IO.PoolingBufferedStream.BeginRead(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)">BeginRead(byte[], int, int, AsyncCallback?, object?)</h4>
-  <div class="markdown level1 summary"><p>Begins an asynchronous read operation. (Consider using <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readasync#system-io-stream-readasync(system-byte()-system-int32-system-int32)">ReadAsync(byte[], int, int)</a> instead.)</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override IAsyncResult BeginRead(byte[] data, int offset, int count, AsyncCallback? callback, object? state)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">data</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td><p>The byte offset in <code class="paramref">buffer</code> at which to begin writing data read from the stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">count</span></td>
-        <td><p>The maximum number of bytes to read.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.asynccallback">AsyncCallback</a></td>
-        <td><span class="parametername">callback</span></td>
-        <td><p>An optional asynchronous callback, to be called when the read is complete.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
-        <td><span class="parametername">state</span></td>
-        <td><p>A user-provided object that distinguishes this particular asynchronous read request from other requests.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncresult">IAsyncResult</a></td>
-        <td><p>An <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncresult">IAsyncResult</a> that represents the asynchronous read, which could still be pending.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.beginread">Stream.BeginRead(byte[], int, int, AsyncCallback, object)</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.ioexception">IOException</a></td>
-        <td><p>Attempted an asynchronous read past the end of the stream, or a disk error occurs.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>One or more of the arguments is invalid.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>Methods were called after the stream was closed.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>The current <code>Stream</code> implementation does not support the read operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.BeginWrite(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.AsyncCallback%2CSystem.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L427">View Source</a>
-  </span>
-  <a id="DotNext_IO_PoolingBufferedStream_BeginWrite_" data-uid="DotNext.IO.PoolingBufferedStream.BeginWrite*"></a>
-  <h4 id="DotNext_IO_PoolingBufferedStream_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_" data-uid="DotNext.IO.PoolingBufferedStream.BeginWrite(System.Byte[],System.Int32,System.Int32,System.AsyncCallback,System.Object)">BeginWrite(byte[], int, int, AsyncCallback?, object?)</h4>
-  <div class="markdown level1 summary"><p>Begins an asynchronous write operation. (Consider using <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.writeasync#system-io-stream-writeasync(system-byte()-system-int32-system-int32)">WriteAsync(byte[], int, int)</a> instead.)</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override IAsyncResult BeginWrite(byte[] data, int offset, int count, AsyncCallback? callback, object? state)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">data</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td><p>The byte offset in <code class="paramref">buffer</code> from which to begin writing.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">count</span></td>
-        <td><p>The maximum number of bytes to write.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.asynccallback">AsyncCallback</a></td>
-        <td><span class="parametername">callback</span></td>
-        <td><p>An optional asynchronous callback, to be called when the write is complete.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
-        <td><span class="parametername">state</span></td>
-        <td><p>A user-provided object that distinguishes this particular asynchronous write request from other requests.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncresult">IAsyncResult</a></td>
-        <td><p>An <code>IAsyncResult</code> that represents the asynchronous write, which could still be pending.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.beginwrite">Stream.BeginWrite(byte[], int, int, AsyncCallback, object)</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.ioexception">IOException</a></td>
-        <td><p>Attempted an asynchronous write past the end of the stream, or a disk error occurs.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>One or more of the arguments is invalid.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>Methods were called after the stream was closed.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>The current <code>Stream</code> implementation does not support the write operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_CopyTo_System_IO_Stream_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.CopyTo(System.IO.Stream%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L816">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L766">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_CopyTo_" data-uid="DotNext.IO.PoolingBufferedStream.CopyTo*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_CopyTo_System_IO_Stream_System_Int32_" data-uid="DotNext.IO.PoolingBufferedStream.CopyTo(System.IO.Stream,System.Int32)">CopyTo(Stream, int)</h4>
@@ -1032,7 +851,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_CopyToAsync_System_IO_Stream_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.CopyToAsync(System.IO.Stream%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L837">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L787">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_CopyToAsync_" data-uid="DotNext.IO.PoolingBufferedStream.CopyToAsync*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_CopyToAsync_System_IO_Stream_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.PoolingBufferedStream.CopyToAsync(System.IO.Stream,System.Int32,System.Threading.CancellationToken)">CopyToAsync(Stream, int, CancellationToken)</h4>
@@ -1126,7 +945,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L876">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L826">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_Dispose_" data-uid="DotNext.IO.PoolingBufferedStream.Dispose*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_Dispose_System_Boolean_" data-uid="DotNext.IO.PoolingBufferedStream.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -1162,7 +981,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.DisposeAsync%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L858">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L808">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_DisposeAsync_" data-uid="DotNext.IO.PoolingBufferedStream.DisposeAsync*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_DisposeAsync" data-uid="DotNext.IO.PoolingBufferedStream.DisposeAsync">DisposeAsync()</h4>
@@ -1193,164 +1012,10 @@ memory pooling.</p>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.disposeasync">Stream.DisposeAsync()</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_EndRead_System_IAsyncResult_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.EndRead(System.IAsyncResult)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L671">View Source</a>
-  </span>
-  <a id="DotNext_IO_PoolingBufferedStream_EndRead_" data-uid="DotNext.IO.PoolingBufferedStream.EndRead*"></a>
-  <h4 id="DotNext_IO_PoolingBufferedStream_EndRead_System_IAsyncResult_" data-uid="DotNext.IO.PoolingBufferedStream.EndRead(System.IAsyncResult)">EndRead(IAsyncResult)</h4>
-  <div class="markdown level1 summary"><p>Waits for the pending asynchronous read to complete. (Consider using <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readasync#system-io-stream-readasync(system-byte()-system-int32-system-int32)">ReadAsync(byte[], int, int)</a> instead.)</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override int EndRead(IAsyncResult asyncResult)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncresult">IAsyncResult</a></td>
-        <td><span class="parametername">asyncResult</span></td>
-        <td><p>The reference to the pending asynchronous request to finish.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The number of bytes read from the stream, between zero (0) and the number of bytes requested. ReadAsync returns zero (0) only if zero bytes were requested or if no more bytes will be available because it's at the end of the stream; otherwise, read operations do not complete until at least one byte is available. If zero bytes are requested, read operations may complete immediately or may not complete until at least one byte is available (but without consuming any data).</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.endread">Stream.EndRead(IAsyncResult)</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">asyncResult</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>A handle to the pending read operation is not available.</p>
-<p>-or-</p>
-<p>The pending operation does not support reading.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><code class="paramref">asyncResult</code> did not originate from a <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.beginread">BeginRead(byte[], int, int, AsyncCallback, object)</a> method on the current stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.ioexception">IOException</a></td>
-        <td><p>The stream is closed or an internal error has occurred.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_EndWrite_System_IAsyncResult_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.EndWrite(System.IAsyncResult)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L431">View Source</a>
-  </span>
-  <a id="DotNext_IO_PoolingBufferedStream_EndWrite_" data-uid="DotNext.IO.PoolingBufferedStream.EndWrite*"></a>
-  <h4 id="DotNext_IO_PoolingBufferedStream_EndWrite_System_IAsyncResult_" data-uid="DotNext.IO.PoolingBufferedStream.EndWrite(System.IAsyncResult)">EndWrite(IAsyncResult)</h4>
-  <div class="markdown level1 summary"><p>Ends an asynchronous write operation. (Consider using <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.writeasync#system-io-stream-writeasync(system-byte()-system-int32-system-int32)">WriteAsync(byte[], int, int)</a> instead.)</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override void EndWrite(IAsyncResult asyncResult)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncresult">IAsyncResult</a></td>
-        <td><span class="parametername">asyncResult</span></td>
-        <td><p>A reference to the outstanding asynchronous I/O request.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.endwrite">Stream.EndWrite(IAsyncResult)</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">asyncResult</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>A handle to the pending write operation is not available.</p>
-<p>-or-</p>
-<p>The pending operation does not support writing.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><code class="paramref">asyncResult</code> did not originate from a <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.beginwrite">BeginWrite(byte[], int, int, AsyncCallback, object)</a> method on the current stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.ioexception">IOException</a></td>
-        <td><p>The stream is closed or an internal error has occurred.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_Finalize.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.Finalize%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L891">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L841">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_Finalize_" data-uid="DotNext.IO.PoolingBufferedStream.Finalize*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_Finalize" data-uid="DotNext.IO.PoolingBufferedStream.Finalize">~PoolingBufferedStream()</h4>
@@ -1365,7 +1030,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_Flush.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.Flush%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L711">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L668">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_Flush_" data-uid="DotNext.IO.PoolingBufferedStream.Flush*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_Flush" data-uid="DotNext.IO.PoolingBufferedStream.Flush">Flush()</h4>
@@ -1399,7 +1064,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_FlushAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.FlushAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L674">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L631">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_FlushAsync_" data-uid="DotNext.IO.PoolingBufferedStream.FlushAsync*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_FlushAsync_System_Threading_CancellationToken_" data-uid="DotNext.IO.PoolingBufferedStream.FlushAsync(System.Threading.CancellationToken)">FlushAsync(CancellationToken)</h4>
@@ -1466,7 +1131,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_Read.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.Read%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L620">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L584">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_Read_" data-uid="DotNext.IO.PoolingBufferedStream.Read*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_Read" data-uid="DotNext.IO.PoolingBufferedStream.Read">Read()</h4>
@@ -1516,114 +1181,10 @@ memory pooling.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_Read_System_Byte___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.Read(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L508">View Source</a>
-  </span>
-  <a id="DotNext_IO_PoolingBufferedStream_Read_" data-uid="DotNext.IO.PoolingBufferedStream.Read*"></a>
-  <h4 id="DotNext_IO_PoolingBufferedStream_Read_System_Byte___System_Int32_System_Int32_" data-uid="DotNext.IO.PoolingBufferedStream.Read(System.Byte[],System.Int32,System.Int32)">Read(byte[], int, int)</h4>
-  <div class="markdown level1 summary"><p>When overridden in a derived class, reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override int Read(byte[] data, int offset, int count)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">data</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td><p>The zero-based byte offset in <code class="paramref">buffer</code> at which to begin storing the data read from the current stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">count</span></td>
-        <td><p>The maximum number of bytes to be read from the current stream.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The total number of bytes read into the buffer. This can be less than the number of bytes requested if that many bytes are not currently available, or zero (0) if <code class="paramref">count</code> is 0 or the end of the stream has been reached.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.read#system-io-stream-read(system-byte()-system-int32-system-int32)">Stream.Read(byte[], int, int)</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>The sum of <code class="paramref">offset</code> and <code class="paramref">count</code> is larger than the buffer length.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">buffer</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">offset</code> or <code class="paramref">count</code> is negative.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.ioexception">IOException</a></td>
-        <td><p>An I/O error occurs.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>The stream does not support reading.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>Methods were called after the stream was closed.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_Read_System_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.Read(System.Span%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L457">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L433">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_Read_" data-uid="DotNext.IO.PoolingBufferedStream.Read*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_Read_System_Span_System_Byte__" data-uid="DotNext.IO.PoolingBufferedStream.Read(System.Span{System.Byte})">Read(Span&lt;byte&gt;)</h4>
@@ -1668,122 +1229,13 @@ memory pooling.</p>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.read#system-io-stream-read(system-span((system-byte)))">Stream.Read(Span&lt;byte&gt;)</a></div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.ReadAsync(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L542">View Source</a>
-  </span>
-  <a id="DotNext_IO_PoolingBufferedStream_ReadAsync_" data-uid="DotNext.IO.PoolingBufferedStream.ReadAsync*"></a>
-  <h4 id="DotNext_IO_PoolingBufferedStream_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.PoolingBufferedStream.ReadAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)">ReadAsync(byte[], int, int, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Asynchronously reads a sequence of bytes from the current stream, advances the position within the stream by the number of bytes read, and monitors cancellation requests.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Task&lt;int&gt; ReadAsync(byte[] data, int offset, int count, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">data</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td><p>The byte offset in <code class="paramref">buffer</code> at which to begin writing data from the stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">count</span></td>
-        <td><p>The maximum number of bytes to read.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</td>
-        <td><p>A task that represents the asynchronous read operation. The value of the <code class="paramref">TResult</code> parameter contains the total number of bytes read into the buffer. The result value can be less than the number of bytes requested if the number of bytes currently available is less than the requested number, or it can be 0 (zero) if <code class="paramref">count</code> is 0 or if the end of the stream has been reached.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readasync#system-io-stream-readasync(system-byte()-system-int32-system-int32-system-threading-cancellationtoken)">Stream.ReadAsync(byte[], int, int, CancellationToken)</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">buffer</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">offset</code> or <code class="paramref">count</code> is negative.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>The sum of <code class="paramref">offset</code> and <code class="paramref">count</code> is larger than the buffer length.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>The stream does not support reading.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>The stream has been disposed.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>The stream is currently in use by a previous read operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
+  <div><a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_Read_System_Span_System_Byte__">ModernStream.Read(Span&lt;byte&gt;)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.ReadAsync(System.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L516">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L484">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_ReadAsync_" data-uid="DotNext.IO.PoolingBufferedStream.ReadAsync*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.PoolingBufferedStream.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)">ReadAsync(Memory&lt;byte&gt;, CancellationToken)</h4>
@@ -1833,13 +1285,13 @@ memory pooling.</p>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readasync#system-io-stream-readasync(system-memory((system-byte))-system-threading-cancellationtoken)">Stream.ReadAsync(Memory&lt;byte&gt;, CancellationToken)</a></div>
+  <div><a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_">ModernStream.ReadAsync(Memory&lt;byte&gt;, CancellationToken)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_ReadAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.ReadAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L593">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L557">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_ReadAsync_" data-uid="DotNext.IO.PoolingBufferedStream.ReadAsync*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_ReadAsync_System_Threading_CancellationToken_" data-uid="DotNext.IO.PoolingBufferedStream.ReadAsync(System.Threading.CancellationToken)">ReadAsync(CancellationToken)</h4>
@@ -1913,65 +1365,10 @@ memory pooling.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_ReadByte.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.ReadByte%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L762">View Source</a>
-  </span>
-  <a id="DotNext_IO_PoolingBufferedStream_ReadByte_" data-uid="DotNext.IO.PoolingBufferedStream.ReadByte*"></a>
-  <h4 id="DotNext_IO_PoolingBufferedStream_ReadByte" data-uid="DotNext.IO.PoolingBufferedStream.ReadByte">ReadByte()</h4>
-  <div class="markdown level1 summary"><p>Reads a byte from the stream and advances the position within the stream by one byte, or returns -1 if at the end of the stream.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override int ReadByte()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The unsigned byte cast to an <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>, or -1 if at the end of the stream.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.readbyte">Stream.ReadByte()</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>The stream does not support reading.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>Methods were called after the stream was closed.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_Reset.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.Reset%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L147">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L146">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_Reset_" data-uid="DotNext.IO.PoolingBufferedStream.Reset*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_Reset" data-uid="DotNext.IO.PoolingBufferedStream.Reset">Reset()</h4>
@@ -1987,7 +1384,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_Seek_System_Int64_System_IO_SeekOrigin_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.Seek(System.Int64%2CSystem.IO.SeekOrigin)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L722">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L679">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_Seek_" data-uid="DotNext.IO.PoolingBufferedStream.Seek*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_Seek_System_Int64_System_IO_SeekOrigin_" data-uid="DotNext.IO.PoolingBufferedStream.Seek(System.Int64,System.IO.SeekOrigin)">Seek(long, SeekOrigin)</h4>
@@ -2071,7 +1468,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_SetLength_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.SetLength(System.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L112">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L111">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_SetLength_" data-uid="DotNext.IO.PoolingBufferedStream.SetLength*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_SetLength_System_Int64_" data-uid="DotNext.IO.PoolingBufferedStream.SetLength(System.Int64)">SetLength(long)</h4>
@@ -2133,7 +1530,7 @@ memory pooling.</p>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_Write.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.Write%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L197">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L196">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_Write_" data-uid="DotNext.IO.PoolingBufferedStream.Write*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_Write" data-uid="DotNext.IO.PoolingBufferedStream.Write">Write()</h4>
@@ -2146,98 +1543,10 @@ memory pooling.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_Write_System_Byte___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.Write(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L327">View Source</a>
-  </span>
-  <a id="DotNext_IO_PoolingBufferedStream_Write_" data-uid="DotNext.IO.PoolingBufferedStream.Write*"></a>
-  <h4 id="DotNext_IO_PoolingBufferedStream_Write_System_Byte___System_Int32_System_Int32_" data-uid="DotNext.IO.PoolingBufferedStream.Write(System.Byte[],System.Int32,System.Int32)">Write(byte[], int, int)</h4>
-  <div class="markdown level1 summary"><p>When overridden in a derived class, writes a sequence of bytes to the current stream and advances the current position within this stream by the number of bytes written.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override void Write(byte[] data, int offset, int count)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">data</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td><p>The zero-based byte offset in <code class="paramref">buffer</code> at which to begin copying bytes to the current stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">count</span></td>
-        <td><p>The number of bytes to be written to the current stream.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.write#system-io-stream-write(system-byte()-system-int32-system-int32)">Stream.Write(byte[], int, int)</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>The sum of <code class="paramref">offset</code> and <code class="paramref">count</code> is greater than the buffer length.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">buffer</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">offset</code> or <code class="paramref">count</code> is negative.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.ioexception">IOException</a></td>
-        <td><p>An I/O error occurred, such as the specified file cannot be found.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>The stream does not support writing.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.write#system-io-stream-write(system-byte()-system-int32-system-int32)">Write(byte[], int, int)</a> was called after the stream was closed.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_Write_System_ReadOnlySpan_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.Write(System.ReadOnlySpan%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L282">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L281">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_Write_" data-uid="DotNext.IO.PoolingBufferedStream.Write*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_Write_System_ReadOnlySpan_System_Byte__" data-uid="DotNext.IO.PoolingBufferedStream.Write(System.ReadOnlySpan{System.Byte})">Write(ReadOnlySpan&lt;byte&gt;)</h4>
@@ -2266,122 +1575,13 @@ memory pooling.</p>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.write#system-io-stream-write(system-readonlyspan((system-byte)))">Stream.Write(ReadOnlySpan&lt;byte&gt;)</a></div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.WriteAsync(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L423">View Source</a>
-  </span>
-  <a id="DotNext_IO_PoolingBufferedStream_WriteAsync_" data-uid="DotNext.IO.PoolingBufferedStream.WriteAsync*"></a>
-  <h4 id="DotNext_IO_PoolingBufferedStream_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.PoolingBufferedStream.WriteAsync(System.Byte[],System.Int32,System.Int32,System.Threading.CancellationToken)">WriteAsync(byte[], int, int, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Asynchronously writes a sequence of bytes to the current stream, advances the current position within this stream by the number of bytes written, and monitors cancellation requests.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override Task WriteAsync(byte[] data, int offset, int count, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>[]</td>
-        <td><span class="parametername">data</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">offset</span></td>
-        <td><p>The zero-based byte offset in <code class="paramref">buffer</code> from which to begin copying bytes to the stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">count</span></td>
-        <td><p>The maximum number of bytes to write.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>A task that represents the asynchronous write operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.writeasync#system-io-stream-writeasync(system-byte()-system-int32-system-int32-system-threading-cancellationtoken)">Stream.WriteAsync(byte[], int, int, CancellationToken)</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">buffer</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">offset</code> or <code class="paramref">count</code> is negative.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>The sum of <code class="paramref">offset</code> and <code class="paramref">count</code> is larger than the buffer length.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>The stream does not support writing.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>The stream has been disposed.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>The stream is currently in use by a previous write operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
+  <div><a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_Write_System_ReadOnlySpan_System_Byte__">ModernStream.Write(ReadOnlySpan&lt;byte&gt;)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.WriteAsync(System.ReadOnlyMemory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L339">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L326">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_WriteAsync_" data-uid="DotNext.IO.PoolingBufferedStream.WriteAsync*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.PoolingBufferedStream.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)">WriteAsync(ReadOnlyMemory&lt;byte&gt;, CancellationToken)</h4>
@@ -2431,13 +1631,13 @@ memory pooling.</p>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.writeasync#system-io-stream-writeasync(system-readonlymemory((system-byte))-system-threading-cancellationtoken)">Stream.WriteAsync(ReadOnlyMemory&lt;byte&gt;, CancellationToken)</a></div>
+  <div><a class="xref" href="DotNext.IO.ModernStream.html#DotNext_IO_ModernStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_">ModernStream.WriteAsync(ReadOnlyMemory&lt;byte&gt;, CancellationToken)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_WriteAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.WriteAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L216">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L215">View Source</a>
   </span>
   <a id="DotNext_IO_PoolingBufferedStream_WriteAsync_" data-uid="DotNext.IO.PoolingBufferedStream.WriteAsync*"></a>
   <h4 id="DotNext_IO_PoolingBufferedStream_WriteAsync_System_Threading_CancellationToken_" data-uid="DotNext.IO.PoolingBufferedStream.WriteAsync(System.Threading.CancellationToken)">WriteAsync(CancellationToken)</h4>
@@ -2503,80 +1703,18 @@ memory pooling.</p>
       </tr>
     </tbody>
   </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream_WriteByte_System_Byte_.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream.WriteByte(System.Byte)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L335">View Source</a>
-  </span>
-  <a id="DotNext_IO_PoolingBufferedStream_WriteByte_" data-uid="DotNext.IO.PoolingBufferedStream.WriteByte*"></a>
-  <h4 id="DotNext_IO_PoolingBufferedStream_WriteByte_System_Byte_" data-uid="DotNext.IO.PoolingBufferedStream.WriteByte(System.Byte)">WriteByte(byte)</h4>
-  <div class="markdown level1 summary"><p>Writes a byte to the current position in the stream and advances the position within the stream by one byte.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public override void WriteByte(byte value)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The byte to write to the stream.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream.writebyte">Stream.WriteByte(byte)</a></div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.ioexception">IOException</a></td>
-        <td><p>An I/O error occurs.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>The stream does not support writing, or the stream is already closed.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>Methods were called after the stream was closed.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Buffers.IBufferedWriter.html">IBufferedWriter</a>
   </div>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Buffers.IBufferedReader.html">IBufferedReader</a>
@@ -2747,7 +1885,7 @@ memory pooling.</p>
                     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_PoolingBufferedStream.md&amp;value=---%0Auid%3A%20DotNext.IO.PoolingBufferedStream%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L18" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/PoolingBufferedStream.cs/#L17" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
