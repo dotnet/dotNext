@@ -77,7 +77,7 @@ partial class ApplicationMaintenanceCommand
             result.GetRequiredValue(successfulResponseOption),
             result.GetRequiredValue(failedResponseOption),
             result.GetRequiredValue(timeoutArg),
-            result.Configuration.Output,
+            result.InvocationConfiguration.Output,
             token
         );
     }
