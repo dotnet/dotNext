@@ -55,7 +55,7 @@ partial class CancellationTokenMultiplexer
         private static CancellationToken GetToken(MultiplexerOrToken value)
             => LinkedCancellationTokenSource.CanInlineToken
                 ? Unsafe.BitCast<MultiplexerOrToken, CancellationToken>(value)
-                : (CancellationToken)value.Item1;
+                : Unsafe.Unbox<CancellationToken>(value.Item1);
 
         /// <inheritdoc cref="IMultiplexedCancellationTokenSource.Token"/>
         public CancellationToken Token => source?.Token ?? GetToken(multiplexerOrToken);
