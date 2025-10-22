@@ -88,7 +88,11 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource, I
                 : Unsafe.Unbox<CancellationToken>(tokenCopy.Item1)
             : Token;
 
-        private protected set => cancellationOrigin = InlineToken(value);
+        private protected set
+        {
+            var tokenCopy = InlineToken(value);
+            Volatile.Write(ref cancellationOrigin.Item1, tokenCopy.Item1);
+        }
     }
 
     /// <summary>
@@ -96,7 +100,9 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource, I
     /// or by calling <see cref="CancellationTokenSource.Cancel()"/> manually.
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal bool IsRootCause => CanInlineToken ? ReferenceEquals(this, cancellationOrigin.Item1) : CancellationOrigin == Token;
+    internal bool IsRootCause => CanInlineToken
+        ? ReferenceEquals(this, Volatile.Read(in cancellationOrigin.Item1))
+        : CancellationOrigin == Token;
     
     // This property checks whether the reinterpret cast CancellationToken => CancellationTokenSource
     // is safe. If not, just box the token.
