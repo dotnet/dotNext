@@ -90,8 +90,8 @@ public class ValueReferenceTests
         Span<string> span = reference;
         Assert.IsTrue(span.IsEmpty);
 
-        Assert.ThrowsException<NullReferenceException>((Func<string>)reference);
-        Assert.ThrowsException<NullReferenceException>(((Action<string>)reference).Bind(string.Empty));
+        Assert.Throws<NullReferenceException>((Func<string>)reference);
+        Assert.Throws<NullReferenceException>(((Action<string>)reference).Bind(string.Empty));
     }
 
     [TestMethod]
@@ -104,7 +104,7 @@ public class ValueReferenceTests
         ReadOnlySpan<string> span = reference;
         Assert.IsTrue(span.IsEmpty);
         
-        Assert.ThrowsException<NullReferenceException>((Func<string>)reference);
+        Assert.Throws<NullReferenceException>((Func<string>)reference);
     }
 
     [TestMethod]
@@ -129,8 +129,8 @@ public class ValueReferenceTests
     public void IncorrectReference()
     {
         byte[] empty = [];
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => new ValueReference<byte>(empty, ref MemoryMarshal.GetArrayDataReference(empty)));
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => new ReadOnlyValueReference<byte>(empty, ref MemoryMarshal.GetArrayDataReference(empty)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new ValueReference<byte>(empty, ref MemoryMarshal.GetArrayDataReference(empty)));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new ReadOnlyValueReference<byte>(empty, ref MemoryMarshal.GetArrayDataReference(empty)));
     }
 
     [TestMethod]
@@ -153,7 +153,7 @@ public class ValueReferenceTests
     public void ArrayCovariance()
     {
         string[] array = ["a", "b"];
-        Assert.ThrowsException<ArrayTypeMismatchException>(() => new ValueReference<object>(array, 0));
+        Assert.Throws<ArrayTypeMismatchException>(() => new ValueReference<object>(array, 0));
 
         var roRef = new ReadOnlyValueReference<object>(array, 1);
         Assert.AreEqual("b", roRef.Value);
