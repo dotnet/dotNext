@@ -1,11 +1,9 @@
-using System.Runtime.CompilerServices;
-
 namespace DotNext.IO;
 
 using Buffers;
 using static Threading.Tasks.Synchronization;
 
-internal abstract class ReadOnlyStream : Stream
+internal abstract class ReadOnlyStream : ModernStream
 {
     public sealed override bool CanRead => true;
 
@@ -22,20 +20,7 @@ internal abstract class ReadOnlyStream : Stream
 
     public abstract override int Read(Span<byte> buffer);
 
-    public sealed override int ReadByte()
-    {
-        Unsafe.SkipInit(out byte b);
-        return Read(new(ref b)) is 1 ? b : -1;
-    }
-
-    public sealed override int Read(byte[] buffer, int offset, int count)
-    {
-        ValidateBufferArguments(buffer, offset, count);
-
-        return Read(buffer.AsSpan(offset, count));
-    }
-
-    public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
+    public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
     {
         ValueTask<int> result;
         if (token.IsCancellationRequested)
@@ -57,30 +42,10 @@ internal abstract class ReadOnlyStream : Stream
         return result;
     }
 
-    public sealed override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token)
-        => ReadAsync(buffer.AsMemory(offset, count), token).AsTask();
-
-    public sealed override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-        => TaskToAsyncResult.Begin(ReadAsync(buffer, offset, count), callback, state);
-
-    public sealed override int EndRead(IAsyncResult ar) => TaskToAsyncResult.End<int>(ar);
-
-    public sealed override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
-
     public sealed override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
 
-    public sealed override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token)
-        => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException());
-
-    public sealed override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token)
+    public sealed override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken token = default)
         => token.IsCancellationRequested ? ValueTask.FromCanceled(token) : ValueTask.FromException(new NotSupportedException());
-
-    public sealed override void WriteByte(byte value) => throw new NotSupportedException();
-
-    public sealed override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-        => throw new NotSupportedException();
-
-    public sealed override void EndWrite(IAsyncResult ar) => throw new InvalidOperationException();
 }
 
 internal sealed class ReadOnlyStream<TArg>(Func<Memory<byte>, TArg, CancellationToken, ValueTask<int>> reader, TArg arg) : ReadOnlyStream
@@ -113,7 +78,7 @@ internal sealed class ReadOnlyStream<TArg>(Func<Memory<byte>, TArg, Cancellation
     public override void SetLength(long value)
         => throw new NotSupportedException();
 
-    public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token)
+    public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
         => reader(buffer, arg, token);
 
     public override int Read(Span<byte> buffer)

@@ -4,14 +4,14 @@
   </PropertyGroup>
   <ItemGroup>
     <!--Compile-time dependencies-->
-    <PackageVersion Include="Fody" Version="6.8.0" />
-    <PackageVersion Include="InlineIL.Fody" Version="1.7.4" />
+    <PackageVersion Include="Fody" Version="6.9.3" />
+    <PackageVersion Include="InlineIL.Fody" Version="1.10.1" />
     <PackageVersion Include="Microsoft.FASTER.Core" Version="2.6.5" />
   </ItemGroup>
   <ItemGroup>
     <!--System packages-->
     <PackageVersion Include="System.Collections.Immutable" Version="8.0.0" />
-    <PackageVersion Include="System.CommandLine" Version="2.0.0-beta5.25306.1" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.0-rc.2.25502.107" />
     <PackageVersion Include="System.IO.Hashing" Version="8.0.0" />
     <PackageVersion Include="System.IO.Pipelines" Version="8.0.0" />
     <PackageVersion Include="System.Resources.Extensions" Version="8.0.0" />
@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <!--Microsoft packages-->
-    <PackageVersion Include="Microsoft.AspNetCore.Connections.Abstractions" Version="8.0.16" />
+    <PackageVersion Include="Microsoft.AspNetCore.Connections.Abstractions" Version="8.0.21" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
@@ -28,20 +28,20 @@
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="8.0.1" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageVersion Include="MSTest.Engine" Version="1.0.0-alpha.25277.3" />
-    <PackageVersion Include="MSTest.SourceGeneration" Version="1.0.0-alpha.25277.3" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="1.7.1" />
-    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="1.7.1" />
-    <PackageVersion Include="MSTest.TestFramework" Version="3.9.1" />
-    <PackageVersion Include="MSTest.Analyzers" Version="3.9.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
+    <PackageVersion Include="MSTest.Engine" Version="2.0.0-alpha.25514.6" />
+    <PackageVersion Include="MSTest.SourceGeneration" Version="2.0.0-alpha.25514.6" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.0.1" />
+    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.0.1" />
+    <PackageVersion Include="MSTest.TestFramework" Version="4.0.1" />
+    <PackageVersion Include="MSTest.Analyzers" Version="4.0.1" />
   </ItemGroup>
   <ItemGroup>
     <!--Misc packages-->
-    <PackageVersion Include="BenchmarkDotNet" Version="0.15.0" />
+    <PackageVersion Include="BenchmarkDotNet" Version="0.15.4" />
     <PackageVersion Include="FastMember.Signed" Version="1.5.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
   </ItemGroup>
 </Project>

@@ -97,7 +97,7 @@ public static class BasicExtensions
     /// <param name="nullable">Nullable value.</param>
     /// <param name="value">Underlying value.</param>
     /// <returns><see langword="true"/> if <paramref name="nullable"/> is not <see langword="null"/>; otherwise, <see langword="false"/>.</returns>
-    public static bool TryGetValue<T>(this T? nullable, out T value)
+    public static bool TryGetValue<T>([NotNullWhen(true)] this T? nullable, out T value)
         where T : struct
     {
         value = Nullable.GetValueRefOrDefaultRef(in nullable);

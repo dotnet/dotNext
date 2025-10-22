@@ -40,7 +40,7 @@ static void ConfigureAddCommand(ApplicationMaintenanceCommand command)
     {
         var x = result.GetRequiredValue(argX);
         var y = result.GetRequiredValue(argY);
-        result.Configuration.Output.WriteLine(x + y);
+        result.InvocationConfiguration.Output.WriteLine(x + y);
     });
 }
 
@@ -66,7 +66,7 @@ static void ConfigureSubtractCommand(ApplicationMaintenanceCommand command)
     {
         var x = result.GetRequiredValue(argX);
         var y = result.GetRequiredValue(argY);
-        result.Configuration.Output.WriteLine(x - y);
+        result.InvocationConfiguration.Output.WriteLine(x - y);
     });
 }
 

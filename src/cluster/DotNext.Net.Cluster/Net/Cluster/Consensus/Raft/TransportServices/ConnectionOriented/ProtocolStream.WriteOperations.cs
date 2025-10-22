@@ -70,9 +70,6 @@ internal partial class ProtocolStream
         }
     }
 
-    public sealed override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
-        => WriteAsync(new ReadOnlyMemory<byte>(buffer, offset, count), token).AsTask();
-
     public sealed override void Write(ReadOnlySpan<byte> input)
     {
         while (!input.IsEmpty)
@@ -89,12 +86,6 @@ internal partial class ProtocolStream
                 bufferEnd = FrameHeadersSize;
             }
         }
-    }
-
-    public sealed override void Write(byte[] buffer, int offset, int count)
-    {
-        ValidateBufferArguments(buffer, offset, count);
-        Write(new ReadOnlySpan<byte>(buffer, offset, count));
     }
 
     internal ValueTask WriteToTransportAsync(CancellationToken token)

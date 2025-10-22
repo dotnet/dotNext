@@ -73,7 +73,7 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
                             True(session.Identity.IsAuthenticated);
                             var identity = IsType<LinuxUdsPeerIdentity>(session.Identity);
                             Equal(Environment.UserName, identity.Name);
-                            result.Configuration.Output.Write(identity.ProcessId);
+                            result.InvocationConfiguration.Output.Write(identity.ProcessId);
                         });
                     });
             })
@@ -131,7 +131,7 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
                         {
                             var x = result.GetRequiredValue(argX);
                             var y = result.GetRequiredValue(argY);
-                            return new(result.Configuration.Output.WriteAsync((x + y).ToString().AsMemory(), token));
+                            return new(result.InvocationConfiguration.Output.WriteAsync((x + y).ToString().AsMemory(), token));
                         });
                         cmd.Authorization += static (user, _, _, _) => new(user.IsInRole("role2"));
                     });

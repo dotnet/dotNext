@@ -214,7 +214,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
 
     private sealed class ReliableAsyncEnumerator : Disposable, IAsyncEnumerator<T>
     {
-        private readonly CancellationTokenSource? tokenSource;
+        private readonly LinkedCancellationTokenSource? tokenSource;
         private readonly PersistentChannelReader<T> reader;
         private readonly CancellationToken token;
         private AsyncLock.Holder readLock;
@@ -227,7 +227,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
             Debug.Assert(reader is not null);
 
             this.reader = reader;
-            tokenSource = producerToken.LinkTo(consumerToken);
+            tokenSource = LinkedCancellationTokenSource.Combine(ref producerToken, consumerToken);
             token = producerToken;
             offset = long.MinValue;
         }
@@ -237,47 +237,55 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         public async ValueTask<bool> MoveNextAsync()
         {
-            // acquire lock if needed
-            if (readLock.IsEmpty)
-                readLock = await reader.readLock.AcquireAsync(token).ConfigureAwait(false);
-
-            // commit previous read
-            bool dryRun;
-            if (offset < 0L)
-            {
-                dryRun = true;
-            }
-            else
-            {
-                await reader.EndReadAsync(offset).ConfigureAwait(false);
-                IChannel.ReadRateMeter.Add(1, reader.reader.MeasurementTags);
-                dryRun = false;
-            }
-
             bool result;
-            rollbackRead = false;
-            var task = await Task.WhenAny(reader.reader.WaitToReadAsync(token), reader.Completion).ConfigureAwait(false);
-
-            // propagate exception if needed
-            await task.ConfigureAwait(false);
-            if (ReferenceEquals(task, reader.Completion))
+            try
             {
-                result = false;
+                // acquire lock if needed
+                if (readLock.IsEmpty)
+                    readLock = await reader.readLock.AcquireAsync(token).ConfigureAwait(false);
+
+                // commit previous read
+                bool dryRun;
+                if (offset < 0L)
+                {
+                    dryRun = true;
+                }
+                else
+                {
+                    await reader.EndReadAsync(offset).ConfigureAwait(false);
+                    IChannel.ReadRateMeter.Add(1, reader.reader.MeasurementTags);
+                    dryRun = false;
+                }
+
+
+                rollbackRead = false;
+                var task = await Task.WhenAny(reader.reader.WaitToReadAsync(token), reader.Completion).ConfigureAwait(false);
+
+                // propagate exception if needed
+                await task.ConfigureAwait(false);
+                if (ReferenceEquals(task, reader.Completion))
+                {
+                    result = false;
+                }
+                else
+                {
+                    rollbackRead = true;
+                    reader.GetOrCreatePartition();
+
+                    if (dryRun)
+                        reader.cursor.Adjust(reader.readTopic.Stream);
+
+                    // reset file cache
+                    var output = reader.readTopic.Stream;
+                    await output.FlushAsync(token).ConfigureAwait(false);
+                    current = await reader.reader.DeserializeAsync(reader.readTopic, token).ConfigureAwait(false);
+                    offset = output.Position;
+                    result = true;
+                }
             }
-            else
+            catch (OperationCanceledException e) when (e.CancellationToken == tokenSource?.Token)
             {
-                rollbackRead = true;
-                reader.GetOrCreatePartition();
-
-                if (dryRun)
-                    reader.cursor.Adjust(reader.readTopic.Stream);
-
-                // reset file cache
-                var output = reader.readTopic.Stream;
-                await output.FlushAsync(token).ConfigureAwait(false);
-                current = await reader.reader.DeserializeAsync(reader.readTopic, token).ConfigureAwait(false);
-                offset = output.Position;
-                result = true;
+                throw new OperationCanceledException(tokenSource.CancellationOrigin);
             }
 
             return result;

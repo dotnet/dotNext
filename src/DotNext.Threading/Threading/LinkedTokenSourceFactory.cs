@@ -14,26 +14,9 @@ public static class LinkedTokenSourceFactory
     /// <param name="first">The first cancellation token. Can be modified by this method.</param>
     /// <param name="second">The second cancellation token.</param>
     /// <returns>The linked token source; or <see langword="null"/> if <paramref name="first"/> or <paramref name="second"/> is not cancelable.</returns>
+    [Obsolete("Use CancellationTokenMultiplexer class instead.")]
     public static LinkedCancellationTokenSource? LinkTo(this ref CancellationToken first, CancellationToken second)
-    {
-        var result = default(LinkedCancellationTokenSource);
-
-        if (first == second)
-        {
-            // nothing to do, just return from this method
-        }
-        else if (!first.CanBeCanceled || second.IsCancellationRequested)
-        {
-            first = second;
-        }
-        else if (second.CanBeCanceled && !first.IsCancellationRequested)
-        {
-            result = new Linked2CancellationTokenSource(in first, in second);
-            first = result.Token;
-        }
-
-        return result;
-    }
+        => LinkedCancellationTokenSource.Combine(ref first, second);
 
     /// <summary>
     /// Links multiple cancellation tokens together.
@@ -41,7 +24,8 @@ public static class LinkedTokenSourceFactory
     /// <param name="first">The first cancellation token. Can be modified by this method.</param>
     /// <param name="tokens">A list of cancellation tokens to link together.</param>
     /// <returns>The linked token source; or <see langword="null"/> if <paramref name="first"/> or <paramref name="tokens"/> are not cancelable.</returns>
-    public static LinkedCancellationTokenSource? LinkTo(this ref CancellationToken first, ReadOnlySpan<CancellationToken> tokens) // TODO: Add params
+    [Obsolete("Use CancellationTokenMultiplexer class instead.")]
+    public static LinkedCancellationTokenSource? LinkTo(this ref CancellationToken first, ReadOnlySpan<CancellationToken> tokens)
     {
         LinkedCancellationTokenSource? result;
         if (tokens.IsEmpty)
@@ -71,6 +55,7 @@ public static class LinkedTokenSourceFactory
     /// <param name="token">The first cancellation token. Can be modified by this method.</param>
     /// <param name="timeout">The timeout to link.</param>
     /// <returns>The linked token source; or <see langword="null"/> if <paramref name="token"/> is canceled or <paramref name="timeout"/> is <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</returns>
+    [Obsolete("Use CancellationTokenMultiplexer class instead.")]
     public static CancellationTokenSource? LinkTo(this ref CancellationToken token, TimeSpan timeout)
     {
         CancellationTokenSource? result;
@@ -96,6 +81,7 @@ public static class LinkedTokenSourceFactory
     /// <param name="timeout">The timeout to link.</param>
     /// <param name="second">The second cancellation token.</param>
     /// <returns>The linked token source; or <see langword="null"/> if not needed.</returns>
+    [Obsolete("Use CancellationTokenMultiplexer class instead.")]
     public static CancellationTokenSource? LinkTo(this ref CancellationToken first, TimeSpan timeout, CancellationToken second)
     {
         CancellationTokenSource? result;
@@ -106,7 +92,7 @@ public static class LinkedTokenSourceFactory
         }
         else if (timeout < TimeSpan.Zero || !second.CanBeCanceled || first.IsCancellationRequested || second.IsCancellationRequested)
         {
-            result = LinkTo(ref first, second);
+            result = LinkedCancellationTokenSource.Combine(ref first, second);
         }
         else if (!first.CanBeCanceled)
         {
@@ -131,32 +117,8 @@ public static class LinkedTokenSourceFactory
     public static bool CausedBy<TSource>(this OperationCanceledException e, TSource? source, CancellationToken token)
         where TSource : IMultiplexedCancellationTokenSource?
         => source is null ? e.CancellationToken == token : e.CancellationToken == source.Token && source.CancellationOrigin == token;
-
-    private sealed class Linked2CancellationTokenSource : LinkedCancellationTokenSource
-    {
-        private readonly CancellationTokenRegistration registration1, registration2;
-
-        internal Linked2CancellationTokenSource(in CancellationToken token1, in CancellationToken token2)
-        {
-            Debug.Assert(token1.CanBeCanceled);
-            Debug.Assert(token2.CanBeCanceled);
-
-            registration1 = Attach(token1);
-            registration2 = Attach(token2);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                registration1.Unregister();
-                registration2.Unregister();
-            }
-
-            base.Dispose(disposing);
-        }
-    }
     
+    [Obsolete]
     private sealed class MultipleLinkedCancellationTokenSource : LinkedCancellationTokenSource
     {
         private MemoryOwner<CancellationTokenRegistration> registrations;

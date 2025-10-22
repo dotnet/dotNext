@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.IO;
 
@@ -15,7 +14,7 @@ using Buffers;
 /// </remarks>
 /// <param name="stream">The underlying stream to be buffered.</param>
 /// <param name="leaveOpen"><see langword="true"/> to leave <paramref name="stream"/> open after the object is disposed; otherwise, <see langword="false"/>.</param>
-public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false) : Stream, IBufferedWriter, IFlushable, IBufferedReader
+public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false) : ModernStream, IBufferedWriter, IBufferedReader
 {
     private const int MinBufferSize = 16;
     private const int DefaultBufferSize = 4096;
@@ -323,18 +322,6 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         }
     }
 
-    /// <inheritdoc/>
-    public override void Write(byte[] data, int offset, int count)
-    {
-        ValidateBufferArguments(data, offset, count);
-
-        Write(new ReadOnlySpan<byte>(data, offset, count));
-    }
-
-    /// <inheritdoc/>
-    public override void WriteByte(byte value)
-        => Write(new ReadOnlySpan<byte>(in value));
-
     /// <inheritdoc cref="Stream.WriteAsync(ReadOnlyMemory{byte}, CancellationToken)"/>
     public override ValueTask WriteAsync(ReadOnlyMemory<byte> data, CancellationToken token = default)
     {
@@ -419,17 +406,6 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         Reset();
     }
 
-    /// <inheritdoc/>
-    public override Task WriteAsync(byte[] data, int offset, int count, CancellationToken token)
-        => WriteAsync(new ReadOnlyMemory<byte>(data, offset, count), token).AsTask();
-
-    /// <inheritdoc/>
-    public override IAsyncResult BeginWrite(byte[] data, int offset, int count, AsyncCallback? callback, object? state)
-        => TaskToAsyncResult.Begin(WriteAsync(data, offset, count), callback, state);
-
-    /// <inheritdoc/>
-    public override void EndWrite(IAsyncResult asyncResult) => TaskToAsyncResult.End(asyncResult);
-
     private ReadOnlyMemory<byte> MemoryToRead => buffer.Memory[readPosition..readLength];
     
     private int ReadFromBuffer(Span<byte> destination)
@@ -504,14 +480,6 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         return bytesRead;
     }
 
-    /// <inheritdoc/>
-    public override int Read(byte[] data, int offset, int count)
-    {
-        ValidateBufferArguments(data, offset, count);
-
-        return Read(data.AsSpan(offset, count));
-    }
-
     /// <inheritdoc cref="Stream.ReadAsync(Memory{byte}, CancellationToken)"/>
     public override ValueTask<int> ReadAsync(Memory<byte> data, CancellationToken token = default)
     {
@@ -537,10 +505,6 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
 
         return task;
     }
-
-    /// <inheritdoc/>
-    public override Task<int> ReadAsync(byte[] data, int offset, int count, CancellationToken token)
-        => ReadAsync(data.AsMemory(offset, count), token).AsTask();
 
     private async ValueTask<int> ReadCoreAsync(Memory<byte> data, CancellationToken token)
     {
@@ -663,13 +627,6 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         return true;
     }
 
-    /// <inheritdoc/>
-    public override IAsyncResult BeginRead(byte[] data, int offset, int count, AsyncCallback? callback, object? state)
-        => TaskToAsyncResult.Begin(ReadAsync(data, offset, count), callback, state);
-
-    /// <inheritdoc/>
-    public override int EndRead(IAsyncResult asyncResult) => TaskToAsyncResult.End<int>(asyncResult);
-
     /// <inheritdoc cref="Stream.FlushAsync(CancellationToken)"/>
     public override Task FlushAsync(CancellationToken token)
     {
@@ -756,13 +713,6 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         }
 
         return newPos;
-    }
-
-    /// <inheritdoc/>
-    public override int ReadByte()
-    {
-        Unsafe.SkipInit(out byte value);
-        return Read(new Span<byte>(ref value)) > 0 ? value : -1;
     }
 
     private void EnsureWriteBufferIsEmpty()

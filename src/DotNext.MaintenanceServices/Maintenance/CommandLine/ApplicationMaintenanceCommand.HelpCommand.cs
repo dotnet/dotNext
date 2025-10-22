@@ -25,8 +25,7 @@ partial class ApplicationMaintenanceCommand
 file static class HelpOptionExtensions
 {
     public static int Invoke(this HelpOption option, ParseResult result)
-    {
-        var root = result.RootCommandResult;
-        return result.Configuration.Invoke(option.Name);
-    }
+        => result.RootCommandResult.Command is RootCommand root
+            ? root.Parse(option.Name).Invoke(result.InvocationConfiguration)
+            : CommandContext.GenericErrorExitCode;
 }

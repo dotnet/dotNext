@@ -23,8 +23,14 @@ internal sealed class StateMachine(DirectoryInfo location) : SimpleStateMachine(
 
     protected override async ValueTask RestoreAsync(FileInfo snapshotFile, CancellationToken token)
     {
-        var handle = File.OpenHandle(snapshotFile.FullName, options: FileOptions.Asynchronous);
-        var buffer = new byte[sizeof(long)];
+        byte[] buffer = new byte[sizeof(long)];
+        using var handle = File.OpenHandle(
+            snapshotFile.FullName,
+            FileMode.Open,
+            FileAccess.Read,
+            FileShare.ReadWrite | FileShare.Delete,
+            FileOptions.Asynchronous | FileOptions.SequentialScan);
+
         await RandomAccess.ReadAsync(handle, buffer, fileOffset: 0L, token).ConfigureAwait(false);
         Value = BinaryPrimitives.ReadInt64LittleEndian(buffer);
     }

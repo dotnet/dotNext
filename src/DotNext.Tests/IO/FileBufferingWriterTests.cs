@@ -192,7 +192,7 @@ public sealed class FileBufferingWriterTests : Test
         Throws<NotSupportedException>(() => writer.Read(new Span<byte>()));
         Throws<NotSupportedException>(() => writer.Read(new byte[10], 0, 10));
         Throws<NotSupportedException>(() => writer.BeginRead(new byte[10], 0, 10, null, null));
-        Throws<InvalidOperationException>(() => writer.EndRead(Task.CompletedTask));
+        Throws<ArgumentException>(() => writer.EndRead(Task.CompletedTask));
         await ThrowsAsync<NotSupportedException>(() => writer.ReadAsync(new byte[10], 0, 10));
         await ThrowsAsync<NotSupportedException>(writer.ReadAsync(new byte[10], CancellationToken.None).AsTask);
     }

@@ -3,6 +3,7 @@ namespace DotNext.Threading;
 public sealed class LinkedCancellationTokenSourceTests : Test
 {
     [Fact]
+    [Obsolete]
     public static async Task LinkedCancellation()
     {
         using var source1 = new CancellationTokenSource();
@@ -25,6 +26,7 @@ public sealed class LinkedCancellationTokenSourceTests : Test
     }
 
     [Fact]
+    [Obsolete]
     public static async Task DirectCancellation()
     {
         using var source1 = new CancellationTokenSource();
@@ -47,6 +49,7 @@ public sealed class LinkedCancellationTokenSourceTests : Test
     }
 
     [Fact]
+    [Obsolete]
     public static async Task CancellationWithTimeout()
     {
         using var source1 = new CancellationTokenSource();
@@ -59,6 +62,7 @@ public sealed class LinkedCancellationTokenSourceTests : Test
     }
 
     [Fact]
+    [Obsolete]
     public static async Task ConcurrentCancellation()
     {
         using var source1 = new CancellationTokenSource();

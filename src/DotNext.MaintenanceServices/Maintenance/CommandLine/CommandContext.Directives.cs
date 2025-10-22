@@ -5,20 +5,16 @@ namespace DotNext.Maintenance.CommandLine;
 
 partial class CommandContext
 {
-    private sealed class DirectiveAction : SynchronousCommandLineAction
+    private sealed class DirectiveAction(Action<CommandContext> action) : SynchronousCommandLineAction
     {
-        internal readonly Action<CommandContext> Action;
+        internal Action<CommandContext> Action => action;
 
-        public DirectiveAction(Action<CommandContext> action)
-        {
-            Action = action;
-            Terminating = false;
-        }
+        public override bool Terminating => false;
 
         public override int Invoke(ParseResult parseResult)
         {
             int result;
-            if (parseResult.Configuration is CommandContext context)
+            if (parseResult.InvocationConfiguration is CommandContext context)
             {
                 Action(context);
                 result = 0;
@@ -38,9 +34,7 @@ partial class CommandContext
 
         public PrintErrorCodeDirective()
             : base(Name)
-        {
-            Action = new DirectiveAction(static context => context.printExitCode = true);
-        }
+            => Action = new DirectiveAction(static context => context.printExitCode = true);
     }
     
     private sealed class SuppressStandardOutputDirective : Directive
@@ -49,9 +43,7 @@ partial class CommandContext
 
         public SuppressStandardOutputDirective()
             : base(Name)
-        {
-            Action = new DirectiveAction(static context => context.suppressOutputBuffer = true);
-        }
+            => Action = new DirectiveAction(static context => context.suppressOutputBuffer = true);
     }
     
     private sealed class SuppressStandardErrorDirective : Directive
@@ -60,9 +52,7 @@ partial class CommandContext
 
         public SuppressStandardErrorDirective()
             : base(Name)
-        {
-            Action = new DirectiveAction(static context => context.suppressErrorBuffer = true);
-        }
+            => Action = new DirectiveAction(static context => context.suppressErrorBuffer = true);
     }
 
     internal static void RegisterDirectives(RootCommand root)

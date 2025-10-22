@@ -20,9 +20,11 @@ partial class ApplicationMaintenanceCommand
 
         /// <inheritdoc />
         public sealed override int Invoke(ParseResult result)
-            => result.Configuration is CommandContext context ? Invoke(context.Session, result) : -1;
+            => CommandContext.TryGetSession(result) is { } session
+                ? Invoke(session, result)
+                : CommandContext.GenericErrorExitCode;
     }
-    
+
     private sealed class DelegatingSynchronousAction(Action<IMaintenanceSession, ParseResult> action) : SynchronousAction
     {
         protected override int Invoke(IMaintenanceSession session, ParseResult result)
@@ -31,7 +33,7 @@ partial class ApplicationMaintenanceCommand
             return 0;
         }
     }
-    
+
     /// <summary>
     /// Represents asynchronous command handler.
     /// </summary>
@@ -48,7 +50,9 @@ partial class ApplicationMaintenanceCommand
 
         /// <inheritdoc />
         public override Task<int> InvokeAsync(ParseResult result, CancellationToken token = default)
-            => result.Configuration is CommandContext context ? InvokeAsync(context.Session, result, token) : Task.FromResult(-1);
+            => CommandContext.TryGetSession(result) is { } session
+                ? InvokeAsync(session, result, token)
+                : Task.FromResult(CommandContext.GenericErrorExitCode);
     }
 
     private sealed class DelegatingAsynchronousAction(Func<IMaintenanceSession, ParseResult, CancellationToken, ValueTask> action)

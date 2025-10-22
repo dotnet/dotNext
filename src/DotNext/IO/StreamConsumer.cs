@@ -11,7 +11,7 @@ using IReadOnlySpanConsumer = Buffers.IReadOnlySpanConsumer<byte>;
 /// </summary>
 /// <param name="output">The writable stream.</param>
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct StreamConsumer(Stream output) : IReadOnlySpanConsumer, IEquatable<StreamConsumer>, IFlushable
+public readonly record struct StreamConsumer(Stream output) : IReadOnlySpanConsumer, IFlushable
 {
     private readonly Stream output = output ?? throw new ArgumentNullException(nameof(output));
 

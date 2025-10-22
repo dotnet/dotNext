@@ -210,9 +210,14 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
         {
             throw new AggregateException(exception, e);
         }
-        catch (OperationCanceledException e) when (e.CausedBy(cts, leaseToken))
+        catch (OperationCanceledException e) when (e.CancellationToken == leaseToken ||
+                                                   e.CancellationToken == cts?.Token && cts.CancellationOrigin == leaseToken)
         {
             throw new TimeoutException(ExceptionMessages.LeaseExpired, e);
+        }
+        catch (OperationCanceledException e) when (cts is not null)
+        {
+            throw new OperationCanceledException(e.Message, e, cts.CancellationOrigin);
         }
         finally
         {
@@ -224,7 +229,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
         out CancellationToken leaseToken,
         CancellationToken token)
     {
-        cts = token.LinkTo(leaseToken = Token);
+        cts = LinkedCancellationTokenSource.Combine(ref token, leaseToken = Token);
         return Fork(worker, token);
 
         static Task<TResult> Fork(Func<CancellationToken, Task<TResult>> function, CancellationToken token)
