@@ -101,8 +101,8 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource, I
     /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal bool IsRootCause => CanInlineToken
-        ? ReferenceEquals(this, Volatile.Read(in cancellationOrigin.Item1))
-        : CancellationOrigin == Token;
+        ? Volatile.Read(in cancellationOrigin.Item1) is not { } tokenCopy || ReferenceEquals(this, tokenCopy)
+        : Token == CancellationOrigin;
     
     // This property checks whether the reinterpret cast CancellationToken => CancellationTokenSource
     // is safe. If not, just box the token.
