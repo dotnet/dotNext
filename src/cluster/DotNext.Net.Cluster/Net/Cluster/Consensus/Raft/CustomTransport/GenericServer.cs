@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using DotNext.Threading;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.AspNetCore.Connections.Features;
 using Microsoft.Extensions.Logging;
@@ -9,6 +8,7 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Consensus.Raft.CustomTransport;
 
 using Buffers;
+using Threading;
 using TransportServices;
 using TransportServices.ConnectionOriented;
 
