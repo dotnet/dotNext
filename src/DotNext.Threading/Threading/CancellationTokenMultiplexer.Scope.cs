@@ -66,7 +66,7 @@ partial class CancellationTokenMultiplexer
         /// <summary>
         /// Gets a value indicating that the multiplexed token is cancelled by the timeout.
         /// </summary>
-        public bool IsTimedOut => source?.IsRootCause ?? false;
+        public bool IsTimedOut => source?.IsRootCause ?? GetToken(multiplexerOrToken) == TimedOutToken;
 
         internal void SetTimeout(TimeSpan value) => source?.CancelAfter(value);
 
@@ -157,5 +157,23 @@ partial class CancellationTokenMultiplexer
 
         /// <inheritdoc/>
         public ValueTask DisposeAsync() => scope.DisposeAsync();
+    }
+
+    private static CancellationToken TimedOutToken => TimedOutTokenSource.Token;
+}
+
+// This source represents a canceled token that is canceled by zero timeout.
+// It's not possible to use new CancellationToken(canceled: true) because the multiplexer
+// cannot distinguish between the canceled token passed by the user code and the token that represents the timeout.
+// This class is not accessible by the user code, and its token cannot be passed to the multiplexer directly.
+file static class TimedOutTokenSource
+{
+    public static readonly CancellationToken Token;
+
+    static TimedOutTokenSource()
+    {
+        using var source = new CancellationTokenSource();
+        Token = source.Token;
+        source.Cancel();
     }
 }

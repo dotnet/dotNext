@@ -75,7 +75,7 @@ public sealed partial class CancellationTokenMultiplexer
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative or too large.</exception>
     public Scope Combine(TimeSpan timeout, ReadOnlySpan<CancellationToken> tokens) => timeout.Ticks switch
     {
-        0L => new(new CancellationToken(canceled: true)),
+        0L => new(TimedOutToken),
         Timeout.InfiniteTicks => Combine(tokens),
         < 0L or > Timeout.MaxTimeoutParameterTicks => throw new ArgumentOutOfRangeException(nameof(timeout)),
         _ => new(this, timeout, tokens)

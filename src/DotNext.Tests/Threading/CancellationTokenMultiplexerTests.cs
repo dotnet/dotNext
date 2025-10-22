@@ -72,13 +72,15 @@ public class CancellationTokenMultiplexerTests : Test
         True(scope.Token.IsCancellationRequested);
     }
 
-    [Fact]
-    public static async Task TimeOut()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    public static async Task TimeOut(int timeout)
     {
         using var cts = new CancellationTokenSource();
         var multiplexer = new CancellationTokenMultiplexer();
 
-        await using var scope = multiplexer.Combine(TimeSpan.FromMilliseconds(1), [cts.Token]);
+        await using var scope = multiplexer.Combine(TimeSpan.FromMilliseconds(timeout), [cts.Token]);
         await scope.Token.WaitAsync();
 
         Equal(scope.Token, scope.CancellationOrigin);
@@ -94,7 +96,7 @@ public class CancellationTokenMultiplexerTests : Test
         await using var scope = multiplexer.CombineAndSetTimeoutLater([]);
         False(scope.Token.IsCancellationRequested);
 
-        scope.Timeout = TimeSpan.FromMilliseconds(1);
+        scope.Timeout = TimeSpan.FromMilliseconds(0);
         await scope.Token.WaitAsync();
         
         Equal(scope.Token, scope.CancellationOrigin);
