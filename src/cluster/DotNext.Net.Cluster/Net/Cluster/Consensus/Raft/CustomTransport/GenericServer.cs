@@ -85,7 +85,7 @@ internal sealed class GenericServer : Server
         {
             // server stopped, suppress exception
         }
-        catch (OperationCanceledException e)
+        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token && cts.IsTimedOut)
         {
             // timeout
             logger.RequestTimedOut(clientAddress, e);
@@ -174,7 +174,7 @@ internal sealed class GenericServer : Server
         private static MemoryAllocator<byte> GetMemoryAllocator(GenericServer server, BaseConnectionContext connection)
         {
             return connection.Features.Get<MemoryAllocator<byte>>()
-                ?? connection.Features.Get<IMemoryPoolFeature>()?.MemoryPool?.ToAllocator()
+                ?? connection.Features.Get<IMemoryPoolFeature>()?.MemoryPool.ToAllocator()
                 ?? server.BufferAllocator;
         }
 
