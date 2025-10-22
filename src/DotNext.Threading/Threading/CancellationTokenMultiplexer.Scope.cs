@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Threading;
 
 using static Timeout;
+using MultiplexerOrToken = ValueTuple<object>;
 
 partial class CancellationTokenMultiplexer
 {
@@ -23,7 +24,7 @@ partial class CancellationTokenMultiplexer
         // CancellationToken is just a wrapper over CancellationTokenSource.
         // For optimization purposes, if only one token is passed to the scope, we can inline the underlying CTS
         // to this structure.
-        private readonly ValueTuple<object> multiplexerOrToken;
+        private readonly MultiplexerOrToken multiplexerOrToken;
         private readonly PooledCancellationTokenSource? source;
 
         internal Scope(CancellationTokenMultiplexer multiplexer, ReadOnlySpan<CancellationToken> tokens, bool timeoutSupport = false)
@@ -46,14 +47,14 @@ partial class CancellationTokenMultiplexer
         internal Scope(CancellationToken token)
             => multiplexerOrToken = InlineToken(token);
 
-        private static ValueTuple<object> InlineToken(CancellationToken token)
+        private static MultiplexerOrToken InlineToken(CancellationToken token)
             => LinkedCancellationTokenSource.CanInlineToken
-                ? Unsafe.BitCast<CancellationToken, ValueTuple<object>>(token)
+                ? Unsafe.BitCast<CancellationToken, MultiplexerOrToken>(token)
                 : new(token);
 
-        private static CancellationToken GetToken(ValueTuple<object> value)
+        private static CancellationToken GetToken(MultiplexerOrToken value)
             => LinkedCancellationTokenSource.CanInlineToken
-                ? Unsafe.BitCast<ValueTuple<object>, CancellationToken>(value)
+                ? Unsafe.BitCast<MultiplexerOrToken, CancellationToken>(value)
                 : (CancellationToken)value.Item1;
 
         /// <inheritdoc cref="IMultiplexedCancellationTokenSource.Token"/>

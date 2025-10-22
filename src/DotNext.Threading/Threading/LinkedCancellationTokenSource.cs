@@ -6,6 +6,7 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 namespace DotNext.Threading;
 
 using Runtime;
+using InlinedToken = ValueTuple<object?>;
 
 /// <summary>
 /// Gets cancellation token source that allows to obtain the token that causes
@@ -18,7 +19,7 @@ using Runtime;
 public abstract class LinkedCancellationTokenSource : CancellationTokenSource, IMultiplexedCancellationTokenSource
 {
     // represents inlined CancellationToken
-    private ValueTuple<object?> cancellationOrigin;
+    private InlinedToken cancellationOrigin;
 
     private protected LinkedCancellationTokenSource()
     {
@@ -36,8 +37,8 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource, I
         }
     }
 
-    private static ValueTuple<object?> InlineToken(CancellationToken token) => CanInlineToken
-        ? Unsafe.BitCast<CancellationToken, ValueTuple<object?>>(token)
+    private static InlinedToken InlineToken(CancellationToken token) => CanInlineToken
+        ? Unsafe.BitCast<CancellationToken, InlinedToken>(token)
         : new(token);
     
     internal void RegisterTimeoutHandler()
@@ -81,11 +82,11 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource, I
     /// </remarks>
     public CancellationToken CancellationOrigin
     {
-        get => CanInlineToken
-            ? Unsafe.BitCast<ValueTuple<object?>, CancellationToken>(cancellationOrigin)
-            : cancellationOrigin.Item1 is null
-                ? CancellationToken.None
-                : Unsafe.Unbox<CancellationToken>(cancellationOrigin.Item1);
+        get => new InlinedToken(Volatile.Read(in cancellationOrigin.Item1)) is { Item1: not null } tokenCopy
+            ? CanInlineToken
+                ? Unsafe.BitCast<InlinedToken, CancellationToken>(tokenCopy)
+                : Unsafe.Unbox<CancellationToken>(tokenCopy.Item1)
+            : Token;
 
         private protected set => cancellationOrigin = InlineToken(value);
     }
@@ -99,7 +100,7 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource, I
     
     // This property checks whether the reinterpret cast CancellationToken => CancellationTokenSource
     // is safe. If not, just box the token.
-    internal static bool CanInlineToken => Intrinsics.AreCompatible<CancellationToken, ValueTuple<object>>()
+    internal static bool CanInlineToken => Intrinsics.AreCompatible<CancellationToken, InlinedToken>()
                                            && RuntimeHelpers.IsReferenceOrContainsReferences<CancellationToken>();
 
     internal static LinkedCancellationTokenSource? Combine(ref CancellationToken first, CancellationToken second)
