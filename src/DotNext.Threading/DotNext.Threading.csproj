@@ -7,7 +7,7 @@
     <ImplicitUsings>true</ImplicitUsings>
     <IsAotCompatible>true</IsAotCompatible>
     <Features>nullablePublicOnly</Features>
-    <VersionPrefix>5.26.0</VersionPrefix>
+    <VersionPrefix>5.26.1</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <Authors>.NET Foundation and Contributors</Authors>
     <Product>.NEXT Family of Libraries</Product>
