@@ -92,16 +92,14 @@ public abstract class LinkedCancellationTokenSource : CancellationTokenSource, I
             // achieve deterministic behavior for CancellationOrigin and IsRootCause properties:
             // if cancellation is requested for this source by timeout, switch cancellationOrigin to not-null
             // value in getter to prevent concurrent overwrite by the linked token cancellation callback.
-            object? tokenCopy;
+            var tokenCopy = cancellationOrigin.Item1;
             if (CanInlineToken)
             {
-                tokenCopy = IsCancellationRequested
-                    ? Interlocked.CompareExchange(ref cancellationOrigin.Item1, this, comparand: null)
-                    : Volatile.Read(in cancellationOrigin.Item1);
-
-                tokenCopy ??= this;
+                tokenCopy ??= IsCancellationRequested
+                    ? Interlocked.CompareExchange(ref cancellationOrigin.Item1, this, comparand: null) ?? this
+                    : this;
             }
-            else if ((tokenCopy = Volatile.Read(in cancellationOrigin.Item1)) is null)
+            else if (tokenCopy is null)
             {
                 object boxedToken = Token;
                 tokenCopy = Interlocked.CompareExchange(ref cancellationOrigin.Item1, boxedToken, comparand: null) ?? boxedToken;
