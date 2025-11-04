@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class MemberUnavailableException | .NEXT </title>
+    <title>Class NotLeaderException | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class MemberUnavailableException | .NEXT ">
+    <meta name="title" content="Class NotLeaderException | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -65,12 +65,12 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Net.Cluster.MemberUnavailableException">
+            <article class="content wrap" id="_content" data-uid="DotNext.Net.Cluster.Consensus.Raft.NotLeaderException">
 
 
 
-  <h1 id="DotNext_Net_Cluster_MemberUnavailableException" data-uid="DotNext.Net.Cluster.MemberUnavailableException" class="text-break">Class MemberUnavailableException</h1>
-  <div class="markdown level0 summary"><p>Indicates that remote member cannot be replicated because it is unreachable through the network.</p>
+  <h1 id="DotNext_Net_Cluster_Consensus_Raft_NotLeaderException" data-uid="DotNext.Net.Cluster.Consensus.Raft.NotLeaderException" class="text-break">Class NotLeaderException</h1>
+  <div class="markdown level0 summary"><p>Indicates that the operation cannot be performed on a node which is not a leader.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -78,8 +78,9 @@
     <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
     <div class="level1"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></div>
     <div class="level2"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.systemexception">SystemException</a></div>
-    <div class="level3"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.ioexception">IOException</a></div>
-    <div class="level4"><span class="xref">MemberUnavailableException</span></div>
+    <div class="level3"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></div>
+    <div class="level4"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.LeaderOperationException.html">LeaderOperationException</a></div>
+    <div class="level5"><span class="xref">NotLeaderException</span></div>
   </div>
   <div class="implements">
     <h5>Implements</h5>
@@ -121,9 +122,6 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception.targetsite">Exception.TargetSite</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception.serializeobjectstate">Exception.SerializeObjectState</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
     </div>
     <div>
@@ -133,35 +131,32 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Net.html">Net</a>.<a class="xref" href="DotNext.Net.Cluster.html">Cluster</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Net.html">Net</a>.<a class="xref" href="DotNext.Net.Cluster.html">Cluster</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.html">Consensus</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.html">Raft</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
-  <h5 id="DotNext_Net_Cluster_MemberUnavailableException_syntax">Syntax</h5>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_NotLeaderException_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class MemberUnavailableException : IOException, ISerializable</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class NotLeaderException : LeaderOperationException, ISerializable</code></pre>
   </div>
   <h3 id="constructors">Constructors
 </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_MemberUnavailableException__ctor_DotNext_Net_Cluster_IClusterMember_System_String_System_Exception_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.MemberUnavailableException.%23ctor(DotNext.Net.Cluster.IClusterMember%2CSystem.String%2CSystem.Exception)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_NotLeaderException__ctor_System_Exception_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.%23ctor(System.Exception)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/MemberUnavailableException.cs/#L9">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/NotLeaderException.cs/#L7">View Source</a>
   </span>
-  <a id="DotNext_Net_Cluster_MemberUnavailableException__ctor_" data-uid="DotNext.Net.Cluster.MemberUnavailableException.#ctor*"></a>
-  <h4 id="DotNext_Net_Cluster_MemberUnavailableException__ctor_DotNext_Net_Cluster_IClusterMember_System_String_System_Exception_" data-uid="DotNext.Net.Cluster.MemberUnavailableException.#ctor(DotNext.Net.Cluster.IClusterMember,System.String,System.Exception)">MemberUnavailableException(IClusterMember, string?, Exception?)</h4>
-  <div class="markdown level1 summary"><p>Indicates that remote member cannot be replicated because it is unreachable through the network.</p>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_NotLeaderException__ctor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.#ctor*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_NotLeaderException__ctor_System_Exception_" data-uid="DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.#ctor(System.Exception)">NotLeaderException(Exception?)</h4>
+  <div class="markdown level1 summary"><p>Indicates that the operation cannot be performed on a node which is not a leader.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MemberUnavailableException(IClusterMember member, string? message = null, Exception? innerException = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public NotLeaderException(Exception? innerException = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -174,55 +169,10 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.IClusterMember.html">IClusterMember</a></td>
-        <td><span class="parametername">member</span></td>
-        <td><p>The unavailable member.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">message</span></td>
-        <td><p>Human-readable text describing the issue.</p>
-</td>
-      </tr>
-      <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
         <td><span class="parametername">innerException</span></td>
-        <td><p>The underlying network-related exception.</p>
+        <td><p>The exception that is the cause of the current exception.</p>
 </td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="properties">Properties
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_MemberUnavailableException_Member.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.MemberUnavailableException.Member%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/MemberUnavailableException.cs/#L15">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_MemberUnavailableException_Member_" data-uid="DotNext.Net.Cluster.MemberUnavailableException.Member*"></a>
-  <h4 id="DotNext_Net_Cluster_MemberUnavailableException_Member" data-uid="DotNext.Net.Cluster.MemberUnavailableException.Member">Member</h4>
-  <div class="markdown level1 summary"><p>Gets unavailable member.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public IClusterMember Member { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.IClusterMember.html">IClusterMember</a></td>
-        <td></td>
       </tr>
     </tbody>
   </table>
@@ -255,10 +205,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_MemberUnavailableException.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.MemberUnavailableException%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
+                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_NotLeaderException.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.NotLeaderException%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
                   </li>
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/MemberUnavailableException.cs/#L9" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/NotLeaderException.cs/#L7" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

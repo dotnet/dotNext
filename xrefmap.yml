@@ -16169,6 +16169,257 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Sequence
   nameWithType: ReadOnlySequenceAccessor.Sequence
+- uid: DotNext.IO.MemorySegmentStream
+  name: MemorySegmentStream
+  href: api/DotNext.IO.MemorySegmentStream.html
+  commentId: T:DotNext.IO.MemorySegmentStream
+  fullName: DotNext.IO.MemorySegmentStream
+  nameWithType: MemorySegmentStream
+- uid: DotNext.IO.MemorySegmentStream.#ctor(System.Memory{System.Byte})
+  name: MemorySegmentStream(Memory<byte>)
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream__ctor_System_Memory_System_Byte__
+  commentId: M:DotNext.IO.MemorySegmentStream.#ctor(System.Memory{System.Byte})
+  name.vb: New(Memory(Of Byte))
+  fullName: DotNext.IO.MemorySegmentStream.MemorySegmentStream(System.Memory<byte>)
+  fullName.vb: DotNext.IO.MemorySegmentStream.New(System.Memory(Of Byte))
+  nameWithType: MemorySegmentStream.MemorySegmentStream(Memory<byte>)
+  nameWithType.vb: MemorySegmentStream.New(Memory(Of Byte))
+- uid: DotNext.IO.MemorySegmentStream.#ctor*
+  name: MemorySegmentStream
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream__ctor_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.IO.MemorySegmentStream.MemorySegmentStream
+  fullName.vb: DotNext.IO.MemorySegmentStream.New
+  nameWithType: MemorySegmentStream.MemorySegmentStream
+  nameWithType.vb: MemorySegmentStream.New
+- uid: DotNext.IO.MemorySegmentStream.CanRead
+  name: CanRead
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_CanRead
+  commentId: P:DotNext.IO.MemorySegmentStream.CanRead
+  fullName: DotNext.IO.MemorySegmentStream.CanRead
+  nameWithType: MemorySegmentStream.CanRead
+- uid: DotNext.IO.MemorySegmentStream.CanRead*
+  name: CanRead
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_CanRead_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.CanRead
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.CanRead
+  nameWithType: MemorySegmentStream.CanRead
+- uid: DotNext.IO.MemorySegmentStream.CanSeek
+  name: CanSeek
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_CanSeek
+  commentId: P:DotNext.IO.MemorySegmentStream.CanSeek
+  fullName: DotNext.IO.MemorySegmentStream.CanSeek
+  nameWithType: MemorySegmentStream.CanSeek
+- uid: DotNext.IO.MemorySegmentStream.CanSeek*
+  name: CanSeek
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_CanSeek_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.CanSeek
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.CanSeek
+  nameWithType: MemorySegmentStream.CanSeek
+- uid: DotNext.IO.MemorySegmentStream.CanWrite
+  name: CanWrite
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_CanWrite
+  commentId: P:DotNext.IO.MemorySegmentStream.CanWrite
+  fullName: DotNext.IO.MemorySegmentStream.CanWrite
+  nameWithType: MemorySegmentStream.CanWrite
+- uid: DotNext.IO.MemorySegmentStream.CanWrite*
+  name: CanWrite
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_CanWrite_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.CanWrite
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.CanWrite
+  nameWithType: MemorySegmentStream.CanWrite
+- uid: DotNext.IO.MemorySegmentStream.ConsumedSpan
+  name: ConsumedSpan
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_ConsumedSpan
+  commentId: P:DotNext.IO.MemorySegmentStream.ConsumedSpan
+  fullName: DotNext.IO.MemorySegmentStream.ConsumedSpan
+  nameWithType: MemorySegmentStream.ConsumedSpan
+- uid: DotNext.IO.MemorySegmentStream.ConsumedSpan*
+  name: ConsumedSpan
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_ConsumedSpan_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.ConsumedSpan
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.ConsumedSpan
+  nameWithType: MemorySegmentStream.ConsumedSpan
+- uid: DotNext.IO.MemorySegmentStream.Flush
+  name: Flush()
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_Flush
+  commentId: M:DotNext.IO.MemorySegmentStream.Flush
+  fullName: DotNext.IO.MemorySegmentStream.Flush()
+  nameWithType: MemorySegmentStream.Flush()
+- uid: DotNext.IO.MemorySegmentStream.Flush*
+  name: Flush
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_Flush_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.Flush
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.Flush
+  nameWithType: MemorySegmentStream.Flush
+- uid: DotNext.IO.MemorySegmentStream.FlushAsync(System.Threading.CancellationToken)
+  name: FlushAsync(CancellationToken)
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_FlushAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.MemorySegmentStream.FlushAsync(System.Threading.CancellationToken)
+  fullName: DotNext.IO.MemorySegmentStream.FlushAsync(System.Threading.CancellationToken)
+  nameWithType: MemorySegmentStream.FlushAsync(CancellationToken)
+- uid: DotNext.IO.MemorySegmentStream.FlushAsync*
+  name: FlushAsync
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_FlushAsync_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.FlushAsync
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.FlushAsync
+  nameWithType: MemorySegmentStream.FlushAsync
+- uid: DotNext.IO.MemorySegmentStream.Length
+  name: Length
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_Length
+  commentId: P:DotNext.IO.MemorySegmentStream.Length
+  fullName: DotNext.IO.MemorySegmentStream.Length
+  nameWithType: MemorySegmentStream.Length
+- uid: DotNext.IO.MemorySegmentStream.Length*
+  name: Length
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_Length_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.Length
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.Length
+  nameWithType: MemorySegmentStream.Length
+- uid: DotNext.IO.MemorySegmentStream.Position
+  name: Position
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_Position
+  commentId: P:DotNext.IO.MemorySegmentStream.Position
+  fullName: DotNext.IO.MemorySegmentStream.Position
+  nameWithType: MemorySegmentStream.Position
+- uid: DotNext.IO.MemorySegmentStream.Position*
+  name: Position
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_Position_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.Position
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.Position
+  nameWithType: MemorySegmentStream.Position
+- uid: DotNext.IO.MemorySegmentStream.Read(System.Span{System.Byte})
+  name: Read(Span<byte>)
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_Read_System_Span_System_Byte__
+  commentId: M:DotNext.IO.MemorySegmentStream.Read(System.Span{System.Byte})
+  name.vb: Read(Span(Of Byte))
+  fullName: DotNext.IO.MemorySegmentStream.Read(System.Span<byte>)
+  fullName.vb: DotNext.IO.MemorySegmentStream.Read(System.Span(Of Byte))
+  nameWithType: MemorySegmentStream.Read(Span<byte>)
+  nameWithType.vb: MemorySegmentStream.Read(Span(Of Byte))
+- uid: DotNext.IO.MemorySegmentStream.Read*
+  name: Read
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_Read_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.Read
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.Read
+  nameWithType: MemorySegmentStream.Read
+- uid: DotNext.IO.MemorySegmentStream.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)
+  name: ReadAsync(Memory<byte>, CancellationToken)
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.MemorySegmentStream.ReadAsync(System.Memory{System.Byte},System.Threading.CancellationToken)
+  name.vb: ReadAsync(Memory(Of Byte), CancellationToken)
+  fullName: DotNext.IO.MemorySegmentStream.ReadAsync(System.Memory<byte>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.MemorySegmentStream.ReadAsync(System.Memory(Of Byte), System.Threading.CancellationToken)
+  nameWithType: MemorySegmentStream.ReadAsync(Memory<byte>, CancellationToken)
+  nameWithType.vb: MemorySegmentStream.ReadAsync(Memory(Of Byte), CancellationToken)
+- uid: DotNext.IO.MemorySegmentStream.ReadAsync*
+  name: ReadAsync
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_ReadAsync_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.ReadAsync
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.ReadAsync
+  nameWithType: MemorySegmentStream.ReadAsync
+- uid: DotNext.IO.MemorySegmentStream.RemainingSpan
+  name: RemainingSpan
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_RemainingSpan
+  commentId: P:DotNext.IO.MemorySegmentStream.RemainingSpan
+  fullName: DotNext.IO.MemorySegmentStream.RemainingSpan
+  nameWithType: MemorySegmentStream.RemainingSpan
+- uid: DotNext.IO.MemorySegmentStream.RemainingSpan*
+  name: RemainingSpan
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_RemainingSpan_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.RemainingSpan
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.RemainingSpan
+  nameWithType: MemorySegmentStream.RemainingSpan
+- uid: DotNext.IO.MemorySegmentStream.Seek(System.Int64,System.IO.SeekOrigin)
+  name: Seek(long, SeekOrigin)
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_Seek_System_Int64_System_IO_SeekOrigin_
+  commentId: M:DotNext.IO.MemorySegmentStream.Seek(System.Int64,System.IO.SeekOrigin)
+  name.vb: Seek(Long, SeekOrigin)
+  fullName: DotNext.IO.MemorySegmentStream.Seek(long, System.IO.SeekOrigin)
+  fullName.vb: DotNext.IO.MemorySegmentStream.Seek(Long, System.IO.SeekOrigin)
+  nameWithType: MemorySegmentStream.Seek(long, SeekOrigin)
+  nameWithType.vb: MemorySegmentStream.Seek(Long, SeekOrigin)
+- uid: DotNext.IO.MemorySegmentStream.Seek*
+  name: Seek
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_Seek_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.Seek
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.Seek
+  nameWithType: MemorySegmentStream.Seek
+- uid: DotNext.IO.MemorySegmentStream.SetLength(System.Int64)
+  name: SetLength(long)
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_SetLength_System_Int64_
+  commentId: M:DotNext.IO.MemorySegmentStream.SetLength(System.Int64)
+  name.vb: SetLength(Long)
+  fullName: DotNext.IO.MemorySegmentStream.SetLength(long)
+  fullName.vb: DotNext.IO.MemorySegmentStream.SetLength(Long)
+  nameWithType: MemorySegmentStream.SetLength(long)
+  nameWithType.vb: MemorySegmentStream.SetLength(Long)
+- uid: DotNext.IO.MemorySegmentStream.SetLength*
+  name: SetLength
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_SetLength_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.SetLength
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.SetLength
+  nameWithType: MemorySegmentStream.SetLength
+- uid: DotNext.IO.MemorySegmentStream.SkipOnOverflow
+  name: SkipOnOverflow
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_SkipOnOverflow
+  commentId: P:DotNext.IO.MemorySegmentStream.SkipOnOverflow
+  fullName: DotNext.IO.MemorySegmentStream.SkipOnOverflow
+  nameWithType: MemorySegmentStream.SkipOnOverflow
+- uid: DotNext.IO.MemorySegmentStream.SkipOnOverflow*
+  name: SkipOnOverflow
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_SkipOnOverflow_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.SkipOnOverflow
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.SkipOnOverflow
+  nameWithType: MemorySegmentStream.SkipOnOverflow
+- uid: DotNext.IO.MemorySegmentStream.Write(System.ReadOnlySpan{System.Byte})
+  name: Write(ReadOnlySpan<byte>)
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_Write_System_ReadOnlySpan_System_Byte__
+  commentId: M:DotNext.IO.MemorySegmentStream.Write(System.ReadOnlySpan{System.Byte})
+  name.vb: Write(ReadOnlySpan(Of Byte))
+  fullName: DotNext.IO.MemorySegmentStream.Write(System.ReadOnlySpan<byte>)
+  fullName.vb: DotNext.IO.MemorySegmentStream.Write(System.ReadOnlySpan(Of Byte))
+  nameWithType: MemorySegmentStream.Write(ReadOnlySpan<byte>)
+  nameWithType.vb: MemorySegmentStream.Write(ReadOnlySpan(Of Byte))
+- uid: DotNext.IO.MemorySegmentStream.Write*
+  name: Write
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_Write_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.Write
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.Write
+  nameWithType: MemorySegmentStream.Write
+- uid: DotNext.IO.MemorySegmentStream.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)
+  name: WriteAsync(ReadOnlyMemory<byte>, CancellationToken)
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.MemorySegmentStream.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Threading.CancellationToken)
+  name.vb: WriteAsync(ReadOnlyMemory(Of Byte), CancellationToken)
+  fullName: DotNext.IO.MemorySegmentStream.WriteAsync(System.ReadOnlyMemory<byte>, System.Threading.CancellationToken)
+  fullName.vb: DotNext.IO.MemorySegmentStream.WriteAsync(System.ReadOnlyMemory(Of Byte), System.Threading.CancellationToken)
+  nameWithType: MemorySegmentStream.WriteAsync(ReadOnlyMemory<byte>, CancellationToken)
+  nameWithType.vb: MemorySegmentStream.WriteAsync(ReadOnlyMemory(Of Byte), CancellationToken)
+- uid: DotNext.IO.MemorySegmentStream.WriteAsync*
+  name: WriteAsync
+  href: api/DotNext.IO.MemorySegmentStream.html#DotNext_IO_MemorySegmentStream_WriteAsync_
+  commentId: Overload:DotNext.IO.MemorySegmentStream.WriteAsync
+  isSpec: "True"
+  fullName: DotNext.IO.MemorySegmentStream.WriteAsync
+  nameWithType: MemorySegmentStream.WriteAsync
 - uid: DotNext.IO.MemoryTransferObject
   name: MemoryTransferObject
   href: api/DotNext.IO.MemoryTransferObject.html
@@ -28731,6 +28982,12 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry(Of T).Timestamp
   nameWithType: JsonLogEntry<T>.Timestamp
   nameWithType.vb: JsonLogEntry(Of T).Timestamp
+- uid: DotNext.Net.Cluster.Consensus.Raft.LeaderOperationException
+  name: LeaderOperationException
+  href: api/DotNext.Net.Cluster.Consensus.Raft.LeaderOperationException.html
+  commentId: T:DotNext.Net.Cluster.Consensus.Raft.LeaderOperationException
+  fullName: DotNext.Net.Cluster.Consensus.Raft.LeaderOperationException
+  nameWithType: LeaderOperationException
 - uid: DotNext.Net.Cluster.Consensus.Raft.LogEntriesBufferingOptions
   name: LogEntriesBufferingOptions
   href: api/DotNext.Net.Cluster.Consensus.Raft.LogEntriesBufferingOptions.html
@@ -30155,6 +30412,31 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.SnapshotBuilderContext.Allocator
   nameWithType: MemoryBasedStateMachine.SnapshotBuilderContext.Allocator
+- uid: DotNext.Net.Cluster.Consensus.Raft.NotLeaderException
+  name: NotLeaderException
+  href: api/DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.html
+  commentId: T:DotNext.Net.Cluster.Consensus.Raft.NotLeaderException
+  fullName: DotNext.Net.Cluster.Consensus.Raft.NotLeaderException
+  nameWithType: NotLeaderException
+- uid: DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.#ctor(System.Exception)
+  name: NotLeaderException(Exception?)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.html#DotNext_Net_Cluster_Consensus_Raft_NotLeaderException__ctor_System_Exception_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.#ctor(System.Exception)
+  name.vb: New(Exception)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.NotLeaderException(System.Exception?)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.New(System.Exception)
+  nameWithType: NotLeaderException.NotLeaderException(Exception?)
+  nameWithType.vb: NotLeaderException.New(Exception)
+- uid: DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.#ctor*
+  name: NotLeaderException
+  href: api/DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.html#DotNext_Net_Cluster_Consensus_Raft_NotLeaderException__ctor_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.NotLeaderException
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.New
+  nameWithType: NotLeaderException.NotLeaderException
+  nameWithType.vb: NotLeaderException.New
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState
   name: PersistentState
   href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html
@@ -30890,6 +31172,31 @@ references:
   commentId: F:DotNext.Net.Cluster.Consensus.Raft.PreVoteResult.RejectedByLeader
   fullName: DotNext.Net.Cluster.Consensus.Raft.PreVoteResult.RejectedByLeader
   nameWithType: PreVoteResult.RejectedByLeader
+- uid: DotNext.Net.Cluster.Consensus.Raft.QuorumUnreachableException
+  name: QuorumUnreachableException
+  href: api/DotNext.Net.Cluster.Consensus.Raft.QuorumUnreachableException.html
+  commentId: T:DotNext.Net.Cluster.Consensus.Raft.QuorumUnreachableException
+  fullName: DotNext.Net.Cluster.Consensus.Raft.QuorumUnreachableException
+  nameWithType: QuorumUnreachableException
+- uid: DotNext.Net.Cluster.Consensus.Raft.QuorumUnreachableException.#ctor(System.Exception)
+  name: QuorumUnreachableException(Exception?)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.QuorumUnreachableException.html#DotNext_Net_Cluster_Consensus_Raft_QuorumUnreachableException__ctor_System_Exception_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.QuorumUnreachableException.#ctor(System.Exception)
+  name.vb: New(Exception)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.QuorumUnreachableException.QuorumUnreachableException(System.Exception?)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.QuorumUnreachableException.New(System.Exception)
+  nameWithType: QuorumUnreachableException.QuorumUnreachableException(Exception?)
+  nameWithType.vb: QuorumUnreachableException.New(Exception)
+- uid: DotNext.Net.Cluster.Consensus.Raft.QuorumUnreachableException.#ctor*
+  name: QuorumUnreachableException
+  href: api/DotNext.Net.Cluster.Consensus.Raft.QuorumUnreachableException.html#DotNext_Net_Cluster_Consensus_Raft_QuorumUnreachableException__ctor_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.QuorumUnreachableException.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: DotNext.Net.Cluster.Consensus.Raft.QuorumUnreachableException.QuorumUnreachableException
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.QuorumUnreachableException.New
+  nameWithType: QuorumUnreachableException.QuorumUnreachableException
+  nameWithType.vb: QuorumUnreachableException.New
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster
   name: RaftCluster
   href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.html
@@ -34536,13 +34843,13 @@ references:
   fullName: DotNext.Net.Cluster.MemberUnavailableException
   nameWithType: MemberUnavailableException
 - uid: DotNext.Net.Cluster.MemberUnavailableException.#ctor(DotNext.Net.Cluster.IClusterMember,System.String,System.Exception)
-  name: MemberUnavailableException(IClusterMember, string, Exception?)
+  name: MemberUnavailableException(IClusterMember, string?, Exception?)
   href: api/DotNext.Net.Cluster.MemberUnavailableException.html#DotNext_Net_Cluster_MemberUnavailableException__ctor_DotNext_Net_Cluster_IClusterMember_System_String_System_Exception_
   commentId: M:DotNext.Net.Cluster.MemberUnavailableException.#ctor(DotNext.Net.Cluster.IClusterMember,System.String,System.Exception)
   name.vb: New(IClusterMember, String, Exception)
-  fullName: DotNext.Net.Cluster.MemberUnavailableException.MemberUnavailableException(DotNext.Net.Cluster.IClusterMember, string, System.Exception?)
+  fullName: DotNext.Net.Cluster.MemberUnavailableException.MemberUnavailableException(DotNext.Net.Cluster.IClusterMember, string?, System.Exception?)
   fullName.vb: DotNext.Net.Cluster.MemberUnavailableException.New(DotNext.Net.Cluster.IClusterMember, String, System.Exception)
-  nameWithType: MemberUnavailableException.MemberUnavailableException(IClusterMember, string, Exception?)
+  nameWithType: MemberUnavailableException.MemberUnavailableException(IClusterMember, string?, Exception?)
   nameWithType.vb: MemberUnavailableException.New(IClusterMember, String, Exception)
 - uid: DotNext.Net.Cluster.MemberUnavailableException.#ctor*
   name: MemberUnavailableException

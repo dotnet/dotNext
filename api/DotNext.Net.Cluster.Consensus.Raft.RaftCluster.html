@@ -425,7 +425,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_AddMemberAsync_System_Net_EndPoint_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.AddMemberAsync(System.Net.EndPoint%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L198">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L199">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_AddMemberAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.AddMemberAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_AddMemberAsync_System_Net_EndPoint_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.AddMemberAsync(System.Net.EndPoint,System.Threading.CancellationToken)">AddMemberAsync(EndPoint, CancellationToken)</h4>
@@ -449,7 +449,7 @@
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.endpoint">EndPoint</a></td>
         <td><span class="parametername">address</span></td>
-        <td><p>The addres of the cluster member.</p>
+        <td><p>The address of the cluster member.</p>
 </td>
       </tr>
       <tr>
@@ -486,6 +486,11 @@
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.html">NotLeaderException</a></td>
+        <td><p>The current node is not a leader.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
         <td><p>The operation has been canceled or the cluster elects a new leader.</p>
@@ -556,7 +561,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L335">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L338">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_Dispose_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.Dispose*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_Dispose_System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -592,7 +597,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_RemoveMemberAsync_System_Net_EndPoint_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.RemoveMemberAsync(System.Net.EndPoint%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L215">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L218">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_RemoveMemberAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.RemoveMemberAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_RemoveMemberAsync_System_Net_EndPoint_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.RemoveMemberAsync(System.Net.EndPoint,System.Threading.CancellationToken)">RemoveMemberAsync(EndPoint, CancellationToken)</h4>
@@ -640,6 +645,27 @@
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
         <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the node has been removed from the cluster successfully;
 <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if the node rejects the replication or the address of the node cannot be committed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.html">NotLeaderException</a></td>
+        <td><p>The current node is not a leader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled or the cluster elects a new leader.</p>
 </td>
       </tr>
     </tbody>
@@ -753,7 +779,7 @@
     <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftCluster_UnavailableMemberDetected_DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftCluster.UnavailableMemberDetected(DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L242">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.DefaultImpl.cs/#L245">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_UnavailableMemberDetected_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.UnavailableMemberDetected*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftCluster_UnavailableMemberDetected_DotNext_Net_Cluster_Consensus_Raft_RaftClusterMember_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftCluster.UnavailableMemberDetected(DotNext.Net.Cluster.Consensus.Raft.RaftClusterMember,System.Threading.CancellationToken)">UnavailableMemberDetected(RaftClusterMember, CancellationToken)</h4>
