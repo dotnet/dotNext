@@ -28,32 +28,39 @@ internal partial class RaftHttpCluster : IOutputChannel
         ArgumentNullException.ThrowIfNull(responseReader);
 
         var tokenSource = CombineTokens([LifecycleToken, token]);
-        do
+        try
         {
-            var leader = Leader ?? throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
-            try
+            do
             {
-                return await (leader.IsRemote
-                        ? leader.SendMessageAsync(message, responseReader, true, tokenSource.Token)
-                        : TryReceiveMessage(leader, message, messageHandlers, responseReader, tokenSource.Token))
-                    .ConfigureAwait(false);
-            }
-            catch (MemberUnavailableException e)
-            {
-                Logger.FailedToRouteMessage(message.Name, e);
-            }
-            catch (UnexpectedStatusCodeException e) when (e.StatusCode is HttpStatusCode.BadRequest)
-            {
-                // keep in sync with ReceiveMessage behavior
-                Logger.FailedToRouteMessage(message.Name, e);
-            }
-            catch (OperationCanceledException e) when (tokenSource.Token == e.CancellationToken)
-            {
-                break;
-            }
-        } while (tokenSource.Token is { IsCancellationRequested: false });
+                var leader = Leader ?? throw new QuorumUnreachableException();
+                try
+                {
+                    return await (leader.IsRemote
+                            ? leader.SendMessageAsync(message, responseReader, true, tokenSource.Token)
+                            : TryReceiveMessage(leader, message, messageHandlers, responseReader, tokenSource.Token))
+                        .ConfigureAwait(false);
+                }
+                catch (MemberUnavailableException e)
+                {
+                    Logger.FailedToRouteMessage(message.Name, e);
+                }
+                catch (UnexpectedStatusCodeException e) when (e.StatusCode is HttpStatusCode.BadRequest)
+                {
+                    // keep in sync with ReceiveMessage behavior
+                    Logger.FailedToRouteMessage(message.Name, e);
+                }
+                catch (OperationCanceledException e) when (tokenSource.Token == e.CancellationToken)
+                {
+                    break;
+                }
+            } while (tokenSource is { Token.IsCancellationRequested: false });
 
-        throw new OperationCanceledException(tokenSource.CancellationOrigin);
+            throw new OperationCanceledException(tokenSource.CancellationOrigin);
+        }
+        finally
+        {
+            await tokenSource.DisposeAsync().ConfigureAwait(false);
+        }
 
         static async Task<TResponse> TryReceiveMessage(RaftClusterMember sender, IMessage message, IEnumerable<IInputChannel> handlers, MessageReader<TResponse> responseReader, CancellationToken token)
         {
@@ -66,33 +73,40 @@ internal partial class RaftHttpCluster : IOutputChannel
     {
         ArgumentNullException.ThrowIfNull(message);
 
-        using var tokenSource = CombineTokens([token, LifecycleToken]);
-        do
+        var tokenSource = CombineTokens([token, LifecycleToken]);
+        try
         {
-            var leader = Leader ?? throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
-            try
+            do
             {
-                return await (leader.IsRemote
-                        ? leader.SendMessageAsync<TResponse>(message, true, tokenSource.Token)
-                        : TryReceiveMessage(leader, message, messageHandlers, tokenSource.Token))
-                    .ConfigureAwait(false);
-            }
-            catch (MemberUnavailableException e)
-            {
-                Logger.FailedToRouteMessage(message.Name, e);
-            }
-            catch (UnexpectedStatusCodeException e) when (e.StatusCode is HttpStatusCode.BadRequest)
-            {
-                // keep in sync with ReceiveMessage behavior
-                Logger.FailedToRouteMessage(message.Name, e);
-            }
-            catch (OperationCanceledException e) when (tokenSource.Token == e.CancellationToken)
-            {
-                throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
-            }
-        } while (tokenSource.Token is { IsCancellationRequested: false });
+                var leader = Leader ?? throw new QuorumUnreachableException();
+                try
+                {
+                    return await (leader.IsRemote
+                            ? leader.SendMessageAsync<TResponse>(message, true, tokenSource.Token)
+                            : TryReceiveMessage(leader, message, messageHandlers, tokenSource.Token))
+                        .ConfigureAwait(false);
+                }
+                catch (MemberUnavailableException e)
+                {
+                    Logger.FailedToRouteMessage(message.Name, e);
+                }
+                catch (UnexpectedStatusCodeException e) when (e.StatusCode is HttpStatusCode.BadRequest)
+                {
+                    // keep in sync with ReceiveMessage behavior
+                    Logger.FailedToRouteMessage(message.Name, e);
+                }
+                catch (OperationCanceledException e) when (tokenSource.Token == e.CancellationToken)
+                {
+                    throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+                }
+            } while (tokenSource is { Token.IsCancellationRequested: false });
 
-        throw new OperationCanceledException(tokenSource.CancellationOrigin);
+            throw new OperationCanceledException(tokenSource.CancellationOrigin);
+        }
+        finally
+        {
+            await tokenSource.DisposeAsync().ConfigureAwait(false);
+        }
 
         static async Task<TResponse> TryReceiveMessage(RaftClusterMember sender, IMessage message, IEnumerable<IInputChannel> handlers, CancellationToken token)
         {
@@ -107,44 +121,51 @@ internal partial class RaftHttpCluster : IOutputChannel
 
         // keep the same message between retries for correct identification of duplicate messages
         var signal = new CustomMessage(LocalMemberId, message, true) { RespectLeadership = true };
-        using var tokenSource = CombineTokens([token, LifecycleToken]);
-        do
+        var tokenSource = CombineTokens([token, LifecycleToken]);
+        try
         {
-            var leader = Leader ?? throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
-            try
+            do
             {
-                var response = leader.IsRemote
-                    ? leader.SendSignalAsync(signal, tokenSource.Token)
-                    : (messageHandlers.TryReceiveSignal(leader, signal.Message, null, tokenSource.Token) ??
-                       throw new UnexpectedStatusCodeException(new NotImplementedException()));
-                await response.ConfigureAwait(false);
-                return;
-            }
-            catch (MemberUnavailableException e)
-            {
-                Logger.FailedToRouteMessage(message.Name, e);
-            }
-            catch (UnexpectedStatusCodeException e) when (e.StatusCode is HttpStatusCode.ServiceUnavailable)
-            {
-                // keep in sync with ReceiveMessage behavior
-                Logger.FailedToRouteMessage(message.Name, e);
-            }
-            catch (OperationCanceledException e) when (tokenSource.Token == e.CancellationToken)
-            {
-                throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
-            }
-        } while (tokenSource.Token is { IsCancellationRequested: false });
+                var leader = Leader ?? throw new QuorumUnreachableException();
+                try
+                {
+                    var response = leader.IsRemote
+                        ? leader.SendSignalAsync(signal, tokenSource.Token)
+                        : (messageHandlers.TryReceiveSignal(leader, signal.Message, null, tokenSource.Token) ??
+                           throw new UnexpectedStatusCodeException(new NotImplementedException()));
+                    await response.ConfigureAwait(false);
+                    return;
+                }
+                catch (MemberUnavailableException e)
+                {
+                    Logger.FailedToRouteMessage(message.Name, e);
+                }
+                catch (UnexpectedStatusCodeException e) when (e.StatusCode is HttpStatusCode.ServiceUnavailable)
+                {
+                    // keep in sync with ReceiveMessage behavior
+                    Logger.FailedToRouteMessage(message.Name, e);
+                }
+                catch (OperationCanceledException e) when (tokenSource.Token == e.CancellationToken)
+                {
+                    throw new OperationCanceledException(e.Message, e, tokenSource.CancellationOrigin);
+                }
+            } while (tokenSource is { Token.IsCancellationRequested: false });
 
-        throw new OperationCanceledException(tokenSource.CancellationOrigin);
+            throw new OperationCanceledException(tokenSource.CancellationOrigin);
+        }
+        finally
+        {
+            await tokenSource.DisposeAsync().ConfigureAwait(false);
+        }
     }
 
     IOutputChannel IMessageBus.LeaderRouter => this;
 
     private static async Task ReceiveOneWayMessageFastAckAsync(ISubscriber sender, IMessage message, IEnumerable<IInputChannel> handlers, HttpResponse response, CancellationToken token)
     {
-        IInputChannel? handler = handlers.FirstOrDefault(message.IsSignalSupported);
-        if (handler is null)
+        if (handlers.FirstOrDefault(message.IsSignalSupported) is not { } handler)
             return;
+        
         IBufferedMessage buffered = message.Length is { } length and < FileMessage.MinSize
             ? new InMemoryMessage(message.Name, message.Type, Convert.ToInt32(length))
             : new FileMessage(message.Name, message.Type);
@@ -156,8 +177,14 @@ internal partial class RaftHttpCluster : IOutputChannel
         // OnCompleted callback
         async Task ReceiveSignal()
         {
-            using (buffered)
+            try
+            {
                 await handler.ReceiveSignal(sender, buffered, null, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                await buffered.DisposeAsync().ConfigureAwait(false);
+            }
         }
     }
 
@@ -168,7 +195,8 @@ internal partial class RaftHttpCluster : IOutputChannel
         // drop duplicated request
         if (response.HttpContext.Features.Get<DuplicateRequestDetector>()?.IsDuplicated(request) ?? false)
             return Task.CompletedTask;
-        Task? task = reliable ?
+        
+        var task = reliable ?
             handlers.TryReceiveSignal(sender, request.Message, response.HttpContext, token) :
             ReceiveOneWayMessageFastAckAsync(sender, request.Message, handlers, response, token);
         if (task is null)
@@ -180,42 +208,45 @@ internal partial class RaftHttpCluster : IOutputChannel
         return task;
     }
 
-    private static async Task ReceiveMessageAsync(ISubscriber sender, CustomMessage request, IEnumerable<IInputChannel> handlers, HttpResponse response, CancellationToken token)
+    private static async Task ReceiveMessageAsync(ISubscriber sender, CustomMessage request, IEnumerable<IInputChannel> handlers,
+        HttpResponse response, CancellationToken token)
     {
         response.StatusCode = StatusCodes.Status200OK;
-        var task = handlers.TryReceiveMessage(sender, request.Message, response.HttpContext, token);
-        if (task is null)
-            response.StatusCode = StatusCodes.Status501NotImplemented;
-        else
+        if (handlers.TryReceiveMessage(sender, request.Message, response.HttpContext, token) is { } task)
+        {
             await CustomMessage.SaveResponseAsync(response, await task.ConfigureAwait(false), token).ConfigureAwait(false);
+        }
+        else
+        {
+            response.StatusCode = StatusCodes.Status501NotImplemented;
+        }
     }
 
     private Task ReceiveMessageAsync(CustomMessage message, HttpResponse response, CancellationToken token)
     {
-        var sender = TryGetMember(message.Sender);
-
-        Task result;
-        if (sender is null)
+        Task task;
+        if (TryGetMember(message.Sender) is not { } sender)
         {
+            sender = null;
             response.StatusCode = StatusCodes.Status404NotFound;
-            result = Task.CompletedTask;
+            task = Task.CompletedTask;
         }
         else if (!message.RespectLeadership)
         {
-            result = ReceiveMessageAsync(sender, message, response, token);
+            task = ReceiveMessageAsync(sender, message, response, token);
         }
         else if (LeadershipToken is { IsCancellationRequested: false } lt)
         {
-            result = ReceiveMessageAsync(sender, message, response, lt, token);
+            task = ReceiveMessageAsync(sender, message, response, lt, token);
         }
         else
         {
             response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-            result = Task.CompletedTask;
+            task = Task.CompletedTask;
         }
 
         sender?.Touch();
-        return result;
+        return task;
     }
 
     private async Task ReceiveMessageAsync(RaftClusterMember sender,
@@ -258,17 +289,15 @@ internal partial class RaftHttpCluster : IOutputChannel
 
     private async Task VoteAsync(RequestVoteMessage request, HttpResponse response, CancellationToken token)
     {
-        var sender = TryGetMember(request.Sender);
-
         Result<bool> result;
-        if (sender is null)
-        {
-            result = new() { Term = Term };
-        }
-        else
+        if (TryGetMember(request.Sender) is { } sender)
         {
             sender.Touch();
             result = await VoteAsync(request.Sender, request.ConsensusTerm, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false);
+        }
+        else
+        {
+            result = new() { Term = Term };
         }
 
         await RequestVoteMessage.SaveResponseAsync(response, result, token).ConfigureAwait(false);
@@ -277,22 +306,21 @@ internal partial class RaftHttpCluster : IOutputChannel
     private async Task PreVoteAsync(PreVoteMessage request, HttpResponse response, CancellationToken token)
     {
         TryGetMember(request.Sender)?.Touch();
-        await PreVoteMessage.SaveResponseAsync(response, await PreVoteAsync(request.Sender, request.ConsensusTerm + 1L, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false), token).ConfigureAwait(false);
+        await PreVoteMessage.SaveResponseAsync(response,
+            await PreVoteAsync(request.Sender, request.ConsensusTerm + 1L, request.LastLogIndex, request.LastLogTerm, token).ConfigureAwait(false),
+            token).ConfigureAwait(false);
     }
 
     private async Task ResignAsync(ResignMessage request, HttpResponse response, CancellationToken token)
     {
-        var sender = TryGetMember(request.Sender);
+        TryGetMember(request.Sender)?.Touch();
         await ResignMessage.SaveResponseAsync(response, await ResignAsync(token).ConfigureAwait(false), token).ConfigureAwait(false);
-        sender?.Touch();
     }
 
     private Task GetMetadataAsync(MetadataMessage request, HttpResponse response, CancellationToken token)
     {
-        var sender = TryGetMember(request.Sender);
-        var result = MetadataMessage.SaveResponseAsync(response, metadata, token);
-        sender?.Touch();
-        return result;
+        TryGetMember(request.Sender)?.Touch();
+        return MetadataMessage.SaveResponseAsync(response, metadata, token);
     }
 
     private async Task AppendEntriesAsync(HttpRequest request, HttpResponse response, CancellationToken token)
@@ -306,13 +334,18 @@ internal partial class RaftHttpCluster : IOutputChannel
             return;
         }
 
-        using var configuration = new ReceivedClusterConfiguration((int)message.ConfigurationLength) { Fingerprint = message.ConfigurationFingerprint };
-        await configurationReader(configuration.Content, token).ConfigureAwait(false);
-
-        await using (entries.ConfigureAwait(false))
+        var configuration = new ReceivedClusterConfiguration((int)message.ConfigurationLength) { Fingerprint = message.ConfigurationFingerprint };
+        try
         {
-            var result = await AppendEntriesAsync(message.Sender, message.ConsensusTerm, entries, message.PrevLogIndex, message.PrevLogTerm, message.CommitIndex, configuration, message.ApplyConfiguration, token).ConfigureAwait(false);
+            await configurationReader(configuration.Content, token).ConfigureAwait(false);
+            var result = await AppendEntriesAsync(message.Sender, message.ConsensusTerm, entries, message.PrevLogIndex, message.PrevLogTerm,
+                message.CommitIndex, configuration, message.ApplyConfiguration, token).ConfigureAwait(false);
             await AppendEntriesMessage.SaveResponseAsync(response, result, token).ConfigureAwait(false);
+        }
+        finally
+        {
+            await entries.DisposeAsync().ConfigureAwait(false);
+            configuration.Dispose();
         }
     }
 

@@ -15,8 +15,6 @@ internal static class ExceptionMessages
 
     internal static string InvalidUserDataSlot => Resources.GetString("InvalidUserDataSlot")!;
 
-    internal static string IndexShouldBeZero => Resources.GetString("IndexShouldBeZero")!;
-
     internal static string CastNullToValueType => Resources.GetString("CastNullToValueType")!;
 
     internal static string UnsupportedLockAcquisition => Resources.GetString("UnsupportedLockAcquisition")!;
@@ -34,8 +32,6 @@ internal static class ExceptionMessages
     internal static string ResourceEntryIsNull(string name)
         => string.Format(Resources.GetString("ResourceEntryIsNull")!, name);
 
-    internal static string SmallBuffer => Resources.GetString("SmallBuffer")!;
-
     internal static string LargeBuffer => Resources.GetString("LargeBuffer")!;
 
     internal static string MalformedBase64 => Resources.GetString("MalformedBase64")!;
@@ -46,8 +42,6 @@ internal static class ExceptionMessages
         => string.Format(Resources.GetString("InvalidHexInput")!, ch);
 
     internal static string KeyAlreadyExists => Resources.GetString("KeyAlreadyExists")!;
-
-    internal static string ObjectMustNotBeArray => Resources.GetString("ObjectMustNotBeArray")!;
 
     internal static string NoResult<TError>(TError errorCode)
         where TError : struct, Enum

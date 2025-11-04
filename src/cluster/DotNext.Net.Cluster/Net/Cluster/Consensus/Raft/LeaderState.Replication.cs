@@ -231,7 +231,7 @@ internal partial class LeaderState<TMember>
         }
         catch (ObjectDisposedException e)
         {
-            replicationTask = ValueTask.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e));
+            replicationTask = ValueTask.FromException(new NotLeaderException(e));
         }
 
         return replicationTask;
@@ -246,7 +246,7 @@ internal partial class LeaderState<TMember>
         }
         catch (ObjectDisposedException e)
         {
-            throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e);
+            throw new NotLeaderException(e);
         }
     }
 

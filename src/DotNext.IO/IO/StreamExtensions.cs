@@ -25,16 +25,17 @@ public static partial class StreamExtensions
         => others switch
         {
             [] => stream,
-            [var s] => new SparseStream<(Stream, Stream)>((stream, s), leaveOpen),
-            [var s1, var s2] => new SparseStream<(Stream, Stream, Stream)>((stream, s1, s2), leaveOpen),
-            [var s1, var s2, var s3] => new SparseStream<(Stream, Stream, Stream, Stream)>((stream, s1, s2, s3), leaveOpen),
-            [var s1, var s2, var s3, var s4] => new SparseStream<(Stream, Stream, Stream, Stream, Stream)>((stream, s1, s2, s3, s4), leaveOpen),
-            [var s1, var s2, var s3, var s4, var s5] => new SparseStream<(Stream, Stream, Stream, Stream, Stream, Stream)>((stream, s1, s2, s3, s4,
+            [var s] => SparseStream.Create<(Stream, Stream)>((stream, s), leaveOpen),
+            [var s1, var s2] => SparseStream.Create<(Stream, Stream, Stream)>((stream, s1, s2), leaveOpen),
+            [var s1, var s2, var s3] => SparseStream.Create<(Stream, Stream, Stream, Stream)>((stream, s1, s2, s3), leaveOpen),
+            [var s1, var s2, var s3, var s4] => SparseStream.Create<(Stream, Stream, Stream, Stream, Stream)>((stream, s1, s2, s3, s4), leaveOpen),
+            [var s1, var s2, var s3, var s4, var s5] => SparseStream.Create<(Stream, Stream, Stream, Stream, Stream, Stream)>((stream, s1, s2, s3, s4,
                 s5), leaveOpen),
-            [var s1, var s2, var s3, var s4, var s5, var s6] => new SparseStream<(Stream, Stream, Stream, Stream, Stream, Stream, Stream)>((stream, s1, s2, s3, s4,
+            [var s1, var s2, var s3, var s4, var s5, var s6] => SparseStream.Create<(Stream, Stream, Stream, Stream, Stream, Stream, Stream)>((stream,
+                s1, s2, s3, s4,
                 s5, s6), leaveOpen),
             { Length: int.MaxValue } => throw new InsufficientMemoryException(),
-            _ => new UnboundedSparseStream(stream, others, leaveOpen),
+            _ => SparseStream.Create(stream, others, leaveOpen),
         };
 
     /// <summary>

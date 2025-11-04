@@ -77,7 +77,7 @@ public struct Leb128<T> : ISupplier<T>, IResettable
     public void Reset() => Value = default;
 
     /// <summary>
-    /// Gets a value represented by the encoded.
+    /// Gets a value represented by the encoder.
     /// </summary>
     public T Value
     {

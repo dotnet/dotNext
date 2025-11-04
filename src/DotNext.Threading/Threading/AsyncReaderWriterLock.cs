@@ -14,23 +14,16 @@ using Tasks;
 /// This lock doesn't support recursion.
 /// </remarks>
 [DebuggerDisplay($"Readers = {{{nameof(CurrentReadCount)}}}, WriteLockHeld = {{{nameof(IsWriteLockHeld)}}}")]
-public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
+public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 {
-    private enum LockType : byte
-    {
-        Read = 0,
-        Upgrade,
-        Exclusive,
-    }
-
     private new sealed class WaitNode :
         QueuedSynchronizer.WaitNode,
-        INodeMapper<WaitNode, LockType>
+        INodeMapper<WaitNode, bool>
     {
-        internal LockType Type;
+        internal bool IsWriteLock;
 
-        static LockType INodeMapper<WaitNode, LockType>.GetValue(WaitNode node)
-            => node.Type;
+        static bool INodeMapper<WaitNode, bool>.GetValue(WaitNode node)
+            => node.IsWriteLock;
     }
 
     // describes internal state of reader/writer lock
@@ -56,22 +49,29 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         {
             if (writeLock)
             {
-                writeLock = false;
-                readLocks = 0L;
+                ExitWriteLock();
             }
             else
             {
-                readLocks--;
+                ExitReadLock();
             }
         }
+
+        private void ExitWriteLock()
+        {
+            writeLock = false;
+            readLocks = 0L;
+        }
+
+        internal void ExitReadLock() => readLocks--;
 
         internal readonly long ReadLocks => Volatile.Read(in readLocks);
 
         internal readonly ulong Version => Volatile.Read(in version);
 
-        internal readonly bool IsWriteLockAllowed => writeLock is false && readLocks is 0L;
+        internal readonly bool IsWriteLockAllowed => writeLock is false && HasNoReadLocks;
 
-        internal readonly bool IsUpgradeToWriteLockAllowed => writeLock is false && readLocks is 1L;
+        internal readonly bool HasNoReadLocks => readLocks is 0L;
 
         internal void AcquireWriteLock()
         {
@@ -98,7 +98,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
         readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
         {
-            node.Type = LockType.Read;
+            node.IsWriteLock = false;
             node.DrainOnReturn = true;
         }
     }
@@ -115,91 +115,10 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             => state.AcquireWriteLock();
 
         readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
-        {
-            node.Type = LockType.Exclusive;
-            node.DrainOnReturn = true;
-        }
-    }
+            => Initialize(node);
 
-    [StructLayout(LayoutKind.Auto)]
-    private struct UpgradeManager : ILockManager, IConsumer<WaitNode>
-    {
-        private State state;
-
-        readonly bool ILockManager.IsLockAllowed
-            => state.IsUpgradeToWriteLockAllowed;
-
-        void ILockManager.AcquireLock()
-            => state.AcquireWriteLock();
-
-        readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
-        {
-            node.Type = LockType.Upgrade;
-            node.DrainOnReturn = true;
-        }
-    }
-
-    /// <summary>
-    /// Represents lock stamp used for optimistic reading.
-    /// </summary>
-    [StructLayout(LayoutKind.Auto)]
-    public readonly struct LockStamp : IEquatable<LockStamp>
-    {
-        private readonly ulong version;
-        private readonly bool valid;
-
-        internal LockStamp(in State state)
-        {
-            version = state.Version;
-            valid = true;
-        }
-
-        internal bool IsValid(in State state)
-            => valid && state.Version == version && !state.WriteLock;
-
-        private bool Equals(in LockStamp other) => version == other.version && valid == other.valid;
-
-        /// <summary>
-        /// Determines whether this stamp represents the same version of the lock state
-        /// as the given stamp.
-        /// </summary>
-        /// <param name="other">The lock stamp to compare.</param>
-        /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(LockStamp other) => Equals(in other);
-
-        /// <summary>
-        /// Determines whether this stamp represents the same version of the lock state
-        /// as the given stamp.
-        /// </summary>
-        /// <param name="other">The lock stamp to compare.</param>
-        /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals([NotNullWhen(true)] object? other) => other is LockStamp stamp && Equals(in stamp);
-
-        /// <summary>
-        /// Computes hash code for this stamp.
-        /// </summary>
-        /// <returns>The hash code of this stamp.</returns>
-        public override int GetHashCode() => HashCode.Combine(valid, version);
-
-        /// <summary>
-        /// Determines whether the first stamp represents the same version of the lock state
-        /// as the second stamp.
-        /// </summary>
-        /// <param name="first">The first lock stamp to compare.</param>
-        /// <param name="second">The second lock stamp to compare.</param>
-        /// <returns><see langword="true"/> of <paramref name="first"/> stamp is equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in LockStamp first, in LockStamp second)
-            => first.Equals(in second);
-
-        /// <summary>
-        /// Determines whether the first stamp represents the different version of the lock state
-        /// as the second stamp.
-        /// </summary>
-        /// <param name="first">The first lock stamp to compare.</param>
-        /// <param name="second">The second lock stamp to compare.</param>
-        /// <returns><see langword="true"/> of <paramref name="first"/> stamp is not equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in LockStamp first, in LockStamp second)
-            => !first.Equals(in second);
+        public static void Initialize(WaitNode node)
+            => node.IsWriteLock = node.DrainOnReturn = true;
     }
 
     private State state;
@@ -223,8 +142,9 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
             {
                 Monitor.Enter(SyncRoot);
                 ownerFlag = lockOwnerState ??= new(trackAllValues: false);
-                ownerFlag.Value = true;
                 Monitor.Exit(SyncRoot);
+
+                ownerFlag.Value = true;
             }
         }
     }
@@ -234,17 +154,13 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
         where TLockManager : struct, ILockManager, IConsumer<WaitNode>
         => ref Unsafe.As<State, TLockManager>(ref state);
 
-    private bool Signal(ref WaitQueueVisitor waitQueueVisitor, LockType type) => type switch
-    {
-        LockType.Exclusive => waitQueueVisitor.SignalCurrent(ref GetLockManager<WriteLockManager>()),
-        LockType.Read => waitQueueVisitor.SignalCurrent(ref GetLockManager<ReadLockManager>()),
-        LockType.Upgrade => waitQueueVisitor.SignalCurrent(ref GetLockManager<UpgradeManager>()),
-        _ => true,
-    };
+    private bool Signal(ref WaitQueueVisitor waitQueueVisitor, bool isWriteLock) => isWriteLock
+        ? waitQueueVisitor.SignalCurrent(ref GetLockManager<WriteLockManager>())
+        : waitQueueVisitor.SignalCurrent(ref GetLockManager<ReadLockManager>());
 
     private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
     {
-        while (!waitQueueVisitor.IsEndOfQueue<WaitNode, LockType>(out var lockType) && Signal(ref waitQueueVisitor, lockType))
+        while (!waitQueueVisitor.IsEndOfQueue<WaitNode, bool>(out var isWriteLock) && Signal(ref waitQueueVisitor, isWriteLock))
         {
             waitQueueVisitor.Advance();
         }
@@ -276,7 +192,7 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 
         // Ordering of version and lock state must be respected:
         // Write lock acquisition changes the state to Acquired and then increments the version.
-        // Optimistic read lock reads the version and then checks Acquired lock state to avoid false positivies.
+        // Optimistic read lock reads the version and then checks Acquired lock state to avoid false positives.
         var stamp = new LockStamp(in state);
         return state.WriteLock ? default : stamp;
     }
@@ -461,27 +377,101 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <summary>
     /// Tries to upgrade the read lock to the write lock synchronously without blocking of the caller.
     /// </summary>
+    /// <remarks>
+    /// When this method is called, the reader lock is released, and the caller goes to the end of the queue for the writer lock.
+    /// Thus, other callers might write to the resource before the caller that requested the upgrade is granted the writer lock.
+    /// If this method returns <see langword="false"/>, it doesn't reacquire the reader lock.
+    /// </remarks>
+    /// <example>
+    /// See example for <see cref="UpgradeToWriteLockAsync(CancellationToken)"/>
+    /// </example>
     /// <returns><see langword="true"/> if lock is taken successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+    /// <exception cref="SynchronizationLockException">The caller wasn't acquire the reader lock.</exception>
     public bool TryUpgradeToWriteLock()
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        return TryEnter<UpgradeManager>();
+
+        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
+        bool result;
+        lock (SyncRoot)
+        {
+            if (state.HasNoReadLocks)
+                throw new SynchronizationLockException();
+
+            result = TryUpgradeToWriteLock(out suspendedCallers);
+        }
+
+        suspendedCallers?.Unwind();
+        if (result)
+        {
+            IsLockHelpByCurrentThread = true;
+        }
+
+        return result;
     }
 
     private bool TryEnter<TLockManager>()
         where TLockManager : struct, ILockManager, IConsumer<WaitNode>
     {
         Monitor.Enter(SyncRoot);
-        var result = IsLockHelpByCurrentThread = TryAcquire(ref GetLockManager<TLockManager>());
+        var result = TryAcquire(ref GetLockManager<TLockManager>());
         Monitor.Exit(SyncRoot);
 
+        if (result)
+        {
+            IsLockHelpByCurrentThread = true;
+        }
+        
         return result;
+    }
+
+    private bool TryUpgradeToWriteLock(out LinkedValueTaskCompletionSource<bool>? suspendedCallers)
+    {
+        Debug.Assert(state.ReadLocks > 0L);
+
+        state.ExitReadLock();
+
+        suspendedCallers = DrainWaitQueue();
+        return TryAcquire(ref GetLockManager<WriteLockManager>());
+    }
+
+    private T UpgradeToWriteLockAsync<T, TBuilder>(ref TBuilder builder)
+        where T : struct, IEquatable<T>
+        where TBuilder : struct, ITaskBuilder<T>
+    {
+        var suspendedCallers = default(LinkedValueTaskCompletionSource<bool>);
+        switch (builder.IsCompleted)
+        {
+            case true:
+                goto default;
+            case false when state.HasNoReadLocks:
+                builder.Dispose();
+                var task = TBuilder.FromException(new SynchronizationLockException());
+                goto exit;
+            case false when Acquire<T, TBuilder, WaitNode>(ref builder, TryUpgradeToWriteLock(out suspendedCallers)) is { } node:
+                WriteLockManager.Initialize(node);
+                goto default;
+            default:
+                builder.Dispose();
+                suspendedCallers?.Unwind();
+                task = builder.Invoke();
+                exit:
+                return task;
+        }
     }
 
     /// <summary>
     /// Tries to upgrade the read lock to the write lock asynchronously.
     /// </summary>
+    /// <remarks>
+    /// When this method is called, the reader lock is released, and the caller goes to the end of the queue for the writer lock.
+    /// Thus, other callers might write to the resource before the caller that requested the upgrade is granted the writer lock.
+    /// If this method fails or returns <see langword="false"/>, it doesn't reacquire the reader lock.
+    /// </remarks>
+    /// <example>
+    /// See example for <see cref="UpgradeToWriteLockAsync(CancellationToken)"/>
+    /// </example>
     /// <param name="timeout">The interval to wait for the lock.</param>
     /// <param name="token">The token that can be used to abort lock acquisition.</param>
     /// <returns><see langword="true"/> if the caller entered upgradeable mode; otherwise, <see langword="false"/>.</returns>
@@ -489,24 +479,77 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
+    /// <exception cref="SynchronizationLockException">The caller wasn't acquire the reader lock.</exception>
     public ValueTask<bool> TryUpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, UpgradeManager>(ref GetLockManager<UpgradeManager>(), timeout, token);
+    {
+        var builder = CreateTaskBuilder(timeout, token);
+        return UpgradeToWriteLockAsync<ValueTask<bool>, TimeoutAndCancellationToken>(ref builder);
+    }
 
     /// <summary>
     /// Upgrades the read lock to the write lock asynchronously.
     /// </summary>
+    /// <remarks>
+    /// When this method is called, the reader lock is released, and the caller goes to the end of the queue for the writer lock.
+    /// Thus, other callers might write to the resource before the caller that requested the upgrade is granted the writer lock.
+    /// If this method fails, it doesn't reacquire the reader lock.
+    /// </remarks>
+    /// <example>
+    /// The recommended pattern for upgrade is the following:
+    /// <code>
+    /// AsyncReaderWriterLock rwl;
+    /// var lockTaken = false;
+    /// await rwl.EnterReadLockAsync(token);
+    /// lockTaken = true;
+    /// try
+    /// {
+    ///   // do read-only stuff ...
+    ///   // now upgrade the lock
+    ///   lockTaken = false;
+    ///   await rwl.UpgradeToWriteLockAsync(token);
+    ///   lockTaken = true;
+    ///   try
+    ///   {
+    ///     // do write
+    ///   }
+    ///   finally
+    ///   {
+    ///     rwl.DowngradeFromWriteLock();
+    ///   }
+    /// }
+    /// finally
+    /// {
+    ///   if (lockTaken)
+    ///     rwl.Release();
+    /// }
+    /// </code>
+    /// <c>lockTaken</c> is needed here because <see cref="UpgradeToWriteLockAsync(CancellationToken)"/> could throw, but
+    /// it always releases the reader lock. In that case, <c>finally</c> block should not release the reader lock twice.
+    /// </example>
     /// <param name="token">The token that can be used to abort lock acquisition.</param>
     /// <returns>The task representing lock acquisition operation.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
+    /// <exception cref="SynchronizationLockException">The caller wasn't acquire the reader lock.</exception>
     public ValueTask UpgradeToWriteLockAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, UpgradeManager>(ref GetLockManager<UpgradeManager>(), token);
+    {
+        var builder = CreateTaskBuilder(token);
+        return UpgradeToWriteLockAsync<ValueTask, CancellationTokenOnly>(ref builder);
+    }
 
     /// <summary>
     /// Upgrades the read lock to the write lock asynchronously.
     /// </summary>
+    /// <remarks>
+    /// When this method is called, the reader lock is released, and the caller goes to the end of the queue for the writer lock.
+    /// Thus, other callers might write to the resource before the caller that requested the upgrade is granted the writer lock.
+    /// If this method fails, it doesn't reacquire the reader lock.
+    /// </remarks>
+    /// <example>
+    /// See example for <see cref="UpgradeToWriteLockAsync(CancellationToken)"/>
+    /// </example>
     /// <param name="timeout">The interval to wait for the lock.</param>
     /// <param name="token">The token that can be used to abort lock acquisition.</param>
     /// <returns>The task representing lock acquisition operation.</returns>
@@ -515,8 +558,12 @@ public class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
+    /// <exception cref="SynchronizationLockException">The caller wasn't acquire the reader lock.</exception>
     public ValueTask UpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync<WaitNode, UpgradeManager>(ref GetLockManager<UpgradeManager>(), timeout, token);
+    {
+        var builder = CreateTaskBuilder(timeout, token);
+        return UpgradeToWriteLockAsync<ValueTask, TimeoutAndCancellationToken>(ref builder);
+    }
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires write lock.

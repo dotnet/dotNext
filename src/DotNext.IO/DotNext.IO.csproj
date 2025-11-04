@@ -11,7 +11,7 @@
     <Authors>.NET Foundation and Contributors</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <VersionPrefix>5.26.0</VersionPrefix>
+    <VersionPrefix>5.26.1</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <AssemblyName>DotNext.IO</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

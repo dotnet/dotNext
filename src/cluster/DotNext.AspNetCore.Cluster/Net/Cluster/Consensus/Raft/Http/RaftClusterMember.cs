@@ -137,7 +137,7 @@ internal sealed class RaftClusterMember : HttpPeerClient, IRaftClusterMember, IS
         {
             context.Logger.MemberUnavailable(EndPoint, e);
             Status = ClusterMemberStatus.Unavailable;
-            return new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
+            return new MemberUnavailableException(this, innerException: e);
         }
     }
 

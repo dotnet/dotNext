@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
+using DotNext.Net.Cluster.Replication;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
@@ -282,7 +283,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
             DestroyLease();
 
             // cancel replication queue
-            replicationQueue.Dispose(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+            replicationQueue.Dispose(new NotLeaderException());
             replicationEvent.Dispose();
 
             context.Dispose();

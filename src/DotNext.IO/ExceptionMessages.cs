@@ -27,4 +27,6 @@ internal static class ExceptionMessages
     internal static string ReadBufferNotEmpty => (string)Resources.Get();
 
     internal static string WriteBufferNotEmpty => (string)Resources.Get();
+
+    internal static string StreamOverflow => (string)Resources.Get();
 }

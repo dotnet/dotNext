@@ -6,3 +6,4 @@ WriterInReadMode=The writer is in read-only mode. Dispose active memory manager 
 FileHandleClosed=The file handle is closed
 ReadBufferNotEmpty=The internal buffer has unconsumed data to read
 WriteBufferNotEmpty=The internal buffer has data to flush
+StreamOverflow=The internal buffer is full

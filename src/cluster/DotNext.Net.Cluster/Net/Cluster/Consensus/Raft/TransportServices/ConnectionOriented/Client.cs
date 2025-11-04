@@ -105,7 +105,7 @@ internal abstract partial class Client : RaftClusterMember
 
             // detect broken socket
             ClearContext();
-            throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
+            throw new MemberUnavailableException(this, innerException: e);
         }
         finally
         {

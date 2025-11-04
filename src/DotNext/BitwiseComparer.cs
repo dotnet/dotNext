@@ -118,7 +118,7 @@ public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
     bool IEqualityComparer<T>.Equals(T x, T y) => Equals(in x, in y);
 
     /// <inheritdoc/>
-    int IEqualityComparer<T>.GetHashCode(T obj) => GetHashCode(in obj, true);
+    int IEqualityComparer<T>.GetHashCode(T obj) => GetHashCode(in obj);
 
     /// <inheritdoc/>
     int IComparer<T>.Compare(T x, T y) => Compare(in x, in y);

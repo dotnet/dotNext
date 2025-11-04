@@ -246,7 +246,7 @@ public partial class RaftCluster<TMember>
     /// </returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="rounds"/> is less than or equal to zero.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled or the cluster elects a new leader.</exception>
-    /// <exception cref="InvalidOperationException">The current node is not a leader.</exception>
+    /// <exception cref="NotLeaderException">The current node is not a leader.</exception>
     /// <exception cref="ConcurrentMembershipModificationException">The method is called concurrently.</exception>
     protected async Task<bool> AddMemberAsync<TAddress>(TMember member, int rounds, IClusterConfigurationStorage<TAddress> configurationStorage, Func<TMember, TAddress> addressProvider, CancellationToken token = default)
         where TAddress : notnull
@@ -293,7 +293,7 @@ public partial class RaftCluster<TMember>
         }
         catch (OperationCanceledException e) when (e.CausedBy(tokenSource, leaderState.Token))
         {
-            throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e);
+            throw new NotLeaderException(e);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
         {
@@ -327,7 +327,7 @@ public partial class RaftCluster<TMember>
     /// <see langword="true"/> if the node has been removed from the cluster successfully;
     /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
     /// </returns>
-    /// <exception cref="InvalidOperationException">The current node is not a leader.</exception>
+    /// <exception cref="NotLeaderException">The current node is not a leader.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled or the cluster elects a new leader.</exception>
     /// <exception cref="ConcurrentMembershipModificationException">The method is called concurrently.</exception>
     protected async Task<bool> RemoveMemberAsync<TAddress>(ClusterMemberId id, IClusterConfigurationStorage<TAddress> configurationStorage, Func<TMember, TAddress> addressProvider, CancellationToken token = default)
@@ -357,7 +357,7 @@ public partial class RaftCluster<TMember>
             }
             catch (OperationCanceledException e) when (e.CausedBy(tokenSource, leaderState.Token))
             {
-                throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e);
+                throw new NotLeaderException(e);
             }
             catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
             {

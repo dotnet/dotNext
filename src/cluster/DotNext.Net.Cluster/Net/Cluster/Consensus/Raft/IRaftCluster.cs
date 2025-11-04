@@ -71,6 +71,7 @@ public interface IRaftCluster : IReplicationCluster<IRaftLogEntry>, IPeerMesh<IR
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The task representing asynchronous result.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <exception cref="QuorumUnreachableException">The quorum is not visible to the local node.</exception>
     ValueTask ApplyReadBarrierAsync(CancellationToken token = default);
 
     /// <summary>

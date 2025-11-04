@@ -16,10 +16,6 @@ internal static class ExceptionMessages
 
     internal static string IncorrectResponse => (string)Resources.Get();
 
-    internal static string UnavailableMember => (string)Resources.Get();
-
-    internal static string LeaderIsUnavailable => (string)Resources.Get();
-
     internal static string InvalidRpcTimeout => (string)Resources.Get();
 
     internal static string UnsupportedRedirection => (string)Resources.Get();

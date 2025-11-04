@@ -11,9 +11,9 @@ using Diagnostics;
 using Extensions;
 using IO.Log;
 using Membership;
+using Replication;
 using Threading;
 using Threading.Tasks;
-using IReplicationCluster = Replication.IReplicationCluster;
 
 /// <summary>
 /// Represents transport-independent implementation of Raft protocol.
@@ -158,7 +158,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private LeaderState<TMember> LeaderStateOrException
-        => state as LeaderState<TMember> ?? throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
+        => state as LeaderState<TMember> ?? throw new NotLeaderException();
 
     /// <summary>
     /// Associates audit trail with the current instance.
@@ -914,7 +914,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 {
                     leaderState.ForceReplication();
                 }
-                catch (InvalidOperationException)
+                catch (NotLeaderException)
                 {
                     // local node is not a leader
                     goto exit;
@@ -932,12 +932,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         return new(result);
     }
 
-    /// <summary>
-    /// Ensures linearizable read from underlying state machine.
-    /// </summary>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    /// <inheritdoc cref="IRaftCluster.ApplyReadBarrierAsync"/>
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder))]
     public async ValueTask ApplyReadBarrierAsync(CancellationToken token = default)
     {
@@ -949,7 +944,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
                 {
                     await leaderState.ForceReplicationAsync(token).ConfigureAwait(false);
                 }
-                catch (InvalidOperationException)
+                catch (NotLeaderException)
                 {
                     // local node is not a leader, retry
                     continue;
@@ -964,7 +959,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             }
             else
             {
-                throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
+                throw new QuorumUnreachableException();
             }
 
             break;
@@ -1233,14 +1228,14 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// Forces replication.
     /// </summary>
     /// <remarks>
-    /// This methods waits for responses from all available cluster members, not from the majority of them.
+    /// This method waits for responses from all available cluster members, not from the majority of them.
     /// </remarks>
     /// <param name="token">The token that can be used to cancel waiting.</param>
     /// <returns>The task representing asynchronous result.</returns>
-    /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
+    /// <exception cref="NotLeaderException">The local cluster member is not a leader.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask ForceReplicationAsync(CancellationToken token = default)
-        => (state as LeaderState<TMember>)?.ForceReplicationAsync(token) ?? ValueTask.FromException(new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader));
+        => (state as LeaderState<TMember>)?.ForceReplicationAsync(token) ?? ValueTask.FromException(new NotLeaderException());
 
     /// <summary>
     /// Appends a new log entry and ensures that it is replicated and committed.
@@ -1250,7 +1245,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if the appended log entry has been committed by the majority of nodes; <see langword="false"/> if retry is required.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-    /// <exception cref="InvalidOperationException">The current node is not a leader.</exception>
+    /// <exception cref="NotLeaderException">The current node is not a leader.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public async ValueTask<bool> ReplicateAsync<TEntry>(TEntry entry, CancellationToken token)
@@ -1273,7 +1268,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
         }
         catch (OperationCanceledException e) when (e.CausedBy(tokenSource, leaderState.Token))
         {
-            throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader, e);
+            throw new NotLeaderException(e);
         }
         catch (OperationCanceledException e) when (e.CancellationToken == tokenSource.Token)
         {

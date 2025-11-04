@@ -110,7 +110,7 @@ public sealed partial class CancellationTokenMultiplexer
             source.Next = current;
             tmp = Interlocked.CompareExchange(ref firstInPool, source, current);
 
-            if (ReferenceEquals(tmp, source))
+            if (ReferenceEquals(tmp, current))
                 break;
         }
     }

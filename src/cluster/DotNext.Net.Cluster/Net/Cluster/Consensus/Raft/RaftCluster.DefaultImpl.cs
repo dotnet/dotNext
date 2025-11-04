@@ -4,6 +4,7 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Channels;
+using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
@@ -11,7 +12,6 @@ using Buffers;
 using IO;
 using IO.Log;
 using Membership;
-using Microsoft.Extensions.Logging;
 using TransportServices;
 
 /// <summary>
@@ -188,12 +188,13 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// <summary>
     /// Announces a new member in the cluster.
     /// </summary>
-    /// <param name="address">The addres of the cluster member.</param>
+    /// <param name="address">The address of the cluster member.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>
     /// <see langword="true"/> if the node has been added to the cluster successfully;
     /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
     /// </returns>
+    /// <exception cref="NotLeaderException">The current node is not a leader.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled or the cluster elects a new leader.</exception>
     public async Task<bool> AddMemberAsync(EndPoint address, CancellationToken token = default)
     {
@@ -212,6 +213,8 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     /// <see langword="true"/> if the node has been removed from the cluster successfully;
     /// <see langword="false"/> if the node rejects the replication or the address of the node cannot be committed.
     /// </returns>
+    /// <exception cref="NotLeaderException">The current node is not a leader.</exception>
+    /// <exception cref="OperationCanceledException">The operation has been canceled or the cluster elects a new leader.</exception>
     public Task<bool> RemoveMemberAsync(EndPoint address, CancellationToken token = default)
         => RemoveMemberAsync(ClusterMemberId.FromEndPoint(address), ConfigurationStorage, GetAddress, token);
 

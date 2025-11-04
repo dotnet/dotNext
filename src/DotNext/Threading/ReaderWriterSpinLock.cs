@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
@@ -10,73 +9,10 @@ namespace DotNext.Threading;
 /// This type should not be used to synchronize access to the I/O intensive resources.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
-public struct ReaderWriterSpinLock
+public partial struct ReaderWriterSpinLock
 {
-    /// <summary>
-    /// Represents lock stamp used for optimistic reading.
-    /// </summary>
-    [StructLayout(LayoutKind.Auto)]
-    public readonly struct LockStamp : IEquatable<LockStamp>
-    {
-        private readonly uint version;
-        private readonly bool valid;
-
-        internal LockStamp(ref readonly uint version)
-        {
-            this.version = Volatile.Read(in version);
-            valid = true;
-        }
-
-        internal bool IsValid(in uint version) => valid && this.version == Volatile.Read(in version);
-
-        private bool Equals(in LockStamp other)
-            => version == other.version && valid == other.valid;
-
-        /// <summary>
-        /// Determines whether this stamp represents the same version of the lock state
-        /// as the given stamp.
-        /// </summary>
-        /// <param name="other">The lock stamp to compare.</param>
-        /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(LockStamp other) => Equals(in other);
-
-        /// <summary>
-        /// Determines whether this stamp represents the same version of the lock state
-        /// as the given stamp.
-        /// </summary>
-        /// <param name="other">The lock stamp to compare.</param>
-        /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals([NotNullWhen(true)] object? other) => other is LockStamp stamp && Equals(in stamp);
-
-        /// <summary>
-        /// Computes hash code for this stamp.
-        /// </summary>
-        /// <returns>The hash code of this stamp.</returns>
-        public override int GetHashCode() => HashCode.Combine(valid, version);
-
-        /// <summary>
-        /// Determines whether the first stamp represents the same version of the lock state
-        /// as the second stamp.
-        /// </summary>
-        /// <param name="first">The first lock stamp to compare.</param>
-        /// <param name="second">The second lock stamp to compare.</param>
-        /// <returns><see langword="true"/> of <paramref name="first"/> stamp is equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in LockStamp first, in LockStamp second)
-            => first.Equals(in second);
-
-        /// <summary>
-        /// Determines whether the first stamp represents the different version of the lock state
-        /// as the second stamp.
-        /// </summary>
-        /// <param name="first">The first lock stamp to compare.</param>
-        /// <param name="second">The second lock stamp to compare.</param>
-        /// <returns><see langword="true"/> of <paramref name="first"/> stamp is not equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in LockStamp first, in LockStamp second)
-            => !first.Equals(in second);
-    }
-
     private const int WriteLockState = int.MinValue;
-    private const int NoLockState = default;
+    private const int NoLockState = 0;
     private const int SingleReaderState = 1;
 
     private volatile int state;
@@ -89,8 +25,8 @@ public struct ReaderWriterSpinLock
     public readonly LockStamp TryOptimisticRead()
     {
         // Ordering of version and lock state must be respected:
-        // Write lock acquisition changes the state to Acquired and then increments the version.
-        // Optimistic read lock reads the version and then checks Acquired lock state to avoid false positivies.
+        // Writer lock acquisition changes the state to Acquired and then increments the version.
+        // Optimistic reader lock reads the version and then checks Acquired lock state to avoid false positives.
         var stamp = new LockStamp(in version);
         return state is WriteLockState ? default : stamp;
     }
@@ -115,7 +51,7 @@ public struct ReaderWriterSpinLock
     /// <summary>
     /// Gets the total number of unique threads that have entered the lock in read mode.
     /// </summary>
-    public readonly int CurrentReadCount => Math.Max(0, state);
+    public readonly int CurrentReadCount => int.Max(0, state);
 
     /// <summary>
     /// Attempts to enter reader lock without blocking the caller thread.
@@ -180,7 +116,9 @@ public struct ReaderWriterSpinLock
     /// </summary>
     public void EnterWriteLock()
     {
-        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) is not NoLockState; spinner.SpinOnce());
+        for (var spinner = new SpinWait();
+             Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) is not NoLockState;
+             spinner.SpinOnce());
 
         Interlocked.Increment(ref version);
     }
@@ -191,18 +129,18 @@ public struct ReaderWriterSpinLock
     /// <returns><see langword="true"/> if writer lock is acquired; otherwise, <see langword="false"/>.</returns>
     public bool TryEnterWriteLock()
     {
-        if (Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) is NoLockState)
-        {
-            Interlocked.Increment(ref version);
-            return true;
-        }
+        if (Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) is not NoLockState)
+            return false;
 
-        return false;
+        Interlocked.Increment(ref version);
+        return true;
     }
 
     private bool TryEnterWriteLock(in Timeout timeout, CancellationToken token)
     {
-        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) is not NoLockState; token.ThrowIfCancellationRequested(), spinner.SpinOnce())
+        for (var spinner = new SpinWait();
+             Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) is not NoLockState;
+             token.ThrowIfCancellationRequested(), spinner.SpinOnce())
         {
             if (timeout)
                 return false;
@@ -223,7 +161,7 @@ public struct ReaderWriterSpinLock
         => TryEnterWriteLock(new Timeout(timeout), token);
 
     /// <summary>
-    /// Exits the write lock.
+    /// Exits the writer lock.
     /// </summary>
     public void ExitWriteLock() => state = NoLockState;
 
@@ -231,51 +169,45 @@ public struct ReaderWriterSpinLock
     /// Upgrades a reader lock to the writer lock.
     /// </summary>
     /// <remarks>
-    /// The caller must have acquired read lock. Otherwise, the behavior is unspecified.
+    /// The caller must have acquired reader lock. Otherwise, the behavior is unspecified.
+    /// The method releases the reader lock and tries to obtain the writer lock.
     /// </remarks>
     public void UpgradeToWriteLock()
     {
-        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, SingleReaderState) is not SingleReaderState; spinner.SpinOnce());
-
-        Interlocked.Increment(ref version);
+        ExitReadLock();
+        EnterWriteLock();
     }
 
     /// <summary>
     /// Attempts to upgrade a reader lock to the writer lock.
     /// </summary>
+    /// <remarks>
+    /// The method releases the reader lock even if it returns <see langword="false"/>, so the caller is responsible
+    /// to reacquire the reader lock.
+    /// </remarks>
     /// <returns><see langword="true"/> if the caller upgraded successfully; otherwise, <see langword="false"/>.</returns>
     public bool TryUpgradeToWriteLock()
     {
-        if (Interlocked.CompareExchange(ref state, WriteLockState, SingleReaderState) is SingleReaderState)
-        {
-            Interlocked.Increment(ref version);
-            return true;
-        }
-
-        return false;
-    }
-
-    private bool TryUpgradeToWriteLock(in Timeout timeout, CancellationToken token)
-    {
-        for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, SingleReaderState) is not SingleReaderState; token.ThrowIfCancellationRequested(), spinner.SpinOnce())
-        {
-            if (timeout)
-                return false;
-        }
-
-        Interlocked.Increment(ref version);
-        return true;
+        ExitReadLock();
+        return TryEnterWriteLock();
     }
 
     /// <summary>
     /// Attempts to upgrade a reader lock to the writer lock.
     /// </summary>
+    /// <remarks>
+    /// The method releases the reader lock even if it returns <see langword="false"/>, so the caller is responsible
+    /// to reacquire the reader lock.
+    /// </remarks>
     /// <param name="timeout">The time to wait for the lock.</param>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns><see langword="true"/> if the caller upgraded successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public bool TryUpgradeToWriteLock(TimeSpan timeout, CancellationToken token = default)
-        => TryUpgradeToWriteLock(new Timeout(timeout), token);
+    {
+        ExitReadLock();
+        return TryEnterWriteLock(new Timeout(timeout), token);
+    }
 
     /// <summary>
     /// Downgrades a writer lock back to the reader lock.

@@ -44,33 +44,30 @@ All these things are implemented in 100% managed code on top of existing .NET AP
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 10-22-2025
+Release Date: 11-04-2025
 
-<a href="https://www.nuget.org/packages/dotnext/5.26.0">DotNext 5.26.0</a>
-* Introduced `DotNext.IO.ModernStream` class that derives from [Stream](https://learn.microsoft.com/en-us/dotnet/api/system.io.stream) and implements many of the methods introduced since .NET Framework 1.1 by default in a modern way, requiring only minimal subset of core methods to be implemented by the derived class
-* Removed async state machine allocations for ad-hoc streams returned by `StreamSource` factory methods
+<a href="https://www.nuget.org/packages/dotnext/5.26.1">DotNext 5.26.1</a>
+* Lock upgrade logic provided by `ReaderWriterSpinLock` is adjusted according to [275](https://github.com/dotnet/dotNext/issues/275)
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.26.0">DotNext.Metaprogramming 5.26.0</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/5.26.1">DotNext.Metaprogramming 5.26.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/5.26.0">DotNext.Unsafe 5.26.0</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/5.26.1">DotNext.Unsafe 5.26.1</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.threading/5.26.0">DotNext.Threading 5.26.0</a>
-* Improved support of timeouts in `CancellationTokenMultiplexer`. The scope object now has explicit property to detect whether the multiplexed token source is cancelled due to timeout
+<a href="https://www.nuget.org/packages/dotnext.threading/5.26.1">DotNext.Threading 5.26.1</a>
+* Lock upgrade logic provided by `AsyncReaderWriterLock` is adjusted according to [275](https://github.com/dotnet/dotNext/issues/275)
+* Improved accuracy of `CancellationTokenMultiplexer.Scope.IsTimedOut` property
 
-<a href="https://www.nuget.org/packages/dotnext.io/5.26.0">DotNext.IO 5.26.0</a>
-* Migration to `ModernStream` class
+<a href="https://www.nuget.org/packages/dotnext.io/5.26.1">DotNext.IO 5.26.1</a>
+* Added auxiliary `MemorySegmentStream` wrapper over [Memory&lt;byte&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.memory-1) type in the form of the writable stream
+* Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.26.0">DotNext.Net.Cluster 5.26.0</a>
-* Migration of Raft implementation to `CancellationTokenMultiplexer`
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/5.26.1">DotNext.Net.Cluster 5.26.1</a>
+* Fixed [276](https://github.com/dotnet/dotNext/issues/276)
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.26.0">DotNext.AspNetCore.Cluster 5.26.0</a>
-* Migration of Raft implementation to `CancellationTokenMultiplexer`
-
-<a href="https://www.nuget.org/packages/dotnext.maintenanceservices/0.5.0">DotNext.MaintenanceServices 0.7.0</a>
-* Migration to `System.CommandLine` release candidate
-* Added custom parser configuration (`ParserConfiguration` class) that can be registered in DI
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/5.26.1">DotNext.AspNetCore.Cluster 5.26.1</a>
+* Fixed [276](https://github.com/dotnet/dotNext/issues/276)
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

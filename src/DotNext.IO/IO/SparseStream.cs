@@ -149,16 +149,23 @@ internal abstract class SparseStream(bool leaveOpen) : ModernStream
 
         GC.SuppressFinalize(this);
     }
+
+    public static SparseStream Create<T>(T streams, bool leaveOpen)
+        where T : struct, ITuple
+        => new SparseStream<T>(streams, leaveOpen);
+
+    public static SparseStream Create(Stream stream, ReadOnlySpan<Stream> streams, bool leaveOpen)
+        => new UnboundedSparseStream(stream, streams, leaveOpen);
 }
 
-internal sealed class SparseStream<T>(T streams, bool leaveOpen) : SparseStream(leaveOpen)
+file sealed class SparseStream<T>(T streams, bool leaveOpen) : SparseStream(leaveOpen)
     where T : struct, ITuple
 {
     protected override ReadOnlySpan<Stream> Streams
         => MemoryMarshal.CreateReadOnlySpan(in Unsafe.As<T, Stream>(ref Unsafe.AsRef(in streams)), streams.Length);
 }
 
-internal sealed class UnboundedSparseStream : SparseStream
+file sealed class UnboundedSparseStream : SparseStream
 {
     private MemoryOwner<Stream> streams;
 

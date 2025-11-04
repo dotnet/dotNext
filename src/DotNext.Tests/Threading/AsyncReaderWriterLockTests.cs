@@ -25,7 +25,7 @@ public sealed class AsyncReaderWriterLockTests : Test
         True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
         True(await rwLock.TryUpgradeToWriteLockAsync(DefaultTimeout));
         False(rwLock.TryEnterWriteLock());
-        False(rwLock.TryUpgradeToWriteLock());
+        Throws<SynchronizationLockException>(() => rwLock.TryUpgradeToWriteLock());
         rwLock.DowngradeFromWriteLock();
         True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
     }
@@ -267,5 +267,68 @@ public sealed class AsyncReaderWriterLockTests : Test
         
         l.Release();
         True(l.TryEnterReadLock(DefaultTimeout));
+    }
+
+    [Fact]
+    public static async Task NoDeadlockWhenUpgrade()
+    {
+        using var l = new AsyncReaderWriterLock();
+        await l.EnterReadLockAsync();
+        await l.EnterReadLockAsync();
+
+        var task1 = l.UpgradeToWriteLockAsync().AsTask(); // suspends
+        False(task1.IsCompleted);
+
+        var task2 = l.UpgradeToWriteLockAsync().AsTask();
+        False(task2.IsCompleted);
+        await task1;
+        l.Release();
+
+        await task2;
+        l.Release();
+    }
+
+    [Fact]
+    public static void UpgradeToWriteLock()
+    {
+        using var l = new AsyncReaderWriterLock();
+        Throws<SynchronizationLockException>(() => l.TryUpgradeToWriteLock());
+        
+        True(l.TryEnterReadLock());
+        True(l.IsReadLockHeld);
+        False(l.IsWriteLockHeld);
+        
+        True(l.TryUpgradeToWriteLock());
+        False(l.IsReadLockHeld);
+        True(l.IsWriteLockHeld);
+        
+        l.Release();
+        False(l.IsReadLockHeld);
+        False(l.IsWriteLockHeld);
+        
+        True(l.TryEnterReadLock());
+        True(l.TryEnterReadLock());
+        False(l.TryUpgradeToWriteLock());
+        Equal(1L, l.CurrentReadCount);
+    }
+    
+    [Fact]
+    public static async Task UpgradeToWriteLockAsync()
+    {
+        await using var l = new AsyncReaderWriterLock();
+        True(l.TryEnterReadLock());
+
+        var task1 = l.EnterWriteLockAsync().AsTask();
+        False(task1.IsCompleted);
+
+        var task2 = l.UpgradeToWriteLockAsync().AsTask();
+        False(task2.IsCompleted);
+        
+        await task1;
+        False(task2.IsCompleted);
+        l.Release();
+
+        await task2;
+        l.Release();
     }
 }
