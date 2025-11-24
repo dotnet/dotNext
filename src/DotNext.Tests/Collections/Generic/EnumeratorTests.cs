@@ -158,7 +158,7 @@ public sealed class EnumeratorTests : Test
     }
 
     [Fact]
-    public static void Skip()
+    public static void SkipElements()
     {
         var range = Enumerable.Range(0, 10);
         using var enumerator = range.GetEnumerator();

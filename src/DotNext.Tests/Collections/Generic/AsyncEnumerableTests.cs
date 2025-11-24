@@ -3,14 +3,9 @@ namespace DotNext.Collections.Generic;
 public sealed class AsyncEnumerableTests : Test
 {
     [Fact]
-    public static async Task EmptyAsyncEnumerable()
+    public static void EmptyAsyncEnumerable()
     {
-        var count = 0;
-
-        await foreach (var item in AsyncEnumerable.Empty<int>())
-            count++;
-
-        Equal(0, count);
+        Empty(AsyncEnumerable.Empty<int>());
     }
 
     [Theory]
@@ -24,8 +19,8 @@ public sealed class AsyncEnumerableTests : Test
         list.AddLast(100);
 
         var asyncList = list.ToAsyncEnumerable(yieldIteration);
-        Equal(100, await asyncList.ElementAtAsync(2));
-        Equal(10, await asyncList.ElementAtAsync(0));
+        Equal(100, await asyncList.ElementAtAsync(2, TestToken));
+        Equal(10, await asyncList.ElementAtAsync(0, TestToken));
     }
 
     [Theory]
@@ -35,12 +30,12 @@ public sealed class AsyncEnumerableTests : Test
     {
         var list = new List<int> { 1, 10, 20 }.ToAsyncEnumerable(yieldIteration);
         var counter = new CollectionTests.Counter<int>();
-        await list.ForEachAsync(counter.Accept);
+        await list.ForEachAsync(counter.Accept, TestToken);
         Equal(3, counter.value);
         counter.value = 0;
 
         list = new[] { 1, 2, 10, 11, 15 }.ToAsyncEnumerable();
-        await list.ForEachAsync(counter.Accept);
+        await list.ForEachAsync(counter.Accept, TestToken);
         Equal(5, counter.value);
     }
 

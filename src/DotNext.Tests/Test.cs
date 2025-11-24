@@ -2,8 +2,6 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
-[assembly: DotNext.ReportLongRunningTests(30_000)]
-
 namespace DotNext;
 
 using static Buffers.Memory;
@@ -21,8 +19,11 @@ public abstract class Test : Assert
     {
         var result = new byte[size];
         Random.Shared.NextBytes(result);
+        
         return result;
     }
+
+    private protected static CancellationToken TestToken => TestContext.Current.CancellationToken;
 
     private static IEnumerable<ReadOnlyMemory<T>> Split<T>(ReadOnlyMemory<T> memory, int chunkSize)
     {

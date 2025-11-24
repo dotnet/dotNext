@@ -260,7 +260,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
         Equal(Memory<byte>.Empty, owner.Memory);
     }
 
-    [PlatformSpecificFact("linux", "windows")]
+    [PlatformSpecificFact(["linux", "windows"])]
     public static void DiscardPages()
     {
         using var systemPages = UnmanagedMemory.AllocateSystemPages(1);

@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>true</ImplicitUsings>
@@ -11,11 +12,8 @@
     <Product>.NEXT Family of Libraries</Product>
     <Description>Unit tests for .NEXT Familiy of Libraries</Description>
     <Copyright>Copyright © .NET Foundation and Contributors</Copyright>
-    <PackageLicenseUrl>https://github.com/dotnet/DotNext/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/dotnet/DotNext</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/dotnet/DotNext.git</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
     <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -25,21 +23,12 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk"/>
-    <PackageReference Include="xunit"/>
-    <PackageReference Include="xunit.runner.visualstudio">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="coverlet.collector">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="xunit.v3"/>
     <PackageReference Include="System.Resources.Extensions"/>
+    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.IO.Hashing"/>
     <ProjectReference Include="..\cluster\DotNext.AspNetCore.Cluster\DotNext.AspNetCore.Cluster.csproj"/>
     <ProjectReference Include="..\cluster\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj"/>
     <ProjectReference Include="..\DotNext.IO\DotNext.IO.csproj"/>
