@@ -360,7 +360,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
         => OrInvokeWithException<Supplier<Exception, T>>(defaultFunc);
 
     /// <inheritdoc cref="IFunctional{TDelegate}.ToDelegate()"/>
-    Func<object?> IFunctional<Func<object?>>.ToDelegate() => Func.Constant<object?>(exception is null ? value : null);
+    Func<object?> IFunctional<Func<object?>>.ToDelegate() => Func<object?>.Constant(exception is null ? value : null);
 
     /// <summary>
     /// Gets exception associated with this result.
@@ -700,7 +700,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
         => OrInvokeWithError<Supplier<TError, T>>(defaultFunc);
 
     /// <inheritdoc cref="IFunctional{TDelegate}.ToDelegate()"/>
-    Func<object?> IFunctional<Func<object?>>.ToDelegate() => Func.Constant<object?>(IsSuccessful ? value : null);
+    Func<object?> IFunctional<Func<object?>>.ToDelegate() => Func<object?>.Constant(IsSuccessful ? value : null);
 
     private T OrThrow<TExceptionFactory>(TExceptionFactory factory)
         where TExceptionFactory : struct, ISupplier<TError, Exception>

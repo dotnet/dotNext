@@ -172,7 +172,7 @@ public sealed class LeaseTests : Test
             token = provider.Token;
         }
 
-        await ThrowsAnyAsync<ObjectDisposedException>(Func.Constant(task));
+        await ThrowsAnyAsync<ObjectDisposedException>(task);
         True(token.IsCancellationRequested);
     }
 

@@ -125,7 +125,7 @@ public sealed class ValueTaskCompletionSourceTests : Test
         var task = source.CreateLinkedTaskCompletionSource("Hello, world!", TimeSpan.FromMilliseconds(20), default).Task;
 
         Equal("Hello, world!", task.AsyncState);
-        await ThrowsAsync<TimeoutException>(Func.Constant(task));
+        await ThrowsAsync<TimeoutException>(task);
     }
 
     [Fact]
@@ -165,7 +165,7 @@ public sealed class ValueTaskCompletionSourceTests : Test
     {
         var source = new ValueTaskCompletionSource();
         var task = source.CreateTask(InfiniteTimeSpan, new(true)).AsTask();
-        await ThrowsAsync<OperationCanceledException>(Func.Constant(task));
+        await ThrowsAsync<OperationCanceledException>(task);
     }
 
     [Fact]

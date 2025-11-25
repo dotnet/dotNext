@@ -610,7 +610,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         => ConvertOptional<TResult, Supplier<T, Optional<TResult>>>(mapper);
 
     /// <inheritdoc cref="IFunctional{TDelegate}.ToDelegate()"/>
-    Func<object?> IFunctional<Func<object?>>.ToDelegate() => Func.Constant<object?>(kind is NotEmptyValue ? value : null);
+    Func<object?> IFunctional<Func<object?>>.ToDelegate() => Func<object?>.Constant(kind is NotEmptyValue ? value : null);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<T> If<TPredicate>(TPredicate condition)

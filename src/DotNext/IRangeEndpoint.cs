@@ -7,7 +7,7 @@ using Patterns;
 /// </summary>
 /// <typeparam name="T">The type of the endpoint.</typeparam>
 public interface IRangeEndpoint<in T>
-    where T : notnull
+    where T : notnull, allows ref struct
 {
     /// <summary>
     /// Checks whether the specified value is on the left side from this endpoint.
@@ -34,7 +34,7 @@ public interface IRangeEndpoint<in T>
 /// </summary>
 /// <typeparam name="T">The type of the endpoint.</typeparam>
 public interface IFiniteRangeEndpoint<T> : IRangeEndpoint<T>
-    where T : notnull
+    where T : notnull, allows ref struct
 {
     /// <summary>
     /// Gets the value of the endpoint.
@@ -46,8 +46,8 @@ public interface IFiniteRangeEndpoint<T> : IRangeEndpoint<T>
 /// Represents enclosed range endpoint.
 /// </summary>
 /// <typeparam name="T">The type of the endpoint.</typeparam>
-public readonly struct EnclosedEndpoint<T> : IFiniteRangeEndpoint<T>
-    where T : IComparable<T>
+public readonly ref struct EnclosedEndpoint<T> : IFiniteRangeEndpoint<T>
+    where T : IComparable<T>, allows ref struct
 {
     /// <summary>
     /// Gets a value of this endpoint.
@@ -83,8 +83,8 @@ public readonly struct EnclosedEndpoint<T> : IFiniteRangeEndpoint<T>
 /// Represents disclosed range endpoint.
 /// </summary>
 /// <typeparam name="T">The type of the endpoint.</typeparam>
-public readonly struct DisclosedEndpoint<T> : IFiniteRangeEndpoint<T>
-    where T : IComparable<T>
+public readonly ref struct DisclosedEndpoint<T> : IFiniteRangeEndpoint<T>
+    where T : IComparable<T>, allows ref struct
 {
     /// <summary>
     /// Gets a value of this endpoint.
@@ -117,7 +117,7 @@ public readonly struct DisclosedEndpoint<T> : IFiniteRangeEndpoint<T>
 }
 
 file sealed class InfinityEndpoint<T> : IRangeEndpoint<T>, ISingleton<InfinityEndpoint<T>>
-    where T : notnull
+    where T : notnull, allows ref struct
 {
     public static InfinityEndpoint<T> Instance { get; } = new();
 

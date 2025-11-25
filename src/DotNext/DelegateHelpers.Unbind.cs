@@ -6,11 +6,13 @@ public static partial class DelegateHelpers
         where T : MulticastDelegate
         => del.Target switch
         {
-            Closure closure when BasicExtensions.IsContravariant(closure.Target, targetType) => ChangeType<T, EmptyTargetRewriter>(closure.Delegate,
+            Closure closure when IsContravariant(closure.Target, targetType) => ChangeType<T, EmptyTargetRewriter>(closure.Delegate,
                 default),
-            { } target when BasicExtensions.IsContravariant(target, targetType) => ChangeType<T, TargetRewriter>(del, default),
+            { } target when IsContravariant(target, targetType) => ChangeType<T, TargetRewriter>(del, default),
             _ => throw new InvalidOperationException(),
         };
+    
+    private static bool IsContravariant(object? obj, Type type) => obj?.GetType().IsAssignableFrom(type) ?? false;
 
     /// <summary>
     /// Converts implicitly bound delegate into its unbound version.
@@ -33,6 +35,7 @@ public static partial class DelegateHelpers
     /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravariant to type <typeparamref name="T"/>.</exception>
     public static Func<T, TResult> Unbind<T, TResult>(this Func<TResult> func)
         where T : class
+        where TResult : allows ref struct
         => func.Unbind<Func<T, TResult>>(typeof(T));
 
     /// <summary>
@@ -46,6 +49,7 @@ public static partial class DelegateHelpers
     /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravariant to type <typeparamref name="T"/>.</exception>
     public static Func<T, TArg, TResult> Unbind<T, TArg, TResult>(this Func<TArg, TResult> func)
         where T : class
+        where TArg : allows ref struct
         => func.Unbind<Func<T, TArg, TResult>>(typeof(T));
 
     /// <summary>
@@ -58,6 +62,7 @@ public static partial class DelegateHelpers
     /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravariant to type <typeparamref name="T"/>.</exception>
     public static Action<T, TArg> Unbind<T, TArg>(this Action<TArg> action)
         where T : class
+        where TArg : allows ref struct
         => action.Unbind<Action<T, TArg>>(typeof(T));
 
     /// <summary>
@@ -72,6 +77,9 @@ public static partial class DelegateHelpers
     /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravariant to type <typeparamref name="T"/>.</exception>
     public static Func<T, T1, T2, TResult> Unbind<T, T1, T2, TResult>(this Func<T1, T2, TResult> func)
         where T : class
+        where T1 : allows ref struct
+        where T2 : allows ref struct
+        where TResult : allows ref struct
         => func.Unbind<Func<T, T1, T2, TResult>>(typeof(T));
 
     /// <summary>
@@ -85,6 +93,8 @@ public static partial class DelegateHelpers
     /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravariant to type <typeparamref name="T"/>.</exception>
     public static Action<T, T1, T2> Unbind<T, T1, T2>(this Action<T1, T2> action)
         where T : class
+        where T1 : allows ref struct
+        where T2 : allows ref struct
         => action.Unbind<Action<T, T1, T2>>(typeof(T));
 
     /// <summary>
@@ -100,6 +110,10 @@ public static partial class DelegateHelpers
     /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravariant to type <typeparamref name="T"/>.</exception>
     public static Func<T, T1, T2, T3, TResult> Unbind<T, T1, T2, T3, TResult>(this Func<T1, T2, T3, TResult> func)
         where T : class
+        where T1 : allows ref struct
+        where T2 : allows ref struct
+        where T3 : allows ref struct
+        where TResult : allows ref struct
         => func.Unbind<Func<T, T1, T2, T3, TResult>>(typeof(T));
 
     /// <summary>
@@ -114,6 +128,9 @@ public static partial class DelegateHelpers
     /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravariant to type <typeparamref name="T"/>.</exception>
     public static Action<T, T1, T2, T3> Unbind<T, T1, T2, T3>(this Action<T1, T2, T3> action)
         where T : class
+        where T1 : allows ref struct
+        where T2 : allows ref struct
+        where T3 : allows ref struct
         => action.Unbind<Action<T, T1, T2, T3>>(typeof(T));
 
     /// <summary>
@@ -130,6 +147,11 @@ public static partial class DelegateHelpers
     /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravariant to type <typeparamref name="T"/>.</exception>
     public static Func<T, T1, T2, T3, T4, TResult> Unbind<T, T1, T2, T3, T4, TResult>(this Func<T1, T2, T3, T4, TResult> func)
         where T : class
+        where T1 : allows ref struct
+        where T2 : allows ref struct
+        where T3 : allows ref struct
+        where T4 : allows ref struct
+        where TResult : allows ref struct
         => func.Unbind<Func<T, T1, T2, T3, T4, TResult>>(typeof(T));
 
     /// <summary>
@@ -145,6 +167,10 @@ public static partial class DelegateHelpers
     /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravariant to type <typeparamref name="T"/>.</exception>
     public static Action<T, T1, T2, T3, T4> Unbind<T, T1, T2, T3, T4>(this Action<T1, T2, T3, T4> action)
         where T : class
+        where T1 : allows ref struct
+        where T2 : allows ref struct
+        where T3 : allows ref struct
+        where T4 : allows ref struct
         => action.Unbind<Action<T, T1, T2, T3, T4>>(typeof(T));
 
     /// <summary>
@@ -162,6 +188,12 @@ public static partial class DelegateHelpers
     /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravariant to type <typeparamref name="T"/>.</exception>
     public static Func<T, T1, T2, T3, T4, T5, TResult> Unbind<T, T1, T2, T3, T4, T5, TResult>(this Func<T1, T2, T3, T4, T5, TResult> func)
         where T : class
+        where T1 : allows ref struct
+        where T2 : allows ref struct
+        where T3 : allows ref struct
+        where T4 : allows ref struct
+        where T5 : allows ref struct
+        where TResult : allows ref struct
         => func.Unbind<Func<T, T1, T2, T3, T4, T5, TResult>>(typeof(T));
 
     /// <summary>
@@ -178,6 +210,11 @@ public static partial class DelegateHelpers
     /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravariant to type <typeparamref name="T"/>.</exception>
     public static Action<T, T1, T2, T3, T4, T5> Unbind<T, T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action)
         where T : class
+        where T1 : allows ref struct
+        where T2 : allows ref struct
+        where T3 : allows ref struct
+        where T4 : allows ref struct
+        where T5 : allows ref struct
         => action.Unbind<Action<T, T1, T2, T3, T4, T5>>(typeof(T));
 
     /// <summary>

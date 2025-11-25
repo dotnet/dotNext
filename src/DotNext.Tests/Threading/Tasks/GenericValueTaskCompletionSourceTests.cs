@@ -138,7 +138,7 @@ public sealed class GenericValueTaskCompletionSourceTests : Test
         var task = source.CreateLinkedTaskCompletionSource("Hello, world!", TimeSpan.FromMilliseconds(20), default).Task;
 
         Equal("Hello, world!", task.AsyncState);
-        await ThrowsAsync<TimeoutException>(Func.Constant(task));
+        await ThrowsAsync<TimeoutException>(task);
     }
 
     [Fact]

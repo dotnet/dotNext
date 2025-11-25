@@ -160,11 +160,11 @@ public sealed class CollectionTests : Test
         var collection = Array.Empty<int>().ToAsyncEnumerable();
         Null(await collection.FirstOrNullAsync());
         Equal(Optional<int>.None, await collection.FirstOrNoneAsync());
-        Equal(Optional<int>.None, await collection.FirstOrNoneAsync(Predicate.Constant<int>(true)));
+        Equal(Optional<int>.None, await collection.FirstOrNoneAsync(Predicate<int>.Constant(true)));
         collection = new int[] { 42 }.ToAsyncEnumerable();
         Equal(42, await collection.FirstOrNullAsync());
         Equal(42, await collection.FirstOrNoneAsync());
-        Equal(42, await collection.FirstOrNoneAsync(Predicate.Constant<int>(true)));
+        Equal(42, await collection.FirstOrNoneAsync(Predicate<int>.Constant(true)));
     }
 
     [Fact]

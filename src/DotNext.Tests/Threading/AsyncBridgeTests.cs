@@ -36,7 +36,7 @@ public sealed class AsyncBridgeTests : Test
         var task = ev.WaitAsync(cts.Token).AsTask();
         cts.Cancel();
 
-        var e = await ThrowsAsync<OperationCanceledException>(Func.Constant(task));
+        var e = await ThrowsAsync<OperationCanceledException>(task);
         Equal(cts.Token, e.CancellationToken);
     }
 
@@ -67,7 +67,7 @@ public sealed class AsyncBridgeTests : Test
 
         source1.Cancel();
         source2.Cancel();
-        await ThrowsAnyAsync<OperationCanceledException>(Func.Constant(task1));
+        await ThrowsAnyAsync<OperationCanceledException>(task1);
         await task2;
 
         foreach (var token in tokens)
@@ -131,7 +131,7 @@ public sealed class AsyncBridgeTests : Test
         False(task.IsCompletedSuccessfully);
         True(interruption(interruptionReason));
 
-        var e = await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task));
+        var e = await ThrowsAsync<PendingTaskInterruptedException>(task);
         Equal(interruptionReason, e.Reason);
     }
 

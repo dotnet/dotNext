@@ -188,28 +188,28 @@ public sealed class BasicExtensionsTests : Test
     [Fact]
     public static void Range()
     {
-        True(15M.IsBetween(10M.Enclosed(), 20M.Enclosed()));
-        False(10M.IsBetween(10M.Disclosed(), 20M.Disclosed()));
-        True(10M.IsBetween(10M.Enclosed(), 20M.Disclosed()));
-        False(15M.IsBetween(10M.Enclosed(), 12M.Enclosed()));
+        True(15M.IsBetween(10M.Enclosed, 20M.Enclosed));
+        False(10M.IsBetween(10M.Disclosed, 20M.Disclosed));
+        True(10M.IsBetween(10M.Enclosed, 20M.Disclosed));
+        False(15M.IsBetween(10M.Enclosed, 12M.Enclosed));
     }
 
     [Fact]
     public static void LeftGreaterThanRight()
     {
-        False(4L.IsBetween(4L.Enclosed(), 3L.Enclosed()));
-        False(4L.IsBetween(4L.Enclosed(), 4L.Disclosed()));
+        False(4L.IsBetween(4L.Enclosed, 3L.Enclosed));
+        False(4L.IsBetween(4L.Enclosed, 4L.Disclosed));
     }
 
     [Fact]
     public static void InfinityEndpoints()
     {
-        True(4L.IsBetween(IRangeEndpoint<long>.Infinity, 10L.Enclosed()));
-        False(10L.IsBetween(IRangeEndpoint<long>.Infinity, 10L.Disclosed()));
+        True(4L.IsBetween(IRangeEndpoint<long>.Infinity, 10L.Enclosed));
+        False(10L.IsBetween(IRangeEndpoint<long>.Infinity, 10L.Disclosed));
 
-        True(4L.IsBetween(0L.Disclosed(), IRangeEndpoint<long>.Infinity));
-        False(10L.IsBetween(10L.Disclosed(), IRangeEndpoint<long>.Infinity));
+        True(4L.IsBetween(0L.Disclosed, long.Unbounded));
+        False(10L.IsBetween(10L.Disclosed, long.Unbounded));
 
-        True(long.MinValue.IsBetween(IRangeEndpoint<long>.Infinity, IRangeEndpoint<long>.Infinity));
+        True(long.MinValue.IsBetween(long.Unbounded, long.Unbounded));
     }
 }

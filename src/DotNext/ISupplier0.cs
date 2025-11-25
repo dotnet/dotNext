@@ -59,7 +59,7 @@ public readonly unsafe struct Supplier<TResult>(delegate*<TResult> ptr) : ISuppl
     /// Converts this supplier to the delegate of type <see cref="Func{TResult}"/>.
     /// </summary>
     /// <returns>The delegate representing the wrapped method.</returns>
-    public Func<TResult> ToDelegate() => DelegateHelpers.CreateDelegate<TResult>(ptr);
+    public Func<TResult> ToDelegate() => Func<TResult>.FromPointer(ptr);
 
     /// <summary>
     /// Gets hexadecimal representation of this pointer.
@@ -113,7 +113,7 @@ public readonly struct ValueSupplier<T>(T value) : ISupplier<T>
     T ISupplier<T>.Invoke() => value;
 
     /// <inheritdoc />
-    Func<T> IFunctional<Func<T>>.ToDelegate() => Func.Constant(value);
+    Func<T> IFunctional<Func<T>>.ToDelegate() => Func<T>.Constant(value);
 
     /// <summary>
     /// Creates constant value supplier.
@@ -199,5 +199,5 @@ file sealed class DefaultSupplier<T> : ISupplier<T?>
 {
     T? ISupplier<T?>.Invoke() => default;
 
-    Func<T?> IFunctional<Func<T?>>.ToDelegate() => Func.Default<T?>;
+    Func<T?> IFunctional<Func<T?>>.ToDelegate() => DelegateHelpers.Default<T?>;
 }

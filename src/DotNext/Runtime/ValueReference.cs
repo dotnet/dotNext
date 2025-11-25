@@ -21,7 +21,8 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     IEquatable<ValueReference<T>>,
     IEqualityOperators<ValueReference<T>, ValueReference<T>, bool>,
     ISupplier<T>,
-    IConsumer<T>
+    IConsumer<T>,
+    ITypedReference<T>
 {
     private readonly nint offset = ValueReference.GetOffset(owner, in fieldRef);
 
@@ -79,6 +80,9 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     /// Gets a reference to the field.
     /// </summary>
     public ref T Value => ref ValueReference.GetObjectData<T>(owner, offset);
+
+    /// <inheritdoc/>
+    ref readonly T ITypedReference<T>.Value => ref Value;
     
     /// <summary>
     /// Obtains managed pointer to the referenced value.
@@ -206,7 +210,8 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
 public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fieldRef) :
     IEquatable<ReadOnlyValueReference<T>>,
     IEqualityOperators<ReadOnlyValueReference<T>, ReadOnlyValueReference<T>, bool>,
-    ISupplier<T>
+    ISupplier<T>,
+    ITypedReference<T>
 {
     private readonly nint offset = ValueReference.GetOffset(owner, in fieldRef);
     

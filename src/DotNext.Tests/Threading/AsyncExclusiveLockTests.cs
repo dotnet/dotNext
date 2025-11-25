@@ -156,8 +156,8 @@ public sealed class AsyncExclusiveLockTests : Test
         var task2 = l.AcquireAsync().AsTask();
         var task3 = l.TryStealAsync(reason, DefaultTimeout).AsTask();
 
-        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task1))).Reason);
-        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task2))).Reason);
+        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task1)).Reason);
+        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task2)).Reason);
 
         l.Release();
         True(await task3);
@@ -174,8 +174,8 @@ public sealed class AsyncExclusiveLockTests : Test
         var task2 = l.AcquireAsync().AsTask();
         var task3 = l.StealAsync(reason, DefaultTimeout).AsTask();
 
-        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task1))).Reason);
-        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task2))).Reason);
+        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task1)).Reason);
+        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task2)).Reason);
 
         l.Release();
         await task3;
@@ -213,7 +213,7 @@ public sealed class AsyncExclusiveLockTests : Test
         var t = Task.Factory.StartNew(() => l.TryAcquire(DefaultTimeout), TaskCreationOptions.LongRunning);
 
         l.Dispose();
-        await ThrowsAnyAsync<ObjectDisposedException>(Func.Constant(t));
+        await ThrowsAnyAsync<ObjectDisposedException>(t);
     }
 
     [Fact]

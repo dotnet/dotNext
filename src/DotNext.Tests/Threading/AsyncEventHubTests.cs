@@ -103,8 +103,8 @@ public sealed class AsyncEventHubTests : Test
         var task2 = hub.WaitOneAsync(1).AsTask();
 
         hub.CancelSuspendedCallers(new(canceled: true));
-        await ThrowsAsync<OperationCanceledException>(Func.Constant(task1));
-        await ThrowsAsync<OperationCanceledException>(Func.Constant(task2));
+        await ThrowsAsync<OperationCanceledException>(task1);
+        await ThrowsAsync<OperationCanceledException>(task2);
     }
 
     [Fact]

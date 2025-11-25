@@ -13,7 +13,7 @@ public sealed class InvocationListTests : Test
 
         list += static str => str.Length > 10;
         list += CheckLength;
-        list += Predicate.Constant<object>(true);
+        list += Predicate<object>.Constant(true);
         NotEmpty(list);
         False(list.IsEmpty);
         Equal(3, list.Count);
@@ -30,10 +30,10 @@ public sealed class InvocationListTests : Test
         InvocationList<Predicate<string>> list = default;
         True(list.Span.IsEmpty);
 
-        list += Predicate.Constant<string>(true);
-        Same(Predicate.Constant<string>(true), list.Span[0]);
+        list += Predicate<string>.Constant(true);
+        Same(Predicate<string>.Constant(true), list.Span[0]);
 
-        list += Predicate.Constant<object>(false);
+        list += Predicate<object>.Constant(false);
         Equal(2, list.Span.Length);
     }
 
@@ -43,14 +43,14 @@ public sealed class InvocationListTests : Test
         InvocationList<Predicate<string>> list = default;
         Empty(list);
 
-        list += Predicate.Constant<string>(true);
-        Collection(list, Same(Predicate.Constant<string>(true)));
+        list += Predicate<string>.Constant(true);
+        Collection(list, Same(Predicate<string>.Constant(true)));
 
-        list += Predicate.Constant<object>(false);
+        list += Predicate<object>.Constant(false);
         Collection(
             list,
-            Same(Predicate.Constant<string>(true)),
-            Same<Predicate<string>>(Predicate.Constant<object>(false)));
+            Same(Predicate<string>.Constant(true)),
+            Same<Predicate<string>>(Predicate<string>.Constant(false)));
     }
 
     [Fact]

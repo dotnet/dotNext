@@ -9,16 +9,6 @@ namespace DotNext;
 /// </summary>
 public static class BasicExtensions
 {
-    internal static bool IsNull(object? obj) => obj is null;
-
-    internal static bool IsNotNull(object? obj) => obj is not null;
-
-    internal static bool IsTypeOf<T>(object? obj) => obj is T;
-
-    internal static TOutput Identity<TInput, TOutput>(TInput input)
-        where TInput : TOutput
-        => input;
-
     /// <summary>
     /// Provides ad-hoc approach to associate some data with the object
     /// without modification of it.
@@ -50,7 +40,7 @@ public static class BasicExtensions
     /// <param name="value">The object to compare with other.</param>
     /// <param name="candidates">Candidate objects.</param>
     /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="candidates"/>.</returns>
-    public static bool IsOneOf<T>(this T value, ReadOnlySpan<T> candidates)
+    public static bool IsOneOf<T>(this T value, params ReadOnlySpan<T> candidates)
     {
         foreach (var other in candidates)
         {
@@ -60,8 +50,6 @@ public static class BasicExtensions
 
         return false;
     }
-
-    internal static bool IsContravariant(object? obj, Type type) => obj?.GetType().IsAssignableFrom(type) ?? false;
 
     /// <summary>
     /// Reinterprets object reference.
@@ -129,33 +117,49 @@ public static class BasicExtensions
     /// <param name="lowerBound">The lower bound.</param>
     /// <param name="upperBound">The upper bound.</param>
     /// <returns><see langword="true"/> if <paramref name="value"/> is in the specified range; otherwise, <see langword="false"/>.</returns>
-    /// <seealso cref="Enclosed{T}(T)"/>
-    /// <seealso cref="Disclosed{T}(T)"/>
+    /// <seealso cref="get_Enclosed{T}(T)"/>
+    /// <seealso cref="get_Disclosed{T}(T)"/>
     public static bool IsBetween<T, TLowerBound, TUpperBound>(this T value, TLowerBound lowerBound, TUpperBound upperBound)
-        where T : notnull
-        where TLowerBound : IRangeEndpoint<T>
-        where TUpperBound : IRangeEndpoint<T>
+        where T : notnull, allows ref struct
+        where TLowerBound : IRangeEndpoint<T>, allows ref struct
+        where TUpperBound : IRangeEndpoint<T>, allows ref struct
         => lowerBound.IsOnRight(value) && upperBound.IsOnLeft(value);
 
-    /// <summary>
-    /// Creates enclosed range endpoint.
-    /// </summary>
-    /// <typeparam name="T">The type of the endpoint.</typeparam>
     /// <param name="value">The endpoint value.</param>
-    /// <returns>The range endpoint.</returns>
-    /// <seealso cref="IsBetween{T, TLowerBound, TUpperBound}(T, TLowerBound, TUpperBound)"/>
-    public static EnclosedEndpoint<T> Enclosed<T>(this T value)
-        where T : IComparable<T>
-        => new() { Value = value };
+    /// <typeparam name="T">The type of the endpoint.</typeparam>
+    extension<T>(T value) where T : IComparable<T>, allows ref struct
+    {
+        /// <summary>
+        /// Creates enclosed range endpoint.
+        /// </summary>
+        /// <returns>The range endpoint.</returns>
+        /// <seealso cref="IsBetween{T, TLowerBound, TUpperBound}(T, TLowerBound, TUpperBound)"/>
+        public EnclosedEndpoint<T> Enclosed => new() { Value = value };
 
+        /// <summary>
+        /// Creates disclosed range endpoint.
+        /// </summary>
+        /// <returns>The range endpoint.</returns>
+        /// <seealso cref="IsBetween{T, TLowerBound, TUpperBound}(T, TLowerBound, TUpperBound)"/>
+        public DisclosedEndpoint<T> Disclosed => new() { Value = value };
+
+        /// <summary>
+        /// Gets the endpoint that represents the infinity.
+        /// </summary>
+        public static IRangeEndpoint<T> Unbounded => IRangeEndpoint<T>.Infinity;
+    }
+    
     /// <summary>
-    /// Creates disclosed range endpoint.
+    /// Providers static methods for <see cref="Predicate{T}"/> type. 
     /// </summary>
-    /// <typeparam name="T">The type of the endpoint.</typeparam>
-    /// <param name="value">The endpoint value.</param>
-    /// <returns>The range endpoint.</returns>
-    /// <seealso cref="IsBetween{T, TLowerBound, TUpperBound}(T, TLowerBound, TUpperBound)"/>
-    public static DisclosedEndpoint<T> Disclosed<T>(this T value)
-        where T : IComparable<T>
-        => new() { Value = value };
+    extension<T>(T)
+        where T : notnull
+    {
+        /// <summary>
+        /// Checks whether the specified object is of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="obj">The object to check.</param>
+        /// <returns></returns>
+        public static bool IsTypeOf([NotNullWhen(true)] object? obj) => obj is T;
+    }
 }

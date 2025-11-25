@@ -265,7 +265,7 @@ public sealed class TcpMultiplexerTests : Test
             task = client.OpenStreamAsync().AsTask();
         }
 
-        await ThrowsAsync<ObjectDisposedException>(Func.Constant(task));
+        await ThrowsAsync<ObjectDisposedException>(task);
     }
     
     [Fact]

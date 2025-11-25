@@ -55,7 +55,7 @@ public readonly unsafe struct Consumer<T>(delegate*<T, void> ptr) : IConsumer<T>
     /// Converts this consumer to the delegate of type <see cref="Action{T}"/>.
     /// </summary>
     /// <returns>The delegate representing the wrapped method.</returns>
-    public Action<T> ToDelegate() => DelegateHelpers.CreateDelegate<T>(ptr);
+    public Action<T> ToDelegate() => Action<T>.FromPointer(ptr);
 
     /// <summary>
     /// Gets hexadecimal representation of this pointer.

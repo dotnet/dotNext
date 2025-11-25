@@ -254,7 +254,7 @@ public sealed class DiskBasedStateMachineTests : Test
     public static async Task SnapshotInstallation(bool useCaching)
     {
         var entries = new Int64LogEntry[SimpleStateMachine.RecordsPerPartition * 2 + 1];
-        entries.AsSpan().ForEach((ref Int64LogEntry entry, int index) => entry = new Int64LogEntry(42L + index) { Term = index });
+        entries.AsSpan().ForEach((entry, index) => entry.Value = new(42L + index) { Term = index });
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
         using (var state = new SimpleStateMachine(dir, new() { UseCaching = useCaching }))

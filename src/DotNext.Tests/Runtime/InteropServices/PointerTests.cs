@@ -16,10 +16,10 @@ public sealed class PointerTests : Test
         ptr.WriteTo(ms, array.Length);
         Equal(6L, ms.Length);
         True(ms.TryGetBuffer(out var buffer));
-        buffer.AsSpan().ForEach(static (ref byte value, int _) =>
+        buffer.AsSpan().ForEach(static (element, _) =>
         {
-            if (value == 1)
-                value = 20;
+            if (element.Value is 1)
+                element.Value = 20;
         });
         ms.Position = 0;
         Equal(6, ptr.ReadFrom(ms, array.Length));
@@ -36,10 +36,10 @@ public sealed class PointerTests : Test
         await ptr.WriteToAsync(ms, array.Length);
         Equal(6L, ms.Length);
         True(ms.TryGetBuffer(out var buffer));
-        buffer.AsSpan().ForEach(static (ref byte value, int _) =>
+        buffer.AsSpan().ForEach(static (element, _) =>
         {
-            if (value == 1)
-                value = 20;
+            if (element.Value is 1)
+                element.Value = 20;
         });
         ms.Position = 0;
         Equal(6, await ptr.ReadFromAsync(ms, array.Length));

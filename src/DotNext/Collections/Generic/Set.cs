@@ -22,8 +22,8 @@ public static class Set
     /// <returns>An ordered set of elements in the range.</returns>
     public static IReadOnlySet<T> Range<T, TLowerBound, TUpperBound>(TLowerBound lowerBound, TUpperBound upperBound)
         where T : IBinaryInteger<T>
-        where TLowerBound : IFiniteRangeEndpoint<T>
-        where TUpperBound : IFiniteRangeEndpoint<T>
+        where TLowerBound : IFiniteRangeEndpoint<T>, allows ref struct
+        where TUpperBound : IFiniteRangeEndpoint<T>, allows ref struct
     {
         var (minValue, maxValue) = GetMinMaxValues(lowerBound, upperBound);
 
@@ -34,7 +34,7 @@ public static class Set
             < 0 => new RangeSet<T>(minValue, maxValue),
         };
 
-        static (T MinValue, T MaxValue) GetMinMaxValues(TLowerBound lowerBound, TUpperBound upperBound)
+        static (T MinValue, T MaxValue) GetMinMaxValues(scoped TLowerBound lowerBound, scoped TUpperBound upperBound)
         {
             var minValue = lowerBound.IsOnRight(lowerBound.Value)
                 ? lowerBound.Value

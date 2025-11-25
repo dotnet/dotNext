@@ -65,13 +65,13 @@ public sealed class IndexPoolTests : Test
     {
         var pool = new IndexPool();
         var expected = new int[pool.Count];
-        Span.ForEach(expected, static (ref int value, int index) => value = index);
+        expected.ForEach(static (element, index) => element.Value = index);
 
         Equal(expected, pool.ToArray());
 
         while (pool.TryTake(out _))
         {
-            // take all indicies
+            // take all indices
         }
 
         Equal(Array.Empty<int>(), pool.ToArray());

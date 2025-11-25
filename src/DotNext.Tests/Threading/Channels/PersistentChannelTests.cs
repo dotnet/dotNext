@@ -141,7 +141,7 @@ public sealed class PersistentChannelTests : Test
         Int128 lowerBound = 0;
         Int128 upperBound = 500;
         for (Int128 i = lowerBound; i < upperBound; i++)
-            True((await reader.ReadAsync()).IsBetween(lowerBound.Enclosed(), upperBound.Disclosed()));
+            True((await reader.ReadAsync()).IsBetween(lowerBound.Enclosed, upperBound.Disclosed));
     }
 
     [Theory]

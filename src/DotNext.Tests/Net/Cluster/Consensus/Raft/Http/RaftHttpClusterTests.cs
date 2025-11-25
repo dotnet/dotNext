@@ -97,13 +97,13 @@ public sealed class RaftHttpClusterTests : RaftTest
         True(await GetLocalClusterView(host1).AddMemberAsync(GetLocalClusterView(host3).LocalMemberAddress));
         await GetLocalClusterView(host3).Readiness.WaitAsync(DefaultTimeout);
 
-        var box1 = host1.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<Mailbox>()).FirstOrDefault() as Mailbox;
+        var box1 = host1.Services.GetServices<IInputChannel>().Where(Mailbox.IsTypeOf).FirstOrDefault() as Mailbox;
         NotNull(box1);
 
-        var box2 = host2.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<Mailbox>()).FirstOrDefault() as Mailbox;
+        var box2 = host2.Services.GetServices<IInputChannel>().Where(Mailbox.IsTypeOf).FirstOrDefault() as Mailbox;
         NotNull(box2);
 
-        var box3 = host3.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<Mailbox>()).FirstOrDefault() as Mailbox;
+        var box3 = host3.Services.GetServices<IInputChannel>().Where(Mailbox.IsTypeOf).FirstOrDefault() as Mailbox;
         NotNull(box3);
 
         await GetLocalClusterView(host1).LeaderRouter.SendSignalAsync(new TextMessage("Message to leader", "simple"));
@@ -166,7 +166,7 @@ public sealed class RaftHttpClusterTests : RaftTest
         await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
 
         var client = GetLocalClusterView(host1).As<IMessageBus>().Members.First(static s => s.EndPoint is UriEndPoint { Uri: { Port: 3263 } });
-        var messageBox = host2.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<Mailbox>()).FirstOrDefault() as Mailbox;
+        var messageBox = host2.Services.GetServices<IInputChannel>().Where(Mailbox.IsTypeOf).FirstOrDefault() as Mailbox;
         NotNull(messageBox);
 
         //request-reply test
@@ -238,7 +238,7 @@ public sealed class RaftHttpClusterTests : RaftTest
         await GetLocalClusterView(host2).Readiness.WaitAsync(DefaultTimeout);
 
         var client = GetLocalClusterView(host1).As<IMessageBus>().Members.First(static s => s.EndPoint is UriEndPoint { Uri: { Port: 3263 } });
-        var messageBox = host2.Services.GetServices<IInputChannel>().Where(Func.IsTypeOf<TestMessageHandler>()).FirstOrDefault() as TestMessageHandler;
+        var messageBox = host2.Services.GetServices<IInputChannel>().Where(TestMessageHandler.IsTypeOf).FirstOrDefault() as TestMessageHandler;
         NotNull(messageBox);
 
         var typedClient = new MessagingClient(client)

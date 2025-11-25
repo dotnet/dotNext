@@ -538,7 +538,7 @@ public sealed class MemoryBasedStateMachineTests : Test
     public static async Task SnapshotInstallation(bool useCaching)
     {
         var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-        entries.AsSpan().ForEach((ref Int64LogEntry entry, int index) => entry = new Int64LogEntry { Term = index, Content = 42L + index });
+        entries.AsSpan().ForEach((entry, index) => entry.Value = new() { Term = index, Content = 42L + index });
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
         using (var state = new PersistentStateWithSnapshot(dir, useCaching))
@@ -605,7 +605,7 @@ public sealed class MemoryBasedStateMachineTests : Test
     public static async Task ClearLog()
     {
         var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-        entries.AsSpan().ForEach((ref Int64LogEntry entry, int index) => entry = new Int64LogEntry { Content = 42L + index, Term = index });
+        entries.AsSpan().ForEach((entry, index) => entry.Value = new() { Content = 42L + index, Term = index });
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
         using var state = new PersistentStateWithSnapshot(dir, useCaching: false);
@@ -642,7 +642,7 @@ public sealed class MemoryBasedStateMachineTests : Test
     public static async Task AppendAndCommitAsync(MemoryBasedStateMachine.CompactionMode compaction, bool caching)
     {
         var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-        entries.AsSpan().ForEach((ref Int64LogEntry entry, int index) => entry = new Int64LogEntry { Content = 42L + index, Term = index });
+        entries.AsSpan().ForEach((entry, index) => entry.Value = new() { Content = 42L + index, Term = index });
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         using var state = new PersistentStateWithSnapshot(dir, caching, compaction);
         Equal(0L, await state.As<IRaftLog>().AppendAndCommitAsync(new LogEntryList(entries), 1L, false, 0L));
@@ -664,7 +664,7 @@ public sealed class MemoryBasedStateMachineTests : Test
     public static async Task SequentialCompaction(bool useCaching)
     {
         var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-        entries.AsSpan().ForEach((ref Int64LogEntry entry, int index) => entry = new Int64LogEntry { Content = 42L + index, Term = index });
+        entries.AsSpan().ForEach((entry, index) => entry.Value = new() { Content = 42L + index, Term = index });
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
         using (var state = new PersistentStateWithSnapshot(dir, useCaching, MemoryBasedStateMachine.CompactionMode.Sequential))
@@ -720,7 +720,7 @@ public sealed class MemoryBasedStateMachineTests : Test
     public static async Task BackgroundCompaction(bool useCaching)
     {
         var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-        entries.AsSpan().ForEach((ref Int64LogEntry entry, int index) => entry = new Int64LogEntry { Content = 42L + index, Term = index });
+        entries.AsSpan().ForEach((entry, index) => entry.Value = new() { Content = 42L + index, Term = index });
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
         using (var state = new PersistentStateWithSnapshot(dir, useCaching, MemoryBasedStateMachine.CompactionMode.Background))
@@ -784,7 +784,7 @@ public sealed class MemoryBasedStateMachineTests : Test
     public static async Task ForegroundCompaction(bool useCaching)
     {
         var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-        entries.AsSpan().ForEach((ref Int64LogEntry entry, int index) => entry = new Int64LogEntry { Content = 42L + index, Term = index });
+        entries.AsSpan().ForEach((entry, index) => entry.Value = new() { Content = 42L + index, Term = index });
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
         using (var state = new PersistentStateWithSnapshot(dir, useCaching, MemoryBasedStateMachine.CompactionMode.Foreground))
@@ -832,7 +832,7 @@ public sealed class MemoryBasedStateMachineTests : Test
     public static async Task IncrementalCompaction(bool useCaching)
     {
         var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-        entries.AsSpan().ForEach((ref Int64LogEntry entry, int index) => entry = new Int64LogEntry { Content = 42L + index, Term = index });
+        entries.AsSpan().ForEach((entry, index) => entry.Value = new() { Content = 42L + index, Term = index });
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker;
         using (var state = new PersistentStateWithSnapshot(dir, useCaching, MemoryBasedStateMachine.CompactionMode.Incremental))
@@ -975,7 +975,7 @@ public sealed class MemoryBasedStateMachineTests : Test
     public static async Task Reconstruction()
     {
         var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-        entries.AsSpan().ForEach((ref Int64LogEntry entry, int index) => entry = new Int64LogEntry { Content = 42L + index, Term = index });
+        entries.AsSpan().ForEach((entry, index) => entry.Value = new() { Content = 42L + index, Term = index });
         var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         using (var state = new PersistentStateWithSnapshot(dir, true))
         {
@@ -1115,7 +1115,7 @@ public sealed class MemoryBasedStateMachineTests : Test
         long snapshotIndex;
         
         var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
-        entries.AsSpan().ForEach((ref Int64LogEntry entry, int index) => entry = new Int64LogEntry { Content = 42L + index, Term = index });
+        entries.AsSpan().ForEach((entry, index) => entry.Value = new() { Content = 42L + index, Term = index });
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         using (var state = new PersistentStateWithSnapshot(dir, true))
         {
@@ -1131,7 +1131,7 @@ public sealed class MemoryBasedStateMachineTests : Test
 
                     var entry = entries[0];
                     var snapshot = await entry.ToByteArrayAsync(token: token);
-                    return (new Int64LogEntry() { Term = entry.Term, IsSnapshot = true, Content = BitConverter.ToInt64(snapshot) },
+                    return (new Int64LogEntry { Term = entry.Term, IsSnapshot = true, Content = BitConverter.ToInt64(snapshot) },
                         snapshotIndex.Value);
                 };
             (snapshot, snapshotIndex) = await state

@@ -124,9 +124,9 @@ public class TaskCompletionPipeTests : Test
     public static async Task ConsumePipe()
     {
         var pipe = new TaskCompletionPipe<Task<int>>();
-        pipe.Add(Task.Run(Func.Constant(42)));
-        pipe.Add(Task.Run(Func.Constant(43)));
-        pipe.Add(Task.Run(Func.Constant(44)));
+        pipe.Add(Task.Run(Func<int>.Constant(42)));
+        pipe.Add(Task.Run(Func<int>.Constant(43)));
+        pipe.Add(Task.Run(Func<int>.Constant(44)));
         pipe.Complete();
 
         var array = await pipe.Consume().ToArrayAsync(initialCapacity: 3);

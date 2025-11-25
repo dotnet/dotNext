@@ -148,7 +148,9 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     }
 
     protected override Expression VisitLabel(LabelExpression node)
-        => node.Type == typeof(void) ? context.Rewrite(node, Converter.Identity<LabelExpression>()) : throw new NotSupportedException(ExceptionMessages.VoidLabelExpected);
+        => node.Type == typeof(void)
+            ? context.Rewrite(node, Func<LabelExpression, LabelExpression>.Identity)
+            : throw new NotSupportedException(ExceptionMessages.VoidLabelExpected);
 
     protected override Expression VisitLambda<T>(Expression<T> node)
     {
@@ -176,7 +178,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
 
     protected override Expression VisitGoto(GotoExpression node)
     {
-        node = context.Rewrite(node, Converter.Identity<GotoExpression>());
+        node = context.Rewrite(node, Func<GotoExpression, GotoExpression>.Identity);
         return node.AddPrologue(false, context.CreateJumpPrologue(node, this));
     }
 

@@ -218,4 +218,9 @@ public static class TypeExtensions
     /// <returns>The default value of type <paramref name="type"/>.</returns>
     public static object? GetDefaultValue([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] this Type type)
         => type.IsValueType ? RuntimeHelpers.GetUninitializedObject(type) : null;
+
+    extension(Type type)
+    {
+        public bool IsDelegate => typeof(Delegate).IsAssignableFrom(type);
+    }
 }

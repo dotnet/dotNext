@@ -18,7 +18,7 @@ public static class Conversion
     /// <param name="task">The task to convert.</param>
     /// <returns>The converted task.</returns>
     public static Task<TOutput> Convert<TInput, TOutput>(this Task<TInput> task)
-        where TInput : TOutput => task.Convert(Converter.Identity<TInput, TOutput>());
+        where TInput : TOutput => task.Convert(Func<TInput, TOutput>.Convert);
 
     /// <summary>
     /// Converts one type of task into another.

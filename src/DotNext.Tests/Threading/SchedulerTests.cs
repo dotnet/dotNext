@@ -9,7 +9,7 @@ public sealed class SchedulerTests : Test
         var task = Scheduler.ScheduleAsync(static (args, token) => ValueTask.CompletedTask, 42, DefaultTimeout);
         False(task.Task.IsCompleted);
         task.Cancel();
-        await ThrowsAsync<Scheduler.DelayedTaskCanceledException>(Func.Constant<Task>(task.Task));
+        await ThrowsAsync<Scheduler.DelayedTaskCanceledException>(task.Task);
         True(task.Task.IsCanceled);
     }
 
@@ -19,7 +19,7 @@ public sealed class SchedulerTests : Test
         var task = Scheduler.ScheduleAsync(static (args, token) => ValueTask.FromResult(args), 42, DefaultTimeout);
         False(task.Task.IsCompleted);
         task.Cancel();
-        await ThrowsAsync<Scheduler.DelayedTaskCanceledException>(Func.Constant<Task<int>>(task.Task));
+        await ThrowsAsync<Scheduler.DelayedTaskCanceledException>(task.Task);
         True(task.Task.IsCanceled);
     }
 

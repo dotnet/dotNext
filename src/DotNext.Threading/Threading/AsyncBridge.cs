@@ -226,7 +226,7 @@ public static partial class AsyncBridge
         if (task.IsCompleted)
         {
             result = new(canceled: true);
-            disposeTokenSource = Func.Constant(false);
+            disposeTokenSource = Func<bool>.Constant(false);
         }
         else
         {

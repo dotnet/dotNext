@@ -44,7 +44,7 @@ public sealed class SpanTests : Test
     [Fact]
     public static void IndexOf()
     {
-        ReadOnlySpan<ulong> span = stackalloc ulong[] { 3, 2, 6, 4 };
+        ReadOnlySpan<ulong> span = [3, 2, 6, 4];
         Equal(1, span.IndexOf(2UL, 0, EqualityComparer<ulong>.Default.Equals));
         Equal(3, span.IndexOf(4UL, 0, EqualityComparer<ulong>.Default.Equals));
         Equal(3UL, span[0]);
@@ -54,8 +54,8 @@ public sealed class SpanTests : Test
     [Fact]
     public static void ForEach()
     {
-        Span<long> span = stackalloc long[] { 3, 2, 6, 4 };
-        span.ForEach((ref long value, int index) => value += index);
+        Span<long> span = [3, 2, 6, 4];
+        span.ForEach((reference, index) => reference.Value += index);
         Equal(3, span[0]);
         Equal(3, span[1]);
         Equal(8, span[2]);

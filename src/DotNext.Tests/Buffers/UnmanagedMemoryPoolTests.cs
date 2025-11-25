@@ -167,10 +167,10 @@ public sealed class UnmanagedMemoryPoolTests : Test
         ms.Write(memory.Bytes);
         Equal(6L, ms.Length);
         True(ms.TryGetBuffer(out var buffer));
-        buffer.AsSpan().ForEach((ref byte value, int _) =>
+        buffer.AsSpan().ForEach((element, _) =>
         {
-            if (value is 1)
-                value = 20;
+            if (element.Value is 1)
+                element.Value = 20;
         });
 
         ms.Position = 0;

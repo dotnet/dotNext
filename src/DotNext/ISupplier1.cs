@@ -58,7 +58,7 @@ public readonly unsafe struct Supplier<T, TResult>(delegate*<T, TResult> ptr) : 
     /// Converts this supplier to the delegate of type <see cref="Func{T, TResult}"/>.
     /// </summary>
     /// <returns>The delegate representing the wrapped method.</returns>
-    public Func<T, TResult> ToDelegate() => DelegateHelpers.CreateDelegate<T, TResult>(ptr);
+    public Func<T, TResult> ToDelegate() => Func<T, TResult>.FromPointer(ptr);
 
     /// <summary>
     /// Gets hexadecimal representation of this pointer.

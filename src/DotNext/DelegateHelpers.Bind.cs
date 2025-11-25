@@ -37,6 +37,7 @@ public static partial class DelegateHelpers
     /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
     public static unsafe Func<TResult> Bind<T, TResult>(this Func<T, TResult> func, T obj)
         where T : class
+        where TResult : allows ref struct
         => Bind(func, obj, &Closure<T>.Create);
 
     /// <summary>
@@ -51,6 +52,8 @@ public static partial class DelegateHelpers
     /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
     public static unsafe Func<T2, TResult> Bind<T1, T2, TResult>(this Func<T1, T2, TResult> func, T1 obj)
         where T1 : class
+        where T2 : allows ref struct
+        where TResult : allows ref struct
         => Bind(func, obj, &Closure<T1>.Create);
 
     /// <summary>
@@ -64,6 +67,7 @@ public static partial class DelegateHelpers
     /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
     public static unsafe Action<T2> Bind<T1, T2>(this Action<T1, T2> action, T1 obj)
         where T1 : class
+        where T2 : allows ref struct
         => Bind(action, obj, &Closure<T1>.Create);
 
     /// <summary>
@@ -79,6 +83,9 @@ public static partial class DelegateHelpers
     /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
     public static unsafe Func<T2, T3, TResult> Bind<T1, T2, T3, TResult>(this Func<T1, T2, T3, TResult> func, T1 obj)
         where T1 : class
+        where T2 : allows ref struct
+        where T3 : allows ref struct
+        where TResult : allows ref struct
         => Bind(func, obj, &Closure<T1>.Create);
 
     /// <summary>
@@ -93,6 +100,8 @@ public static partial class DelegateHelpers
     /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
     public static unsafe Action<T2, T3> Bind<T1, T2, T3>(this Action<T1, T2, T3> action, T1 obj)
         where T1 : class
+        where T2 : allows ref struct
+        where T3 : allows ref struct
         => Bind(action, obj, &Closure<T1>.Create);
 
     /// <summary>
@@ -109,6 +118,10 @@ public static partial class DelegateHelpers
     /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
     public static unsafe Func<T2, T3, T4, TResult> Bind<T1, T2, T3, T4, TResult>(this Func<T1, T2, T3, T4, TResult> func, T1 obj)
         where T1 : class
+        where T2 : allows ref struct
+        where T3 : allows ref struct
+        where T4 : allows ref struct
+        where TResult : allows ref struct
         => Bind(func, obj, &Closure<T1>.Create);
 
     /// <summary>
@@ -124,6 +137,9 @@ public static partial class DelegateHelpers
     /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
     public static unsafe Action<T2, T3, T4> Bind<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> action, T1 obj)
         where T1 : class
+        where T2 : allows ref struct
+        where T3 : allows ref struct
+        where T4 : allows ref struct
         => Bind(action, obj, &Closure<T1>.Create);
 
     /// <summary>
@@ -141,6 +157,11 @@ public static partial class DelegateHelpers
     /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
     public static unsafe Func<T2, T3, T4, T5, TResult> Bind<T1, T2, T3, T4, T5, TResult>(this Func<T1, T2, T3, T4, T5, TResult> func, T1 obj)
         where T1 : class
+        where T2 : allows ref struct
+        where T3 : allows ref struct
+        where T4 : allows ref struct
+        where T5 : allows ref struct
+        where TResult : allows ref struct
         => Bind(func, obj, &Closure<T1>.Create);
 
     /// <summary>
@@ -157,6 +178,10 @@ public static partial class DelegateHelpers
     /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
     public static unsafe Action<T2, T3, T4, T5> Bind<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action, T1 obj)
         where T1 : class
+        where T2 : allows ref struct
+        where T3 : allows ref struct
+        where T4 : allows ref struct
+        where T5 : allows ref struct
         => Bind(action, obj, &Closure<T1>.Create);
 
     /// <summary>

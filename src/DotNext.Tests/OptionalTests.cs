@@ -308,7 +308,7 @@ public sealed class OptionalTest : Test
     [Fact]
     public static void ConvertNullToRefType()
     {
-        var value = new Optional<string>(null).Convert(Converter.Identity<string, string>());
+        var value = new Optional<string>(null).Convert(Func<string, string>.Identity);
         False(value.HasValue);
         True(value.IsNull);
     }
@@ -316,7 +316,7 @@ public sealed class OptionalTest : Test
     [Fact]
     public static void ConvertNoneToRefType()
     {
-        var value = Optional<string>.None.Convert(Converter.Identity<string, string>());
+        var value = Optional<string>.None.Convert(Func<string, string>.Identity);
         False(value.HasValue);
         False(value.IsNull);
     }

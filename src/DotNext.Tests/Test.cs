@@ -47,6 +47,14 @@ public abstract class Test : Assert
     private protected static Action<T> Same<T>(T expected)
         where T : class
         => actual => Same(expected, actual);
+
+    private protected static Task<TException> ThrowsAsync<TException>(Task task)
+        where TException : Exception
+        => ThrowsAsync<TException>(Func<Task>.Constant(task));
+
+    private protected static Task<TException> ThrowsAnyAsync<TException>(Task task)
+        where TException : Exception
+        => ThrowsAnyAsync<TException>(Func<Task>.Constant(task));
     
     protected static TResult InvokeAsThread<TResult>(Func<TResult> func, [CallerMemberName] string threadName = "")
     {

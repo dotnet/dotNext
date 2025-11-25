@@ -173,8 +173,8 @@ public sealed class AsyncReaderWriterLockTests : Test
         var task2 = @lock.TryEnterReadLockAsync(DefaultTimeout).AsTask();
         var task3 = @lock.TryStealWriteLockAsync(reason, DefaultTimeout).AsTask();
 
-        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task1))).Reason);
-        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task2))).Reason);
+        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task1)).Reason);
+        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task2)).Reason);
 
         @lock.Release();
         True(await task3);
@@ -191,8 +191,8 @@ public sealed class AsyncReaderWriterLockTests : Test
         var task2 = @lock.TryEnterReadLockAsync(DefaultTimeout).AsTask();
         var task3 = @lock.StealWriteLockAsync(reason, DefaultTimeout).AsTask();
 
-        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task1))).Reason);
-        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(Func.Constant(task2))).Reason);
+        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task1)).Reason);
+        Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task2)).Reason);
 
         @lock.Release();
         await task3;
@@ -207,7 +207,7 @@ public sealed class AsyncReaderWriterLockTests : Test
         var t = Task.Factory.StartNew(() => l.TryEnterWriteLock(DefaultTimeout), TaskCreationOptions.LongRunning);
         
         l.Dispose();
-        await ThrowsAsync<ObjectDisposedException>(Func.Constant(t));
+        await ThrowsAsync<ObjectDisposedException>(t);
     }
     
     [Fact]
@@ -219,7 +219,7 @@ public sealed class AsyncReaderWriterLockTests : Test
         var t = Task.Factory.StartNew(() => l.TryEnterReadLock(DefaultTimeout), TaskCreationOptions.LongRunning);
         
         l.Dispose();
-        await ThrowsAsync<ObjectDisposedException>(Func.Constant(t));
+        await ThrowsAsync<ObjectDisposedException>(t);
     }
 
     [Fact]

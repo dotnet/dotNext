@@ -218,34 +218,36 @@ public static class Span
             action(item);
     }
 
-    /// <summary>
-    /// Iterates over elements of the span.
-    /// </summary>
-    /// <typeparam name="T">The type of the elements.</typeparam>
     /// <param name="span">The span to iterate.</param>
-    /// <param name="action">The action to be applied for each element of the span.</param>
-    public static void ForEach<T>(this Span<T> span, RefAction<T, int> action)
-    {
-        for (var i = 0; i < span.Length; i++)
-            action(ref span[i], i);
-    }
-
-    /// <summary>
-    /// Iterates over elements of the span.
-    /// </summary>
     /// <typeparam name="T">The type of the elements.</typeparam>
-    /// <typeparam name="TArg">The type of the argument to be passed to the action.</typeparam>
-    /// <param name="span">The span to iterate.</param>
-    /// <param name="action">The action to be applied for each element of the span.</param>
-    /// <param name="arg">The argument to be passed to the action.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="action"/> is zero.</exception>
-    [CLSCompliant(false)]
-    public static unsafe void ForEach<T, TArg>(this Span<T> span, delegate*<ref T, TArg, void> action, TArg arg)
+    extension<T>(Span<T> span)
     {
-        ArgumentNullException.ThrowIfNull(action);
+        /// <summary>
+        /// Iterates over elements of the span.
+        /// </summary>
+        /// <param name="action">The action to be applied for each element of the span.</param>
+        public void ForEach(Action<LocalReference<T>, int> action)
+        {
+            for (var i = 0; i < span.Length; i++)
+                action(new(ref span[i]), i);
+        }
 
-        foreach (ref var item in span)
-            action(ref item, arg);
+        /// <summary>
+        /// Iterates over elements of the span.
+        /// </summary>
+        /// <typeparam name="TArg">The type of the argument to be passed to the action.</typeparam>
+        /// <param name="action">The action to be applied for each element of the span.</param>
+        /// <param name="arg">The argument to be passed to the action.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="action"/> is zero.</exception>
+        [CLSCompliant(false)]
+        public unsafe void ForEach<TArg>(delegate*<ref T, TArg, void> action, TArg arg)
+            where TArg : allows ref struct
+        {
+            ArgumentNullException.ThrowIfNull(action);
+
+            foreach (ref var item in span)
+                action(ref item, arg);
+        }
     }
 
     /// <summary>
@@ -415,7 +417,7 @@ public static class Span
     /// <returns>The first element in the span that matches to the specified filter; or <see cref="Optional{T}.None"/>.</returns>
     public static Optional<T> FirstOrNone<T>(this ReadOnlySpan<T> span, Predicate<T>? filter = null)
     {
-        filter ??= Predicate.Constant<T>(true);
+        filter ??= Predicate<T>.Constant(true);
         
         for (var i = 0; i < span.Length; i++)
         {
