@@ -60,8 +60,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Http"/>
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions"/>
     <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
     <PackageReference Include="System.Runtime.Caching"/>
     <ProjectReference Include="..\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj" />

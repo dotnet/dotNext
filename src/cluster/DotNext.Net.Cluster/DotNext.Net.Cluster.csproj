@@ -59,7 +59,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Collections.Immutable"/>
     <PackageReference Include="Microsoft.AspNetCore.Connections.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
     <ProjectReference Include="..\..\DotNext.Threading\DotNext.Threading.csproj" />

@@ -40,7 +40,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Threading.Channels"/>
     <ProjectReference Include="..\DotNext\DotNext.csproj" />
   </ItemGroup>
 
