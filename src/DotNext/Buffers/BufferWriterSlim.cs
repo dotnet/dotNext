@@ -21,7 +21,7 @@ namespace DotNext.Buffers;
 /// <seealso cref="SparseBufferWriter{T}"/>
 [StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FreeCapacity = {{{nameof(FreeCapacity)}}}, Overflow = {{{nameof(Overflow)}}}")]
-public ref partial struct BufferWriterSlim<T>
+public ref struct BufferWriterSlim<T>
 {
     private readonly Span<T> initialBuffer;
     private readonly MemoryAllocator<T>? allocator;
