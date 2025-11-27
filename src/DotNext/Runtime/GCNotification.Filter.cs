@@ -10,7 +10,7 @@ public partial class GCNotification
     {
     }
 
-    internal abstract bool Test(in GCMemoryInfo info);
+    private protected abstract bool Test(in GCMemoryInfo info);
 
     /// <summary>
     /// Combines two filters using logical AND.
@@ -102,7 +102,7 @@ public partial class GCNotification
             this.threshold = threshold;
         }
 
-        internal override bool Test(in GCMemoryInfo info)
+        private protected override bool Test(in GCMemoryInfo info)
             => info.MemoryLoadBytes <= info.HighMemoryLoadThresholdBytes * threshold;
     }
 
@@ -114,7 +114,7 @@ public partial class GCNotification
         {
         }
 
-        internal override bool Test(in GCMemoryInfo info)
+        private protected override bool Test(in GCMemoryInfo info)
             => info.Compacted;
     }
 
@@ -126,7 +126,7 @@ public partial class GCNotification
         {
         }
 
-        internal override bool Test(in GCMemoryInfo info) => true;
+        private protected override bool Test(in GCMemoryInfo info) => true;
 
         public override GCNotification And(GCNotification right)
             => right;
@@ -146,7 +146,7 @@ public partial class GCNotification
             this.generation = generation;
         }
 
-        internal override bool Test(in GCMemoryInfo info)
+        private protected override bool Test(in GCMemoryInfo info)
             => info.Generation == generation;
     }
 
@@ -161,7 +161,7 @@ public partial class GCNotification
             fragmentationPercentage = fragmentation;
         }
 
-        internal override bool Test(in GCMemoryInfo info)
+        private protected override bool Test(in GCMemoryInfo info)
             => ((double)info.FragmentedBytes / info.HeapSizeBytes) >= fragmentationPercentage;
     }
 
@@ -177,7 +177,7 @@ public partial class GCNotification
             this.right = right;
         }
 
-        internal override bool Test(in GCMemoryInfo info)
+        private protected override bool Test(in GCMemoryInfo info)
             => left.Test(in info) && right.Test(in info);
     }
 
@@ -193,7 +193,7 @@ public partial class GCNotification
             this.right = right;
         }
 
-        internal override bool Test(in GCMemoryInfo info)
+        private protected override bool Test(in GCMemoryInfo info)
             => left.Test(in info) || right.Test(in info);
     }
 
@@ -209,7 +209,7 @@ public partial class GCNotification
             this.right = right;
         }
 
-        internal override bool Test(in GCMemoryInfo info)
+        private protected override bool Test(in GCMemoryInfo info)
             => left.Test(in info) ^ right.Test(in info);
     }
 
@@ -224,7 +224,7 @@ public partial class GCNotification
             this.filter = filter;
         }
 
-        internal override bool Test(in GCMemoryInfo info) => !filter.Test(in info);
+        private protected override bool Test(in GCMemoryInfo info) => !filter.Test(in info);
 
         public override GCNotification Negate()
             => filter;
