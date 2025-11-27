@@ -21,23 +21,28 @@ public static class DisposableType
     }
 
     /// <summary>
-    /// Gets <c>Dispose</c> method which implements dispose pattern.
+    /// Extends <see cref="Type"/> type.
     /// </summary>
-    /// <remarks>
-    /// This method checks whether the type implements <see cref="IDisposable"/>.
-    /// If it is then return <see cref="IDisposable.Dispose"/> method. Otherwise,
-    /// return public instance method with name Dispose.
-    /// </remarks>
     /// <param name="type">The type to inspect.</param>
-    /// <returns>Dispose method; or <see langword="null"/>, if this method doesn't exist.</returns>
-    public static MethodInfo? GetDisposeMethod([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] this Type type)
-        => GetDisposeMethod(type, typeof(IDisposable), nameof(IDisposable.Dispose), typeof(void));
+    extension([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] Type type)
+    {
+        /// <summary>
+        /// Gets <c>Dispose</c> method which implements dispose pattern.
+        /// </summary>
+        /// <remarks>
+        /// This method checks whether the type implements <see cref="IDisposable"/>.
+        /// If it is then return <see cref="IDisposable.Dispose"/> method. Otherwise,
+        /// return public instance method with name Dispose.
+        /// </remarks>
+        /// <value>Dispose method; or <see langword="null"/>, if this method doesn't exist.</value>
+        public MethodInfo? DisposeMethod
+            => GetDisposeMethod(type, typeof(IDisposable), nameof(IDisposable.Dispose), typeof(void));
 
-    /// <summary>
-    /// Gets <c>DisposeAsync</c> method implementing async dispose pattern.
-    /// </summary>
-    /// <param name="type">The type to inspect.</param>
-    /// <returns>Dispose method; or <see langword="null"/>, if this method doesn't exist.</returns>
-    public static MethodInfo? GetDisposeAsyncMethod([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods)] this Type type)
-        => GetDisposeMethod(type, typeof(IAsyncDisposable), nameof(IAsyncDisposable.DisposeAsync), typeof(ValueTask));
+        /// <summary>
+        /// Gets <c>DisposeAsync</c> method implementing async dispose pattern.
+        /// </summary>
+        /// <value>Dispose method; or <see langword="null"/>, if this method doesn't exist.</value>
+        public MethodInfo? DisposeAsyncMethod
+            => GetDisposeMethod(type, typeof(IAsyncDisposable), nameof(IAsyncDisposable.DisposeAsync), typeof(ValueTask));
+    }
 }

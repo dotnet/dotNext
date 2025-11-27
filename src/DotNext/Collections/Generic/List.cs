@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -16,92 +15,70 @@ using static Reflection.CollectionType;
 public static partial class List
 {
     /// <summary>
-    /// Provides strongly-typed access to list indexer.
+    /// Extends <see cref="IReadOnlyList{T}"/> type.
     /// </summary>
     /// <typeparam name="T">Type of list items.</typeparam>
-    public static class Indexer<T>
+    /// <param name="list">Read-only list instance.</param>
+    extension<T>(IReadOnlyList<T> list)
     {
         /// <summary>
-        /// Represents read-only list item getter.
+        /// Returns <see cref="IReadOnlyList{T}.get_Item"/> as delegate
+        /// attached to the list instance.
         /// </summary>
-        public static Func<IReadOnlyList<T>, int, T> ReadOnly { get; }
-
-        /// <summary>
-        /// Represents list item getter.
-        /// </summary>
-        public static Func<IList<T>, int, T> Getter { get; }
-
-        /// <summary>
-        /// Represents list item setter.
-        /// </summary>
-        public static Action<IList<T>, int, T> Setter { get; }
-
-        static Indexer()
+        /// <value>A delegate representing indexer.</value>
+        public Func<int, T> IndexerGetter
         {
-            Ldtoken(PropertyGet(Type<IReadOnlyList<T>>(), ItemIndexerName));
-            Pop(out RuntimeMethodHandle method);
-            Ldtoken(Type<IReadOnlyList<T>>());
-            Pop(out RuntimeTypeHandle type);
-            ReadOnly = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IReadOnlyList<T>, int, T>>();
-
-            Ldtoken(PropertyGet(Type<IList<T>>(), ItemIndexerName));
-            Pop(out method);
-            Ldtoken(Type<IList<T>>());
-            Pop(out type);
-            Getter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Func<IList<T>, int, T>>();
-
-            Ldtoken(PropertySet(Type<IList<T>>(), ItemIndexerName));
-            Pop(out method);
-            Setter = ((MethodInfo)MethodBase.GetMethodFromHandle(method, type)!).CreateDelegate<Action<IList<T>, int, T>>();
+            get
+            {
+                Push(list);
+                Dup();
+                Ldvirtftn(PropertyGet(Type<IReadOnlyList<T>>(), ItemIndexerName));
+                Newobj(Constructor(Type<Func<int, T>>(), Type<object>(), Type<IntPtr>()));
+                return Return<Func<int, T>>();
+            }
         }
     }
 
     /// <summary>
-    /// Returns <see cref="IReadOnlyList{T}.get_Item"/> as delegate
-    /// attached to the list instance.
-    /// </summary>
-    /// <typeparam name="T">Type of list items.</typeparam>
-    /// <param name="list">Read-only list instance.</param>
-    /// <returns>A delegate representing indexer.</returns>
-    public static Func<int, T> IndexerGetter<T>(this IReadOnlyList<T> list)
-    {
-        Push(list);
-        Dup();
-        Ldvirtftn(PropertyGet(Type<IReadOnlyList<T>>(), ItemIndexerName));
-        Newobj(Constructor(Type<Func<int, T>>(), Type<object>(), Type<IntPtr>()));
-        return Return<Func<int, T>>();
-    }
-
-    /// <summary>
-    /// Returns <see cref="IList{T}.get_Item"/> as delegate
-    /// attached to the list instance.
+    /// Extends <see cref="IList{T}"/> type.
     /// </summary>
     /// <typeparam name="T">Type of list items.</typeparam>
     /// <param name="list">Mutable list instance.</param>
-    /// <returns>A delegate representing indexer.</returns>
-    public static Func<int, T> IndexerGetter<T>(this IList<T> list)
+    extension<T>(IList<T> list)
     {
-        Push(list);
-        Dup();
-        Ldvirtftn(PropertyGet(Type<IList<T>>(), ItemIndexerName));
-        Newobj(Constructor(Type<Func<int, T>>(), Type<object>(), Type<IntPtr>()));
-        return Return<Func<int, T>>();
-    }
+        /// <summary>
+        /// Returns <see cref="IList{T}.get_Item"/> as delegate
+        /// attached to the list instance.
+        /// </summary>
+        /// <value>A delegate representing indexer.</value>
+        public Func<int, T> IndexerGetter
+        {
+            get
+            {
+                Push(list);
+                Dup();
+                Ldvirtftn(PropertyGet(Type<IList<T>>(), ItemIndexerName));
+                Newobj(Constructor(Type<Func<int, T>>(), Type<object>(), Type<IntPtr>()));
+                return Return<Func<int, T>>();
+            }
+        }
 
-    /// <summary>
-    /// Returns <see cref="IList{T}.set_Item"/> as delegate
-    /// attached to the list instance.
-    /// </summary>
-    /// <typeparam name="T">Type of list items.</typeparam>
-    /// <param name="list">Mutable list instance.</param>
-    /// <returns>A delegate representing indexer.</returns>
-    public static Action<int, T> IndexerSetter<T>(this IList<T> list)
-    {
-        Push(list);
-        Dup();
-        Ldvirtftn(PropertySet(Type<IList<T>>(), ItemIndexerName));
-        Newobj(Constructor(Type<Action<int, T>>(), Type<object>(), Type<IntPtr>()));
-        return Return<Action<int, T>>();
+        /// <summary>
+        /// Returns <see cref="IList{T}.set_Item"/> as delegate
+        /// attached to the list instance.
+        /// </summary>
+        /// <returns>A delegate representing indexer.</returns>
+        public Action<int, T> IndexerSetter
+        {
+            get
+            {
+                Push(list);
+                Dup();
+                Ldvirtftn(PropertySet(Type<IList<T>>(), ItemIndexerName));
+                Newobj(Constructor(Type<Action<int, T>>(), Type<object>(), Type<IntPtr>()));
+                return Return<Action<int, T>>();
+            }
+        }
     }
 
     private static TOutput[] ToArray<TInput, TOutput, TConverter>(this IList<TInput> input, TConverter mapper)

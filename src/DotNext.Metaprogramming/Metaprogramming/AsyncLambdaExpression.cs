@@ -20,7 +20,7 @@ internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexi
     {
         if (typeof(TDelegate).IsAbstract)
             throw new GenericArgumentException<TDelegate>(ExceptionMessages.AbstractDelegate, nameof(TDelegate));
-        var invokeMethod = GetInvokeMethod<TDelegate>();
+        var invokeMethod = get_InvokeMethod<TDelegate>();
         taskType = new TaskType(invokeMethod.ReturnType);
         Parameters = GetParameters(invokeMethod.GetParameters());
         this.usePooling = usePooling;

@@ -8,9 +8,9 @@ public sealed class PropertyExtensionsTests : Test
     public static void CheckExternalInit()
     {
         var property = typeof(string).GetProperty(nameof(string.Length));
-        False(property.IsExternalInit());
+        False(property.IsExternalInit);
 
         property = typeof(PropertyExtensionsTests).GetProperty(nameof(Property));
-        True(property.IsExternalInit());
+        True(property.IsExternalInit);
     }
 }

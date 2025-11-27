@@ -61,7 +61,7 @@ public static partial class Memory
     /// <summary>
     /// Provides extensions for <see cref="ReadOnlyMemory{T}"/> type.
     /// </summary>
-    /// <typeparam name="T"><typeparam name="T">The type of elements in the memory blocks.</typeparam></typeparam>
+    /// <typeparam name="T">The type of elements in the memory blocks.</typeparam>
     extension<T>(ReadOnlyMemory<T>)
     {
         /// <summary>

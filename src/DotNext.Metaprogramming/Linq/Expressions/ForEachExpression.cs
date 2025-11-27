@@ -5,8 +5,7 @@ using System.Reflection;
 
 namespace DotNext.Linq.Expressions;
 
-using static Reflection.CollectionType;
-using static Reflection.DisposableType;
+using Reflection;
 using List = Collections.Generic.List;
 
 /// <summary>
@@ -210,13 +209,13 @@ public sealed class ForEachExpression : CustomExpression, ILoopLabels
         if (this.configureAwait is { } configureAwait)
         {
             moveNextCall = moveNextCall.Await(configureAwait);
-            disposeMethod = enumeratorVar.Type.GetDisposeAsyncMethod();
+            disposeMethod = enumeratorVar.Type.DisposeAsyncMethod;
             Debug.Assert(disposeMethod is not null);
             disposeCall = Call(enumeratorVar, disposeMethod).Await(configureAwait);
         }
         else
         {
-            disposeMethod = enumeratorVar.Type.GetDisposeMethod();
+            disposeMethod = enumeratorVar.Type.DisposeMethod;
             disposeCall = disposeMethod is null ? null : Call(enumeratorVar, disposeMethod);
         }
 

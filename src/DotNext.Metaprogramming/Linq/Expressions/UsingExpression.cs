@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace DotNext.Linq.Expressions;
 
-using static Reflection.DisposableType;
+using Reflection;
 using List = Collections.Generic.List;
 
 /// <summary>
@@ -26,7 +26,7 @@ public sealed class UsingExpression : CustomExpression
 
     internal UsingExpression(Expression resource)
     {
-        disposeMethod = resource.Type.GetDisposeMethod() ?? throw new ArgumentException(ExceptionMessages.DisposePatternExpected(resource.Type), nameof(resource));
+        disposeMethod = resource.Type.DisposeMethod ?? throw new ArgumentException(ExceptionMessages.DisposePatternExpected(resource.Type), nameof(resource));
         if (resource is ParameterExpression param)
         {
             assignment = null;
@@ -40,7 +40,7 @@ public sealed class UsingExpression : CustomExpression
 
     internal UsingExpression(Expression resource, bool configureAwait)
     {
-        disposeMethod = resource.Type.GetDisposeAsyncMethod() ?? throw new ArgumentException(ExceptionMessages.DisposePatternExpected(resource.Type), nameof(resource));
+        disposeMethod = resource.Type.DisposeAsyncMethod ?? throw new ArgumentException(ExceptionMessages.DisposePatternExpected(resource.Type), nameof(resource));
         if (resource is ParameterExpression param)
         {
             assignment = null;

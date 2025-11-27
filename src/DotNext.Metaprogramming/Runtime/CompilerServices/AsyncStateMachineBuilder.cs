@@ -454,7 +454,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
 
     internal AsyncStateMachineBuilder(IReadOnlyList<ParameterExpression> parameters)
     {
-        var invokeMethod = DelegateType.GetInvokeMethod<TDelegate>();
+        var invokeMethod = DelegateType.get_InvokeMethod<TDelegate>();
         methodBuilder = new AsyncStateMachineBuilder(invokeMethod.ReturnType, parameters);
     }
 

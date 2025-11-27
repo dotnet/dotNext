@@ -145,8 +145,8 @@ public static partial class ServiceProviderFactory
     public static Func<object[], IServiceProvider> CreateFactory(params Type[] types)
         => RuntimeFeature.IsDynamicCodeCompiled ? CreateResolver(types).Create : types.Create;
 
-    [DynamicDependency(DynamicallyAccessedMemberTypes.All, typeof(IServiceProvider))]
-    [UnconditionalSuppressMessage("ReflectionAnalysis", "IL2026", Justification = "IServiceProvider.GetService() is known to be used")]
+    [RequiresDynamicCode("Dynamic code compilation is required for faster lookup")]
+    [RequiresUnreferencedCode("Calls System.Linq.Expressions.Expression.Call(Expression, String, Type[], params Expression[])")]
     private static Func<Type, object[], IServiceProvider, object?> CreateDelegatingResolver(IReadOnlyList<Type> types)
     {
         var requestedType = Expression.Parameter(typeof(Type));

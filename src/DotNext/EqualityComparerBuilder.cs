@@ -76,7 +76,7 @@ public readonly struct EqualityComparerBuilder<T>
     private static MethodCallExpression EqualsMethodForValueType(MemberExpression first, MemberExpression second)
     {
         MethodInfo? method;
-        if (first.Type.IsUnmanaged())
+        if (first.Type.IsUnmanaged)
         {
             method = typeof(BitwiseComparer<>)
                 .MakeGenericType(first.Type)
@@ -104,7 +104,7 @@ public readonly struct EqualityComparerBuilder<T>
     {
         MethodInfo? method;
 
-        if (expr.Type.IsUnmanaged())
+        if (expr.Type.IsUnmanaged)
         {
             method = typeof(BitwiseComparer<>)
                 .MakeGenericType(expr.Type)
@@ -136,7 +136,7 @@ public readonly struct EqualityComparerBuilder<T>
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodInfo EqualsMethodForArrayElementType(Type itemType)
     {
-        if (itemType.IsUnmanaged())
+        if (itemType.IsUnmanaged)
         {
             var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
             return typeof(Span)
@@ -167,7 +167,7 @@ public readonly struct EqualityComparerBuilder<T>
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     private static MethodInfo HashCodeMethodForArrayElementType(Type itemType)
     {
-        if (itemType.IsUnmanaged())
+        if (itemType.IsUnmanaged)
         {
             var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
             return typeof(FNV1a32)

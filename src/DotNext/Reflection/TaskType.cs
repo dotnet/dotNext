@@ -36,6 +36,7 @@ public static class TaskType
     }
 
     internal static readonly Type CompletedTaskType;
+    private static readonly Func<Task, bool> CompletedSuccessfullyGetter;
 
     static TaskType()
     {
@@ -50,7 +51,7 @@ public static class TaskType
         var getterInfo = MethodBase.GetMethodFromHandle(getterHandle, taskHandle) as MethodInfo;
         Debug.Assert(getterInfo is not null);
 
-        IsCompletedSuccessfullyGetter = getterInfo.CreateDelegate<Func<Task, bool>>();
+        CompletedSuccessfullyGetter = getterInfo.CreateDelegate<Func<Task, bool>>();
     }
 
     /// <summary>
@@ -72,83 +73,106 @@ public static class TaskType
 
         return (valueTask ? typeof(ValueTask<>) : typeof(Task<>)).MakeGenericType(taskResult);
     }
-
+    
     /// <summary>
-    /// Obtains result type from task type.
+    /// Extends <see cref="Type"/> type.
     /// </summary>
     /// <param name="taskType">A type of <see cref="Task"/> or <see cref="Task{TResult}"/>.</param>
-    /// <returns>Task result type; or <see langword="null"/> if <paramref name="taskType"/> is not a task type.</returns>
-    public static Type? GetTaskType([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] this Type taskType)
+    extension([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] Type taskType)
     {
-        if (taskType.IsValueType)
-            return GetValueTaskType(taskType);
-
-        // this is workaround for .NET 5 and later
-        // because Task.CompletedTask returning instance of generic type Task<TaskVoidResult>
-        if (taskType == CompletedTaskType)
-            return typeof(void);
-
-        if (taskType.FindGenericInstance(typeof(Task<>)) is { } result)
+        /// <summary>
+        /// Obtains result type from task type.
+        /// </summary>
+        /// <value>Task result type; or <see langword="null"/> if <paramref name="taskType"/> is not a task type.</value>
+        public Type? TaskGenericArgument
         {
-            result = result.GetGenericArguments()[0];
-        }
-        else if (typeof(Task).IsAssignableFrom(taskType))
-        {
-            result = typeof(void);
-        }
-        else
-        {
-            result = null;
-        }
-
-        return result;
-
-        static Type? GetValueTaskType(Type valueTaskType)
-        {
-            Type? result;
-
-            if (valueTaskType == typeof(ValueTask))
+            get
             {
-                result = typeof(void);
-            }
-            else if (valueTaskType.IsConstructedGenericType && valueTaskType.GetGenericTypeDefinition() == typeof(ValueTask<>))
-            {
-                result = valueTaskType.GetGenericArguments()[0];
-            }
-            else
-            {
-                result = null;
-            }
+                if (taskType.IsValueType)
+                    return GetValueTaskType(taskType);
 
-            return result;
+                // this is workaround for .NET 5 and later
+                // because Task.CompletedTask returning instance of generic type Task<TaskVoidResult>
+                if (taskType == CompletedTaskType)
+                    return typeof(void);
+
+                if (taskType.FindGenericInstance(typeof(Task<>)) is { } result)
+                {
+                    result = result.GetGenericArguments()[0];
+                }
+                else if (typeof(Task).IsAssignableFrom(taskType))
+                {
+                    result = typeof(void);
+                }
+                else
+                {
+                    result = null;
+                }
+
+                return result;
+
+                static Type? GetValueTaskType(Type valueTaskType)
+                {
+                    Type? result;
+
+                    if (valueTaskType == typeof(ValueTask))
+                    {
+                        result = typeof(void);
+                    }
+                    else if (valueTaskType.IsConstructedGenericType && valueTaskType.GetGenericTypeDefinition() == typeof(ValueTask<>))
+                    {
+                        result = valueTaskType.GetGenericArguments()[0];
+                    }
+                    else
+                    {
+                        result = null;
+                    }
+
+                    return result;
+                }
+            }
         }
+        
     }
 
     /// <summary>
-    /// Gets delegate representing getter of <see cref="Task{T}.Result"/> property.
+    /// Extends <see cref="Task{T}"/> type.
     /// </summary>
     /// <typeparam name="T">The type of task result.</typeparam>
-    /// <returns>The delegate representing <see cref="Task{T}.Result"/> property getter.</returns>
-    public static Func<Task<T>, T> GetResultGetter<T>() => Cache<T>.ResultGetter;
+    extension<T>(Task<T>)
+    {
+        /// <summary>
+        /// Gets delegate representing getter of <see cref="Task{T}.Result"/> property.
+        /// </summary>
+        /// <value>The delegate representing <see cref="Task{T}.Result"/> property getter.</value>
+        public static Func<Task<T>, T> ResultGetter => Cache<T>.ResultGetter;
+    }
 
     /// <summary>
-    /// Gets a delegate representing getter method of <see cref="Task.IsCompletedSuccessfully"/> property.
-    /// </summary>
-    public static Func<Task, bool> IsCompletedSuccessfullyGetter { get; }
-
-    /// <summary>
-    /// Gets a delegate that representing getter method of <see cref="Task.IsCompleted"/> property
-    /// captured for the specified task.
+    /// Extends <see cref="Task"/> type.
     /// </summary>
     /// <param name="task">The task to reflect.</param>
-    /// <returns>The delegate representing <see cref="Task.IsCompleted"/> property of <paramref name="task"/>.</returns>
-    public static Func<bool> GetIsCompletedGetter(this Task task)
+    extension(Task task)
     {
-        ArgumentNullException.ThrowIfNull(task);
+        /// <summary>
+        /// Gets a delegate that representing getter method of <see cref="Task.IsCompleted"/> property
+        /// captured for the specified task.
+        /// </summary>
+        /// <value>The delegate representing <see cref="Task.IsCompleted"/> property of <paramref name="task"/>.</value>
+        public Func<bool> IsCompletedGetter
+        {
+            get
+            {
+                Push(task);
+                Ldftn(PropertyGet(Type<Task>(), nameof(Task.IsCompleted)));
+                Newobj(Constructor(Type<Func<bool>>(), Type<object>(), Type<IntPtr>()));
+                return Return<Func<bool>>();
+            }
+        }
 
-        Push(task);
-        Ldftn(PropertyGet(Type<Task>(), nameof(Task.IsCompleted)));
-        Newobj(Constructor(Type<Func<bool>>(), Type<object>(), Type<IntPtr>()));
-        return Return<Func<bool>>();
+        /// <summary>
+        /// Gets a delegate representing getter method of <see cref="Task.IsCompletedSuccessfully"/> property.
+        /// </summary>
+        public static Func<Task, bool> IsCompletedSuccessfullyGetter => CompletedSuccessfullyGetter;
     }
 }

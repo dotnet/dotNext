@@ -945,7 +945,7 @@ public static partial class ExpressionBuilder
     {
         if (collection.Type == typeof(string) || collection.Type == typeof(StringBuilder))
             return Expression.Property(collection, nameof(string.Length));
-        var interfaceType = collection.Type.GetImplementedCollection() ?? throw new ArgumentException(ExceptionMessages.CollectionImplementationExpected);
+        var interfaceType = collection.Type.ImplementedCollection ?? throw new ArgumentException(ExceptionMessages.CollectionImplementationExpected);
         return Expression.Property(collection, interfaceType, nameof(Count));
     }
 
