@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using Runtime;
+using Runtime.CompilerServices;
 using Runtime.ExceptionServices;
 
 /// <summary>
@@ -232,7 +232,7 @@ public partial class Epoch
         private ReadOnlySpan<Discardable> Span => count switch
         {
             0 => ReadOnlySpan<Discardable>.Empty,
-            1 => new(in Intrinsics.InToRef<object, Discardable>(in discardable)),
+            1 => new(in AdvancedHelpers.InToRef<object, Discardable>(in discardable)),
             _ => new(Unsafe.As<Discardable[]>(discardable), 0, count),
         };
 

@@ -7,6 +7,8 @@ using Pointer = System.Reflection.Pointer;
 
 namespace DotNext.Runtime.InteropServices;
 
+using CompilerServices;
+
 /// <summary>
 /// CLS-compliant typed pointer for .NET languages without direct support of pointer data type.
 /// </summary>
@@ -74,7 +76,7 @@ public readonly partial struct Pointer<T> :
     /// Determines whether this pointer is aligned
     /// to the size of <typeparamref name="T"/>.
     /// </summary>
-    public bool IsAligned => Address % Intrinsics.AlignOf<T>() is 0;
+    public bool IsAligned => Address % RuntimeHelpers.AlignOf<T>() is 0;
 
     /// <summary>
     /// Fills the elements of the array with a specified value.
@@ -149,7 +151,7 @@ public readonly partial struct Pointer<T> :
 
         ArgumentNullException.ThrowIfNull(other.value, nameof(other));
 
-        Intrinsics.Swap(value, other.value);
+        NativeMemory.Swap(value, other.value);
     }
 
     /// <inheritdoc/>
@@ -231,7 +233,7 @@ public readonly partial struct Pointer<T> :
         }
         else
         {
-            Intrinsics.Copy(in *value, out *destination.value, count);
+            Unsafe.Copy(in *value, out *destination.value, count);
         }
     }
 
@@ -256,7 +258,7 @@ public readonly partial struct Pointer<T> :
             length = checked(sizeof(T) * length);
             result = GC.AllocateUninitializedArray<byte>(length, pinned: true);
 
-            Intrinsics.Copy(in Unsafe.AsRef<byte>(value), out MemoryMarshal.GetArrayDataReference(result), (nuint)length);
+            Unsafe.Copy(in Unsafe.AsRef<byte>(value), out MemoryMarshal.GetArrayDataReference(result), (nuint)length);
         }
 
         return result;
@@ -282,7 +284,7 @@ public readonly partial struct Pointer<T> :
         else
         {
             result = GC.AllocateUninitializedArray<T>(length, pinned: true);
-            Intrinsics.Copy(in value[0], out MemoryMarshal.GetArrayDataReference(result), (nuint)length);
+            Unsafe.Copy(in value[0], out MemoryMarshal.GetArrayDataReference(result), (nuint)length);
         }
 
         return result;
@@ -402,7 +404,7 @@ public readonly partial struct Pointer<T> :
 
         ArgumentNullException.ThrowIfNull(other.value, nameof(other));
 
-        return Intrinsics.Compare(value, other, checked(count * (uint)sizeof(T)));
+        return NativeMemory.Compare(value, other, checked(count * (uint)sizeof(T)));
     }
 
     /// <inheritdoc/>
@@ -452,7 +454,7 @@ public readonly partial struct Pointer<T> :
     /// Computes hash code of the pointer itself (i.e. address), not of the memory content.
     /// </summary>
     /// <returns>The hash code of this pointer.</returns>
-    public override unsafe int GetHashCode() => Intrinsics.PointerHashCode(value);
+    public override unsafe int GetHashCode() => NativeMemory.PointerHashCode(value);
 
     /// <summary>
     /// Indicates that this pointer represents the same memory location as other pointer.

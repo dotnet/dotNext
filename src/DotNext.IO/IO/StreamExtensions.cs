@@ -4,7 +4,6 @@ using Microsoft.Win32.SafeHandles;
 namespace DotNext.IO;
 
 using Buffers;
-using static Runtime.Intrinsics;
 
 /// <summary>
 /// Represents high-level read/write methods for the stream.
@@ -81,7 +80,7 @@ public static partial class StreamExtensions
         finally
         {
             writer.Dispose();
-            KeepAlive(in buffer);
+            GC.KeepAlive(in buffer);
         }
 
         return result;

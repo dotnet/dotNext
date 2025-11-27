@@ -17,7 +17,9 @@ public static partial class StreamSource
     /// <param name="writable">Determines whether the stream supports writing.</param>
     /// <returns>The stream representing the array segment.</returns>
     public static Stream AsStream(this ArraySegment<byte> segment, bool writable = false)
-        => segment.Array.IsNullOrEmpty() ? Stream.Null : new MemoryStream(segment.Array, segment.Offset, segment.Count, writable, false);
+        => Array.IsNullOrEmpty(segment.Array)
+            ? Stream.Null :
+            new MemoryStream(segment.Array, segment.Offset, segment.Count, writable, false);
 
     /// <summary>
     /// Converts read-only sequence of bytes to a read-only stream.

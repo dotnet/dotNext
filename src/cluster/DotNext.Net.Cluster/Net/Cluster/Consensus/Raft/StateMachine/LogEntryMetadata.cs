@@ -6,7 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers;
 using Buffers.Binary;
-using Runtime;
+using Runtime.CompilerServices;
 
 [StructLayout(LayoutKind.Sequential)] // Perf: in case of LE, we want to store the metadata in the block of memory as-is
 internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
@@ -52,7 +52,7 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     {
         Debug.Assert(AlignedSize >= Size);
 
-        Debug.Assert(Intrinsics.AlignOf<LogEntryMetadata>() is sizeof(long));
+        Debug.Assert(LogEntryMetadata.Alignment is sizeof(long));
         Debug.Assert(Size % sizeof(long) is 0);
         Debug.Assert(input.Length >= Size);
 
@@ -67,7 +67,7 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
         else if (IntPtr.Size is sizeof(long))
         {
             // 64-bit LE case, the pointer is always aligned to 8 bytes
-            Debug.Assert(Intrinsics.AddressOf(in ptr) % IntPtr.Size is 0);
+            Debug.Assert(AdvancedHelpers.AddressOf(in ptr) % IntPtr.Size is 0);
             this = Unsafe.As<byte, LogEntryMetadata>(ref ptr);
         }
         else
@@ -114,7 +114,7 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
 
     public void Format(Span<byte> output)
     {
-        Debug.Assert(Intrinsics.AlignOf<LogEntryMetadata>() is sizeof(long));
+        Debug.Assert(LogEntryMetadata.Alignment is sizeof(long));
         Debug.Assert(output.Length >= Size);
 
         // fast path without any overhead for LE byte order

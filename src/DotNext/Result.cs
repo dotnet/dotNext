@@ -52,7 +52,7 @@ public static class Result
     /// <param name="resultType">The type of <see cref="Result{T}"/>.</param>
     /// <returns><see langword="true"/>, if specified type is result type; otherwise, <see langword="false"/>.</returns>
     public static bool IsResult(this Type resultType) => resultType.IsConstructedGenericType &&
-                                                         resultType.GetGenericTypeDefinition().IsOneOf([typeof(Result<>), typeof(Result<,>)]);
+                                                         resultType.GetGenericTypeDefinition().IsOneOf(typeof(Result<>), typeof(Result<,>));
 
     /// <summary>
     /// Returns the underlying type argument of the specified result type.
@@ -504,7 +504,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     public Result(TError error)
     {
         Unsafe.SkipInit(out value);
-        errorCode = Intrinsics.IsDefault(in error) ? throw new ArgumentOutOfRangeException(nameof(error)) : error;
+        errorCode = AdvancedHelpers.IsDefault(in error) ? throw new ArgumentOutOfRangeException(nameof(error)) : error;
     }
 
     /// <summary>
@@ -580,7 +580,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// Indicates that the result is successful.
     /// </summary>
     /// <value><see langword="true"/> if this result is successful; <see langword="false"/> if this result represents exception.</value>
-    public bool IsSuccessful => Intrinsics.IsDefault(in errorCode);
+    public bool IsSuccessful => AdvancedHelpers.IsDefault(in errorCode);
 
     /// <inheritdoc />
     bool IOptionMonad<T>.HasValue => IsSuccessful;

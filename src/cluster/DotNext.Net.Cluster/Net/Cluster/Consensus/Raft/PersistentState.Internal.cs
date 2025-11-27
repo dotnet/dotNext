@@ -11,7 +11,7 @@ using Buffers;
 using Buffers.Binary;
 using IO;
 using Threading;
-using Intrinsics = Runtime.Intrinsics;
+using Intrinsics = Runtime.CompilerServices.AdvancedHelpers;
 
 public partial class PersistentState
 {

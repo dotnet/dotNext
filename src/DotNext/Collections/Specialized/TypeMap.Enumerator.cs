@@ -6,7 +6,6 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 namespace DotNext.Collections.Specialized;
 
 using Generic;
-using static Runtime.Intrinsics;
 
 public partial class TypeMap<TValue> : IEnumerable<TValue>
 {
@@ -45,7 +44,7 @@ public partial class TypeMap<TValue> : IEnumerable<TValue>
                 for (nuint nextIndex; ;)
                 {
                     nextIndex = index + 1U;
-                    if (nextIndex >= entries.GetLength())
+                    if (nextIndex >= Array.GetLength(entries))
                         break;
 
                     index = nextIndex;

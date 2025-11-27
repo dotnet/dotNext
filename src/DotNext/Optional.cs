@@ -74,7 +74,7 @@ public static class Optional
         var optional = await task.ConfigureAwait(false);
         return optional.HasValue
             ? await converter.Invoke(optional.ValueOrDefault, token).ConfigureAwait(false)
-            : optional.IsNull && Intrinsics.IsNullable<TOutput>()
+            : optional.IsNull && AdvancedHelpers.IsNullable<TOutput>()
                 ? new(default)
                 : Optional<TOutput>.None;
     }
@@ -560,7 +560,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<TResult> Convert<TResult, TConverter>(TConverter converter)
         where TConverter : struct, ISupplier<T, TResult>
-        => HasValue ? converter.Invoke(value) : IsNull && Intrinsics.IsNullable<TResult>() ? new(default) : Optional<TResult>.None;
+        => HasValue ? converter.Invoke(value) : IsNull && AdvancedHelpers.IsNullable<TResult>() ? new(default) : Optional<TResult>.None;
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is

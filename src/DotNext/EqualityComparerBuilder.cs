@@ -2,13 +2,12 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace DotNext;
 
 using Collections.Generic;
 using Reflection;
-using Intrinsics = Runtime.Intrinsics;
+using NativeMemoryExtensions = Runtime.InteropServices.NativeMemoryExtensions;
 using FNV1a32 = IO.Hashing.FNV1a32;
 
 /// <summary>
@@ -269,7 +268,7 @@ public readonly struct EqualityComparerBuilder<T>
                 expr = Expression.Field(inputParam, field);
                 expr = field.FieldType switch
                 {
-                    { IsPointer: true } => Expression.Call(typeof(Intrinsics).GetMethod(nameof(Intrinsics.PointerHashCode), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)!, expr),
+                    { IsPointer: true } => Expression.Call(typeof(NativeMemoryExtensions).GetMethod(nameof(NativeMemoryExtensions.PointerHashCode), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)!, expr),
                     { IsPrimitive: true } => Expression.Call(expr, nameof(GetHashCode), []),
                     { IsValueType: true } => HashCodeMethodForValueType(expr, Expression.Constant(SaltedHashCode)),
                     { IsSZArray: true } => HashCodeMethodForArrayElementType(expr, Expression.Constant(SaltedHashCode)),
@@ -315,7 +314,7 @@ public readonly struct EqualityComparerBuilder<T>
     {
         var t = typeof(T);
 
-        return t.IsPrimitive || t.IsEnum || t.IsOneOf([typeof(nint), typeof(nuint), typeof(DateTime), typeof(Half), typeof(DateTimeOffset)])
+        return t.IsPrimitive || t.IsEnum || t.IsOneOf(typeof(nint), typeof(nuint), typeof(DateTime), typeof(Half), typeof(DateTimeOffset))
             ? EqualityComparer<T>.Default
             : new ConstructedEqualityComparer(BuildEquals(), BuildGetHashCode());
     }

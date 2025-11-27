@@ -2,7 +2,7 @@ using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext;
 
-using static Runtime.Intrinsics;
+using static Runtime.CompilerServices.AdvancedHelpers;
 using FNV1a32 = IO.Hashing.FNV1a32;
 
 /// <summary>

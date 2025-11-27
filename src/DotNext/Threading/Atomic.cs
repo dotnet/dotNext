@@ -1,11 +1,10 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DotNext.Runtime;
 
 namespace DotNext.Threading;
 
-using static Intrinsics;
+using AdvancedHelpers = Runtime.CompilerServices.AdvancedHelpers;
 
 /// <summary>
 /// Provides atomic access to non-primitive data type.
@@ -94,7 +93,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void Read(out T result)
     {
         lockState.Acquire();
-        Copy(in value, out result);
+        AdvancedHelpers.Copy(in value, out result);
         lockState.Release();
     }
 
@@ -119,7 +118,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void Swap(ref T other)
     {
         lockState.Acquire();
-        Runtime.Intrinsics.Swap(ref value, ref other);
+        AdvancedHelpers.Swap(ref value, ref other);
         lockState.Release();
     }
 
@@ -130,7 +129,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void Write(in T newValue)
     {
         lockState.Acquire();
-        Copy(in newValue, out value);
+        AdvancedHelpers.Copy(in newValue, out value);
         lockState.Release();
     }
 
@@ -142,8 +141,8 @@ public struct Atomic<T> : IStrongBox, ICloneable
         lockState.Acquire();
         var current = value;
         if (successful = comparer.Equals(in current, in expected))
-            Copy(in update, out value);
-        Copy(in current, out result);
+            AdvancedHelpers.Copy(in update, out value);
+        AdvancedHelpers.Copy(in current, out result);
         lockState.Release();
         return successful;
     }
@@ -191,7 +190,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         {
             // custom comparer may throw exception
             if (result = comparer.Equals(in value, in expected))
-                Copy(in update, out value);
+                AdvancedHelpers.Copy(in update, out value);
         }
         finally
         {
@@ -239,8 +238,8 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void Exchange(in T update, out T previous)
     {
         lockState.Acquire();
-        Copy(in value, out previous);
-        Copy(in update, out value);
+        AdvancedHelpers.Copy(in value, out previous);
+        AdvancedHelpers.Copy(in update, out value);
         lockState.Release();
     }
 
@@ -260,7 +259,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         {
             // custom updater may throw exception
             updater(ref value);
-            Copy(in value, out result);
+            AdvancedHelpers.Copy(in value, out result);
         }
         finally
         {
@@ -292,7 +291,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
             lockState.Release();
         }
 
-        Copy(in previous, out result);
+        AdvancedHelpers.Copy(in previous, out result);
     }
 
     /// <summary>
@@ -316,7 +315,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         {
             // custom accumulator may throw exception
             accumulator(ref value, in x);
-            Copy(in value, out result);
+            AdvancedHelpers.Copy(in value, out result);
         }
         finally
         {
@@ -352,14 +351,14 @@ public struct Atomic<T> : IStrongBox, ICloneable
             lockState.Release();
         }
 
-        Copy(in previous, out result);
+        AdvancedHelpers.Copy(in previous, out result);
     }
 
     /// <summary>
     /// Gets or sets value atomically.
     /// </summary>
     /// <remarks>
-    /// To achieve best performance it is recommended to use <see cref="Read"/> and <see cref="Write"/> methods
+    /// To achieve the best performance it is recommended to use <see cref="Read"/> and <see cref="Write"/> methods
     /// because they don't cause extra allocation of stack memory for passing value.
     /// </remarks>
     public T Value
@@ -434,7 +433,7 @@ public static partial class Atomic
     /// <seelaso href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf">Section I.12.6.6.</seelaso>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAtomic<T>()
-        => AlignOf<T>() == Unsafe.SizeOf<T>() && Unsafe.SizeOf<T>() <= nuint.Size;
+        => AdvancedHelpers.AlignOf<T>() == Unsafe.SizeOf<T>() && Unsafe.SizeOf<T>() <= nuint.Size;
 
     private struct InterlockedOperations :
         IInterlockedOperations<int>,
@@ -531,7 +530,7 @@ public static partial class Atomic
 
         public static double VolatileRead(ref readonly double location)
             => Is32BitProcess
-                ? Interlocked.Read(in InToRef<double, long>(in location))
+                ? Interlocked.Read(in AdvancedHelpers.InToRef<double, long>(in location))
                 : Volatile.Read(in location);
 
         public static void VolatileWrite(ref double location, double value)

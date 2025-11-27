@@ -5,7 +5,7 @@ using Base64 = System.Buffers.Text.Base64;
 
 namespace DotNext.Buffers.Text;
 
-using static Runtime.Intrinsics;
+using static Runtime.CompilerServices.AdvancedHelpers;
 
 /// <summary>
 /// Represents base64 encoder suitable for encoding large binary

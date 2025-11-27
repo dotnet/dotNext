@@ -2,8 +2,6 @@
 
 namespace DotNext.Buffers;
 
-using static Runtime.Intrinsics;
-
 public sealed class UnmanagedMemoryPoolTests : Test
 {
     [Fact]
@@ -216,12 +214,12 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static unsafe void MarshalAsMemory()
     {
-        int* ptr = stackalloc int[] { 10, 20, 30 };
+        var ptr = stackalloc int[] { 10, 20, 30 };
         var memory = UnmanagedMemory.AsMemory(ptr, 3);
         False(memory.IsEmpty);
         Equal([10, 20, 30], memory.Span);
 
-        KeepAlive(in memory);
+        GC.KeepAlive(in memory);
     }
 
     [Fact]

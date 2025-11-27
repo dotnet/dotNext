@@ -9,6 +9,7 @@ namespace DotNext;
 
 using Buffers;
 using Runtime;
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Provides extension methods for type <see cref="Span{T}"/> and <see cref="ReadOnlySpan{T}"/>.
@@ -610,8 +611,8 @@ public static class Span
 
         if (start1 > start2)
         {
-            Intrinsics.Swap(ref start1, ref start2);
-            Intrinsics.Swap(ref length1, ref length2);
+            RuntimeHelpers.Swap(ref start1, ref start2);
+            RuntimeHelpers.Swap(ref length1, ref length2);
         }
 
         var endOfLeftSegment = start1 + length1;
@@ -984,5 +985,22 @@ public static class Span
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Extends <see cref="ReadOnlySpan{T}"/>.
+    /// </summary>
+    /// <typeparam name="TOutput">The unmanaged output type.</typeparam>
+    extension<TOutput>(ReadOnlySpan<TOutput>)
+        where TOutput : unmanaged
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static ReadOnlySpan<TOutput> ReinterpretCast<TInput>(ReadOnlySpan<TInput> input)
+            where TInput : unmanaged
+        {
+            Debug.Assert(Unsafe.SizeOf<TInput>() == Unsafe.SizeOf<TOutput>());
+
+            return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.As<TInput, TOutput>(ref MemoryMarshal.GetReference(input)), input.Length);
+        }
     }
 }

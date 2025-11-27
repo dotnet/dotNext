@@ -1,15 +1,16 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.InteropServices;
 
-using Runtime;
+using CompilerServices;
 
 internal interface INativeMemoryAllocator<T>
     where T : unmanaged
 {
     public static abstract bool IsZeroed { get; }
     
-    public static bool IsNaturallyAligned => Intrinsics.AlignOf<T>() <= nuint.Size;
+    public static bool IsNaturallyAligned => RuntimeHelpers.AlignOf<T>() <= nuint.Size;
     
     private static unsafe nuint GetByteCount(nuint length)
         => checked(length * (uint)sizeof(T));
@@ -30,7 +31,7 @@ internal interface INativeMemoryAllocator<T>
             var byteCount = GetByteCount(length);
             result = NativeMemory.AlignedAlloc(
                 byteCount,
-                (uint)Intrinsics.AlignOf<T>());
+                (uint)RuntimeHelpers.AlignOf<T>());
 
             if (TAllocator.IsZeroed)
                 NativeMemory.Clear(result, byteCount);
@@ -56,7 +57,7 @@ internal interface INativeMemoryAllocator<T>
         var byteCount = GetByteCount(length);
         var result = IsNaturallyAligned
             ? NativeMemory.Realloc(address, byteCount)
-            : NativeMemory.AlignedRealloc(address, byteCount, (uint)Intrinsics.AlignOf<T>());
+            : NativeMemory.AlignedRealloc(address, byteCount, (uint)RuntimeHelpers.AlignOf<T>());
 
         return (T*)result;
     }

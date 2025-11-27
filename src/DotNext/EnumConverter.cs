@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext;
 
-using static Runtime.Intrinsics;
+using static Runtime.CompilerServices.AdvancedHelpers;
 
 /// <summary>
 /// Provides conversion between enum value and primitive types.

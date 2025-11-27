@@ -6,6 +6,8 @@ using DotNext.Reflection;
 
 namespace DotNext.Runtime;
 
+using CompilerServices;
+
 /// <summary>
 /// Represents the variant value on the stack.
 /// </summary>
@@ -82,7 +84,7 @@ public readonly ref struct Variant : IEquatable<Variant>
     {
         ArgumentNullException.ThrowIfNull(boxedValue);
 
-        return new(ref Intrinsics.GetRawData(boxedValue), boxedValue.GetType(), mutable: true);
+        return new(ref AdvancedHelpers.GetRawData(boxedValue), boxedValue.GetType(), mutable: true);
     }
 
     /// <summary>

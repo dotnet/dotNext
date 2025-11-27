@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
-using Intrinsics = Runtime.Intrinsics;
+using Intrinsics = Runtime.CompilerServices.AdvancedHelpers;
 
 /// <summary>
 /// Represents the memory obtained from the pool or allocated

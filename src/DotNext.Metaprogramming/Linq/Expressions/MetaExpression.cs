@@ -6,7 +6,7 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Linq.Expressions;
 
-using Intrinsics = Runtime.Intrinsics;
+using Intrinsics = Runtime.CompilerServices.AdvancedHelpers;
 
 internal sealed class MetaExpression : DynamicMetaObject
 {
@@ -77,11 +77,11 @@ internal sealed class MetaExpression : DynamicMetaObject
     {
         restrictions = BindingRestrictions.Empty;
 
-        if (Intrinsics.GetLength(args) is 0U)
+        if (args.IsEmpty)
             return [];
 
         var result = new Expression[args.LongLength];
-        for (nuint i = 0; i < Intrinsics.GetLength(args); i++)
+        for (nuint i = 0; i < Array.GetLength(args); i++)
         {
             result[i] = ToExpression(args[i], out var r);
             restrictions = restrictions.Merge(r);

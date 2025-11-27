@@ -1,8 +1,11 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext;
+
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Various extension methods for core data types.
@@ -37,7 +40,7 @@ public static class BasicExtensions
     /// to check equality between two objects.
     /// </remarks>
     /// <typeparam name="T">The type of object to compare.</typeparam>
-    /// <param name="value">The object to compare with other.</param>
+    /// <param name="value">The object to compare with the others.</param>
     /// <param name="candidates">Candidate objects.</param>
     /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="candidates"/>.</returns>
     public static bool IsOneOf<T>(this T value, params ReadOnlySpan<T> candidates)
@@ -91,14 +94,6 @@ public static class BasicExtensions
         value = Nullable.GetValueRefOrDefaultRef(in nullable);
         return nullable.HasValue;
     }
-
-    /// <summary>
-    /// Indicates that array is <see langword="null"/> or empty.
-    /// </summary>
-    /// <param name="array">The array to check.</param>
-    /// <returns><see langword="true"/>, if array is <see langword="null"/> or empty.</returns>
-    public static bool IsNullOrEmpty([NotNullWhen(false)] this Array? array)
-        => array is null || Runtime.Intrinsics.GetLength(array) is 0;
 
     /// <summary>
     /// Determines whether the specified value is in the specified range.
@@ -161,5 +156,44 @@ public static class BasicExtensions
         /// <param name="obj">The object to check.</param>
         /// <returns></returns>
         public static bool IsTypeOf([NotNullWhen(true)] object? obj) => obj is T;
+
+        /// <summary>
+        /// Checks whether the specified object is exactly of the specified type.
+        /// </summary>
+        /// <param name="obj">The object to test.</param>
+        /// <typeparam name="T">The expected type of object.</typeparam>
+        /// <returns><see langword="true"/> if <paramref name="obj"/> is not <see langword="null"/> and of type <typeparamref name="T"/>; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsExactTypeOf(object? obj) => obj?.GetType() == typeof(T);
+    }
+
+    /// <summary>
+    /// Extends <see cref="GC"/>.
+    /// </summary>
+    extension(GC)
+    {
+        /// <summary>
+        /// Keeps the reference to the value type alive.
+        /// </summary>
+        /// <param name="location">A location of the object.</param>
+        /// <typeparam name="T">The value type.</typeparam>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void KeepAlive<T>(ref readonly T location)
+            where T : struct
+        {
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+                KeepAlive(in Unsafe.InToRef<T, byte>(in location));
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        [StackTraceHidden]
+        private static void KeepAlive(ref readonly byte location)
+        {
+            // We cannot inline this check to avoid compiler optimization to eliminate null check.
+            // This check can be eliminated because typically the location points to the field in the class
+            // and that field is already statically checked for null
+            if (Unsafe.IsNullRef(in location))
+                throw new ArgumentNullException(nameof(location));
+        }
     }
 }

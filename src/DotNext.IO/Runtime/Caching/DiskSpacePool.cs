@@ -1,9 +1,11 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.Caching;
 
+using CompilerServices;
 using Number = Numerics.Number;
 using List = Collections.Generic.List;
 
@@ -71,11 +73,11 @@ public partial class DiskSpacePool : Disposable
                 // for efficient scatter/gather on Windows, the buffer needs to be page aligned
                 buffer = GC.AllocateUninitializedArray<byte>(pageSize * 2, pinned: true);
 
-                var address = (nuint)Intrinsics.AddressOf(in buffer.Span[0]); // pinned already
+                var address = (nuint)Unsafe.AddressOf(in buffer.Span[0]); // pinned already
                 var remainder = (int)(address % (uint)pageSize);
 
                 buffer = buffer.Slice(remainder is 0 ? 0 : pageSize - remainder, pageSize);
-                Debug.Assert(Intrinsics.AddressOf(in buffer.Span[0]) % pageSize is 0);
+                Debug.Assert(Unsafe.AddressOf(in buffer.Span[0]) % pageSize is 0);
             
                 buffer.Span.Clear();
             }

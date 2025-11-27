@@ -118,7 +118,7 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     private bool SameObject(object? other) => ReferenceEquals(owner, other);
 
     private Func<T> ToFunc()
-        => Intrinsics.InToRef<ValueReference<T>, ReadOnlyValueReference<T>>(in this).ToFunc();
+        => AdvancedHelpers.InToRef<ValueReference<T>, ReadOnlyValueReference<T>>(in this).ToFunc();
     
     private Action<T> ToAction()
     {
@@ -402,8 +402,8 @@ file static class ValueReference
 
     internal static nint GetOffset<T>(object owner, ref readonly T field, [CallerArgumentExpression(nameof(field))] string? paramName = null)
     {
-        ref var rawData = ref Intrinsics.GetRawData(owner);
-        var offset = Unsafe.ByteOffset(in rawData, in Intrinsics.InToRef<T, byte>(in field));
+        ref var rawData = ref AdvancedHelpers.GetRawData(owner);
+        var offset = Unsafe.ByteOffset(in rawData, in AdvancedHelpers.InToRef<T, byte>(in field));
 
         // Ensure that the reference is an interior pointer to the field inside the object
         if (GetRawObjectDataSize is not null && owner != Sentinel.Instance && (nuint)(offset + Unsafe.SizeOf<T>()) > GetRawObjectDataSize(owner))
@@ -414,7 +414,7 @@ file static class ValueReference
 
     internal static ref T GetObjectData<T>(object owner, nint offset)
     {
-        ref var rawData = ref Intrinsics.GetRawData(owner);
+        ref var rawData = ref AdvancedHelpers.GetRawData(owner);
         return ref Unsafe.As<byte, T>(ref Unsafe.Add(ref rawData, offset));
     }
 }
