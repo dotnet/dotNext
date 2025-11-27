@@ -85,7 +85,7 @@ internal sealed class GenericServer : Server
         {
             // server stopped, suppress exception
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == cts.Token && cts.IsTimedOut)
+        catch (OperationCanceledException e) when (e.CausedByTimeout(cts))
         {
             // timeout
             logger.RequestTimedOut(clientAddress, e);

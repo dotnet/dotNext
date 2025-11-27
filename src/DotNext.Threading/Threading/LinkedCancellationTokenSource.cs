@@ -16,7 +16,7 @@ using InlinedToken = ValueTuple<object?>;
 /// This source is not resettable. Calling of <see cref="CancellationTokenSource.TryReset"/>
 /// may lead to unpredictable results.
 /// </remarks>
-public abstract class LinkedCancellationTokenSource : CancellationTokenSource, IMultiplexedCancellationTokenSource
+internal abstract class LinkedCancellationTokenSource : CancellationTokenSource, IMultiplexedCancellationTokenSource
 {
     // represents inlined CancellationToken
     private InlinedToken cancellationOrigin;
