@@ -586,7 +586,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<by
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public void CopyTo<TConsumer>(TConsumer consumer, int bufferSize, CancellationToken token)
-        where TConsumer : IReadOnlySpanConsumer<byte>
+        where TConsumer : IReadOnlySpanConsumer<byte>, allows ref struct
     {
         if (fileBackend is not null)
         {

@@ -222,5 +222,7 @@ public static class TypeExtensions
     extension(Type type)
     {
         public bool IsDelegate => typeof(Delegate).IsAssignableFrom(type);
+
+        public bool IsVoid => typeof(void) == type;
     }
 }

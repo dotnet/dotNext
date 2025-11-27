@@ -8,6 +8,8 @@ using System.Runtime.InteropServices;
 namespace DotNext.Collections.Concurrent;
 
 using Generic;
+using Runtime;
+using Runtime.CompilerServices;
 using Threading;
 
 /// <summary>
@@ -152,6 +154,22 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
 
     /// <inheritdoc/>
     int ISupplier<int>.Invoke() => Take();
+    
+    /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    {
+        switch (count)
+        {
+            case 0:
+                result.Mutable<int>() = Take();
+                break;
+            case 1:
+                Return(args.ReadOnly<int>());
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(count));
+        }
+    }
 
     /// <summary>
     /// Returns an index previously obtained using <see cref="TryTake(out int)"/> back to the pool.

@@ -7,8 +7,8 @@ using System.Text.Json.Serialization;
 
 namespace DotNext;
 
+using Runtime;
 using Runtime.CompilerServices;
-using Intrinsics = Runtime.Intrinsics;
 
 /// <summary>
 /// Represents extension methods for type <see cref="Result{T}"/>.
@@ -129,7 +129,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
 
     [JsonIgnore]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal bool IsNull => exception is null && value is null;
+    internal bool IsNull => IsSuccessful && value is null;
 
     private Result(ExceptionDispatchInfo dispatchInfo)
     {
@@ -161,6 +161,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// </summary>
     /// <value><see langword="true"/> if this result is successful; <see langword="false"/> if this result represents exception.</value>
     [MemberNotNullWhen(false, nameof(Error))]
+    [MemberNotNullWhen(false, nameof(exception))]
     public bool IsSuccessful => exception is null;
 
     /// <inheritdoc />
@@ -212,7 +213,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
         where TConverter : struct, ISupplier<T, TResult>
     {
         Result<TResult> result;
-        if (exception is null)
+        if (IsSuccessful)
         {
             try
             {
@@ -236,7 +237,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
         where TConverter : struct, ISupplier<T, Result<TResult>>
     {
         Result<TResult> result;
-        if (exception is null)
+        if (IsSuccessful)
         {
             try
             {
@@ -305,7 +306,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     public bool TryGet([MaybeNullWhen(false)] out T value)
     {
         value = this.value;
-        return exception is null;
+        return IsSuccessful;
     }
 
     /// <summary>
@@ -313,12 +314,12 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// </summary>
     /// <param name="defaultValue">The value to be returned if this result is unsuccessful.</param>
     /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
-    public T? Or(T? defaultValue) => exception is null ? value : defaultValue;
+    public T? Or(T? defaultValue) => IsSuccessful ? value : defaultValue;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private T OrInvoke<TSupplier>(TSupplier defaultFunc)
         where TSupplier : struct, ISupplier<T>
-        => exception is null ? value : defaultFunc.Invoke();
+        => IsSuccessful ? value : defaultFunc.Invoke();
 
     /// <summary>
     /// Returns the value if present; otherwise invoke delegate.
@@ -340,7 +341,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private T OrInvokeWithException<TSupplier>(TSupplier defaultFunc)
         where TSupplier : struct, ISupplier<Exception, T>
-        => exception is null ? value : defaultFunc.Invoke(exception.SourceException);
+        => IsSuccessful ? value : defaultFunc.Invoke(exception.SourceException);
 
     /// <summary>
     /// Returns the value if present; otherwise invoke delegate.
@@ -359,8 +360,13 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     public unsafe T OrInvoke(delegate*<Exception, T> defaultFunc)
         => OrInvokeWithException<Supplier<Exception, T>>(defaultFunc);
 
-    /// <inheritdoc cref="IFunctional{TDelegate}.ToDelegate()"/>
-    Func<object?> IFunctional<Func<object?>>.ToDelegate() => Func<object?>.Constant(exception is null ? value : null);
+    /// <inheritdoc/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    {
+        ref var res = ref ISupplier<object?>.PrepareInvocation(count, result);
+        if (IsSuccessful)
+            res = value;
+    }
 
     /// <summary>
     /// Gets exception associated with this result.
@@ -408,7 +414,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// Gets boxed representation of the result.
     /// </summary>
     /// <returns>The boxed representation of the result.</returns>
-    public Result<object?> Box() => exception is null ? new(value) : new(exception);
+    public Result<object?> Box() => IsSuccessful ? new(value) : new(exception);
 
     /// <summary>
     /// Extracts actual result.
@@ -420,7 +426,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// Converts the result into <see cref="Optional{T}"/>.
     /// </summary>
     /// <returns>Option monad representing value in this monad.</returns>
-    public Optional<T> TryGet() => exception is null ? new(value) : Optional<T>.None;
+    public Optional<T> TryGet() => IsSuccessful ? new(value) : Optional<T>.None;
 
     /// <summary>
     /// Converts the result into <see cref="Optional{T}"/>.
@@ -449,13 +455,13 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// <param name="left">The first result to check.</param>
     /// <param name="right">The second result to check.</param>
     /// <returns><see langword="true"/> if both results are successful; otherwise, <see langword="false"/>.</returns>
-    public static bool operator &(in Result<T> left, in Result<T> right) => left.exception is null && right.exception is null;
+    public static bool operator &(in Result<T> left, in Result<T> right) => left.IsSuccessful && right.IsSuccessful;
 
     /// <inheritdoc cref="IOptionMonad{T,TSelf}.op_LogicalNot"/>
     public static bool operator !(in Result<T> result) => result.exception is not null;
 
     /// <inheritdoc cref="IOptionMonad{T,TSelf}.op_True"/>
-    public static bool operator true(in Result<T> result) => result.exception is null;
+    public static bool operator true(in Result<T> result) => result.IsSuccessful;
 
     /// <inheritdoc cref="IOptionMonad{T,TSelf}.op_False"/>
     public static bool operator false(in Result<T> result) => !result;
@@ -699,8 +705,13 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     public unsafe T OrInvoke(delegate*<TError, T> defaultFunc)
         => OrInvokeWithError<Supplier<TError, T>>(defaultFunc);
 
-    /// <inheritdoc cref="IFunctional{TDelegate}.ToDelegate()"/>
-    Func<object?> IFunctional<Func<object?>>.ToDelegate() => Func<object?>.Constant(IsSuccessful ? value : null);
+    /// <inheritdoc/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    {
+        ref var res = ref ISupplier<object?>.PrepareInvocation(count, result);
+        if (IsSuccessful)
+            res = value;
+    }
 
     private T OrThrow<TExceptionFactory>(TExceptionFactory factory)
         where TExceptionFactory : struct, ISupplier<TError, Exception>

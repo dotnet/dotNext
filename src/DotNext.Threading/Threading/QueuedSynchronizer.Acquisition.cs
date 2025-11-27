@@ -7,6 +7,9 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
+using Runtime;
+using Runtime.CompilerServices;
+
 partial class QueuedSynchronizer
 {
     private protected interface ITaskBuilder : IDisposable
@@ -163,7 +166,22 @@ partial class QueuedSynchronizer
             Debug.Assert(IsCompleted);
 
             return AsTask<ValueTask<bool>>(taskFactory);
-        } 
+        }
+
+        void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        {
+            ArgumentOutOfRangeException.ThrowIfNotEqual(count, 0);
+
+            Debug.Assert(IsCompleted);
+            if (result.TargetType == typeof(ValueTask))
+            {
+                result.Mutable<ValueTask>() = AsTask<ValueTask>(taskFactory);
+            }
+            else
+            {
+                result.Mutable<ValueTask<bool>>() = AsTask<ValueTask<bool>>(taskFactory);
+            }
+        }
 
         static bool ITaskBuilder<ValueTask>.ThrowOnTimeout => true;
 

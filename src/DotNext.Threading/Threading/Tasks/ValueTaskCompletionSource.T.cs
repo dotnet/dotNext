@@ -5,6 +5,9 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks;
 
+using Runtime;
+using Runtime.CompilerServices;
+
 /// <summary>
 /// Represents the producer side of <see cref="ValueTask{T}"/>.
 /// </summary>
@@ -21,7 +24,7 @@ namespace DotNext.Threading.Tasks;
 /// </remarks>
 /// <typeparam name="T">>The type the task result.</typeparam>
 /// <seealso cref="ValueTaskCompletionSource"/>
-public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueTaskSource<T>, IValueTaskSource, ISupplier<TimeSpan, CancellationToken, ValueTask>, ISupplier<TimeSpan, CancellationToken, ValueTask<T>>
+public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueTaskSource<T>, IValueTaskSource, IValueTaskFactory<T>
 {
     private Result<T> result;
 

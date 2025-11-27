@@ -4,6 +4,9 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Buffers;
 
+using Runtime;
+using Runtime.CompilerServices;
+
 /// <summary>
 /// Represents common interface for growable buffer writers.
 /// </summary>
@@ -45,6 +48,25 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
     void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> input)
         => Write(input);
 
+    /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    {
+        switch (count)
+        {
+            case 1:
+                Write(args.ReadOnly<ReadOnlySpan<T>>());
+                break;
+            case 2:
+                result.Mutable<ValueTask>() = Invoke(
+                    GetArgument<ReadOnlyMemory<T>>(ref args, 0),
+                    GetArgument<CancellationToken>(ref args, 1)
+                );
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(count));
+        }
+    }
+
     /// <summary>
     /// Writes single element to this buffer.
     /// </summary>
@@ -62,7 +84,7 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
     /// <typeparam name="TConsumer">The type of the object that represents the consumer.</typeparam>
     /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
     void CopyTo<TConsumer>(TConsumer consumer)
-        where TConsumer : IReadOnlySpanConsumer<T>;
+        where TConsumer : IReadOnlySpanConsumer<T>, allows ref struct;
 
     /// <summary>
     /// Passes the contents of this writer to the callback asynchronously.

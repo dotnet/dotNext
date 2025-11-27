@@ -7,6 +7,8 @@ namespace DotNext.Buffers;
 
 using Binary;
 using Numerics;
+using Runtime;
+using Runtime.CompilerServices;
 using DecodingContext = DotNext.Text.DecodingContext;
 
 /// <summary>
@@ -35,6 +37,9 @@ internal struct MemoryBlockReader(Memory<byte> destination) : IBufferReader
         source.CopyTo(destination.Span, out var count);
         destination = destination.Slice(count);
     }
+    
+    readonly void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -54,6 +59,9 @@ internal struct MemoryReader(Memory<byte> destination) : IBufferReader, ISupplie
     }
 
     readonly int ISupplier<int>.Invoke() => BytesWritten;
+    
+    readonly void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 
     static bool IBufferReader.ThrowOnPartialData => false;
 }
@@ -74,6 +82,9 @@ internal unsafe struct WellKnownIntegerReader<T>(delegate*<ReadOnlySpan<byte>, b
         source.CopyTo(Buffer.Slice(writtenBytes), out var count);
         writtenBytes += count;
     }
+    
+    readonly void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 
     T ISupplier<T>.Invoke() => parser(Buffer, Number.IsSigned<T>() is false);
 
@@ -108,6 +119,9 @@ internal unsafe struct IntegerReader<T>(delegate*<ReadOnlySpan<byte>, bool, T> p
             buffer.Dispose();
         }
     }
+    
+    readonly void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 
     internal static IntegerReader<T> LittleEndian() => new(&T.ReadLittleEndian);
 
@@ -129,6 +143,9 @@ internal struct BinaryFormattable256Reader<T> : IBufferReader, ISupplier<T>
         source.CopyTo(destination.Slice(writtenBytes), out var count);
         writtenBytes += count;
     }
+    
+    readonly void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 
     readonly T ISupplier<T>.Invoke()
     {
@@ -165,6 +182,9 @@ internal struct BinaryFormattableReader<T>() : IBufferReader, ISupplier<T>
             buffer.Dispose();
         }
     }
+    
+    readonly void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -182,6 +202,9 @@ internal struct CharBufferDecodingReader(in DecodingContext context, int length,
         remainingBytes -= bytes.Length;
         writtenChars += decoder.GetChars(bytes, buffer.Span.Slice(writtenChars), remainingBytes is 0);
     }
+    
+    readonly void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -198,6 +221,9 @@ internal struct DecodingReader(Decoder decoder, int length, Memory<char> buffer)
     }
 
     readonly int ISupplier<int>.Invoke() => writtenChars;
+    
+    readonly void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -220,6 +246,9 @@ internal unsafe struct Parsing256Reader<TArg, TResult>(TArg arg, delegate*<ReadO
         ReadOnlySpan<byte> source = buffer;
         return parser(source.Slice(0, consumedBytes), arg);
     }
+    
+    readonly void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 
     internal static int MaxSize => Unsafe.SizeOf<Buffer256>();
 }
@@ -249,6 +278,9 @@ internal unsafe struct ParsingReader<TArg, TResult>(TArg arg, delegate*<ReadOnly
             buffer.Dispose();
         }
     }
+    
+    readonly void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -271,6 +303,9 @@ internal struct ProxyReader<TReader>(TReader reader) : IBufferReader, ISupplier<
     static bool IBufferReader.ThrowOnPartialData => TReader.ThrowOnPartialData;
 
     readonly TReader ISupplier<TReader>.Invoke() => reader;
+    
+    readonly void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 
     public static implicit operator ProxyReader<TReader>(TReader reader) => new(reader);
 }

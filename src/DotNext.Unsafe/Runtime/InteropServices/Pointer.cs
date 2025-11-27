@@ -22,7 +22,6 @@ public readonly partial struct Pointer<T> :
     IComparable<Pointer<T>>,
     IStrongBox,
     ISupplier<nint>,
-    ISupplier<nuint>,
     ISpanFormattable
     where T : unmanaged
 {
@@ -408,9 +407,6 @@ public readonly partial struct Pointer<T> :
 
     /// <inheritdoc/>
     nint ISupplier<nint>.Invoke() => Address;
-
-    /// <inheritdoc/>
-    unsafe nuint ISupplier<nuint>.Invoke() => (nuint)value;
 
     /// <summary>
     /// Converts this pointer the memory owner.

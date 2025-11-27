@@ -6,6 +6,9 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Buffers;
 
+using Runtime;
+using Runtime.CompilerServices;
+
 /// <summary>
 /// Represents builder of the sparse memory buffer.
 /// </summary>
@@ -217,7 +220,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public void CopyTo<TConsumer>(TConsumer consumer)
-        where TConsumer : IReadOnlySpanConsumer<T>
+        where TConsumer : IReadOnlySpanConsumer<T>, allows ref struct
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         for (var current = first; current is not null; current = current.Next)
@@ -280,7 +283,33 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
 
     /// <inheritdoc />
     ReadOnlySequence<T> ISupplier<ReadOnlySequence<T>>.Invoke()
+        => WrittenSequence;
+    
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private ReadOnlySequence<T> WrittenSequence
         => TryGetWrittenContent(out var segment) ? new ReadOnlySequence<T>(segment) : Memory.ToReadOnlySequence(this);
+    
+    /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    {
+        switch (count)
+        {
+            case 0:
+                result.Mutable<ReadOnlySequence<T>>() = WrittenSequence;
+                break;
+            case 1:
+                Write(args.ReadOnly<ReadOnlySpan<T>>());
+                break;
+            case 2:
+                result.Mutable<ValueTask>() = this.As<ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>>().Invoke(
+                    IFunctional.GetArgument<ReadOnlyMemory<T>>(ref args, 0),
+                    IFunctional.GetArgument<CancellationToken>(ref args, 1)
+                );
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(count));
+        }
+    }
 
     private void ReleaseChunks()
     {

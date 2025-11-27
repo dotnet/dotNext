@@ -1,7 +1,9 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext;
 
+using Runtime;
 using Runtime.CompilerServices;
 
 /// <summary>
@@ -16,7 +18,8 @@ using Runtime.CompilerServices;
 /// as closure which is not allocated on the heap.
 /// </remarks>
 /// <typeparam name="T">The type of the argument.</typeparam>
-public interface IConsumer<in T> : IFunctional<Action<T>>
+public interface IConsumer<in T> : IFunctional
+    where T : allows ref struct
 {
     /// <summary>
     /// Invokes the consumer.
@@ -24,8 +27,17 @@ public interface IConsumer<in T> : IFunctional<Action<T>>
     /// <param name="arg">The first argument.</param>
     void Invoke(T arg);
 
-    /// <inheritdoc />
-    Action<T> IFunctional<Action<T>>.ToDelegate() => Invoke;
+    /// <inheritdoc/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    {
+        PrepareInvocation(count);
+        Invoke(args.ReadOnly<T>());
+    }
+
+    internal static void PrepareInvocation(int count,
+        [CallerArgumentExpression(nameof(count))]
+        string? countArgName = null)
+        => ArgumentOutOfRangeException.ThrowIfNotEqual(count, 1, countArgName);
 }
 
 /// <summary>
@@ -40,6 +52,7 @@ public interface IConsumer<in T> : IFunctional<Action<T>>
 [CLSCompliant(false)]
 [StructLayout(LayoutKind.Auto)]
 public readonly unsafe struct Consumer<T>(delegate*<T, void> ptr) : IConsumer<T>
+    where T : allows ref struct
 {
     private readonly delegate*<T, void> ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
 
@@ -51,11 +64,12 @@ public readonly unsafe struct Consumer<T>(delegate*<T, void> ptr) : IConsumer<T>
     /// <inheritdoc />
     void IConsumer<T>.Invoke(T arg) => ptr(arg);
 
-    /// <summary>
-    /// Converts this consumer to the delegate of type <see cref="Action{T}"/>.
-    /// </summary>
-    /// <returns>The delegate representing the wrapped method.</returns>
-    public Action<T> ToDelegate() => Action<T>.FromPointer(ptr);
+    /// <inheritdoc/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    {
+        IConsumer<T>.PrepareInvocation(count);
+        ptr(args.ReadOnly<T>());
+    }
 
     /// <summary>
     /// Gets hexadecimal representation of this pointer.
@@ -76,35 +90,8 @@ public readonly unsafe struct Consumer<T>(delegate*<T, void> ptr) : IConsumer<T>
     /// </summary>
     /// <param name="consumer">The value representing the pointer to the method.</param>
     /// <returns>The delegate representing the wrapped method.</returns>
-    public static explicit operator Action<T>(Consumer<T> consumer) => consumer.ToDelegate();
-}
-
-/// <summary>
-/// Represents implementation of <see cref="IConsumer{T}"/> interface
-/// with the support of closure that is not allocated on the heap.
-/// </summary>
-/// <typeparam name="TContext">The type describing closure.</typeparam>
-/// <typeparam name="T">The type of the consumer argument.</typeparam>
-/// <remarks>
-/// Wraps the function pointer.
-/// </remarks>
-/// <param name="ptr">The function pointer.</param>
-/// <param name="context">The context to be passed to the function pointer.</param>
-/// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
-[CLSCompliant(false)]
-[StructLayout(LayoutKind.Auto)]
-public readonly unsafe struct ConsumerClosure<TContext, T>(delegate*<in TContext, T, void> ptr, TContext context) : IConsumer<T>
-{
-    private readonly delegate*<in TContext, T, void> ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
-    private readonly TContext context = context;
-
-    /// <summary>
-    /// Gets a value indicating that this function pointer is zero.
-    /// </summary>
-    public bool IsEmpty => ptr is null;
-
-    /// <inheritdoc />
-    void IConsumer<T>.Invoke(T arg) => ptr(in context, arg);
+    public static explicit operator Action<T>(Consumer<T> consumer)
+        => Action<T>.FromPointer(consumer.ptr);
 }
 
 /// <summary>
@@ -113,7 +100,8 @@ public readonly unsafe struct ConsumerClosure<TContext, T>(delegate*<in TContext
 /// </summary>
 /// <typeparam name="T">The type of the consumer argument.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct DelegatingConsumer<T> : IConsumer<T>, IEquatable<DelegatingConsumer<T>>
+public readonly record struct DelegatingConsumer<T> : IConsumer<T>
+    where T : allows ref struct
 {
     private readonly Action<T> action;
 
@@ -133,8 +121,12 @@ public readonly record struct DelegatingConsumer<T> : IConsumer<T>, IEquatable<D
     /// <inheritdoc />
     void IConsumer<T>.Invoke(T arg) => action(arg);
 
-    /// <inheritdoc />
-    Action<T> IFunctional<Action<T>>.ToDelegate() => action;
+    /// <inheritdoc/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    {
+        IConsumer<T>.PrepareInvocation(count);
+        action(args.ReadOnly<T>());
+    }
 
     /// <inheritdoc />
     public override string? ToString() => action?.ToString();

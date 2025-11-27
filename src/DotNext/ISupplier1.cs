@@ -1,7 +1,9 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext;
 
+using Runtime;
 using Runtime.CompilerServices;
 
 /// <summary>
@@ -17,7 +19,9 @@ using Runtime.CompilerServices;
 /// </remarks>
 /// <typeparam name="T">The type of the argument.</typeparam>
 /// <typeparam name="TResult">The type of the result.</typeparam>
-public interface ISupplier<in T, out TResult> : IFunctional<Func<T, TResult>>
+public interface ISupplier<in T, out TResult> : IFunctional
+    where T : allows ref struct
+    where TResult : allows ref struct
 {
     /// <summary>
     /// Invokes the supplier.
@@ -26,8 +30,22 @@ public interface ISupplier<in T, out TResult> : IFunctional<Func<T, TResult>>
     /// <returns>The value returned by this supplier.</returns>
     TResult Invoke(T arg);
 
-    /// <inheritdoc />
-    Func<T, TResult> IFunctional<Func<T, TResult>>.ToDelegate() => Invoke;
+    /// <inheritdoc/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => PrepareInvocation(count, result) = Invoke(args.ReadOnly<T>());
+
+    internal static ref TResult PrepareInvocation(int count,
+        Variant result,
+        [CallerArgumentExpression(nameof(count))]
+        string? countArgName = null,
+        [CallerArgumentExpression(nameof(result))]
+        string? resultArgName = null)
+    {
+        ArgumentOutOfRangeException.ThrowIfNotEqual(count, 1, countArgName);
+        ArgumentOutOfRangeException.ThrowIfNotEqual(result.IsMutable, true, resultArgName);
+
+        return ref result.Mutable<TResult>();
+    }
 }
 
 /// <summary>
@@ -43,6 +61,8 @@ public interface ISupplier<in T, out TResult> : IFunctional<Func<T, TResult>>
 [StructLayout(LayoutKind.Auto)]
 [CLSCompliant(false)]
 public readonly unsafe struct Supplier<T, TResult>(delegate*<T, TResult> ptr) : ISupplier<T, TResult>
+    where T : allows ref struct
+    where TResult : allows ref struct
 {
     private readonly delegate*<T, TResult> ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
 
@@ -54,11 +74,9 @@ public readonly unsafe struct Supplier<T, TResult>(delegate*<T, TResult> ptr) : 
     /// <inheritdoc />
     TResult ISupplier<T, TResult>.Invoke(T arg) => ptr(arg);
 
-    /// <summary>
-    /// Converts this supplier to the delegate of type <see cref="Func{T, TResult}"/>.
-    /// </summary>
-    /// <returns>The delegate representing the wrapped method.</returns>
-    public Func<T, TResult> ToDelegate() => Func<T, TResult>.FromPointer(ptr);
+    /// <inheritdoc/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => ISupplier<T, TResult>.PrepareInvocation(count, result) = ptr(args.ReadOnly<T>());
 
     /// <summary>
     /// Gets hexadecimal representation of this pointer.
@@ -73,42 +91,14 @@ public readonly unsafe struct Supplier<T, TResult>(delegate*<T, TResult> ptr) : 
     /// <returns>The typed function pointer.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
     public static implicit operator Supplier<T, TResult>(delegate*<T, TResult> ptr) => new(ptr);
-
+    
     /// <summary>
     /// Converts this supplier to the delegate of type <see cref="Func{T, TResult}"/>.
     /// </summary>
     /// <param name="supplier">The value representing the pointer to the method.</param>
     /// <returns>The delegate representing the wrapped method.</returns>
-    public static explicit operator Func<T, TResult>(Supplier<T, TResult> supplier) => supplier.ToDelegate();
-}
-
-/// <summary>
-/// Represents implementation of <see cref="ISupplier{T, TResult}"/> interface
-/// with the support of closure that is not allocated on the heap.
-/// </summary>
-/// <typeparam name="TContext">The type describing closure.</typeparam>
-/// <typeparam name="T">The type of the argument.</typeparam>
-/// <typeparam name="TResult">The type of the result.</typeparam>
-/// <remarks>
-/// Wraps the function pointer.
-/// </remarks>
-/// <param name="ptr">The function pointer.</param>
-/// <param name="context">The context to be passed to the function pointer.</param>
-/// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
-[StructLayout(LayoutKind.Auto)]
-[CLSCompliant(false)]
-public readonly unsafe struct SupplierClosure<TContext, T, TResult>(delegate*<in TContext, T, TResult> ptr, TContext context) : ISupplier<T, TResult>
-{
-    private readonly delegate*<in TContext, T, TResult> ptr = ptr is not null ? ptr : throw new ArgumentNullException(nameof(ptr));
-    private readonly TContext context = context;
-
-    /// <summary>
-    /// Gets a value indicating that this function pointer is zero.
-    /// </summary>
-    public bool IsEmpty => ptr is null;
-
-    /// <inheritdoc />
-    TResult ISupplier<T, TResult>.Invoke(T arg) => ptr(in context, arg);
+    public static explicit operator Func<T, TResult>(Supplier<T, TResult> supplier)
+        => Func<T, TResult>.FromPointer(supplier.ptr);
 }
 
 /// <summary>
@@ -118,7 +108,9 @@ public readonly unsafe struct SupplierClosure<TContext, T, TResult>(delegate*<in
 /// <typeparam name="T">The type of the argument.</typeparam>
 /// <typeparam name="TResult">The type of the result.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct DelegatingSupplier<T, TResult> : ISupplier<T, TResult>, IEquatable<DelegatingSupplier<T, TResult>>
+public readonly record struct DelegatingSupplier<T, TResult> : ISupplier<T, TResult>
+    where T :allows ref struct
+    where TResult : allows ref struct
 {
     private readonly Func<T, TResult> func;
 
@@ -138,8 +130,9 @@ public readonly record struct DelegatingSupplier<T, TResult> : ISupplier<T, TRes
     /// <inheritdoc />
     TResult ISupplier<T, TResult>.Invoke(T arg) => func(arg);
 
-    /// <inheritdoc />
-    Func<T, TResult> IFunctional<Func<T, TResult>>.ToDelegate() => func;
+    /// <inheritdoc/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => ISupplier<T, TResult>.PrepareInvocation(count, result) = func(args.ReadOnly<T>());
 
     /// <inheritdoc />
     public override string? ToString() => func?.ToString();
@@ -155,34 +148,33 @@ public readonly record struct DelegatingSupplier<T, TResult> : ISupplier<T, TRes
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct DelegatingPredicate<T>(Predicate<T> predicate) : ISupplier<T, bool>, IFunctional<Predicate<T>>
+internal readonly struct DelegatingPredicate<T>(Predicate<T> predicate) : ISupplier<T, bool>
+    where T : allows ref struct
 {
     /// <inheritdoc />
     bool ISupplier<T, bool>.Invoke(T arg) => predicate(arg);
 
-    /// <inheritdoc />
-    Func<T, bool> IFunctional<Func<T, bool>>.ToDelegate() => predicate.ChangeType<Func<T, bool>>();
-
-    /// <inheritdoc />
-    Predicate<T> IFunctional<Predicate<T>>.ToDelegate() => predicate;
+    /// <inheritdoc/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => ISupplier<T, bool>.PrepareInvocation(count, result) = predicate(args.ReadOnly<T>());
 
     public static implicit operator DelegatingPredicate<T>(Predicate<T> predicate)
         => new(predicate);
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct DelegatingConverter<TInput, TOutput>(Converter<TInput, TOutput> converter) : ISupplier<TInput, TOutput>, IFunctional<Converter<TInput, TOutput>>
+internal readonly struct DelegatingConverter<TInput, TOutput>(Converter<TInput, TOutput> converter) : ISupplier<TInput, TOutput>
+    where TInput : allows ref struct
+    where TOutput : allows ref struct
 {
     private readonly Converter<TInput, TOutput> converter = converter ?? throw new ArgumentNullException(nameof(converter));
 
     /// <inheritdoc />
     TOutput ISupplier<TInput, TOutput>.Invoke(TInput arg) => converter(arg);
 
-    /// <inheritdoc />
-    Func<TInput, TOutput> IFunctional<Func<TInput, TOutput>>.ToDelegate() => converter.ChangeType<Func<TInput, TOutput>>();
-
-    /// <inheritdoc />
-    Converter<TInput, TOutput> IFunctional<Converter<TInput, TOutput>>.ToDelegate() => converter;
+    /// <inheritdoc/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => ISupplier<TInput, TOutput>.PrepareInvocation(count, result) = converter(args.ReadOnly<TInput>());
 
     public static implicit operator DelegatingConverter<TInput, TOutput>(Converter<TInput, TOutput> converter)
         => new(converter);

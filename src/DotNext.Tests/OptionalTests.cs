@@ -1,5 +1,9 @@
-﻿namespace DotNext;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 
+namespace DotNext;
+
+using Runtime;
 using Runtime.CompilerServices;
 
 public sealed class OptionalTest : Test
@@ -333,16 +337,21 @@ public sealed class OptionalTest : Test
     }
 
     [Fact]
-    public static void OptionalToDelegate()
+    public static void DynamicInvokeOptional()
     {
-        IFunctional<Func<object>> functional = Optional.None<object>();
-        Null(functional.ToDelegate().Invoke());
+        IFunctional functional = Optional.Null<object>();
+        object result = Missing.Value;
+        functional.DynamicInvoke(ref Unsafe.NullRef<Variant>(), 0, Variant.Mutable(ref result));
+        Null(result);
 
         functional = new Optional<int>(42);
-        Equal(42, functional.ToDelegate().Invoke());
+        functional.DynamicInvoke(ref Unsafe.NullRef<Variant>(), 0, Variant.Mutable(ref result));
+        Equal(42, result);
 
         functional = Optional.None<int>();
-        Null(functional.ToDelegate().Invoke());
+        result = Missing.Value;
+        functional.DynamicInvoke(ref Unsafe.NullRef<Variant>(), 0, Variant.Mutable(ref result));
+        Same(Missing.Value, result);
     }
 
     [Fact]

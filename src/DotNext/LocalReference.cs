@@ -30,11 +30,14 @@ public interface ITypedReference<T>
 /// <typeparam name="T">The type of the referenced value.</typeparam>
 [StructLayout(LayoutKind.Auto)]
 public readonly ref struct LocalReference<T>(ref T location) : ITypedReference<T>, IEquatable<LocalReference<T>>
+    where T : allows ref struct
 {
+    private readonly ref byte location = ref Unsafe.As<T, byte>(ref location);
+
     /// <summary>
     /// The referenced value.
     /// </summary>
-    public readonly ref T Value = ref location;
+    public ref T Value => ref Unsafe.As<byte, T>(ref location);
     
     /// <summary>
     /// Gets a value indicating that this reference is empty.
@@ -46,9 +49,6 @@ public readonly ref struct LocalReference<T>(ref T location) : ITypedReference<T
 
     /// <inheritdoc/>
     public bool Equals(LocalReference<T> other) => Unsafe.AreSame(ref Value, ref other.Value);
-
-    /// <inheritdoc/>
-    public override string? ToString() => Unsafe.IsNullRef(in Value) ? null : Value?.ToString();
 
     /// <inheritdoc/>
     [DoesNotReturn]
@@ -95,14 +95,6 @@ public readonly ref struct LocalReference<T>(ref T location) : ITypedReference<T
     /// <returns>Read-only view of the same memory location as presented by <paramref name="reference"/>.</returns>
     public static implicit operator ReadOnlyLocalReference<T>(LocalReference<T> reference)
         => new(in reference.Value);
-
-    /// <summary>
-    /// Gets a span over the referenced value.
-    /// </summary>
-    /// <param name="reference">The value reference.</param>
-    /// <returns>The span that contains <see cref="Value"/>; or empty span if <paramref name="reference"/> is empty.</returns>
-    public static implicit operator Span<T>(LocalReference<T> reference)
-        => reference.IsEmpty ? new() : new(ref reference.Value);
 }
 
 /// <summary>
@@ -112,11 +104,14 @@ public readonly ref struct LocalReference<T>(ref T location) : ITypedReference<T
 /// <typeparam name="T">The type of the referenced value.</typeparam>
 [StructLayout(LayoutKind.Auto)]
 public readonly ref struct ReadOnlyLocalReference<T>(ref readonly T location) : ITypedReference<T>, IEquatable<ReadOnlyLocalReference<T>>
+    where T : allows ref struct
 {
+    private readonly ref byte location = ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in location));
+
     /// <summary>
     /// The referenced value.
     /// </summary>
-    public readonly ref readonly T Value = ref location;
+    public ref readonly T Value => ref Unsafe.As<byte, T>(ref location);
 
     /// <summary>
     /// Gets a value indicating that this reference is empty.
@@ -128,9 +123,6 @@ public readonly ref struct ReadOnlyLocalReference<T>(ref readonly T location) : 
 
     /// <inheritdoc/>
     public bool Equals(ReadOnlyLocalReference<T> other) => Unsafe.AreSame(in Value, in other.Value);
-
-    /// <inheritdoc/>
-    public override string? ToString() => Unsafe.IsNullRef(in Value) ? null : Value?.ToString();
 
     /// <inheritdoc/>
     [DoesNotReturn]
@@ -169,12 +161,4 @@ public readonly ref struct ReadOnlyLocalReference<T>(ref readonly T location) : 
     /// <returns><see langword="true"/> if both references point to the different memory locations; otherwise, <see langword="false"/>.</returns>
     public static bool operator !=(ReadOnlyLocalReference<T> x, ReadOnlyLocalReference<T> y)
         => !x.Equals(y);
-    
-    /// <summary>
-    /// Gets a span over the referenced value.
-    /// </summary>
-    /// <param name="reference">The value reference.</param>
-    /// <returns>The span that contains <see cref="Value"/>; or empty span if <paramref name="reference"/> is empty.</returns>
-    public static implicit operator ReadOnlySpan<T>(ReadOnlyLocalReference<T> reference)
-        => reference.IsEmpty ? new() : new(in reference.Value);
 }

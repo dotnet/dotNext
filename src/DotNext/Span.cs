@@ -80,43 +80,6 @@ public static class Span
     }
 
     /// <summary>
-    /// Sorts the elements.
-    /// </summary>
-    /// <param name="span">The contiguous region of arbitrary memory to sort.</param>
-    /// <param name="comparison">The comparer used for sorting.</param>
-    /// <typeparam name="T">The type of the elements.</typeparam>
-    [CLSCompliant(false)]
-    public static unsafe void Sort<T>(this Span<T> span, delegate*<T?, T?, int> comparison)
-        => span.Sort<T, ComparerWrapper<T>>(comparison);
-
-    /// <summary>
-    /// Trims the span to specified length if it exceeds it.
-    /// If length is less that <paramref name="maxLength" /> then the original span returned.
-    /// </summary>
-    /// <typeparam name="T">The type of items in the span.</typeparam>
-    /// <param name="span">A contiguous region of arbitrary memory.</param>
-    /// <param name="maxLength">Maximum length.</param>
-    /// <returns>Trimmed span.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
-    public static Span<T> TrimLength<T>(this Span<T> span, int maxLength)
-    {
-        switch (maxLength)
-        {
-            case < 0:
-                throw new ArgumentOutOfRangeException(nameof(maxLength));
-            case 0:
-                span = default;
-                break;
-            default:
-                if (span.Length > maxLength)
-                    span = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(span), maxLength);
-                break;
-        }
-
-        return span;
-    }
-
-    /// <summary>
     /// Trims the span to specified length if it exceeds it.
     /// If length is less that <paramref name="maxLength" /> then the original span returned.
     /// </summary>
@@ -127,34 +90,6 @@ public static class Span
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
     public static ReadOnlySpan<T> TrimLength<T>(this ReadOnlySpan<T> span, int maxLength)
         => TrimLength(MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(span), span.Length), maxLength);
-
-    /// <summary>
-    /// Trims the span to specified length if it exceeds it.
-    /// If length is less that <paramref name="maxLength" /> then the original span returned.
-    /// </summary>
-    /// <typeparam name="T">The type of items in the span.</typeparam>
-    /// <param name="span">A contiguous region of arbitrary memory.</param>
-    /// <param name="maxLength">Maximum length.</param>
-    /// <param name="rest">The rest of <paramref name="span"/>.</param>
-    /// <returns>Trimmed span.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
-    public static Span<T> TrimLength<T>(this Span<T> span, int maxLength, out Span<T> rest)
-    {
-        switch (maxLength)
-        {
-            case < 0:
-                throw new ArgumentOutOfRangeException(nameof(maxLength));
-            case 0:
-                rest = span;
-                span = default;
-                break;
-            default:
-                span = TrimLengthCore(span, maxLength, out rest);
-                break;
-        }
-
-        return span;
-    }
 
     private static Span<T> TrimLengthCore<T>(Span<T> span, int maxLength, out Span<T> rest)
     {
@@ -218,6 +153,9 @@ public static class Span
             action(item);
     }
 
+    /// <summary>
+    /// Represents extensions for <see cref="Span{T}"/> type.
+    /// </summary>
     /// <param name="span">The span to iterate.</param>
     /// <typeparam name="T">The type of the elements.</typeparam>
     extension<T>(Span<T> span)
@@ -247,6 +185,65 @@ public static class Span
 
             foreach (ref var item in span)
                 action(ref item, arg);
+        }
+        
+        /// <summary>
+        /// Sorts the elements.
+        /// </summary>
+        /// <param name="comparison">The comparer used for sorting.</param>
+        [CLSCompliant(false)]
+        public unsafe void Sort(delegate*<T?, T?, int> comparison)
+            => span.Sort<T, ComparerWrapper<T>>(comparison);
+
+        /// <summary>
+        /// Trims the span to specified length if it exceeds it.
+        /// If length is less that <paramref name="maxLength" /> then the original span returned.
+        /// </summary>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <returns>Trimmed span.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
+        public Span<T> TrimLength(int maxLength)
+        {
+            switch (maxLength)
+            {
+                case < 0:
+                    throw new ArgumentOutOfRangeException(nameof(maxLength));
+                case 0:
+                    span = default;
+                    break;
+                default:
+                    if (span.Length > maxLength)
+                        span = MemoryMarshal.CreateSpan(ref MemoryMarshal.GetReference(span), maxLength);
+                    break;
+            }
+
+            return span;
+        }
+
+        /// <summary>
+        /// Trims the span to specified length if it exceeds it.
+        /// If length is less that <paramref name="maxLength" /> then the original span returned.
+        /// </summary>
+        /// <param name="maxLength">Maximum length.</param>
+        /// <param name="rest">The rest of <paramref name="span"/>.</param>
+        /// <returns>Trimmed span.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
+        public Span<T> TrimLength(int maxLength, out Span<T> rest)
+        {
+            switch (maxLength)
+            {
+                case < 0:
+                    throw new ArgumentOutOfRangeException(nameof(maxLength));
+                case 0:
+                    rest = span;
+                    span = default;
+                    break;
+                default:
+                    span = TrimLengthCore(span, maxLength, out rest);
+                    break;
+            }
+
+            return span;
         }
     }
 

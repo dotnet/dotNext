@@ -9,7 +9,7 @@ namespace DotNext.Runtime.InteropServices;
 /// </summary>
 [CLSCompliant(false)]
 [NativeMarshalling(typeof(UnmanagedMemoryMarshaller))]
-public interface IUnmanagedMemory : IDisposable, ISupplier<Stream>
+public interface IUnmanagedMemory : IDisposable
 {
     /// <summary>
     /// Gets size of referenced unmanaged memory, in bytes.
@@ -40,9 +40,6 @@ public interface IUnmanagedMemory : IDisposable, ISupplier<Stream>
     /// <returns>The stream of unmanaged memory.</returns>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
     Stream AsStream() => Pointer.AsStream(long.CreateChecked(Size));
-
-    /// <inheritdoc/>
-    Stream ISupplier<Stream>.Invoke() => AsStream();
 }
 
 /// <summary>

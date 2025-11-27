@@ -95,14 +95,25 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     /// <inheritdoc cref="IConsumer{T}.Invoke(T)"/>
     void IConsumer<T>.Invoke(T value) => Value = value;
 
-    /// <inheritdoc cref="IFunctional{T}.ToDelegate()"/>
-    Action<T> IFunctional<Action<T>>.ToDelegate() => ToAction();
+    /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    {
+        switch (count)
+        {
+            case 0:
+                // supplier
+                result.Mutable<T>() = Value;
+                break;
+            case 1:
+                Value = args.ReadOnly<T>();
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(count));
+        }
+    }
 
     /// <inheritdoc cref="ISupplier{T}.Invoke()"/>
     T ISupplier<T>.Invoke() => Value;
-
-    /// <inheritdoc cref="IFunctional{T}.ToDelegate()"/>
-    Func<T> IFunctional<Func<T>>.ToDelegate() => ToFunc();
 
     private bool SameObject(object? other) => ReferenceEquals(owner, other);
 
@@ -181,6 +192,22 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     /// <returns>The span that contains <see cref="Value"/>; or empty span if <paramref name="reference"/> is empty.</returns>
     public static implicit operator Span<T>(ValueReference<T> reference)
         => reference.IsEmpty ? new() : new(ref reference.Value);
+
+    /// <summary>
+    /// Converts the reference to variant value.
+    /// </summary>
+    /// <param name="reference">The reference to convert.</param>
+    /// <returns>The variant value referencing the same value as <paramref name="reference"/>.</returns>
+    public static implicit operator Variant(ValueReference<T> reference)
+        => Variant.Mutable(ref reference.Value);
+
+    /// <summary>
+    /// Converts the reference to the local reference.
+    /// </summary>
+    /// <param name="reference">The reference to convert.</param>
+    /// <returns>The local reference the same value as <paramref name="reference"/>.</returns>
+    public static implicit operator LocalReference<T>(ValueReference<T> reference)
+        => new(ref reference.Value);
 
     /// <summary>
     /// Returns a setter for the memory location.
@@ -263,8 +290,9 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
     /// <inheritdoc cref="ISupplier{T}.Invoke()"/>
     T ISupplier<T>.Invoke() => Value;
 
-    /// <inheritdoc cref="IFunctional{T}.ToDelegate()"/>
-    Func<T> IFunctional<Func<T>>.ToDelegate() => ToFunc();
+    /// <inheritdoc/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => ISupplier<T>.PrepareInvocation(count, result) = Value;
 
     internal Func<T> ToFunc()
     {
@@ -332,6 +360,22 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
     /// <returns>The span that contains <see cref="Value"/>; or empty span if <paramref name="reference"/> is empty.</returns>
     public static implicit operator ReadOnlySpan<T>(ReadOnlyValueReference<T> reference)
         => reference.IsEmpty ? new() : new(in reference.Value);
+    
+    /// <summary>
+    /// Converts the reference to variant value.
+    /// </summary>
+    /// <param name="reference">The reference to convert.</param>
+    /// <returns>The variant value referencing the same value as <paramref name="reference"/>.</returns>
+    public static implicit operator Variant(ReadOnlyValueReference<T> reference)
+        => Variant.ReadOnly(in reference.Value);
+
+    /// <summary>
+    /// Converts the reference to the local reference.
+    /// </summary>
+    /// <param name="reference">The reference to convert.</param>
+    /// <returns>The local reference the same value as <paramref name="reference"/>.</returns>
+    public static implicit operator ReadOnlyLocalReference<T>(ReadOnlyValueReference<T> reference)
+        => new(in reference.Value);
 
     /// <summary>
     /// Returns a getter for the memory location.

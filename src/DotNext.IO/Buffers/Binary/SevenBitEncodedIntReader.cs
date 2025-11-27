@@ -3,6 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers.Binary;
 
+using Runtime;
+using Runtime.CompilerServices;
+
 [StructLayout(LayoutKind.Auto)]
 internal struct SevenBitEncodedIntReader() : IBufferReader, ISupplier<int>
 {
@@ -15,4 +18,7 @@ internal struct SevenBitEncodedIntReader() : IBufferReader, ISupplier<int>
         => incompleted = decoder.Append(MemoryMarshal.GetReference(source));
 
     readonly int ISupplier<int>.Invoke() => (int)decoder.Value;
+
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        => throw new NotSupportedException();
 }

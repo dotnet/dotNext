@@ -6,6 +6,9 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
+using Runtime;
+using Runtime.CompilerServices;
+
 /// <summary>
 /// Represents unified representation of the memory rented using various
 /// types of memory pools.
@@ -268,6 +271,21 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
 
     /// <inheritdoc/>
     readonly ReadOnlyMemory<T> ISupplier<ReadOnlyMemory<T>>.Invoke() => Memory;
+
+    /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
+    readonly void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    {
+        ArgumentOutOfRangeException.ThrowIfNotEqual(count, 0);
+
+        if (result.TargetType == typeof(Memory<T>))
+        {
+            result.Mutable<Memory<T>>() = Memory;
+        }
+        else
+        {
+            result.Mutable<ReadOnlyMemory<T>>() = Memory;
+        }
+    }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     internal readonly ref T First

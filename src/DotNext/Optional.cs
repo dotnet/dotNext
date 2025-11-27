@@ -8,8 +8,8 @@ using System.Text.Json.Serialization;
 
 namespace DotNext;
 
+using Runtime;
 using Runtime.CompilerServices;
-using Intrinsics = Runtime.Intrinsics;
 
 /// <summary>
 /// Various extension and factory methods for constructing optional value.
@@ -609,8 +609,14 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     public unsafe Optional<TResult> Convert<TResult>(delegate*<T, Optional<TResult>> mapper)
         => ConvertOptional<TResult, Supplier<T, Optional<TResult>>>(mapper);
 
-    /// <inheritdoc cref="IFunctional{TDelegate}.ToDelegate()"/>
-    Func<object?> IFunctional<Func<object?>>.ToDelegate() => Func<object?>.Constant(kind is NotEmptyValue ? value : null);
+    /// <inheritdoc/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    {
+        // Do not modify the result if value is undefined
+        ref var res = ref ISupplier<object?>.PrepareInvocation(count, result);
+        if (kind is not UndefinedValue)
+            res = value;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<T> If<TPredicate>(TPredicate condition)

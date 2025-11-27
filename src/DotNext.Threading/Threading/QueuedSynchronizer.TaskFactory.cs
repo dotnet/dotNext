@@ -4,8 +4,7 @@ using Patterns;
 
 partial class QueuedSynchronizer
 {
-    private interface IValueTaskFactory : ISupplier<TimeSpan, CancellationToken, ValueTask>,
-        ISupplier<TimeSpan, CancellationToken, ValueTask<bool>>;
+    private interface IValueTaskFactory : IValueTaskFactory<bool>;
     
     private sealed class CanceledTaskFactory : IValueTaskFactory, ISingleton<CanceledTaskFactory>
     {

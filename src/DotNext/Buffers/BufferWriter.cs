@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
+using Runtime;
+using Runtime.CompilerServices;
 using Enumerator = Collections.Generic.Enumerator;
 
 /// <summary>
@@ -54,6 +56,28 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
 
     /// <inheritdoc/>
     ReadOnlyMemory<T> ISupplier<ReadOnlyMemory<T>>.Invoke() => WrittenMemory;
+
+    /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    {
+        switch (count)
+        {
+            case 0:
+                result.Mutable<ReadOnlyMemory<T>>() = WrittenMemory;
+                break;
+            case 1:
+                this.As<IGrowableBuffer<T>>().Write(args.ReadOnly<ReadOnlySpan<T>>());
+                break;
+            case 2:
+                result.Mutable<ValueTask>() = this.As<ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>>().Invoke(
+                    IFunctional.GetArgument<ReadOnlyMemory<T>>(ref args, 0),
+                    IFunctional.GetArgument<CancellationToken>(ref args, 1)
+                );
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(count));
+        }
+    }
 
     /// <summary>
     /// Gets or sets the amount of data written to the underlying memory so far.
