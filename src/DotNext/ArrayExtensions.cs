@@ -34,16 +34,11 @@ public static class ArrayExtensions
         }
 
         /// <summary>
-        /// Indicates that the array is empty.
-        /// </summary>
-        public bool IsEmpty => GetLength(a) is 0;
-
-        /// <summary>
         /// Indicates that array is <see langword="null"/> or empty.
         /// </summary>
         /// <param name="array">The array to check.</param>
         /// <returns><see langword="true"/>, if array is <see langword="null"/> or empty.</returns>
         public static bool IsNullOrEmpty([NotNullWhen(false)] Array? array)
-            => array is null or { IsEmpty: true };
+            => array is null || GetLength(array) is 0;
     }
 }

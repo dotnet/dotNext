@@ -27,13 +27,22 @@ public static class Optional
         => (await task.ConfigureAwait(false)).OrNull();
 
     /// <summary>
-    /// Returns the value if present; otherwise return default value.
+    /// Extends <see cref="Task{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
-    /// <param name="task">The task returning optional value.</param>
-    /// <param name="defaultValue">The value to be returned if there is no value present.</param>
-    /// <returns>The value, if present, otherwise default.</returns>
-    public static async Task<T?> Or<T>(this Task<Optional<T>> task, T? defaultValue)
+    extension<T>(Task<Optional<T>>)
+    {
+        /// <summary>
+        /// Returns the value if present; otherwise return default value.
+        /// </summary>
+        /// <param name="task">The task returning optional value.</param>
+        /// <param name="defaultValue">The value to be returned if there is no value present.</param>
+        /// <returns>The value, if present, otherwise default.</returns>
+        public static Task<T?> operator |(Task<Optional<T>> task, T? defaultValue)
+            => Or(task, defaultValue);
+    }
+
+    private static async Task<T?> Or<T>(Task<Optional<T>> task, T? defaultValue)
         => (await task.ConfigureAwait(false)).Or(defaultValue);
 
     /// <summary>
@@ -133,18 +142,24 @@ public static class Optional
         => (await task.ConfigureAwait(false)).If(condition);
 
     /// <summary>
-    /// Indicates that specified type is optional type.
+    /// Extends <see cref="Type"/> type.
     /// </summary>
     /// <param name="optionalType">The type to check.</param>
-    /// <returns><see langword="true"/>, if specified type is optional type; otherwise, <see langword="false"/>.</returns>
-    public static bool IsOptional(this Type optionalType) => optionalType.IsConstructedGenericType && optionalType.GetGenericTypeDefinition() == typeof(Optional<>);
+    extension(Type optionalType)
+    {
+        /// <summary>
+        /// Indicates that specified type is optional type.
+        /// </summary>
+        /// <returns><see langword="true"/>, if specified type is optional type; otherwise, <see langword="false"/>.</returns>
+        public bool IsOptional => optionalType.IsConstructedGenericType && optionalType.GetGenericTypeDefinition() == typeof(Optional<>);
+    }
 
     /// <summary>
     /// Returns the underlying type argument of the specified optional type.
     /// </summary>
     /// <param name="optionalType">Optional type.</param>
     /// <returns>Underlying type argument of the optional type; otherwise, <see langword="null"/>.</returns>
-    public static Type? GetUnderlyingType(Type optionalType) => IsOptional(optionalType) ? optionalType.GetGenericArguments()[0] : null;
+    public static Type? GetUnderlyingType(Type optionalType) => optionalType.IsOptional ? optionalType.GetGenericArguments()[0] : null;
 
     /// <summary>
     /// Constructs optional value from nullable value type.

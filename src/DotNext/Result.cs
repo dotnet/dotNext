@@ -47,19 +47,26 @@ public static class Result
     public static ref readonly Result<T> Coalesce<T>(this in Result<T> first, in Result<T> second) => ref first.IsSuccessful ? ref first : ref second;
 
     /// <summary>
-    /// Indicates that the specified type is the result type.
+    /// Extends <see cref="Type"/> type.
     /// </summary>
     /// <param name="resultType">The type of <see cref="Result{T}"/>.</param>
-    /// <returns><see langword="true"/>, if specified type is result type; otherwise, <see langword="false"/>.</returns>
-    public static bool IsResult(this Type resultType) => resultType.IsConstructedGenericType &&
-                                                         resultType.GetGenericTypeDefinition().IsOneOf(typeof(Result<>), typeof(Result<,>));
+    extension(Type resultType)
+    {
+        /// <summary>
+        /// Indicates that the specified type is the result type.
+        /// </summary>
+        /// 
+        /// <value><see langword="true"/>, if specified type is result type; otherwise, <see langword="false"/>.</value>
+        public bool IsResult => resultType.IsConstructedGenericType &&
+                                resultType.GetGenericTypeDefinition().IsOneOf(typeof(Result<>), typeof(Result<,>));
+    }
 
     /// <summary>
     /// Returns the underlying type argument of the specified result type.
     /// </summary>
     /// <param name="resultType">Result type.</param>
     /// <returns>Underlying type argument of the result type; otherwise, <see langword="null"/>.</returns>
-    public static Type? GetUnderlyingType(Type resultType) => IsResult(resultType) ? resultType.GetGenericArguments()[0] : null;
+    public static Type? GetUnderlyingType(Type resultType) => resultType.IsResult ? resultType.GetGenericArguments()[0] : null;
 
     /// <summary>
     /// Creates a new instance of <see cref="Result{T}"/> from the specified value.

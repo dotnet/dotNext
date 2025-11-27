@@ -157,11 +157,11 @@ public sealed class OptionalTest : Test
         Equal(20, await Task.FromResult(opt).OrThrow(() => new ArithmeticException()));
         Equal(20D, await Task.FromResult(opt).Convert(double.CreateChecked));
         Equal(20D, await Task.FromResult(opt).Convert(FromInt));
-        Equal(20, await Task.FromResult(opt).Or(42));
+        Equal(20, await (Task.FromResult(opt) | 42));
         Equal(20, await Task.FromResult(opt).If(int.IsEvenInteger));
         
         opt = default;
-        Equal(42, await Task.FromResult(opt).Or(42));
+        Equal(42, await (Task.FromResult(opt) | 42));
         Equal(Optional<int>.None, await Task.FromResult(opt).If(int.IsEvenInteger));
         Equal(Optional<double>.None, await Task.FromResult(opt).Convert(FromInt));
         await ThrowsAsync<ArithmeticException>(Task.FromResult(opt).OrThrow<int, ArithmeticException>);

@@ -77,7 +77,7 @@ internal sealed class MetaExpression : DynamicMetaObject
     {
         restrictions = BindingRestrictions.Empty;
 
-        if (args.IsEmpty)
+        if (args is [])
             return [];
 
         var result = new Expression[args.LongLength];

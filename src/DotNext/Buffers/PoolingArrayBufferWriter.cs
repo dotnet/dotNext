@@ -117,10 +117,10 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)index, (uint)position, nameof(index));
 
-        if (items.IsEmpty)
+        if (items is [])
             goto exit;
 
-        if (buffer.IsEmpty)
+        if (buffer is [])
         {
             buffer = pool.Rent(items.Length);
         }
@@ -158,7 +158,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)index, (uint)position, nameof(index));
 
-        if (buffer.IsEmpty)
+        if (buffer is [])
         {
             buffer = pool.Rent(items.Length);
         }
@@ -169,7 +169,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
         }
         else
         {
-            Debug.Assert(!buffer.IsEmpty);
+            Debug.Assert(buffer is not []);
 
             var newBuffer = pool.Rent(index + items.Length);
             CopyFast(buffer, newBuffer, index);
@@ -250,7 +250,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        if (buffer.IsEmpty)
+        if (buffer is [])
         {
             // nothing to do
         }
@@ -356,7 +356,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfNegative(count);
 
-        if (buffer.IsEmpty)
+        if (buffer is [])
         {
             // nothing to do
         }
@@ -389,7 +389,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfNegative(count);
 
-        if (buffer.IsEmpty)
+        if (buffer is [])
         {
             // nothing to do
         }
@@ -401,7 +401,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
         }
         else if (count > 0)
         {
-            Debug.Assert(buffer.Length > 0);
+            Debug.Assert(buffer is not []);
 
             var newSize = position - count;
             var newBuffer = pool.Rent(newSize);
@@ -440,7 +440,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     private protected override void Resize(int newSize)
     {
         var newBuffer = pool.Rent(newSize);
-        if (!buffer.IsEmpty)
+        if (buffer is not [])
         {
             CopyFast(buffer, newBuffer, position);
             ReturnBuffer();
@@ -455,7 +455,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     {
         if (disposing)
         {
-            if (!buffer.IsEmpty)
+            if (buffer is not [])
             {
                 ReturnBuffer();
                 buffer = [];
