@@ -347,7 +347,11 @@ public static partial class Synchronization
 
         static void BlockingWait(ref TAwaiter awaiter)
         {
-            awaiter.UnsafeOnCompleted(Thread.CurrentThread.Interrupt);
+            var currentThread = Thread.CurrentThread;
+            if (currentThread.IsThreadPoolThread)
+                DrainLocalThreadQueue();
+            
+            awaiter.UnsafeOnCompleted(currentThread.Interrupt);
             try
             {
                 // park thread
@@ -359,6 +363,11 @@ public static partial class Synchronization
             }
         }
     }
+
+    [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "TransferAllLocalWorkItemsToHighPriorityGlobalQueue")]
+    private static extern void DrainLocalThreadQueue(
+        [UnsafeAccessorType("System.Threading.ThreadPoolWorkQueue, System.Private.CoreLib")]
+        object? obj = null);
 
     private interface IAwaiterStateProvider<TAwaiter>
         where TAwaiter : struct, ICriticalNotifyCompletion
