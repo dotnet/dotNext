@@ -50,12 +50,12 @@ public sealed class AwaitExpression : CustomExpression
     internal ParameterExpression NewAwaiterHolder()
     {
         var result = Variable(AwaiterType);
-        result.GetUserData().Set(IsAwaiterVarSlot, true);
+        result.UserData.Set(IsAwaiterVarSlot, true);
         return result;
     }
 
     internal static bool IsAwaiterHolder([NotNullWhen(true)] ParameterExpression? variable)
-        => variable?.GetUserData().Get(IsAwaiterVarSlot) ?? false;
+        => variable?.UserData.Get(IsAwaiterVarSlot) ?? false;
 
     internal MethodCallExpression GetAwaiter { get; }
 

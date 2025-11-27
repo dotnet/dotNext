@@ -20,7 +20,7 @@ public static class AsyncLockAcquisition
                 or WaitHandle or System.Threading.ReaderWriterLock:
                 goto default;
             case not null when GC.GetGeneration(obj) is not int.MaxValue:
-                return obj.GetUserData().GetOrSet(ReaderWriterLock);
+                return obj.UserData.GetOrSet(ReaderWriterLock);
             default:
                 throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
         }
@@ -48,7 +48,7 @@ public static class AsyncLockAcquisition
             case ReaderWriterLockSlim or WaitHandle or System.Threading.ReaderWriterLock:
                 goto default;
             case not null when GC.GetGeneration(obj) is not int.MaxValue:
-                @lock = AsyncLock.Exclusive(obj.GetUserData().GetOrSet(ExclusiveLock));
+                @lock = AsyncLock.Exclusive(obj.UserData.GetOrSet(ExclusiveLock));
                 break;
             default:
                 throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);

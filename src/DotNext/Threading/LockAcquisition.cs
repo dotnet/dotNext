@@ -20,7 +20,7 @@ public static class LockAcquisition
             case SemaphoreSlim or WaitHandle or System.Threading.ReaderWriterLock:
                 goto default;
             case not null when GC.GetGeneration(obj) is not int.MaxValue:
-                return obj.GetUserData().GetOrSet<ReaderWriterLockSlim, ReaderWriterLockSlimWithRecursion>(ReaderWriterLock);
+                return obj.UserData.GetOrSet<ReaderWriterLockSlim, ReaderWriterLockSlimWithRecursion>(ReaderWriterLock);
             default:
                 throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
         }

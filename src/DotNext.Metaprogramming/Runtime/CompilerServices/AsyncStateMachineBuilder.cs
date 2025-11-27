@@ -8,9 +8,7 @@ namespace DotNext.Runtime.CompilerServices;
 
 using Linq.Expressions;
 using Reflection;
-using static Collections.Generic.Dictionary;
 using static Collections.Generic.Collection;
-using static Reflection.TypeExtensions;
 
 /// <summary>
 /// Provides initial transformation of async method.
@@ -67,13 +65,13 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     }
 
     private static void MarkAsParameter(ParameterExpression parameter, int position)
-        => parameter.GetUserData().Set(ParameterPositionSlot, position);
+        => parameter.UserData.Set(ParameterPositionSlot, position);
 
     internal IEnumerable<ParameterExpression> Parameters
         => from candidate in Variables.Keys
-           let position = candidate.GetUserData().Get(ParameterPositionSlot, -1)
+           let position = candidate.UserData.Get(ParameterPositionSlot, -1)
            where position >= 0
-           orderby position ascending
+           orderby position
            select candidate;
 
     internal IEnumerable<ParameterExpression> Closures => Variables.Keys.Where(ClosureAnalyzer.IsClosure);

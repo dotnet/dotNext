@@ -24,7 +24,7 @@ internal sealed class ClosureAnalyzer : ExpressionVisitor
         {
             // replace local with closure variable
             var closure = Expression.Variable(typeof(StrongBox<>).MakeGenericType(p.Type));
-            p.GetUserData().Set(ClosureVariableSlot, true);
+            p.UserData.Set(ClosureVariableSlot, true);
             Closures.Add(p, closure);
             return Expression.Field(closure, nameof(StrongBox<int>.Value));
         }
@@ -33,5 +33,5 @@ internal sealed class ClosureAnalyzer : ExpressionVisitor
     }
 
     internal static bool IsClosure(ParameterExpression p)
-        => p.GetUserData().TryGet(ClosureVariableSlot, out var result) | result;
+        => p.UserData.TryGet(ClosureVariableSlot, out var result) | result;
 }

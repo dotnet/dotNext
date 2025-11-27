@@ -25,8 +25,8 @@ internal class ExpressionAttributes
     internal uint StateId;
 
     internal void AttachTo(Expression node)
-        => node.GetUserData().Set(AttributesSlot, this);
+        => node.UserData.Set(AttributesSlot, this);
 
     internal static ExpressionAttributes? Get(Expression node)
-        => node.GetUserData().Get(AttributesSlot);
+        => node.UserData.Get(AttributesSlot);
 }
