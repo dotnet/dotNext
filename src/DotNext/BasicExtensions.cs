@@ -165,7 +165,6 @@ public static class BasicExtensions
         /// Checks whether the specified object is exactly of the specified type.
         /// </summary>
         /// <param name="obj">The object to test.</param>
-        /// <typeparam name="T">The expected type of object.</typeparam>
         /// <returns><see langword="true"/> if <paramref name="obj"/> is not <see langword="null"/> and of type <typeparamref name="T"/>; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsExactTypeOf(object? obj) => obj?.GetType() == typeof(T);

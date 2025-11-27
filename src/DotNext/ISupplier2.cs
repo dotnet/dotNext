@@ -34,10 +34,10 @@ public interface ISupplier<in T1, in T2, out TResult> : IFunctional
     TResult Invoke(T1 arg1, T2 arg2);
 
     /// <inheritdoc/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => PrepareInvocation(count, result) = Invoke(
-            GetArgument<T1>(ref args, 0),
-            GetArgument<T2>(ref args, 1));
+            GetArgument<T1>(in args, 0),
+            GetArgument<T2>(in args, 1));
 
     internal static ref TResult PrepareInvocation(int count,
         Variant result,
@@ -88,10 +88,10 @@ public readonly unsafe struct Supplier<T1, T2, TResult>(delegate*<T1, T2, TResul
     public override string ToString() => new IntPtr(ptr).ToString("X");
 
     /// <inheritdoc/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => ISupplier<T1, T2, TResult>.PrepareInvocation(count, result) = ptr(
-            IFunctional.GetArgument<T1>(ref args, 0),
-            IFunctional.GetArgument<T2>(ref args, 1));
+            IFunctional.GetArgument<T1>(in args, 0),
+            IFunctional.GetArgument<T2>(in args, 1));
 
     /// <summary>
     /// Wraps the function pointer.
@@ -143,10 +143,10 @@ public readonly record struct DelegatingSupplier<T1, T2, TResult> : ISupplier<T1
     TResult ISupplier<T1, T2, TResult>.Invoke(T1 arg1, T2 arg2) => func(arg1, arg2);
 
     /// <inheritdoc/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => ISupplier<T1, T2, TResult>.PrepareInvocation(count, result) = func(
-            IFunctional.GetArgument<T1>(ref args, 0),
-            IFunctional.GetArgument<T2>(ref args, 1));
+            IFunctional.GetArgument<T1>(in args, 0),
+            IFunctional.GetArgument<T2>(in args, 1));
 
     /// <inheritdoc />
     public override string? ToString() => func?.ToString();
@@ -170,10 +170,10 @@ internal readonly struct DelegatingComparer<T>(Comparison<T?> comparison) : ICom
     int ISupplier<T?, T?, int>.Invoke(T? x, T? y) => comparison(x, y);
 
     /// <inheritdoc/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => ISupplier<T?, T?, int>.PrepareInvocation(count, result) = comparison(
-            IFunctional.GetArgument<T?>(ref args, 0),
-            IFunctional.GetArgument<T?>(ref args, 1));
+            IFunctional.GetArgument<T?>(in args, 0),
+            IFunctional.GetArgument<T?>(in args, 1));
 
     /// <inheritdoc />
     int IComparer<T>.Compare(T? x, T? y) => comparison(x, y);
@@ -192,10 +192,10 @@ internal readonly unsafe struct ComparerWrapper<T>(delegate*<T?, T?, int> ptr) :
     int IComparer<T>.Compare(T? x, T? y) => ptr(x, y);
 
     /// <inheritdoc/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => ISupplier<T?, T?, int>.PrepareInvocation(count, result) = ptr(
-            IFunctional.GetArgument<T?>(ref args, 0),
-            IFunctional.GetArgument<T?>(ref args, 1));
+            IFunctional.GetArgument<T?>(in args, 0),
+            IFunctional.GetArgument<T?>(in args, 1));
 
     public static implicit operator ComparerWrapper<T>(delegate*<T?, T?, int> ptr) => new(ptr);
 }

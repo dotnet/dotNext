@@ -610,7 +610,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         => ConvertOptional<TResult, Supplier<T, Optional<TResult>>>(mapper);
 
     /// <inheritdoc/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
     {
         // Do not modify the result if value is undefined
         ref var res = ref ISupplier<object?>.PrepareInvocation(count, result);

@@ -50,7 +50,7 @@ public sealed class GrowableBufferTests : Test
             writer.Reset();
             var expectedSpan = new ReadOnlySpan<byte>(expected);
             var arg = Variant.Immutable(ref expectedSpan);
-            writer.DynamicInvoke(ref arg, 1, Variant.Empty);
+            writer.DynamicInvoke(in arg, 1, Variant.Empty);
             Equal(expectedSpan.Length, writer.WrittenCount);
         }
         finally

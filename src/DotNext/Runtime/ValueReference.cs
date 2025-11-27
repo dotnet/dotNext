@@ -96,7 +96,7 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     void IConsumer<T>.Invoke(T value) => Value = value;
 
     /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
     {
         switch (count)
         {
@@ -291,7 +291,7 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
     T ISupplier<T>.Invoke() => Value;
 
     /// <inheritdoc/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => ISupplier<T>.PrepareInvocation(count, result) = Value;
 
     internal Func<T> ToFunc()

@@ -11,7 +11,7 @@ namespace DotNext;
 /// This is by-ref struct because user data should have
 /// the same lifetime as its owner.
 /// </remarks>
-public readonly ref partial struct UserDataStorage
+public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
 {
     /// <summary>
     /// Implementation of this interface allows to customize behavior of
@@ -413,6 +413,9 @@ public readonly ref partial struct UserDataStorage
     /// </summary>
     /// <returns>The textual representation of this storage.</returns>
     public override string? ToString() => source?.ToString();
+
+    /// <inheritdoc/>
+    public bool Equals(UserDataStorage other) => ReferenceEquals(source, other.source);
 
     /// <summary>
     /// Determines whether two stores are for the same object.

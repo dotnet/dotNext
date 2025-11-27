@@ -518,7 +518,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     }
     
     /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
     {
         switch (count)
         {
@@ -527,8 +527,8 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
                 break;
             case 2:
                 result.Mutable<ValueTask>() = WriteAsync(
-                    IFunctional.GetArgument<ReadOnlyMemory<T>>(ref args, 0),
-                    IFunctional.GetArgument<CancellationToken>(ref args, 1)
+                    IFunctional.GetArgument<ReadOnlyMemory<T>>(in args, 0),
+                    IFunctional.GetArgument<CancellationToken>(in args, 1)
                 );
                 break;
             default:

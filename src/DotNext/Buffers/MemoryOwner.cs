@@ -273,7 +273,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     readonly ReadOnlyMemory<T> ISupplier<ReadOnlyMemory<T>>.Invoke() => Memory;
 
     /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
-    readonly void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
     {
         ArgumentOutOfRangeException.ThrowIfNotEqual(count, 0);
 

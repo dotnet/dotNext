@@ -27,7 +27,7 @@ public interface ISupplier<out TResult> : IFunctional
     TResult Invoke();
 
     /// <inheritdoc/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => PrepareInvocation(count, result) = Invoke();
 
     internal static ref TResult PrepareInvocation(int count,
@@ -69,7 +69,7 @@ public readonly unsafe struct Supplier<TResult>(delegate*<TResult> ptr) : ISuppl
     TResult ISupplier<TResult>.Invoke() => ptr();
 
     /// <inheritdoc/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => ISupplier<TResult>.PrepareInvocation(count, result) = ptr();
 
     /// <summary>
@@ -108,7 +108,7 @@ public readonly struct Activator<T> : ISupplier<T>
     T ISupplier<T>.Invoke() => new();
 
     /// <inheritdoc/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => ISupplier<T>.PrepareInvocation(count, result) = new();
 }
 
@@ -126,7 +126,7 @@ public readonly struct ValueSupplier<T>(T value) : ISupplier<T>
     T ISupplier<T>.Invoke() => value;
 
     /// <inheritdoc/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => ISupplier<T>.PrepareInvocation(count, result) = value;
 
     /// <summary>
@@ -165,7 +165,7 @@ public readonly record struct DelegatingSupplier<TResult> : ISupplier<TResult>
     TResult ISupplier<TResult>.Invoke() => func();
 
     /// <inheritdoc/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => ISupplier<TResult>.PrepareInvocation(count, result) = func();
 
     /// <inheritdoc />

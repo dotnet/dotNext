@@ -361,7 +361,7 @@ public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
         => OrInvokeWithException<Supplier<Exception, T>>(defaultFunc);
 
     /// <inheritdoc/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
     {
         ref var res = ref ISupplier<object?>.PrepareInvocation(count, result);
         if (IsSuccessful)
@@ -706,7 +706,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
         => OrInvokeWithError<Supplier<TError, T>>(defaultFunc);
 
     /// <inheritdoc/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
     {
         ref var res = ref ISupplier<object?>.PrepareInvocation(count, result);
         if (IsSuccessful)

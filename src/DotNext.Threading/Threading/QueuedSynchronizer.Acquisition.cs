@@ -168,7 +168,7 @@ partial class QueuedSynchronizer
             return AsTask<ValueTask<bool>>(taskFactory);
         }
 
-        void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+        void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         {
             ArgumentOutOfRangeException.ThrowIfNotEqual(count, 0);
 

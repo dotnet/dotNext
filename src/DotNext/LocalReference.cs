@@ -16,11 +16,6 @@ public interface ITypedReference<T>
     /// Gets a reference to the value.
     /// </summary>
     ref readonly T Value { get; }
-    
-    /// <summary>
-    /// Gets a value indicating that this reference is empty.
-    /// </summary>
-    bool IsEmpty { get; }
 }
 
 /// <summary>

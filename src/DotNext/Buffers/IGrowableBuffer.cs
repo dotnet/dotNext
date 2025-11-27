@@ -43,7 +43,7 @@ public interface IGrowableBuffer<T> : IBufferWriter<T>, IReadOnlySpanConsumer<T>
         => Write(input);
 
     /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
     {
         switch (count)
         {
@@ -52,8 +52,8 @@ public interface IGrowableBuffer<T> : IBufferWriter<T>, IReadOnlySpanConsumer<T>
                 break;
             case 2:
                 result.Mutable<ValueTask>() = Invoke(
-                    GetArgument<ReadOnlyMemory<T>>(ref args, 0),
-                    GetArgument<CancellationToken>(ref args, 1)
+                    GetArgument<ReadOnlyMemory<T>>(in args, 0),
+                    GetArgument<CancellationToken>(in args, 1)
                 );
                 break;
             default:
@@ -108,7 +108,7 @@ public interface IGrowableBuffer<T> : IBufferWriter<T>, IReadOnlySpanConsumer<T>
     /// <returns><see langword="true"/> if the written content can be represented as contiguous block of memory; otherwise, <see langword="false"/>.</returns>
     bool TryGetWrittenContent(out ReadOnlyMemory<T> block);
 
-    internal static bool GetBufferSize(int sizeHint, int capacity, int writtenCount, out int newSize)
+    private protected static bool GetBufferSize(int sizeHint, int capacity, int writtenCount, out int newSize)
     {
         Debug.Assert(sizeHint >= 0);
         Debug.Assert(capacity >= 0);

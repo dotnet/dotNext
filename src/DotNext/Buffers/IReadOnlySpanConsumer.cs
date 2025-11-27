@@ -27,7 +27,7 @@ public interface IReadOnlySpanConsumer<T> : ISupplier<ReadOnlyMemory<T>, Cancell
     void Invoke(ReadOnlySpan<T> span);
 
     /// <inheritdoc/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
     {
         switch (count)
         {
@@ -36,8 +36,8 @@ public interface IReadOnlySpanConsumer<T> : ISupplier<ReadOnlyMemory<T>, Cancell
                 break;
             case 2:
                 result.Mutable<ValueTask>() = Invoke(
-                    GetArgument<ReadOnlyMemory<T>>(ref args, 0),
-                    GetArgument<CancellationToken>(ref args, 1)
+                    GetArgument<ReadOnlyMemory<T>>(in args, 0),
+                    GetArgument<CancellationToken>(in args, 1)
                 );
                 break;
             default:

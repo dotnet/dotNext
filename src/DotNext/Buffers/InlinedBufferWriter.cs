@@ -104,7 +104,7 @@ internal struct InlinedBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowabl
     public readonly override string ToString() => WrittenMemory.ToString();
 
     [StructLayout(LayoutKind.Auto)]
-    public readonly ref struct Ref(ref InlinedBufferWriter<T> writer) : IBufferWriter<T>
+    public readonly ref struct Ref(ref InlinedBufferWriter<T> writer) : IBufferWriter<T>, ITypedReference<InlinedBufferWriter<T>>
     {
         private readonly ref InlinedBufferWriter<T> writer = ref writer;
 
@@ -113,5 +113,7 @@ internal struct InlinedBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowabl
         Memory<T> IBufferWriter<T>.GetMemory(int sizeHint) => writer.GetMemory(sizeHint);
 
         Span<T> IBufferWriter<T>.GetSpan(int sizeHint) => writer.GetSpan(sizeHint);
+
+        ref readonly InlinedBufferWriter<T> ITypedReference<InlinedBufferWriter<T>>.Value => ref writer;
     }
 }

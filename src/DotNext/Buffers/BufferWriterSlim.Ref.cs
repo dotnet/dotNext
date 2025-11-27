@@ -6,7 +6,7 @@ namespace DotNext.Buffers;
 partial struct BufferWriterSlim<T>
 {
     [StructLayout(LayoutKind.Auto)]
-    internal readonly ref struct Ref : IBufferWriter<T>
+    internal readonly ref struct Ref : IBufferWriter<T>, ITypedReference<BufferWriterSlim<T>>
     {
         private readonly LocalReference<BufferWriterSlim<T>> reference;
 
@@ -20,5 +20,7 @@ partial struct BufferWriterSlim<T>
         Span<T> IBufferWriter<T>.GetSpan(int sizeHint) => reference.Value.GetSpan(sizeHint);
 
         internal ref BufferWriterSlim<T> Value => ref reference.Value;
+
+        ref readonly BufferWriterSlim<T> ITypedReference<BufferWriterSlim<T>>.Value => ref Value;
     }
 }

@@ -19,6 +19,6 @@ internal struct SevenBitEncodedIntReader() : IBufferReader, ISupplier<int>
 
     readonly int ISupplier<int>.Invoke() => (int)decoder.Value;
 
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => throw new NotSupportedException();
 }

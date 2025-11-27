@@ -10,7 +10,7 @@ partial class AdvancedHelpers
     extension(Unsafe)
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static ref TTo InToRef<TFrom, TTo>(scoped ref readonly TFrom source)
+        internal static ref TTo InToRef<TFrom, TTo>(ref readonly TFrom source)
             => ref Unsafe.As<TFrom, TTo>(ref Unsafe.AsRef(in source));
         
         /// <summary>

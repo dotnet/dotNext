@@ -156,7 +156,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     int ISupplier<int>.Invoke() => Take();
     
     /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
     {
         switch (count)
         {

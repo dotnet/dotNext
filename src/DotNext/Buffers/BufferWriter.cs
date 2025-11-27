@@ -58,7 +58,7 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
     ReadOnlyMemory<T> ISupplier<ReadOnlyMemory<T>>.Invoke() => WrittenMemory;
 
     /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
-    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
     {
         switch (count)
         {
@@ -70,8 +70,8 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
                 break;
             case 2:
                 result.Mutable<ValueTask>() = this.As<ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>>().Invoke(
-                    IFunctional.GetArgument<ReadOnlyMemory<T>>(ref args, 0),
-                    IFunctional.GetArgument<CancellationToken>(ref args, 1)
+                    IFunctional.GetArgument<ReadOnlyMemory<T>>(in args, 0),
+                    IFunctional.GetArgument<CancellationToken>(in args, 1)
                 );
                 break;
             default:
