@@ -31,7 +31,7 @@ public interface IConsumer<in T> : IFunctional
     void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
     {
         PrepareInvocation(count);
-        Invoke(args.ReadOnly<T>());
+        Invoke(args.Immutable<T>());
     }
 
     internal static void PrepareInvocation(int count,
@@ -68,7 +68,7 @@ public readonly unsafe struct Consumer<T>(delegate*<T, void> ptr) : IConsumer<T>
     void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
     {
         IConsumer<T>.PrepareInvocation(count);
-        ptr(args.ReadOnly<T>());
+        ptr(args.Immutable<T>());
     }
 
     /// <summary>
@@ -125,7 +125,7 @@ public readonly record struct DelegatingConsumer<T> : IConsumer<T>
     void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
     {
         IConsumer<T>.PrepareInvocation(count);
-        action(args.ReadOnly<T>());
+        action(args.Immutable<T>());
     }
 
     /// <inheritdoc />

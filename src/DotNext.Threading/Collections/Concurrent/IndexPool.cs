@@ -164,7 +164,7 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
                 result.Mutable<int>() = Take();
                 break;
             case 1:
-                Return(args.ReadOnly<int>());
+                Return(args.Immutable<int>());
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(count));

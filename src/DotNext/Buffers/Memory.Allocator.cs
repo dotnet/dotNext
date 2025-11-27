@@ -5,88 +5,110 @@ namespace DotNext.Buffers;
 
 public static partial class Memory
 {
-    private static MemoryOwner<T> Allocate<T>(this ArrayPool<T> pool, int length)
-        => new(pool, length);
-
     /// <summary>
-    /// Converts array pool to the memory allocator.
+    /// Extends <see cref="ArrayPool{T}"/> type.
     /// </summary>
     /// <param name="pool">The array pool.</param>
     /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
-    /// <returns>The array allocator.</returns>
-    public static MemoryAllocator<T> ToAllocator<T>(this ArrayPool<T> pool)
-        => pool.Allocate;
-
-    private static MemoryOwner<T> Allocate<T>(this MemoryPool<T> pool, int length)
-        => new(pool, length);
-
-    /// <summary>
-    /// Converts memory pool to the memory allocator.
-    /// </summary>
-    /// <param name="pool">The memory pool.</param>
-    /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
-    /// <returns>The memory allocator.</returns>
-    public static MemoryAllocator<T> ToAllocator<T>(this MemoryPool<T> pool)
-        => pool.Allocate;
-
-    private static MemoryOwner<T> Allocate<T>(this Func<int, IMemoryOwner<T>> provider, int length)
-        => new(provider, length);
-
-    /// <summary>
-    /// Converts memory provider to the memory allocator.
-    /// </summary>
-    /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
-    /// <param name="provider">The memory provider.</param>
-    /// <returns>The memory allocator.</returns>
-    public static MemoryAllocator<T> ToAllocator<T>(this Func<int, IMemoryOwner<T>> provider)
-        => provider.Allocate;
-
-    /// <summary>
-    /// Allocates memory of at least <paramref name="length"/> size.
-    /// </summary>
-    /// <param name="allocator">The memory allocator.</param>
-    /// <param name="length">The number of items in the rented memory.</param>
-    /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
-    /// <returns>The allocated memory.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static MemoryOwner<T> AllocateAtLeast<T>(this MemoryAllocator<T>? allocator, int length)
+    extension<T>(ArrayPool<T> pool)
     {
-        MemoryOwner<T> result;
-        if (allocator is null)
-        {
-            result = AllocateAtLeast<T>(length);
-        }
-        else
-        {
-            result = allocator(length);
-            result.Expand();
-        }
+        private MemoryOwner<T> Allocate(int length)
+            => new(pool, length);
 
-        return result;
+        /// <summary>
+        /// Converts array pool to the memory allocator.
+        /// </summary>
+        /// <returns>The array allocator.</returns>
+        public MemoryAllocator<T> ToAllocator()
+            => pool.Allocate;
     }
 
     /// <summary>
-    /// Allocates memory of <paramref name="length"/> size.
+    /// Extends <see cref="MemoryPool{T}"/> type.
+    /// </summary>
+    /// <param name="pool">The memory pool.</param>
+    /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
+    extension<T>(MemoryPool<T> pool)
+    {
+        private MemoryOwner<T> Allocate(int length)
+            => new(pool, length);
+
+        /// <summary>
+        /// Converts memory pool to the memory allocator.
+        /// </summary>
+        /// <returns>The memory allocator.</returns>
+        public MemoryAllocator<T> ToAllocator()
+            => pool.Allocate;
+    }
+
+    /// <summary>
+    /// Extends <see cref="Func{Int32, IMemoryOwner}"/> type.
+    /// </summary>
+    /// <param name="provider">The memory provider.</param>
+    /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
+    extension<T>(Func<int, IMemoryOwner<T>> provider)
+    {
+        private MemoryOwner<T> Allocate(int length)
+            => new(provider, length);
+
+        /// <summary>
+        /// Converts memory provider to the memory allocator.
+        /// </summary>
+        /// <returns>The memory allocator.</returns>
+        public MemoryAllocator<T> ToAllocator()
+            => provider.Allocate;
+    }
+
+    /// <summary>
+    /// Extends <see cref="MemoryAllocator{T}"/> delegate.
     /// </summary>
     /// <param name="allocator">The memory allocator.</param>
-    /// <param name="length">The number of items in the rented memory.</param>
     /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
-    /// <returns>The allocated memory.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static MemoryOwner<T> AllocateExactly<T>(this MemoryAllocator<T>? allocator, int length)
+    extension<T>(MemoryAllocator<T>? allocator)
     {
-        MemoryOwner<T> result;
-        if (allocator is null)
+        /// <summary>
+        /// Allocates memory of at least <paramref name="length"/> size.
+        /// </summary>
+        /// <param name="length">The number of items in the rented memory.</param>
+        /// <returns>The allocated memory.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public MemoryOwner<T> AllocateAtLeast(int length)
         {
-            result = AllocateExactly<T>(length);
-        }
-        else
-        {
-            result = allocator(length);
-            result.Truncate(length);
+            MemoryOwner<T> result;
+            if (allocator is null)
+            {
+                result = AllocateAtLeast<T>(length);
+            }
+            else
+            {
+                result = allocator(length);
+                result.Expand();
+            }
+
+            return result;
         }
 
-        return result;
+        /// <summary>
+        /// Allocates memory of <paramref name="length"/> size.
+        /// </summary>
+        /// <param name="length">The number of items in the rented memory.</param>
+        /// <returns>The allocated memory.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public MemoryOwner<T> AllocateExactly(int length)
+        {
+            MemoryOwner<T> result;
+            if (allocator is null)
+            {
+                result = AllocateExactly<T>(length);
+            }
+            else
+            {
+                result = allocator(length);
+                result.Truncate(length);
+            }
+
+            return result;
+        }
     }
 
     /// <summary>

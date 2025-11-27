@@ -92,13 +92,13 @@ public sealed class MemoryOwnerTests : Test
     public static void RawReference()
     {
         var owner = new MemoryOwner<byte>(Array.Empty<byte>());
-        True(Unsafe.IsNullRef(ref Memory.GetReference(in owner)));
+        True(Unsafe.IsNullRef(ref owner.DataRef));
 
         owner = default;
-        True(Unsafe.IsNullRef(ref Memory.GetReference(in owner)));
+        True(Unsafe.IsNullRef(ref owner.DataRef));
 
         owner = new([10]);
-        Equal(10, Memory.GetReference(in owner));
+        Equal(10, owner.DataRef);
     }
 
     [Fact]

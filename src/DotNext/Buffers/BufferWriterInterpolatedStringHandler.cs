@@ -2,7 +2,6 @@ using System.Buffers;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Buffers;
 
@@ -15,9 +14,6 @@ namespace DotNext.Buffers;
 [StructLayout(LayoutKind.Auto)]
 public struct BufferWriterInterpolatedStringHandler
 {
-    private const int MaxBufferSize = int.MaxValue / 2;
-    private const char Whitespace = ' ';
-
     private readonly IBufferWriter<char> buffer;
     private readonly IFormatProvider? provider;
     private int count;
@@ -51,46 +47,6 @@ public struct BufferWriterInterpolatedStringHandler
     public void AppendLiteral(string? value)
         => AppendFormatted(value.AsSpan());
 
-    internal static int AppendFormatted<T>(IBufferWriter<char> buffer, T value, string? format, IFormatProvider? provider)
-    {
-        int charsWritten;
-
-        switch (value)
-        {
-            case ISpanFormattable:
-                Span<char> span = buffer.GetSpan();
-
-                // constrained call avoiding boxing for value types
-                for (int sizeHint; !((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider); span = buffer.GetSpan(sizeHint))
-                {
-                    sizeHint = span.Length;
-                    sizeHint = sizeHint <= MaxBufferSize ? sizeHint << 1 : throw new InsufficientMemoryException();
-                }
-
-                buffer.Advance(charsWritten);
-                break;
-            case IFormattable:
-                // constrained call avoiding boxing for value types
-                charsWritten = Write(buffer, ((IFormattable)value).ToString(format, provider));
-
-                break;
-            case not null:
-                charsWritten = Write(buffer, value.ToString());
-                break;
-            default:
-                charsWritten = 0;
-                break;
-        }
-
-        return charsWritten;
-
-        static int Write(IBufferWriter<char> buffer, scoped ReadOnlySpan<char> chars)
-        {
-            buffer.Write(chars);
-            return chars.Length;
-        }
-    }
-
     /// <summary>
     /// Writes the specified value to the handler.
     /// </summary>
@@ -98,7 +54,7 @@ public struct BufferWriterInterpolatedStringHandler
     /// <param name="value">The value to write.</param>
     /// <param name="format">The format string.</param>
     public void AppendFormatted<T>(T value, string? format = null)
-        => count += AppendFormatted(buffer, value, format, provider);
+        => count += CharBuffer.AppendFormatted<T, BufferWriterReference<char>>(new(buffer), value, format, provider);
 
     /// <summary>
     /// Writes the specified character span to the handler.
@@ -110,29 +66,6 @@ public struct BufferWriterInterpolatedStringHandler
         count += value.Length;
     }
 
-    private void AppendFormatted(scoped ReadOnlySpan<char> value, int alignment, bool leftAlign)
-    {
-        Debug.Assert(alignment >= 0);
-
-        var padding = alignment - value.Length;
-        if (padding <= 0)
-        {
-            AppendFormatted(value);
-            return;
-        }
-
-        var span = buffer.GetSpan(alignment);
-        var filler = leftAlign
-            ? span.Slice(value.Length, padding)
-            : span.TrimLength(padding, out span);
-
-        filler.Fill(Whitespace);
-        value.CopyTo(span);
-
-        buffer.Advance(alignment);
-        count += alignment;
-    }
-
     /// <summary>
     /// Writes the specified string of chars to the handler.
     /// </summary>
@@ -142,14 +75,7 @@ public struct BufferWriterInterpolatedStringHandler
     /// it indicates left-aligned and the required minimum is the absolute value.
     /// </param>
     public void AppendFormatted(scoped ReadOnlySpan<char> value, int alignment)
-    {
-        bool leftAlign;
-
-        if (leftAlign = alignment < 0)
-            alignment = -alignment;
-
-        AppendFormatted(value, alignment, leftAlign);
-    }
+        => count += CharBuffer.AppendFormatted<BufferWriterReference<char>>(new(buffer), value, alignment);
 
     /// <summary>
     /// Writes the specified value to the handler.
@@ -162,51 +88,5 @@ public struct BufferWriterInterpolatedStringHandler
     /// </param>
     /// <param name="format">The format string.</param>
     public void AppendFormatted<T>(T value, int alignment, string? format = null)
-    {
-        bool leftAlign;
-
-        if (leftAlign = alignment < 0)
-            alignment = -alignment;
-
-        switch (value)
-        {
-            case ISpanFormattable:
-                for (int bufferSize = alignment; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
-                {
-                    Span<char> span = buffer.GetSpan(bufferSize), filler;
-                    if (((ISpanFormattable)value).TryFormat(span, out var charsWritten, format, provider))
-                    {
-                        var padding = alignment - charsWritten;
-
-                        if (padding <= 0)
-                        {
-                            alignment = charsWritten;
-                        }
-                        else if (leftAlign)
-                        {
-                            filler = span.Slice(charsWritten, padding);
-                            filler.Fill(Whitespace);
-                        }
-                        else
-                        {
-                            filler = span.TrimLength(padding, out var rest);
-                            span.Slice(0, charsWritten).CopyTo(rest);
-                            filler.Fill(Whitespace);
-                        }
-
-                        buffer.Advance(alignment);
-                        count += alignment;
-                        break;
-                    }
-                }
-
-                break;
-            case IFormattable:
-                AppendFormatted(((IFormattable)value).ToString(format, provider).AsSpan(), alignment, leftAlign);
-                break;
-            case not null:
-                AppendFormatted(value.ToString().AsSpan(), alignment, leftAlign);
-                break;
-        }
-    }
+        => count += CharBuffer.AppendFormatted<T, BufferWriterReference<char>>(new(buffer), value, alignment, format, provider);
 }

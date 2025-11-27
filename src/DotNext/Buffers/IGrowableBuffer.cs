@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.ComponentModel;
 using Debug = System.Diagnostics.Debug;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
@@ -17,7 +18,7 @@ using Runtime.CompilerServices;
 /// </remarks>
 /// <typeparam name="T">The type of the elements in the buffer.</typeparam>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
-public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IResettable
+public interface IGrowableBuffer<T> : IBufferWriter<T>, IReadOnlySpanConsumer<T>, IDisposable, IResettable
 {
     /// <summary>
     /// Represents default initial buffer size.
@@ -29,13 +30,6 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
     /// </summary>
     /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
     long WrittenCount { get; }
-
-    /// <summary>
-    /// Gets the maximum number of elements
-    /// that can hold this buffer.
-    /// </summary>
-    /// <value>The maximum number of elements; or <see langword="null"/> if this buffer has no limits.</value>
-    long? Capacity => null;
 
     /// <summary>
     /// Writes the memory block.
@@ -54,7 +48,7 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
         switch (count)
         {
             case 1:
-                Write(args.ReadOnly<ReadOnlySpan<T>>());
+                Write(args.Immutable<ReadOnlySpan<T>>());
                 break;
             case 2:
                 result.Mutable<ValueTask>() = Invoke(
@@ -106,15 +100,6 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
     /// <returns>The actual number of copied elements.</returns>
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     int CopyTo(Span<T> output);
-
-    /// <summary>
-    /// Clears the contents of the writer.
-    /// </summary>
-    /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
-    void Clear();
-
-    /// <inheritdoc />
-    void IResettable.Reset() => Clear();
 
     /// <summary>
     /// Attempts to get written content as contiguous block of memory.

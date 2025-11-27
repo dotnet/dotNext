@@ -113,7 +113,7 @@ partial class WriteAheadLog
                         writer.Add() = enumerator.Current;
                     }
 
-                    return Memory.ToReadOnlySequence(writer.WrittenSpan);
+                    return ReadOnlyMemory<byte>.Concat(writer.WrittenSpan);
                 }
             }
 

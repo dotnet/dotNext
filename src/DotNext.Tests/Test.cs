@@ -40,7 +40,7 @@ public abstract class Test : Assert
     }
 
     private protected static ReadOnlySequence<T> ToReadOnlySequence<T>(ReadOnlyMemory<T> memory, int chunkSize)
-        => Split(memory, chunkSize).ToReadOnlySequence();
+        => Split(memory, chunkSize).Concat();
 
     private protected static Action<T> Equal<T>(T expected) => actual => Equal(expected, actual);
 

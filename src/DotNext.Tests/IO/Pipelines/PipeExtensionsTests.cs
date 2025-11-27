@@ -285,7 +285,7 @@ public sealed class PipeExtensionsTests : Test
         var portion1 = RandomBytes(64);
         var portion2 = RandomBytes(64);
 
-        var reader = PipeReader.Create(Memory.Concat(new ReadOnlyMemory<byte>(portion1), portion2));
+        var reader = PipeReader.Create(ReadOnlyMemory<byte>.Concat(new ReadOnlyMemory<byte>(portion1), portion2));
 
         await using (var enumerator = reader.ReadAllAsync().GetAsyncEnumerator())
         {

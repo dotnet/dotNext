@@ -21,7 +21,7 @@ using Buffers;
 /// returned <see cref="Memory{T}"/> instance references bytes in memory. Otherwise,
 /// it references memory-mapped file.
 /// </remarks>
-public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<byte>, IGrowableBuffer<byte>
+public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<byte>
 {
     [StructLayout(LayoutKind.Auto)]
     private readonly struct ReadSession : IDisposable
@@ -268,7 +268,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IBufferWriter<by
     }
 
     /// <inheritdoc/>
-    void IGrowableBuffer<byte>.Clear() => Clear(reuseBuffer: false);
+    void IResettable.Reset() => Clear(reuseBuffer: false);
 
     private void ClearCore(bool reuseBuffer)
     {

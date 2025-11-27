@@ -6,6 +6,9 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
+using Runtime;
+using Runtime.CompilerServices;
+
 /// <summary>
 /// Represents stack-allocated buffer writer.
 /// </summary>
@@ -21,7 +24,7 @@ namespace DotNext.Buffers;
 /// <seealso cref="SparseBufferWriter{T}"/>
 [StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FreeCapacity = {{{nameof(FreeCapacity)}}}, Overflow = {{{nameof(Overflow)}}}")]
-public ref struct BufferWriterSlim<T>
+public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
 {
     private readonly Span<T> initialBuffer;
     private readonly MemoryAllocator<T>? allocator;
@@ -77,6 +80,9 @@ public ref struct BufferWriterSlim<T>
         }
     }
 
+    /// <inheritdoc/>
+    readonly long IGrowableBuffer<T>.WrittenCount => WrittenCount;
+
     /// <summary>
     /// Gets the total amount of space within the underlying memory.
     /// </summary>
@@ -111,35 +117,57 @@ public ref struct BufferWriterSlim<T>
         return InternalGetSpan(sizeHint);
     }
 
+    /// <inheritdoc/>
+    Memory<T> IBufferWriter<T>.GetMemory(int sizeHint) => GetMemory(sizeHint);
+    
+    private Memory<T> GetMemory(int sizeHint)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
+        
+        if (!extraBuffer.IsEmpty)
+        {
+            // no need to copy initial buffer
+            EnsureExtraBufferSize(sizeHint);
+        }
+        else
+        {
+            // copy everything to the extra buffer, because it's not possible to return the stack pointer
+            IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position, out var newSize);
+            extraBuffer = allocator.AllocateAtLeast(newSize);
+            initialBuffer.Slice(0, position).CopyTo(extraBuffer.Span);
+        }
+
+        return extraBuffer.Memory.Slice(position);
+    } 
+
     internal Span<T> InternalGetSpan(int sizeHint)
     {
         Debug.Assert(sizeHint >= 0);
 
         Span<T> result;
-        int newSize;
-        if (extraBuffer.IsEmpty)
+        if (!extraBuffer.IsEmpty)
         {
-            // need to copy initial buffer
-            if (IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position, out newSize))
-            {
-                extraBuffer = allocator.AllocateAtLeast(newSize);
-                initialBuffer.CopyTo(result = extraBuffer.Span);
-            }
-            else
-            {
-                result = initialBuffer;
-            }
+            // no need to copy initial buffer
+            EnsureExtraBufferSize(sizeHint);
+            result = extraBuffer.Span;
+        }
+        else if (IGrowableBuffer<T>.GetBufferSize(sizeHint, initialBuffer.Length, position, out var newSize))
+        {
+            extraBuffer = allocator.AllocateAtLeast(newSize);
+            initialBuffer.CopyTo(result = extraBuffer.Span);
         }
         else
         {
-            // no need to copy initial buffer
-            if (IGrowableBuffer<T>.GetBufferSize(sizeHint, extraBuffer.Length, position, out newSize))
-                extraBuffer.Resize(newSize, allocator);
-
-            result = extraBuffer.Span;
+            result = initialBuffer;
         }
 
         return result.Slice(position);
+    }
+
+    private void EnsureExtraBufferSize(int sizeHint)
+    {
+        if (IGrowableBuffer<T>.GetBufferSize(sizeHint, extraBuffer.Length, position, out sizeHint))
+            extraBuffer.Resize(sizeHint, allocator);
     }
 
     /// <summary>
@@ -193,6 +221,10 @@ public ref struct BufferWriterSlim<T>
             position += input.Length;
         }
     }
+    
+    /// <inheritdoc />
+    void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> input)
+        => Write(input);
 
     /// <summary>
     /// Adds single element to this builder.
@@ -200,6 +232,9 @@ public ref struct BufferWriterSlim<T>
     /// <param name="item">The item to be added.</param>
     /// <exception cref="InsufficientMemoryException">Pre-allocated initial buffer size is not enough to place <paramref name="item"/> to it and this builder is not growable.</exception>
     public void Add(T item) => Add() = item;
+
+    /// <inheritdoc/>
+    void IGrowableBuffer<T>.Write(T item) => Add() = item;
 
     /// <summary>
     /// Adds single element and returns a reference to it.
@@ -261,6 +296,49 @@ public ref struct BufferWriterSlim<T>
         }
 
         return false;
+    }
+
+    /// <inheritdoc/>
+    readonly int IGrowableBuffer<T>.CopyTo(Span<T> output)
+    {
+        WrittenSpan.CopyTo(output, out var writtenCount);
+        return writtenCount;
+    }
+
+    /// <inheritdoc/>
+    readonly void IGrowableBuffer<T>.CopyTo<TConsumer>(TConsumer consumer)
+        => consumer.Invoke(WrittenSpan);
+
+    /// <inheritdoc/>
+    ValueTask IGrowableBuffer<T>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
+    {
+        // copy everything to the extra buffer
+        if (extraBuffer.IsEmpty)
+        {
+            extraBuffer = allocator.AllocateAtLeast(position);
+            initialBuffer.Slice(0, position).CopyTo(extraBuffer.Span);
+        }
+        
+        return consumer.Invoke(extraBuffer.Memory.Slice(0, position), token);
+    }
+
+    /// <inheritdoc/>
+    ValueTask ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<T> input, CancellationToken token)
+        => WriteAsync(input, token);
+
+    private ValueTask WriteAsync(ReadOnlyMemory<T> input, CancellationToken token)
+    {
+        var task = ValueTask.CompletedTask;
+        try
+        {
+            Write(input.Span);
+        }
+        catch (Exception e)
+        {
+            task = ValueTask.FromException(e);
+        }
+
+        return task;
     }
 
     /// <summary>
@@ -334,6 +412,19 @@ public ref struct BufferWriterSlim<T>
         return result;
     }
 
+    /// <inheritdoc/>
+    bool IGrowableBuffer<T>.TryGetWrittenContent(out ReadOnlyMemory<T> block)
+    {
+        if (NoOverflow)
+        {
+            block = default;
+            return false;
+        }
+
+        block = extraBuffer.Memory.Slice(0, position);
+        return true;
+    }
+
     /// <summary>
     /// Clears the data written to the underlying buffer.
     /// </summary>
@@ -352,6 +443,9 @@ public ref struct BufferWriterSlim<T>
 
         position = 0;
     }
+
+    /// <inheritdoc/>
+    void IResettable.Reset() => Clear();
 
     /// <summary>
     /// Writes a collection of elements.
@@ -421,6 +515,25 @@ public ref struct BufferWriterSlim<T>
         }
 
         this = default;
+    }
+    
+    /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
+    void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
+    {
+        switch (count)
+        {
+            case 1:
+                Write(args.Immutable<ReadOnlySpan<T>>());
+                break;
+            case 2:
+                result.Mutable<ValueTask>() = WriteAsync(
+                    IFunctional.GetArgument<ReadOnlyMemory<T>>(ref args, 0),
+                    IFunctional.GetArgument<CancellationToken>(ref args, 1)
+                );
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(count));
+        }
     }
 
     /// <summary>

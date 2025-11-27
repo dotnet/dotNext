@@ -24,5 +24,5 @@ public interface IFunctional
     /// <returns>The reference to the argument value.</returns>
     protected static ref readonly T GetArgument<T>(ref Variant args, int index)
         where T : allows ref struct
-        => ref Unsafe.Add(ref args, index).ReadOnly<T>();
+        => ref Unsafe.Add(ref args, index).Immutable<T>();
 }

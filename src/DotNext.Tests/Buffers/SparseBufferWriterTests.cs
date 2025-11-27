@@ -18,7 +18,7 @@ public sealed class SparseBufferWriterTests : Test
         using var writer = new SparseBufferWriter<byte>(128, growth);
         var sequence = ToReadOnlySequence(new ReadOnlyMemory<byte>(RandomBytes(5000)), 1000);
         writer.Write(in sequence, copyMemory);
-        Equal(sequence.ToArray(), writer.ToReadOnlySequence().ToArray());
+        Equal(sequence.ToArray(), writer.Concat().ToArray());
     }
 
     [Theory]

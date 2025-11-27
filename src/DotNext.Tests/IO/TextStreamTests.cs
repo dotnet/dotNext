@@ -184,7 +184,7 @@ public sealed class TextStreamTests : Test
         }
 
         // decode data
-        using (var reader = buffer.ToReadOnlySequence().AsTextReader(enc, bufferSize))
+        using (var reader = buffer.Concat().AsTextReader(enc, bufferSize))
         {
             Equal('П', reader.Peek());
             Equal("Привет, мир!", reader.ReadLine());
@@ -236,7 +236,7 @@ public sealed class TextStreamTests : Test
     [Fact]
     public static async Task WriteSequence()
     {
-        var sequence = new[] { "abc".AsMemory(), "def".AsMemory(), "g".AsMemory() }.ToReadOnlySequence();
+        var sequence = new[] { "abc".AsMemory(), "def".AsMemory(), "g".AsMemory() }.Concat();
         await using var writer = new StringWriter();
         await writer.WriteAsync(sequence);
         Equal("abcdefg", writer.ToString());
@@ -271,7 +271,7 @@ public sealed class TextStreamTests : Test
         }
 
         XmlSerializableType actual;
-        using (var reader = buffer.ToReadOnlySequence().AsTextReader(enc, bufferSize))
+        using (var reader = buffer.Concat().AsTextReader(enc, bufferSize))
         {
             actual = (XmlSerializableType)serializer.Deserialize(reader);
         }

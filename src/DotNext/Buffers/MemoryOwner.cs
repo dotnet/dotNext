@@ -253,7 +253,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
         {
             AssertValid();
 
-            return MemoryMarshal.CreateSpan(ref First, length);
+            return MemoryMarshal.CreateSpan(ref DataRef, length);
         }
     }
 
@@ -287,8 +287,11 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
         }
     }
 
+    /// <summary>
+    /// Gets managed pointer to the first element in the rented memory block.
+    /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal readonly ref T First
+    public readonly ref T DataRef
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => ref array is not null
@@ -311,7 +314,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
             AssertValid();
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)length, nameof(index));
 
-            return ref Unsafe.Add(ref First, index);
+            return ref Unsafe.Add(ref DataRef, index);
         }
     }
 

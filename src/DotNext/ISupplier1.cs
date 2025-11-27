@@ -32,7 +32,7 @@ public interface ISupplier<in T, out TResult> : IFunctional
 
     /// <inheritdoc/>
     void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
-        => PrepareInvocation(count, result) = Invoke(args.ReadOnly<T>());
+        => PrepareInvocation(count, result) = Invoke(args.Immutable<T>());
 
     internal static ref TResult PrepareInvocation(int count,
         Variant result,
@@ -76,7 +76,7 @@ public readonly unsafe struct Supplier<T, TResult>(delegate*<T, TResult> ptr) : 
 
     /// <inheritdoc/>
     void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
-        => ISupplier<T, TResult>.PrepareInvocation(count, result) = ptr(args.ReadOnly<T>());
+        => ISupplier<T, TResult>.PrepareInvocation(count, result) = ptr(args.Immutable<T>());
 
     /// <summary>
     /// Gets hexadecimal representation of this pointer.
@@ -132,7 +132,7 @@ public readonly record struct DelegatingSupplier<T, TResult> : ISupplier<T, TRes
 
     /// <inheritdoc/>
     void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
-        => ISupplier<T, TResult>.PrepareInvocation(count, result) = func(args.ReadOnly<T>());
+        => ISupplier<T, TResult>.PrepareInvocation(count, result) = func(args.Immutable<T>());
 
     /// <inheritdoc />
     public override string? ToString() => func?.ToString();
@@ -156,7 +156,7 @@ internal readonly struct DelegatingPredicate<T>(Predicate<T> predicate) : ISuppl
 
     /// <inheritdoc/>
     void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
-        => ISupplier<T, bool>.PrepareInvocation(count, result) = predicate(args.ReadOnly<T>());
+        => ISupplier<T, bool>.PrepareInvocation(count, result) = predicate(args.Immutable<T>());
 
     public static implicit operator DelegatingPredicate<T>(Predicate<T> predicate)
         => new(predicate);
@@ -174,7 +174,7 @@ internal readonly struct DelegatingConverter<TInput, TOutput>(Converter<TInput, 
 
     /// <inheritdoc/>
     void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
-        => ISupplier<TInput, TOutput>.PrepareInvocation(count, result) = converter(args.ReadOnly<TInput>());
+        => ISupplier<TInput, TOutput>.PrepareInvocation(count, result) = converter(args.Immutable<TInput>());
 
     public static implicit operator DelegatingConverter<TInput, TOutput>(Converter<TInput, TOutput> converter)
         => new(converter);

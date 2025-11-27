@@ -328,7 +328,7 @@ public sealed class FileBufferingWriterTests : Test
         writer.Write(stackalloc byte[] { 1, 2, 3 });
         using var manager = writer.GetWrittenContent();
         Equal(new byte[] { 1, 2, 3 }, manager.Memory.ToArray());
-        Throws<InvalidOperationException>(writer.As<IGrowableBuffer<byte>>().Clear);
+        Throws<InvalidOperationException>(writer.As<IGrowableBuffer<byte>>().Reset);
         Throws<InvalidOperationException>(() => writer.WriteByte(2));
         Throws<InvalidOperationException>(writer.GetWrittenContent);
         await ThrowsAsync<InvalidOperationException>(() => writer.WriteAsync(new byte[2], 0, 2));

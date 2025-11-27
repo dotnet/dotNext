@@ -97,7 +97,7 @@ internal sealed class DecodingTextReader : TextBufferReader
         {
             do
             {
-                ref var first = ref Memory.GetReference(in buffer);
+                ref var first = ref buffer.DataRef;
 
                 do
                 {

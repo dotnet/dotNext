@@ -1,6 +1,7 @@
 namespace DotNext.Buffers;
 
 using IO;
+using Runtime;
 
 public sealed class GrowableBufferTests : Test
 {
@@ -25,53 +26,66 @@ public sealed class GrowableBufferTests : Test
             => output.Append(input);
     }
 
-    private static unsafe void ReadWriteTest(IGrowableBuffer<byte> writer)
+    private static unsafe void ReadWriteTest<TBuffer>(Func<TBuffer> factory)
+        where TBuffer : IGrowableBuffer<byte>, allows ref struct
     {
-        // write a few bytes
-        writer.Write(255);
-        writer.Write(0);
-        Equal(2L, writer.WrittenCount);
-        var actual = new byte[2];
-        Equal(2, writer.CopyTo(actual));
-        Equal(new byte[] { 255, 0 }, actual);
+        var writer = factory();
+        try
+        {
+            // write a few bytes
+            writer.Write(255);
+            writer.Write(0);
+            Equal(2L, writer.WrittenCount);
+            var actual = new byte[2];
+            Equal(2, writer.CopyTo(actual));
+            Equal(new byte[] { 255, 0 }, actual);
 
-        writer.Clear();
-        var expected = RandomBytes(5000);
-        writer.Write(expected);
-        actual = new byte[expected.Length];
-        writer.CopyTo<ReadOnlySpanConsumer<byte, ArrayCopyOperation>>(new(&ArrayCopyOperation.Append, new ArrayCopyOperation(actual)));
-        Equal(expected, actual);
+            writer.Reset();
+            var expected = RandomBytes(5000);
+            writer.Write(expected);
+            actual = new byte[expected.Length];
+            writer.CopyTo<ReadOnlySpanConsumer<byte, ArrayCopyOperation>>(new(&ArrayCopyOperation.Append, new ArrayCopyOperation(actual)));
+            Equal(expected, actual);
+            
+            writer.Reset();
+            var expectedSpan = new ReadOnlySpan<byte>(expected);
+            var arg = Variant.Immutable(ref expectedSpan);
+            writer.DynamicInvoke(ref arg, 1, Variant.Empty);
+            Equal(expectedSpan.Length, writer.WrittenCount);
+        }
+        finally
+        {
+            writer.Dispose();
+        }
     }
 
     [Fact]
     public static void ReadWriteUsingPooledBufferWriter()
     {
-        using var writer = new PoolingBufferWriter<byte>();
-        Null(writer.As<IGrowableBuffer<byte>>().Capacity);
-        ReadWriteTest(writer);
+        ReadWriteTest(static () => new PoolingBufferWriter<byte>());
     }
 
     [Fact]
     public static void ReadWriteUsingPooledArrayBufferWriter()
     {
-        using var writer = new PoolingArrayBufferWriter<byte>() { Capacity = 8 };
-        Null(writer.As<IGrowableBuffer<byte>>().Capacity);
-        ReadWriteTest(writer);
+        ReadWriteTest(static () => new PoolingArrayBufferWriter<byte> { Capacity = 8 });
     }
 
     [Fact]
     public static void ReadWriteUsingSequenceBuilder()
     {
-        using var builder = new SequenceBuilder<byte>();
-        Null(builder.As<IGrowableBuffer<byte>>().Capacity);
-        ReadWriteTest(builder);
+        ReadWriteTest(static () => new SequenceBuilder<byte>());
     }
 
     [Fact]
     public static void ReadWriteUsingFileBufferingWriter()
     {
-        using var writer = new FileBufferingWriter(asyncIO: false);
-        Null(writer.As<IGrowableBuffer<byte>>().Capacity);
-        ReadWriteTest(writer);
+        ReadWriteTest(static () => new FileBufferingWriter(asyncIO: false));
+    }
+
+    [Fact]
+    public static void ReadWriteUsingBufferWriter()
+    {
+        ReadWriteTest(static () => new BufferWriterSlim<byte>());
     }
 }

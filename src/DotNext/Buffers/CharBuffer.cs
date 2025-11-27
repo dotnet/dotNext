@@ -7,18 +7,22 @@ namespace DotNext.Buffers;
 /// <summary>
 /// Providers extension methods to work with char buffers.
 /// </summary>
-public static class CharBuffer
+public static partial class CharBuffer
 {
+    private static void Write<TWriter>(TWriter writer, StringBuilder input)
+        where TWriter : struct, IBufferWriter<char>, allows ref struct
+    {
+        foreach (var chunk in input.GetChunks())
+            Memory.Write(writer, chunk.Span);
+    }
+
     /// <summary>
     /// Writes the contents of string builder to the buffer.
     /// </summary>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="input">The string builder.</param>
     public static void Write(this IBufferWriter<char> writer, StringBuilder input)
-    {
-        foreach (var chunk in input.GetChunks())
-            writer.Write(chunk.Span);
-    }
+        => Write<BufferWriterReference<char>>(new(writer), input);
 
     /// <summary>
     /// Writes interpolated string to the buffer.
@@ -49,18 +53,10 @@ public static class CharBuffer
     /// <param name="provider">The format provider.</param>
     /// <returns>The number of written characters.</returns>
     public static int Format<T>(this IBufferWriter<char> writer, T value, string? format = null, IFormatProvider? provider = null)
-        => BufferWriterInterpolatedStringHandler.AppendFormatted(writer, value, format, provider);
-
-    /// <summary>
-    /// Writes formatted string to the buffer.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="format">Formatting template.</param>
-    /// <param name="args">The arguments to be rendered as a part of template.</param>
-    /// <param name="provider">A culture-specific formatting information.</param>
-    /// <returns>The number of written characters.</returns>
-    /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place rendered template.</exception>
-    public static int Format(this IBufferWriter<char> writer, CompositeFormat format, ReadOnlySpan<object?> args, IFormatProvider? provider = null)
+        => AppendFormatted<T, BufferWriterReference<char>>(new(writer), value, format, provider);
+    
+    private static int Format<TWriter>(TWriter writer, CompositeFormat format, ReadOnlySpan<object?> args, IFormatProvider? provider)
+        where TWriter : struct, IBufferWriter<char>, allows ref struct
     {
         const int maxBufferSize = int.MaxValue / 2;
 
@@ -79,6 +75,18 @@ public static class CharBuffer
     }
 
     /// <summary>
+    /// Writes formatted string to the buffer.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="format">Formatting template.</param>
+    /// <param name="args">The arguments to be rendered as a part of template.</param>
+    /// <param name="provider">A culture-specific formatting information.</param>
+    /// <returns>The number of written characters.</returns>
+    /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place rendered template.</exception>
+    public static int Format(this IBufferWriter<char> writer, CompositeFormat format, ReadOnlySpan<object?> args, IFormatProvider? provider = null)
+        => Format<BufferWriterReference<char>>(new(writer), format, args, provider);
+
+    /// <summary>
     /// Writes line termination symbols to the buffer.
     /// </summary>
     /// <param name="writer">The buffer writer.</param>
@@ -95,21 +103,16 @@ public static class CharBuffer
         writer.Write(characters);
         writer.Write(Environment.NewLine);
     }
-
-    /// <summary>
-    /// Writes concatenated strings.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="values">An array of strings.</param>
-    /// <exception cref="OutOfMemoryException">The concatenated string is too large.</exception>
-    public static void Concat(this IBufferWriter<char> writer, scoped ReadOnlySpan<string?> values)
+    
+    private static void Concat<TWriter>(TWriter writer, scoped ReadOnlySpan<string?> values)
+        where  TWriter : struct, IBufferWriter<char>, allows ref struct
     {
         switch (values.Length)
         {
             case 0:
                 break;
             case 1:
-                writer.Write(values[0]);
+                Memory.Write<char, TWriter>(writer, values[0]);
                 break;
             default:
                 var totalLength = 0L;
@@ -148,15 +151,21 @@ public static class CharBuffer
     }
 
     /// <summary>
+    /// Writes concatenated strings.
+    /// </summary>
+    /// <param name="writer">The buffer writer.</param>
+    /// <param name="values">An array of strings.</param>
+    /// <exception cref="OutOfMemoryException">The concatenated string is too large.</exception>
+    public static void Concat(this IBufferWriter<char> writer, params ReadOnlySpan<string?> values)
+        => Concat<BufferWriterReference<char>>(new(writer), values);
+
+    /// <summary>
     /// Writes the contents of string builder to the buffer.
     /// </summary>
     /// <param name="writer">The buffer writer.</param>
     /// <param name="input">The string builder.</param>
     public static void Write(this ref BufferWriterSlim<char> writer, StringBuilder input)
-    {
-        foreach (var chunk in input.GetChunks())
-            writer.Write(chunk.Span);
-    }
+        => Write<BufferWriterSlim<char>.Ref>(new(ref writer), input);
 
     /// <summary>
     /// Writes interpolated string to the buffer.
@@ -187,7 +196,7 @@ public static class CharBuffer
     /// <param name="provider">The format provider.</param>
     /// <returns>The number of written characters.</returns>
     public static int Format<T>(this ref BufferWriterSlim<char> writer, T value, string? format = null, IFormatProvider? provider = null)
-        => BufferWriterSlimInterpolatedStringHandler.AppendFormatted(ref writer, value, format, provider);
+        => AppendFormatted<T, BufferWriterSlim<char>.Ref>(new(ref writer), value, format, provider);
 
     /// <summary>
     /// Writes formatted string to the buffer.
@@ -198,23 +207,9 @@ public static class CharBuffer
     /// <param name="provider">A culture-specific formatting information.</param>
     /// <returns>The number of written characters.</returns>
     /// <exception cref="InsufficientMemoryException"><paramref name="writer"/> has not enough space to place rendered template.</exception>
-    public static int Format(this ref BufferWriterSlim<char> writer, CompositeFormat format, scoped ReadOnlySpan<object?> args, IFormatProvider? provider = null)
-    {
-        const int maxBufferSize = int.MaxValue / 2;
-
-        int bufferSize;
-        for (bufferSize = 0; ; bufferSize = bufferSize <= maxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException(ExceptionMessages.NotEnoughMemory))
-        {
-            var buffer = writer.InternalGetSpan(bufferSize);
-            if (buffer.TryWrite(provider, format, out bufferSize, args))
-                break;
-
-            bufferSize = buffer.Length;
-        }
-
-        writer.Advance(bufferSize);
-        return bufferSize;
-    }
+    public static int Format(this ref BufferWriterSlim<char> writer, CompositeFormat format, scoped ReadOnlySpan<object?> args,
+        IFormatProvider? provider = null)
+        => Format<BufferWriterSlim<char>.Ref>(new(ref writer), format, args, provider);
 
     /// <summary>
     /// Writes line termination symbols to the buffer.
@@ -240,50 +235,8 @@ public static class CharBuffer
     /// <param name="writer">The buffer writer.</param>
     /// <param name="values">An array of strings.</param>
     /// <exception cref="OutOfMemoryException">The concatenated string is too large.</exception>
-    public static void Concat(this ref BufferWriterSlim<char> writer, scoped ReadOnlySpan<string?> values)
-    {
-        switch (values.Length)
-        {
-            case 0:
-                break;
-            case 1:
-                writer.Write(values[0]);
-                break;
-            default:
-                var totalLength = 0L;
-
-                foreach (var str in values)
-                {
-                    if (str is { Length: > 0 })
-                    {
-                        totalLength += str.Length;
-                    }
-                }
-
-                switch (totalLength)
-                {
-                    case 0L:
-                        break;
-                    case > int.MaxValue:
-                        throw new OutOfMemoryException();
-                    default:
-                        var output = writer.InternalGetSpan((int)totalLength);
-                        foreach (var str in values)
-                        {
-                            if (str is { Length: > 0 })
-                            {
-                                str.CopyTo(output);
-                                output = output.Slice(str.Length);
-                                writer.Advance(str.Length);
-                            }
-                        }
-
-                        break;
-                }
-
-                break;
-        }
-    }
+    public static void Concat(this ref BufferWriterSlim<char> writer, params ReadOnlySpan<string?> values)
+        => Concat<BufferWriterSlim<char>.Ref>(new(ref writer), values);
 
     /// <summary>
     /// Writes the contents of a string builder to the buffer.

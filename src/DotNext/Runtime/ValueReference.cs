@@ -105,7 +105,7 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
                 result.Mutable<T>() = Value;
                 break;
             case 1:
-                Value = args.ReadOnly<T>();
+                Value = args.Immutable<T>();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(count));
@@ -367,7 +367,7 @@ public readonly struct ReadOnlyValueReference<T>(object owner, ref readonly T fi
     /// <param name="reference">The reference to convert.</param>
     /// <returns>The variant value referencing the same value as <paramref name="reference"/>.</returns>
     public static implicit operator Variant(ReadOnlyValueReference<T> reference)
-        => Variant.ReadOnly(in reference.Value);
+        => Variant.Immutable(in reference.Value);
 
     /// <summary>
     /// Converts the reference to the local reference.

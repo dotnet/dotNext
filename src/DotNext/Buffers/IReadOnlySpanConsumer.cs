@@ -32,7 +32,7 @@ public interface IReadOnlySpanConsumer<T> : ISupplier<ReadOnlyMemory<T>, Cancell
         switch (count)
         {
             case 1:
-                Invoke(args.ReadOnly<ReadOnlySpan<T>>());
+                Invoke(args.Immutable<ReadOnlySpan<T>>());
                 break;
             case 2:
                 result.Mutable<ValueTask>() = Invoke(

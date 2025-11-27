@@ -16,7 +16,7 @@ using Enumerator = Collections.Generic.Enumerator;
 /// </summary>
 /// <typeparam name="T">The data type that can be written.</typeparam>
 [DebuggerDisplay($"WrittenCount = {{{nameof(WrittenCount)}}}, FreeCapacity = {{{nameof(FreeCapacity)}}}")]
-public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
+public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>, IReadOnlyList<T>, IGrowableBuffer<T>
 {
     private const string ElementTypeMeterAttribute = "dotnext.buffers.element";
 
@@ -66,7 +66,7 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
                 result.Mutable<ReadOnlyMemory<T>>() = WrittenMemory;
                 break;
             case 1:
-                this.As<IGrowableBuffer<T>>().Write(args.ReadOnly<ReadOnlySpan<T>>());
+                this.As<IGrowableBuffer<T>>().Write(args.Immutable<ReadOnlySpan<T>>());
                 break;
             case 2:
                 result.Mutable<ValueTask>() = this.As<ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>>().Invoke(
@@ -112,7 +112,7 @@ public abstract class BufferWriter<T> : Disposable, IBufferWriter<T>, ISupplier<
         => consumer.Invoke(WrittenMemory.Span);
 
     /// <inheritdoc />
-    void IGrowableBuffer<T>.Clear() => Clear();
+    void IResettable.Reset() => Clear();
 
     /// <inheritdoc />
     int IGrowableBuffer<T>.CopyTo(Span<T> output)

@@ -282,12 +282,15 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     }
 
     /// <inheritdoc />
+    void IResettable.Reset() => Clear();
+
+    /// <inheritdoc />
     ReadOnlySequence<T> ISupplier<ReadOnlySequence<T>>.Invoke()
         => WrittenSequence;
     
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private ReadOnlySequence<T> WrittenSequence
-        => TryGetWrittenContent(out var segment) ? new ReadOnlySequence<T>(segment) : Memory.ToReadOnlySequence(this);
+        => TryGetWrittenContent(out var segment) ? new ReadOnlySequence<T>(segment) : Memory.Concat(this);
     
     /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
     void IFunctional.DynamicInvoke(scoped ref Variant args, int count, scoped Variant result)
@@ -298,7 +301,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
                 result.Mutable<ReadOnlySequence<T>>() = WrittenSequence;
                 break;
             case 1:
-                Write(args.ReadOnly<ReadOnlySpan<T>>());
+                Write(args.Immutable<ReadOnlySpan<T>>());
                 break;
             case 2:
                 result.Mutable<ValueTask>() = this.As<ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>>().Invoke(

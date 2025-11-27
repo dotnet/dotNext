@@ -31,17 +31,17 @@ public sealed class VariantTests : Test
         Null(Variant.Empty.ToObject());
 
         var i = 42;
-        Equal(42, Variant.ReadOnly(in i).ToObject());
+        Equal(42, Variant.Immutable(in i).ToObject());
 
         var str = "Hello, world!";
-        Same(str, Variant.ReadOnly(in str).ToObject());
+        Same(str, Variant.Immutable(in str).ToObject());
     }
 
     [Fact]
     public static void Immutability()
     {
         var i = 42;
-        False(Variant.ReadOnly(in i).IsMutable);
+        False(Variant.Immutable(in i).IsMutable);
         True(Variant.Mutable(ref i).IsMutable);
     }
 
@@ -49,8 +49,8 @@ public sealed class VariantTests : Test
     public static void Equality()
     {
         var i = 42;
-        var x = Variant.ReadOnly(in i);
-        var y = Variant.ReadOnly(in i);
+        var x = Variant.Immutable(in i);
+        var y = Variant.Immutable(in i);
         
         True(x == y);
     }

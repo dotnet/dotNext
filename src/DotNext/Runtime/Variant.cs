@@ -61,7 +61,7 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// <param name="location">The location of the value.</param>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <returns>The untyped value.</returns>
-    public static Variant ReadOnly<T>(ref readonly T location)
+    public static Variant Immutable<T>(ref readonly T location)
         where T : allows ref struct
         => Create(in location, mutable: false);
 
@@ -93,7 +93,7 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// <typeparam name="T">The expected type of the value.</typeparam>
     /// <returns>A location of the value.</returns>
     /// <exception cref="InvalidCastException">The underlying value cannot be converted to type <typeparamref name="T"/>.</exception>
-    public ref readonly T ReadOnly<T>()
+    public ref readonly T Immutable<T>()
         where T : allows ref struct
     {
         CheckType(typeof(T));

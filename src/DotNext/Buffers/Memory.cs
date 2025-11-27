@@ -1,4 +1,6 @@
+using System.Buffers;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Buffers;
 
@@ -52,15 +54,6 @@ public static partial class Memory
         => memory.Length <= maxLength ? memory : memory.Slice(0, maxLength);
 
     /// <summary>
-    /// Gets managed pointer to the first element in the rented memory block.
-    /// </summary>
-    /// <typeparam name="T">The type of the elements in the memory block.</typeparam>
-    /// <param name="owner">The rented memory block.</param>
-    /// <returns>A managed pointer to the first element; or <see cref="System.Runtime.CompilerServices.Unsafe.NullRef{T}"/> if memory block is empty.</returns>
-    [EditorBrowsable(EditorBrowsableState.Advanced)]
-    public static ref T GetReference<T>(in MemoryOwner<T> owner) => ref owner.First;
-
-    /// <summary>
     /// Resizes the buffer.
     /// </summary>
     /// <typeparam name="T">The type of the elements in the buffer.</typeparam>
@@ -76,6 +69,41 @@ public static partial class Memory
             owner.Span.CopyTo(newBuffer.Span);
             owner.Dispose();
             owner = newBuffer;
+        }
+    }
+    
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Write<T, TWriter>(TWriter writer, ReadOnlySpan<T> value)
+        where TWriter : struct, IBufferWriter<T>, allows ref struct
+    {
+        var destination = writer.GetSpan();
+
+        // Fast path, try copying to the available memory directly
+        if (value.Length <= destination.Length)
+        {
+            value.CopyTo(destination);
+            writer.Advance(value.Length);
+        }
+        else
+        {
+            WriteMultiSegment(writer, value, destination);
+        }
+
+        static void WriteMultiSegment(TWriter writer, in ReadOnlySpan<T> source, Span<T> destination)
+        {
+            for (var input = source;;)
+            {
+                input.CopyTo(destination, out var writtenCount);
+                writer.Advance(writtenCount);
+                input = input.Slice(writtenCount);
+                if (input.Length > 0)
+                {
+                    destination = writer.GetSpan();
+                    continue;
+                }
+
+                break;
+            }
         }
     }
 }
