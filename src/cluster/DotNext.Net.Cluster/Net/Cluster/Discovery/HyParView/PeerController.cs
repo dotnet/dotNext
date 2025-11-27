@@ -63,7 +63,7 @@ public abstract partial class PeerController : Disposable, IPeerMesh, IAsyncDisp
         random = new();
         cancellationTokens = new() { MaximumRetained = 100 };
         queue = Channel.CreateBounded<Command>(new BoundedChannelOptions(configuration.QueueCapacity) { FullMode = BoundedChannelFullMode.Wait });
-        PeerComparer = configuration.EndPointComparer ?? EqualityComparer<EndPoint>.Default;
+        PeerComparer = configuration.EndPointComparer;
         activeView = ImmutableHashSet.Create(PeerComparer);
         passiveView = ImmutableHashSet.Create(PeerComparer);
         lifecycleTokenSource = new();

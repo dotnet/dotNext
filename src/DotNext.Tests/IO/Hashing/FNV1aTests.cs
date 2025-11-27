@@ -55,12 +55,15 @@ public sealed class FNV1aTests : Test
     public static void HashGuid()
     {
         Span<Guid> elements = stackalloc Guid[3];
-        Random.Shared.GetItems(elements);
+        foreach (ref var g in elements)
+        {
+            g = Guid.NewGuid();
+        }
 
         var algorithm = new FNV1a32();
-        algorithm.Append<Guid>(elements);
-        var hash1 = algorithm.GetCurrentHash();
+        algorithm.Append(elements);
+        algorithm.GetCurrentHash();
 
-        Equal(FNV1a32.Hash<Guid>(elements), algorithm.GetCurrentHash());
+        Equal(FNV1a32.Hash(elements), algorithm.GetCurrentHash());
     }
 }

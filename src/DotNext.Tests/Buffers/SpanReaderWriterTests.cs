@@ -1,12 +1,10 @@
 using System.Numerics;
-using System.Runtime.InteropServices;
 using System.Text;
-using DotNext.IO;
-using DotNext.Text;
 
 namespace DotNext.Buffers;
 
 using Binary;
+using IO;
 
 public sealed class SpanReaderTests : Test
 {
@@ -30,7 +28,7 @@ public sealed class SpanReaderTests : Test
         segment[3] = 50;
         Equal(5, writer.WrittenCount);
         Equal(0, writer.FreeCapacity);
-        Equal(new int[] { 10, 20, 30, 40, 50 }, writer.WrittenSpan.ToArray());
+        Equal(new [] { 10, 20, 30, 40, 50 }, writer.WrittenSpan.ToArray());
 
         var exceptionThrown = false;
         try
@@ -403,7 +401,7 @@ public sealed class SpanReaderTests : Test
     [InlineData(124)]
     public static void WriteStringBuilder(int stringLength)
     {
-        var str = Random.Shared.NextString(Alphabet, stringLength);
+        var str = Random.Shared.GetString(Alphabet, stringLength);
 
         var builder = new StringBuilder();
         for (var i = 0; i < 3; i++)

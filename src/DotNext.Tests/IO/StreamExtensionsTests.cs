@@ -104,7 +104,7 @@ public sealed class StreamExtensionsTests : Test
     [InlineData(0x80)]
     public static async Task BinaryReaderInterop(int length)
     {
-        var expected = Random.Shared.NextString(Alphabet + AlphabetUpperCase + Numbers, length);
+        var expected = Random.Shared.GetString(Alphabet + AlphabetUpperCase + Numbers, length);
         using var ms = new MemoryStream();
         await ms.EncodeAsync(expected.AsMemory(), Encoding.UTF8, LengthFormat.Compressed, new byte[16]);
         ms.Position = 0;
@@ -119,7 +119,7 @@ public sealed class StreamExtensionsTests : Test
     [InlineData(0x80)]
     public static async Task BinaryWriterInterop(int length)
     {
-        var expected = Random.Shared.NextString(Alphabet + AlphabetUpperCase + Numbers, length);
+        var expected = Random.Shared.GetString(Alphabet + AlphabetUpperCase + Numbers, length);
         using var ms = new MemoryStream();
         await using (var writer = new BinaryWriter(ms, Encoding.UTF8, true))
         {
