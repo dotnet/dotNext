@@ -62,7 +62,7 @@ public static partial class Memory
     /// <param name="chunks">The sequence of memory blocks.</param>
     /// <typeparam name="T">The type of elements in the memory blocks.</typeparam>
     /// <returns>The constructed <see cref="ReadOnlySequence{T}"/> instance containing memory blocks.</returns>
-    public static ReadOnlySequence<T> ToReadOnlySequence<T>(ReadOnlySpan<ReadOnlyMemory<T>> chunks) // TODO: use params
+    public static ReadOnlySequence<T> ToReadOnlySequence<T>(params ReadOnlySpan<ReadOnlyMemory<T>> chunks)
     {
         switch (chunks)
         {
@@ -127,7 +127,7 @@ public static partial class Memory
     /// </summary>
     /// <param name="strings">A collection of strings.</param>
     /// <returns>A sequence of characters representing concatenated strings.</returns>
-    public static ReadOnlySequence<char> ToReadOnlySequence(ReadOnlySpan<string?> strings) // TODO: Use params
+    public static ReadOnlySequence<char> ToReadOnlySequence(params ReadOnlySpan<string?> strings)
     {
         switch (strings)
         {

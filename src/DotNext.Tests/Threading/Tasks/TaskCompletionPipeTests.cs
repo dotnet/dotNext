@@ -161,20 +161,13 @@ public class TaskCompletionPipeTests : Test
     }
 
     [Fact]
-    public static async Task CompletedTaskGroupToCollection()
-    {
-        await foreach (var t in TaskCompletionPipe.WhenEach([Task.CompletedTask, Task.CompletedTask]))
-        {
-            True(t.IsCompleted);
-        }
-    }
-
-    [Fact]
     public static async Task TaskGroupToCollection()
     {
         var source1 = new TaskCompletionSource<int>();
         var source2 = new TaskCompletionSource<int>();
-        await using var consumer = TaskCompletionPipe.Consume([source1.Task, source2.Task]).GetAsyncEnumerator();
+        await using var consumer = TaskCompletionPipe
+            .Consume(source1.Task, source2.Task)
+            .GetAsyncEnumerator(TestToken);
         
         source1.SetResult(42);
         True(await consumer.MoveNextAsync());

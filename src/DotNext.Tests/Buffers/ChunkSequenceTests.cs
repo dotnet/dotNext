@@ -48,13 +48,13 @@ public sealed class ChunkSequenceTests : Test
     [Fact]
     public static void Concatenation3()
     {
-        Equal([], Memory.ToReadOnlySequence([]).ToArray());
+        Equal([], Memory.ToReadOnlySequence().ToArray());
         
         ReadOnlyMemory<byte> block1 = new byte[] { 1, 2 };
-        Equal(block1.Span, Memory.ToReadOnlySequence([block1]).ToArray());
+        Equal(block1.Span, Memory.ToReadOnlySequence(block1).ToArray());
         
         ReadOnlyMemory<byte> block2 = new byte[] { 3, 4 };
-        Equal([1, 2, 3, 4], Memory.ToReadOnlySequence([block1, block2]).ToArray());
+        Equal([1, 2, 3, 4], Memory.ToReadOnlySequence(block1, block2).ToArray());
     }
 
     [Fact]
@@ -84,13 +84,13 @@ public sealed class ChunkSequenceTests : Test
     [Fact]
     public static void StringConcatenation2()
     {
-        Equal([], Memory.ToReadOnlySequence(ReadOnlySpan<string>.Empty).ToArray());
+        Equal([], Memory.ToReadOnlySequence().ToArray());
         
         const string block1 = "Hello";
-        Equal(block1, Memory.ToReadOnlySequence([block1]).ToString());
+        Equal(block1, Memory.ToReadOnlySequence(block1).ToString());
 
         const string block2 = ", world!";
-        Equal(block1 + block2, Memory.ToReadOnlySequence([block1, block2]).ToString());
+        Equal(block1 + block2, Memory.ToReadOnlySequence(block1, block2).ToString());
     }
 
     [Fact]

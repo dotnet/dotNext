@@ -609,7 +609,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     {
         metadataPages.Dispose();
         dataPages.Dispose();
-        Dispose<QueuedSynchronizer>([lockManager, appliedEvent, stateLock]);
+        Dispose<QueuedSynchronizer>(lockManager, appliedEvent, stateLock);
         checkpoint.Dispose();
         state.Dispose();
         context.Clear();

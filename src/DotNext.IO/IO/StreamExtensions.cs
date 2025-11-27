@@ -43,7 +43,7 @@ public static partial class StreamExtensions
     /// <param name="stream">The stream to combine.</param>
     /// <param name="others">A collection of streams.</param>
     /// <returns>An object that represents multiple streams as one logical stream.</returns>
-    public static Stream Combine(this Stream stream, ReadOnlySpan<Stream> others) // TODO: Use params in future
+    public static Stream Combine(this Stream stream, params ReadOnlySpan<Stream> others)
         => Combine(stream, others, leaveOpen: true);
 
     /// <summary>

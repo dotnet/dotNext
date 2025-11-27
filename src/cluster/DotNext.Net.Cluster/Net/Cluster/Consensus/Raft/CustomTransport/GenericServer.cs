@@ -57,7 +57,7 @@ internal sealed class GenericServer : Server
         {
             while (!IsDisposingOrDisposed && !lifecycleToken.IsCancellationRequested)
             {
-                cts = multiplexer.CombineAndSetTimeoutLater([lifecycleToken, connection.ConnectionClosed]);
+                cts = multiplexer.CombineAndSetTimeoutLater(lifecycleToken, connection.ConnectionClosed);
                 var messageType = await protocol.ReadMessageTypeAsync(cts.Token).ConfigureAwait(false);
                 if (messageType is MessageType.None)
                     break;

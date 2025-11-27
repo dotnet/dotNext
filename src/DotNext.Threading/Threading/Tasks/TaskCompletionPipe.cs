@@ -126,15 +126,6 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <summary>
     /// Adds the task to this pipe.
     /// </summary>
-    /// <param name="task">The task to add.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="task"/> is <see langword="null"/>.</exception>
-    /// <exception cref="InvalidOperationException">The pipe is closed.</exception>
-    public void Add(T task) // TODO: Remove in future with optional param
-        => Add(task, userData: null);
-
-    /// <summary>
-    /// Adds the task to this pipe.
-    /// </summary>
     /// <remarks>
     /// <paramref name="userData"/> can be requested later using <see cref="TryRead(out T?, out object?)"/> method.
     /// </remarks>
@@ -142,7 +133,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <param name="userData">Arbitrary object associated with the task.</param>
     /// <exception cref="ArgumentNullException"><paramref name="task"/> is <see langword="null"/>.</exception>
     /// <exception cref="InvalidOperationException">The pipe is closed.</exception>
-    public void Add(T task, object? userData)
+    public void Add(T task, object? userData = null)
     {
         ArgumentNullException.ThrowIfNull(task);
 

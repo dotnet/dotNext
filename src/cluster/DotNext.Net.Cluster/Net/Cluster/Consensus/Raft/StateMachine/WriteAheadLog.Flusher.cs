@@ -103,7 +103,7 @@ partial class WriteAheadLog
     {
         Debug.Assert(flushCompleted is not null);
 
-        var linkedTokenSource = cancellationTokens.Combine([token, lifetimeToken]);
+        var linkedTokenSource = cancellationTokens.Combine(token, lifetimeToken);
         var registration = linkedTokenSource.Token.UnsafeRegister(Signal, flushCompleted);
         try
         {

@@ -173,7 +173,7 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
     };
 
     /// <summary>
-    /// Addes the delegate to the list and returns modified list.
+    /// Adds the delegate to the list and returns modified list.
     /// </summary>
     /// <param name="list">The list of delegates.</param>
     /// <param name="d">The delegate to add.</param>
