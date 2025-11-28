@@ -284,7 +284,7 @@ public readonly struct EqualityComparerBuilder<T>
         }
 
         expressions.Add(hashCodeTemp);
-        expr = Expression.Block(typeof(int), List.Singleton(hashCodeTemp), expressions);
+        expr = Expression.Block(typeof(int), IReadOnlyList<ParameterExpression>.Singleton(hashCodeTemp), expressions);
         return Expression.Lambda<Func<T, int>>(expr, false, inputParam).Compile();
     }
 

@@ -141,7 +141,7 @@ public sealed class ListTests : Test
     [Fact]
     public static void SingletonCollection()
     {
-        var collection = List.Singleton(42);
+        var collection = IReadOnlyList<int>.Singleton(42);
         NotEmpty(collection);
         Equal(42, collection.First());
     }
@@ -150,7 +150,7 @@ public sealed class ListTests : Test
     public static void Repeat()
     {
         const decimal value = 42M;
-        var collection = List.Repeat(value, 0);
+        var collection = IReadOnlyList<decimal>.Repeat(value, 0);
         Empty(collection);
 
         collection = List.Repeat(value, 1);

@@ -3,8 +3,8 @@ using System.Reflection;
 
 namespace DotNext.Linq.Expressions;
 
+using Collections.Generic;
 using Reflection;
-using List = Collections.Generic.List;
 
 /// <summary>
 /// Represents <c>using</c> or <c>await using</c> expression.
@@ -156,6 +156,6 @@ public sealed class UsingExpression : CustomExpression
 
         return assignment is null ?
             MakeTry(Type, Body, Block(typeof(void), disposeCall, Assign(Resource, Default(Resource.Type))), null, null) :
-            Block(Type, List.Singleton(Resource), assignment, TryFinally(Body, disposeCall));
+            Block(Type, IReadOnlyList<ParameterExpression>.Singleton(Resource), assignment, TryFinally(Body, disposeCall));
     }
 }

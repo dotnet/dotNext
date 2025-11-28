@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -14,53 +13,6 @@ using Generic;
 [StructLayout(LayoutKind.Auto)]
 public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySet<T>, IAsyncEnumerable<T>, IEnumerable<SingletonList<T>.Enumerator, T>
 {
-    /// <summary>
-    /// Represents an enumerator over the collection containing a single element.
-    /// </summary>
-    [StructLayout(LayoutKind.Auto)]
-    public struct Enumerator : IEnumerator<Enumerator, T>
-    {
-        private const byte NotRequestedState = 1;
-        private const byte RequestedState = 2;
-
-        private byte state;
-
-        internal Enumerator(T item)
-        {
-            Current = item;
-            state = NotRequestedState;
-        }
-
-        /// <summary>
-        /// Gets the current element.
-        /// </summary>
-        public T Current { get; }
-
-        /// <summary>
-        /// Advances the position of the enumerator to the next element.
-        /// </summary>
-        /// <returns><see langword="true"/> if the enumerator advanced successfully; otherwise, <see langword="false"/>.</returns>
-        public bool MoveNext()
-        {
-            if (state is NotRequestedState)
-            {
-                state = RequestedState;
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Resets state of this enumerator.
-        /// </summary>
-        public void Reset()
-        {
-            if (state is RequestedState)
-                state = NotRequestedState;
-        }
-    }
-
     /// <summary>
     /// The item of the list.
     /// </summary>
@@ -210,5 +162,52 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySe
         return !enumerator.MoveNext()
             || EqualityComparer<T>.Default.Equals(Item, enumerator.Current)
             && !enumerator.MoveNext();
+    }
+    
+    /// <summary>
+    /// Represents an enumerator over the collection containing a single element.
+    /// </summary>
+    [StructLayout(LayoutKind.Auto)]
+    public struct Enumerator : IEnumerator<Enumerator, T>
+    {
+        private const byte NotRequestedState = 1;
+        private const byte RequestedState = 2;
+
+        private byte state;
+
+        internal Enumerator(T item)
+        {
+            Current = item;
+            state = NotRequestedState;
+        }
+
+        /// <summary>
+        /// Gets the current element.
+        /// </summary>
+        public T Current { get; }
+
+        /// <summary>
+        /// Advances the position of the enumerator to the next element.
+        /// </summary>
+        /// <returns><see langword="true"/> if the enumerator advanced successfully; otherwise, <see langword="false"/>.</returns>
+        public bool MoveNext()
+        {
+            if (state is NotRequestedState)
+            {
+                state = RequestedState;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Resets state of this enumerator.
+        /// </summary>
+        public void Reset()
+        {
+            if (state is RequestedState)
+                state = NotRequestedState;
+        }
     }
 }

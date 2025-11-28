@@ -2,10 +2,10 @@
 
 namespace DotNext.Metaprogramming;
 
+using Collections.Generic;
 using Linq.Expressions;
 using Runtime.CompilerServices;
 using static Reflection.DelegateType;
-using List = Collections.Generic.List;
 
 internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexicalScope<Expression<TDelegate>, Action<LambdaContext>>, ILexicalScope<Expression<TDelegate>, Action<LambdaContext, ParameterExpression>>
     where TDelegate : Delegate
@@ -72,7 +72,7 @@ internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexi
         {
             lambda = Expression.Lambda<TDelegate>(
                 Expression.Block(
-                List.Singleton(recursion),
+                IReadOnlyList<ParameterExpression>.Singleton(recursion),
                 Expression.Assign(recursion, lambda),
                 Expression.Invoke(recursion, Parameters)), Parameters);
         }

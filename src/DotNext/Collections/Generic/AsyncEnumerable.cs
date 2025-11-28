@@ -122,25 +122,6 @@ public static partial class AsyncEnumerable
     }
 
     /// <summary>
-    /// Bypasses a specified number of elements in a sequence.
-    /// </summary>
-    /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
-    /// <param name="enumerator">Enumerator to modify. Cannot be <see langword="null"/>.</param>
-    /// <param name="count">The number of elements to skip.</param>
-    /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static async ValueTask<bool> SkipAsync<T>(this IAsyncEnumerator<T> enumerator, int count)
-    {
-        for (; count > 0; count--)
-        {
-            if (!await enumerator.MoveNextAsync().ConfigureAwait(false))
-                return false;
-        }
-
-        return true;
-    }
-
-    /// <summary>
     /// Skip <see langword="null"/> values in the collection.
     /// </summary>
     /// <typeparam name="T">Type of elements in the collection.</typeparam>

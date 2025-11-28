@@ -2,8 +2,8 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming;
 
+using Collections.Generic;
 using static Reflection.DelegateType;
-using List = Collections.Generic.List;
 
 /// <summary>
 /// Represents lambda function builder.
@@ -112,7 +112,7 @@ internal sealed class LambdaExpression<TDelegate> : LambdaExpression, ILexicalSc
         if (recursion is not null)
         {
             body = Expression.Block(
-                List.Singleton(recursion),
+                IReadOnlyList<ParameterExpression>.Singleton(recursion),
                 Expression.Assign(recursion, Expression.Lambda<TDelegate>(body, tailCall, Parameters)),
                 Expression.Invoke(recursion, Parameters));
         }

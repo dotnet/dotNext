@@ -5,8 +5,8 @@ using System.Reflection;
 
 namespace DotNext.Linq.Expressions;
 
+using Collections.Generic;
 using Reflection;
-using List = Collections.Generic.List;
 
 /// <summary>
 /// Represents iteration over collection elements as expression.
@@ -192,7 +192,7 @@ public sealed class ForEachExpression : CustomExpression, ILoopLabels
                 Assign(enumeratorVar, Default(enumeratorVar.Type)) :
                 Block(disposeCall, Assign(enumeratorVar, Default(enumeratorVar.Type)));
         loopBody = TryFinally(loopBody, @finally);
-        return Block(Type, List.Singleton(enumeratorVar), enumeratorAssignment, loopBody);
+        return Block(Type, IReadOnlyList<ParameterExpression>.Singleton(enumeratorVar), enumeratorAssignment, loopBody);
     }
 
     /// <summary>

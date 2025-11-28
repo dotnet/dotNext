@@ -56,7 +56,7 @@ public readonly struct ReadOnlyCollectionView<TInput, TOutput>(IReadOnlyCollecti
     public bool Equals(ReadOnlyCollectionView<TInput, TOutput> other) => Equals(in other);
 
     /// <summary>
-    /// Returns hash code for the this view.
+    /// Returns hash code for this view.
     /// </summary>
     /// <returns>The hash code of this view.</returns>
     public override int GetHashCode() => RuntimeHelpers.GetHashCode(source) ^ mapper.GetHashCode();

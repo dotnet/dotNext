@@ -13,8 +13,7 @@ public static class ArrayExtensions
     /// <summary>
     /// Extends <see cref="Array"/> type.
     /// </summary>
-    /// <param name="a">The array to extend.</param>
-    extension(Array a)
+    extension(Array)
     {
         /// <summary>
         /// Gets length of the array.

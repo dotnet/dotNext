@@ -165,7 +165,7 @@ public sealed class StreamExtensionsTests : Test
     {
         using var ms1 = new MemoryStream([1, 2, 3]);
         using var ms2 = new MemoryStream([4, 5, 6]);
-        using var combined = List.Singleton(ms1).Append(ms2).Combine();
+        using var combined = IReadOnlyList<Stream>.Singleton(ms1).Append(ms2).Combine();
         using var result = new MemoryStream();
 
         combined.CopyTo(result, 128);
