@@ -99,7 +99,7 @@ public sealed class AsyncTriggerTests : Test
         False(task.IsCompleted);
 
         cond.Value = true;
-        Thread.MemoryBarrier();
+        Volatile.WriteBarrier();
         trigger.Signal();
         await task;
     }
@@ -116,7 +116,7 @@ public sealed class AsyncTriggerTests : Test
         False(task.IsCompleted);
 
         cond.Value = true;
-        Thread.MemoryBarrier();
+        Volatile.WriteBarrier();
         trigger.Signal();
         True(await task);
     }
