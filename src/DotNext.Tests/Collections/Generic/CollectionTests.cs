@@ -97,19 +97,6 @@ public sealed class CollectionTests : Test
     }
 
     [Fact]
-    public static void ElementAtIndex()
-    {
-        var list = new LinkedList<long>();
-        list.AddLast(10);
-        list.AddLast(40);
-        list.AddLast(100);
-        list.ElementAt(2, out var element);
-        Equal(100, element);
-        list.ElementAt(0, out element);
-        Equal(10, element);
-    }
-
-    [Fact]
     public static void SkipNullsTest()
     {
         var list = new LinkedList<string>();

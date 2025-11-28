@@ -7,7 +7,7 @@ namespace DotNext.Collections.Specialized;
 
 using Generic;
 
-public partial class TypeMap<TValue> : IEnumerable<TValue>
+public partial class TypeMap<TValue> : IEnumerable<TypeMap<TValue>.Enumerator, TValue>
 {
     /// <summary>
     /// Gets the enumerator over the values.
@@ -65,17 +65,9 @@ public partial class TypeMap<TValue> : IEnumerable<TValue>
     /// </summary>
     /// <returns>The enumerator over the values.</returns>
     public Enumerator GetEnumerator() => new(entries);
-
-    /// <inheritdoc cref="IEnumerable{T}.GetEnumerator()"/>
-    IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, TValue>();
-
-    /// <inheritdoc cref="IEnumerable.GetEnumerator()"/>
-    IEnumerator IEnumerable.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, TValue>();
 }
 
-public partial class TypeMap
+public partial class TypeMap : IEnumerable<TypeMap.Enumerator, object>
 {
     /// <summary>
     /// Represents an enumerator over values stored in the map.
@@ -114,12 +106,4 @@ public partial class TypeMap
     /// </summary>
     /// <returns>The enumerator over values in this map.</returns>
     public Enumerator GetEnumerator() => new(entries);
-
-    /// <inheritdoc cref="IEnumerable{T}.GetEnumerator()"/>
-    IEnumerator<object> IEnumerable<object>.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, object>();
-
-    /// <inheritdoc cref="IEnumerable.GetEnumerator()"/>
-    IEnumerator IEnumerable.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, object>();
 }

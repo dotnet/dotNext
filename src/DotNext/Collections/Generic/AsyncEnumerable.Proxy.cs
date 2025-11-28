@@ -4,45 +4,23 @@ namespace DotNext.Collections.Generic;
 
 public static partial class AsyncEnumerable
 {
-    internal interface IProxyEnumerator<out TSelf, T> : IAsyncEnumerator<T>
-        where TSelf : IProxyEnumerator<TSelf, T>
+    internal sealed class YieldingEnumerable<T>(IEnumerable<T> enumerable) : IAsyncEnumerable<T>
     {
-        public static abstract TSelf Create(IEnumerable<T> enumerable, CancellationToken token);
+        IAsyncEnumerator<T> IAsyncEnumerable<T>.GetAsyncEnumerator(CancellationToken token)
+            => new YieldingEnumerator<T>(enumerable, token);
     }
     
-    internal abstract class ProxyEnumerator<T>(IEnumerable<T> enumerable, CancellationToken token) : IAsyncEnumerator<T>
+    private sealed class YieldingEnumerator<T>(IEnumerable<T> enumerable, CancellationToken token) :
+        IAsyncEnumerator<T>,
+        IThreadPoolWorkItem,
+        IValueTaskSource<bool>
     {
-        protected readonly CancellationToken token = token;
         private readonly IEnumerator<T> enumerator = enumerable.GetEnumerator();
-        
-        protected bool MoveNext() => enumerator.MoveNext();
-
-        public T Current => enumerator.Current;
-
-        public abstract ValueTask<bool> MoveNextAsync();
-        
-        ValueTask IAsyncDisposable.DisposeAsync()
-        {
-            var task = ValueTask.CompletedTask;
-            try
-            {
-                enumerator.Dispose();
-            }
-            catch (Exception e)
-            {
-                task = ValueTask.FromException(e);
-            }
-
-            return task;
-        }
-    }
-
-    internal sealed class YieldingEnumerator<T>(IEnumerable<T> enumerable, CancellationToken token) : ProxyEnumerator<T>(enumerable, token),
-        IValueTaskSource<bool>, IProxyEnumerator<YieldingEnumerator<T>, T>, IThreadPoolWorkItem
-    {
         private ManualResetValueTaskSourceCore<bool> source = new() { RunContinuationsAsynchronously = false };
 
-        public override ValueTask<bool> MoveNextAsync()
+        T IAsyncEnumerator<T>.Current => enumerator.Current;
+
+        ValueTask<bool> IAsyncEnumerator<T>.MoveNextAsync()
         {
             var version = source.Version;
             ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: false);
@@ -60,7 +38,7 @@ public static partial class AsyncEnumerable
                 bool result;
                 try
                 {
-                    result = MoveNext();
+                    result = enumerator.MoveNext();
                 }
                 catch (Exception e)
                 {
@@ -88,44 +66,20 @@ public static partial class AsyncEnumerable
 
         void IValueTaskSource<bool>.OnCompleted(Action<object?> continuation, object? state, short version, ValueTaskSourceOnCompletedFlags flags)
             => source.OnCompleted(continuation, state, version, flags);
-
-        static YieldingEnumerator<T> IProxyEnumerator<YieldingEnumerator<T>, T>.Create(IEnumerable<T> enumerable, CancellationToken token)
-            => new(enumerable, token);
-    }
-
-    internal sealed class Enumerator<T>(IEnumerable<T> enumerable, CancellationToken token)
-        : ProxyEnumerator<T>(enumerable, token), IProxyEnumerator<Enumerator<T>, T>
-    {
-        public override ValueTask<bool> MoveNextAsync()
+        
+        ValueTask IAsyncDisposable.DisposeAsync()
         {
-            ValueTask<bool> task;
-            if (token.IsCancellationRequested)
+            var task = ValueTask.CompletedTask;
+            try
             {
-                task = ValueTask.FromCanceled<bool>(token);
+                enumerator.Dispose();
             }
-            else
+            catch (Exception e)
             {
-                try
-                {
-                    task = new(MoveNext());
-                }
-                catch (Exception e)
-                {
-                    task = ValueTask.FromException<bool>(e);
-                }
+                task = ValueTask.FromException(e);
             }
 
             return task;
         }
-
-        static Enumerator<T> IProxyEnumerator<Enumerator<T>, T>.Create(IEnumerable<T> enumerable, CancellationToken token)
-            => new(enumerable, token);
-    }
-
-    internal sealed class Proxy<T, TEnumerator>(IEnumerable<T> enumerable) : IAsyncEnumerable<T>
-        where TEnumerator : class, IProxyEnumerator<TEnumerator, T>
-    {
-        public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token)
-            => TEnumerator.Create(enumerable, token);
     }
 }

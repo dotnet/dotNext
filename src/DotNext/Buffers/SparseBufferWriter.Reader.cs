@@ -8,7 +8,7 @@ namespace DotNext.Buffers;
 
 using Collections.Generic;
 
-public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
+public partial class SparseBufferWriter<T> : IEnumerable<SparseBufferWriter<T>.Enumerator, ReadOnlyMemory<T>>
 {
     /// <summary>
     /// Represents enumerator over memory segments.
@@ -228,12 +228,4 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         return new Enumerator(first);
     }
-
-    /// <inheritdoc />
-    IEnumerator<ReadOnlyMemory<T>> IEnumerable<ReadOnlyMemory<T>>.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, ReadOnlyMemory<T>>();
-
-    /// <inheritdoc />
-    IEnumerator IEnumerable.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, ReadOnlyMemory<T>>();
 }

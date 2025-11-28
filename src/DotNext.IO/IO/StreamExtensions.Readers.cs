@@ -9,9 +9,9 @@ namespace DotNext.IO;
 
 using Buffers;
 using Buffers.Binary;
+using Collections.Generic;
 using Numerics;
 using Text;
-using AsyncEnumerable = Collections.Generic.AsyncEnumerable;
 
 public static partial class StreamExtensions
 {
@@ -238,7 +238,7 @@ public static partial class StreamExtensions
             return DecodeAsync(stream, context.GetDecoder(), lengthFormat, charBuffer, byteBuffer, token);
         }
 
-        return AsyncEnumerable.Throw<ReadOnlyMemory<char>>(new ArgumentException(ExceptionMessages.BufferTooSmall, paramName));
+        return IAsyncEnumerable<ReadOnlyMemory<char>>.Throw(new ArgumentException(ExceptionMessages.BufferTooSmall, paramName));
     }
 
     private static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(Stream stream, Decoder decoder, LengthFormat lengthFormat, Memory<char> charBuffer, Memory<byte> byteBuffer, [EnumeratorCancellation] CancellationToken token = default)

@@ -9,7 +9,6 @@ namespace DotNext.Buffers;
 
 using Runtime;
 using Runtime.CompilerServices;
-using Enumerator = Collections.Generic.Enumerator;
 
 /// <summary>
 /// Represents memory-backed output sink which <typeparamref name="T"/> data can be written.
@@ -313,7 +312,7 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
     /// Gets enumerator over all written elements.
     /// </summary>
     /// <returns>The enumerator over all written elements.</returns>
-    public IEnumerator<T> GetEnumerator() => Enumerator.ToEnumerator(WrittenMemory);
+    public IEnumerator<T> GetEnumerator() => MemoryMarshal.ToEnumerator(WrittenMemory);
 
     /// <inheritdoc/>
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

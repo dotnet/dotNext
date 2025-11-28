@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -75,17 +74,9 @@ partial class WriteAheadLog
         public MemoryRange GetRange(ulong offset, long length) => new(this, offset, length);
 
         [StructLayout(LayoutKind.Auto)]
-        public readonly struct MemoryRange(PageManager manager, ulong offset, long length) : IEnumerable<ReadOnlyMemory<byte>>
+        public readonly struct MemoryRange(PageManager manager, ulong offset, long length) : IEnumerable<MemoryRange.Enumerator, ReadOnlyMemory<byte>>
         {
             public Enumerator GetEnumerator() => new(manager, offset, length);
-
-            private IEnumerator<ReadOnlyMemory<byte>> ToClassicEnumerator()
-                => GetEnumerator().ToClassicEnumerator<Enumerator, ReadOnlyMemory<byte>>();
-
-            IEnumerator<ReadOnlyMemory<byte>> IEnumerable<ReadOnlyMemory<byte>>.GetEnumerator()
-                => ToClassicEnumerator();
-
-            IEnumerator IEnumerable.GetEnumerator() => ToClassicEnumerator();
 
             public bool TryGetMemory(out ReadOnlyMemory<byte> memory)
             {

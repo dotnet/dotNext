@@ -270,6 +270,66 @@ public static partial class Memory
             => source.IsEmpty ? Partitioner.Create<T>([], splitOnSegments) : new ReadOnlySequencePartitioner<T>(in source, splitOnSegments);
     }
 
+    /// <summary>
+    /// Extends <see cref="SequenceMarshal"/> type.
+    /// </summary>
+    extension(SequenceMarshal)
+    {
+        /// <summary>
+        /// Gets enumerator over all elements in the sequence.
+        /// </summary>
+        /// <param name="sequence">The sequence to be converted.</param>
+        /// <typeparam name="T">The type of elements in the sequence.</typeparam>
+        /// <returns>The enumerator over all elements in the sequence.</returns>
+        public static IEnumerator<T> ToEnumerator<T>(in ReadOnlySequence<T> sequence)
+        {
+            return sequence.IsEmpty
+                ? Enumerable.Empty<T>().GetEnumerator()
+                : sequence.IsSingleSegment
+                    ? ToEnumerator(sequence.First)
+                    : ToEnumeratorSlow(sequence.GetEnumerator());
+
+            static IEnumerator<T> ToEnumeratorSlow(ReadOnlySequence<T>.Enumerator enumerator)
+            {
+                while (enumerator.MoveNext())
+                {
+                    var segment = enumerator.Current;
+
+                    for (nint i = 0; i < segment.Length; i++)
+                        yield return Unsafe.Add(ref MemoryMarshal.GetReference(segment.Span), i);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Extends <see cref="MemoryMarshal"/> type.
+    /// </summary>
+    extension(MemoryMarshal)
+    {
+        /// <summary>
+        /// Gets enumerator over all elements in the memory.
+        /// </summary>
+        /// <param name="memory">The memory block to be converted.</param>
+        /// <typeparam name="T">The type of elements in the memory.</typeparam>
+        /// <returns>The enumerator over all elements in the memory.</returns>
+        /// <seealso cref="MemoryMarshal.ToEnumerable{T}(ReadOnlyMemory{T})"/>
+        public static IEnumerator<T> ToEnumerator<T>(ReadOnlyMemory<T> memory)
+        {
+            return memory.IsEmpty
+                ? Enumerable.Empty<T>().GetEnumerator()
+                : MemoryMarshal.TryGetArray(memory, out var segment)
+                    ? segment.GetEnumerator()
+                    : ToEnumeratorSlow(memory);
+
+            static IEnumerator<T> ToEnumeratorSlow(ReadOnlyMemory<T> memory)
+            {
+                for (nint i = 0; i < memory.Length; i++)
+                    yield return Unsafe.Add(ref MemoryMarshal.GetReference(memory.Span), i);
+            }
+        }
+    }
+
     [StructLayout(LayoutKind.Auto)]
     private readonly ref struct CharMemoryEnumerator(IEnumerable<string?> strings) : IEnumerator<ReadOnlyMemory<char>>
     {
@@ -399,7 +459,7 @@ file sealed class ReadOnlySequencePartitioner<T> : OrderablePartitioner<T>
         {
             var length = i < remainder ? quotient + 1 : quotient;
             var sliced = sequence.Slice(startIndex, length);
-            partitions[i] = Enumerator.ToEnumerator(in sliced);
+            partitions[i] = SequenceMarshal.ToEnumerator(in sliced);
             startIndex = sliced.End;
         }
 

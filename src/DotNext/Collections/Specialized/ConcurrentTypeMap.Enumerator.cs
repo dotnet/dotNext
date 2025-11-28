@@ -6,7 +6,7 @@ namespace DotNext.Collections.Specialized;
 
 using Generic;
 
-public partial class ConcurrentTypeMap<TValue> : IEnumerable<TValue>
+public partial class ConcurrentTypeMap<TValue> : IEnumerable<ConcurrentTypeMap<TValue>.Enumerator, TValue>
 {
     /// <summary>
     /// Represents an enumerator over the values in the map.
@@ -67,17 +67,9 @@ public partial class ConcurrentTypeMap<TValue> : IEnumerable<TValue>
     /// </summary>
     /// <returns>The enumerator over the values.</returns>
     public Enumerator GetEnumerator() => new(Volatile.Read(ref entries));
-
-    /// <inheritdoc cref="IEnumerable{T}.GetEnumerator()"/>
-    IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, TValue>();
-
-    /// <inheritdoc cref="IEnumerable.GetEnumerator()"/>
-    IEnumerator IEnumerable.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, TValue>();
 }
 
-public partial class ConcurrentTypeMap
+public partial class ConcurrentTypeMap : IEnumerable<ConcurrentTypeMap.Enumerator, object>
 {
     /// <summary>
     /// Represents an enumerator over values stored in the map.
@@ -104,7 +96,7 @@ public partial class ConcurrentTypeMap
             return false;
         }
 
-        /// <inheritdoc cref="IEnumerator.Current"/>
+        /// <inheritdoc cref="IEnumerator{T}.Current"/>
         public readonly object Current => current ?? throw new InvalidOperationException();
         
         /// <inheritdoc cref="IEnumerator{TSelf, T}.Reset()"/>
@@ -116,12 +108,4 @@ public partial class ConcurrentTypeMap
     /// </summary>
     /// <returns>The enumerator over values in this map.</returns>
     public Enumerator GetEnumerator() => new(entries);
-
-    /// <inheritdoc cref="IEnumerable{T}.GetEnumerator()"/>
-    IEnumerator<object> IEnumerable<object>.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, object>();
-
-    /// <inheritdoc cref="IEnumerable.GetEnumerator()"/>
-    IEnumerator IEnumerable.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, object>();
 }

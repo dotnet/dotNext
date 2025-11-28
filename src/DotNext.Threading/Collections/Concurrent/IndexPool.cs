@@ -1,4 +1,3 @@
-using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -20,7 +19,7 @@ using Threading;
 /// </remarks>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 [StructLayout(LayoutKind.Auto)]
-public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<int>, IResettable
+public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<int>, IResettable, IEnumerable<IndexPool.Enumerator, int>
 {
     private readonly int maxValue;
     private ulong bitmask;
@@ -238,14 +237,6 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// </summary>
     /// <returns>The enumerator over available indices in this pool.</returns>
     public readonly Enumerator GetEnumerator() => new(Atomic.Read(in bitmask), maxValue);
-
-    /// <inheritdoc/>
-    readonly IEnumerator<int> IEnumerable<int>.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, int>();
-
-    /// <inheritdoc/>
-    readonly IEnumerator IEnumerable.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, int>();
 
     /// <summary>
     /// Represents an enumerator over available indices in the pool.

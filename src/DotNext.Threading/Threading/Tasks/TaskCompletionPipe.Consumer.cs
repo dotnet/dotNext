@@ -3,8 +3,6 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks;
 
-using static Collections.Generic.AsyncEnumerable;
-
 /// <summary>
 /// Provides various extension methods for <see cref="TaskCompletionPipe{T}"/> class.
 /// </summary>
@@ -73,6 +71,6 @@ public static class TaskCompletionPipe
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The asynchronous enumerator over completed tasks.</returns>
         public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token = default)
-            => pipe is null ? Empty<T>().GetAsyncEnumerator(token) : GetAsyncEnumerator<T>(pipe, pipe.Version, token);
+            => pipe is null ? AsyncEnumerable.Empty<T>().GetAsyncEnumerator(token) : GetAsyncEnumerator<T>(pipe, pipe.Version, token);
     }
 }

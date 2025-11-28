@@ -12,7 +12,7 @@ using Generic;
 /// </summary>
 /// <typeparam name="T">The type of the element in the list.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySet<T>, IAsyncEnumerable<T>
+public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySet<T>, IAsyncEnumerable<T>, IEnumerable<SingletonList<T>.Enumerator, T>
 {
     /// <summary>
     /// Represents an enumerator over the collection containing a single element.
@@ -138,16 +138,8 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySe
     public readonly Enumerator GetEnumerator() => new(Item);
 
     /// <inheritdoc />
-    readonly IEnumerator<T> IEnumerable<T>.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, T>();
-
-    /// <inheritdoc />
-    readonly IEnumerator IEnumerable.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, T>();
-
-    /// <inheritdoc />
     readonly IAsyncEnumerator<T> IAsyncEnumerable<T>.GetAsyncEnumerator(CancellationToken token)
-        => GetEnumerator().ToAsyncEnumerator<Enumerator, T>(token);
+        => IEnumerable<Enumerator, T>.GetAsyncEnumerator(GetEnumerator(), token);
 
     /// <summary>
     /// Converts a value to the read-only list.

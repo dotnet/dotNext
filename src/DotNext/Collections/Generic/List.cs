@@ -168,12 +168,38 @@ public static partial class List
         => new(list, converter);
 
     /// <summary>
-    /// Constructs read-only list with a single item in it.
+    /// Extends <see cref="IReadOnlyList{T}"/> type.
     /// </summary>
-    /// <param name="item">An item to be placed into list.</param>
     /// <typeparam name="T">Type of list items.</typeparam>
-    /// <returns>Read-only list containing single item.</returns>
-    public static IReadOnlyList<T> Singleton<T>(T item) => new Specialized.SingletonList<T> { Item = item };
+    extension<T>(IReadOnlyList<T>)
+    {
+        /// <summary>
+        /// Constructs read-only list with a single item in it.
+        /// </summary>
+        /// <param name="item">An item to be placed into list.</param>
+        /// <returns>Read-only list containing single item.</returns>
+        public static IReadOnlyList<T> Singleton(T item) => new Specialized.SingletonList<T> { Item = item };
+
+        /// <summary>
+        /// Generates a list that contains one repeated value.
+        /// </summary>
+        /// <param name="item">The item to be returned from the list.</param>
+        /// <param name="count">The number of elements in the list.</param>
+        /// <typeparam name="T">Type of the list.</typeparam>
+        /// <returns>A list that contains a repeated value.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
+        public static IReadOnlyList<T> Repeat(T item, int count)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+
+            return count switch
+            {
+                0 => [],
+                1 => Singleton(item),
+                _ => new RepeatList<T>(item, count),
+            };
+        }
+    }
 
     /// <summary>
     /// Inserts the item into sorted list.
@@ -294,7 +320,7 @@ public static partial class List
         => list.Insert(index.GetOffset(list.Count), item);
 
     /// <summary>
-    /// Removes the item at the specifie index.
+    /// Removes the item at the specified index.
     /// </summary>
     /// <typeparam name="T">The type of elements in the list.</typeparam>
     /// <param name="list">The list to modify.</param>
@@ -313,24 +339,4 @@ public static partial class List
     /// <returns>The section of the list.</returns>
     public static ListSegment<T> Slice<T>(this IList<T> list, Range range)
         => new(list, range);
-
-    /// <summary>
-    /// Generates a list that contains one repeated value.
-    /// </summary>
-    /// <param name="item">The item to be returned from the list.</param>
-    /// <param name="count">The number of elements in the list.</param>
-    /// <typeparam name="T">Type of the list.</typeparam>
-    /// <returns>A list that contains a repeated value.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
-    public static IReadOnlyList<T> Repeat<T>(T item, int count)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegative(count);
-
-        return count switch
-        {
-            0 => Array.Empty<T>(),
-            1 => Singleton(item),
-            _ => new RepeatList<T>(item, count),
-        };
-    }
 }

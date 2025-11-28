@@ -129,7 +129,7 @@ public class TaskCompletionPipeTests : Test
         pipe.Add(Task.Run(Func<int>.Constant(44)));
         pipe.Complete();
 
-        var array = await pipe.Consume().ToArrayAsync(initialCapacity: 3);
+        var array = await pipe.Consume().ToArrayAsync(TestToken);
         Contains(42, array);
         Contains(43, array);
         Contains(44, array);
