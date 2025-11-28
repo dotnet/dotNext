@@ -420,7 +420,7 @@ public static class ByteBuffer
     /// <returns>The value read from <paramref name="reader"/>.</returns>
     public static T ReadLittleEndian<T>(this ref SpanReader<byte> reader)
         where T : IBinaryInteger<T>
-        => T.ReadLittleEndian(reader.Read(Number.GetMaxByteCount<T>()), Number.IsSigned<T>() is false);
+        => T.ReadLittleEndian(reader.Read(Number.get_MaxByteCount<T>()), Number.get_IsSigned<T>() is false);
 
     /// <summary>
     /// Reads integer value encoded in big-endian format.
@@ -430,5 +430,5 @@ public static class ByteBuffer
     /// <returns>The value read from <paramref name="reader"/>.</returns>
     public static T ReadBigEndian<T>(this ref SpanReader<byte> reader)
         where T : IBinaryInteger<T>
-        => T.ReadBigEndian(reader.Read(Number.GetMaxByteCount<T>()), Number.IsSigned<T>() is false);
+        => T.ReadBigEndian(reader.Read(Number.get_MaxByteCount<T>()), Number.get_IsSigned<T>() is false);
 }

@@ -94,7 +94,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     public ValueTask WriteLittleEndianAsync<T>(T value, CancellationToken token = default)
         where T : IBinaryInteger<T>
     {
-        return WriteAsync(value, Write, Number.GetMaxByteCount<T>(), token);
+        return WriteAsync(value, Write, Number.get_MaxByteCount<T>(), token);
 
         static void Write(Span<byte> destination, T value)
         {
@@ -114,7 +114,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     public ValueTask WriteBigEndianAsync<T>(T value, CancellationToken token = default)
         where T : IBinaryInteger<T>
     {
-        return WriteAsync(value, Write, Number.GetMaxByteCount<T>(), token);
+        return WriteAsync(value, Write, Number.get_MaxByteCount<T>(), token);
 
         static void Write(Span<byte> destination, T value)
         {

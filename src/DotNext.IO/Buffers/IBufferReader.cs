@@ -86,7 +86,7 @@ internal unsafe struct WellKnownIntegerReader<T>(delegate*<ReadOnlySpan<byte>, b
     readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
         => throw new NotSupportedException();
 
-    T ISupplier<T>.Invoke() => parser(Buffer, Number.IsSigned<T>() is false);
+    T ISupplier<T>.Invoke() => parser(Buffer, Number.get_IsSigned<T>() is false);
 
     internal static WellKnownIntegerReader<T> LittleEndian() => new(&T.ReadLittleEndian);
 
@@ -97,7 +97,7 @@ internal unsafe struct WellKnownIntegerReader<T>(delegate*<ReadOnlySpan<byte>, b
 internal unsafe struct IntegerReader<T>(delegate*<ReadOnlySpan<byte>, bool, T> parser) : IBufferReader, ISupplier<T>
     where T : IBinaryInteger<T>
 {
-    private MemoryOwner<byte> buffer = Memory.AllocateExactly<byte>(Number.GetMaxByteCount<T>());
+    private MemoryOwner<byte> buffer = Memory.AllocateExactly<byte>(Number.get_MaxByteCount<T>());
     private int writtenBytes;
 
     readonly int IBufferReader.RemainingBytes => buffer.Length - writtenBytes;
@@ -112,7 +112,7 @@ internal unsafe struct IntegerReader<T>(delegate*<ReadOnlySpan<byte>, bool, T> p
     {
         try
         {
-            return parser(buffer.Span.Slice(0, writtenBytes), Number.IsSigned<T>() is false);
+            return parser(buffer.Span.Slice(0, writtenBytes), Number.get_IsSigned<T>() is false);
         }
         finally
         {

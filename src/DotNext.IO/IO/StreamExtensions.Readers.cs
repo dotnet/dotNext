@@ -70,9 +70,9 @@ public static partial class StreamExtensions
         ArgumentNullException.ThrowIfNull(stream);
         ThrowIfEmpty(buffer);
 
-        buffer = buffer.Slice(0, Number.GetMaxByteCount<T>());
+        buffer = buffer.Slice(0, Number.get_MaxByteCount<T>());
         await stream.ReadExactlyAsync(buffer, token).ConfigureAwait(false);
-        return T.ReadLittleEndian(buffer.Span, Number.IsSigned<T>() is false);
+        return T.ReadLittleEndian(buffer.Span, Number.get_IsSigned<T>() is false);
     }
 
     /// <summary>
@@ -92,9 +92,9 @@ public static partial class StreamExtensions
         ArgumentNullException.ThrowIfNull(stream);
         ThrowIfEmpty(buffer);
 
-        buffer = buffer.Slice(0, Number.GetMaxByteCount<T>());
+        buffer = buffer.Slice(0, Number.get_MaxByteCount<T>());
         await stream.ReadExactlyAsync(buffer, token).ConfigureAwait(false);
-        return T.ReadBigEndian(buffer.Span, Number.IsSigned<T>() is false);
+        return T.ReadBigEndian(buffer.Span, Number.get_IsSigned<T>() is false);
     }
 
     private static unsafe ValueTask<int> ReadLengthAsync(this Stream stream, LengthFormat lengthFormat, Memory<byte> buffer, CancellationToken token)
