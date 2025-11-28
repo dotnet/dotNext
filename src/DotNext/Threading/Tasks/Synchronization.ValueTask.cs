@@ -21,7 +21,7 @@ public static partial class Synchronization
             }
             catch (Exception e)
             {
-                aggregator.Add(e);
+                aggregator += e;
             }
         }
 

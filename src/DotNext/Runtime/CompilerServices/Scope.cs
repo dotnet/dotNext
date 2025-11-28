@@ -140,7 +140,7 @@ public struct Scope : IDisposable, IAsyncDisposable
                 }
                 catch (Exception e)
                 {
-                    aggregator.Add(e);
+                    aggregator += e;
                 }
             }
         }
@@ -191,7 +191,7 @@ public struct Scope : IDisposable, IAsyncDisposable
                 }
                 catch (Exception e)
                 {
-                    exceptions.Add(e);
+                    exceptions += e;
                 }
             }
 

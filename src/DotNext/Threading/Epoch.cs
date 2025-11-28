@@ -278,7 +278,7 @@ public partial class Epoch
                 }
                 catch (Exception e)
                 {
-                    exceptions.Add(e);
+                    exceptions += e;
                 }
             }
             else
