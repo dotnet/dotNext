@@ -44,7 +44,7 @@ public interface IBufferedWriter : IBufferedChannel, IBufferWriter<byte>
     {
         for (int bytesWritten; !input.IsEmpty; input = input.Slice(bytesWritten))
         {
-            input.Span.CopyTo(Buffer.Span, out bytesWritten);
+            bytesWritten = input.Span >> Buffer.Span;
             Produce(bytesWritten);
             await WriteAsync(token).ConfigureAwait(false);
         }

@@ -115,10 +115,7 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
 
     /// <inheritdoc />
     int IGrowableBuffer<T>.CopyTo(Span<T> output)
-    {
-        WrittenMemory.Span.CopyTo(output, out var writtenCount);
-        return writtenCount;
-    }
+        => WrittenMemory.Span >> output;
 
     /// <inheritdoc />
     bool IGrowableBuffer<T>.TryGetWrittenContent(out ReadOnlyMemory<T> block)
@@ -156,22 +153,13 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
             return;
 
         var span = GetSpan(items.Count);
-        int count;
-        switch (items)
+        var count = items switch
         {
-            case List<T> list:
-                CollectionsMarshal.AsSpan(list).CopyTo(span, out count);
-                break;
-            case T[] array:
-                array.AsSpan().CopyTo(span, out count);
-                break;
-            case ArraySegment<T> segment:
-                segment.AsSpan().CopyTo(span, out count);
-                break;
-            default:
-                count = CopyFromCollection(items, span);
-                break;
-        }
+            List<T> list => CollectionsMarshal.AsSpan(list) >> span,
+            T[] array => array.AsSpan() >> span,
+            ArraySegment<T> segment => segment.AsSpan() >> span,
+            _ => CopyFromCollection(items, span)
+        };
 
         position += count;
 

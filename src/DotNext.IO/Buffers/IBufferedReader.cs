@@ -44,7 +44,7 @@ public interface IBufferedReader : IBufferedChannel
         var result = 0;
         for (int bytesRead; result < destination.Length; result += bytesRead, destination = destination.Slice(bytesRead))
         {
-            Buffer.Span.CopyTo(destination.Span, out bytesRead);
+            bytesRead = Buffer.Span >> destination.Span;
             Consume(bytesRead);
             if (!await ReadAsync(token).ConfigureAwait(false))
                 break;

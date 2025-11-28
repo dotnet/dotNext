@@ -32,7 +32,7 @@ public static class RandomExtensions
 
             do
             {
-                RandomNumberGenerator.Fill(Span.AsBytes(ref result));
+                RandomNumberGenerator.Fill(uint.AsBytes(ref result));
                 result >>>= 1; // remove sign bit
             }
             while (result is maxValue);

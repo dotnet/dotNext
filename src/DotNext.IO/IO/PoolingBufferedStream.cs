@@ -306,7 +306,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         }
         else if (data.Length < maxBufferSize)
         {
-            data.CopyTo(freeBuf, out var bytesWritten);
+            var bytesWritten = data >> freeBuf;
             stream.Write(freeBuf = buffer.Span);
             data = data.Slice(bytesWritten);
             data.CopyTo(freeBuf);
@@ -386,7 +386,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         Debug.Assert(data.Length < maxBufferSize);
 
         var writeBuffer = buffer.Memory;
-        data.Span.CopyTo(writeBuffer.Span.Slice(writePosition), out var bytesWritten);
+        var bytesWritten = data.Span >> writeBuffer.Span.Slice(writePosition);
         await stream.WriteAsync(writeBuffer, token).ConfigureAwait(false);
         data = data.Slice(bytesWritten);
         data.CopyTo(writeBuffer);
@@ -413,7 +413,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
         int count;
         if (MemoryToRead.Span is { IsEmpty: false } readBuf)
         {
-            readBuf.CopyTo(destination, out count);
+            count = readBuf >> destination;
             readPosition += count;
         }
         else

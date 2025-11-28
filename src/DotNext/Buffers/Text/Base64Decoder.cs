@@ -66,7 +66,7 @@ public partial struct Base64Decoder : IBufferedDecoder<byte>, IBufferedDecoder<c
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [UnscopedRef]
     private Span<byte> ByteBuffer
-        => Span.AsBytes(ref reservedBuffer);
+        => ulong.AsBytes(ref reservedBuffer);
 
     private readonly ReadOnlySpan<byte> BufferedBytes
     {

@@ -29,10 +29,7 @@ internal struct InlinedBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowabl
         => consumer.Invoke(WrittenMemory, token);
 
     readonly int IGrowableBuffer<T>.CopyTo(Span<T> output)
-    {
-        WrittenMemory.Span.CopyTo(output, out var writtenCount);
-        return writtenCount;
-    }
+        => WrittenMemory.Span >> output;
 
     public void Clear()
     {

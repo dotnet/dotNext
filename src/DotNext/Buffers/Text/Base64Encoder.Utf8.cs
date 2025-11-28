@@ -21,7 +21,7 @@ public partial struct Base64Encoder
             case OperationStatus.NeedMoreData:
                 reservedBufferSize = bytes.Length - bytesRead;
                 Debug.Assert(reservedBufferSize <= MaxBufferedDataSize);
-                bytes.Slice(bytesRead).CopyTo(Span.AsBytes(ref reservedBuffer));
+                bytes.Slice(bytesRead).CopyTo(ushort.AsBytes(ref reservedBuffer));
                 break;
         }
 

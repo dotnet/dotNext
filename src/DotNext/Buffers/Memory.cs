@@ -93,7 +93,7 @@ public static partial class Memory
         {
             for (var input = source;;)
             {
-                input.CopyTo(destination, out var writtenCount);
+                var writtenCount = input >> destination;
                 writer.Advance(writtenCount);
                 input = input.Slice(writtenCount);
                 if (input.Length > 0)

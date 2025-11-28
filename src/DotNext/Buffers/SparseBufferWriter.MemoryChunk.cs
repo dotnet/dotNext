@@ -73,7 +73,7 @@ public partial class SparseBufferWriter<T>
 
         internal override int Write(ReadOnlySpan<T> input)
         {
-            input.CopyTo(FreeSpan, out var count);
+            var count = input >> FreeSpan;
             writtenCount += count;
             return count;
         }

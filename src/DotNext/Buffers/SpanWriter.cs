@@ -154,7 +154,7 @@ public ref struct SpanWriter<T>
     /// <returns>The number of written elements.</returns>
     public int Write(scoped ReadOnlySpan<T> input)
     {
-        input.CopyTo(RemainingSpan, out var writtenCount);
+        var writtenCount = input >> RemainingSpan;
         position += writtenCount;
         return writtenCount;
     }

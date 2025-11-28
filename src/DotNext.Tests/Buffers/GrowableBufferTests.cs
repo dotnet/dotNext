@@ -18,8 +18,7 @@ public sealed class GrowableBufferTests : Test
 
         private void Append(ReadOnlySpan<byte> input)
         {
-            input.CopyTo(output.AsSpan(offset), out var writtenCount);
-            offset += writtenCount;
+            offset += input >> output.AsSpan(offset);
         }
 
         internal static void Append(ReadOnlySpan<byte> input, ArrayCopyOperation output)

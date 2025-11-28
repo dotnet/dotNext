@@ -329,7 +329,7 @@ public partial class FileReader : Disposable, IBufferedReader
 
     private int ReadFromBuffer(Span<byte> destination)
     {
-        BufferSpan.CopyTo(destination, out var bytesCopied);
+        var bytesCopied = BufferSpan >> destination;
         ConsumeUnsafe(bytesCopied);
         return bytesCopied;
     }

@@ -7,8 +7,6 @@ using System.Text;
 
 namespace DotNext.Buffers;
 
-using Enumerator = Collections.Generic.Enumerator;
-
 public static partial class Memory
 {
     /// <summary>

@@ -33,7 +33,7 @@ public sealed class BufferWriterSlimTests : Test
         Equal(30, builder[2]);
         Equal(40, builder[3]);
         Span<int> result = stackalloc int[5];
-        builder.WrittenSpan.CopyTo(result, out var writtenCount);
+        var writtenCount = builder.WrittenSpan >> result;
         Equal(4, writtenCount);
         Equal([10, 20, 30, 40, 0], result);
 

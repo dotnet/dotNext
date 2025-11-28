@@ -688,8 +688,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
 
         if (HasBufferedData)
         {
-            WrittenSpan.CopyTo(output, out var subCount);
-            totalBytes += subCount;
+            totalBytes += WrittenSpan >> output;
         }
 
     exit:
@@ -717,8 +716,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
 
         if (HasBufferedData)
         {
-            WrittenSpan.CopyTo(output.Span, out var subCount);
-            totalBytes += subCount;
+            totalBytes += WrittenSpan >> output.Span;
         }
 
     exit:

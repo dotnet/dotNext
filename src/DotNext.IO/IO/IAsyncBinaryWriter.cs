@@ -117,7 +117,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     {
         for (int bytesWritten; !input.IsEmpty; input = input.Slice(bytesWritten))
         {
-            input.Span.CopyTo(Buffer.Span, out bytesWritten);
+            bytesWritten = input.Span >> Buffer.Span;
             await AdvanceAsync(bytesWritten, token).ConfigureAwait(false);
         }
     }

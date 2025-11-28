@@ -72,7 +72,7 @@ public partial struct Base64Encoder : IBufferedEncoder<byte>, IBufferedEncoder<c
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [UnscopedRef]
-    private Span<byte> Buffer => Span.AsBytes(ref reservedBuffer);
+    private Span<byte> Buffer => ushort.AsBytes(ref reservedBuffer);
 
     [ExcludeFromCodeCoverage]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
