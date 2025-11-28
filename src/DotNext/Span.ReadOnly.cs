@@ -265,7 +265,7 @@ partial class Span
         /// <param name="source">Source memory.</param>
         /// <param name="destination">Destination memory.</param>
         /// <returns>The number of copied elements.</returns>
-        public static int operator >> (ReadOnlySpan<T> source, Span<T> destination)
+        public static int operator >>(ReadOnlySpan<T> source, Span<T> destination)
         {
             int writtenCount;
             if (source.Length > destination.Length)
@@ -338,7 +338,7 @@ partial class Span
         {
             ArgumentOutOfRangeException.ThrowIfZero(source.Length, nameof(source));
 
-            ref var ptr = ref MemoryMarshal.GetReference(source);
+            ref T ptr = ref MemoryMarshal.GetReference(source);
             source = MemoryMarshal.CreateReadOnlySpan(ref Unsafe.Add(ref ptr, 1), source.Length - 1);
             return ref ptr;
         }

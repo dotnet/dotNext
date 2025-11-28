@@ -186,7 +186,7 @@ public partial class Epoch
 
         public Discardable Current
         {
-            readonly get;
+            readonly get => field ?? throw new InvalidOperationException();
             private set;
         }
 

@@ -123,7 +123,7 @@ public sealed class SpanTests : Test
     {
         ReadOnlySpan<int> src = source;
         Span<int> dst = destination;
-        var writtenCount = src >> dst;
+        src.CopyTo(dst, out var writtenCount);
         Equal(Math.Min(src.Length, dst.Length), writtenCount);
 
         for (var i = 0; i < writtenCount; i++)
