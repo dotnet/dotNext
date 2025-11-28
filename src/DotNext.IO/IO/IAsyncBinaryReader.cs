@@ -462,9 +462,9 @@ public interface IAsyncBinaryReader
             return Unsafe.As<TReader, PipeBinaryReader>(ref reader).AsStream();
 
         if (typeof(TReader) == typeof(SequenceReader))
-            return Unsafe.As<TReader, SequenceReader>(ref reader).ReadToEnd().AsStream();
+            return Stream.Create(Unsafe.As<TReader, SequenceReader>(ref reader).ReadToEnd());
 
-        return StreamSource.AsStream(ReadAsync, reader);
+        return Stream.CreateAsyncReadOnly(ReadAsync, reader);
 
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         static async ValueTask<int> ReadAsync(Memory<byte> buffer, TReader reader, CancellationToken token)

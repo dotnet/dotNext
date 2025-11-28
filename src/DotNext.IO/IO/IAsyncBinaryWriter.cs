@@ -342,7 +342,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         if (typeof(TWriter) == typeof(AsyncBufferWriter))
             return Unsafe.As<TWriter, AsyncBufferWriter>(ref writer).AsStream();
 
-        return StreamSource.AsAsynchronousStream(new Wrapper<TWriter>(writer));
+        return StreamSource.CreateAsyncWritable(new Wrapper<TWriter>(writer));
     }
 
     [StructLayout(LayoutKind.Auto)]

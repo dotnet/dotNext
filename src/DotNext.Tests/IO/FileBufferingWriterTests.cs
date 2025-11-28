@@ -359,7 +359,7 @@ public sealed class FileBufferingWriterTests : Test
         using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
         await DictionarySerializer.SerializeAsync(dict, writer, buffer);
         using var manager = writer.GetWrittenContent();
-        using var source = StreamSource.AsStream(manager.Memory);
+        using var source = StreamSource.Create(manager.Memory);
         Equal(dict, await DictionarySerializer.DeserializeAsync(source, buffer));
     }
 

@@ -127,7 +127,7 @@ public partial class FileBufferingWriter
 
         // reuse the same handle when opening file for read
         return fileName is null
-            ? StreamSource.AsStream(buffer.Memory.Slice(0, position))
+            ? StreamSource.Create(buffer.Memory.Slice(0, position))
             : new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete, fileProvider.BufferSize, useAsyncIO ? withAsyncIO : withoutAsyncIO);
     }
 

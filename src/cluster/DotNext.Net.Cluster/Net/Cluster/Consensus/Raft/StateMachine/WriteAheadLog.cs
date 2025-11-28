@@ -452,7 +452,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         {
             const int bufferSize = 1024;
             var buffer = allocator.AllocateAtLeast(bufferSize);
-            var stream = writer.AsStream();
+            var stream = Stream.CreateWritable(writer, flush: null, flushAsync: null);
             try
             {
                 await entry.WriteToAsync(stream, buffer.Memory, token).ConfigureAwait(false);
