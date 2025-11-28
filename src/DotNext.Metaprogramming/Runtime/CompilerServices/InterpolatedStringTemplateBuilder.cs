@@ -74,26 +74,26 @@ public struct InterpolatedStringTemplateBuilder(int literalLength, int formatted
         {
             if (argumentType is null)
             {
-                output.Write(literalOrFormat);
+                output += literalOrFormat;
                 return;
             }
 
-            output.Add('{');
+            output += '{';
             output.Format(position++, provider: InvariantCulture);
 
             if (alignment is not 0)
             {
-                output.Add(',');
+                output += ',';
                 output.Format(alignment, provider: InvariantCulture);
             }
 
             if (literalOrFormat is { Length: > 0 })
             {
-                output.Add(':');
-                output.Write(literalOrFormat);
+                output += ':';
+                output += literalOrFormat;
             }
 
-            output.Add('}');
+            output += '}';
         }
     }
 

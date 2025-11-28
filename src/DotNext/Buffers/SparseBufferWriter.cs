@@ -198,6 +198,9 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public void Add(T item) => Write(new(ref item));
 
+    /// <inheritdoc cref="Add(T)"/>
+    public void operator += (T item) => Add(item);
+
     /// <inheritdoc />
     void IGrowableBuffer<T>.Write(T value) => Add(value);
 

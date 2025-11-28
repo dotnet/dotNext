@@ -62,7 +62,7 @@ public ref struct BufferWriterSlimInterpolatedStringHandler
     /// <param name="value">The span to write.</param>
     public void AppendFormatted(scoped ReadOnlySpan<char> value)
     {
-        buffer.Value.Write(value);
+        buffer.Value += value;
         count += value.Length;
     }
 

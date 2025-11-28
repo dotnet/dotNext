@@ -139,6 +139,9 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
         position += 1;
     }
 
+    /// <inheritdoc cref="Add(T)"/>
+    public void operator += (T item) => Add(item);
+
     /// <inheritdoc />
     void IGrowableBuffer<T>.Write(T value) => Add(value);
 

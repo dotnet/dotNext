@@ -70,7 +70,7 @@ internal partial class HttpPeerController
         try
         {
             writer.WriteEndPoint(localNode);
-            writer.Add(Unsafe.BitCast<bool, byte>(highPriority));
+            writer += Unsafe.BitCast<bool, byte>(highPriority);
 
             result = writer.DetachOrCopyBuffer();
         }

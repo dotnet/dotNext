@@ -216,7 +216,7 @@ public static partial class CharBuffer
     /// </summary>
     /// <param name="writer">The buffer writer.</param>
     public static void WriteLine(this ref BufferWriterSlim<char> writer)
-        => writer.Write(Environment.NewLine);
+        => writer += Environment.NewLine;
 
     /// <summary>
     /// Writes a string to the buffer, followed by a line terminator.
@@ -225,8 +225,8 @@ public static partial class CharBuffer
     /// <param name="characters">The characters to write.</param>
     public static void WriteLine(this ref BufferWriterSlim<char> writer, scoped ReadOnlySpan<char> characters)
     {
-        writer.Write(characters);
-        writer.Write(Environment.NewLine);
+        writer += characters;
+        writer += Environment.NewLine;
     }
 
     /// <summary>

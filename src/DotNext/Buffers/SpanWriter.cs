@@ -159,6 +159,16 @@ public ref struct SpanWriter<T>
         return writtenCount;
     }
 
+    /// <inheritdoc cref="TryWrite"/>
+    public void operator += (scoped ReadOnlySpan<T> input) => TryWrite(input);
+
+    /// <inheritdoc cref="TryWrite"/>
+    public void operator checked += (scoped ReadOnlySpan<T> input)
+    {
+        if (!TryWrite(input))
+            throw new InternalBufferOverflowException();
+    }
+
     /// <summary>
     /// Puts single element into the underlying span.
     /// </summary>
@@ -201,6 +211,12 @@ public ref struct SpanWriter<T>
         [StackTraceHidden]
         static void ThrowInternalBufferOverflowException() => throw new InternalBufferOverflowException(ExceptionMessages.NotEnoughMemory);
     }
+
+    /// <inheritdoc cref="Add(T)"/>
+    public void operator checked += (T item) => Add() = item;
+
+    /// <inheritdoc cref="TryAdd(T)"/>
+    public void operator += (T item) => TryAdd(item);
 
     /// <summary>
     /// Obtains the portion of underlying span and marks it as written.

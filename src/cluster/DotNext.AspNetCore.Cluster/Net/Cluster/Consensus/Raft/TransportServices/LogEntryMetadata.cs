@@ -67,7 +67,7 @@ internal readonly struct LogEntryMetadata
         var writer = new SpanWriter<byte>(output);
         writer.WriteLittleEndian(Term);
         writer.WriteLittleEndian(timestamp);
-        writer.Add(flags);
+        writer += flags;
         writer.WriteLittleEndian(identifier);
         writer.WriteLittleEndian(Length);
     }

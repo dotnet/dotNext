@@ -221,6 +221,9 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
             position += input.Length;
         }
     }
+
+    /// <inheritdoc cref="Write"/>
+    public void operator += (scoped ReadOnlySpan<T> input) => Write(input);
     
     /// <inheritdoc />
     void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> input)
@@ -247,6 +250,9 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         position += 1;
         return ref result;
     }
+
+    /// <inheritdoc cref="Add(T)"/>
+    public void operator += (T item) => Add() = item;
 
     /// <summary>
     /// Gets the last added item.

@@ -118,9 +118,9 @@ internal sealed class DecodingTextReader : TextBufferReader
                     }
 
                     if ((uint)newLineBufferPosition > 0U)
-                        result.Write(newLine.Slice(0, newLineBufferPosition));
+                        result += newLine.Slice(0, newLineBufferPosition);
 
-                    result.Add(ch);
+                    result += ch;
                     newLineBufferPosition = 0;
                 }
                 while (++charPos < charLen);
@@ -129,7 +129,7 @@ internal sealed class DecodingTextReader : TextBufferReader
 
             // add trailing characters recognized as a part of uncompleted line termination
             if ((uint)newLineBufferPosition > 0U)
-                result.Write(newLine.Slice(0, newLineBufferPosition));
+                result += newLine.Slice(0, newLineBufferPosition);
 
             exit:
             return (uint)result.WrittenCount > 0U ? new string(result.WrittenSpan) : string.Empty;

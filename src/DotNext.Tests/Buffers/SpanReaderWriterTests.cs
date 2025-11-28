@@ -33,7 +33,10 @@ public sealed class SpanReaderTests : Test
         var exceptionThrown = false;
         try
         {
-            writer.Add(42);
+            checked
+            {
+                writer += 42;
+            }
         }
         catch (InternalBufferOverflowException)
         {
@@ -152,6 +155,22 @@ public sealed class SpanReaderTests : Test
 
         True(exceptionThrown);
         False(writer.TryWrite(new byte[1]));
+
+        exceptionThrown = false;
+        try
+        {
+            checked
+            {
+                writer += new byte[1];
+            }
+        }
+        catch (InternalBufferOverflowException)
+        {
+            exceptionThrown = true;
+        }
+        
+        True(exceptionThrown);
+        
         False(writer.TryWrite(1));
         False(writer.TrySlide(2, out _));
         False(writer.TryAdd(1));

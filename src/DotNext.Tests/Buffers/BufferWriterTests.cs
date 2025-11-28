@@ -305,7 +305,7 @@ public sealed class BufferWriterTests : Test
     [Fact]
     public static void AdvanceRewind()
     {
-        var buffer = new PoolingArrayBufferWriter<int>();
+        using var buffer = new PoolingArrayBufferWriter<int>();
 
         Throws<ArgumentOutOfRangeException>(() => buffer.Rewind(1));
 

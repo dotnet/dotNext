@@ -189,7 +189,7 @@ public static class BufferWriter
     public static int Write(this ref BufferWriterSlim<byte> writer, scoped ReadOnlySpan<byte> value, LengthFormat lengthFormat)
     {
         var result = writer.WriteLength(value.Length, lengthFormat);
-        writer.Write(value);
+        writer += value;
         result += value.Length;
         
         return result;

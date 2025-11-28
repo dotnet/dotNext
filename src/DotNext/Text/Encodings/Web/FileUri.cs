@@ -82,7 +82,7 @@ public static class FileUri
     private static bool TryCreateFromFileNameCore(ReadOnlySpan<char> fileName, UrlEncoder encoder, Span<char> output, out int charsWritten)
     {
         var writer = new SpanWriter<char>(output);
-        writer.Write(FileScheme);
+        writer += FileScheme;
 
         bool endsWithTrailingSeparator;
         SearchValues<char> directoryPathSeparators;
@@ -102,13 +102,13 @@ public static class FileUri
                     is not [.. var drive, driveSeparator])
                     throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
 
-                writer.Add(UriPathSeparator);
-                writer.Write(drive);
-                writer.Write(endsWithTrailingSeparator ? [escapedDriveSeparatorChar, UriPathSeparator] : [escapedDriveSeparatorChar]);
+                writer += UriPathSeparator;
+                writer += drive;
+                writer += endsWithTrailingSeparator ? [escapedDriveSeparatorChar, UriPathSeparator] : [escapedDriveSeparatorChar];
                 break;
         }
 
-        for (;; writer.Add(UriPathSeparator))
+        for (;; writer += UriPathSeparator)
         {
             var component = GetPathComponent(ref fileName, directoryPathSeparators, out endsWithTrailingSeparator);
             if (encoder.Encode(component, writer.RemainingSpan, out _, out charsWritten) is not OperationStatus.Done)
