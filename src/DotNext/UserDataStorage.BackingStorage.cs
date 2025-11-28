@@ -209,7 +209,7 @@ public partial struct UserDataStorage
         }
 
         private TValue? GetOrSet<TValue, TSupplier>(int typeIndex, int valueIndex, TSupplier valueFactory)
-           where TSupplier : struct, ISupplier<TValue>
+           where TSupplier : struct, ISupplier<TValue>, allows ref struct
         {
             var tables = this.tables;
 
@@ -224,7 +224,7 @@ public partial struct UserDataStorage
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal TValue? GetOrSet<TValue, TSupplier>(UserDataSlot<TValue> slot, TSupplier valueFactory)
-            where TSupplier : struct, ISupplier<TValue>
+            where TSupplier : struct, ISupplier<TValue>, allows ref struct
         {
             Debug.Assert(slot.IsAllocated);
 

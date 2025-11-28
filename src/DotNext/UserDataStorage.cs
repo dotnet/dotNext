@@ -4,6 +4,9 @@ using System.Runtime.InteropServices;
 
 namespace DotNext;
 
+using Runtime;
+using Runtime.CompilerServices;
+
 /// <summary>
 /// Provides access to user data associated with the object.
 /// </summary>
@@ -46,7 +49,8 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct DelegatingValueFactory<T, TResult> : ISupplier<TResult>
+    private readonly ref struct DelegatingValueFactory<T, TResult> : ISupplier<TResult>
+        where T : allows ref struct
     {
         private readonly T arg;
         private readonly Func<T, TResult> factory;
@@ -58,10 +62,14 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
         }
 
         TResult ISupplier<TResult>.Invoke() => factory(arg);
+        
+        void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
+            => ISupplier<TResult>.PrepareInvocation(count, result) = factory(arg);
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly unsafe struct ValueFactory<T, TResult> : ISupplier<TResult>
+    private readonly unsafe ref struct ValueFactory<T, TResult> : ISupplier<TResult>
+        where T : allows ref struct
     {
         private readonly T arg;
         private readonly delegate*<T, TResult> factory;
@@ -73,10 +81,15 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
         }
 
         TResult ISupplier<TResult>.Invoke() => factory(arg);
+        
+        void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
+            => ISupplier<TResult>.PrepareInvocation(count, result) = factory(arg);
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly unsafe struct ValueFactory<T1, T2, TResult> : ISupplier<TResult>
+    private readonly unsafe ref struct ValueFactory<T1, T2, TResult> : ISupplier<TResult>
+        where T1 : allows ref struct
+        where T2 : allows ref struct
     {
         private readonly T1 arg1;
         private readonly T2 arg2;
@@ -90,10 +103,15 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
         }
 
         TResult ISupplier<TResult>.Invoke() => factory(arg1, arg2);
+        
+        void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
+            => ISupplier<TResult>.PrepareInvocation(count, result) = factory(arg1, arg2);
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct DelegatingValueFactory<T1, T2, TResult> : ISupplier<TResult>
+    private readonly ref struct DelegatingValueFactory<T1, T2, TResult> : ISupplier<TResult>
+        where T1 : allows ref struct
+        where T2 : allows ref struct
     {
         private readonly T1 arg1;
         private readonly T2 arg2;
@@ -107,6 +125,9 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
         }
 
         TResult ISupplier<TResult>.Invoke() => factory(arg1, arg2);
+        
+        void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
+            => ISupplier<TResult>.PrepareInvocation(count, result) = factory(arg1, arg2);
     }
 
     private readonly object source;
@@ -224,6 +245,7 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
     /// <returns>The data associated with the slot.</returns>
     /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public TValue GetOrSet<T, TValue>(UserDataSlot<TValue> slot, T arg, Func<T, TValue> valueFactory)
+        where T : allows ref struct
         => GetOrSet(slot, new DelegatingValueFactory<T, TValue>(arg, valueFactory));
 
     /// <summary>
@@ -238,6 +260,7 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
     /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     [CLSCompliant(false)]
     public unsafe TValue GetOrSet<T, TValue>(UserDataSlot<TValue> slot, T arg, delegate*<T, TValue> valueFactory)
+        where T : allows ref struct
         => GetOrSet(slot, new ValueFactory<T, TValue>(arg, valueFactory));
 
     /// <summary>
@@ -253,6 +276,8 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
     /// <returns>The data associated with the slot.</returns>
     /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public TValue GetOrSet<T1, T2, TValue>(UserDataSlot<TValue> slot, T1 arg1, T2 arg2, Func<T1, T2, TValue> valueFactory)
+        where T1 : allows ref struct
+        where T2 : allows ref struct
         => GetOrSet(slot, new DelegatingValueFactory<T1, T2, TValue>(arg1, arg2, valueFactory));
 
     /// <summary>
@@ -269,6 +294,8 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
     /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     [CLSCompliant(false)]
     public unsafe TValue GetOrSet<T1, T2, TValue>(UserDataSlot<TValue> slot, T1 arg1, T2 arg2, delegate*<T1, T2, TValue> valueFactory)
+        where T1 : allows ref struct
+        where T2 : allows ref struct
         => GetOrSet(slot, new ValueFactory<T1, T2, TValue>(arg1, arg2, valueFactory));
 
     /// <summary>
@@ -281,7 +308,7 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
     /// <returns>The data associated with the slot.</returns>
     /// <exception cref="ArgumentException"><paramref name="slot"/> is not allocated.</exception>
     public TValue GetOrSet<TValue, TFactory>(UserDataSlot<TValue> slot, TFactory valueFactory)
-        where TFactory : struct, ISupplier<TValue>
+        where TFactory : struct, ISupplier<TValue>, allows ref struct
     {
         if (!slot.IsAllocated)
             throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
