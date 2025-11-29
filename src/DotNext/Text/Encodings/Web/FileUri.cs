@@ -142,15 +142,29 @@ public static class FileUri
     }
 
     /// <summary>
-    /// Gets URI that points to the file system object.
+    /// Extends <see cref="FileSystemInfo"/> type.
     /// </summary>
-    /// <param name="fileInfo">The information about file system object.</param>
-    /// <param name="settings">The encoding settings.</param>
-    /// <returns><see cref="Uri"/> that points to the file system object.</returns>
-    public static Uri GetUri(this FileSystemInfo fileInfo, TextEncoderSettings? settings = null)
+    /// <param name="file">The information about file system object.</param>
+    extension(FileSystemInfo file)
     {
-        ArgumentNullException.ThrowIfNull(fileInfo);
+        /// <summary>
+        /// Gets URI that points to the file system object.
+        /// </summary>
+        /// <param name="settings">The encoding settings.</param>
+        /// <returns><see cref="Uri"/> that points to the file system object.</returns>
+        public Uri GetUri(TextEncoderSettings? settings)
+        {
+            ArgumentNullException.ThrowIfNull(file);
 
-        return new(CreateFromFileNameCore(fileInfo.FullName, settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings)), UriKind.Absolute);
+            return new(CreateFromFileNameCore(file.FullName, settings is null
+                    ? UrlEncoder.Default
+                    : UrlEncoder.Create(settings)),
+                UriKind.Absolute);
+        }
+
+        /// <summary>
+        /// Gets URI that points to the file system object.
+        /// </summary>
+        public Uri Uri => GetUri(file, settings: null);
     }
 }

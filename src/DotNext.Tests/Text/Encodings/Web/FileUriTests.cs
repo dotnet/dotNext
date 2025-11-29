@@ -41,7 +41,7 @@ public sealed class FileUriTests : Test
     public static void GetUriExtensionMethod()
     {
         var fileName = OperatingSystem.IsWindows() ? "C:\\some\\path" : "/some/path";
-        var uri = new FileInfo(fileName).GetUri();
+        var uri = new FileInfo(fileName).Uri;
         Equal(fileName, uri.LocalPath);
     }
 
