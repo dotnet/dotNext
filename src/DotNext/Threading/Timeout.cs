@@ -105,9 +105,12 @@ public readonly struct Timeout
     public bool IsInfinite => created.IsEmpty;
 
     /// <summary>
-    /// Indicates that timeout is occurred.
+    /// Indicates that the timeout is occurred.
     /// </summary>
-    public bool IsExpired => !IsInfinite && created.Elapsed > timeout;
+    /// <value><see langword="true"/> if timeout is occurred; otherwise, <see langword="false"/>.</value>
+    public bool IsExpired => IsExpiredInternal(TimeProvider.System);
+    
+    internal bool IsExpiredInternal(TimeProvider provider) => !IsInfinite && created.GetElapsedTime(provider) > timeout;
 
     /// <summary>
     /// Throws <see cref="TimeoutException"/> if timeout occurs.

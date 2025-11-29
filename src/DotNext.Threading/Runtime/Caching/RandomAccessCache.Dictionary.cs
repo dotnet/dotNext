@@ -528,7 +528,7 @@ public partial class RandomAccessCache<TKey, TValue>
         try
         {
             var bucketLock = oldVersion.GetByIndex(lockCount).Lock;
-            await bucketLock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
+            await bucketLock.AcquireAsync(timeout.RemainingTime, token).ConfigureAwait(false);
             lockCount++;
 
             if (!ReferenceEquals(oldVersion, buckets))
@@ -538,7 +538,7 @@ public partial class RandomAccessCache<TKey, TValue>
             for (; lockCount < oldVersion.Count; lockCount++)
             {
                 bucketLock = oldVersion.GetByIndex(lockCount).Lock;
-                await bucketLock.AcquireAsync(timeout.GetRemainingTimeOrZero(), token).ConfigureAwait(false);
+                await bucketLock.AcquireAsync(timeout.RemainingTime, token).ConfigureAwait(false);
             }
             
             var newSource = new CancelableValueTaskCompletionSource();

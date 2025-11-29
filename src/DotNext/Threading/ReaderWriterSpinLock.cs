@@ -89,9 +89,9 @@ public partial struct ReaderWriterSpinLock
     /// </summary>
     public void ExitReadLock() => Interlocked.Decrement(ref state);
 
-    private bool TryEnterReadLock(in Timeout timeout, CancellationToken token)
+    private bool TryEnterReadLock(in Timeout timeout, TimeProvider provider, CancellationToken token)
     {
-        for (var spinner = new SpinWait(); !timeout.IsExpired; token.ThrowIfCancellationRequested(), spinner.SpinOnce())
+        for (var spinner = new SpinWait(); !timeout.IsExpired(provider); token.ThrowIfCancellationRequested(), spinner.SpinOnce())
         {
             var currentState = state;
             if (currentState is not WriteLockState and not int.MaxValue && Interlocked.CompareExchange(ref state, currentState + 1, currentState) == currentState)
@@ -109,7 +109,18 @@ public partial struct ReaderWriterSpinLock
     /// <returns><see langword="true"/> if the calling thread entered read mode, otherwise, <see langword="false"/>.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public bool TryEnterReadLock(TimeSpan timeout, CancellationToken token = default)
-        => TryEnterReadLock(new Timeout(timeout), token);
+        => TryEnterReadLock(timeout, TimeProvider.System, token);
+    
+    /// <summary>
+    /// Tries to enter the lock in read mode.
+    /// </summary>
+    /// <param name="timeout">The interval to wait.</param>
+    /// <param name="provider">The time provider.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if the calling thread entered read mode, otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public bool TryEnterReadLock(TimeSpan timeout, TimeProvider provider, CancellationToken token = default)
+        => TryEnterReadLock(new Timeout(timeout), provider, token);
 
     /// <summary>
     /// Enters the lock in write mode.
@@ -136,13 +147,13 @@ public partial struct ReaderWriterSpinLock
         return true;
     }
 
-    private bool TryEnterWriteLock(in Timeout timeout, CancellationToken token)
+    private bool TryEnterWriteLock(in Timeout timeout, TimeProvider provider, CancellationToken token)
     {
         for (var spinner = new SpinWait();
              Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) is not NoLockState;
              token.ThrowIfCancellationRequested(), spinner.SpinOnce())
         {
-            if (timeout)
+            if (timeout.IsExpired(provider))
                 return false;
         }
 
@@ -158,7 +169,18 @@ public partial struct ReaderWriterSpinLock
     /// <returns><see langword="true"/> if the calling thread entered read mode, otherwise, <see langword="false"/>.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public bool TryEnterWriteLock(TimeSpan timeout, CancellationToken token = default)
-        => TryEnterWriteLock(new Timeout(timeout), token);
+        => TryEnterWriteLock(timeout, TimeProvider.System, token);
+    
+    /// <summary>
+    /// Tries to enter the lock in write mode.
+    /// </summary>
+    /// <param name="timeout">The interval to wait.</param>
+    /// <param name="provider">The time provider.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if the calling thread entered read mode, otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public bool TryEnterWriteLock(TimeSpan timeout, TimeProvider provider, CancellationToken token = default)
+        => TryEnterWriteLock(new Timeout(timeout), provider, token);
 
     /// <summary>
     /// Exits the writer lock.
@@ -204,9 +226,24 @@ public partial struct ReaderWriterSpinLock
     /// <returns><see langword="true"/> if the caller upgraded successfully; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public bool TryUpgradeToWriteLock(TimeSpan timeout, CancellationToken token = default)
+        => TryUpgradeToWriteLock(timeout, TimeProvider.System, token);
+    
+    /// <summary>
+    /// Attempts to upgrade a reader lock to the writer lock.
+    /// </summary>
+    /// <remarks>
+    /// The method releases the reader lock even if it returns <see langword="false"/>, so the caller is responsible
+    /// to reacquire the reader lock.
+    /// </remarks>
+    /// <param name="timeout">The time to wait for the lock.</param>
+    /// <param name="provider">The time provider.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if the caller upgraded successfully; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public bool TryUpgradeToWriteLock(TimeSpan timeout, TimeProvider provider, CancellationToken token = default)
     {
         ExitReadLock();
-        return TryEnterWriteLock(new Timeout(timeout), token);
+        return TryEnterWriteLock(timeout, provider, token);
     }
 
     /// <summary>

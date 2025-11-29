@@ -103,7 +103,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 for (BucketList newCopy;; bucketsCopy = newCopy)
                 {
                     bucketsCopy.GetByHash(hashCode, out bucket);
-                    await bucket.Value.Lock.AcquireAsync(timeout.GetRemainingTimeOrZero(), cts.Token).ConfigureAwait(false);
+                    await bucket.Value.Lock.AcquireAsync(timeout.RemainingTime, cts.Token).ConfigureAwait(false);
                     bucketLock = bucket.Value.Lock;
 
                     newCopy = buckets;
@@ -189,7 +189,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 for (BucketList newCopy;; bucketsCopy = newCopy)
                 {
                     bucketsCopy.GetByHash(hashCode, out bucket);
-                    await bucket.Value.Lock.AcquireAsync(timeout.GetRemainingTimeOrZero(), cts.Token).ConfigureAwait(false);
+                    await bucket.Value.Lock.AcquireAsync(timeout.RemainingTime, cts.Token).ConfigureAwait(false);
                     bucketLock = bucket.Value.Lock;
 
                     newCopy = buckets;

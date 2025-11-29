@@ -267,7 +267,7 @@ public abstract class LeaseConsumer : Disposable, IAsyncDisposable
             // ensure that the timer has been stopped
             await timer.DisposeAsync().ConfigureAwait(false);
             timeout = new(AdjustTimeToLive(response.TimeToLive), ts);
-            if (timeout.TryGetRemainingTime(out var remainingTime))
+            if (timeout.TryGetRemainingTime(provider, out var remainingTime))
             {
                 if (source is not { } sourceCopy)
                     source = sourceCopy = new();
