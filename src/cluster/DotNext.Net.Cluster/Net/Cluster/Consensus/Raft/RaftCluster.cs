@@ -1204,7 +1204,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     async void IRaftStateMachine<TMember>.UnavailableMemberDetected(IRaftStateMachine.IWeakCallerStateIdentity callerState, TMember member, CancellationToken token)
     {
         // check state to drop old notifications (double-check pattern)
-        if (callerState.IsValid(state) && membershipState.FalseToTrue())
+        if (callerState.IsValid(state) && Interlocked.FalseToTrue(ref membershipState))
         {
             try
             {
@@ -1217,7 +1217,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
             }
             finally
             {
-                membershipState.Value = false;
+                Volatile.Write(ref membershipState, false);
             }
         }
 

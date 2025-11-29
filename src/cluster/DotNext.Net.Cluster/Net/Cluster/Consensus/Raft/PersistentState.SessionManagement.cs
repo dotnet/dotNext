@@ -1,9 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using DotNext.Threading;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using AtomicBoolean = Threading.Atomic.Boolean;
 using IndexPool = Collections.Concurrent.IndexPool;
 
 public partial class PersistentState
@@ -35,12 +35,12 @@ public partial class PersistentState
         // index in the array represents session identifier
         // if true then session identifier is available;
         // otherwise, false.
-        private readonly AtomicBoolean[] tokens;
+        private readonly bool[] tokens;
 
         internal SlowSessionIdPool(int poolSize)
         {
-            tokens = new AtomicBoolean[poolSize];
-            Array.Fill(tokens, new AtomicBoolean(true));
+            tokens = new Boolean[poolSize];
+            Array.Fill(tokens, true);
         }
 
         internal override int Take()
@@ -48,14 +48,14 @@ public partial class PersistentState
             // fast path attempt to obtain session ID is o(1)
             var sessionId = (uint)Environment.CurrentManagedThreadId % (uint)tokens.Length;
             ref var first = ref MemoryMarshal.GetArrayDataReference(tokens);
-            if (Unsafe.Add(ref first, sessionId).TrueToFalse())
+            if (Interlocked.TrueToFalse(ref Unsafe.Add(ref first, sessionId)))
                 goto exit;
 
             // slow path - enumerate over all slots in search of available ID
             repeat_search:
             for (sessionId = 0U; sessionId < (uint)tokens.Length; sessionId++)
             {
-                if (Unsafe.Add(ref first, sessionId).TrueToFalse())
+                if (Interlocked.TrueToFalse(ref Unsafe.Add(ref first, sessionId)))
                     goto exit;
             }
 
@@ -66,7 +66,7 @@ public partial class PersistentState
         }
 
         internal override void Return(int sessionId)
-            => tokens[sessionId].Value = true;
+            => Volatile.Write(ref tokens[sessionId], true);
     }
 
     // concurrent read sessions management

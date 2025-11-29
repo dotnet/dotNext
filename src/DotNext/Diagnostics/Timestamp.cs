@@ -15,8 +15,7 @@ public readonly record struct Timestamp :
     IComparable<Timestamp>,
     IComparisonOperators<Timestamp, Timestamp, bool>,
     IAdditionOperators<Timestamp, TimeSpan, Timestamp>,
-    ISubtractionOperators<Timestamp, TimeSpan, Timestamp>,
-    IInterlockedOperations<Timestamp>
+    ISubtractionOperators<Timestamp, TimeSpan, Timestamp>
 {
     private static readonly double TickFrequency = GetTickFrequency(TimeProvider.System);
     private readonly long ticks;
@@ -276,7 +275,7 @@ public readonly record struct Timestamp :
     public static void Refresh(ref Timestamp location, TimeProvider provider)
         => Atomic.Write(ref Unsafe.AsRef(in location.ticks), Math.Max(1L, provider.GetTimestamp()));
 
-    /// <inheritdoc cref="IInterlockedOperations{T}.CompareExchange(ref T, T, T)"/>
+    /// <inheritdoc cref="Interlocked.CompareExchange{T}(ref T, T, T)"/>
     public static Timestamp CompareExchange(ref Timestamp location, Timestamp value, Timestamp comparand)
         => new(Interlocked.CompareExchange(ref Unsafe.AsRef(in location.ticks), value.ticks, comparand.ticks));
 }
