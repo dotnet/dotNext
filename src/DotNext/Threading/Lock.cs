@@ -301,19 +301,19 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     /// </summary>
     /// <param name="other">Other lock to compare.</param>
     /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
-    public override readonly bool Equals([NotNullWhen(true)] object? other) => other is Lock @lock && Equals(in @lock);
+    public readonly override bool Equals([NotNullWhen(true)] object? other) => other is Lock @lock && Equals(in @lock);
 
     /// <summary>
     /// Computes hash code of this lock.
     /// </summary>
     /// <returns>The hash code of this lock.</returns>
-    public override readonly int GetHashCode() => HashCode.Combine(lockedObject, type, owner);
+    public readonly override int GetHashCode() => HashCode.Combine(lockedObject, type, owner);
 
     /// <summary>
     /// Returns actual type of this lock in the form of the string.
     /// </summary>
     /// <returns>The actual type of this lock.</returns>
-    public override readonly string ToString() => type.ToString();
+    public readonly override string ToString() => type.ToString();
 
     /// <summary>
     /// Determines whether two locks are the same.
