@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -306,9 +307,6 @@ partial class Span
         {
             ArgumentOutOfRangeException.ThrowIfNotEqual(span.Length, y.Length, nameof(y));
 
-            if (span.Overlaps(y))
-                throw new ArgumentException(ExceptionMessages.OverlappedRange, nameof(y));
-
             SwapCore(span, y);
         }
     }
@@ -386,7 +384,7 @@ partial class Span
     {
         Debug.Assert(x.Length == y.Length);
 
-        var bufferSize = Math.Min(SpanOwner<T>.StackallocThreshold, x.Length);
+        var bufferSize = int.Min(SpanOwner<T>.StackallocThreshold, x.Length);
         if (bufferSize is 0)
         {
             return;
@@ -397,40 +395,76 @@ partial class Span
             Swap(x, y, buffer);
             ArrayPool<T>.Shared.Return(buffer, clearArray: true);
         }
+        else if (Vector.IsHardwareAccelerated)
+        {
+            SwapVectorized(ref MemoryMarshal.GetReference(x), ref MemoryMarshal.GetReference(y), (uint)x.Length);
+        }
         else
         {
             unsafe
             {
                 // Only T without references inside can be allocated on the stack.
                 // GC cannot track references placed on the stack using `localloc` IL instruction.
-                void* buffer = stackalloc byte[checked(Unsafe.SizeOf<T>() * bufferSize)];
-                Swap(x, y, new Span<T>(buffer, bufferSize));
+                void* buffer = stackalloc byte[Unsafe.SizeOf<T>() * bufferSize];
+                Swap(x, y, new(buffer, bufferSize));
+            }
+        }
+
+        static void SwapVectorized(ref T x, ref T y, ulong length)
+        {
+            Debug.Assert(Vector.IsHardwareAccelerated);
+            
+            length *= (uint)Unsafe.SizeOf<T>();
+            ref var ptrX = ref Unsafe.As<T, byte>(ref x);
+            ref var ptrY = ref Unsafe.As<T, byte>(ref y);
+        
+            for (Vector<byte> vecX, vecY; length >= (uint)Vector<byte>.Count; length -= (uint)Vector<byte>.Count)
+            {
+                vecX = Vector.LoadUnsafe(in ptrX);
+                vecY = Vector.LoadUnsafe(in ptrY);
+                (vecX, vecY) = (vecY, vecX);
+            
+                vecX.StoreUnsafe(ref ptrX);
+                vecY.StoreUnsafe(ref ptrY);
+            
+                ptrX = ref Unsafe.Add(ref ptrY, Vector<byte>.Count);
+                ptrY = ref Unsafe.Add(ref ptrY, Vector<byte>.Count);
+            }
+
+            if (length > 0L)
+            {
+                Debug.Assert(length <= (uint)Vector<byte>.Count);
+                
+                Span<byte> buffer = stackalloc byte[(int)length];
+                SwapMemory(MemoryMarshal.CreateSpan(ref ptrX, buffer.Length),
+                    MemoryMarshal.CreateSpan(ref ptrY, buffer.Length),
+                    buffer);
             }
         }
 
         static void Swap(Span<T> x, Span<T> y, Span<T> buffer)
         {
             Debug.Assert(x.Length == y.Length);
-            Debug.Assert(buffer.IsEmpty is false);
+            Debug.Assert(buffer is not []);
 
             while (x.Length >= buffer.Length)
             {
                 SwapMemory(TrimLengthCore(x, buffer.Length, out x), TrimLengthCore(y, buffer.Length, out y), buffer);
             }
 
-            if (!x.IsEmpty)
+            if (x is not [])
             {
                 Debug.Assert(x.Length <= buffer.Length);
 
                 SwapMemory(x, y, buffer.Slice(0, x.Length));
             }
         }
-
-        static void SwapMemory(Span<T> x, Span<T> y, Span<T> buffer)
-        {
-            x.CopyTo(buffer);
-            y.CopyTo(x);
-            buffer.CopyTo(y);
-        }
+    }
+    
+    private static void SwapMemory<T>(Span<T> x, Span<T> y, Span<T> buffer)
+    {
+        x.CopyTo(buffer);
+        y.CopyTo(x);
+        buffer.CopyTo(y);
     }
 }
