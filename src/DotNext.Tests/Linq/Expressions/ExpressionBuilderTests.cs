@@ -652,10 +652,10 @@ public sealed class ExpressionBuilderTests : Test
     {
         MutationExpression mut = typeof(Net.Cluster.Consensus.Raft.Result<bool>).New().With(new MemberBindings
             {
-                {nameof(Net.Cluster.Consensus.Raft.Result<bool>.Value), false.Const()}
+                {nameof(Net.Cluster.Consensus.Raft.Result<>.Value), false.Const()}
             });
 
-        Contains(mut.Bindings, static item => nameof(Net.Cluster.Consensus.Raft.Result<bool>.Value) == item.Member.Name);
+        Contains(mut.Bindings, static item => nameof(Net.Cluster.Consensus.Raft.Result<>.Value) == item.Member.Name);
         Equal(typeof(Net.Cluster.Consensus.Raft.Result<bool>), mut.Reduce().Type);
     }
 

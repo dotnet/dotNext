@@ -195,7 +195,7 @@ public struct InterpolatedStringTemplateBuilder(int literalLength, int formatted
 
         // try-finally block to dispose the writer
         expr = Expression.Block(statements);
-        expr = Expression.TryFinally(expr, Expression.Call(writerLocal, nameof(BufferWriterSlim<char>.Dispose), []));
+        expr = Expression.TryFinally(expr, Expression.Call(writerLocal, nameof(BufferWriterSlim<>.Dispose), []));
         expr = Expression.Block([preallocatedBufferLocal, writerLocal, handlerLocal], expr);
 
         return Expression.Lambda(

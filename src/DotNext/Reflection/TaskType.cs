@@ -22,7 +22,7 @@ public static class TaskType
 
         static Cache()
         {
-            Ldtoken(PropertyGet(Type<Task<T>>(), nameof(Task<T>.Result)));
+            Ldtoken(PropertyGet(Type<Task<T>>(), nameof(Task<>.Result)));
             Pop(out RuntimeMethodHandle getterHandle);
             
             Ldtoken<Task<T>>();

@@ -75,15 +75,15 @@ public sealed class ForEachExpression : CustomExpression, ILoopLabels
         this.configureAwait = configureAwait;
 
         // enumerator = enumerable.GetAsyncEnumerator(token);
-        const string GetAsyncEnumeratorMethod = nameof(IAsyncEnumerable<Missing>.GetAsyncEnumerator);
+        const string GetAsyncEnumeratorMethod = nameof(IAsyncEnumerable<>.GetAsyncEnumerator);
         MethodCallExpression getEnumerator = collection.Call(GetAsyncEnumeratorMethod, cancellationToken);
         enumeratorVar = Variable(getEnumerator.Type, EnumeratorVarName);
         enumeratorAssignment = Assign(enumeratorVar, getEnumerator);
 
         // discover async MoveNext
-        moveNextCall = enumeratorVar.Call(nameof(IAsyncEnumerator<Missing>.MoveNextAsync));
+        moveNextCall = enumeratorVar.Call(nameof(IAsyncEnumerator<>.MoveNextAsync));
 
-        Element = Property(enumeratorVar, nameof(IAsyncEnumerator<Missing>.Current));
+        Element = Property(enumeratorVar, nameof(IAsyncEnumerator<>.Current));
         BreakLabel = breakLabel ?? Label(typeof(void), BreakLabelName);
         ContinueLabel = continueLabel ?? Label(typeof(void), ContinueLabelName);
     }

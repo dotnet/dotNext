@@ -259,12 +259,12 @@ public static partial class ExpressionBuilder
         // handle nullable value type
         Type? underlyingType = Nullable.GetUnderlyingType(operand.Type);
         if (underlyingType is not null)
-            return operand.Property(nameof(Nullable<int>.HasValue)).Not();
+            return operand.Property(nameof(Nullable<>.HasValue)).Not();
 
         // handle optional type
         underlyingType = Optional.GetUnderlyingType(operand.Type);
         if (underlyingType is not null)
-            return operand.Property(nameof(Optional<int>.HasValue)).Not();
+            return operand.Property(nameof(Optional<>.HasValue)).Not();
 
         // handle reference type or value type
         return operand.Type is { IsValueType: false, IsPointer: false, IsPrimitive: false }
@@ -285,12 +285,12 @@ public static partial class ExpressionBuilder
         // handle nullable value type
         var underlyingType = Nullable.GetUnderlyingType(operand.Type);
         if (underlyingType is not null)
-            return operand.Property(nameof(Nullable<int>.HasValue));
+            return operand.Property(nameof(Nullable<>.HasValue));
 
         // handle optional type
         underlyingType = Optional.GetUnderlyingType(operand.Type);
         if (underlyingType is not null)
-            return operand.Property(nameof(Optional<int>.HasValue));
+            return operand.Property(nameof(Optional<>.HasValue));
 
         // handle reference type or value type
         return operand.Type is { IsValueType: false, IsPointer: false, IsPrimitive: false }

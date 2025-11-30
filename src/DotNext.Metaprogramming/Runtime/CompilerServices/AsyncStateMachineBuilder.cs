@@ -466,7 +466,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         => Expression.Lambda(BuildTransitionDelegate(stateMachine.Type), body, tailCall, stateMachine);
 
     private static MemberExpression GetStateField(ParameterExpression stateMachine)
-        => stateMachine.Field(nameof(AsyncStateMachine<int>.State));
+        => stateMachine.Field(nameof(AsyncStateMachine<>.State));
 
     private Expression<TDelegate> Build(LambdaExpression stateMachineMethod)
     {
@@ -505,7 +505,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
             newBody.Add(parameterHolder.Assign(parameter));
         }
 
-        var startMethod = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.Start));
+        var startMethod = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<>.Start));
         Debug.Assert(startMethod is not null);
         newBody.Add(methodBuilder.Task.AdjustTaskType(Expression.Call(startMethod, stateMachineMethod, stateVariable)));
         return Expression.Lambda<TDelegate>(Expression.Block([stateVariable], newBody), true, parameters);
@@ -576,7 +576,7 @@ internal sealed class AsyncStateMachineBuilder<TDelegate> : ExpressionVisitor, I
         {
             var v = vars[i];
             var s = slots[i];
-            variables[v] = ClosureAnalyzer.IsClosure(v) ? s.Field(nameof(StrongBox<int>.Value)) : s;
+            variables[v] = ClosureAnalyzer.IsClosure(v) ? s.Field(nameof(StrongBox<>.Value)) : s;
         }
 
         return stateMachine;

@@ -85,7 +85,7 @@ public static partial class Dictionary
     {
         Push(dictionary);
         Dup();
-        Ldvirtftn(PropertyGet(Type<IReadOnlyDictionary<TKey, TValue>>(), nameof(IReadOnlyDictionary<TKey, TValue>.Keys)));
+        Ldvirtftn(PropertyGet(Type<IReadOnlyDictionary<TKey, TValue>>(), nameof(IReadOnlyDictionary<,>.Keys)));
         Newobj(Constructor(Type<Func<IEnumerable<TKey>>>(), Type<object>(), Type<IntPtr>()));
         return Return<Func<IEnumerable<TKey>>>();
     }
@@ -102,7 +102,7 @@ public static partial class Dictionary
     {
         Push(dictionary);
         Dup();
-        Ldvirtftn(PropertyGet(Type<IReadOnlyDictionary<TKey, TValue>>(), nameof(IReadOnlyDictionary<TKey, TValue>.Values)));
+        Ldvirtftn(PropertyGet(Type<IReadOnlyDictionary<TKey, TValue>>(), nameof(IReadOnlyDictionary<,>.Values)));
         Newobj(Constructor(Type<Func<IEnumerable<TKey>>>(), Type<object>(), Type<IntPtr>()));
         return Return<Func<IEnumerable<TValue>>>();
     }
@@ -153,7 +153,7 @@ public static partial class Dictionary
     {
         Push(dictionary);
         Dup();
-        Ldvirtftn(PropertyGet(Type<IDictionary<TKey, TValue>>(), nameof(IDictionary<TKey, TValue>.Keys)));
+        Ldvirtftn(PropertyGet(Type<IDictionary<TKey, TValue>>(), nameof(IDictionary<,>.Keys)));
         Newobj(Constructor(Type<Func<ICollection<TKey>>>(), Type<object>(), Type<IntPtr>()));
         return Return<Func<ICollection<TKey>>>();
     }
@@ -170,7 +170,7 @@ public static partial class Dictionary
     {
         Push(dictionary);
         Dup();
-        Ldvirtftn(PropertyGet(Type<IDictionary<TKey, TValue>>(), nameof(IDictionary<TKey, TValue>.Values)));
+        Ldvirtftn(PropertyGet(Type<IDictionary<TKey, TValue>>(), nameof(IDictionary<,>.Values)));
         Newobj(Constructor(Type<Func<ICollection<TKey>>>(), Type<object>(), Type<IntPtr>()));
         return Return<Func<ICollection<TValue>>>();
     }

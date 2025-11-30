@@ -92,9 +92,9 @@ public sealed class AsyncResultExpression : CustomExpression
     internal Expression Reduce(ParameterExpression stateMachine, LabelTarget endOfAsyncMethod)
     {
         // if state machine is non-void then use Result property
-        return stateMachine.Type.GetProperty(nameof(AsyncStateMachine<ValueTuple, int>.Result)) is { } resultProperty
+        return stateMachine.Type.GetProperty(nameof(AsyncStateMachine<,>.Result)) is { } resultProperty
             ? Block(Property(stateMachine, resultProperty).Assign(AsyncResult), endOfAsyncMethod.Return())
-            : Block(AsyncResult, stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Complete)), endOfAsyncMethod.Return());
+            : Block(AsyncResult, stateMachine.Call(nameof(AsyncStateMachine<>.Complete)), endOfAsyncMethod.Return());
     }
 
     /// <summary>

@@ -67,7 +67,7 @@ public readonly struct EqualityComparerBuilder<T>
     private static PropertyInfo? GetDefaultEqualityComparer(Type target)
         => typeof(EqualityComparer<>)
                 .MakeGenericType(target)
-                .GetProperty(nameof(EqualityComparer<int>.Default), PublicStaticFlags);
+                .GetProperty(nameof(EqualityComparer<>.Default), PublicStaticFlags);
 
     private static FieldInfo? HashSaltField => typeof(RandomExtensions).GetField(nameof(RandomExtensions.BitwiseHashSalt), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);
 
@@ -80,7 +80,7 @@ public readonly struct EqualityComparerBuilder<T>
         {
             method = typeof(BitwiseComparer<>)
                 .MakeGenericType(first.Type)
-                .GetMethod(nameof(BitwiseComparer<int>.Equals), PublicStaticFlags)
+                .GetMethod(nameof(BitwiseComparer<>.Equals), PublicStaticFlags)
                 ?.MakeGenericMethod(second.Type);
 
             Debug.Assert(method is not null);
@@ -92,7 +92,7 @@ public readonly struct EqualityComparerBuilder<T>
 
         method = defaultProperty
             .DeclaringType
-            ?.GetMethod(nameof(EqualityComparer<int>.Equals), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            ?.GetMethod(nameof(EqualityComparer<>.Equals), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
         Debug.Assert(method is not null);
         return Expression.Call(Expression.Property(null, defaultProperty), method, first, second);
@@ -108,7 +108,7 @@ public readonly struct EqualityComparerBuilder<T>
         {
             method = typeof(BitwiseComparer<>)
                 .MakeGenericType(expr.Type)
-                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), 0, new[] { expr.Type.MakeByRefType(), typeof(bool) });
+                .GetMethod(nameof(BitwiseComparer<>.GetHashCode), 0, new[] { expr.Type.MakeByRefType(), typeof(bool) });
 
             Debug.Assert(method is not null);
             expr = Expression.Call(method, expr, salted);
@@ -120,7 +120,7 @@ public readonly struct EqualityComparerBuilder<T>
 
             method = method = defaultProperty
                 .DeclaringType
-                ?.GetMethod(nameof(EqualityComparer<int>.GetHashCode), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+                ?.GetMethod(nameof(EqualityComparer<>.GetHashCode), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
             Debug.Assert(method is not null);
             expr = Expression.Call(Expression.Property(null, defaultProperty), method, expr);

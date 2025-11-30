@@ -26,7 +26,7 @@ internal sealed class ClosureAnalyzer : ExpressionVisitor
             var closure = Expression.Variable(typeof(StrongBox<>).MakeGenericType(p.Type));
             p.UserData.Set(ClosureVariableSlot, true);
             Closures.Add(p, closure);
-            return Expression.Field(closure, nameof(StrongBox<int>.Value));
+            return Expression.Field(closure, nameof(StrongBox<>.Value));
         }
 
         return base.Visit(node);

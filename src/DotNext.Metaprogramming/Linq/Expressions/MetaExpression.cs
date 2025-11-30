@@ -12,7 +12,7 @@ internal sealed class MetaExpression : DynamicMetaObject
 {
     private static readonly MethodInfo AsExpressionBuilderMethod = new Func<object?, ISupplier<Expression>?>(Unsafe.As<ISupplier<Expression>>).Method;
     private static readonly MethodInfo AsExpressionMethod = new Func<object?, Expression?>(Unsafe.As<Expression>).Method;
-    private static readonly MethodInfo BuildMethod = typeof(ISupplier<Expression>).GetMethod(nameof(ISupplier<Expression>.Invoke), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)!;
+    private static readonly MethodInfo BuildMethod = typeof(ISupplier<Expression>).GetMethod(nameof(ISupplier<>.Invoke), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)!;
     private static readonly MethodInfo MakeUnaryMethod = new Func<ExpressionType, Expression, Type, UnaryExpression>(Expression.MakeUnary).Method;
     private static readonly MethodInfo MakeBinaryMethod = new Func<ExpressionType, Expression, Expression, BinaryExpression>(Expression.MakeBinary).Method;
     private static readonly MethodInfo PropertyOrFieldMethod = new Func<Expression, string, MemberExpression>(Expression.PropertyOrField).Method;
