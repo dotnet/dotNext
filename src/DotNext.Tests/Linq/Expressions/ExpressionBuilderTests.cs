@@ -9,13 +9,13 @@ public sealed class ExpressionBuilderTests : Test
     private static Predicate<T> MakeNullCheck<T>()
     {
         var param = Expression.Parameter(typeof(T), "input");
-        return Expression.Lambda<Predicate<T>>(param.IsNull(), param).Compile();
+        return Expression.Lambda<Predicate<T>>(param.IsNull, param).Compile();
     }
 
     private static Predicate<T> MakeNotNullCheck<T>()
     {
         var param = Expression.Parameter(typeof(T), "input");
-        return Expression.Lambda<Predicate<T>>(param.IsNotNull(), param).Compile();
+        return Expression.Lambda<Predicate<T>>(param.IsNotNull, param).Compile();
     }
 
     private static Func<T, string> MakeToString<T>()
@@ -121,7 +121,7 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void AndBuilder()
     {
-        var expr = true.Const().And(false.Const());
+        var expr = true.Quoted & false.Quoted;
         Equal(ExpressionType.And, expr.NodeType);
         Equal(ExpressionType.Constant, expr.Left.NodeType);
         Equal(ExpressionType.Constant, expr.Right.NodeType);
@@ -130,8 +130,8 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void AssignToIndexer()
     {
-        var indexer = Array.Empty<int>().Const().Property(typeof(IList<int>), "Item", 0.Const());
-        var expr = indexer.Assign(42.Const());
+        var indexer = Array.Empty<int>().Quoted.Property(typeof(IList<int>), "Item", 0.Quoted);
+        var expr = indexer.Assign(42.Quoted);
         Equal(ExpressionType.Assign, expr.NodeType);
         Equal(ExpressionType.Constant, expr.Right.NodeType);
         Equal(ExpressionType.Index, expr.Left.NodeType);
@@ -144,7 +144,7 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void IndexerAccess()
     {
-        var indexer = new List<int>().Const().Property("Item", 0.Const());
+        var indexer = new List<int>().Quoted.Property("Item", 0.Quoted);
         NotEmpty(indexer.Arguments);
         Equal(ExpressionType.Constant, indexer.Arguments[0].NodeType);
     }
@@ -178,19 +178,19 @@ public sealed class ExpressionBuilderTests : Test
         Equal(GotoExpressionKind.Return, expr.Kind);
 
         label = Expression.Label(typeof(int));
-        expr = label.Break(typeof(int).Default());
+        expr = label.Break(typeof(int).DefaultExpr);
         Equal(ExpressionType.Goto, expr.NodeType);
         Equal(GotoExpressionKind.Break, expr.Kind);
 
-        expr = label.Goto(42.Const());
+        expr = label.Goto(42.Quoted);
         Equal(ExpressionType.Goto, expr.NodeType);
         Equal(GotoExpressionKind.Goto, expr.Kind);
 
-        expr = label.Return(42.Const());
+        expr = label.Return(42.Quoted);
         Equal(ExpressionType.Goto, expr.NodeType);
         Equal(GotoExpressionKind.Return, expr.Kind);
 
-        var site = label.LandingSite(42.Const());
+        var site = label.LandingSite(42.Quoted);
         Equal(ExpressionType.Label, site.NodeType);
         Equal(ExpressionType.Constant, site.DefaultValue?.NodeType);
     }
@@ -198,7 +198,7 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void ArrayElement()
     {
-        var indexer = Array.Empty<int>().Const().ElementAt(1.Const());
+        var indexer = Array.Empty<int>().Quoted.ElementAt(1.Quoted);
         Equal(ExpressionType.Index, indexer.NodeType);
         Equal(ExpressionType.Constant, indexer.Object?.NodeType);
     }
@@ -206,7 +206,7 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void InvokeDelegate()
     {
-        var expr = new Action(ArrayElement).Const().Invoke();
+        var expr = new Action(ArrayElement).Quoted.Invoke();
         Equal(ExpressionType.Invoke, expr.NodeType);
         Equal(ExpressionType.Constant, expr.Expression.NodeType);
     }
@@ -214,47 +214,47 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void BinaryOperations()
     {
-        var expr = 42.Const().GreaterThanOrEqual(43.Const());
+        var expr = 42.Quoted >= 43.Quoted;
         Equal(ExpressionType.GreaterThanOrEqual, expr.NodeType);
 
-        expr = 42.Const().LeftShift(2.Const());
+        expr = 42.Quoted << 2.Quoted;
         Equal(ExpressionType.LeftShift, expr.NodeType);
 
-        expr = (BinaryExpression)42.Const().RightShift(2.Const());
+        expr = 42.Quoted >> 2.Quoted;
         Equal(ExpressionType.RightShift, expr.NodeType);
 
-        expr = 42.Const().LessThanOrEqual(43.Const());
+        expr = 42.Quoted <= 43.Quoted;
         Equal(ExpressionType.LessThanOrEqual, expr.NodeType);
 
-        expr = 42.Const().Modulo(43.Const());
+        expr = 42.Quoted % 43.Quoted;
         Equal(ExpressionType.Modulo, expr.NodeType);
 
-        expr = 42.Const().NotEqual(43.Const());
+        expr = 42.Quoted.NotEqual(43.Quoted);
         Equal(ExpressionType.NotEqual, expr.NodeType);
 
-        expr = 42.Const().Xor(43.Const());
+        expr = 42.Quoted ^ 43.Quoted;
         Equal(ExpressionType.ExclusiveOr, expr.NodeType);
 
-        expr = 42.Const().Or(43.Const());
+        expr = 42.Quoted | 43.Quoted;
         Equal(ExpressionType.Or, expr.NodeType);
 
-        expr = 42D.Const().Power(2D.Const());
+        expr = 42D.Quoted.Power(2D.Quoted);
         Equal(ExpressionType.Power, expr.NodeType);
     }
 
     [Fact]
     public static void UnaryOperators()
     {
-        var expr = 20.Const().Negate();
-        Equal(ExpressionType.Negate, expr.NodeType);
+        var expr = !true.Quoted;
+        Equal(ExpressionType.Not, expr.NodeType);
 
-        expr = (-20).Const().UnaryPlus();
+        expr = +(-20).Quoted;
         Equal(ExpressionType.UnaryPlus, expr.NodeType);
 
-        expr = "".Const().TryConvert<IEnumerable<char>>();
+        expr = "".Quoted.TryConvert<IEnumerable<char>>();
         Equal(ExpressionType.TypeAs, expr.NodeType);
 
-        expr = new object().Const().Unbox<int>();
+        expr = new object().Quoted.Unbox<int>();
         Equal(ExpressionType.Unbox, expr.NodeType);
     }
 
@@ -275,7 +275,7 @@ public sealed class ExpressionBuilderTests : Test
         expr = variable.PreIncrementAssign();
         Equal(ExpressionType.PreIncrementAssign, expr.NodeType);
 
-        var index = new int[0].Const().ElementAt(0.Const());
+        var index = Array.Empty<int>().Quoted.ElementAt(0.Quoted);
         expr = index.PreDecrementAssign();
         Equal(ExpressionType.PreDecrementAssign, expr.NodeType);
 
@@ -300,7 +300,7 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void NewString()
     {
-        var expr = typeof(string).Const().New('a'.Const().Convert<object>(), 2.Const().Convert<object>());
+        var expr = typeof(string).Quoted.New('a'.Quoted.Convert<object>(), 2.Quoted.Convert<object>());
         var lambda = Expression.Lambda<Func<object>>(expr).Compile();
         Equal("aa", lambda());
     }
@@ -308,7 +308,7 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void WithObject()
     {
-        var expr = "abc".Const().With(obj =>
+        var expr = "abc".Quoted.With(obj =>
         {
             Equal(ExpressionType.Parameter, obj.NodeType);
             return obj.Property(nameof(string.Length));
@@ -321,7 +321,7 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void ForEachLoop()
     {
-        var expr = new int[3].Const().ForEach((current, _, _) =>
+        var expr = new int[3].Quoted.ForEach((current, _, _) =>
         {
             Equal(typeof(int), current.Type);
             Equal(ExpressionType.MemberAccess, current.NodeType);
@@ -337,7 +337,7 @@ public sealed class ExpressionBuilderTests : Test
     public static void ItemIndex()
     {
         const short indexValue = 10;
-        var index = new ItemIndexExpression(indexValue.Const());
+        var index = new ItemIndexExpression(indexValue.Quoted);
         False(index.IsFromEnd);
         Equal(ExpressionType.New, index.Reduce().NodeType);
         Equal(typeof(Index), index.Type);
@@ -348,7 +348,7 @@ public sealed class ExpressionBuilderTests : Test
         Equal(typeof(Index), index.Type);
 
         var i = ^20;
-        index = i.Quote();
+        index = i.Quoted;
         True(index.IsFromEnd);
     }
 
@@ -363,7 +363,7 @@ public sealed class ExpressionBuilderTests : Test
         Same(ItemIndexExpression.First, range.Start);
         Same(ItemIndexExpression.Last, range.End);
 
-        range = (..^1).Quote();
+        range = (..^1).Quoted;
         Equal(typeof(Range), range.Type);
         Equal(ExpressionType.New, range.Reduce().NodeType);
     }
@@ -375,7 +375,7 @@ public sealed class ExpressionBuilderTests : Test
         Delegate lambda = Expression.Lambda<Func<long[], long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
         Equal(42L, lambda.DynamicInvoke(new[] { 42L, 43L }));
 
-        lambda = Expression.Lambda<Func<long[], long>>(new CollectionAccessExpression(parameter, typeof(Index).Default()), parameter).Compile();
+        lambda = Expression.Lambda<Func<long[], long>>(new CollectionAccessExpression(parameter, typeof(Index).DefaultExpr), parameter).Compile();
         Equal(42L, lambda.DynamicInvoke(new[] { 42L, 43L }));
 
         lambda = Expression.Lambda<Func<long[], long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
@@ -431,7 +431,7 @@ public sealed class ExpressionBuilderTests : Test
     public static void NullCoalescingAssignmentOfValueType()
     {
         var parameter = Expression.Parameter(typeof(int));
-        var lambda = Expression.Lambda<Func<int, int>>(parameter.NullCoalescingAssignment(10.Const()), parameter).Compile();
+        var lambda = Expression.Lambda<Func<int, int>>(parameter.NullCoalescingAssignment(10.Quoted), parameter).Compile();
         Equal(0, lambda(0));
         Equal(42, lambda(42));
     }
@@ -440,7 +440,7 @@ public sealed class ExpressionBuilderTests : Test
     public static void NullCoalescingAssignmentOfNullableValueType()
     {
         var parameter = Expression.Parameter(typeof(int?));
-        var lambda = Expression.Lambda<Func<int?, int>>(parameter.NullCoalescingAssignment(new int?(10).Const()).Convert<int>(), parameter).Compile();
+        var lambda = Expression.Lambda<Func<int?, int>>(parameter.NullCoalescingAssignment(new int?(10).Quoted).Convert<int>(), parameter).Compile();
         Equal(0, lambda(0));
         Equal(10, lambda(null));
         Equal(42, lambda(42));
@@ -450,7 +450,7 @@ public sealed class ExpressionBuilderTests : Test
     public static void NullCoalescingAssignmentOfVariable()
     {
         var parameter = Expression.Parameter(typeof(string));
-        var lambda = Expression.Lambda<Func<string, string>>(parameter.NullCoalescingAssignment(string.Empty.Const()), parameter).Compile();
+        var lambda = Expression.Lambda<Func<string, string>>(parameter.NullCoalescingAssignment(string.Empty.Quoted), parameter).Compile();
         Equal(string.Empty, lambda(null));
         Equal("Hello, world!", lambda("Hello, world!"));
     }
@@ -459,7 +459,7 @@ public sealed class ExpressionBuilderTests : Test
     public static void NullCoalescingAssignmentOfArrayElement()
     {
         var parameter = Expression.Parameter(typeof(string[]));
-        var lambda = Expression.Lambda<Action<string[]>>(parameter.ElementAt(0.Const()).NullCoalescingAssignment(string.Empty.Const()), parameter).Compile();
+        var lambda = Expression.Lambda<Action<string[]>>(parameter.ElementAt(0.Quoted).NullCoalescingAssignment(string.Empty.Quoted), parameter).Compile();
         string[] array = { null };
         lambda(array);
         Equal(string.Empty, array[0]);
@@ -475,7 +475,7 @@ public sealed class ExpressionBuilderTests : Test
         string[] array = { null };
         string[] GetEmptyArray() => array;
         var parameter = Expression.Parameter(typeof(Func<string[]>));
-        var lambda = Expression.Lambda<Action<Func<string[]>>>(parameter.Invoke().ElementAt(0.Const()).NullCoalescingAssignment(string.Empty.Const()), parameter).Compile();
+        var lambda = Expression.Lambda<Action<Func<string[]>>>(parameter.Invoke().ElementAt(0.Quoted).NullCoalescingAssignment(string.Empty.Quoted), parameter).Compile();
         lambda(GetEmptyArray);
         Equal(string.Empty, array[0]);
 
@@ -487,20 +487,20 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void ConvertToNullable()
     {
-        var lambda = Expression.Lambda<Func<int?>>(2.Const().AsNullable()).Compile();
+        var lambda = Expression.Lambda<Func<int?>>(2.Quoted.Nullable).Compile();
         Equal(2, lambda());
 
-        var lambda2 = Expression.Lambda<Func<int?>>(new int?(2).Const().AsNullable()).Compile();
+        var lambda2 = Expression.Lambda<Func<int?>>(new int?(2).Quoted.Nullable).Compile();
         Equal(2, lambda2());
 
-        var lambda3 = Expression.Lambda<Func<string>>("Hello, world!".Const().AsNullable()).Compile();
+        var lambda3 = Expression.Lambda<Func<string>>("Hello, world!".Quoted.Nullable).Compile();
         Equal("Hello, world!", lambda3());
     }
 
     [Fact]
     public static void ConvertToOptional()
     {
-        var lambda = Expression.Lambda<Func<Optional<int>>>(2.Const().AsOptional()).Compile();
+        var lambda = Expression.Lambda<Func<Optional<int>>>(2.Quoted.Optional).Compile();
         Equal(2, lambda());
     }
 
@@ -519,9 +519,9 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void CachedBindingRegression()
     {
-        BinaryExpression expr1 = 42.Const().AsDynamic() > 2;
-        BinaryExpression expr2 = 43.Const().AsDynamic() > 3;
-        BinaryExpression expr3 = 43L.Const().AsDynamic() > 3L;
+        BinaryExpression expr1 = 42.Quoted.AsDynamic() > 2;
+        BinaryExpression expr2 = 43.Quoted.AsDynamic() > 3;
+        BinaryExpression expr3 = 43L.Quoted.AsDynamic() > 3L;
         NotEqual(expr1.Right, expr2.Right);
         NotEqual(expr2, expr3);
     }
@@ -529,65 +529,65 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void LateBindConstant()
     {
-        object value = 42.Const();
-        BinaryExpression expr = 43.Const().AsDynamic() > value;
+        object value = 42.Quoted;
+        BinaryExpression expr = 43.Quoted.AsDynamic() > value;
         IsType<ConstantExpression>(expr.Right);
     }
 
     [Fact]
     public static void EarlyBindConstant()
     {
-        BinaryExpression expr = 43.Const().AsDynamic() > 42.Const();
+        BinaryExpression expr = 43.Quoted.AsDynamic() > 42.Quoted;
         IsType<ConstantExpression>(expr.Right);
     }
 
     [Fact]
     public static void LateBindMetaConstant()
     {
-        dynamic right = 42.Const().AsDynamic();
-        BinaryExpression expr = 43.Const().AsDynamic() > right;
+        dynamic right = 42.Quoted.AsDynamic();
+        BinaryExpression expr = 43.Quoted.AsDynamic() > right;
         IsType<ConstantExpression>(expr.Right);
     }
 
     [Fact]
     public static void DynamicMethodCallExpr()
     {
-        MethodCallExpression expr = 43.Const().AsDynamic().ToString(InvariantCulture);
+        MethodCallExpression expr = 43.Quoted.AsDynamic().ToString(InvariantCulture);
         IsType<ConstantExpression>(expr.Object);
     }
 
     [Fact]
     public static void DynamicMemberGetter()
     {
-        MemberExpression expr = "Hello, world!".Const().AsDynamic().Length;
+        MemberExpression expr = "Hello, world!".Quoted.AsDynamic().Length;
         IsType<ConstantExpression>(expr.Expression);
     }
 
     [Fact]
     public static void DynamicArrayGetElement()
     {
-        IndexExpression expr = Array.Empty<int>().Const().AsDynamic()[1];
+        IndexExpression expr = Array.Empty<int>().Quoted.AsDynamic()[1];
         IsType<ConstantExpression>(expr.Object);
     }
 
     [Fact]
     public static void DynamicListGetElement()
     {
-        IndexExpression expr = ImmutableList<int>.Empty.Const().AsDynamic()[1];
+        IndexExpression expr = ImmutableList<int>.Empty.Quoted.AsDynamic()[1];
         IsType<ConstantExpression>(expr.Object);
     }
 
     [Fact]
     public static void DynamicUnaryOperator()
     {
-        UnaryExpression expr = ~42.Const().AsDynamic();
+        UnaryExpression expr = ~42.Quoted.AsDynamic();
         IsType<ConstantExpression>(expr.Operand);
     }
 
     [Fact]
     public static void DynamicConvertOperator()
     {
-        dynamic result = 42.Const().AsDynamic();
+        dynamic result = 42.Quoted.AsDynamic();
         Throws<NotSupportedException>(() => (long)result);
     }
 
@@ -596,8 +596,8 @@ public sealed class ExpressionBuilderTests : Test
     {
         MemberInitExpression initialization = typeof(UriBuilder).New().Init(new()
             {
-                { nameof(UriBuilder.Host), "localhost".Const() },
-                { nameof(UriBuilder.Scheme), Uri.UriSchemeHttps.Const() }
+                { nameof(UriBuilder.Host), "localhost".Quoted },
+                { nameof(UriBuilder.Scheme), Uri.UriSchemeHttps.Quoted }
             });
 
         Contains(initialization.Bindings, static item => nameof(UriBuilder.Host) == item.Member.Name);
@@ -609,9 +609,9 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void MutateRecordClass1()
     {
-        MutationExpression mut = typeof(RecordClass).New(42.Const()).With(new MemberBindings()
+        MutationExpression mut = typeof(RecordClass).New(42.Quoted).With(new MemberBindings()
             {
-                { nameof(RecordClass.A), 52.Const() }
+                { nameof(RecordClass.A), 52.Quoted }
             });
 
         Contains(mut.Bindings, static item => nameof(RecordClass.A) == item.Member.Name);
@@ -621,10 +621,10 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void MutateRecordClass2()
     {
-        var constructExpr = typeof(RecordClass).New(42.Const());
+        var constructExpr = typeof(RecordClass).New(42.Quoted);
         var bindings = new MemberBindings()
             {
-                { nameof(RecordClass.A), 52.Const() }
+                { nameof(RecordClass.A), 52.Quoted }
             };
 
         MutationExpression mut = MutationExpression.Create(constructExpr, bindings.Bind(constructExpr.Type));
@@ -638,9 +638,9 @@ public sealed class ExpressionBuilderTests : Test
     [Fact]
     public static void MutateRecordStruct()
     {
-        MutationExpression mut = typeof(RecordStruct).New(42.Const()).With(new MemberBindings
+        MutationExpression mut = typeof(RecordStruct).New(42.Quoted).With(new MemberBindings
             {
-                { nameof(RecordStruct.A), 52.Const() }
+                { nameof(RecordStruct.A), 52.Quoted }
             });
 
         Contains(mut.Bindings, static item => nameof(RecordStruct.A) == item.Member.Name);
@@ -652,7 +652,7 @@ public sealed class ExpressionBuilderTests : Test
     {
         MutationExpression mut = typeof(Net.Cluster.Consensus.Raft.Result<bool>).New().With(new MemberBindings
             {
-                {nameof(Net.Cluster.Consensus.Raft.Result<>.Value), false.Const()}
+                {nameof(Net.Cluster.Consensus.Raft.Result<>.Value), false.Quoted}
             });
 
         Contains(mut.Bindings, static item => nameof(Net.Cluster.Consensus.Raft.Result<>.Value) == item.Member.Name);
@@ -674,7 +674,7 @@ public sealed class ExpressionBuilderTests : Test
     [InlineData(typeof(UInt128), typeof(MethodCallExpression))]
     public static void UnsignedRightShift(Type primitiveType, Type expressionType)
     {
-        var expr = new UnsignedRightShiftExpression(Expression.Default(primitiveType), 2.Const());
+        var expr = new UnsignedRightShiftExpression(primitiveType.DefaultExpr, 2.Quoted);
         IsAssignableFrom<DefaultExpression>(expr.Left);
         IsAssignableFrom<ConstantExpression>(expr.Right);
         True(expr.Method.IsStatic);

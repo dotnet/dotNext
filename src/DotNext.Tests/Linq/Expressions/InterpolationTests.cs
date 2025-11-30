@@ -7,7 +7,7 @@ public sealed class InterpolationTests : Test
     [Fact]
     public static void PlainString()
     {
-        var str = InterpolationExpression.PlainString($"Hello, {"Sally".Const()}");
+        var str = InterpolationExpression.PlainString($"Hello, {"Sally".Quoted}");
         NotEmpty(str.Arguments);
         Equal(typeof(string), str.Type);
         Equal("Hello, {0}", str.Format);
@@ -18,7 +18,7 @@ public sealed class InterpolationTests : Test
     [Fact]
     public static void FormattableString()
     {
-        var str = InterpolationExpression.FormattableString($"Hello, {"Sally".Const()}");
+        var str = InterpolationExpression.FormattableString($"Hello, {"Sally".Quoted}");
         NotEmpty(str.Arguments);
         Equal(typeof(FormattableString), str.Type);
         Equal("Hello, {0}", str.Format);
@@ -29,7 +29,7 @@ public sealed class InterpolationTests : Test
     [Fact]
     public static void InterpolatedString()
     {
-        var str = InterpolationExpression.Create($"Hello, {"Sally".Const()}");
+        var str = InterpolationExpression.Create($"Hello, {"Sally".Quoted}");
         NotEmpty(str.Arguments);
         Equal(typeof(string), str.Type);
         Equal("Hello, {0}", str.Format);

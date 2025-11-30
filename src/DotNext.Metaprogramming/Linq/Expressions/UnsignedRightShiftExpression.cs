@@ -4,6 +4,8 @@ using System.Reflection;
 
 namespace DotNext.Linq.Expressions;
 
+using Reflection;
+
 /// <summary>
 /// Represents unsigned right shift expression.
 /// </summary>

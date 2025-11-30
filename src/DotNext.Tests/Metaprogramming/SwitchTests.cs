@@ -11,9 +11,9 @@ public sealed class SwitchTests : Test
         var lambda = Lambda<Func<int, string>>(static fun =>
         {
             Switch(fun[0])
-                .Case(0.Const(), "Zero".Const())
-                .Case(1.Const(), "One".Const())
-                .Default("Unknown".Const())
+                .Case(0.Quoted, "Zero".Quoted)
+                .Case(1.Quoted, "One".Quoted)
+                .Default("Unknown".Quoted)
                 .OfType<string>()
                 .End();
         })
@@ -29,9 +29,9 @@ public sealed class SwitchTests : Test
         var lambda = Lambda<Func<string, int>>(static fun =>
         {
             Switch(fun[0])
-                .Case("Zero".Const(), 0.Const())
-                .Case("One".Const(), 1.Const())
-                .Default(int.MaxValue.Const())
+                .Case("Zero".Quoted, 0.Quoted)
+                .Case("One".Quoted, 1.Quoted)
+                .Default(int.MaxValue.Quoted)
                 .OfType<int>()
                 .End();
         })

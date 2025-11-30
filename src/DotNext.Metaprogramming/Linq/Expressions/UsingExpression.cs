@@ -22,7 +22,6 @@ public sealed class UsingExpression : CustomExpression
     private readonly MethodInfo disposeMethod;
     private readonly BinaryExpression? assignment;
     private readonly bool? configureAwait;  // null for synchronous expression
-    private Expression? body;
 
     internal UsingExpression(Expression resource)
     {
@@ -112,8 +111,8 @@ public sealed class UsingExpression : CustomExpression
     /// </summary>
     public Expression Body
     {
-        get => body ?? Empty();
-        internal set => body = value;
+        get => field ?? Empty();
+        internal set;
     }
 
     /// <summary>

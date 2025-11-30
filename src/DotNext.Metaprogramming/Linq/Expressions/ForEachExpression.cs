@@ -32,8 +32,6 @@ public sealed class ForEachExpression : CustomExpression, ILoopLabels
     private readonly MethodCallExpression moveNextCall;
     private readonly bool? configureAwait;  // null for synchronous expression
 
-    private Expression? body;
-
     // for synchronous collection
     internal ForEachExpression(Expression collection, LabelTarget? continueLabel, LabelTarget? breakLabel)
     {
@@ -170,8 +168,8 @@ public sealed class ForEachExpression : CustomExpression, ILoopLabels
     /// </summary>
     public Expression Body
     {
-        get => body ?? Empty();
-        internal set => body = value;
+        get => field ?? Empty();
+        internal set;
     }
 
     /// <summary>

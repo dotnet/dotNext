@@ -20,7 +20,6 @@ public sealed class WithExpression : CustomExpression
     public delegate Expression Statement(ParameterExpression scopeVar);
 
     private readonly BinaryExpression? assignment;
-    private Expression? body;
 
     internal WithExpression(Expression expr)
     {
@@ -67,8 +66,8 @@ public sealed class WithExpression : CustomExpression
     /// </summary>
     public Expression Body
     {
-        get => body ?? Empty();
-        internal set => body = value;
+        get => field ?? Empty();
+        internal set;
     }
 
     /// <summary>

@@ -68,7 +68,7 @@ public static class TaskType
     [RequiresUnreferencedCode("Dynamic code generation may be incompatible with IL trimming")]
     public static Type MakeTaskType(this Type taskResult, bool valueTask = false)
     {
-        if (taskResult == typeof(void))
+        if (taskResult.IsVoid)
             return valueTask ? typeof(ValueTask) : typeof(Task);
 
         return (valueTask ? typeof(ValueTask<>) : typeof(Task<>)).MakeGenericType(taskResult);

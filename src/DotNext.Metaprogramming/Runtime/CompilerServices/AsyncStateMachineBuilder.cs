@@ -426,7 +426,7 @@ internal sealed class AsyncStateMachineBuilder : ExpressionVisitor, IDisposable
     {
         ICollection<SwitchCase> cases = new LinkedList<SwitchCase>();
         foreach (var (state, label) in stateSwitchTable)
-            cases.Add(Expression.SwitchCase(label.MakeGoto(), state.Const()));
+            cases.Add(Expression.SwitchCase(label.MakeGoto(), state.Quoted));
         return Expression.Switch(new StateIdExpression(), Expression.Empty(), null, cases);
     }
 

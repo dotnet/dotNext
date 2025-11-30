@@ -86,7 +86,7 @@ public sealed class BlockTests : Test
         {
             Lock(fun[0], () =>
             {
-                Call(fun[0], nameof(StringBuilder.Append), 'a'.Const());
+                Call(fun[0], nameof(StringBuilder.Append), 'a'.Quoted);
             });
         })
         .Compile();
@@ -104,7 +104,7 @@ public sealed class BlockTests : Test
         {
             AwaitUsing(fun[0], () =>
             {
-                Assign(result, 42L.Const());
+                Assign(result, 42L.Quoted);
             }, configureAwait);
         })
        .Compile();

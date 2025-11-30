@@ -32,18 +32,18 @@ public sealed class AwaitExpression : CustomExpression
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(ValueTaskAwaiter<>))]
     public AwaitExpression(Expression expression, bool configureAwait = false)
     {
-        const BindingFlags PublicInstanceMethod = BindingFlags.Public | BindingFlags.Instance;
+        const BindingFlags publicInstanceMethod = BindingFlags.Public | BindingFlags.Instance;
         if (configureAwait)
         {
-            MethodInfo? configureMethod = expression.Type.GetMethod(nameof(Task.ConfigureAwait), PublicInstanceMethod, Type.DefaultBinder, [typeof(bool)], modifiers: null);
+            MethodInfo? configureMethod = expression.Type.GetMethod(nameof(Task.ConfigureAwait), publicInstanceMethod, Type.DefaultBinder, [typeof(bool)], modifiers: null);
             if (configureMethod is not null)
-                expression = expression.Call(configureMethod, false.Const());
+                expression = expression.Call(configureMethod, false.Quoted);
         }
 
         // expression type must have type with GetAwaiter() method
-        MethodInfo? getAwaiter = expression.Type.GetMethod(nameof(Task.GetAwaiter), PublicInstanceMethod, Type.DefaultBinder, [], modifiers: null);
+        MethodInfo? getAwaiter = expression.Type.GetMethod(nameof(Task.GetAwaiter), publicInstanceMethod, Type.DefaultBinder, [], modifiers: null);
         GetAwaiter = expression.Call(getAwaiter ?? throw new ArgumentException(ExceptionMessages.MissingGetAwaiterMethod(expression.Type)));
-        getAwaiter = GetAwaiter.Type.GetMethod(nameof(TaskAwaiter.GetResult), PublicInstanceMethod, Type.DefaultBinder, [], modifiers: null);
+        getAwaiter = GetAwaiter.Type.GetMethod(nameof(TaskAwaiter.GetResult), publicInstanceMethod, Type.DefaultBinder, [], modifiers: null);
         GetResultMethod = getAwaiter ?? throw new ArgumentException(ExceptionMessages.MissingGetResultMethod(GetAwaiter.Type));
     }
 
@@ -57,11 +57,11 @@ public sealed class AwaitExpression : CustomExpression
     internal static bool IsAwaiterHolder([NotNullWhen(true)] ParameterExpression? variable)
         => variable?.UserData.Get(IsAwaiterVarSlot) ?? false;
 
-    internal MethodCallExpression GetAwaiter { get; }
+    private MethodCallExpression GetAwaiter { get; }
 
-    internal Type AwaiterType => GetAwaiter.Type;
+    private Type AwaiterType => GetAwaiter.Type;
 
-    internal MethodInfo GetResultMethod { get; }
+    private MethodInfo GetResultMethod { get; }
 
     /// <summary>
     /// Gets result type of asynchronous operation.

@@ -37,8 +37,10 @@ internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexi
         {
             if (taskType.ResultType == typeof(void))
                 return null;
-            else if (lambdaResult is null)
+            
+            if (lambdaResult is null)
                 DeclareVariable(lambdaResult = Expression.Variable(taskType.ResultType, "result"));
+            
             return lambdaResult;
         }
     }

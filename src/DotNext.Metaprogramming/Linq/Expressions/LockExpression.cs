@@ -20,7 +20,6 @@ public sealed class LockExpression : CustomExpression
     public delegate Expression Statement(ParameterExpression syncRoot);
 
     private readonly BinaryExpression? assignment;
-    private Expression? body;
 
     internal LockExpression(Expression syncRoot)
     {
@@ -67,8 +66,8 @@ public sealed class LockExpression : CustomExpression
     /// </summary>
     public Expression Body
     {
-        get => body ?? Empty();
-        internal set => body = value;
+        get => field ?? Empty();
+        internal set;
     }
 
     /// <summary>

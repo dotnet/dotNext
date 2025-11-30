@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using DotNext.Reflection;
 
 namespace DotNext.Linq.Expressions;
 
@@ -63,12 +64,11 @@ public sealed class NullSafetyExpression : CustomExpression
     /// <summary>
     /// Gets type of this expression.
     /// </summary>
-    public override Type Type
-    {
-        get => alwaysNotNull || Body.Type == typeof(void) || Body.Type is { IsClass: true } or { IsInterface: true } || Nullable.GetUnderlyingType(Body.Type) is not null || Optional.GetUnderlyingType(Body.Type) is not null ?
-            Body.Type :
-            typeof(Nullable<>).MakeGenericType(Body.Type);
-    }
+    public override Type Type =>
+        alwaysNotNull || Body.Type is { IsClass: true } or { IsVoid: true } or { IsInterface: true } ||
+        Nullable.GetUnderlyingType(Body.Type) is not null || Optional.GetUnderlyingType(Body.Type) is not null
+            ? Body.Type
+            : typeof(Nullable<>).MakeGenericType(Body.Type);
 
     /// <summary>
     /// Reconstructs expression with a new body.
@@ -93,7 +93,7 @@ public sealed class NullSafetyExpression : CustomExpression
         if (alwaysNotNull)
             return Body;
         var body = Body.Type.IsValueType ? Convert(Body, Type) : Body;
-        Expression conditional = Condition(Target.IsNotNull(), body, Default(body.Type));
+        Expression conditional = Condition(Target.IsNotNull, body, Default(body.Type));
         return assignment is null ?
             conditional :
             Block(body.Type, IReadOnlyList<ParameterExpression>.Singleton(Target), assignment, conditional);

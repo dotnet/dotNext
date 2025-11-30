@@ -122,8 +122,6 @@ public sealed class ForExpression : CustomExpression, ILoopLabels
         ForExpression ISupplier<ForExpression>.Invoke() => Build();
     }
 
-    private Expression? body;
-
     internal ForExpression(Expression initialization, LabelTarget continueLabel, LabelTarget breakLabel, LoopBuilder.Condition condition)
     {
         Initialization = initialization;
@@ -138,7 +136,7 @@ public sealed class ForExpression : CustomExpression, ILoopLabels
     internal ForExpression(Expression initialization, IBuilder builder)
         : this(initialization, builder.ContinueLabel, builder.BreakLabel, builder.MakeCondition)
     {
-        body = builder.MakeBody(LoopVar).AddPrologue(false, Continue(ContinueLabel), builder.MakeIteration(LoopVar));
+        Body = builder.MakeBody(LoopVar).AddPrologue(false, Continue(ContinueLabel), builder.MakeIteration(LoopVar));
     }
 
     /// <summary>
@@ -178,8 +176,8 @@ public sealed class ForExpression : CustomExpression, ILoopLabels
     /// </summary>
     public Expression Body
     {
-        get => body ?? Empty();
-        internal set => body = value;
+        get => field ?? Empty();
+        internal set;
     }
 
     /// <summary>

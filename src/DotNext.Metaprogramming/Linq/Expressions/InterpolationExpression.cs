@@ -30,7 +30,7 @@ public sealed partial class InterpolationExpression : CustomExpression
         this.kind = kind;
         FormatProvider = formatProvider is not null && typeof(IFormatProvider).IsAssignableFrom(formatProvider.Type)
             ? formatProvider
-            : Expression.Constant(null, typeof(IFormatProvider));
+            : Constant(null, typeof(IFormatProvider));
 
         static Expression GetArgument(object? arg) => arg switch
         {
@@ -86,15 +86,12 @@ public sealed partial class InterpolationExpression : CustomExpression
     /// May be <see cref="string"/> or <see cref="System.FormattableString"/>
     /// which is depends on factory method.
     /// </remarks>
-    public override Type Type
+    public override Type Type => kind switch
     {
-        get => kind switch
-        {
-            Kind.PlainString or Kind.InterpolatedString => typeof(string),
-            Kind.FormattableString => typeof(FormattableString),
-            _ => typeof(void),
-        };
-    }
+        Kind.PlainString or Kind.InterpolatedString => typeof(string),
+        Kind.FormattableString => typeof(FormattableString),
+        _ => typeof(void),
+    };
 
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(string))]
     private Expression MakePlainString()
