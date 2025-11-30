@@ -18,6 +18,7 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     {
         None = 0,
         Monitor,
+        ExclusiveLock,
         ReadLock,
         UpgradeableReadLock,
         WriteLock,
@@ -59,6 +60,9 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
             {
                 case Type.Monitor:
                     System.Threading.Monitor.Exit(lockedObject);
+                    break;
+                case Type.ExclusiveLock:
+                    As<System.Threading.Lock>(lockedObject).Exit();
                     break;
                 case Type.ReadLock:
                     As<ReaderWriterLockSlim>(lockedObject).ExitReadLock();
@@ -118,7 +122,7 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     /// Creates monitor-based lock control object but doesn't acquire the lock.
     /// </summary>
     /// <param name="obj">Monitor lock target.</param>
-    /// <returns>The lock representing monitor.</returns>
+    /// <returns>The lock representing the monitor.</returns>
     public static Lock Monitor(object obj) => new(obj ?? throw new ArgumentNullException(nameof(obj)), Type.Monitor, false);
 
     /// <summary>
@@ -129,6 +133,23 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     /// </remarks>
     /// <returns>The exclusive lock.</returns>
     public static Lock Monitor() => new(new object(), Type.Monitor, true);
+
+    /// <summary>
+    /// Creates exclusive lock.
+    /// </summary>
+    /// <param name="locker">The locker object.</param>
+    /// <returns>The exclusive lock.</returns>
+    public static Lock ExclusiveLock(System.Threading.Lock locker)
+        => new(locker ?? throw new ArgumentNullException(nameof(locker)), Type.ExclusiveLock, false);
+
+    /// <summary>
+    /// Creates exclusive lock.
+    /// </summary>
+    /// <remarks>
+    /// Constructed lock owns the <see cref="System.Threading.Lock"/> instance.
+    /// </remarks>
+    /// <returns>The exclusive lock.</returns>
+    public static Lock ExclusiveLock() => new(new System.Threading.Lock(), Type.ExclusiveLock, true);
 
     /// <summary>
     /// Creates read lock but doesn't acquire it.
@@ -155,6 +176,9 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
             case Type.Monitor:
                 Debug.Assert(lockedObject is not null);
                 break;
+            case Type.ExclusiveLock:
+                Debug.Assert(lockedObject is System.Threading.Lock);
+                break;
             case Type.ReadLock or Type.WriteLock or Type.UpgradeableReadLock:
                 Debug.Assert(lockedObject is ReaderWriterLockSlim);
                 break;
@@ -180,6 +204,9 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
             case Type.Monitor:
                 System.Threading.Monitor.Enter(lockedObject);
                 break;
+            case Type.ExclusiveLock:
+                As<System.Threading.Lock>(lockedObject).Enter();
+                break;
             case Type.ReadLock:
                 As<ReaderWriterLockSlim>(lockedObject).EnterReadLock();
                 break;
@@ -204,6 +231,7 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
         return type switch
         {
             Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject),
+            Type.ExclusiveLock => As<System.Threading.Lock>(lockedObject).TryEnter(),
             Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(0),
             Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(0),
             Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(0),
@@ -236,6 +264,7 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
         return type switch
         {
             Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject, timeout),
+            Type.ExclusiveLock => As<System.Threading.Lock>(lockedObject).TryEnter(timeout),
             Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(timeout),
             Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(timeout),
             Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(timeout),

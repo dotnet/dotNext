@@ -36,6 +36,22 @@ public sealed class LockTests : Test
         holder.Dispose();
         False(Monitor.IsEntered(syncRoot));
     }
+    
+    [Fact]
+    public static void ExclusiveLock()
+    {
+        var syncRoot = new System.Threading.Lock();
+        using var @lock = Lock.ExclusiveLock(syncRoot);
+        True(@lock.TryAcquire(out var holder));
+        True(syncRoot.IsHeldByCurrentThread);
+        holder.Dispose();
+        False(syncRoot.IsHeldByCurrentThread);
+
+        holder = @lock.Acquire(DefaultTimeout);
+        True(syncRoot.IsHeldByCurrentThread);
+        holder.Dispose();
+        False(syncRoot.IsHeldByCurrentThread);
+    }
 
     [Fact]
     public static void SemaphoreLock()
