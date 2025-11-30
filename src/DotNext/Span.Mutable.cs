@@ -422,12 +422,11 @@ partial class Span
             {
                 vecX = Vector.LoadUnsafe(in ptrX);
                 vecY = Vector.LoadUnsafe(in ptrY);
-                (vecX, vecY) = (vecY, vecX);
             
-                vecX.StoreUnsafe(ref ptrX);
-                vecY.StoreUnsafe(ref ptrY);
+                vecY.StoreUnsafe(ref ptrX);
+                vecX.StoreUnsafe(ref ptrY);
             
-                ptrX = ref Unsafe.Add(ref ptrY, Vector<byte>.Count);
+                ptrX = ref Unsafe.Add(ref ptrX, Vector<byte>.Count);
                 ptrY = ref Unsafe.Add(ref ptrY, Vector<byte>.Count);
             }
 
