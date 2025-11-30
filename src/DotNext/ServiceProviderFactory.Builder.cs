@@ -33,7 +33,7 @@ public partial class ServiceProviderFactory
         public IServiceProvider Build(IServiceProvider? fallback = null)
         {
             if (services.Count == 0)
-                return fallback ?? Empty;
+                return fallback ?? IServiceProvider.Empty;
 
             return new CachedServiceProvider(services, fallback);
         }
