@@ -224,5 +224,5 @@ internal readonly struct AsyncBufferWriter(IBufferWriter<byte> writer) : IAsyncB
         return result;
     }
 
-    IBufferWriter<byte>? IAsyncBinaryWriter.TryGetBufferWriter() => writer;
+    IBufferWriter<byte> IAsyncBinaryWriter.TryGetBufferWriter() => writer;
 }

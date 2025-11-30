@@ -452,18 +452,9 @@ public interface IAsyncBinaryReader
     /// <exception cref="ArgumentNullException"><paramref name="reader"/> is <see langword="null"/>.</exception>
     public static IAsyncBinaryReader Create(PipeReader reader) => new PipeBinaryReader(reader);
 
-    internal static Stream GetStream<TReader>(TReader reader, out bool keepAlive)
+    internal static Stream CreateStream<TReader>(TReader reader)
         where TReader : IAsyncBinaryReader
     {
-        if (keepAlive = typeof(TReader) == typeof(AsyncStreamBinaryAccessor))
-            return Unsafe.As<TReader, AsyncStreamBinaryAccessor>(ref reader).Stream;
-
-        if (typeof(TReader) == typeof(PipeBinaryReader))
-            return Unsafe.As<TReader, PipeBinaryReader>(ref reader).AsStream();
-
-        if (typeof(TReader) == typeof(SequenceReader))
-            return Stream.Create(Unsafe.As<TReader, SequenceReader>(ref reader).ReadToEnd());
-
         return Stream.CreateAsyncReadOnly(ReadAsync, reader);
 
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]

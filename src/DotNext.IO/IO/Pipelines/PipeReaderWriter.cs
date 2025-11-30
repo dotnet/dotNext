@@ -12,7 +12,7 @@ using Text;
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct PipeBinaryReader(PipeReader reader) : IAsyncBinaryReader
 {
-    internal Stream AsStream() => reader.AsStream(leaveOpen: true);
+    internal PipeReader Reader => reader;
 
     ValueTask<T> IAsyncBinaryReader.ReadAsync<T>(CancellationToken token)
         => reader.ReadAsync<T>(token);
@@ -85,7 +85,7 @@ internal readonly struct PipeBinaryReader(PipeReader reader) : IAsyncBinaryReade
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct PipeBinaryWriter(PipeWriter writer, long bufferSize) : IAsyncBinaryWriter
 {
-    internal Stream AsStream() => writer.AsStream(leaveOpen: true);
+    internal PipeWriter Writer => writer;
 
     private ValueTask FlushIfNeededAsync(CancellationToken token)
     {

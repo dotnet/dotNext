@@ -330,20 +330,9 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         return new AsyncBufferWriter(writer);
     }
 
-    internal static Stream GetStream<TWriter>(TWriter writer, out bool keepAlive)
+    internal static Stream CreateStream<TWriter>(TWriter writer)
         where TWriter : IAsyncBinaryWriter
-    {
-        if (keepAlive = typeof(TWriter) == typeof(AsyncStreamBinaryAccessor))
-            return Unsafe.As<TWriter, AsyncStreamBinaryAccessor>(ref writer).Stream;
-
-        if (typeof(TWriter) == typeof(PipeBinaryWriter))
-            return Unsafe.As<TWriter, PipeBinaryWriter>(ref writer).AsStream();
-
-        if (typeof(TWriter) == typeof(AsyncBufferWriter))
-            return Unsafe.As<TWriter, AsyncBufferWriter>(ref writer).AsStream();
-
-        return StreamSource.CreateAsyncWritable(new Wrapper<TWriter>(writer));
-    }
+        => StreamSource.CreateAsyncWritable(new Wrapper<TWriter>(writer));
 
     [StructLayout(LayoutKind.Auto)]
     private readonly struct Wrapper<TWriter>(TWriter writer) : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
