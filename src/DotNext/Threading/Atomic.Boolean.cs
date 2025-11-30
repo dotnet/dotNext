@@ -5,6 +5,9 @@ namespace DotNext.Threading;
 
 public static partial class Atomic
 {
+    /// <summary>
+    /// Extends <see cref="Interlocked"/> type.
+    /// </summary>
     extension(Interlocked)
     {
         /// <summary>
