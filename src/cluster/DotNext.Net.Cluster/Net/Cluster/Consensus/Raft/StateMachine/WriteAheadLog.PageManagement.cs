@@ -95,7 +95,7 @@ partial class WriteAheadLog
 
                 static ReadOnlySequence<byte> ReadMultiSegment(ref Enumerator enumerator)
                 {
-                    var buffer = new ReadOnlyMemoryArray();
+                    var buffer = new InlineArray3<ReadOnlyMemory<byte>>();
                     var writer = new BufferWriterSlim<ReadOnlyMemory<byte>>(buffer);
                     writer.Add() = enumerator.Current;
 
@@ -145,12 +145,6 @@ partial class WriteAheadLog
 
                     return false;
                 }
-            }
-
-            [InlineArray(3)]
-            private struct ReadOnlyMemoryArray
-            {
-                private ReadOnlyMemory<byte> element0;
             }
         }
     }
