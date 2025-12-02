@@ -13,10 +13,7 @@ using Buffers.Binary;
 using Collections.Generic;
 using Text;
 
-/// <summary>
-/// Represents extension method for parsing data stored in pipe.
-/// </summary>
-public static partial class PipeExtensions
+partial class PipeExtensions
 {
     internal static ValueTask<TResult> ReadAsync<TResult, TParser>(PipeReader reader, TParser parser, CancellationToken token)
         where TParser : struct, IBufferReader, ISupplier<TResult>
