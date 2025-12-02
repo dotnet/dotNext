@@ -42,7 +42,6 @@ public static class Set
         /// <param name="upperBound">The upper bound of the range.</param>
         /// <returns>An ordered set of elements in the range.</returns>
         public static IReadOnlySet<T> Range<TLowerBound, TUpperBound>(TLowerBound lowerBound, TUpperBound upperBound)
-        
             where TLowerBound : IFiniteRangeEndpoint<T>, allows ref struct
             where TUpperBound : IFiniteRangeEndpoint<T>, allows ref struct
         {
