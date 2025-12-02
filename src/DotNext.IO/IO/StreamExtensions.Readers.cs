@@ -133,8 +133,10 @@ public static partial class StreamExtensions
     [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
     public static async ValueTask<MemoryOwner<byte>> ReadBlockAsync(this Stream stream, LengthFormat lengthFormat, MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
     {
+        allocator ??= MemoryAllocator<byte>.Default;
         MemoryOwner<byte> result;
         int length;
+        
         using (result = allocator.AllocateExactly(Leb128<uint>.MaxSizeInBytes))
         {
             length = await stream.ReadLengthAsync(lengthFormat, result.Memory, token).ConfigureAwait(false);
@@ -185,7 +187,7 @@ public static partial class StreamExtensions
         var length = await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false);
         if (length > 0)
         {
-            result = allocator.AllocateExactly(context.Encoding.GetMaxCharCount(length));
+            result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(length));
 
             try
             {
@@ -494,7 +496,7 @@ public static partial class StreamExtensions
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
-        using var buffer = allocator.AllocateAtLeast(bufferSize);
+        using var buffer = allocator.DefaultIfNull.AllocateAtLeast(bufferSize);
 
         for (int bytesRead; (bytesRead = await source.ReadAsync(buffer.Memory, token).ConfigureAwait(false)) > 0;)
             yield return buffer.Memory.Slice(0, bytesRead);
@@ -521,7 +523,7 @@ public static partial class StreamExtensions
         ArgumentOutOfRangeException.ThrowIfNegative(length);
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
 
-        using var buffer = allocator.AllocateAtLeast(bufferSize);
+        using var buffer = allocator.DefaultIfNull.AllocateAtLeast(bufferSize);
 
         for (int bytesRead; length > 0L; length -= bytesRead)
         {
@@ -661,6 +663,7 @@ public static partial class StreamExtensions
     /// or <paramref name="charsBuf"/> is empty.
     /// </exception>
     public static int ReadUtf8<TArg>(this Stream stream, Span<byte> bytesBuf, Span<char> charsBuf, ReadOnlySpanAction<char, TArg> action, TArg arg)
+        where TArg : allows ref struct
     {
         ArgumentNullException.ThrowIfNull(stream);
         ArgumentNullException.ThrowIfNull(action);

@@ -27,9 +27,10 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     /// <summary>
     /// Gets or sets buffer allocator.
     /// </summary>
-    public MemoryAllocator<byte>? Allocator
+    [AllowNull]
+    public MemoryAllocator<byte> Allocator
     {
-        get;
+        get => field ??= MemoryAllocator<byte>.Default;
         init;
     }
 

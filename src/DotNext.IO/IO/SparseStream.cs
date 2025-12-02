@@ -154,8 +154,8 @@ internal abstract class SparseStream(bool leaveOpen) : ModernStream
         where T : struct, ITuple
         => new SparseStream<T>(streams, leaveOpen);
 
-    public static SparseStream Create(Stream stream, ReadOnlySpan<Stream> streams, bool leaveOpen)
-        => new UnboundedSparseStream(stream, streams, leaveOpen);
+    public static SparseStream Create(ReadOnlySpan<Stream> streams, bool leaveOpen)
+        => new UnboundedSparseStream(streams, leaveOpen);
 }
 
 file sealed class SparseStream<T>(T streams, bool leaveOpen) : SparseStream(leaveOpen)
@@ -169,15 +169,12 @@ file sealed class UnboundedSparseStream : SparseStream
 {
     private MemoryOwner<Stream> streams;
 
-    internal UnboundedSparseStream(Stream stream, ReadOnlySpan<Stream> streams, bool leaveOpen)
+    internal UnboundedSparseStream(ReadOnlySpan<Stream> streams, bool leaveOpen)
         : base(leaveOpen)
     {
         Debug.Assert(streams.Length < int.MaxValue);
 
-        this.streams = MemoryAllocator<Stream>.Default.AllocateExactly(streams.Length + 1);
-        var output = this.streams.Span;
-        output[0] = stream;
-        streams.CopyTo(output.Slice(1));
+        this.streams = streams.Copy();
     }
 
     protected override ReadOnlySpan<Stream> Streams => streams.Span;

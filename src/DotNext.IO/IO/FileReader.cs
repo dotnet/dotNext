@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
@@ -56,10 +57,11 @@ public partial class FileReader : Disposable, IBufferedReader
     }
 
     /// <inheritdoc cref="IBufferedChannel.Allocator"/>
+    [AllowNull]
     public MemoryAllocator<byte> Allocator
     {
-        get;
-        init => field = value.DefaultIfNull;
+        get => field ??= MemoryAllocator<byte>.Default;
+        init;
     }
 
     /// <summary>

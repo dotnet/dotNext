@@ -16,7 +16,7 @@ internal sealed class DecodingTextReader : TextBufferReader
     private MemoryOwner<char> buffer;
     private int charPos, charLen;
 
-    internal DecodingTextReader(ReadOnlySequence<byte> sequence, Encoding encoding, int bufferSize, MemoryAllocator<char>? allocator)
+    internal DecodingTextReader(in ReadOnlySequence<byte> sequence, Encoding encoding, int bufferSize, MemoryAllocator<char>? allocator)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
         ArgumentNullException.ThrowIfNull(encoding);

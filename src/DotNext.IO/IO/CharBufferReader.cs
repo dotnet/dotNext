@@ -14,7 +14,7 @@ internal sealed class CharBufferReader : TextBufferReader
     /// Initializes a new reader for the buffer containing characters.
     /// </summary>
     /// <param name="sequence">The buffer containing characters.</param>
-    internal CharBufferReader(ReadOnlySequence<char> sequence)
+    internal CharBufferReader(in ReadOnlySequence<char> sequence)
     {
         this.sequence = sequence;
         position = sequence.Start;

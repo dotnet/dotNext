@@ -481,6 +481,9 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         Write(input);
     }
 
+    /// <inheritdoc cref="AddAll"/>
+    public void operator += (IEnumerable<T> collection) => AddAll(collection);
+
     private void WriteSlow(IEnumerable<T> collection)
     {
         using var enumerator = collection.GetEnumerator();

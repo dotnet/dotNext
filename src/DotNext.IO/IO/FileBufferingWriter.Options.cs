@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
@@ -77,6 +78,7 @@ public partial class FileBufferingWriter
         /// <summary>
         /// Gets or sets the allocator of internal buffer.
         /// </summary>
+        [AllowNull]
         public MemoryAllocator<byte> MemoryAllocator
         {
             get => field.DefaultIfNull;

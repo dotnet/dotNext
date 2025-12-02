@@ -159,6 +159,7 @@ public static partial class StreamExtensions
         ArgumentException.ThrowIfEmpty(buffer);
 
         const int maxBufferSize = int.MaxValue / 2;
+        allocator ??= MemoryAllocator<char>.Default;
 
         for (var charBufferSize = SpanOwner<char>.StackallocThreshold; ; charBufferSize = charBufferSize <= maxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
         {

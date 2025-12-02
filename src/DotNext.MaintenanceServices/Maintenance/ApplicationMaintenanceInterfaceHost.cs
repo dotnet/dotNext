@@ -10,8 +10,8 @@ namespace DotNext.Maintenance;
 
 using Buffers;
 using Collections.Specialized;
+using IO;
 using Security.Principal;
-using static IO.TextStreamExtensions;
 using static Runtime.InteropServices.UnixDomainSocketInterop;
 using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
 
@@ -244,7 +244,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
 
         internal MaintenanceSession(Socket socket, Encoding encoding, BufferWriter<byte> buffer, IIdentity identity)
         {
-            ResponseWriter = buffer.AsTextWriter(encoding, CultureInfo.CurrentCulture, socket.Flush, socket.FlushAsync);
+            ResponseWriter = TextWriter.Create(buffer, encoding, CultureInfo.CurrentCulture, socket.Flush, socket.FlushAsync);
             identityOrPrincipal = identity;
         }
 

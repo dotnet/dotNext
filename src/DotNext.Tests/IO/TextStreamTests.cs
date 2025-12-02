@@ -1,6 +1,5 @@
 using System.Buffers;
 using System.Text;
-using System.Xml;
 using System.Xml.Serialization;
 using static System.Globalization.CultureInfo;
 
@@ -12,24 +11,21 @@ public sealed class TextStreamTests : Test
 {
     public sealed class XmlSerializableType
     {
-        private byte[] byteArray;
-        private string[] stringArray;
-
         [XmlElement("Value")]
         public string Value { get; set; }
 
         [XmlArray("ByteItem")]
         public byte[] ByteArray
         {
-            get => byteArray ?? Array.Empty<byte>();
-            set => byteArray = value;
+            get => field ?? [];
+            set;
         }
 
         [XmlArray("StringItem")]
         public string[] StringArray
         {
-            get => stringArray ?? Array.Empty<string>();
-            set => stringArray = value;
+            get => field ?? [];
+            set;
         }
     }
 
@@ -37,7 +33,7 @@ public sealed class TextStreamTests : Test
     public static void WriteTextToCharBuffer()
     {
         using var writer = new PoolingArrayBufferWriter<char>();
-        using var actual = writer.AsTextWriter();
+        using var actual = TextWriter.Create(writer);
 
         using TextWriter expected = new StringWriter(InvariantCulture);
 
@@ -92,7 +88,7 @@ public sealed class TextStreamTests : Test
     public static void EmptyLines()
     {
         var line = string.Concat(Environment.NewLine, "a", Environment.NewLine).AsMemory();
-        using var reader = new ReadOnlySequence<char>(line).AsTextReader();
+        using var reader = TextReader.Create(new ReadOnlySequence<char>(line));
         Equal(string.Empty, reader.ReadLine());
         Equal("a", reader.ReadLine());
         Null(reader.ReadLine());
@@ -105,7 +101,7 @@ public sealed class TextStreamTests : Test
         var str = string.Concat("a", newLine[0].ToString());
         if (newLine.Length > 1)
         {
-            using var reader = new ReadOnlySequence<char>(str.AsMemory()).AsTextReader();
+            using var reader = TextReader.Create(new ReadOnlySequence<char>(str.AsMemory()));
             Equal(str, reader.ReadLine());
         }
     }
@@ -123,7 +119,7 @@ public sealed class TextStreamTests : Test
         if (newLine.Length > 1)
         {
             var enc = Encoding.GetEncoding(encodingName);
-            using var reader = new ReadOnlySequence<byte>(enc.GetBytes(str).AsMemory()).AsTextReader(enc, bufferSize);
+            using var reader = TextReader.Create(new ReadOnlySequence<byte>(enc.GetBytes(str).AsMemory()), enc, bufferSize);
             Equal(str, reader.ReadLine());
         }
     }
@@ -138,7 +134,7 @@ public sealed class TextStreamTests : Test
     {
         var enc = Encoding.GetEncoding(encodingName);
         var block = ToReadOnlySequence<byte>(enc.GetBytes("Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!").AsMemory(), 1);
-        using var reader = block.AsTextReader(enc, bufferSize);
+        using var reader = TextReader.Create(block, enc, bufferSize);
         Equal("Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!", reader.ReadToEnd());
     }
 
@@ -152,7 +148,7 @@ public sealed class TextStreamTests : Test
     {
         var enc = Encoding.GetEncoding(encodingName);
         var bytes = enc.GetBytes("Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!").AsMemory();
-        using var reader = new ReadOnlySequence<byte>(bytes).AsTextReader(enc, bufferSize);
+        using var reader = TextReader.Create(new ReadOnlySequence<byte>(bytes), enc, bufferSize);
         Equal("Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!", reader.ReadLine());
     }
 
@@ -168,7 +164,7 @@ public sealed class TextStreamTests : Test
         var enc = Encoding.GetEncoding(encodingName);
 
         // write data
-        using (var writer = buffer.AsTextWriter(enc, InvariantCulture))
+        using (var writer = TextWriter.Create(buffer, enc, InvariantCulture))
         {
             writer.WriteLine("Привет, мир!");
             writer.WriteLine("Hello, world!&*(@&*(fghjwgfwffgw Привет, мир!");
@@ -184,7 +180,7 @@ public sealed class TextStreamTests : Test
         }
 
         // decode data
-        using (var reader = buffer.Concat().AsTextReader(enc, bufferSize))
+        using (var reader = TextReader.Create(buffer.Concat(), enc, bufferSize))
         {
             Equal('П', reader.Peek());
             Equal("Привет, мир!", reader.ReadLine());
@@ -212,7 +208,7 @@ public sealed class TextStreamTests : Test
     public static async Task WriteTextAsync()
     {
         var writer = new ArrayBufferWriter<char>();
-        using var actual = writer.AsTextWriter();
+        using var actual = TextWriter.Create(writer);
 
         using TextWriter expected = new StringWriter(InvariantCulture);
 
@@ -265,13 +261,13 @@ public sealed class TextStreamTests : Test
         using var buffer = new SparseBufferWriter<byte>(1024, SparseBufferGrowth.Linear);
         var serializer = new XmlSerializer(typeof(XmlSerializableType));
 
-        using (var writer = buffer.AsTextWriter(enc, InvariantCulture))
+        using (var writer = TextWriter.Create(buffer, enc, InvariantCulture))
         {
             serializer.Serialize(writer, expected);
         }
 
         XmlSerializableType actual;
-        using (var reader = buffer.Concat().AsTextReader(enc, bufferSize))
+        using (var reader = TextReader.Create(buffer.Concat(), enc, bufferSize))
         {
             actual = (XmlSerializableType)serializer.Deserialize(reader);
         }

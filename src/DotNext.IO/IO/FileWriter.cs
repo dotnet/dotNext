@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using SafeFileHandle = Microsoft.Win32.SafeHandles.SafeFileHandle;
 
 namespace DotNext.IO;
@@ -54,10 +55,11 @@ public partial class FileWriter : Disposable, IFlushable, IBufferedWriter
     }
     
     /// <inheritdoc cref="IBufferedChannel.Allocator"/>
+    [AllowNull]
     public MemoryAllocator<byte> Allocator
     {
-        get;
-        init => field = value.DefaultIfNull;
+        get => field ??= MemoryAllocator<byte>.Default;
+        init;
     }
 
     /// <summary>

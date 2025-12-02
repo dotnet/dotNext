@@ -136,7 +136,7 @@ public sealed class StreamExtensionsTests : Test
     {
         using var ms1 = new MemoryStream([1, 2, 3]);
         using var ms2 = new MemoryStream([4, 5, 6]);
-        using var combined = ms1.Combine([ms2]);
+        using var combined = Stream.Combine([ms1, ms2]);
         True(combined.CanRead);
         False(combined.CanWrite);
         False(combined.CanSeek);
@@ -165,7 +165,7 @@ public sealed class StreamExtensionsTests : Test
     {
         using var ms1 = new MemoryStream([1, 2, 3]);
         using var ms2 = new MemoryStream([4, 5, 6]);
-        using var combined = IReadOnlyList<Stream>.Singleton(ms1).Append(ms2).Combine();
+        using var combined = Stream.Combine(IReadOnlyList<Stream>.Singleton(ms1).Append(ms2));
         using var result = new MemoryStream();
 
         combined.CopyTo(result, 128);
@@ -177,7 +177,7 @@ public sealed class StreamExtensionsTests : Test
     {
         await using var ms1 = new MemoryStream([1, 2, 3]);
         await using var ms2 = new MemoryStream([4, 5, 6]);
-        await using var combined = ms1.Combine([ms2]);
+        await using var combined = Stream.Combine([ms1, ms2]);
         await using var result = new MemoryStream();
 
         await combined.CopyToAsync(result, 128);
@@ -189,7 +189,7 @@ public sealed class StreamExtensionsTests : Test
     {
         using var ms1 = new MemoryStream([1, 2, 3]);
         using var ms2 = new MemoryStream([4, 5, 6]);
-        using var combined = ms1.Combine([ms2]);
+        using var combined = Stream.Combine([ms1, ms2]);
 
         Equal(1, combined.ReadByte());
         Equal(2, combined.ReadByte());
@@ -212,7 +212,7 @@ public sealed class StreamExtensionsTests : Test
     [InlineData(10)]
     public static void CombineManyStreams(byte streamCount)
     {
-        using var stream = GetStreams(streamCount).Combine(leaveOpen: false);
+        using var stream = Stream.Combine(GetStreams(streamCount), leaveOpen: false);
         Equal(streamCount, stream.Length);
         var actual = new byte[streamCount];
         stream.ReadExactly(actual);
@@ -236,7 +236,7 @@ public sealed class StreamExtensionsTests : Test
     {
         await using var ms1 = new MemoryStream([1, 2, 3]);
         await using var ms2 = new MemoryStream([4, 5, 6]);
-        await using var combined = ms1.Combine([ms2]);
+        await using var combined = Stream.Combine([ms1, ms2]);
 
         Throws<NotSupportedException>(() => combined.SetLength(0L));
         Throws<NotSupportedException>(() => combined.Seek(0L, default));

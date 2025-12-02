@@ -1,4 +1,4 @@
-using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Buffers;
 
@@ -10,6 +10,7 @@ public interface IBufferedChannel : IResettable, IDisposable
     /// <summary>
     /// Gets buffer allocator.
     /// </summary>
+    [AllowNull]
     MemoryAllocator<byte> Allocator { get; init; }
     
     /// <summary>

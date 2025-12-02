@@ -20,22 +20,22 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
     public Stream BaseStream => stream;
 
     /// <summary>
-    /// Establishes segment bounds.
+    /// Gets or sets the segment range.
     /// </summary>
-    /// <remarks>
-    /// This method modifies <see cref="Stream.Position"/> property of the underlying stream.
-    /// </remarks>
-    /// <param name="offset">The offset in the underlying stream.</param>
-    /// <param name="length">The length of the segment.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is larger than the remaining length of the underlying stream; or <paramref name="offset"/> if greater than the length of the underlying stream.</exception>
-    public void Adjust(long offset, long length)
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// The length is larger than the remaining length of the underlying stream;
+    /// or the offset is greater than the length of the underlying stream.</exception>
+    public (long Offset, long Length) Range
     {
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)offset, (ulong)stream.Length, nameof(offset));
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)length, (ulong)(stream.Length - offset), nameof(length));
+        get => (offset, length);
+        set
+        {
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)offset, (ulong)stream.Length, nameof(offset));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)length, (ulong)(stream.Length - offset), nameof(length));
 
-        this.length = length;
-        this.offset = offset;
-        stream.Position = offset;
+            (offset, length) = value;
+            stream.Position = offset;
+        }
     }
 
     /// <summary>
