@@ -3,7 +3,7 @@ using System.Text;
 
 namespace DotNext.Net.Mime;
 
-using static Text.EncodingExtensions;
+using Text;
 
 /// <summary>
 /// Represents extension methods for <see cref="ContentType"/> data type.
@@ -16,5 +16,5 @@ public static class ContentTypeExtensions
     /// <param name="contentType">The content type.</param>
     /// <returns>The encoding specified by <paramref name="contentType"/>.</returns>
     public static Encoding GetEncoding(this ContentType contentType)
-        => (contentType.CharSet is { Length: > 0 } charSet ? Encoding.GetEncoding(charSet) : Encoding.UTF8).WithoutPreamble();
+        => (contentType.CharSet is { Length: > 0 } charSet ? Encoding.GetEncoding(charSet) : Encoding.UTF8).WithoutPreamble;
 }

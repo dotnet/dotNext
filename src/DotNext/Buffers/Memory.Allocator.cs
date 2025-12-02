@@ -59,12 +59,8 @@ public static partial class Memory
             => provider.Allocate;
     }
 
-    /// <summary>
-    /// Extends <see cref="MemoryAllocator{T}"/> delegate.
-    /// </summary>
     /// <param name="allocator">The memory allocator.</param>
-    /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
-    extension<T>(MemoryAllocator<T>? allocator)
+    extension<T>(MemoryAllocator<T> allocator)
     {
         /// <summary>
         /// Allocates memory of at least <paramref name="length"/> size.
@@ -73,88 +69,81 @@ public static partial class Memory
         /// <returns>The allocated memory.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public MemoryOwner<T> AllocateAtLeast(int length)
-        {
-            MemoryOwner<T> result;
-            if (allocator is null)
-            {
-                result = AllocateAtLeast<T>(length);
-            }
-            else
-            {
-                result = allocator(length);
-                result.Expand();
-            }
-
-            return result;
-        }
+            => allocator.Invoke(length);
 
         /// <summary>
         /// Allocates memory of <paramref name="length"/> size.
         /// </summary>
         /// <param name="length">The number of items in the rented memory.</param>
-        /// <returns>The allocated memory.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <returns>The allocated memory.</returns>]
         public MemoryOwner<T> AllocateExactly(int length)
         {
-            MemoryOwner<T> result;
-            if (allocator is null)
-            {
-                result = AllocateExactly<T>(length);
-            }
-            else
-            {
-                result = allocator(length);
-                result.Truncate(length);
-            }
-
+            var result = allocator(length);
+            result.Truncate(length);
             return result;
         }
     }
 
     /// <summary>
-    /// Returns array allocator.
+    /// Extends <see cref="MemoryAllocator{T}"/> delegate.
     /// </summary>
-    /// <typeparam name="T">The type of elements in the array.</typeparam>
-    /// <returns>The array allocator.</returns>
-    public static MemoryAllocator<T> GetArrayAllocator<T>()
+    /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
+    extension<T>(MemoryAllocator<T>? allocator)
     {
-        return AllocateArray;
+        /// <summary>
+        /// Gets the array allocator.
+        /// </summary>
+        /// <value>The array allocator.</value>
+        public static MemoryAllocator<T> ArrayAllocator
+        {
+            get
+            {
+                return AllocateArray;
 
-        static MemoryOwner<T> AllocateArray(int length)
-            => new(GC.AllocateUninitializedArray<T>(length, pinned: false));
+                static MemoryOwner<T> AllocateArray(int length)
+                    => new(GC.AllocateUninitializedArray<T>(length, pinned: false));
+            }
+        }
+
+        /// <summary>
+        /// Gets the default allocator that uses <see cref="ArrayPool{T}.Shared"/> pool.
+        /// </summary>
+        public static MemoryAllocator<T> Default
+        {
+            get
+            {
+                return AllocateUsingArrayPool;
+                
+                static MemoryOwner<T> AllocateUsingArrayPool(int length)
+                    => new(ArrayPool<T>.Shared, length);
+            }
+        }
+
+        /// <summary>
+        /// Gets <see cref="Memory.get_Default{T}"/> allocator if the current is <see langword="null"/>.
+        /// </summary>
+        public MemoryAllocator<T> DefaultIfNull => allocator ?? get_Default<T>();
     }
 
     /// <summary>
-    /// Returns an allocator of pinned arrays.
+    /// Extends <see cref="MemoryAllocator{T}"/> with static members.
     /// </summary>
-    /// <typeparam name="T">The type of elements in the array.</typeparam>
-    /// <returns>The array allocator.</returns>
-    public static MemoryAllocator<T> GetPinnedArrayAllocator<T>()
-        where T : unmanaged
+    /// <typeparam name="T">The blittable type.</typeparam>
+    extension<T>(MemoryAllocator<T>) where T : unmanaged
     {
-        return AllocateArray;
+        /// <summary>
+        /// Returns an allocator of pinned arrays.
+        /// </summary>
+        /// <value>The array allocator.</value>
+        public static MemoryAllocator<T> PinnedArrayAllocator
+        {
+            get
+            {
+                return AllocateArray;
 
-        static MemoryOwner<T> AllocateArray(int length)
-            => new(GC.AllocateUninitializedArray<T>(length, pinned: true));
+                static MemoryOwner<T> AllocateArray(int length)
+                    => new(GC.AllocateUninitializedArray<T>(length, pinned: true));
+            }
+        }
     }
-
-    /// <summary>
-    /// Rents a block of memory of at least
-    /// <paramref name="length"/> size from <see cref="ArrayPool{T}.Shared"/> pool.
-    /// </summary>
-    /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
-    /// <param name="length">The number of items in the rented memory.</param>
-    /// <returns>The allocated memory.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static MemoryOwner<T> AllocateAtLeast<T>(int length)
-        => new(ArrayPool<T>.Shared, length, exactSize: false);
-
-    /// <summary>
-    /// Rents a block of memory of the specified size from <see cref="ArrayPool{T}.Shared"/> pool.
-    /// </summary>
-    /// <typeparam name="T">The type of the items in the memory pool.</typeparam>
-    /// <param name="length">The number of items in the rented memory.</param>
-    /// <returns>The allocated memory.</returns>
-    public static MemoryOwner<T> AllocateExactly<T>(int length)
-        => new(ArrayPool<T>.Shared, length, exactSize: true);
 }

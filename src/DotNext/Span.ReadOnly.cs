@@ -151,8 +151,6 @@ partial class Span
         /// Trims the span to specified length if it exceeds it.
         /// If length is less that <paramref name="maxLength" /> then the original span returned.
         /// </summary>
-        /// <typeparam name="T">The type of items in the span.</typeparam>
-        /// 
         /// <param name="maxLength">Maximum length.</param>
         /// <returns>Trimmed span.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="maxLength"/> is less than zero.</exception>
@@ -210,7 +208,6 @@ partial class Span
         /// <param name="first">The first memory block.</param>
         /// <param name="second">The second memory block.</param>
         /// <param name="allocator">The memory allocator used to allocate buffer for the result.</param>
-        /// <typeparam name="T">The type of the elements in the memory.</typeparam>
         /// <returns>The memory block containing elements from the specified two memory blocks.</returns>
         public static MemoryOwner<T> Concat(ReadOnlySpan<T> first, ReadOnlySpan<T> second, MemoryAllocator<T>? allocator = null)
         {

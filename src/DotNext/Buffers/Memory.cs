@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Buffers;
@@ -61,7 +60,7 @@ public static partial class Memory
     /// <param name="newLength">A new length of the buffer.</param>
     /// <param name="allocator">The allocator to be called if the requested length is larger than the requested length.</param>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="newLength"/> is less than zero.</exception>
-    public static void Resize<T>(this ref MemoryOwner<T> owner, int newLength, MemoryAllocator<T>? allocator = null)
+    public static void Resize<T>(this ref MemoryOwner<T> owner, int newLength, MemoryAllocator<T> allocator)
     {
         if (!owner.TryResize(newLength))
         {
@@ -73,7 +72,7 @@ public static partial class Memory
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Write<T, TWriter>(TWriter writer, ReadOnlySpan<T> value)
+    internal static void Write<T, TWriter>(TWriter writer, ReadOnlySpan<T> value)
         where TWriter : struct, IBufferWriter<T>, allows ref struct
     {
         var destination = writer.GetSpan();

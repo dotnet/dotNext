@@ -75,7 +75,7 @@ public static class TaskType
     }
     
     /// <summary>
-    /// Extends <see cref="Type"/> type.
+    /// Extends <see cref="System.Type"/> type.
     /// </summary>
     /// <param name="taskType">A type of <see cref="Task"/> or <see cref="Task{TResult}"/>.</param>
     extension([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] Type taskType)

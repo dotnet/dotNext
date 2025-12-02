@@ -140,7 +140,9 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     /// <param name="locker">The locker object.</param>
     /// <returns>The exclusive lock.</returns>
     public static Lock ExclusiveLock(System.Threading.Lock locker)
+#pragma warning disable CS9216
         => new(locker ?? throw new ArgumentNullException(nameof(locker)), Type.ExclusiveLock, false);
+#pragma warning restore CS9216
 
     /// <summary>
     /// Creates exclusive lock.
@@ -149,7 +151,10 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     /// Constructed lock owns the <see cref="System.Threading.Lock"/> instance.
     /// </remarks>
     /// <returns>The exclusive lock.</returns>
-    public static Lock ExclusiveLock() => new(new System.Threading.Lock(), Type.ExclusiveLock, true);
+    public static Lock ExclusiveLock()
+#pragma warning disable CS9216
+        => new(new System.Threading.Lock(), Type.ExclusiveLock, true);
+#pragma warning restore CS9216
 
     /// <summary>
     /// Creates read lock but doesn't acquire it.

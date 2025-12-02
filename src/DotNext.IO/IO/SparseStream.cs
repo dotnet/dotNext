@@ -174,7 +174,7 @@ file sealed class UnboundedSparseStream : SparseStream
     {
         Debug.Assert(streams.Length < int.MaxValue);
 
-        this.streams = Memory.AllocateExactly<Stream>(streams.Length + 1);
+        this.streams = MemoryAllocator<Stream>.Default.AllocateExactly(streams.Length + 1);
         var output = this.streams.Span;
         output[0] = stream;
         streams.CopyTo(output.Slice(1));

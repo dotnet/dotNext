@@ -95,7 +95,6 @@ partial class DelegateHelpers
         /// <summary>
         /// Creates a delegate that hides the return value.
         /// </summary>
-        /// <typeparam name="TResult">The type of the result.</typeparam>
         /// <returns>The action that invokes the same method as <paramref name="func"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public Action HideReturnValue()
@@ -328,7 +327,6 @@ partial class DelegateHelpers
         /// Returns a predicate which negates evaluation result of
         /// the original predicate.
         /// </summary>
-        /// <typeparam name="T">Type of the predicate argument.</typeparam>
         /// <param name="other">The predicate to negate.</param>
         /// <returns>The predicate which negates evaluation result of the original predicate.</returns>
         public static Predicate<T> operator !(Func<T, bool> other)

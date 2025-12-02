@@ -51,7 +51,7 @@ public interface ISerializable<TSelf> : IDataTransferObject
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static async ValueTask<TSelf> ReadFromAsync(Stream input, int bufferSize = 128, CancellationToken token = default)
     {
-        using var owner = Memory.AllocateAtLeast<byte>(bufferSize);
+        using var owner = MemoryAllocator<byte>.Default.AllocateAtLeast(bufferSize);
         return await ReadFromAsync(input, owner.Memory, token).ConfigureAwait(false);
     }
 

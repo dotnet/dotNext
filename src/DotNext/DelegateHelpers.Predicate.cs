@@ -68,7 +68,6 @@ partial class DelegateHelpers
         /// <summary>
         /// Represents predicate as type <see cref="Func{T,Boolean}"/>.
         /// </summary>
-        /// <typeparam name="T">Type of predicate argument.</typeparam>
         /// <returns>A delegate of type <see cref="Func{T,Boolean}"/> referencing the same method as original predicate.</returns>
         public Func<T, bool> AsFunc()
             => predicate.ChangeType<Func<T, bool>>();
@@ -76,7 +75,6 @@ partial class DelegateHelpers
         /// <summary>
         /// Represents predicate as type <see cref="Converter{T,Boolean}"/>.
         /// </summary>
-        /// <typeparam name="T">Type of predicate argument.</typeparam>
         /// <returns>A delegate of type <see cref="Converter{T,Boolean}"/> referencing the same method as original predicate.</returns>
         public Converter<T, bool> AsConverter()
             => predicate.ChangeType<Converter<T, bool>>();
@@ -85,7 +83,6 @@ partial class DelegateHelpers
         /// Returns a predicate which negates evaluation result of
         /// the original predicate.
         /// </summary>
-        /// <typeparam name="T">Type of the predicate argument.</typeparam>
         /// <param name="other">The predicate to negate.</param>
         /// <returns>The predicate which negates evaluation result of the original predicate.</returns>
         public static Predicate<T> operator !(Predicate<T> other)
@@ -145,7 +142,6 @@ partial class DelegateHelpers
         /// <summary>
         /// Returns a predicate which always returns the specified value.
         /// </summary>
-        /// <typeparam name="T">The type of the input parameter.</typeparam>
         /// <param name="value">The value to be returned by the predicate.</param>
         /// <returns>A cached predicate always returning <paramref name="value"/>.</returns>
         public static Predicate<T> Constant(bool value)

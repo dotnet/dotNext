@@ -27,7 +27,7 @@ using Runtime.CompilerServices;
 public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
 {
     private readonly Span<T> initialBuffer;
-    private readonly MemoryAllocator<T>? allocator;
+    private readonly MemoryAllocator<T> allocator;
     private MemoryOwner<T> extraBuffer;
     private int position;
 
@@ -45,7 +45,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     public BufferWriterSlim(Span<T> buffer, MemoryAllocator<T>? allocator = null)
     {
         initialBuffer = buffer;
-        this.allocator = allocator;
+        this.allocator = allocator.DefaultIfNull;
     }
 
     /// <summary>
@@ -58,6 +58,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     {
         ArgumentOutOfRangeException.ThrowIfNegative(initialCapacity);
 
+        allocator ??= MemoryAllocator<T>.Default;
         this.allocator = allocator;
         extraBuffer = initialCapacity is 0 ? default : allocator.AllocateAtLeast(initialCapacity);
     }
@@ -93,10 +94,8 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     /// </summary>
     public readonly int FreeCapacity => Capacity - WrittenCount;
 
-    private readonly bool NoOverflow => position <= initialBuffer.Length;
-
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private readonly Span<T> Buffer => NoOverflow ? initialBuffer : extraBuffer.Span;
+    private readonly Span<T> Buffer => extraBuffer.IsEmpty ? initialBuffer : extraBuffer.Span;
 
     /// <summary>
     /// Gets span over constructed memory block.
@@ -370,7 +369,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     /// </returns>
     public bool TryDetachBuffer(out MemoryOwner<T> owner)
     {
-        if (NoOverflow)
+        if (extraBuffer.IsEmpty)
         {
             owner = default;
             return false;
@@ -397,7 +396,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         }
         else
         {
-            if (NoOverflow)
+            if (extraBuffer.IsEmpty)
             {
                 result = allocator.AllocateExactly(position);
                 initialBuffer.CopyTo(result.Span);
@@ -418,7 +417,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     /// <inheritdoc/>
     bool IGrowableBuffer<T>.TryGetWrittenContent(out ReadOnlyMemory<T> block)
     {
-        if (NoOverflow)
+        if (extraBuffer.IsEmpty)
         {
             block = default;
             return false;

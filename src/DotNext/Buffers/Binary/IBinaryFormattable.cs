@@ -55,7 +55,7 @@ public interface IBinaryFormattable<out TSelf>
     /// <returns>The buffer containing formatted value.</returns>
     public static MemoryOwner<byte> Format(TSelf value, MemoryAllocator<byte>? allocator = null)
     {
-        var result = allocator.AllocateExactly(TSelf.Size);
+        var result = allocator.DefaultIfNull.AllocateExactly(TSelf.Size);
         value.Format(result.Span);
         return result;
     }

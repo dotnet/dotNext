@@ -1,15 +1,24 @@
 using System.Buffers;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
 partial struct BufferWriterSlim<T>
 {
+    /// <summary>
+    /// Represents indirection layer to express a reference to <see cref="BufferWriterSlim{T}"/> in generic context.
+    /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    internal readonly ref struct Ref : IBufferWriter<T>, ITypedReference<BufferWriterSlim<T>>
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public readonly ref struct Ref : IBufferWriter<T>, ITypedReference<BufferWriterSlim<T>>
     {
         private readonly LocalReference<BufferWriterSlim<T>> reference;
 
+        /// <summary>
+        /// Initializes a new reference.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
         public Ref(ref BufferWriterSlim<T> writer)
             => reference = new(ref writer);
 

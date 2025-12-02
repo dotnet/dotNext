@@ -185,7 +185,6 @@ public static partial class List
         /// </summary>
         /// <param name="item">The item to be returned from the list.</param>
         /// <param name="count">The number of elements in the list.</param>
-        /// <typeparam name="T">Type of the list.</typeparam>
         /// <returns>A list that contains a repeated value.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is negative.</exception>
         public static IReadOnlyList<T> Repeat(T item, int count)

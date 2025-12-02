@@ -119,6 +119,12 @@ internal sealed class EncodingWithoutPreamble : Encoding
     public override string GetString(byte[] bytes, int index, int count)
         => encoding.GetString(bytes, index, count);
 
+    public override bool TryGetBytes(ReadOnlySpan<char> chars, Span<byte> bytes, out int bytesWritten)
+        => encoding.TryGetBytes(chars, bytes, out bytesWritten);
+
+    public override bool TryGetChars(ReadOnlySpan<byte> bytes, Span<char> chars, out int charsWritten)
+        => encoding.TryGetChars(bytes, chars, out charsWritten);
+
     public override string? ToString() => encoding.ToString();
 
     public override bool Equals([NotNullWhen(true)] object? other)

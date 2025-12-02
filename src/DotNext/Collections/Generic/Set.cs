@@ -36,7 +36,6 @@ public static class Set
         /// <summary>
         /// Creates a range using the specified bounds.
         /// </summary>
-        /// <typeparam name="T">The type of the elements in the range.</typeparam>
         /// <typeparam name="TLowerBound">The type of lower bound.</typeparam>
         /// <typeparam name="TUpperBound">The type of upper bound.</typeparam>
         /// <param name="lowerBound">The lower bound of the range.</param>

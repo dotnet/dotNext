@@ -109,7 +109,6 @@ partial class Span
         /// </summary>
         /// <param name="destination">Destination memory.</param>
         /// <param name="writtenCount">The number of copied elements.</param>
-        /// <typeparam name="T">The type of the elements in the span.</typeparam>
         public void CopyTo(Span<T> destination, out int writtenCount)
             => writtenCount = span >> destination;
 

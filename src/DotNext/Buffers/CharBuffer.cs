@@ -1,13 +1,14 @@
 using System.Buffers;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace DotNext.Buffers;
 
+using IInterpolatedStringHandler = DotNext.Text.IInterpolatedStringHandler;
+
 /// <summary>
 /// Providers extension methods to work with char buffers.
 /// </summary>
-public static partial class CharBuffer
+public static class CharBuffer
 {
     private static void Write<TWriter>(TWriter writer, StringBuilder input)
         where TWriter : struct, IBufferWriter<char>, allows ref struct
@@ -25,25 +26,6 @@ public static partial class CharBuffer
         => Write<BufferWriterReference<char>>(new(writer), input);
 
     /// <summary>
-    /// Writes interpolated string to the buffer.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="provider">The formatting provider.</param>
-    /// <param name="handler">The handler of the interpolated string.</param>
-    /// <returns>The number of written characters.</returns>
-    public static int Interpolate(this IBufferWriter<char> writer, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(writer), nameof(provider))] in BufferWriterInterpolatedStringHandler handler)
-        => handler.WrittenCount;
-
-    /// <summary>
-    /// Writes interpolated string to the buffer.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="handler">The handler of the interpolated string.</param>
-    /// <returns>The number of written characters.</returns>
-    public static int Interpolate(this IBufferWriter<char> writer, [InterpolatedStringHandlerArgument(nameof(writer))] in BufferWriterInterpolatedStringHandler handler)
-        => Interpolate(writer, null, in handler);
-
-    /// <summary>
     /// Writes the value as a string.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
@@ -53,7 +35,7 @@ public static partial class CharBuffer
     /// <param name="provider">The format provider.</param>
     /// <returns>The number of written characters.</returns>
     public static int Format<T>(this IBufferWriter<char> writer, T value, string? format = null, IFormatProvider? provider = null)
-        => AppendFormatted<T, BufferWriterReference<char>>(new(writer), value, format, provider);
+        => IInterpolatedStringHandler.AppendFormatted<T, BufferWriterReference<char>>(new(writer), value, format, provider);
     
     private static int Format<TWriter>(TWriter writer, CompositeFormat format, ReadOnlySpan<object?> args, IFormatProvider? provider)
         where TWriter : struct, IBufferWriter<char>, allows ref struct
@@ -168,25 +150,6 @@ public static partial class CharBuffer
         => Write<BufferWriterSlim<char>.Ref>(new(ref writer), input);
 
     /// <summary>
-    /// Writes interpolated string to the buffer.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="provider">The formatting provider.</param>
-    /// <param name="handler">The handler of the interpolated string.</param>
-    /// <returns>The number of written characters.</returns>
-    public static int Interpolate(this ref BufferWriterSlim<char> writer, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(writer), nameof(provider))] scoped in BufferWriterSlimInterpolatedStringHandler handler)
-        => handler.WrittenCount;
-
-    /// <summary>
-    /// Writes interpolated string to the buffer.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <param name="handler">The handler of the interpolated string.</param>
-    /// <returns>The number of written characters.</returns>
-    public static int Interpolate(this ref BufferWriterSlim<char> writer, [InterpolatedStringHandlerArgument(nameof(writer))] scoped in BufferWriterSlimInterpolatedStringHandler handler)
-        => Interpolate(ref writer, null, in handler);
-
-    /// <summary>
     /// Writes the value as a string.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
@@ -196,7 +159,7 @@ public static partial class CharBuffer
     /// <param name="provider">The format provider.</param>
     /// <returns>The number of written characters.</returns>
     public static int Format<T>(this ref BufferWriterSlim<char> writer, T value, string? format = null, IFormatProvider? provider = null)
-        => AppendFormatted<T, BufferWriterSlim<char>.Ref>(new(ref writer), value, format, provider);
+        => IInterpolatedStringHandler.AppendFormatted<T, BufferWriterSlim<char>.Ref>(new(ref writer), value, format, provider);
 
     /// <summary>
     /// Writes formatted string to the buffer.

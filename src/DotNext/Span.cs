@@ -40,7 +40,6 @@ public static partial class Span
         /// into <see cref="Span{T}"/>.
         /// </summary>
         /// <param name="pointer">The typed pointer.</param>
-        /// <typeparam name="T">The type of the pointer.</typeparam>
         /// <returns>The span of contiguous memory.</returns>
         [CLSCompliant(false)]
         public static unsafe Span<byte> AsBytes(T* pointer)

@@ -79,7 +79,7 @@ public abstract class TransportTestSuite : RaftTest
 
         async ValueTask ILocalMember.ProposeConfigurationAsync(Func<Memory<byte>, CancellationToken, ValueTask> configurationReader, long configurationLength, long fingerprint, CancellationToken token)
         {
-            using var buffer = Memory.AllocateExactly<byte>(int.CreateSaturating(configurationLength));
+            using var buffer = MemoryAllocator<byte>.Default.AllocateExactly(int.CreateSaturating(configurationLength));
             await configurationReader(buffer.Memory, token).ConfigureAwait(false);
             Equal(42L, fingerprint);
             ReceivedConfiguration = buffer.Memory.ToArray();

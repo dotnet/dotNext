@@ -124,7 +124,7 @@ public partial struct Base64Encoder
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static IAsyncEnumerable<ReadOnlyMemory<byte>> EncodeToUtf8Async(IAsyncEnumerable<ReadOnlyMemory<byte>> bytes,
         MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
-        => IBufferedEncoder<byte>.EncodeAsync<Base64Encoder>(bytes, allocator, token);
+        => IBufferedEncoder<byte>.EncodeAsync<Base64Encoder>(bytes, allocator.DefaultIfNull, token);
 
     /// <summary>
     /// Flushes the buffered data as base64-encoded UTF-8 characters to the output buffer.

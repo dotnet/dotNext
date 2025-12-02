@@ -92,7 +92,7 @@ internal unsafe struct WellKnownIntegerReader<T>(delegate*<ReadOnlySpan<byte>, b
 internal unsafe struct IntegerReader<T>(delegate*<ReadOnlySpan<byte>, bool, T> parser) : IBufferReader, ISupplier<T>
     where T : IBinaryInteger<T>
 {
-    private MemoryOwner<byte> buffer = Memory.AllocateExactly<byte>(Number.get_MaxByteCount<T>());
+    private MemoryOwner<byte> buffer = MemoryAllocator<byte>.Default.AllocateExactly(Number.get_MaxByteCount<T>());
     private int writtenBytes;
 
     readonly int IBufferReader.RemainingBytes => buffer.Length - writtenBytes;
@@ -151,7 +151,7 @@ internal struct BinaryFormattable256Reader<T> : IBufferReader, ISupplier<T>
 internal struct BinaryFormattableReader<T>() : IBufferReader, ISupplier<T>
     where T : IBinaryFormattable<T>
 {
-    private MemoryOwner<byte> buffer = Memory.AllocateExactly<byte>(T.Size);
+    private MemoryOwner<byte> buffer = MemoryAllocator<byte>.Default.AllocateExactly(T.Size);
     private int writtenBytes;
 
     readonly int IBufferReader.RemainingBytes => T.Size - writtenBytes;
@@ -243,7 +243,7 @@ internal unsafe struct Parsing256Reader<TArg, TResult>(TArg arg, delegate*<ReadO
 [StructLayout(LayoutKind.Auto)]
 internal unsafe struct ParsingReader<TArg, TResult>(TArg arg, delegate*<ReadOnlySpan<byte>, TArg, TResult> parser, int length) : IBufferReader, ISupplier<TResult>
 {
-    private MemoryOwner<byte> buffer = Memory.AllocateExactly<byte>(length);
+    private MemoryOwner<byte> buffer = MemoryAllocator<byte>.Default.AllocateExactly(length);
     private int consumedBytes;
 
     readonly int IBufferReader.RemainingBytes => buffer.Length - consumedBytes;

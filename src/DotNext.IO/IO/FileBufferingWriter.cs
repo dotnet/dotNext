@@ -153,7 +153,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     private readonly TagList measurementTags;
     private readonly BackingFileProvider fileProvider;
     private readonly int memoryThreshold;
-    private readonly MemoryAllocator<byte>? allocator;
+    private readonly MemoryAllocator<byte> allocator;
     private MemoryOwner<byte> buffer;
     private int position;
     private string? fileName;
@@ -193,7 +193,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
         if (options.UseTemporaryFile && !Directory.Exists(options.Path))
             throw new DirectoryNotFoundException(ExceptionMessages.DirectoryNotFound(options.Path));
 
-        allocator = options.MemoryAllocator;
+        allocator = options.MemoryAllocator.DefaultIfNull;
         var memoryThreshold = options.MemoryThreshold;
         if (options.InitialCapacity > 0)
         {

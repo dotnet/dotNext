@@ -174,7 +174,7 @@ public interface IDataTransferObject
         var output = new FileBufferingWriter(asyncIO: true);
         await using (output.ConfigureAwait(false))
         {
-            using var buffer = Memory.AllocateAtLeast<byte>(DefaultBufferSize);
+            using var buffer = MemoryAllocator<byte>.Default.AllocateAtLeast(DefaultBufferSize);
 
             // serialize
             await WriteToAsync(new AsyncStreamBinaryAccessor(output, buffer.Memory), token).ConfigureAwait(false);
@@ -207,7 +207,7 @@ public interface IDataTransferObject
 
         await using (fs.ConfigureAwait(false))
         {
-            using var buffer = Memory.AllocateAtLeast<byte>(DefaultBufferSize);
+            using var buffer = MemoryAllocator<byte>.Default.AllocateAtLeast(DefaultBufferSize);
 
             // serialize
             await WriteToAsync(new AsyncStreamBinaryAccessor(fs, buffer.Memory), token).ConfigureAwait(false);

@@ -23,7 +23,7 @@ using Runtime.CompilerServices;
 public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISupplier<ReadOnlySequence<T>>
 {
     private readonly int chunkSize;
-    private readonly MemoryAllocator<T>? allocator;
+    private readonly MemoryAllocator<T> allocator;
     private readonly unsafe delegate*<int, ref int, int> growth;
     private int chunkIndex; // used for linear and exponential allocation strategies only
     private MemoryChunk? first;
@@ -44,7 +44,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(chunkSize);
 
         this.chunkSize = chunkSize;
-        this.allocator = allocator;
+        this.allocator = allocator.DefaultIfNull;
 
         unsafe
         {

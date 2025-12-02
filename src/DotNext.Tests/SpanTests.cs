@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Text;
 
 namespace DotNext;
 
@@ -89,7 +90,8 @@ public sealed class SpanTests : Test
     public static TheoryData<MemoryAllocator<char>> TestAllocators() => new()
     {
         null,
-        Memory.GetArrayAllocator<char>(),
+        MemoryAllocator<char>.ArrayAllocator,
+        MemoryAllocator<char>.PinnedArrayAllocator,
         ArrayPool<char>.Shared.ToAllocator(),
     };
 
@@ -604,5 +606,14 @@ public sealed class SpanTests : Test
         
         Array.Clear(mask);
         False(new ReadOnlySpan<byte>(value).IsBitwiseAndNonZero(mask));
+    }
+
+    [Fact]
+    public static void Tst()
+    {
+        var enc = Encoding.UTF32;
+        var encoder = enc.GetEncoder();
+        
+        Same(Encoding.UTF8.EncoderFallback, encoder.Fallback);
     }
 }

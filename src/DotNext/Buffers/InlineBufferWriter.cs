@@ -6,8 +6,9 @@ using System.Runtime.InteropServices;
 namespace DotNext.Buffers;
 
 [StructLayout(LayoutKind.Auto)]
-internal struct InlinedBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowableBuffer<T>
+internal struct InlineBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowableBuffer<T>
 {
+    private readonly MemoryAllocator<T> allocator = allocator.DefaultIfNull;
     private MemoryOwner<T> buffer;
     private int position;
 
@@ -64,9 +65,9 @@ internal struct InlinedBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowabl
             => throw new InvalidOperationException();
     }
 
-    public Memory<T> GetMemory(int sizeHint) => GetBuffer(sizeHint).Memory;
+    public Memory<T> GetMemory(int sizeHint) => GetBuffer(sizeHint).Memory.Slice(position);
 
-    public Span<T> GetSpan(int sizeHint) => GetBuffer(sizeHint).Span;
+    public Span<T> GetSpan(int sizeHint) => GetBuffer(sizeHint).Span.Slice(position);
     
     [UnscopedRef]
     private ref readonly MemoryOwner<T> GetBuffer(int sizeHint)
@@ -101,9 +102,9 @@ internal struct InlinedBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowabl
     public readonly override string ToString() => WrittenMemory.ToString();
 
     [StructLayout(LayoutKind.Auto)]
-    public readonly ref struct Ref(ref InlinedBufferWriter<T> writer) : IBufferWriter<T>, ITypedReference<InlinedBufferWriter<T>>
+    public readonly ref struct Ref(ref InlineBufferWriter<T> writer) : IBufferWriter<T>, ITypedReference<InlineBufferWriter<T>>
     {
-        private readonly ref InlinedBufferWriter<T> writer = ref writer;
+        private readonly ref InlineBufferWriter<T> writer = ref writer;
 
         void IBufferWriter<T>.Advance(int count) => writer.Advance(count);
 
@@ -111,6 +112,6 @@ internal struct InlinedBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowabl
 
         Span<T> IBufferWriter<T>.GetSpan(int sizeHint) => writer.GetSpan(sizeHint);
 
-        ref readonly InlinedBufferWriter<T> ITypedReference<InlinedBufferWriter<T>>.Value => ref writer;
+        ref readonly InlineBufferWriter<T> ITypedReference<InlineBufferWriter<T>>.Value => ref writer;
     }
 }

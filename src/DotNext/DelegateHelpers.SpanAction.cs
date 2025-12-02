@@ -19,7 +19,6 @@ partial class DelegateHelpers
         /// <summary>
         /// Converts static method represented by the pointer to the open delegate of type <see cref="SpanAction{T, TArg}"/>.
         /// </summary>
-        /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
         /// <param name="ptr">The function pointer.</param>
         /// <returns>The delegate instance.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="ptr"/> is zero.</exception>
@@ -38,8 +37,6 @@ partial class DelegateHelpers
         /// Converts static method represented by the pointer to the closed delegate of type <see cref="SpanAction{T, TArg}"/>.
         /// </summary>
         /// <typeparam name="T">The type of the implicit capture object.</typeparam>
-        /// <typeparam name="TItem">The type of the objects in the read-only span.</typeparam>
-        /// <typeparam name="TArg">The type of the object that represents the state.</typeparam>
         /// <param name="ptr">The function pointer.</param>
         /// <param name="obj">The object to be passed as first argument implicitly.</param>
         /// <returns>The delegate instance.</returns>

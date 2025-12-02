@@ -4,25 +4,26 @@ namespace DotNext.Buffers;
 
 internal static class BufferReader
 {
-    internal static SequencePosition Append<TParser>(this ref TParser parser, in ReadOnlySequence<byte> input)
-        where TParser : struct, IBufferReader
+    extension<TParser>(ref TParser parser) where TParser : struct, IBufferReader
     {
-        var position = input.Start;
-        for (int consumedBytes, remainingBytes; (remainingBytes = parser.RemainingBytes) > 0 && input.TryGet(ref position, out var block, advance: false) && !block.IsEmpty; position = input.GetPosition(consumedBytes, position))
+        internal SequencePosition Append(in ReadOnlySequence<byte> input)
         {
-            block = block.TrimLength(remainingBytes);
-            parser.Invoke(block.Span);
-            consumedBytes = block.Length;
+            var position = input.Start;
+            for (int consumedBytes, remainingBytes; (remainingBytes = parser.RemainingBytes) > 0 && input.TryGet(ref position, out var block, advance: false) && !block.IsEmpty; position = input.GetPosition(consumedBytes, position))
+            {
+                block = block.TrimLength(remainingBytes);
+                parser.Invoke(block.Span);
+                consumedBytes = block.Length;
+            }
+
+            return position;
         }
 
-        return position;
-    }
-
-    internal static void EndOfStream<TParser>(this ref TParser parser)
-        where TParser : struct, IBufferReader
-    {
-        if (TParser.ThrowOnPartialData && parser.RemainingBytes > 0)
-            throw new EndOfStreamException();
+        internal void EndOfStream()
+        {
+            if (TParser.ThrowOnPartialData && parser.RemainingBytes > 0)
+                throw new EndOfStreamException();
+        }
     }
 
     internal static TResult EndOfStream<TResult, TParser>(this ref TParser parser)

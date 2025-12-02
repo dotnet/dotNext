@@ -71,7 +71,6 @@ public static partial class Collection
         /// <summary>
         /// Converts read-only collection into single-dimensional array.
         /// </summary>
-        /// <typeparam name="T">Type of collection items.</typeparam>
         /// <param name="col">A collection to convert.</param>
         /// <returns>Array of collection items.</returns>
         public static T[] ToArray(IReadOnlyCollection<T> col)

@@ -47,7 +47,7 @@ public static class CollectionType
     }
     
     /// <summary>
-    /// Extends <see cref="Type"/> type.
+    /// Extends <see cref="System.Type"/> type.
     /// </summary>
     /// <param name="collectionType">Any collection type implementing <see cref="IEnumerable{T}"/>.</param>
     extension(
@@ -61,7 +61,7 @@ public static class CollectionType
     }
 
     /// <summary>
-    /// Extends <see cref="Type"/> type.
+    /// Extends <see cref="System.Type"/> type.
     /// </summary>
     /// <param name="type">The type that implements the one of the supported collection types.</param>
     extension([DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] Type type)

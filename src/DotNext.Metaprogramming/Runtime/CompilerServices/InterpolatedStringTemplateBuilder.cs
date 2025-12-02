@@ -8,6 +8,7 @@ using static System.Globalization.CultureInfo;
 namespace DotNext.Runtime.CompilerServices;
 
 using Buffers;
+using Text;
 
 /// <summary>
 /// Represents a builder of the lambda expression

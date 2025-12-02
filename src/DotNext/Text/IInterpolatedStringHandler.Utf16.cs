@@ -1,14 +1,15 @@
 using System.Buffers;
 using System.Diagnostics;
 
-namespace DotNext.Buffers;
+namespace DotNext.Text;
 
-partial class CharBuffer
+using Buffers;
+
+partial interface IInterpolatedStringHandler
 {
-    private const int MaxBufferSize = int.MaxValue / 2;
-    private const char Whitespace = ' ';
+    private const char WhitespaceUtf16 = ' ';
     
-    internal static int AppendFormatted<T, TWriter>(TWriter buffer, T value, string? format, IFormatProvider? provider)
+    internal static int AppendFormatted<T, TWriter>(TWriter writer, T value, string? format, IFormatProvider? provider)
         where TWriter : struct, IBufferWriter<char>, allows ref struct
     {
         int charsWritten;
@@ -16,24 +17,24 @@ partial class CharBuffer
         switch (value)
         {
             case ISpanFormattable:
-                Span<char> span = buffer.GetSpan();
+                Span<char> span = writer.GetSpan();
 
                 // constrained call avoiding boxing for value types
-                for (int sizeHint; !((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider); span = buffer.GetSpan(sizeHint))
+                for (int sizeHint; !((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider); span = writer.GetSpan(sizeHint))
                 {
                     sizeHint = span.Length;
                     sizeHint = sizeHint <= MaxBufferSize ? sizeHint << 1 : throw new InsufficientMemoryException();
                 }
 
-                buffer.Advance(charsWritten);
+                writer.Advance(charsWritten);
                 break;
             case IFormattable:
                 // constrained call avoiding boxing for value types
-                charsWritten = Write(buffer, ((IFormattable)value).ToString(format, provider));
+                charsWritten = Write(writer, ((IFormattable)value).ToString(format, provider));
 
                 break;
             case not null:
-                charsWritten = Write(buffer, value.ToString());
+                charsWritten = Write(writer, value.ToString());
                 break;
             default:
                 charsWritten = 0;
@@ -49,7 +50,7 @@ partial class CharBuffer
         }
     }
 
-    internal static int AppendFormatted<TWriter>(TWriter writer, scoped ReadOnlySpan<char> value, int alignment)
+    protected static int AppendFormatted<TWriter>(TWriter writer, scoped ReadOnlySpan<char> value, int alignment)
         where TWriter : struct, IBufferWriter<char>, allows ref struct
     {
         bool leftAlign;
@@ -79,7 +80,7 @@ partial class CharBuffer
                 ? span.Slice(value.Length, padding)
                 : span.TrimLength(padding, out span);
 
-            filler.Fill(Whitespace);
+            filler.Fill(WhitespaceUtf16);
             value.CopyTo(span);
 
             writer.Advance(alignment);
@@ -115,13 +116,13 @@ partial class CharBuffer
                         else if (leftAlign)
                         {
                             filler = span.Slice(charsWritten, padding);
-                            filler.Fill(Whitespace);
+                            filler.Fill(WhitespaceUtf16);
                         }
                         else
                         {
                             filler = span.TrimLength(padding, out var rest);
                             span.Slice(0, charsWritten).CopyTo(rest);
-                            filler.Fill(Whitespace);
+                            filler.Fill(WhitespaceUtf16);
                         }
 
                         writer.Advance(alignment);
@@ -140,5 +141,11 @@ partial class CharBuffer
         }
 
         return writtenCount;
+    }
+
+    protected static int EstimateUtf16BufferSize(int literalLength, int formattedCount)
+    {
+        var length = literalLength + formattedCount * CharsPerPlaceholder;
+        return int.CreateSaturating(length);
     }
 }

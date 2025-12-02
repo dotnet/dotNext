@@ -437,7 +437,6 @@ public static partial class Atomic
         /// Determines that write to the location in the memory of
         /// type <typeparamref name="T"/> is atomic.
         /// </summary>
-        /// <typeparam name="T">The type of the value to be written.</typeparam>
         /// <returns><see langword="true"/> if write is atomic; otherwise, <see langword="false"/>.</returns>
         /// <seelaso href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf">Section I.12.6.6.</seelaso>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
