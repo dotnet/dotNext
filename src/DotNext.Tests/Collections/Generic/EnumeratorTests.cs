@@ -118,7 +118,7 @@ public sealed class EnumeratorTests : Test
     public static async Task SkipAsync()
     {
         await using var enumerator = System.Linq.AsyncEnumerable.Range(0, 10).GetAsyncEnumerator(TestToken);
-        True(await enumerator.SkipAsync(8));
+        True(await (enumerator >> 8));
         True(await enumerator.MoveNextAsync());
         Equal(8, enumerator.Current);
         True(await enumerator.MoveNextAsync());
@@ -131,7 +131,7 @@ public sealed class EnumeratorTests : Test
     {
         var range = Enumerable.Range(0, 10);
         using var enumerator = range.GetEnumerator();
-        True(enumerator.Skip(8));
+        True(enumerator >> 8);
         True(enumerator.MoveNext());
         Equal(8, enumerator.Current);
         True(enumerator.MoveNext());

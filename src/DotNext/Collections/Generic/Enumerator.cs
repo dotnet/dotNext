@@ -6,21 +6,27 @@ namespace DotNext.Collections.Generic;
 public static partial class Enumerator
 {
     /// <summary>
-    /// Bypasses a specified number of elements in a sequence.
+    /// Extends <see cref="IEnumerator{T}"/> type.
     /// </summary>
     /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
-    /// <param name="enumerator">Enumerator to modify. Cannot be <see langword="null"/>.</param>
-    /// <param name="count">The number of elements to skip.</param>
-    /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
-    public static bool Skip<T>(this IEnumerator<T> enumerator, int count)
+    extension<T>(IEnumerator<T>)
     {
-        for (; count > 0; count--)
+        /// <summary>
+        /// Bypasses a specified number of elements in a sequence.
+        /// </summary>
+        /// <param name="enumerator">Enumerator to modify. Cannot be <see langword="null"/>.</param>
+        /// <param name="count">The number of elements to skip.</param>
+        /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
+        public static bool operator >> (IEnumerator<T> enumerator, int count)
         {
-            if (!enumerator.MoveNext())
-                return false;
-        }
+            for (; count > 0; count--)
+            {
+                if (!enumerator.MoveNext())
+                    return false;
+            }
 
-        return true;
+            return true;
+        }
     }
 
     /// <summary>
@@ -32,7 +38,7 @@ public static partial class Enumerator
     /// <param name="count">The number of elements to skip.</param>
     /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
     public static bool Skip<TEnumerator, T>(this ref TEnumerator enumerator, int count)
-        where TEnumerator : struct, IEnumerator<T>
+        where TEnumerator : struct, IEnumerator<T>, allows ref struct
     {
         for (; count > 0; count--)
         {
@@ -55,21 +61,30 @@ public static partial class Enumerator
         => new(enumerator, count, leaveOpen);
     
     /// <summary>
-    /// Bypasses a specified number of elements in a sequence.
+    /// Extends <see cref="IAsyncEnumerator{T}"/> type.
     /// </summary>
     /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
-    /// <param name="enumerator">Enumerator to modify. Cannot be <see langword="null"/>.</param>
-    /// <param name="count">The number of elements to skip.</param>
-    /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static async ValueTask<bool> SkipAsync<T>(this IAsyncEnumerator<T> enumerator, int count)
+    extension<T>(IAsyncEnumerator<T> e)
     {
-        for (; count > 0; count--)
-        {
-            if (!await enumerator.MoveNextAsync().ConfigureAwait(false))
-                return false;
-        }
+        /// <summary>
+        /// Bypasses a specified number of elements in a sequence.
+        /// </summary>
+        /// <param name="enumerator">Enumerator to modify. Cannot be <see langword="null"/>.</param>
+        /// <param name="count">The number of elements to skip.</param>
+        /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<bool> operator >> (IAsyncEnumerator<T> enumerator, int count)
+            => enumerator.SkipAsync(count);
 
-        return true;
+        private async ValueTask<bool> SkipAsync(int count)
+        {
+            for (; count > 0; count--)
+            {
+                if (!await e.MoveNextAsync().ConfigureAwait(false))
+                    return false;
+            }
+
+            return true;
+        }
     }
 }
