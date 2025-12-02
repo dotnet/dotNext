@@ -1,12 +1,15 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading.Tasks;
 
+using Lock = System.Threading.Lock;
+
 public partial class ManualResetCompletionSource
 {
-    private protected object SyncRoot => cancellationCallback;
+    private readonly Lock SyncRoot = new();
+
+    private protected Lock.Scope AcquireLock() => SyncRoot.EnterScope();
 
     [Conditional("DEBUG")]
-    private protected void AssertLocked() => Debug.Assert(Monitor.IsEntered(SyncRoot));
+    private protected void AssertLocked() => Debug.Assert(SyncRoot.IsHeldByCurrentThread);
 }

@@ -54,9 +54,9 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        Monitor.Enter(SyncRoot);
+        var scope = AcquireInternalLock();
         var result = TryAcquire(ref manager);
-        Monitor.Exit(SyncRoot);
+        scope.Dispose();
 
         return result;
     }
@@ -79,7 +79,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
         else
         {
             ManualResetCompletionSource? suspendedCaller;
-            lock (SyncRoot)
+            using (AcquireInternalLock())
             {
                 if (manager.Value)
                 {

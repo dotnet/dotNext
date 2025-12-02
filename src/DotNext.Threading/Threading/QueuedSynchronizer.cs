@@ -17,9 +17,11 @@ using Tasks;
 public abstract partial class QueuedSynchronizer : Disposable
 {
     private readonly TaskCompletionSource disposeTask;
+    private readonly System.Threading.Lock syncRoot;
 
     private protected QueuedSynchronizer()
     {
+        syncRoot = new();
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
         waitQueue = new()
         {
@@ -59,8 +61,10 @@ public abstract partial class QueuedSynchronizer : Disposable
         init => concurrencyLimited = value;
     }
 
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private protected object SyncRoot => disposeTask;
+    private protected System.Threading.Lock.Scope AcquireInternalLock() => syncRoot.EnterScope();
+
+    [Conditional("DEBUG")]
+    private protected void AssertInternalLockState() => Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
     /// <summary>
     /// Cancels all suspended callers.
@@ -79,7 +83,7 @@ public abstract partial class QueuedSynchronizer : Disposable
         ExceptionDispatchInfo.SetCurrentStackTrace(exception);
         
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             suspendedCallers = DrainWaitQueue(exception);
         }
@@ -95,7 +99,7 @@ public abstract partial class QueuedSynchronizer : Disposable
         }
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             suspendedCallers = DrainWaitQueue(reason);
         }
@@ -142,7 +146,7 @@ public abstract partial class QueuedSynchronizer : Disposable
     {
         ValueTask result;
 
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             if (this is { IsReadyToDispose: true, IsDisposed: false })
             {

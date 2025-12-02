@@ -81,7 +81,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             result = !manager.Value;
             manager.Value = !autoReset;
@@ -101,9 +101,9 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        Monitor.Enter(SyncRoot);
+        var scope = AcquireInternalLock();
         var result = manager.TryReset();
-        Monitor.Exit(SyncRoot);
+        scope.Dispose();
 
         return result;
     }

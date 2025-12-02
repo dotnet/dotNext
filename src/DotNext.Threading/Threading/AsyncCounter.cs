@@ -82,9 +82,9 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        Monitor.Enter(SyncRoot);
+        var scope = AcquireInternalLock();
         var result = manager.TryReset();
-        Monitor.Exit(SyncRoot);
+        scope.Dispose();
 
         return result;
     }
@@ -141,7 +141,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         Debug.Assert(delta > 0L);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             manager.Increment(delta);
             suspendedCallers = DrainWaitQueue();
@@ -156,7 +156,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         bool result;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             result = manager.TryIncrement(maxValue);
             suspendedCallers = DrainWaitQueue();
@@ -204,9 +204,9 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        Monitor.Enter(SyncRoot);
+        var scope = AcquireInternalLock();
         var result = TryAcquire(ref manager);
-        Monitor.Exit(SyncRoot);
+        scope.Dispose();
 
         return result;
     }

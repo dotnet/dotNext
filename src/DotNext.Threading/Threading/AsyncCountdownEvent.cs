@@ -78,9 +78,9 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     {
         Debug.Assert(signalCount > 0L);
 
-        Monitor.Enter(SyncRoot);
+        var scope = AcquireInternalLock();
         manager.IncrementInitial(signalCount);
-        Monitor.Exit(SyncRoot);
+        scope.Dispose();
     }
 
     private bool TryAddCountCore(long signalCount)
@@ -88,14 +88,14 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         Debug.Assert(signalCount > 0L);
 
         bool result;
-        Monitor.Enter(SyncRoot);
+        var scope = AcquireInternalLock();
 
         if (result = manager.Current is not 0L)
         {
             manager.Increment(signalCount);
         }
 
-        Monitor.Exit(SyncRoot);
+        scope.Dispose();
         return result;
     }
 
@@ -167,7 +167,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             result = manager.Current is 0L;
             manager.Current = manager.Initial;
@@ -198,7 +198,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             result = manager.Current is 0L;
             manager.Current = manager.Initial = count;
@@ -211,7 +211,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
     private bool SignalAndResetCore(out LinkedValueTaskCompletionSource<bool>? suspendedCallers)
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        AssertInternalLockState();
 
         manager.Decrement();
         if (manager.IsLockAllowed)
@@ -275,7 +275,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             if (manager.Current is 0L)
                 throw new InvalidOperationException();

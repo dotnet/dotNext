@@ -40,7 +40,7 @@ partial class QueuedSynchronizer
 
     private IReadOnlyList<object?> GetSuspendedCallersCore()
     {
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             return waitQueue.GetSuspendedCallers();
         }

@@ -29,7 +29,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         bool signaled;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             signaled = DrainWaitQueue(visitor, out suspendedCallers);
         }

@@ -88,7 +88,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     private bool TrySetResult(object? completionData, short? completionToken, ExceptionDispatchInfo? dispatchInfo, out bool resumable)
     {
         bool completed;
-        lock (SyncRoot)
+        using (AcquireLock())
         {
             resumable = (completed = versionAndStatus.CanBeCompleted(completionToken)) && SetResult(dispatchInfo, completionData);
         }

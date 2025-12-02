@@ -108,7 +108,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             suspendedCallers = DrainWaitQueue();
 
@@ -133,7 +133,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             ReleaseCore(context);
             suspendedCallers = DrainWaitQueue();
@@ -159,7 +159,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             return TryAcquireCore(context);
         }
@@ -240,8 +240,6 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
     private bool TryAcquireCore(TContext context)
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-
         if (IsEmptyQueue && CanAcquire(context))
         {
             AcquireCore(context);

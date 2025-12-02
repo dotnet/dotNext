@@ -145,9 +145,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        Monitor.Enter(SyncRoot);
+        var scope = AcquireInternalLock();
         var result = TryAcquire(ref GetLockManager<TManager>());
-        Monitor.Exit(SyncRoot);
+        scope.Dispose();
 
         return result;
     }
@@ -221,7 +221,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             if (state.IsStrongLockAllowed) // nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
@@ -246,7 +246,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             if (state.IsStrongLockAllowed) // nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);

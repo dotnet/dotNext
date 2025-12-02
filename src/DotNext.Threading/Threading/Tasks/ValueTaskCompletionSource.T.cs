@@ -130,7 +130,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     protected internal bool TrySetResult(object? completionData, short? completionToken, in Result<T> result, out bool resumable)
     {
         bool completed;
-        lock (SyncRoot)
+        using (AcquireLock())
         {
             resumable = (completed = versionAndStatus.CanBeCompleted(completionToken)) && SetResult(in result, completionData);
         }

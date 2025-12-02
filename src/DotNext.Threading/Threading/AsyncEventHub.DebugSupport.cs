@@ -33,7 +33,7 @@ public partial class AsyncEventHub
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
         EventGroup result;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             result = new(state);
         }

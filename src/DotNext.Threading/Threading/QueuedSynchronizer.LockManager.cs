@@ -15,7 +15,7 @@ partial class QueuedSynchronizer
     private protected bool TryAcquire<TLockManager>(ref TLockManager manager)
         where TLockManager : struct, ILockManager
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        AssertInternalLockState();
 
         if (IsEmptyQueue && manager.IsLockAllowed)
         {

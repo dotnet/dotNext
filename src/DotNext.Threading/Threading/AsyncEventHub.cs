@@ -95,7 +95,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
         
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             state = default;
         }
@@ -116,7 +116,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         var newState = GetBitMask(eventIndex);
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             result = (state & newState) == UInt128.Zero;
             state = newState;
@@ -142,7 +142,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         var mask = GetBitMask(eventIndex);
         bool result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             result = (state & mask) == UInt128.Zero;
             state |= mask;
@@ -169,7 +169,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         
         EventGroup result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             result = new(events.Mask & ~state);
             state = events.Mask;
@@ -196,7 +196,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 
         EventGroup result;
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             result = new(events.Mask & ~state);
             state |= events.Mask;

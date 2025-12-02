@@ -140,9 +140,9 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
             }
             else if (value)
             {
-                Monitor.Enter(SyncRoot);
+                var scope = AcquireInternalLock();
                 ownerFlag = lockOwnerState ??= new(trackAllValues: false);
-                Monitor.Exit(SyncRoot);
+                scope.Dispose();
 
                 ownerFlag.Value = true;
             }
@@ -297,9 +297,9 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        Monitor.Enter(SyncRoot);
+        var scope = AcquireInternalLock();
         var result = stamp.IsValid(in state) && TryAcquire(ref GetLockManager<WriteLockManager>());
-        Monitor.Exit(SyncRoot);
+        scope.Dispose();
 
         if (result)
         {
@@ -394,7 +394,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         bool result;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             if (state.HasNoReadLocks)
                 throw new SynchronizationLockException();
@@ -414,9 +414,9 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     private bool TryEnter<TLockManager>()
         where TLockManager : struct, ILockManager, IConsumer<WaitNode>
     {
-        Monitor.Enter(SyncRoot);
+        var scope = AcquireInternalLock();
         var result = TryAcquire(ref GetLockManager<TLockManager>());
-        Monitor.Exit(SyncRoot);
+        scope.Dispose();
 
         if (result)
         {
@@ -621,7 +621,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             if (state.IsWriteLockAllowed)
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
@@ -653,7 +653,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             if (state.IsWriteLockAllowed)
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);

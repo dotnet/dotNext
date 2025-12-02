@@ -44,7 +44,7 @@ partial class QueuedSynchronizer
         private object? syncRoot;
         private ISupplier<TimeSpan, CancellationToken, ValueTask>? taskFactory;
 
-        public CancellationTokenOnly(object syncRoot, CancellationToken token)
+        public CancellationTokenOnly(System.Threading.Lock syncRoot, CancellationToken token)
         {
             this.token = token;
             if (token.IsCancellationRequested)
@@ -53,7 +53,7 @@ partial class QueuedSynchronizer
             }
             else
             {
-                Monitor.Enter(this.syncRoot = syncRoot);
+                syncRoot.Enter();
             }
         }
 
@@ -100,10 +100,10 @@ partial class QueuedSynchronizer
     {
         private readonly TimeSpan timeout;
         private readonly CancellationToken token;
-        private object? syncRoot;
+        private System.Threading.Lock? syncRoot;
         private IValueTaskFactory? taskFactory;
 
-        public TimeoutAndCancellationToken(object syncRoot, TimeSpan timeout, CancellationToken token)
+        public TimeoutAndCancellationToken(System.Threading.Lock syncRoot, TimeSpan timeout, CancellationToken token)
         {
             this.timeout = timeout;
             this.token = token;
@@ -115,7 +115,7 @@ partial class QueuedSynchronizer
             {
                 taskFactory = CanceledTaskFactory.Instance;
             }
-            else if (Monitor.TryEnter(syncRoot, timeout))
+            else if (syncRoot.TryEnter(timeout))
             {
                 this.syncRoot = syncRoot;
             }
@@ -142,11 +142,8 @@ partial class QueuedSynchronizer
 
         void IDisposable.Dispose()
         {
-            if (syncRoot is not null)
-            {
-                Monitor.Exit(syncRoot);
-                syncRoot = null;
-            }
+            syncRoot?.Exit();
+            syncRoot = null;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -229,10 +226,10 @@ partial class QueuedSynchronizer
     }
 
     private protected CancellationTokenOnly CreateTaskBuilder(CancellationToken token)
-        => new(SyncRoot, token);
+        => new(syncRoot, token);
 
     private protected TimeoutAndCancellationToken CreateTaskBuilder(TimeSpan timeout, CancellationToken token)
-        => new(SyncRoot, timeout, token);
+        => new(syncRoot, timeout, token);
 
     private void DrainWaitQueue<T, TBuilder>(ref InterruptingTaskBuilder<T, TBuilder> builder, Exception e)
         where T : struct, IEquatable<T>

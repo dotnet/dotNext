@@ -23,7 +23,7 @@ partial class QueuedSynchronizer
 
     private protected LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        AssertInternalLockState();
         
         var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
         var visitor = GetWaitQueue(ref detachedQueue);
@@ -55,7 +55,7 @@ partial class QueuedSynchronizer
 
     private void BackToPool(WaitNode node)
     {
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             pool.Return(node);
         }
@@ -63,9 +63,8 @@ partial class QueuedSynchronizer
 
     private void RemoveAndDrainIfNeeded(WaitNode node)
     {
-        var syncRoot = SyncRoot;
         var suspendedCallers = default(LinkedValueTaskCompletionSource<bool>);
-        Monitor.Enter(syncRoot);
+        syncRoot.Enter();
         try
         {
             suspendedCallers = waitQueue.Remove(node) && node.DrainOnReturn
@@ -74,7 +73,7 @@ partial class QueuedSynchronizer
         }
         finally
         {
-            Monitor.Exit(syncRoot);
+            syncRoot.Exit();
             suspendedCallers?.Unwind();
         }
     }
@@ -84,7 +83,7 @@ partial class QueuedSynchronizer
         where TNode : WaitNode, new()
         where TBuilder : struct, ITaskBuilder<T>
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        AssertInternalLockState();
         Debug.Assert(!builder.IsCompleted);
 
         if (IsDisposingOrDisposed)

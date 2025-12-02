@@ -71,9 +71,9 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 
     private bool TryAcquireCore()
     {
-        Monitor.Enter(SyncRoot);
+        var scope = AcquireInternalLock();
         var result = IsLockHelpByCurrentThread = TryAcquire(ref manager);
-        Monitor.Exit(SyncRoot);
+        scope.Dispose();
 
         return result;
     }
@@ -211,7 +211,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         ManualResetCompletionSource? suspendedCaller;
-        lock (SyncRoot)
+        using (AcquireInternalLock())
         {
             if (!manager.Value)
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);

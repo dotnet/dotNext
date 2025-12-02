@@ -58,7 +58,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void ChangeCount([ConstantExpected] bool increment)
+    private void ChangeCount(bool increment)
     {
         Debug.Assert(Monitor.IsEntered(array));
 
