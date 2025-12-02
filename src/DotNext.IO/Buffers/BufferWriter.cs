@@ -223,6 +223,8 @@ public static class BufferWriter
     public static long Format<T>(this IBufferWriter<byte> writer, T value, in EncodingContext context, LengthFormat? lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, MemoryAllocator<char>? allocator = null)
         where T : ISpanFormattable
     {
+        allocator ??= MemoryAllocator<char>.Default;
+        
         // attempt to allocate char buffer on the stack
         Span<char> charBuffer = stackalloc char[SpanOwner<char>.StackallocThreshold];
         if (!TryFormat(writer, value, charBuffer, in context, lengthFormat, format, provider, out var bytesWritten))

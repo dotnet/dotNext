@@ -193,7 +193,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
         if (options.UseTemporaryFile && !Directory.Exists(options.Path))
             throw new DirectoryNotFoundException(ExceptionMessages.DirectoryNotFound(options.Path));
 
-        allocator = options.MemoryAllocator.DefaultIfNull;
+        allocator = options.MemoryAllocator;
         var memoryThreshold = options.MemoryThreshold;
         if (options.InitialCapacity > 0)
         {

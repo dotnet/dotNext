@@ -178,7 +178,7 @@ public static partial class PipeExtensions
         MemoryOwner<char> result;
         if (length > 0)
         {
-            result = allocator.AllocateAtLeast(context.Encoding.GetMaxCharCount(length));
+            result = allocator.DefaultIfNull.AllocateAtLeast(context.Encoding.GetMaxCharCount(length));
             result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(reader, new(in context, length, result.Memory), token).ConfigureAwait(false));
         }
         else
@@ -462,7 +462,7 @@ public static partial class PipeExtensions
         MemoryOwner<byte> result;
         if (length > 0)
         {
-            result = allocator.AllocateExactly(length);
+            result = allocator.DefaultIfNull.AllocateExactly(length);
             await ReadExactlyAsync(reader, result.Memory, token).ConfigureAwait(false);
         }
         else

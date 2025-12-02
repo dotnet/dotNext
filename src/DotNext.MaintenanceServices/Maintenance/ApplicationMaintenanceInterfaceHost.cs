@@ -10,7 +10,6 @@ namespace DotNext.Maintenance;
 
 using Buffers;
 using Collections.Specialized;
-using Runtime.CompilerServices;
 using Security.Principal;
 using static IO.TextStreamExtensions;
 using static Runtime.InteropServices.UnixDomainSocketInterop;
@@ -76,18 +75,18 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
     /// <summary>
     /// Gets or sets allocator for the buffer of bytes.
     /// </summary>
-    public MemoryAllocator<byte>? ByteBufferAllocator
+    public MemoryAllocator<byte> ByteBufferAllocator
     {
-        get;
+        get => field.DefaultIfNull;
         init;
     }
 
     /// <summary>
     /// Gets or sets allocator for the buffer of characters.
     /// </summary>
-    public MemoryAllocator<char>? CharBufferAllocator
+    public MemoryAllocator<char> CharBufferAllocator
     {
-        get;
+        get => field.DefaultIfNull;
         init;
     }
 

@@ -10,9 +10,6 @@ public class LogEntryBufferingOptions
 {
     private const int DefaultMemoryThreshold = 32768;
     private const int DefaultFileBufferSize = 4096;
-    private string? destinationPath;
-    private int memoryThreshold = DefaultMemoryThreshold;
-    private int fileBufferSize = DefaultFileBufferSize;
 
     /// <summary>
     /// Gets or sets full path to the directory used as temporary storage of
@@ -20,8 +17,8 @@ public class LogEntryBufferingOptions
     /// </summary>
     public string TempPath
     {
-        get => destinationPath is { Length: > 0 } ? destinationPath : Path.GetTempPath();
-        set => destinationPath = value;
+        get => field is { Length: > 0 } ? field : Path.GetTempPath();
+        set;
     }
 
     /// <summary>
@@ -30,9 +27,9 @@ public class LogEntryBufferingOptions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
     public int BufferSize
     {
-        get => fileBufferSize;
-        set => fileBufferSize = value > 0 ? fileBufferSize : throw new ArgumentOutOfRangeException(nameof(value));
-    }
+        get;
+        set => field = value > 0 ? field : throw new ArgumentOutOfRangeException(nameof(value));
+    } = DefaultFileBufferSize;
 
     /// <summary>
     /// The maximum size of log entry that can be stored in-memory without saving the content to the disk.
@@ -40,16 +37,16 @@ public class LogEntryBufferingOptions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
     public int MemoryThreshold
     {
-        get => memoryThreshold;
-        set => memoryThreshold = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-    }
+        get;
+        set => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    } = DefaultMemoryThreshold;
 
     /// <summary>
     /// Gets or sets memory allocator.
     /// </summary>
-    public MemoryAllocator<byte>? MemoryAllocator
+    public MemoryAllocator<byte> MemoryAllocator
     {
-        get;
+        get => field.DefaultIfNull;
         set;
     }
 

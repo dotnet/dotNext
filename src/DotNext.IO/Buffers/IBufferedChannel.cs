@@ -10,7 +10,7 @@ public interface IBufferedChannel : IResettable, IDisposable
     /// <summary>
     /// Gets buffer allocator.
     /// </summary>
-    MemoryAllocator<byte>? Allocator { get; init; }
+    MemoryAllocator<byte> Allocator { get; init; }
     
     /// <summary>
     /// Gets the maximum size of the internal buffer.

@@ -56,10 +56,10 @@ public partial class FileReader : Disposable, IBufferedReader
     }
 
     /// <inheritdoc cref="IBufferedChannel.Allocator"/>
-    public MemoryAllocator<byte>? Allocator
+    public MemoryAllocator<byte> Allocator
     {
         get;
-        init;
+        init => field = value.DefaultIfNull;
     }
 
     /// <summary>

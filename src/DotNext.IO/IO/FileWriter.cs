@@ -54,10 +54,10 @@ public partial class FileWriter : Disposable, IFlushable, IBufferedWriter
     }
     
     /// <inheritdoc cref="IBufferedChannel.Allocator"/>
-    public MemoryAllocator<byte>? Allocator
+    public MemoryAllocator<byte> Allocator
     {
         get;
-        init;
+        init => field = value.DefaultIfNull;
     }
 
     /// <summary>

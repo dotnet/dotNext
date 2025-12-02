@@ -11,7 +11,7 @@ internal sealed class DecodingTextReader : TextBufferReader
 {
     private readonly Encoding encoding;
     private readonly Decoder decoder;
-    private readonly MemoryAllocator<char>? allocator;
+    private readonly MemoryAllocator<char> allocator;
     private ReadOnlySequence<byte> sequence;
     private MemoryOwner<char> buffer;
     private int charPos, charLen;
@@ -19,12 +19,12 @@ internal sealed class DecodingTextReader : TextBufferReader
     internal DecodingTextReader(ReadOnlySequence<byte> sequence, Encoding encoding, int bufferSize, MemoryAllocator<char>? allocator)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
+        ArgumentNullException.ThrowIfNull(encoding);
 
-        this.encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
+        this.encoding = encoding;
         decoder = encoding.GetDecoder();
         this.sequence = sequence;
-        this.allocator = allocator;
-        buffer = allocator.AllocateAtLeast(bufferSize);
+        buffer = (this.allocator = allocator.DefaultIfNull).AllocateAtLeast(bufferSize);
     }
 
     private Span<char> Buffer => buffer.Span;

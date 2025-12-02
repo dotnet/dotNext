@@ -41,11 +41,6 @@ public class HttpPeerConfiguration : PeerConfiguration, IPeerConfiguration
     }
 
     /// <summary>
-    /// Gets or sets allocator for the internal buffer.
-    /// </summary>
-    public MemoryAllocator<byte>? Allocator { get; set; }
-
-    /// <summary>
     /// Gets or sets the address of the contact node.
     /// </summary>
     public Uri? ContactNode

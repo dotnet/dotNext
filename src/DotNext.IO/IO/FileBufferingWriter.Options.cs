@@ -52,19 +52,17 @@ public partial class FileBufferingWriter
     {
         internal const int DefaultMemoryThreshold = 32768;
         internal const int DefaultFileBufferSize = 4096;
-        private readonly int memoryThreshold, initialCapacity;
         private readonly string? path;
         private readonly bool keepFileAlive;
         private readonly int? fileBufferSize;
-        private readonly bool synchronousIO;
 
         /// <summary>
         /// The maximum amount of memory in bytes to allocate before switching to a file on disk.
         /// </summary>
         public int MemoryThreshold
         {
-            get => memoryThreshold is 0 ? DefaultMemoryThreshold : memoryThreshold;
-            init => memoryThreshold = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            get => field is 0 ? DefaultMemoryThreshold : field;
+            init => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         /// <summary>
@@ -72,16 +70,16 @@ public partial class FileBufferingWriter
         /// </summary>
         public int InitialCapacity
         {
-            get => initialCapacity;
-            init => initialCapacity = (uint)value < (uint)MemoryThreshold ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            get;
+            init => field = (uint)value < (uint)MemoryThreshold ? value : throw new ArgumentOutOfRangeException(nameof(value));
         }
 
         /// <summary>
         /// Gets or sets the allocator of internal buffer.
         /// </summary>
-        public MemoryAllocator<byte>? MemoryAllocator
+        public MemoryAllocator<byte> MemoryAllocator
         {
-            get;
+            get => field.DefaultIfNull;
             init;
         }
 
@@ -110,7 +108,7 @@ public partial class FileBufferingWriter
         }
 
         /// <summary>
-        /// To enable asynchronous I/O operations.
+        /// Enables asynchronous I/O operations.
         /// </summary>
         /// <remarks>
         /// In asynchronous mode you should use asynchronous methods for writing. Synchronous
@@ -119,8 +117,8 @@ public partial class FileBufferingWriter
         /// </remarks>
         public bool AsyncIO
         {
-            get => !synchronousIO;
-            init => synchronousIO = !value;
+            get => !field;
+            init => field = !value;
         }
 
         /// <summary>

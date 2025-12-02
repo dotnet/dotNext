@@ -20,7 +20,7 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
     private const string UserAgent = "HyParView.NET";
     private readonly IHttpMessageHandlerFactory? handlerFactory;
     private readonly IPeerLifetime? lifetimeService;
-    private readonly MemoryAllocator<byte>? allocator;
+    private readonly MemoryAllocator<byte> allocator;
     private readonly string clientHandlerName;
     private readonly TimeSpan requestTimeout;
     private readonly HttpProtocolVersion protocolVersion;
@@ -46,7 +46,7 @@ internal sealed partial class HttpPeerController : PeerController, IHostedServic
         // configuration
         clientHandlerName = configuration.Value.ClientHandlerName;
         requestTimeout = configuration.Value.RequestTimeout;
-        this.allocator = configuration.Value.Allocator ?? allocator;
+        this.allocator = allocator.DefaultIfNull;
         protocolVersion = configuration.Value.ProtocolVersion;
         protocolVersionPolicy = configuration.Value.ProtocolVersionPolicy;
         contactNode = configuration.Value.ContactNode is { IsAbsoluteUri: true } uri ? new(uri) : null;
