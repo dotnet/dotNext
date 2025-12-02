@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -224,7 +225,7 @@ file static class Features
 {
     private const string UseNativeAllocationFeature = "DotNext.Buffers.NativeAllocation";
 
-    // TODO: [FeatureSwitchDefinition(EnableNativeAllocationFeature)]
+    [FeatureSwitchDefinition(UseNativeAllocationFeature)]
     internal static bool UseNativeAllocation
         => LibraryFeature.IsSupported(UseNativeAllocationFeature);
     
