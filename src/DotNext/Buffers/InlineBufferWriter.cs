@@ -12,7 +12,7 @@ internal struct InlineBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowable
     private MemoryOwner<T> buffer;
     private int position;
 
-    long IGrowableBuffer<T>.WrittenCount => WrittenCount;
+    readonly long IGrowableBuffer<T>.WrittenCount => WrittenCount;
 
     public int Capacity
     {
