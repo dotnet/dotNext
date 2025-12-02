@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks.Sources;
 using Debug = System.Diagnostics.Debug;
 
@@ -214,20 +213,6 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         var source = new LinkedTaskCompletionSource(userData);
         source.LinkTo(this, version);
         return source;
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct OperationCanceledExceptionFactory : ISupplier<OperationCanceledException>
-    {
-        private readonly CancellationToken token;
-
-        internal OperationCanceledExceptionFactory(CancellationToken token) => this.token = token;
-
-        OperationCanceledException ISupplier<OperationCanceledException>.Invoke()
-            => new(token);
-
-        public static implicit operator OperationCanceledExceptionFactory(CancellationToken token)
-            => new(token);
     }
 
     private sealed class LinkedTaskCompletionSource : TaskCompletionSource
