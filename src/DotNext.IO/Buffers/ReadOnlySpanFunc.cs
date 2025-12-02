@@ -10,4 +10,6 @@ namespace DotNext.Buffers;
 /// <param name="span">A read-only span of objects.</param>
 /// <param name="arg">A state object.</param>
 /// <returns>The value returned by the delegate.</returns>
-public delegate TResult ReadOnlySpanFunc<T, in TArg, out TResult>(ReadOnlySpan<T> span, TArg arg);
+public delegate TResult ReadOnlySpanFunc<T, in TArg, out TResult>(ReadOnlySpan<T> span, TArg arg)
+    where TArg : allows ref struct
+    where TResult : allows ref struct;
