@@ -39,12 +39,20 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// <summary>
     /// Gets the type of the value.
     /// </summary>
-    public Type TargetType => targetType switch
+    public Type TargetType
     {
-        null => typeof(void),
-        { IsByRef: true } t when t.GetElementType() is { } elementType => elementType,
-        { } t => t,
-    };
+        get
+        {
+            return Infer(targetType);
+            
+            static Type Infer(Type? targetType) => targetType switch
+            {
+                null => typeof(void),
+                { IsByRef: true } => targetType.GetElementType()!,
+                _ => targetType,
+            };
+        }
+    }
 
     /// <summary>
     /// Gets a value indicating that the underlying value can be mutated.
@@ -96,14 +104,19 @@ public readonly ref struct Variant : IEquatable<Variant>
     public ref readonly T Immutable<T>()
         where T : allows ref struct
     {
-        CheckType(typeof(T));
+        CheckType(TargetType, typeof(T));
         return ref Unsafe.As<byte, T>(ref location);
-    }
 
-    private void CheckType(Type actual)
-    {
-        if (actual != TargetType)
+        static void CheckType(Type? expected, Type actual)
+        {
+            if (expected is not null &&
+                expected.IsByRef
+                    ? expected.GetElementType() == actual
+                    : expected == actual)
+                return;
+
             throw new InvalidCastException();
+        }
     }
 
     /// <summary>
@@ -116,8 +129,19 @@ public readonly ref struct Variant : IEquatable<Variant>
     public ref T Mutable<T>()
         where T : allows ref struct
     {
-        CheckMutableType(typeof(T));
+        CheckMutableType(targetType, typeof(T));
         return ref Unsafe.As<byte, T>(ref location);
+
+        static void CheckMutableType(Type? expected, Type actual)
+        {
+            if (expected is not null &&
+                expected.IsByRef
+                    ? expected.GetElementType() == actual
+                    : expected == actual)
+                return;
+
+            throw new InvalidCastException();
+        }
     }
 
     /// <summary>
@@ -132,21 +156,6 @@ public readonly ref struct Variant : IEquatable<Variant>
         { IsValueType: true } vt => RuntimeHelpers.Box(ref location, vt.TypeHandle),
         _ => Unsafe.As<byte, object>(ref location)
     };
-
-    private void CheckMutableType(Type actual)
-    {
-        switch (targetType)
-        {
-            case null:
-                goto default;
-            case { IsByRef: true } t when actual == t.GetElementType():
-                break;
-            case { } t when actual == t:
-                break;
-            default:
-                throw new InvalidCastException();
-        }
-    }
 
     /// <summary>
     /// Checks whether this container references the same value and type as <paramref name="other"/>.
