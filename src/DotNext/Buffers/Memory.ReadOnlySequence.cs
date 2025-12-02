@@ -203,7 +203,7 @@ public static partial class Memory
         /// Copies the contents from the source sequence into a destination span.
         /// </summary>
         /// <param name="destination">Destination memory.</param>
-        /// <param name="consumed">The position within <paramref name="source"/> that represents the end of <paramref name="destination"/>.</param>
+        /// <param name="consumed">The position within the receiver that represents the end of <paramref name="destination"/>.</param>
         /// <returns>The number of copied elements.</returns>
         public int CopyTo(Span<T> destination, out SequencePosition consumed)
         {

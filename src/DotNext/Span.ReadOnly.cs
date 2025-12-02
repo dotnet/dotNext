@@ -237,7 +237,7 @@ partial class Span
         /// Creates buffered copy of the memory block.
         /// </summary>
         /// <param name="allocator">Optional buffer allocator.</param>
-        /// <returns>The copy of the elements from <paramref name="span"/>.</returns>
+        /// <returns>The copy of the elements from the source span.</returns>
         public MemoryOwner<T> Copy(MemoryAllocator<T>? allocator = null)
         {
             if (span.IsEmpty)
@@ -316,7 +316,7 @@ partial class Span
         /// </summary>
         /// <param name="count">The number of elements to take.</param>
         /// <returns>The span containing <paramref name="count"/> elements.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of <paramref name="source"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of the source span.</exception>
         public ReadOnlySpan<T> Advance(int count)
         {
             ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)source.Length, nameof(count));
@@ -330,7 +330,7 @@ partial class Span
         /// Takes the first element and adjusts the span.
         /// </summary>
         /// <returns>The reference to the first element in the span.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="source"/> is empty.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The source span is empty.</exception>
         public ref readonly T Advance()
         {
             ArgumentOutOfRangeException.ThrowIfZero(source.Length, nameof(source));

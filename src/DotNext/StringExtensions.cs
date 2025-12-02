@@ -67,7 +67,7 @@ public static class StringExtensions
         /// This method if useful for .NET languages without syntactic support of ranges.
         /// </remarks>
         /// <param name="range">The range of substring.</param>
-        /// <returns>The part of <paramref name="str"/> extracted according to the supplied range.</returns>
+        /// <returns>The part of the receiver string extracted according to the supplied range.</returns>
         public string Substring(Range range)
         {
             var (start, length) = range.GetOffsetAndLength(str.Length);

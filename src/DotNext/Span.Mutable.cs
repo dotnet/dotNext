@@ -212,9 +212,9 @@ partial class Span
         /// <summary>
         /// Moves the range within the span to the specified index.
         /// </summary>
-        /// <param name="range">The range of elements within <paramref name="span"/> to move.</param>
+        /// <param name="range">The range of elements within the source span to move.</param>
         /// <param name="destinationIndex">The index of the element before which <paramref name="range"/> of elements will be placed.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="destinationIndex"/> is not a valid index within <paramref name="span"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="destinationIndex"/> is not a valid index within the source span.</exception>
         public void Move(Range range, Index destinationIndex)
         {
             var (sourceIndex, length) = range.GetOffsetAndLength(span.Length);
@@ -299,14 +299,13 @@ partial class Span
         /// <summary>
         /// Swaps contents of the two spans.
         /// </summary>
-        /// <param name="y">The second span.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The length of <paramref name="y"/> is not of the same length as <paramref name="span"/>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="span"/> overlaps with <paramref name="y"/>.</exception>
-        public void Swap(Span<T> y)
+        /// <param name="other">The second span.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The length of <paramref name="other"/> is not of the same length as the source span.</exception>
+        public void Swap(Span<T> other)
         {
-            ArgumentOutOfRangeException.ThrowIfNotEqual(span.Length, y.Length, nameof(y));
+            ArgumentOutOfRangeException.ThrowIfNotEqual(span.Length, other.Length, nameof(other));
 
-            SwapCore(span, y);
+            SwapCore(span, other);
         }
     }
     
@@ -322,7 +321,7 @@ partial class Span
         /// </summary>
         /// <param name="count">The number of elements to take.</param>
         /// <returns>The span containing <paramref name="count"/> elements.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of <paramref name="source"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of the source span.</exception>
         public Span<T> Advance(int count)
         {
             ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)source.Length, nameof(count));
@@ -336,7 +335,7 @@ partial class Span
         /// Takes the first element and adjusts the span.
         /// </summary>
         /// <returns>The reference to the first element in the span.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="source"/> is empty.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The source span is empty.</exception>
         public ref T Advance()
         {
             ArgumentOutOfRangeException.ThrowIfZero(source.Length, nameof(source));

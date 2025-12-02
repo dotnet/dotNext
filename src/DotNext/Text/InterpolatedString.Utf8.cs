@@ -15,6 +15,8 @@ public static partial class StringInterpolation
     /// Formats interpolated string as a rented buffer of characters.
     /// </summary>
     /// <param name="allocator">The allocator of the interpolated string.</param>
+    /// <param name="encoder">The encoding context.</param>
+    /// <param name="buffer">The preallocated buffer to be used for placing characters during encoding.</param>
     /// <param name="provider">Optional formatting provider to be applied for each interpolated string argument.</param>
     /// <param name="handler">The interpolated string handler.</param>
     /// <returns>A buffer containing formatted string.</returns>
@@ -27,6 +29,8 @@ public static partial class StringInterpolation
     /// Formats interpolated string as a rented buffer of characters.
     /// </summary>
     /// <param name="allocator">The allocator of the interpolated string.</param>
+    /// <param name="encoder">The encoding context.</param>
+    /// <param name="buffer">The preallocated buffer to be used for placing characters during encoding.</param>
     /// <param name="handler">The interpolated string handler.</param>
     /// <returns>A buffer containing formatted string.</returns>
     public static MemoryOwner<byte> Interpolate(MemoryAllocator<byte>? allocator, Encoder encoder, Span<char> buffer,

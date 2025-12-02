@@ -16,7 +16,7 @@ public partial class DelegateHelpers
         /// <summary>
         /// Invokes the action without throwing the exception.
         /// </summary>
-        /// <returns>The exception caused by <paramref name="action"/>; or <see langword="null"/>, if the delegate is called successfully.</returns>
+        /// <returns>The exception caused by the action; or <see langword="null"/>, if the delegate is called successfully.</returns>
         public Exception? TryInvoke()
         {
             var result = default(Exception);
@@ -72,8 +72,8 @@ public partial class DelegateHelpers
         /// <summary>
         /// Converts action to async delegate.
         /// </summary>
-        /// <returns>The asynchronous function that wraps <paramref name="action"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
+        /// <returns>The asynchronous function that wraps the action.</returns>
+        /// <exception cref="ArgumentNullException">The receiver is <see langword="null"/>.</exception>
         public Func<CancellationToken, ValueTask> ToAsync()
         {
             ArgumentNullException.ThrowIfNull(action);
@@ -116,7 +116,7 @@ public partial class DelegateHelpers
         /// Invokes the action without throwing the exception.
         /// </summary>
         /// <param name="arg">The first action argument.</param>
-        /// <returns>The exception caused by <paramref name="action"/>; or <see langword="null"/>, if the delegate is called successfully.</returns>
+        /// <returns>The exception caused by the action; or <see langword="null"/>, if the delegate is called successfully.</returns>
         public Exception? TryInvoke(T arg)
         {
             var result = default(Exception);
@@ -172,8 +172,8 @@ public partial class DelegateHelpers
         /// <summary>
         /// Converts action to async delegate.
         /// </summary>
-        /// <returns>The asynchronous function that wraps <paramref name="action"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
+        /// <returns>The asynchronous function that wraps the action.</returns>
+        /// <exception cref="ArgumentNullException">The receiver is <see langword="null"/>.</exception>
         public Func<T, CancellationToken, ValueTask> ToAsync()
         {
             ArgumentNullException.ThrowIfNull(action);
@@ -232,7 +232,7 @@ public partial class DelegateHelpers
         /// </summary>
         /// <param name="arg1">The first action argument.</param>
         /// <param name="arg2">The second action argument.</param>
-        /// <returns>The exception caused by <paramref name="action"/>; or <see langword="null"/>, if the delegate is called successfully.</returns>
+        /// <returns>The exception caused by the action; or <see langword="null"/>, if the delegate is called successfully.</returns>
         public Exception? TryInvoke(T1 arg1, T2 arg2)
         {
             var result = default(Exception);
@@ -288,8 +288,8 @@ public partial class DelegateHelpers
         /// <summary>
         /// Converts action to async delegate.
         /// </summary>
-        /// <returns>The asynchronous function that wraps <paramref name="action"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
+        /// <returns>The asynchronous function that wraps the action.</returns>
+        /// <exception cref="ArgumentNullException">The receiver is <see langword="null"/>.</exception>
         public Func<T1, T2, CancellationToken, ValueTask> ToAsync()
         {
             ArgumentNullException.ThrowIfNull(action);
@@ -339,7 +339,7 @@ public partial class DelegateHelpers
         /// <param name="arg1">The first action argument.</param>
         /// <param name="arg2">The second action argument.</param>
         /// <param name="arg3">The third action argument.</param>
-        /// <returns>The exception caused by <paramref name="action"/>; or <see langword="null"/>, if the delegate is called successfully.</returns>
+        /// <returns>The exception caused by the action; or <see langword="null"/>, if the delegate is called successfully.</returns>
         public Exception? TryInvoke(T1 arg1, T2 arg2, T3 arg3)
         {
             var result = default(Exception);
@@ -395,8 +395,8 @@ public partial class DelegateHelpers
         /// <summary>
         /// Converts action to async delegate.
         /// </summary>
-        /// <returns>The asynchronous function that wraps <paramref name="action"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="action"/> is <see langword="null"/>.</exception>
+        /// <returns>The asynchronous function that wraps the action.</returns>
+        /// <exception cref="ArgumentNullException">The receiver is <see langword="null"/>.</exception>
         public Func<T1, T2, T3, CancellationToken, ValueTask> ToAsync()
         {
             ArgumentNullException.ThrowIfNull(action);
@@ -449,7 +449,7 @@ public partial class DelegateHelpers
         /// <param name="arg2">The second action argument.</param>
         /// <param name="arg3">The third action argument.</param>
         /// <param name="arg4">The fourth action argument.</param>
-        /// <returns>The exception caused by <paramref name="action"/>; or <see langword="null"/>, if the delegate is called successfully.</returns>
+        /// <returns>The exception caused by the action; or <see langword="null"/>, if the delegate is called successfully.</returns>
         public Exception? TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
             var result = default(Exception);
@@ -526,7 +526,7 @@ public partial class DelegateHelpers
         /// <param name="arg3">The third action argument.</param>
         /// <param name="arg4">The fourth action argument.</param>
         /// <param name="arg5">The fifth action argument.</param>
-        /// <returns>The exception caused by <paramref name="action"/>; or <see langword="null"/>, if the delegate is called successfully.</returns>
+        /// <returns>The exception caused by the action; or <see langword="null"/>, if the delegate is called successfully.</returns>
         public Exception? TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
             var result = default(Exception);
@@ -607,7 +607,7 @@ public partial class DelegateHelpers
         /// <param name="arg4">The fourth action argument.</param>
         /// <param name="arg5">The fifth action argument.</param>
         /// <param name="arg6">The sixth action argument.</param>
-        /// <returns>The exception caused by <paramref name="action"/>; or <see langword="null"/>, if the delegate is called successfully.</returns>
+        /// <returns>The exception caused by the action; or <see langword="null"/>, if the delegate is called successfully.</returns>
         public Exception? TryInvoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4,
             T5 arg5, T6 arg6)
         {

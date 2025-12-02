@@ -18,8 +18,8 @@ partial class DelegateHelpers
         /// <summary>
         /// Converts function to async delegate.
         /// </summary>
-        /// <returns>The asynchronous function that wraps <paramref name="func"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
+        /// <returns>The asynchronous function that wraps the function.</returns>
+        /// <exception cref="ArgumentNullException">The receiver is <see langword="null"/>.</exception>
         public Func<CancellationToken, ValueTask<TResult>> ToAsync()
         {
             ArgumentNullException.ThrowIfNull(func);
@@ -95,8 +95,8 @@ partial class DelegateHelpers
         /// <summary>
         /// Creates a delegate that hides the return value.
         /// </summary>
-        /// <returns>The action that invokes the same method as <paramref name="func"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
+        /// <returns>The action that invokes the same method as the function.</returns>
+        /// <exception cref="ArgumentNullException">The receiver is <see langword="null"/>.</exception>
         public Action HideReturnValue()
         {
             ArgumentNullException.ThrowIfNull(func);
@@ -156,8 +156,8 @@ partial class DelegateHelpers
         /// <summary>
         /// Converts function to async delegate.
         /// </summary>
-        /// <returns>The asynchronous function that wraps <paramref name="func"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
+        /// <returns>The asynchronous function that wraps the function.</returns>
+        /// <exception cref="ArgumentNullException">The receiver is <see langword="null"/>.</exception>
         public Func<T, CancellationToken, ValueTask<TResult>> ToAsync()
         {
             ArgumentNullException.ThrowIfNull(func);
@@ -238,8 +238,8 @@ partial class DelegateHelpers
         /// <summary>
         /// Creates a delegate that hides the return value.
         /// </summary>
-        /// <returns>The action that invokes the same method as <paramref name="func"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
+        /// <returns>The action that invokes the same method as the function.</returns>
+        /// <exception cref="ArgumentNullException">The receiver is <see langword="null"/>.</exception>
         public  Action<T> HideReturnValue()
         {
             ArgumentNullException.ThrowIfNull(func);
@@ -405,8 +405,8 @@ partial class DelegateHelpers
         /// <summary>
         /// Converts function to async delegate.
         /// </summary>
-        /// <returns>The asynchronous function that wraps <paramref name="func"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
+        /// <returns>The asynchronous function that wraps the function.</returns>
+        /// <exception cref="ArgumentNullException">The receiver is <see langword="null"/>.</exception>
         public Func<T1, T2, CancellationToken, ValueTask<TResult>> ToAsync()
         {
             ArgumentNullException.ThrowIfNull(func);

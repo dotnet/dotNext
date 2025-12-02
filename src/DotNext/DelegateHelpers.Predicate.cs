@@ -14,8 +14,8 @@ partial class DelegateHelpers
         /// <summary>
         /// Converts function to async delegate.
         /// </summary>
-        /// <returns>The asynchronous function that wraps <paramref name="predicate"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="predicate"/> is <see langword="null"/>.</exception>
+        /// <returns>The asynchronous function that wraps the predicate.</returns>
+        /// <exception cref="ArgumentNullException">The receiver is <see langword="null"/>.</exception>
         public Func<T, CancellationToken, ValueTask<bool>> ToAsync()
         {
             ArgumentNullException.ThrowIfNull(predicate);

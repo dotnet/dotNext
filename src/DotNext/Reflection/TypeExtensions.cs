@@ -20,7 +20,7 @@ public static class TypeExtensions
         /// <summary>
         /// Returns read-only collection of base types and, optionally, all implemented interfaces.
         /// </summary>
-        /// <param name="includeTopLevel"><see langword="true"/> to return <paramref name="type"/> as first element in the collection.</param>
+        /// <param name="includeTopLevel"><see langword="true"/> to return the top-level type as the first element in the collection.</param>
         /// <param name="includeInterfaces"><see langword="true"/> to include implemented interfaces; <see langword="false"/> to return inheritance hierarchy only.</param>
         /// <returns>Read-only collection of base types and, optionally, all implemented interfaces.</returns>
         public IEnumerable<Type> GetBaseTypes(bool includeTopLevel = false, bool includeInterfaces = false)
@@ -149,8 +149,8 @@ public static class TypeExtensions
         /// <param name="obj">The object to be cast.</param>
         /// <returns>The object after casting, or <see langword="null"/> if <paramref name="obj"/> is <see langword="null"/>.</returns>
         /// <exception cref="InvalidCastException">
-        /// If the object is not <see langword="null"/> and is not assignable to the <paramref name="type"/>;
-        /// or if object is <see langword="null"/> and <paramref name="type"/> is value type.
+        /// If the object is not <see langword="null"/> and is not assignable to the expected type;
+        /// or if object is <see langword="null"/> and the type is value type.
         /// </exception>
         [return: NotNullIfNotNull(nameof(obj))]
         public object? Cast(object? obj)
@@ -165,7 +165,7 @@ public static class TypeExtensions
         /// Indicates that object of one type can be implicitly converted into another without boxing.
         /// </summary>
         /// <param name="from">The type check.</param>
-        /// <returns><see langword="true"/> if <paramref name="from"/> is implicitly convertible into <paramref name="to"/> without boxing.</returns>
+        /// <returns><see langword="true"/> if <paramref name="from"/> is implicitly convertible to the receiver type without boxing.</returns>
         /// <seealso cref="Type.IsAssignableFrom(Type)"/>
         /// <example>
         /// <code>
