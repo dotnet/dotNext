@@ -123,7 +123,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     {
         ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
         
-        if (!extraBuffer.IsEmpty)
+        if (extraBuffer.Length > 0)
         {
             // no need to copy initial buffer
             EnsureExtraBufferSize(sizeHint);
@@ -144,7 +144,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         Debug.Assert(sizeHint >= 0);
 
         Span<T> result;
-        if (!extraBuffer.IsEmpty)
+        if (extraBuffer.Length > 0)
         {
             // no need to copy initial buffer
             EnsureExtraBufferSize(sizeHint);
@@ -214,7 +214,7 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
     /// <exception cref="OverflowException">The size of the internal buffer becomes greater than <see cref="int.MaxValue"/>.</exception>
     public void Write(scoped ReadOnlySpan<T> input)
     {
-        if (!input.IsEmpty)
+        if (input.Length > 0)
         {
             input.CopyTo(InternalGetSpan(input.Length));
             position += input.Length;

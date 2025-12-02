@@ -21,4 +21,23 @@ public static partial class PipeExtensions
 
         return new DuplexStream(pipe, leaveInputOpen, leaveOutputOpen);
     }
+
+    /// <summary>
+    /// Extends <see cref="IAsyncBinaryReader"/> type.
+    /// </summary>
+    extension(IAsyncBinaryReader)
+    {
+        /// <summary>
+        /// Creates default implementation of binary reader for the specified pipe reader.
+        /// </summary>
+        /// <remarks>
+        /// It is recommended to use extension methods from <see cref="Pipelines.PipeExtensions"/> class
+        /// for decoding data from the stream. This method is intended for situation
+        /// when you need an object implementing <see cref="IAsyncBinaryReader"/> interface.
+        /// </remarks>
+        /// <param name="reader">The pipe reader.</param>
+        /// <returns>The binary reader.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="reader"/> is <see langword="null"/>.</exception>
+        public static IAsyncBinaryReader Create(PipeReader reader) => new PipeBinaryReader(reader);
+    }
 }

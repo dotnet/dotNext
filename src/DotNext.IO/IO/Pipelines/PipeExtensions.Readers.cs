@@ -199,7 +199,7 @@ partial class PipeExtensions
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(this PipeReader reader, DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer, CancellationToken token = default)
-        => buffer.IsEmpty ? IAsyncEnumerable<ReadOnlyMemory<char>>.Throw(new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer))) : DecodeAsync(reader, context.GetDecoder(), lengthFormat, buffer, token);
+        => buffer.IsEmpty ? IAsyncEnumerable<ReadOnlyMemory<char>>.Throw(ArgumentException.BufferTooSmall(nameof(buffer))) : DecodeAsync(reader, context.GetDecoder(), lengthFormat, buffer, token);
 
     private static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(PipeReader reader, Decoder decoder, LengthFormat lengthFormat, Memory<char> buffer, [EnumeratorCancellation] CancellationToken token = default)
     {

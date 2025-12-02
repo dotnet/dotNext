@@ -39,7 +39,7 @@ public partial struct Base64Encoder
             EncodeToUtf8Core(tempBuffer.WrittenSpan, ref chars, bytes.IsEmpty && flush);
         }
 
-        if (bytes.IsEmpty is false)
+        if (bytes.Length > 0)
         {
             EncodeToUtf8Core(bytes, ref chars, flush);
         }

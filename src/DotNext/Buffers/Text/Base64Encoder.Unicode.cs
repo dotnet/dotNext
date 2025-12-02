@@ -42,7 +42,7 @@ public partial struct Base64Encoder
             EncodeToUtf16Core(tempBuffer.WrittenSpan, ref chars, bytes.IsEmpty && flush);
         }
 
-        if (bytes.IsEmpty is false)
+        if (bytes.Length > 0)
         {
             EncodeToUtf16Core(bytes, ref chars, flush);
         }

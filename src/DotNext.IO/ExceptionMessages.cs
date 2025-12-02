@@ -11,8 +11,6 @@ internal static class ExceptionMessages
 {
     private static readonly ResourceManager Resources = new("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
-    internal static string BufferTooSmall => (string)Resources.Get();
-
     internal static string StreamNotWritable => (string)Resources.Get();
 
     internal static string StreamNotReadable => (string)Resources.Get();

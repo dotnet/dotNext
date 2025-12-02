@@ -45,8 +45,7 @@ public static partial class StreamExtensions
     public static async ValueTask<T> ReadAsync<T>(this Stream stream, Memory<byte> buffer, CancellationToken token = default)
         where T : IBinaryFormattable<T>
     {
-        if (buffer.Length < T.Size)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+        ArgumentException.ThrowIfShorterThan(buffer, T.Size);
 
         buffer = buffer.Slice(0, T.Size);
         await stream.ReadExactlyAsync(buffer, token).ConfigureAwait(false);
@@ -68,7 +67,7 @@ public static partial class StreamExtensions
         where T : IBinaryInteger<T>
     {
         ArgumentNullException.ThrowIfNull(stream);
-        ThrowIfEmpty(buffer);
+        ArgumentException.ThrowIfEmpty(buffer);
 
         buffer = buffer.Slice(0, Number.get_MaxByteCount<T>());
         await stream.ReadExactlyAsync(buffer, token).ConfigureAwait(false);
@@ -90,7 +89,7 @@ public static partial class StreamExtensions
         where T : IBinaryInteger<T>
     {
         ArgumentNullException.ThrowIfNull(stream);
-        ThrowIfEmpty(buffer);
+        ArgumentException.ThrowIfEmpty(buffer);
 
         buffer = buffer.Slice(0, Number.get_MaxByteCount<T>());
         await stream.ReadExactlyAsync(buffer, token).ConfigureAwait(false);
@@ -180,7 +179,7 @@ public static partial class StreamExtensions
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public static async ValueTask<MemoryOwner<char>> DecodeAsync(this Stream stream, DecodingContext context, LengthFormat lengthFormat, Memory<byte> buffer, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
     {
-        ThrowIfEmpty(buffer);
+        ArgumentException.ThrowIfEmpty(buffer);
 
         MemoryOwner<char> result;
         var length = await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false);
@@ -238,7 +237,7 @@ public static partial class StreamExtensions
             return DecodeAsync(stream, context.GetDecoder(), lengthFormat, charBuffer, byteBuffer, token);
         }
 
-        return IAsyncEnumerable<ReadOnlyMemory<char>>.Throw(new ArgumentException(ExceptionMessages.BufferTooSmall, paramName));
+        return IAsyncEnumerable<ReadOnlyMemory<char>>.Throw( ArgumentException.BufferTooSmall(paramName));
     }
 
     private static async IAsyncEnumerable<ReadOnlyMemory<char>> DecodeAsync(Stream stream, Decoder decoder, LengthFormat lengthFormat, Memory<char> charBuffer, Memory<byte> byteBuffer, [EnumeratorCancellation] CancellationToken token = default)
@@ -273,7 +272,7 @@ public static partial class StreamExtensions
     public static async ValueTask<TResult> ParseAsync<TArg, TResult>(this Stream stream, TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, Memory<byte> buffer, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(parser);
-        ThrowIfEmpty(buffer);
+        ArgumentException.ThrowIfEmpty(buffer);
 
         using var chars = await stream.DecodeAsync(context, lengthFormat, buffer, allocator, token).ConfigureAwait(false);
         return parser(chars.Span, arg);
@@ -354,7 +353,7 @@ public static partial class StreamExtensions
     public static async ValueTask CopyToAsync<TConsumer>(this Stream source, TConsumer consumer, Memory<byte> buffer, CancellationToken token = default)
         where TConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
-        ThrowIfEmpty(buffer);
+        ArgumentException.ThrowIfEmpty(buffer);
 
         for (int bytesRead; (bytesRead = await source.ReadAsync(buffer, token).ConfigureAwait(false)) > 0;)
         {
@@ -380,7 +379,7 @@ public static partial class StreamExtensions
         where TConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
     {
         ArgumentOutOfRangeException.ThrowIfNegative(count);
-        ThrowIfEmpty(buffer);
+        ArgumentException.ThrowIfEmpty(buffer);
 
         for (int bytesRead; count > 0L; count -= bytesRead)
         {
@@ -555,7 +554,7 @@ public static partial class StreamExtensions
         ArgumentNullException.ThrowIfNull(output);
 
         if (Encoding.UTF8.GetMaxCharCount(buffer.Length) is 0)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+            throw ArgumentException.BufferTooSmall(nameof(buffer));
 
         int consumedBufferBytes, bytesRead, bufferOffset = 0;
 
@@ -593,10 +592,10 @@ public static partial class StreamExtensions
     {
         ArgumentNullException.ThrowIfNull(stream);
         ArgumentNullException.ThrowIfNull(action);
-        ThrowIfEmpty(charsBuf);
+        ArgumentException.ThrowIfEmpty(charsBuf);
 
         if (Encoding.UTF8.GetMaxCharCount(bytesBuf.Length) is 0)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(bytesBuf));
+            throw ArgumentException.BufferTooSmall(nameof(bytesBuf));
 
         int consumedBufferBytes, bufferOffset = 0;
         bool completed;
@@ -630,7 +629,7 @@ public static partial class StreamExtensions
         ArgumentNullException.ThrowIfNull(output);
 
         if (Encoding.UTF8.GetMaxCharCount(buffer.Length) is 0)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+            throw ArgumentException.BufferTooSmall(nameof(buffer));
 
         int consumedBufferBytes, bytesRead, bufferOffset = 0;
 
@@ -665,12 +664,10 @@ public static partial class StreamExtensions
     {
         ArgumentNullException.ThrowIfNull(stream);
         ArgumentNullException.ThrowIfNull(action);
+        ArgumentException.ThrowIfEmpty(charsBuf);
 
         if (Encoding.UTF8.GetMaxCharCount(bytesBuf.Length) is 0)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(bytesBuf));
-
-        if (charsBuf.IsEmpty)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(charsBuf));
+            throw ArgumentException.BufferTooSmall(nameof(bytesBuf));
 
         int consumedBufferBytes, bytesRead, bufferOffset = 0;
 

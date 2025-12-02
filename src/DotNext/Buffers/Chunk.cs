@@ -19,7 +19,7 @@ internal sealed class Chunk<T> : ReadOnlySequenceSegment<T>
 
     internal static void AddChunk(in ReadOnlyMemory<T> segment, [AllowNull] ref Chunk<T> first, [AllowNull] ref Chunk<T> last)
     {
-        Debug.Assert(!segment.IsEmpty);
+        Debug.Assert(segment.Length > 0);
 
         last = first is null || last is null
             ? first = new(segment) { RunningIndex = 0L }

@@ -410,22 +410,6 @@ public interface IAsyncBinaryReader
     }
 
     /// <summary>
-    /// Creates default implementation of binary reader for the stream.
-    /// </summary>
-    /// <remarks>
-    /// It is recommended to use extension methods from <see cref="StreamExtensions"/> class
-    /// for decoding data from the stream. This method is intended for situation
-    /// when you need an object implementing <see cref="IAsyncBinaryReader"/> interface.
-    /// </remarks>
-    /// <param name="input">The stream to be wrapped into the reader.</param>
-    /// <param name="buffer">The buffer used for decoding data from the stream.</param>
-    /// <returns>The stream reader.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="input"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
-    public static IAsyncBinaryReader Create(Stream input, Memory<byte> buffer)
-        => ReferenceEquals(input, Stream.Null) ? Empty : new AsyncStreamBinaryAccessor(input, buffer);
-
-    /// <summary>
     /// Creates default implementation of binary reader over sequence of bytes.
     /// </summary>
     /// <param name="sequence">The sequence of bytes.</param>
@@ -438,19 +422,6 @@ public interface IAsyncBinaryReader
     /// <param name="memory">The block of memory.</param>
     /// <returns>The binary reader for the memory block.</returns>
     public static SequenceReader Create(ReadOnlyMemory<byte> memory) => new(memory);
-
-    /// <summary>
-    /// Creates default implementation of binary reader for the specifed pipe reader.
-    /// </summary>
-    /// <remarks>
-    /// It is recommended to use extension methods from <see cref="Pipelines.PipeExtensions"/> class
-    /// for decoding data from the stream. This method is intended for situation
-    /// when you need an object implementing <see cref="IAsyncBinaryReader"/> interface.
-    /// </remarks>
-    /// <param name="reader">The pipe reader.</param>
-    /// <returns>The binary reader.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="reader"/> is <see langword="null"/>.</exception>
-    public static IAsyncBinaryReader Create(PipeReader reader) => new PipeBinaryReader(reader);
 
     internal static Stream CreateStream<TReader>(TReader reader)
         where TReader : IAsyncBinaryReader

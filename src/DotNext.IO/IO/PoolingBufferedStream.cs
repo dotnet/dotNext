@@ -230,7 +230,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
 
         var writeBuf = WrittenMemory.Span;
         bool result;
-        if (result = !writeBuf.IsEmpty)
+        if (result = writeBuf.Length > 0)
         {
             stream.Write(writeBuf);
             writePosition = 0;
@@ -242,7 +242,7 @@ public sealed class PoolingBufferedStream(Stream stream, bool leaveOpen = false)
     private ValueTask WriteCoreAsync(out bool isWritten, CancellationToken token)
     {
         var writeBuf = WrittenMemory;
-        return (isWritten = !writeBuf.IsEmpty)
+        return (isWritten = writeBuf.Length > 0)
             ? WriteAndResetAsync(writeBuf, token)
             : ValueTask.CompletedTask;
     }

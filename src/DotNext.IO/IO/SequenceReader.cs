@@ -18,8 +18,6 @@ using DecodingContext = Text.DecodingContext;
 /// <summary>
 /// Represents binary reader for the sequence of bytes.
 /// </summary>
-/// <seealso cref="IAsyncBinaryReader.Create(ReadOnlySequence{byte})"/>
-/// <seealso cref="IAsyncBinaryReader.Create(ReadOnlyMemory{byte})"/>
 /// <remarks>
 /// Initializes a new sequence reader.
 /// </remarks>
@@ -29,7 +27,11 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
 {
     private SequencePosition position = sequence.Start;
 
-    internal SequenceReader(ReadOnlyMemory<byte> memory)
+    /// <summary>
+    /// Initializes a new sequence reader for the specified block of memory.
+    /// </summary>
+    /// <param name="memory">The memory block to read.</param>
+    public SequenceReader(ReadOnlyMemory<byte> memory)
         : this(new ReadOnlySequence<byte>(memory))
     {
     }
@@ -50,7 +52,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     public readonly SequencePosition Position => position;
 
     private void Read<TParser>(ref TParser parser)
-        where TParser : struct, IBufferReader
+        where TParser : struct, IBufferReader, allows ref struct
     {
         position = parser.Append(RemainingSequence);
         parser.EndOfStream();
@@ -197,7 +199,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
             position = remaining.GetPosition(chunk.Length, position);
         }
 
-        return !chunk.IsEmpty;
+        return chunk.Length > 0;
     }
 
     /// <summary>
@@ -220,7 +222,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
             chunk = default;
         }
 
-        return !chunk.IsEmpty;
+        return chunk.Length > 0;
     }
 
     /// <summary>
@@ -256,7 +258,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         MemoryOwner<byte> result;
         if (length > 0)
         {
-            result = allocator.AllocateExactly(length);
+            result = allocator.DefaultIfNull.AllocateExactly(length);
             Read(result.Span);
         }
         else
@@ -305,7 +307,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         var length = ReadLength(lengthFormat);
         if (length > 0)
         {
-            result = allocator.AllocateExactly(context.Encoding.GetMaxCharCount(length));
+            result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(length));
             var parser = new CharBufferDecodingReader(in context, length, result.Memory);
             result.TryResize(Read<int, CharBufferDecodingReader>(ref parser));
         }
@@ -329,8 +331,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     [UnscopedRef]
     public SpanDecodingEnumerable Decode(in DecodingContext context, LengthFormat lengthFormat, Span<char> buffer)
     {
-        if (buffer.IsEmpty)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+        ArgumentException.ThrowIfEmpty(buffer);
 
         var length = ReadLength(lengthFormat);
         var bytes = RemainingSequence;
@@ -357,8 +358,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
     public DecodingEnumerable Decode(in DecodingContext context, LengthFormat lengthFormat, Memory<char> buffer)
     {
-        if (buffer.IsEmpty)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+        ArgumentException.ThrowIfEmpty(buffer);
 
         var length = ReadLength(lengthFormat);
         return new(Read(length), in context, in buffer);
@@ -857,7 +857,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
 
         internal DecodingEnumerable(ReadOnlySequence<byte> bytes, in DecodingContext context, in Memory<char> buffer)
         {
-            Debug.Assert(!buffer.IsEmpty);
+            Debug.Assert(buffer.Length > 0);
 
             this.bytes = bytes;
             this.context = context;
@@ -933,7 +933,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         /// Gets enumerator over decoded chunks of characters.
         /// </summary>
         /// <returns>The enumerator over decoded chunks of characters.</returns>
-        public Enumerator GetEnumerator() => new(in bytes, ref position, context, buffer);
+        public Enumerator GetEnumerator() => new(in bytes, ref position, context.GetDecoder(), buffer);
 
         /// <summary>
         /// Represents enumerator over decoded characters.
@@ -947,11 +947,11 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
             private readonly ref SequencePosition position;
             private int charsWritten;
 
-            internal Enumerator(scoped in ReadOnlySequence<byte> bytes, ref SequencePosition position, scoped in DecodingContext context, Span<char> buffer)
+            internal Enumerator(scoped in ReadOnlySequence<byte> bytes, ref SequencePosition position, Decoder decoder, Span<char> buffer)
             {
                 this.bytes = bytes;
                 this.position = ref position;
-                decoder = context.GetDecoder();
+                this.decoder = decoder;
                 this.buffer = buffer;
             }
 

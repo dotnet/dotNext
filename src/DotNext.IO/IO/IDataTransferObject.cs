@@ -86,8 +86,7 @@ public interface IDataTransferObject
     protected static async ValueTask<TResult> TransformAsync<TResult, TTransformation>(Stream input, TTransformation transformation, bool resetStream, Memory<byte> buffer, CancellationToken token)
         where TTransformation : ITransformation<TResult>
     {
-        if (buffer.IsEmpty)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+        ArgumentException.ThrowIfEmpty(buffer);
 
         try
         {

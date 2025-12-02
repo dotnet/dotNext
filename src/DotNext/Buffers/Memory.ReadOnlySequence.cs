@@ -44,7 +44,7 @@ public static partial class Memory
             for (var current = chunks.First; current is not null; current = current.Next)
             {
                 ref readonly var segment = ref current.ValueRef;
-                if (!segment.IsEmpty)
+                if (segment.Length > 0)
                     Chunk<T>.AddChunk(segment, ref head, ref tail);
             }
         }

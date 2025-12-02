@@ -14,12 +14,6 @@ using Buffers;
 /// </remarks>
 public static partial class StreamExtensions
 {
-    internal static void ThrowIfEmpty<T>(in Memory<T> buffer, [CallerArgumentExpression(nameof(buffer))] string expression = "buffer")
-    {
-        if (buffer.IsEmpty)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, expression);
-    }
-
     private static Stream Combine(Stream stream, ReadOnlySpan<Stream> others, bool leaveOpen)
         => others switch
         {
@@ -56,7 +50,7 @@ public static partial class StreamExtensions
     public static Stream Combine(this ReadOnlySpan<Stream> streams, bool leaveOpen = true)
         => streams is [var first, .. var rest]
             ? Combine(first, rest, leaveOpen)
-            : throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(streams));
+            : throw ArgumentException.BufferTooSmall(nameof(streams));
 
     /// <summary>
     /// Combines multiple readable streams.
@@ -104,6 +98,28 @@ public static partial class StreamExtensions
         return handle is { IsInvalid: false, IsClosed: false }
             ? new UnbufferedFileStream(handle, access)
             : throw new ArgumentException(ExceptionMessages.FileHandleClosed, nameof(handle));
+    }
+
+    /// <summary>
+    /// Extends <see cref="IAsyncBinaryReader"/> type.
+    /// </summary>
+    extension(IAsyncBinaryReader)
+    {
+        /// <summary>
+        /// Creates default implementation of binary reader for the stream.
+        /// </summary>
+        /// <remarks>
+        /// It is recommended to use extension methods from <see cref="StreamExtensions"/> class
+        /// for decoding data from the stream. This method is intended for situation
+        /// when you need an object implementing <see cref="IAsyncBinaryReader"/> interface.
+        /// </remarks>
+        /// <param name="input">The stream to be wrapped into the reader.</param>
+        /// <param name="buffer">The buffer used for decoding data from the stream.</param>
+        /// <returns>The stream reader.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="input"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
+        public static IAsyncBinaryReader Create(Stream input, Memory<byte> buffer)
+            => ReferenceEquals(input, Stream.Null) ? IAsyncBinaryReader.Empty : new AsyncStreamBinaryAccessor(input, buffer);
     }
     
     [InlineArray(32)]

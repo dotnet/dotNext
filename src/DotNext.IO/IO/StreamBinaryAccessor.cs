@@ -15,7 +15,7 @@ using Text;
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct AsyncStreamBinaryAccessor(Stream stream, Memory<byte> buffer) : IAsyncBinaryReader, IAsyncBinaryWriter, IFlushable
 {
-    private readonly Memory<byte> buffer = buffer.IsEmpty ? throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer)) : buffer;
+    private readonly Memory<byte> buffer = buffer.IsEmpty ? throw ArgumentException.BufferTooSmall(nameof(buffer)) : buffer;
 
     internal Stream Stream => stream;
 

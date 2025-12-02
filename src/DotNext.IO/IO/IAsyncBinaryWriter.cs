@@ -296,7 +296,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     public static IAsyncBinaryWriter Create(Stream output, Memory<byte> buffer)
     {
         ArgumentNullException.ThrowIfNull(output);
-        StreamExtensions.ThrowIfEmpty(buffer);
+        ArgumentException.ThrowIfEmpty(buffer);
 
         return new AsyncStreamBinaryAccessor(output, buffer);
     }
