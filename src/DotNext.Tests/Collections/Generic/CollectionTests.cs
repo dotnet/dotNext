@@ -203,7 +203,7 @@ public sealed class CollectionTests : Test
         queue.Enqueue(42);
         queue.Enqueue(52);
 
-        var consumer = queue.GetConsumer();
+        var consumer = queue.Consume();
         Collection(consumer, static i => Equal(42, i), static i => Equal(52, i));
     }
 
@@ -214,7 +214,7 @@ public sealed class CollectionTests : Test
         queue.Push(42);
         queue.Push(52);
 
-        var consumer = queue.GetConsumer();
+        var consumer = queue.Consume();
         Collection(consumer, static i => Equal(52, i), static i => Equal(42, i));
     }
 

@@ -20,7 +20,6 @@ public static partial class Collection
         public struct Enumerator : IEnumerator<Enumerator, T>
         {
             private readonly IProducerConsumerCollection<T>? collection;
-
             private T? current;
 
             internal Enumerator(IProducerConsumerCollection<T>? collection)
@@ -59,6 +58,6 @@ public static partial class Collection
     /// <param name="collection">The concurrent collection.</param>
     /// <typeparam name="T">The type of elements in the collection.</typeparam>
     /// <returns>The consumer in the form of enumerable collection.</returns>
-    public static ConsumingEnumerable<T> GetConsumer<T>(this IProducerConsumerCollection<T> collection)
+    public static ConsumingEnumerable<T> Consume<T>(this IProducerConsumerCollection<T> collection)
         => new(collection ?? throw new ArgumentNullException(nameof(collection)));
 }
