@@ -39,7 +39,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         private long readLocks; // volatile
         private bool writeLock;
 
-        internal readonly bool WriteLock => Volatile.Read(ref Unsafe.AsRef(in writeLock));
+        internal readonly bool WriteLock => Volatile.Read(in writeLock);
 
         internal void DowngradeFromWriteLock()
         {
@@ -67,9 +67,9 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
 
         internal void ExitReadLock() => readLocks--;
 
-        internal readonly long ReadLocks => Volatile.Read(in readLocks);
+        internal readonly long ReadLocks => Atomic.Read(in readLocks);
 
-        internal readonly ulong Version => Volatile.Read(in version);
+        internal readonly ulong Version => Atomic.Read(in version);
 
         internal readonly bool IsWriteLockAllowed => writeLock is false && HasNoReadLocks;
 

@@ -9,6 +9,8 @@ partial class QueuedSynchronizer
         bool IsLockAllowed { get; }
 
         void AcquireLock();
+
+        static virtual bool RequiresEmptyQueue => true;
     }
 
     private protected interface ILockManager<TState, out TSelf> : ILockManager
@@ -23,7 +25,7 @@ partial class QueuedSynchronizer
     {
         AssertInternalLockState();
 
-        if (IsEmptyQueue && manager.IsLockAllowed)
+        if ((!TLockManager.RequiresEmptyQueue || IsEmptyQueue) && manager.IsLockAllowed)
         {
             manager.AcquireLock();
             return true;
