@@ -227,7 +227,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
     private T SignalAndWaitAsync<T, TBuilder>(ref TBuilder builder, out bool completedSynchronously)
         where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
         var suspendedCallers = default(LinkedValueTaskCompletionSource<bool>);
         if (!builder.IsCompleted

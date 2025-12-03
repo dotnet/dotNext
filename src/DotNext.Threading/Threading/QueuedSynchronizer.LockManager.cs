@@ -30,7 +30,7 @@ partial class QueuedSynchronizer
     private T AcquireAsync<T, TBuilder, TNode, TLockManager>(ref TBuilder builder, ref TLockManager manager)
         where T : struct, IEquatable<T>
         where TNode : WaitNode, new()
-        where TBuilder : struct, ITaskBuilder<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
         where TLockManager : struct, ILockManager, IConsumer<TNode>
     {
         switch (builder.IsCompleted)

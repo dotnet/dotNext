@@ -88,7 +88,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
 
     private T WaitAsync<T, TBuilder>(ref TBuilder builder)
         where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
         switch (builder.IsCompleted)
         {
@@ -194,7 +194,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
 
     private T SignalAndWaitAsync<T, TBuilder, TVisitor>(ref TBuilder builder, TVisitor visitor, bool throwOnEmptyQueue)
         where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
         where TVisitor : struct, IWaitQueueVisitor<T>
     {
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;

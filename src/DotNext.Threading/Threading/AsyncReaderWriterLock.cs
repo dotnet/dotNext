@@ -438,7 +438,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
 
     private T UpgradeToWriteLockAsync<T, TBuilder>(ref TBuilder builder)
         where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
         var suspendedCallers = default(LinkedValueTaskCompletionSource<bool>);
         switch (builder.IsCompleted)

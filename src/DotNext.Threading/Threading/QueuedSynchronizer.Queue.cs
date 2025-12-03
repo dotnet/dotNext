@@ -81,7 +81,7 @@ partial class QueuedSynchronizer
     private protected TNode? Acquire<T, TBuilder, TNode>(ref TBuilder builder, bool acquired)
         where T : struct, IEquatable<T>
         where TNode : WaitNode, new()
-        where TBuilder : struct, ITaskBuilder<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
         AssertInternalLockState();
         Debug.Assert(!builder.IsCompleted);

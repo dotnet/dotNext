@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Threading;
@@ -212,7 +211,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
     private T AcquireAsync<T, TBuilder>(TContext context, ref TBuilder builder)
         where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
         T result;
         if (!builder.IsCompleted)

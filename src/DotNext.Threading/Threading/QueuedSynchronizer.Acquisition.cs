@@ -38,7 +38,7 @@ partial class QueuedSynchronizer
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private protected struct CancellationTokenOnly : ITaskBuilder<ValueTask>
+    private protected ref struct CancellationTokenOnly : ITaskBuilder<ValueTask>
     {
         private readonly CancellationToken token;
         private object? syncRoot;
@@ -91,10 +91,17 @@ partial class QueuedSynchronizer
         static bool ITaskBuilder<ValueTask>.ThrowOnTimeout => true;
 
         static ValueTask ITaskBuilder<ValueTask>.FromException(Exception e) => ValueTask.FromException(e);
+
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+        {
+            ArgumentOutOfRangeException.ThrowIfNotEqual(count, 0);
+
+            SetDynamicInvokeResult<CancellationTokenOnly, ValueTask>(ref this, result);
+        }
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private protected struct TimeoutAndCancellationToken :
+    private protected ref struct TimeoutAndCancellationToken :
         ITaskBuilder<ValueTask>,
         ITaskBuilder<ValueTask<bool>>
     {
@@ -165,18 +172,18 @@ partial class QueuedSynchronizer
             return AsTask<ValueTask<bool>>(taskFactory);
         }
 
-        void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
         {
             ArgumentOutOfRangeException.ThrowIfNotEqual(count, 0);
-
             Debug.Assert(IsCompleted);
+            
             if (result.TargetType == typeof(ValueTask))
             {
-                result.Mutable<ValueTask>() = AsTask<ValueTask>(taskFactory);
+                SetDynamicInvokeResult<TimeoutAndCancellationToken, ValueTask>(ref this, result);
             }
             else
             {
-                result.Mutable<ValueTask<bool>>() = AsTask<ValueTask<bool>>(taskFactory);
+                SetDynamicInvokeResult<TimeoutAndCancellationToken, ValueTask<bool>>(ref this, result);
             }
         }
 
@@ -190,10 +197,10 @@ partial class QueuedSynchronizer
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct InterruptingTaskBuilder<T, TBuilder>
+    private ref struct InterruptingTaskBuilder<T, TBuilder>
         : ITaskBuilder<T>
         where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
         public required TBuilder Builder;
         public LinkedValueTaskCompletionSource<bool>? InterruptedCallers;
@@ -223,6 +230,9 @@ partial class QueuedSynchronizer
         static bool ITaskBuilder<T>.ThrowOnTimeout => TBuilder.ThrowOnTimeout;
 
         static T ITaskBuilder<T>.FromException(Exception e) => TBuilder.FromException(e);
+
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => Builder.DynamicInvoke(in args, count, result);
     }
 
     private protected CancellationTokenOnly CreateTaskBuilder(CancellationToken token)
@@ -233,8 +243,14 @@ partial class QueuedSynchronizer
 
     private void DrainWaitQueue<T, TBuilder>(ref InterruptingTaskBuilder<T, TBuilder> builder, Exception e)
         where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
         => builder.InterruptedCallers = builder.IsCompleted
             ? null
             : DrainWaitQueue(e);
+
+    private static void SetDynamicInvokeResult<TSupplier, TResult>(scoped ref TSupplier supplier, scoped Variant result)
+        where TSupplier : struct, ISupplier<TResult>, allows ref struct
+    {
+        result.Mutable<TResult>() = supplier.Invoke();
+    }
 }

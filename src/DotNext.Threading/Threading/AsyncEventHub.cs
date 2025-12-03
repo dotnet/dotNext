@@ -302,7 +302,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     
     private T WaitAnyAsync<T, TBuilder>(ref TBuilder builder, UInt128 mask, ICollection<int>? output = null)
         where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
         var events = state & mask;
         switch (builder.IsCompleted)
@@ -435,7 +435,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 
     private T WaitAllAsync<T, TBuilder>(ref TBuilder builder, UInt128 mask)
         where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
         var events = state & mask;
         switch (builder.IsCompleted)
