@@ -113,9 +113,9 @@ public static partial class Memory
             get
             {
                 return AllocateUsingArrayPool;
-                
+
                 static MemoryOwner<T> AllocateUsingArrayPool(int length)
-                    => new(ArrayPool<T>.Shared, length);
+                    => new(ArrayPool<T>.Shared, length, exactSize: false);
             }
         }
 

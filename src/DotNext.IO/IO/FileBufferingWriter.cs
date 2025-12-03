@@ -295,7 +295,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
             case < 0:
                 throw new ArgumentOutOfRangeException(nameof(sizeHint));
             case 0:
-                sizeHint = Math.Max(1, buffer.Length - position);
+                sizeHint = int.Max(1, int.Min(buffer.Length - position, memoryThreshold));
                 break;
         }
 

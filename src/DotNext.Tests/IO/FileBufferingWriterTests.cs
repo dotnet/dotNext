@@ -466,13 +466,10 @@ public sealed class FileBufferingWriterTests : Test
     [Fact]
     public static void NotEnoughMemory()
     {
-        using var writer = new FileBufferingWriter(memoryThreshold: 10, asyncIO: false);
-        var bytes = new byte[500];
-        for (byte i = 0; i < byte.MaxValue; i++)
-            bytes[i] = i;
+        const int threshold = 10;
+        using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
 
-        IBufferWriter<byte> buffer = writer;
-        Throws<InsufficientMemoryException>(() => buffer.Write(bytes));
+        Throws<InsufficientMemoryException>(() => writer.As<IBufferWriter<byte>>().GetSpan(threshold + 1));
     }
 
     private sealed class CallbackChecker : TaskCompletionSource<bool>
