@@ -149,18 +149,15 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private TLockManager GetLockManager<TLockManager>()
-        where TLockManager : struct, ILockManager<State, TLockManager>, IConsumer<WaitNode>, allows ref struct
+        where TLockManager : struct, ILockManager<State, TLockManager>, allows ref struct
         => GetLockManager<State, TLockManager>(ref state);
 
     private bool TryAcquire<TLockManager>()
-        where TLockManager : struct, ILockManager<State, TLockManager>, IConsumer<WaitNode>, allows ref struct
+        where TLockManager : struct, ILockManager<State, TLockManager>, allows ref struct
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        var scope = AcquireInternalLock();
-        var result = TryAcquire(GetLockManager<TLockManager>());
-        scope.Dispose();
-
+        TryAcquire<State, TLockManager>(ref state, out var result).Dispose();
         return result;
     }
 

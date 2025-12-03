@@ -20,11 +20,13 @@ using Tasks;
 public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct StateManager(ref long counter) : ILockManager, IConsumer<WaitNode>
+    private readonly ref struct StateManager(ref long counter) : ILockManager<long, StateManager>, IConsumer<WaitNode>
     {
         private readonly ref long counter = ref counter;
 
-        readonly bool ILockManager.IsLockAllowed => counter > 0L;
+        static StateManager ILockManager<long, StateManager>.Create(ref long state) => new(ref state);
+
+        bool ILockManager.IsLockAllowed => counter > 0L;
 
         void ILockManager.AcquireLock() => counter--;
 
@@ -69,11 +71,10 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        var scope = AcquireInternalLock();
-        var result = TryReset(ref counter);
-        scope.Dispose();
-
-        return result;
+        using (AcquireInternalLock())
+        {
+            return TryReset(ref counter);
+        }
         
         static bool TryReset(ref long counter)
         {
@@ -207,10 +208,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        var scope = AcquireInternalLock();
-        var result = TryAcquire(new StateManager(ref counter));
-        scope.Dispose();
-
-        return result;
+        TryAcquire<long, StateManager>(ref counter, out var decremented).Dispose();
+        return decremented;
     }
 }

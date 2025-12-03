@@ -71,6 +71,17 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
 
         internal readonly ulong Version => Atomic.Read(in version);
 
+        internal bool IsValidVersionUnsafe(ulong expected) => version == expected;
+
+        internal bool IsValidVersion(ulong expected)
+        {
+            var currentVer = version;
+            var writeLockAcquired = writeLock;
+            Volatile.ReadBarrier();
+            
+            return currentVer == expected && !writeLockAcquired;
+        }
+
         internal readonly bool IsWriteLockAllowed => writeLock is false && HasNoReadLocks;
 
         internal readonly bool HasNoReadLocks => readLocks is 0L;
@@ -138,30 +149,22 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// Initializes a new reader/writer lock.
     /// </summary>
     public AsyncReaderWriterLock() => state = new();
-    
-    private bool IsLockHelpByCurrentThread
-    {
-        get => lockOwnerState?.Value ?? false;
-        set
-        {
-            if (lockOwnerState is { } ownerFlag)
-            {
-                ownerFlag.Value = value;
-            }
-            else if (value)
-            {
-                var scope = AcquireInternalLock();
-                ownerFlag = lockOwnerState ??= new(trackAllValues: false);
-                scope.Dispose();
 
-                ownerFlag.Value = true;
-            }
+    private bool IsLockHelpByCurrentThread => lockOwnerState?.Value ?? false;
+
+    private void InitializeLockOwner(bool acquired)
+    {
+        AssertInternalLockState();
+        
+        if (lockOwnerState is null && acquired)
+        {
+            lockOwnerState = new(trackAllValues: false);
         }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private TLockManager GetLockManager<TLockManager>()
-        where TLockManager : struct, ILockManager<State, TLockManager>, IConsumer<WaitNode>, allows ref struct
+        where TLockManager : struct, ILockManager<State, TLockManager>, allows ref struct
         => GetLockManager<State, TLockManager>(ref state);
 
     private bool Signal(ref WaitQueueVisitor waitQueueVisitor, bool isWriteLock) => isWriteLock
@@ -212,7 +215,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// </summary>
     /// <param name="stamp">A stamp to check.</param>
     /// <returns><see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp; else <see langword="false"/>.</returns>
-    public bool Validate(in LockStamp stamp) => stamp.IsValid(in state);
+    public bool Validate(in LockStamp stamp) => stamp.IsInitialized && state.IsValidVersion(stamp.Version);
 
     /// <summary>
     /// Tries to obtain reader lock synchronously without blocking caller thread.
@@ -246,13 +249,22 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         bool result;
         try
         {
-            IsLockHelpByCurrentThread =
-                result = TryAcquireAsync<WaitNode, TLockManager>(GetLockManager<TLockManager>(), timeout, token)
-                    .Wait();
+            result = TryAcquireAsync<WaitNode, TLockManager>(GetLockManager<TLockManager>(), timeout, token)
+                .Wait();
         }
         catch (OperationCanceledException e) when (e.CancellationToken == token)
         {
             result = false;
+        }
+
+        if (result && lockOwnerState is null)
+        {
+            using (AcquireInternalLock())
+            {
+                lockOwnerState ??= new(trackAllValues: false);
+            }
+
+            lockOwnerState.Value = true;
         }
 
         return result;
@@ -307,16 +319,23 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        var scope = AcquireInternalLock();
-        var result = stamp.IsValid(in state) && TryAcquire(GetLockManager<WriteLockManager>());
-        scope.Dispose();
-
-        if (result)
+        bool acquired;
+        if (stamp.IsInitialized)
         {
-            IsLockHelpByCurrentThread = true;
+            using (AcquireInternalLock())
+            {
+                acquired = state.IsValidVersionUnsafe(stamp.Version) && TryAcquire(GetLockManager<WriteLockManager>());
+                InitializeLockOwner(acquired);
+            }
+        }
+        else
+        {
+            acquired = false;
         }
 
-        return result;
+        lockOwnerState?.Value = acquired;
+
+        return acquired;
     }
 
     /// <summary>
@@ -403,37 +422,35 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        bool result;
+        bool upgraded;
         using (AcquireInternalLock())
         {
             if (state.HasNoReadLocks)
                 throw new SynchronizationLockException();
 
-            result = TryUpgradeToWriteLock(out suspendedCallers);
+            upgraded = TryUpgradeToWriteLock(out suspendedCallers);
+            InitializeLockOwner(upgraded);
         }
 
         suspendedCallers?.Unwind();
-        if (result)
-        {
-            IsLockHelpByCurrentThread = true;
-        }
+        lockOwnerState?.Value = upgraded;
 
-        return result;
+        return upgraded;
     }
 
     private bool TryEnter<TLockManager>()
         where TLockManager : struct, ILockManager<State, TLockManager>, IConsumer<WaitNode>, allows ref struct
     {
-        var scope = AcquireInternalLock();
-        var result = TryAcquire(GetLockManager<TLockManager>());
-        scope.Dispose();
-
-        if (result)
+        bool acquired;
+        using (AcquireInternalLock())
         {
-            IsLockHelpByCurrentThread = true;
+            acquired = TryAcquire(GetLockManager<TLockManager>());
+            InitializeLockOwner(acquired);
         }
-        
-        return result;
+
+        lockOwnerState?.Value = acquired;
+
+        return acquired;
     }
 
     private bool TryUpgradeToWriteLock(out LinkedValueTaskCompletionSource<bool>? suspendedCallers)
@@ -637,7 +654,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.ExitLock();
-            IsLockHelpByCurrentThread = false;
+            lockOwnerState?.Value = false;
             suspendedCallers = DrainWaitQueue();
 
             if (IsDisposing && IsReadyToDispose)

@@ -91,11 +91,10 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        var scope = AcquireInternalLock();
-        var result = TryReset(ref signaled);
-        scope.Dispose();
-
-        return result;
+        using (AcquireInternalLock())
+        {
+            return TryReset(ref signaled);
+        }
         
         static bool TryReset(ref bool signaled)
         {

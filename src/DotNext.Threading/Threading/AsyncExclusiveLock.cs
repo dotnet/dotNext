@@ -14,9 +14,11 @@ using Tasks;
 public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 {
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct LockManager(ref bool acquired) : ILockManager, IConsumer<WaitNode>
+    private readonly ref struct LockManager(ref bool acquired) : ILockManager<bool, LockManager>, IConsumer<WaitNode>
     {
         private readonly ref bool acquired = ref acquired;
+
+        static LockManager ILockManager<bool, LockManager>.Create(ref bool state) => new(ref state);
 
         bool ILockManager.IsLockAllowed => !acquired;
 
@@ -69,11 +71,13 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 
     private bool TryAcquireCore()
     {
-        var scope = AcquireInternalLock();
-        var result = IsLockHelpByCurrentThread = TryAcquire(new LockManager(ref acquired));
-        scope.Dispose();
+        bool lockTaken;
+        using (TryAcquire<bool, LockManager>(ref acquired, out lockTaken))
+        {
+            IsLockHelpByCurrentThread = lockTaken;
+        }
 
-        return result;
+        return lockTaken;
     }
 
     /// <summary>

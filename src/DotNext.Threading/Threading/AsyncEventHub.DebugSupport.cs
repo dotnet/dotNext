@@ -32,12 +32,9 @@ public partial class AsyncEventHub
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
-        EventGroup result;
         using (AcquireInternalLock())
         {
-            result = new(state);
+            return new(state);
         }
-
-        return result;
     }
 }

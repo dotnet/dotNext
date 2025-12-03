@@ -14,9 +14,11 @@ using Tasks;
 public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct StateManager(ref bool signaled) : ILockManager, IConsumer<WaitNode>
+    private readonly ref struct StateManager(ref bool signaled) : ILockManager<bool, StateManager>, IConsumer<WaitNode>
     {
         private readonly ref bool signaled = ref signaled;
+
+        static StateManager ILockManager<bool, StateManager>.Create(ref bool state) => new(ref state);
 
         bool ILockManager.IsLockAllowed => signaled;
 
@@ -54,10 +56,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        var scope = AcquireInternalLock();
-        var result = TryAcquire(new StateManager(ref signaled));
-        scope.Dispose();
-
+        TryAcquire<bool, StateManager>(ref signaled, out var result).Dispose();
         return result;
     }
 

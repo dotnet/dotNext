@@ -24,13 +24,8 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
         public readonly bool IsEmpty => Current is 0L;
 
-        internal void Increment(long value) => Current = checked(Current + value);
-
-        internal void IncrementInitial(long value)
-            => Current = Initial = checked(Current + value);
-
         internal void Decrement(long value = 1L)
-            => Current = Math.Max(0L, Current - value);
+            => Current = long.Max(0L, Current - value);
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -90,9 +85,13 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     {
         Debug.Assert(signalCount > 0L);
 
-        var scope = AcquireInternalLock();
-        state.IncrementInitial(signalCount);
-        scope.Dispose();
+        using (AcquireInternalLock())
+        {
+            checked
+            {
+                state.Initial = state.Current += signalCount;
+            }
+        }
     }
 
     private bool TryAddCountCore(long signalCount)
@@ -100,14 +99,17 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         Debug.Assert(signalCount > 0L);
 
         bool result;
-        var scope = AcquireInternalLock();
-
-        if (result = !state.IsEmpty)
+        using (AcquireInternalLock())
         {
-            state.Increment(signalCount);
+            if (result = !state.IsEmpty)
+            {
+                checked
+                {
+                    state.Current += signalCount;
+                }
+            }
         }
 
-        scope.Dispose();
         return result;
     }
 

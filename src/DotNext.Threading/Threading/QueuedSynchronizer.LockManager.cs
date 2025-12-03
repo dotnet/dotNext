@@ -34,6 +34,16 @@ partial class QueuedSynchronizer
         return false;
     }
 
+    private protected System.Threading.Lock.Scope TryAcquire<TState, TLockManager>(ref TState state, out bool acquired)
+        where TState : struct
+        where TLockManager : struct, ILockManager<TState, TLockManager>, allows ref struct
+    {
+        var manager = TLockManager.Create(ref state);
+        var scope = syncRoot.EnterScope();
+        acquired = TryAcquire(manager);
+        return scope;
+    }
+
     private T AcquireAsync<T, TBuilder, TNode, TLockManager>(ref TBuilder builder, TLockManager manager)
         where T : struct, IEquatable<T>
         where TNode : WaitNode, new()
