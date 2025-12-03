@@ -181,8 +181,8 @@ partial class QueuedSynchronizer
 
         public void SignalCurrent(Exception e) => SignalCurrent(result: new(e));
 
-        public bool SignalCurrent<TLockManager>(ref TLockManager manager)
-            where TLockManager : struct, ILockManager
+        public bool SignalCurrent<TLockManager>(TLockManager manager)
+            where TLockManager : struct, ILockManager, allows ref struct
         {
             if (!manager.IsLockAllowed)
                 return false;
@@ -193,10 +193,10 @@ partial class QueuedSynchronizer
             return true;
         }
 
-        public void SignalAll<TLockManager>(ref TLockManager manager)
-            where TLockManager : struct, ILockManager
+        public void SignalAll<TLockManager>(TLockManager manager)
+            where TLockManager : struct, ILockManager, allows ref struct
         {
-            while (!EndOfQueue && SignalCurrent(ref manager))
+            while (!EndOfQueue && SignalCurrent(manager))
             {
                 Advance();
             }

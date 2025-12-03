@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Runtime;
+using Runtime.CompilerServices;
 using Tasks;
 
 /// <summary>
@@ -12,25 +14,21 @@ using Tasks;
 public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct LockManager : ILockManager, IConsumer<WaitNode>
+    private readonly ref struct LockManager(ref bool acquired) : ILockManager, IConsumer<WaitNode>
     {
-        private bool state;
+        private readonly ref bool acquired = ref acquired;
 
-        internal readonly bool Value => state;
+        bool ILockManager.IsLockAllowed => !acquired;
 
-        internal readonly bool VolatileRead() => Volatile.Read(in state);
+        void ILockManager.AcquireLock() => acquired = true;
 
-        readonly bool ILockManager.IsLockAllowed => !state;
+        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = true;
 
-        void ILockManager.AcquireLock()
-            => state = true;
-
-        internal void ExitLock() => state = false;
-
-        readonly void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = true;
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
     }
 
-    private LockManager manager;
+    private bool acquired;
     private Thread? lockOwner;
 
     /// <summary>
@@ -41,12 +39,12 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
-        => waitQueueVisitor.SignalAll(ref manager);
+        => waitQueueVisitor.SignalAll(new LockManager(ref acquired));
 
     /// <summary>
     /// Indicates that exclusive lock taken.
     /// </summary>
-    public bool IsLockHeld => manager.VolatileRead();
+    public bool IsLockHeld => Volatile.Read(in acquired);
 
     /// <summary>
     /// Attempts to obtain exclusive lock synchronously without blocking caller thread.
@@ -72,7 +70,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     private bool TryAcquireCore()
     {
         var scope = AcquireInternalLock();
-        var result = IsLockHelpByCurrentThread = TryAcquire(ref manager);
+        var result = IsLockHelpByCurrentThread = TryAcquire(new LockManager(ref acquired));
         scope.Dispose();
 
         return result;
@@ -116,7 +114,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, LockManager>(ref manager, timeout, token);
+        => TryAcquireAsync<WaitNode, LockManager>(new(ref acquired), timeout, token);
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -130,7 +128,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync<WaitNode, LockManager>(ref manager, timeout, token);
+        => AcquireAsync<WaitNode, LockManager>(new(ref acquired), timeout, token);
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -142,7 +140,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, LockManager>(ref manager, token);
+        => AcquireAsync<WaitNode, LockManager>(new(ref acquired), token);
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires the lock.
@@ -161,7 +159,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask<bool> TryStealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, LockManager>(reason, ref manager, timeout, token);
+        => TryAcquireAsync<WaitNode, LockManager>(reason, new(ref acquired), timeout, token);
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires the lock.
@@ -181,7 +179,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync<WaitNode, LockManager>(reason, ref manager, timeout, token);
+        => AcquireAsync<WaitNode, LockManager>(reason, new(ref acquired), timeout, token);
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires the lock.
@@ -199,7 +197,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealAsync(object? reason = null, CancellationToken token = default)
-        => AcquireAsync<WaitNode, LockManager>(reason, ref manager, token);
+        => AcquireAsync<WaitNode, LockManager>(reason, new(ref acquired), token);
 
     /// <summary>
     /// Releases previously acquired exclusive lock.
@@ -213,10 +211,10 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         ManualResetCompletionSource? suspendedCaller;
         using (AcquireInternalLock())
         {
-            if (!manager.Value)
+            if (!acquired)
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
-            manager.ExitLock();
+            acquired = false;
             lockOwner = null;
             suspendedCaller = DrainWaitQueue();
 
@@ -229,5 +227,5 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
         suspendedCaller?.NotifyConsumer();
     }
 
-    private protected sealed override bool IsReadyToDispose => manager is { Value: false } && IsEmptyQueue;
+    private protected sealed override bool IsReadyToDispose => !acquired && IsEmptyQueue;
 }

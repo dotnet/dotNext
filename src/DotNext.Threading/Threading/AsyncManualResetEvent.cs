@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Runtime;
+using Runtime.CompilerServices;
 using Tasks;
 
 /// <summary>
@@ -12,43 +14,31 @@ using Tasks;
 public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager, IConsumer<WaitNode>
+    private readonly ref struct StateManager(ref bool signaled) : ILockManager, IConsumer<WaitNode>
     {
-        internal bool Value;
+        private readonly ref bool signaled = ref signaled;
 
-        internal StateManager(bool initialState)
-            => Value = initialState;
+        bool ILockManager.IsLockAllowed => signaled;
 
-        internal bool TryReset()
-        {
-            var result = Value;
-
-            if (result)
-                Value = false;
-
-            return result;
-        }
-
-        readonly bool ILockManager.IsLockAllowed => Value;
-
-        readonly void ILockManager.AcquireLock()
+        void ILockManager.AcquireLock()
         {
             // nothing to do here
         }
 
-        readonly void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
+        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
+
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
     }
 
-    private StateManager manager;
+    private bool signaled;
 
     /// <summary>
     /// Initializes a new asynchronous reset event in the specified state.
     /// </summary>
     /// <param name="initialState"><see langword="true"/> to set the initial state signaled; <see langword="false"/> to set the initial state to non signaled.</param>
     public AsyncManualResetEvent(bool initialState)
-    {
-        manager = new(initialState);
-    }
+        => signaled = initialState;
 
     private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
         => waitQueueVisitor.SignalAll();
@@ -59,7 +49,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <summary>
     /// Indicates whether this event is set.
     /// </summary>
-    public bool IsSet => Volatile.Read(ref manager.Value);
+    public bool IsSet => Volatile.Read(in signaled);
 
     /// <summary>
     /// Sets the state of the event to signaled, allowing one or more awaiters to proceed.
@@ -83,8 +73,8 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         using (AcquireInternalLock())
         {
-            result = !manager.Value;
-            manager.Value = !autoReset;
+            result = !signaled;
+            signaled = !autoReset;
             suspendedCallers = DrainWaitQueue();
         }
 
@@ -102,10 +92,19 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         var scope = AcquireInternalLock();
-        var result = manager.TryReset();
+        var result = TryReset(ref signaled);
         scope.Dispose();
 
         return result;
+        
+        static bool TryReset(ref bool signaled)
+        {
+            var result = signaled;
+            if (result)
+                signaled = false;
+
+            return result;
+        }
     }
 
     /// <inheritdoc/>
@@ -121,7 +120,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, StateManager>(ref manager, timeout, token);
+        => TryAcquireAsync<WaitNode, StateManager>(new(ref signaled), timeout, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -131,5 +130,5 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, StateManager>(ref manager, token);
+        => AcquireAsync<WaitNode, StateManager>(new(ref signaled), token);
 }

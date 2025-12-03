@@ -4,6 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Runtime;
+using Runtime.CompilerServices;
 using Tasks;
 
 /// <summary>
@@ -57,36 +59,46 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct WeakLockManager : ILockManager, IConsumer<WaitNode>
+    private readonly ref struct WeakLockManager(ref State state) : ILockManager<State, WeakLockManager>, IConsumer<WaitNode>
     {
-        private State state;
+        private readonly ref State state = ref state;
 
-        readonly bool ILockManager.IsLockAllowed
+        static WeakLockManager ILockManager<State, WeakLockManager>.Create(ref State state) => new(ref state);
+
+        bool ILockManager.IsLockAllowed
             => state.IsWeakLockAllowed;
 
         void ILockManager.AcquireLock()
             => state.AcquireWeakLock();
 
-        readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
+        void IConsumer<WaitNode>.Invoke(WaitNode node)
         {
             node.IsStrongLock = false;
             node.DrainOnReturn = true;
         }
+
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private struct StrongLockManager : ILockManager, IConsumer<WaitNode>
+    private readonly ref struct StrongLockManager(ref State state) : ILockManager<State, StrongLockManager>, IConsumer<WaitNode>
     {
-        private State state;
+        private readonly ref State state = ref state;
+        
+        static StrongLockManager ILockManager<State, StrongLockManager>.Create(ref State state) => new(ref state);
 
-        readonly bool ILockManager.IsLockAllowed
+        bool ILockManager.IsLockAllowed
             => state.IsStrongLockAllowed;
 
         void ILockManager.AcquireLock()
             => state.AcquireStrongLock();
 
-        readonly void IConsumer<WaitNode>.Invoke(WaitNode node)
+        void IConsumer<WaitNode>.Invoke(WaitNode node)
             => node.IsStrongLock = node.DrainOnReturn = true;
+        
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
     }
 
     private State state;
@@ -104,8 +116,8 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     private bool Signal(ref WaitQueueVisitor waitQueueVisitor, bool strongLock) => strongLock
-        ? waitQueueVisitor.SignalCurrent(ref GetLockManager<StrongLockManager>())
-        : waitQueueVisitor.SignalCurrent(ref GetLockManager<WeakLockManager>());
+        ? waitQueueVisitor.SignalCurrent(GetLockManager<StrongLockManager>())
+        : waitQueueVisitor.SignalCurrent(GetLockManager<WeakLockManager>());
 
     private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
     {
@@ -136,17 +148,17 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     public bool IsStrongLockHeld => state.IsStrongLockHeld;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private ref TLockManager GetLockManager<TLockManager>()
-        where TLockManager : struct, ILockManager, IConsumer<WaitNode>
-        => ref Unsafe.As<State, TLockManager>(ref state);
+    private TLockManager GetLockManager<TLockManager>()
+        where TLockManager : struct, ILockManager<State, TLockManager>, IConsumer<WaitNode>, allows ref struct
+        => GetLockManager<State, TLockManager>(ref state);
 
-    private bool TryAcquire<TManager>()
-        where TManager : struct, ILockManager, IConsumer<WaitNode>
+    private bool TryAcquire<TLockManager>()
+        where TLockManager : struct, ILockManager<State, TLockManager>, IConsumer<WaitNode>, allows ref struct
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         var scope = AcquireInternalLock();
-        var result = TryAcquire(ref GetLockManager<TManager>());
+        var result = TryAcquire(GetLockManager<TLockManager>());
         scope.Dispose();
 
         return result;
@@ -174,8 +186,8 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
     {
         return strongLock
-            ? TryAcquireAsync<WaitNode, StrongLockManager>(ref GetLockManager<StrongLockManager>(), timeout, token)
-            : TryAcquireAsync<WaitNode, WeakLockManager>(ref GetLockManager<WeakLockManager>(), timeout, token);
+            ? TryAcquireAsync<WaitNode, StrongLockManager>(GetLockManager<StrongLockManager>(), timeout, token)
+            : TryAcquireAsync<WaitNode, WeakLockManager>(GetLockManager<WeakLockManager>(), timeout, token);
     }
 
     /// <summary>
@@ -192,8 +204,8 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask AcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
     {
         return strongLock
-            ? AcquireAsync<WaitNode, StrongLockManager>(ref GetLockManager<StrongLockManager>(), token)
-            : AcquireAsync<WaitNode, WeakLockManager>(ref GetLockManager<WeakLockManager>(), token);
+            ? AcquireAsync<WaitNode, StrongLockManager>(GetLockManager<StrongLockManager>(), token)
+            : AcquireAsync<WaitNode, WeakLockManager>(GetLockManager<WeakLockManager>(), token);
     }
 
     /// <summary>
@@ -207,8 +219,8 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     public ValueTask AcquireAsync(bool strongLock, CancellationToken token = default)
     {
         return strongLock
-            ? AcquireAsync<WaitNode, StrongLockManager>(ref GetLockManager<StrongLockManager>(), token)
-            : AcquireAsync<WaitNode, WeakLockManager>(ref GetLockManager<WeakLockManager>(), token);
+            ? AcquireAsync<WaitNode, StrongLockManager>(GetLockManager<StrongLockManager>(), token)
+            : AcquireAsync<WaitNode, WeakLockManager>(GetLockManager<WeakLockManager>(), token);
     }
 
     /// <summary>

@@ -4,6 +4,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Runtime;
+using Runtime.CompilerServices;
 using Tasks;
 
 /// <summary>
@@ -16,14 +18,11 @@ using Tasks;
 public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 {
     [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager, IConsumer<WaitNode>
+    private struct State(long initialCount)
     {
-        internal long Current, Initial;
+        public long Current = initialCount, Initial = initialCount;
 
-        internal StateManager(long initialCount)
-            => Current = Initial = initialCount;
-
-        public readonly bool IsLockAllowed => Current is 0L;
+        public readonly bool IsEmpty => Current is 0L;
 
         internal void Increment(long value) => Current = checked(Current + value);
 
@@ -32,18 +31,31 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 
         internal void Decrement(long value = 1L)
             => Current = Math.Max(0L, Current - value);
+    }
 
-        readonly void ILockManager.AcquireLock()
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct StateManager(ref State state) : ILockManager<State, StateManager>, IConsumer<WaitNode>
+    {
+        private readonly ref State state = ref state;
+
+        static StateManager ILockManager<State, StateManager>.Create(ref State state) => new(ref state);
+
+        bool ILockManager.IsLockAllowed => state.IsEmpty;
+        
+        void ILockManager.AcquireLock()
         {
             // nothing to do here
         }
 
-        readonly void IConsumer<WaitNode>.Invoke(WaitNode node) => Initialize(node);
+        void IConsumer<WaitNode>.Invoke(WaitNode node) => Initialize(node);
 
         public static void Initialize(WaitNode node) => node.DrainOnReturn = false;
+
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
     }
 
-    private StateManager manager;
+    private State state;
 
     /// <summary>
     /// Creates a new countdown event with the specified count.
@@ -54,7 +66,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     {
         ArgumentOutOfRangeException.ThrowIfNegative(initialCount);
 
-        manager = new(initialCount);
+        state = new(initialCount);
     }
 
     private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor) => waitQueueVisitor.SignalAll();
@@ -62,12 +74,12 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <summary>
     /// Gets the numbers of signals initially required to set the event.
     /// </summary>
-    public long InitialCount => Atomic.Read(in manager.Initial);
+    public long InitialCount => Atomic.Read(in state.Initial);
 
     /// <summary>
     /// Gets the number of remaining signals required to set the event.
     /// </summary>
-    public long CurrentCount => Atomic.Read(in manager.Current);
+    public long CurrentCount => Atomic.Read(in state.Current);
 
     /// <summary>
     /// Indicates whether this event is set.
@@ -79,7 +91,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         Debug.Assert(signalCount > 0L);
 
         var scope = AcquireInternalLock();
-        manager.IncrementInitial(signalCount);
+        state.IncrementInitial(signalCount);
         scope.Dispose();
     }
 
@@ -90,9 +102,9 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         bool result;
         var scope = AcquireInternalLock();
 
-        if (result = manager.Current is not 0L)
+        if (result = !state.IsEmpty)
         {
-            manager.Increment(signalCount);
+            state.Increment(signalCount);
         }
 
         scope.Dispose();
@@ -169,8 +181,8 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         using (AcquireInternalLock())
         {
-            result = manager.Current is 0L;
-            manager.Current = manager.Initial;
+            result = state.Current is 0L;
+            state.Current = state.Initial;
             suspendedCallers = DrainWaitQueue(e);
         }
 
@@ -200,8 +212,8 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         using (AcquireInternalLock())
         {
-            result = manager.Current is 0L;
-            manager.Current = manager.Initial = count;
+            result = state.Current is 0L;
+            state.Current = state.Initial = count;
             suspendedCallers = DrainWaitQueue(e);
         }
 
@@ -213,10 +225,10 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     {
         AssertInternalLockState();
 
-        manager.Decrement();
-        if (manager.IsLockAllowed)
+        state.Decrement();
+        if (state.IsEmpty)
         {
-            manager.Current = manager.Initial;
+            state.Current = state.Initial;
             suspendedCallers = DrainWaitQueue();
             return true;
         }
@@ -277,11 +289,11 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         using (AcquireInternalLock())
         {
-            if (manager.Current is 0L)
+            if (state.Current is 0L)
                 throw new InvalidOperationException();
 
-            manager.Decrement(signalCount);
-            suspendedCallers = (result = manager.IsLockAllowed)
+            state.Decrement(signalCount);
+            suspendedCallers = (result = state.IsEmpty)
                 ? DrainWaitQueue()
                 : null;
         }
@@ -303,7 +315,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, StateManager>(ref manager, timeout, token);
+        => TryAcquireAsync<WaitNode, StateManager>(new(ref state), timeout, token);
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -313,5 +325,5 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, StateManager>(ref manager, token);
+        => AcquireAsync<WaitNode, StateManager>(new(ref state), token);
 }
