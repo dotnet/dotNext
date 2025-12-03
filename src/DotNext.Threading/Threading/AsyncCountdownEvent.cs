@@ -280,9 +280,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="InvalidOperationException">The current instance is already set; or <paramref name="signalCount"/> is greater than <see cref="CurrentCount"/>.</exception>
     public bool Signal(long signalCount = 1L)
     {
-        if (signalCount < 1L)
-            throw new ArgumentOutOfRangeException(nameof(signalCount));
-
+        ArgumentOutOfRangeException.ThrowIfLessThan(signalCount, 1L);
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
         bool result;
