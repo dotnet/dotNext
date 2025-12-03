@@ -159,4 +159,13 @@ public sealed class EnumTests : Test
         Equal(-1, EnumConverter.FromEnum<EnvironmentVariableTarget, short>(expected));
         Throws<OverflowException>(() => EnumConverter.FromEnum<EnvironmentVariableTarget, ushort>(expected));
     }
+
+    [Fact]
+    public static void UnderlyingType()
+    {
+        Equal(TypeCode.Int32, EnvironmentVariableTarget.UnderlyingType);
+        Equal(TypeCode.UInt32, UInt32Enum.UnderlyingType);
+        Equal(TypeCode.UInt64, UInt64Enum.UnderlyingType);
+        Equal(TypeCode.Byte, ByteEnum.UnderlyingType);
+    }
 }
