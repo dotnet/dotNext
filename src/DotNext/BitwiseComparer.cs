@@ -2,6 +2,7 @@ using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext;
 
+using Patterns;
 using static Runtime.CompilerServices.AdvancedHelpers;
 using FNV1a32 = IO.Hashing.FNV1a32;
 
@@ -9,7 +10,7 @@ using FNV1a32 = IO.Hashing.FNV1a32;
 /// Represents bitwise comparer for the arbitrary value type.
 /// </summary>
 /// <typeparam name="T">The value type.</typeparam>
-public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>
+public sealed class BitwiseComparer<T> : IEqualityComparer<T>, IComparer<T>, ISingleton<BitwiseComparer<T>>
     where T : unmanaged
 {
     private BitwiseComparer()
