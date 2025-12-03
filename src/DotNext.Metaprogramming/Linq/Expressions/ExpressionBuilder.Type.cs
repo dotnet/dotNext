@@ -30,7 +30,7 @@ partial class ExpressionBuilder
         /// <returns>Instantiation expression.</returns>
         public NewExpression New(params Expression[] args)
         {
-            if (args.LongLength is 0L)
+            if (args is [])
                 return Expression.New(type);
 
             return type.GetConstructor(Array.ConvertAll(args, static arg => arg.Type)) is { } ctor

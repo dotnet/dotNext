@@ -76,12 +76,12 @@ public sealed class AsyncResultExpression : CustomExpression
         if (AsyncResult.Type == typeof(void))
         {
             completedTask = Block(AsyncResult, Default(typeof(CompletedTask)));
-            failedTask = typeof(CompletedTask).New(caughtException);
+            failedTask = typeof(CompletedTask).New([caughtException]);
         }
         else
         {
-            completedTask = typeof(CompletedTask<>).MakeGenericType(AsyncResult.Type).New(AsyncResult);
-            failedTask = completedTask.Type.New(caughtException);
+            completedTask = typeof(CompletedTask<>).MakeGenericType(AsyncResult.Type).New([AsyncResult]);
+            failedTask = completedTask.Type.New([caughtException]);
         }
 
         return AsyncResult is ConstantExpression or DefaultExpression ?
