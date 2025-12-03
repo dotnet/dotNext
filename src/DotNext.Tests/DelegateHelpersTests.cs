@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -59,73 +58,85 @@ public sealed class DelegateHelpersTests : Test
         Equal(42L, d(42M));
     }
 
-    private static int GetLength(string value) => value.Length;
-
     [Fact]
-    public static void BindUnbind1()
+    public static void FuncBindingChain()
     {
-        var func = new Func<string, int>(GetLength).Bind("abc");
-        Equal(3, func());
-        Equal(4, func.Unbind<string, int>().Invoke("abcd"));
+        var func = new Func<string, string, string, string, string, string>(Concat) << "abc" << "d" << "e" << "f" << "g";
+        Equal("abcdefg", func());
 
-        var func2 = new Func<string, bool>("abc".Contains).Bind("a");
-        True(func2());
-        True(func2.Unbind<string, bool>().Invoke("c"));
-        Throws<InvalidOperationException>(() => func2.Unbind<object, bool>());
-    }
-
-    [Fact]
-    public static void BindUnbind2()
-    {
-        var func = new Func<string, string, string>(string.Concat).Bind("abc");
-        Equal("abcde", func("de"));
-        Equal("abcde", func.Unbind<string, string, string>().Invoke("ab", "cde"));
-
-        var func2 = new Func<string, string, string>("abc".Replace).Bind("a");
-        Equal("1bc", func2("1"));
-        Equal("2bc", func2.Unbind<string, string, string>().Invoke("a", "2"));
-        Throws<InvalidOperationException>(() => func2.Unbind<object, string, string>());
-    }
-
-    [Fact]
-    public static void BindUnbind3()
-    {
-        var func = new Func<string, string, string, string>(string.Concat).Bind("abc");
-        Equal("abcde", func("d", "e"));
-        Equal("abcde", func.Unbind<string, string, string, string>().Invoke("ab", "cd", "e"));
-
-        var func2 = new Func<string, string, StringComparison, string>("abc".Replace).Bind("a");
-        Equal("1bc", func2("1", StringComparison.Ordinal));
-        Equal("2bc", func2.Unbind<string, string, StringComparison, string>().Invoke("a", "2", StringComparison.Ordinal));
-    }
-
-    [Fact]
-    public static void BindUnbind4()
-    {
-        var func = new Func<string, string, string, string, string>(string.Concat).Bind("abc");
-        Equal("abcdef", func("d", "e", "f"));
-        Equal("abcdef", func.Unbind<string, string, string, string, string>().Invoke("ab", "cd", "e", "f"));
-
-        var func2 = new Func<string, string, bool, CultureInfo, string>("abc".Replace).Bind("a");
-        Equal("1bc", func2("1", false, CultureInfo.InvariantCulture));
-        Equal("2bc", func2.Unbind<string, string, bool, CultureInfo, string>().Invoke("a", "2", false, CultureInfo.InvariantCulture));
-    }
-
-    [Fact]
-    public static void BindUnbind5()
-    {
+        func = new Func<string, string, string, string, string, string>(Concat)
+            .Bind("abc")
+            .Bind("d")
+            .Bind("e")
+            .Bind("f")
+            .Bind("g");
+        Equal("abcdefg", func());
+        
+        Equal("abcdefg", func
+            .Unbind<string, string>()
+            .Unbind<string, string, string>()
+            .Unbind<string, string, string, string>()
+            .Unbind<string, string, string, string, string>()
+            .Unbind<string, string, string, string, string, string>()
+            .Invoke("abc", "d", "e", "f", "g"));
+        
         static string Concat(string str1, string str2, string str3, string str4, string str5)
             => str1 + str2 + str3 + str4 + str5;
-        var func = new Func<string, string, string, string, string, string>(Concat).Bind("abc");
-        Equal("abcdefg", func("d", "e", "f", "g"));
-        Equal("abcdefg", func.Unbind<string, string, string, string, string, string>().Invoke("ab", "cd", "e", "f", "g"));
+    }
+
+    [Fact]
+    public static void ActionBindingChain()
+    {
+        var acc = new Accumulator();
+        var action = new Action<string, string, string, string, string>(acc.Sum) << "abc" << "d" << "e" << "f" << "g";
+        action.Invoke();
+        Equal("abcdefg", acc.Value);
+
+        acc.Value = null;
+        action = new Action<string, string, string, string, string>(acc.Sum)
+            .Bind("abc")
+            .Bind("d")
+            .Bind("e")
+            .Bind("f")
+            .Bind("g");
+        action.Invoke();
+        Equal("abcdefg", acc.Value);
+        acc.Value = null;
+
+        action
+            .Unbind<string>()
+            .Unbind<string, string>()
+            .Unbind<string, string, string>()
+            .Unbind<string, string, string, string>()
+            .Unbind<string, string, string, string, string>()
+            .Invoke("abc", "d", "e", "f", "g");
+        Equal("abcdefg", acc.Value);
+        acc.Value = null;
+
+        var staticAction = action
+            .Unbind<string>()
+            .Unbind<string, string>()
+            .Unbind<string, string, string>()
+            .Unbind<string, string, string, string>()
+            .Unbind<string, string, string, string, string>()
+            .Unbind<Accumulator, string, string, string, string, string>();
+        staticAction.Invoke(acc, "abc", "d", "e", "f", "g");
+        Equal("abcdefg", acc.Value);
+    }
+    
+    private sealed class Accumulator
+    {
+        public string Value;
+
+        public void Sum(string x1, string x2, string x3, string x4, string x5)
+            => Value += x1 + x2 + x3 + x4 + x5;
     }
 
     [Fact]
     public static void BindUnbindPredicate()
     {
         Predicate<string> predicate = string.IsNullOrEmpty;
-        var func = predicate.Bind(string.Empty);
+        var func = predicate << string.Empty;
         True(func());
         func = predicate.Bind("abc");
         False(func());

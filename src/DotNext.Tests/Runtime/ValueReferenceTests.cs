@@ -91,7 +91,7 @@ public sealed class ValueReferenceTests : Test
         True(span.IsEmpty);
 
         Throws<NullReferenceException>((Func<string>)reference);
-        Throws<NullReferenceException>(((Action<string>)reference).Bind(string.Empty));
+        Throws<NullReferenceException>((Action<string>)reference << string.Empty);
     }
 
     [Fact]
