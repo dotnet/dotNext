@@ -1,7 +1,6 @@
 ﻿using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
@@ -111,7 +110,7 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
     }
 
     private UnmanagedMemoryOwner<T, TAllocator> Rent<TAllocator>(int length)
-        where TAllocator : struct, INativeMemoryAllocator<T>
+        where TAllocator : struct, INativeMemoryAllocator<T>, allows ref struct
         => new PoolingUnmanagedMemoryOwner<T, TAllocator>(length, removeMemory);
 
     /// <summary>
@@ -130,7 +129,7 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
 
 file sealed class PoolingUnmanagedMemoryOwner<T, TAllocator> : UnmanagedMemoryOwner<T, TAllocator>, IUnmanagedMemory<T>
     where T : unmanaged
-    where TAllocator : struct, INativeMemoryAllocator<T>
+    where TAllocator : struct, INativeMemoryAllocator<T>, allows ref struct
 {
     private Action<IUnmanagedMemory<T>>? onDisposedCallback;
 

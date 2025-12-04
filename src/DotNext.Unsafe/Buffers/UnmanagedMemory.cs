@@ -16,135 +16,163 @@ using Runtime.InteropServices;
 public static class UnmanagedMemory
 {
     /// <summary>
-    /// Allocates a block of unmanaged memory of the specified size, in elements.
+    /// Extends <see cref="IUnmanagedMemory{T}"/> type.
     /// </summary>
     /// <typeparam name="T">The type of the elements in the unmanaged memory block.</typeparam>
-    /// <param name="length">The number of elements to be allocated in unmanaged memory.</param>
-    /// <returns>The object representing allocated unmanaged memory.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than or equal to zero.</exception>
-    [CLSCompliant(false)]
-    public static IUnmanagedMemory<T> Allocate<T>(int length)
-        where T : unmanaged
+    extension<T>(IUnmanagedMemory<T>) where T : unmanaged
     {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
-        return new UnmanagedMemoryOwner<T, DraftAllocator<T>>(length);
-    }
-
-    /// <summary>
-    /// Allocates and zeroes a block of unmanaged memory of the specified size, in elements.
-    /// </summary>
-    /// <typeparam name="T">The type of the elements in the unmanaged memory block.</typeparam>
-    /// <param name="length">The number of elements to be allocated in unmanaged memory.</param>
-    /// <returns>The object representing allocated unmanaged memory.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than or equal to zero.</exception>
-    [CLSCompliant(false)]
-    public static IUnmanagedMemory<T> AllocateZeroed<T>(int length)
-        where T : unmanaged
-    {
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
-        return new UnmanagedMemoryOwner<T, ZeroedAllocator<T>>(length);
-    }
-
-    /// <summary>
-    /// Gets allocator of unmanaged memory.
-    /// </summary>
-    /// <typeparam name="T">The type of the elements in the memory block.</typeparam>
-    /// <param name="zeroMem"><see langword="true"/> to set all bits in the memory to zero; otherwise, <see langword="false"/>.</param>
-    /// <returns>The unmanaged memory allocator.</returns>
-    public static MemoryAllocator<T> GetAllocator<T>(bool zeroMem)
-        where T : unmanaged
-    {
-        return zeroMem
-            ? Allocate<ZeroedAllocator<T>>
-            : Allocate<DraftAllocator<T>>;
-
-        static MemoryOwner<T> Allocate<TAllocator>(int length)
-            where TAllocator : unmanaged, INativeMemoryAllocator<T>
-            => new(static length => new UnmanagedMemoryOwner<T, TAllocator>(length), length);
-    }
-
-    /// <summary>
-    /// Wraps unmanaged pointer to <see cref="Memory{T}"/>.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the memory.</typeparam>
-    /// <param name="pointer">The pointer to a sequence of elements.</param>
-    /// <param name="length">The number of elements.</param>
-    /// <returns></returns>
-    [CLSCompliant(false)]
-    public static unsafe Memory<T> AsMemory<T>(T* pointer, int length)
-        where T : unmanaged
-    {
-        ArgumentNullException.ThrowIfNull(pointer);
-        ArgumentOutOfRangeException.ThrowIfNegative(length);
-
-        return length > 0
-            ? new UnmanagedMemory<T>(pointer, length).Memory
-            : Memory<T>.Empty;
-    }
-
-    /// <summary>
-    /// Allocates a specified number of system pages.
-    /// </summary>
-    /// <param name="pageCount">The number of system pages to be allocated.</param>
-    /// <returns>A memory owner that represents allocated system pages.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="pageCount"/> is negative or zero.</exception>
-    public static IMemoryOwner<byte> AllocateSystemPages(int pageCount)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegative(pageCount);
-
-        return pageCount is 0 ? UnmanagedMemory<byte>.Empty() : new SystemPageManager(pageCount);
-    }
-
-    /// <summary>
-    /// Allocates page-aligned memory.
-    /// </summary>
-    /// <param name="size">The number of bytes to be allocated.</param>
-    /// <param name="roundUpSize"><see langword="true"/> to round up the <paramref name="size"/> to the page size; otherwise, <see langword="false"/>.</param>
-    /// <returns>A memory owner that represents page-aligned memory block.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="size"/> is negative or zero.</exception>
-    [CLSCompliant(false)]
-    public static IMemoryOwner<byte> AllocatePageAlignedMemory(int size, bool roundUpSize = false)
-    {
-        ArgumentOutOfRangeException.ThrowIfNegative(size);
-
-        return size is 0 ? UnmanagedMemory<byte>.Empty() : new SystemPageManager(size, roundUpSize);
-    }
-
-    /// <summary>
-    /// Calculates the page aligned offset for the specified memory block.
-    /// </summary>
-    /// <param name="memory">The memory block.</param>
-    /// <param name="offset">The offset to the page-aligned element.</param>
-    /// <returns><see langword="true"/> if the <paramref name="offset"/> within the memory range; otherwise, <see langword="false"/>.</returns>
-    public static unsafe bool GetPageAlignedOffset(ReadOnlySpan<byte> memory, out int offset)
-    {
-        nuint pageSize = (uint)Environment.SystemPageSize;
-        fixed (void* ptr = memory)
+        /// <summary>
+        /// Allocates a block of unmanaged memory of the specified size, in elements.
+        /// </summary>
+        /// <param name="length">The number of elements to be allocated in unmanaged memory.</param>
+        /// <returns>The object representing allocated unmanaged memory.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than or equal to zero.</exception>
+        [CLSCompliant(false)]
+        public static IUnmanagedMemory<T> Allocate(int length)
         {
-            var address = (nuint)ptr;
-            var alignedAddress = address - (address & ((uint)Environment.SystemPageSize - 1));
-            alignedAddress = address == alignedAddress ? alignedAddress : alignedAddress + pageSize;
-
-            offset = (int)(alignedAddress - address);
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
+            return Allocate<T, DraftAllocator<T>>(length);
         }
 
-        return offset < memory.Length;
+        /// <summary>
+        /// Allocates and zeroes a block of unmanaged memory of the specified size, in elements.
+        /// </summary>
+        /// <param name="length">The number of elements to be allocated in unmanaged memory.</param>
+        /// <returns>The object representing allocated unmanaged memory.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than or equal to zero.</exception>
+        [CLSCompliant(false)]
+        public static IUnmanagedMemory<T> AllocateZeroed(int length)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
+            return Allocate<T, ZeroedAllocator<T>>(length);
+        }
+
+        private static UnmanagedMemoryOwner<T, TAllocator> Allocate<TAllocator>(int length)
+            where TAllocator : unmanaged, INativeMemoryAllocator<T>, allows ref struct
+            => new(length);
     }
 
     /// <summary>
-    /// Returns the backing RAM back to the OS.
+    /// Extends <see cref="MemoryAllocator{T}"/> type.
     /// </summary>
-    /// <param name="memoryBlock">A region of the virtual memory.</param>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// The length or the offset of <paramref name="memoryBlock"/> is not page-aligned.
-    /// </exception>
-    /// <seealso cref="AllocateSystemPages"/>
-    public static unsafe void Discard<T>(Span<T> memoryBlock)
-        where T : unmanaged
+    /// <typeparam name="T">The type of the elements in the memory block.</typeparam>
+    extension<T>(MemoryAllocator<T>) where T : unmanaged
     {
-        fixed (void* ptr = memoryBlock)
+        /// <summary>
+        /// Gets the unmanaged memory allocator.
+        /// </summary>
+        public static MemoryAllocator<T> Unmanaged => GetAllocator<T>(zeroMem: false);
+
+        /// <summary>
+        /// Gets the unmanaged memoir
+        /// </summary>
+        public static MemoryAllocator<T> UnmanagedZeroMem => GetAllocator<T>(zeroMem: true);
+        
+        private static MemoryAllocator<T> GetAllocator(bool zeroMem)
         {
-            SystemPageManager.Discard((nint)ptr, memoryBlock.Length);
+            return zeroMem
+                ? Allocate<ZeroedAllocator<T>>
+                : Allocate<DraftAllocator<T>>;
+
+            static MemoryOwner<T> Allocate<TAllocator>(int length)
+                where TAllocator : unmanaged, INativeMemoryAllocator<T>, allows ref struct
+                => new(Allocate<T, TAllocator>, length);
+        }
+    }
+
+    /// <summary>
+    /// Extends <see cref="Memory{T}"/> type.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the memory.</typeparam>
+    extension<T>(Memory<T>) where T : unmanaged
+    {
+        /// <summary>
+        /// Wraps unmanaged pointer to <see cref="Memory{T}"/>.
+        /// </summary>
+        /// <param name="pointer">The pointer to a sequence of elements.</param>
+        /// <param name="length">The number of elements.</param>
+        /// <returns></returns>
+        [CLSCompliant(false)]
+        public static unsafe Memory<T> FromPointer(T* pointer, int length)
+        {
+            ArgumentNullException.ThrowIfNull(pointer);
+            ArgumentOutOfRangeException.ThrowIfNegative(length);
+
+            return length > 0
+                ? new UnmanagedMemory<T>(pointer, length).Memory
+                : Memory<T>.Empty;
+        }
+    }
+
+    /// <summary>
+    /// Extends <see cref="NativeMemory"/> type.
+    /// </summary>
+    extension(NativeMemory)
+    {
+        /// <summary>
+        /// Allocates a specified number of system pages.
+        /// </summary>
+        /// <param name="pageCount">The number of system pages to be allocated.</param>
+        /// <returns>A memory owner that represents allocated system pages.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="pageCount"/> is negative or zero.</exception>
+        public static IMemoryOwner<byte> AllocateSystemPages(int pageCount)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(pageCount);
+
+            return pageCount is 0 ? UnmanagedMemory<byte>.Empty() : new SystemPageManager(pageCount);
+        }
+
+        /// <summary>
+        /// Allocates page-aligned memory.
+        /// </summary>
+        /// <param name="size">The number of bytes to be allocated.</param>
+        /// <param name="roundUpSize"><see langword="true"/> to round up the <paramref name="size"/> to the page size; otherwise, <see langword="false"/>.</param>
+        /// <returns>A memory owner that represents page-aligned memory block.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="size"/> is negative or zero.</exception>
+        [CLSCompliant(false)]
+        public static IMemoryOwner<byte> AllocatePageAlignedMemory(int size, bool roundUpSize = false)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(size);
+
+            return size is 0 ? UnmanagedMemory<byte>.Empty() : new SystemPageManager(size, roundUpSize);
+        }
+
+        /// <summary>
+        /// Calculates the page aligned offset for the specified memory block.
+        /// </summary>
+        /// <param name="memory">The memory block.</param>
+        /// <param name="offset">The offset to the page-aligned element.</param>
+        /// <returns><see langword="true"/> if the <paramref name="offset"/> within the memory range; otherwise, <see langword="false"/>.</returns>
+        public static unsafe bool GetPageAlignedOffset(ReadOnlySpan<byte> memory, out int offset)
+        {
+            nuint pageSize = (uint)Environment.SystemPageSize;
+            fixed (void* ptr = memory)
+            {
+                var address = (nuint)ptr;
+                var alignedAddress = address - (address & ((uint)Environment.SystemPageSize - 1));
+                alignedAddress = address == alignedAddress ? alignedAddress : alignedAddress + pageSize;
+
+                offset = (int)(alignedAddress - address);
+            }
+
+            return offset < memory.Length;
+        }
+
+        /// <summary>
+        /// Returns the backing RAM back to the OS.
+        /// </summary>
+        /// <param name="memoryBlock">A region of the virtual memory.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// The length or the offset of <paramref name="memoryBlock"/> is not page-aligned.
+        /// </exception>
+        /// <seealso cref="AllocateSystemPages"/>
+        public static unsafe void Discard<T>(Span<T> memoryBlock)
+            where T : unmanaged
+        {
+            fixed (void* ptr = memoryBlock)
+            {
+                SystemPageManager.Discard((nint)ptr, memoryBlock.Length);
+            }
         }
     }
 }
@@ -210,7 +238,7 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
 
 internal class UnmanagedMemoryOwner<T, TAllocator> : UnmanagedMemory<T>, IUnmanagedMemory<T>
     where T : unmanaged
-    where TAllocator : struct, INativeMemoryAllocator<T>
+    where TAllocator : struct, INativeMemoryAllocator<T>, allows ref struct
 {
     public unsafe UnmanagedMemoryOwner(int length)
         : base(INativeMemoryAllocator<T>.Allocate<TAllocator>((uint)length), length)

@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
@@ -215,7 +216,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     public static unsafe void MarshalAsMemory()
     {
         var ptr = stackalloc int[] { 10, 20, 30 };
-        var memory = UnmanagedMemory.AsMemory(ptr, 3);
+        var memory = Memory<int>.FromPointer(ptr, 3);
         False(memory.IsEmpty);
         Equal([10, 20, 30], memory.Span);
 
@@ -225,7 +226,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static unsafe void AllocateSystemPages()
     {
-        using var owner = UnmanagedMemory.AllocateSystemPages(2);
+        using var owner = NativeMemory.AllocateSystemPages(2);
         using var handle = owner.Memory.Pin();
         True((nuint)handle.Pointer % (uint)Environment.SystemPageSize is 0);
     }
@@ -233,16 +234,16 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void AllocateSystemPagesInvalidPageCount()
     {
-        Throws<ArgumentOutOfRangeException>(static () => UnmanagedMemory.AllocateSystemPages(-1));
+        Throws<ArgumentOutOfRangeException>(static () => NativeMemory.AllocateSystemPages(-1));
         
-        var owner = UnmanagedMemory.AllocateSystemPages(0);
+        var owner = NativeMemory.AllocateSystemPages(0);
         Equal(Memory<byte>.Empty, owner.Memory);
     }
 
     [Fact]
     public static unsafe void AllocatePageAlignedMemory()
     {
-        using var owner = UnmanagedMemory.AllocatePageAlignedMemory(Environment.SystemPageSize - 1, roundUpSize: true);
+        using var owner = NativeMemory.AllocatePageAlignedMemory(Environment.SystemPageSize - 1, roundUpSize: true);
         Equal(Environment.SystemPageSize, owner.Memory.Length);
         
         using var handle = owner.Memory.Pin();
@@ -254,14 +255,14 @@ public sealed class UnmanagedMemoryPoolTests : Test
     {
         Throws<ArgumentOutOfRangeException>(static () => UnmanagedMemory.AllocatePageAlignedMemory(-1));
 
-        var owner = UnmanagedMemory.AllocatePageAlignedMemory(0);
+        var owner = NativeMemory.AllocatePageAlignedMemory(0);
         Equal(Memory<byte>.Empty, owner.Memory);
     }
 
     [PlatformSpecificFact(["linux", "windows"])]
     public static void DiscardPages()
     {
-        using var systemPages = UnmanagedMemory.AllocateSystemPages(1);
+        using var systemPages = NativeMemory.AllocateSystemPages(1);
         systemPages.Memory.Span[0] = 42;
         
         // On FreeBSD and MacOS, the method doesn't clear the memory
@@ -274,9 +275,9 @@ public sealed class UnmanagedMemoryPoolTests : Test
     public static void DiscardPinnedMemory()
     {
         var bytes = GC.AllocateArray<byte>(Environment.SystemPageSize * 2, pinned: true);
-        True(UnmanagedMemory.GetPageAlignedOffset(bytes, out var offset));
+        True(NativeMemory.GetPageAlignedOffset(bytes, out var offset));
         
-        UnmanagedMemory.Discard(bytes.AsSpan(offset, Environment.SystemPageSize));
+        NativeMemory.Discard(bytes.AsSpan(offset, Environment.SystemPageSize));
     }
 
     [Fact]

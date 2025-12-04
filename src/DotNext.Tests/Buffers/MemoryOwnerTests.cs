@@ -70,8 +70,8 @@ public sealed class MemoryOwnerTests : Test
     [
         MemoryAllocator<int>.ArrayAllocator,
         MemoryAllocator<int>.PinnedArrayAllocator,
-        UnmanagedMemory.GetAllocator<int>(zeroMem: false),
-        UnmanagedMemory.GetAllocator<int>(zeroMem: true)
+        MemoryAllocator<int>.Unmanaged,
+        MemoryAllocator<int>.UnmanagedZeroMem
     ];
 
     [Theory]
