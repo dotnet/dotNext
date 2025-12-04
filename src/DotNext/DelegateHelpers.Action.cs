@@ -103,6 +103,11 @@ public partial class DelegateHelpers
 
             return task;
         }
+
+        /// <summary>
+        /// Gets the action that does nothing.
+        /// </summary>
+        public static Action NoOp => static () => { };
     }
 
     /// <summary>
@@ -215,6 +220,11 @@ public partial class DelegateHelpers
             action(item);
             return item;
         }
+
+        /// <summary>
+        /// Gets the action that does nothing.
+        /// </summary>
+        public static Action<T> NoOp => static _ => { };
     }
 
     /// <summary>
@@ -319,6 +329,11 @@ public partial class DelegateHelpers
 
             return task;
         }
+
+        /// <summary>
+        /// Gets the action that does nothing.
+        /// </summary>
+        public static Action<T1, T2> NoOp => static (_, _) => { };
     }
 
     /// <summary>
@@ -426,6 +441,11 @@ public partial class DelegateHelpers
 
             return task;
         }
+
+        /// <summary>
+        /// Gets the action that does nothing.
+        /// </summary>
+        public static Action<T1, T2, T3> NoOp => static (_, _, _) => { };
     }
 
     /// <summary>
@@ -500,6 +520,11 @@ public partial class DelegateHelpers
             Newobj(Constructor(Type<Action<T1, T2, T3, T4>>(), Type<object>(), Type<IntPtr>()));
             return Return<Action<T1, T2, T3, T4>>();
         }
+
+        /// <summary>
+        /// Gets the action that does nothing.
+        /// </summary>
+        public static Action<T1, T2, T3, T4> NoOp => static (_, _, _, _) => { };
     }
 
     /// <summary>
@@ -578,6 +603,11 @@ public partial class DelegateHelpers
             Newobj(Constructor(Type<Action<T1, T2, T3, T4, T5>>(), Type<object>(), Type<IntPtr>()));
             return Return<Action<T1, T2, T3, T4, T5>>();
         }
+
+        /// <summary>
+        /// Gets the action that does nothing.
+        /// </summary>
+        public static Action<T1, T2, T3, T4, T5> NoOp => static (_, _, _, _, _) => { };
     }
 
     /// <summary>
@@ -660,5 +690,10 @@ public partial class DelegateHelpers
             Newobj(Constructor(Type<Action<T1, T2, T3, T4, T5, T6>>(), Type<object>(), Type<IntPtr>()));
             return Return<Action<T1, T2, T3, T4, T5, T6>>();
         }
+
+        /// <summary>
+        /// Gets the action that does nothing.
+        /// </summary>
+        public static Action<T1, T2, T3, T4, T5, T6> NoOp => static (_, _, _, _, _, _) => { };
     }
 }

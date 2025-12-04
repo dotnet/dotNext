@@ -703,4 +703,17 @@ public sealed class DelegateHelpersTests : Test
         False((pred1 ^ pred2).Invoke(1));
         True((pred1 ^ pred2).Invoke(19));
     }
+
+    [Fact]
+    public static void NoOperation()
+    {
+        Same(Action.NoOp, Action.NoOp);
+        Action.NoOp.Invoke();
+        Action<int>.NoOp.Invoke(42);
+        Action<int, int>.NoOp.Invoke(42, 42);
+        Action<int, int, int>.NoOp.Invoke(42, 42, 42);
+        Action<int, int, int, int>.NoOp.Invoke(42, 42, 42, 42);
+        Action<int, int, int, int, int>.NoOp.Invoke(42, 42, 42, 42, 42);
+        Action<int, int, int, int, int, int>.NoOp.Invoke(42, 42, 42, 42, 42, 42);
+    }
 }
