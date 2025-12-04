@@ -1,8 +1,11 @@
 using System.Runtime.CompilerServices;
 
-namespace DotNext.Buffers;
+namespace DotNext;
 
-partial class Memory
+/// <summary>
+/// Extends <see cref="ArgumentException"/> type.
+/// </summary>
+public static class ArgumentExceptionExtensions
 {
     /// <summary>
     /// Adds additional static checkers to <see cref="ArgumentException"/> type.

@@ -4,6 +4,8 @@ using System.Runtime.InteropServices.Marshalling;
 
 namespace DotNext.Runtime.InteropServices;
 
+using IO;
+
 /// <summary>
 /// Represents common interface for the wrapper of the unmanaged memory.
 /// </summary>

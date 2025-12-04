@@ -60,14 +60,6 @@ public readonly partial struct Pointer<T> :
     }
 
     /// <summary>
-    /// Gets boxed pointer.
-    /// </summary>
-    /// <returns>The boxed pointer.</returns>
-    /// <seealso cref="Pointer"/>
-    [CLSCompliant(false)]
-    public unsafe object GetBoxedPointer() => Pointer.Box(value, typeof(T*));
-
-    /// <summary>
     /// Determines whether this pointer is aligned
     /// to the size of <typeparamref name="T"/>.
     /// </summary>

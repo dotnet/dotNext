@@ -1,6 +1,6 @@
-using System.Runtime.CompilerServices;
+namespace DotNext.IO;
 
-namespace DotNext.Runtime.InteropServices;
+using Runtime.InteropServices;
 
 /// <summary>
 /// Extensions for <see cref="Pointer{T}"/> data type.

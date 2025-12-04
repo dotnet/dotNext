@@ -4,6 +4,9 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.InteropServices;
 
+using IO;
+using Reflection;
+
 public sealed class PointerTests : Test
 {
     [Fact]
@@ -33,7 +36,7 @@ public sealed class PointerTests : Test
         using var pinned = array.Pin();
         using var ms = new MemoryStream();
         var ptr = (Pointer<ushort>)pinned;
-        await ptr.WriteToAsync(ms, array.Length);
+        await ptr.WriteToAsync(ms, array.Length, TestToken);
         Equal(6L, ms.Length);
         True(ms.TryGetBuffer(out var buffer));
         buffer.AsSpan().ForEach(static (element, _) =>
@@ -42,7 +45,7 @@ public sealed class PointerTests : Test
                 element.Value = 20;
         });
         ms.Position = 0;
-        Equal(6, await ptr.ReadFromAsync(ms, array.Length));
+        Equal(6, await ptr.ReadFromAsync(ms, array.Length, TestToken));
         Equal(20, ptr[0]);
     }
 
@@ -251,7 +254,7 @@ public sealed class PointerTests : Test
     {
         Pointer<int> ptr = stackalloc int[1];
         ptr.Value = 42;
-        var obj = ptr.GetBoxedPointer();
+        var obj = Pointer.Box(ptr);
         IsType<Pointer>(obj);
         Equal(ptr.Address, new IntPtr(Pointer.Unbox(obj)));
     }
