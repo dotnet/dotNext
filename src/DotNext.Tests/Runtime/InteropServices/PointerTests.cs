@@ -123,7 +123,7 @@ public sealed class PointerTests : Test
     public static unsafe void ToStreamConversion()
     {
         Pointer<byte> ptr = stackalloc byte[] { 10, 20, 30 };
-        using var stream = ptr.AsStream(3);
+        using var stream = Stream.Create(ptr, 3);
         var bytes = new byte[3];
         Equal(3, stream.Read(bytes, 0, 3));
         Equal(10, bytes[0]);

@@ -39,7 +39,7 @@ public interface IUnmanagedMemory : IDisposable
     /// </summary>
     /// <returns>The stream of unmanaged memory.</returns>
     /// <exception cref="ObjectDisposedException">The underlying unmanaged memory has been released.</exception>
-    Stream AsStream() => Pointer.AsStream(long.CreateChecked(Size));
+    Stream AsStream() => Stream.Create(Pointer, long.CreateChecked(Size));
 }
 
 /// <summary>

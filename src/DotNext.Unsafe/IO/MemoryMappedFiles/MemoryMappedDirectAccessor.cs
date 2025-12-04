@@ -18,7 +18,7 @@ public unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
     internal MemoryMappedDirectAccessor(MemoryMappedViewAccessor accessor)
     {
         this.accessor = accessor;
-        ptr = default;
+        ptr = null;
         accessor.SafeMemoryMappedViewHandle.AcquirePointer(ref ptr);
     }
 
@@ -29,7 +29,7 @@ public unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
     /// The caller is responsible for disposing of the returned stream.
     /// </remarks>
     /// <returns>The stream representing virtual memory of the memory-mapped file.</returns>
-    public readonly Stream AsStream() => accessor is null ? Stream.Null : Pointer.AsStream(Size, accessor.GetFileAccess());
+    public readonly Stream AsStream() => Stream.Create(Pointer, Size, accessor.GetFileAccess());
 
     /// <summary>
     /// Gets a value indicating that this object doesn't represent the memory-mapped file segment.
