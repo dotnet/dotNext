@@ -21,7 +21,7 @@ public sealed class StreamSegmentTests : Test
         using var segment = new StreamSegment(ms);
         Same(ms, segment.BaseStream);
         Equal(0, segment.Position);
-        segment.Range = (0, 2);
+        segment.Range = (0L, 2L);
         Equal(1, segment.ReadByte());
         Equal(1, segment.Position);
 
@@ -30,6 +30,8 @@ public sealed class StreamSegmentTests : Test
 
         Equal(-1, segment.ReadByte());
         Equal(2, segment.Position);
+
+        Equal((0L, 2L), segment.Range);
     }
 
     [Fact]
