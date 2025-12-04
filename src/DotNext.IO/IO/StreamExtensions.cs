@@ -72,6 +72,18 @@ public static partial class StreamExtensions
         }
 
         /// <summary>
+        /// Creates a stream wrapper over the memory block.
+        /// </summary>
+        /// <param name="memory">The memory block to wrap.</param>
+        /// <param name="skipOnOverflow">
+        /// Indicates that <see cref="Stream.Write(ReadOnlySpan{byte})"/> and <see cref="Stream.WriteAsync(ReadOnlyMemory{byte}, CancellationToken)"/> must throw
+        /// <see cref="IOException"/> if the caller is trying to write past to the end of the underlying buffer.
+        /// </param>
+        /// <returns>The wrapper stream.</returns>
+        public static MemorySegmentStream Create(Memory<byte> memory, bool skipOnOverflow = false)
+            => new(memory) { SkipOnOverflow = false };
+
+        /// <summary>
         /// Creates a slice over the specified stream.
         /// </summary>
         /// <param name="offset">The offset within a stream.</param>
