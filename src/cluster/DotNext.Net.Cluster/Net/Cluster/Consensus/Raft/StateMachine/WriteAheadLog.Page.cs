@@ -112,7 +112,7 @@ partial class WriteAheadLog
         {
             if ((pageSize & (Environment.SystemPageSize - 1)) is 0)
             {
-                UnmanagedMemory.Discard(GetSpan());
+                NativeMemory.Discard(GetSpan());
             }
         }
 
