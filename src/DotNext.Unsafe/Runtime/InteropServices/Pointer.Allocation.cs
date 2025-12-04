@@ -11,7 +11,7 @@ partial struct Pointer<T>
     {
         var address = INativeMemoryAllocator<T>.IsNaturallyAligned
             ? NativeMemory.Alloc((uint)sizeof(T))
-            : NativeMemory.AlignedAlloc((uint)sizeof(T), (uint)RuntimeHelpers.AlignOf<T>());
+            : NativeMemory.AlignedAlloc((uint)sizeof(T), (uint)Unsafe.AlignOf<T>());
 
         return new((T*)address);
     }

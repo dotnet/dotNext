@@ -70,16 +70,6 @@ partial class AdvancedHelpers
             => (second, first) = (first, second);
         
         /// <summary>
-        /// Gets the alignment requirement for type <typeparamref name="T"/>, in bytes.
-        /// </summary>
-        /// <typeparam name="T">The target type.</typeparam>
-        /// <returns>The alignment of the type <typeparamref name="T"/>.</returns>
-        /// <seealso href="https://en.cppreference.com/w/c/language/_Alignof">_Alignof operator in C++</seealso>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int AlignOf<T>()
-            => Unsafe.SizeOf<AlignmentHelperType<T>>() - Unsafe.SizeOf<T>();
-        
-        /// <summary>
         /// Determines whether the object overrides <see cref="object.Finalize()"/> method.
         /// </summary>
         /// <param name="obj">The object to check.</param>
@@ -94,17 +84,6 @@ partial class AdvancedHelpers
             Ceq();
             return Return<bool>();
         }
-
-        /// <summary>
-        /// Determines whether the two types are binary compatible, i.e. both types have the same
-        /// size and memory alignment.
-        /// </summary>
-        /// <typeparam name="T1">The first type to compare.</typeparam>
-        /// <typeparam name="T2">The second type to compare.</typeparam>
-        /// <returns><see langword="true"/> if both types are binary compatible; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool AreCompatible<T1, T2>()
-            => Unsafe.SizeOf<T1>() == Unsafe.SizeOf<T2>() && AlignOf<T1>() == AlignOf<T2>();
     }
 
     /// <summary>
