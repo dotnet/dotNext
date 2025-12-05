@@ -21,16 +21,6 @@ public readonly struct ReadOnlyCollectionView<TInput, TOutput>(IReadOnlyCollecti
     private readonly Func<TInput, TOutput> mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 
     /// <summary>
-    /// Initializes a new lazily converted view.
-    /// </summary>
-    /// <param name="collection">Read-only collection to convert.</param>
-    /// <param name="mapper">Collection items converter.</param>
-    public ReadOnlyCollectionView(IReadOnlyCollection<TInput> collection, Converter<TInput, TOutput> mapper)
-        : this(collection, Unsafe.As<Func<TInput, TOutput>>(mapper))
-    {
-    }
-
-    /// <summary>
     /// Count of items in the collection.
     /// </summary>
     public int Count => source?.Count ?? 0;

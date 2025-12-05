@@ -164,7 +164,7 @@ public static partial class List
     /// <typeparam name="TInput">Type of items in the source list.</typeparam>
     /// <typeparam name="TOutput">Type of items in the target list.</typeparam>
     /// <returns>Lazily converted read-only list.</returns>
-    public static ReadOnlyListView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyList<TInput> list, Converter<TInput, TOutput> converter)
+    public static ReadOnlyListView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyList<TInput> list, Func<TInput, TOutput> converter)
         => new(list, converter);
 
     /// <summary>

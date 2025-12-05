@@ -94,7 +94,7 @@ public static partial class Collection
         /// <typeparam name="TOutput">Type of items in the target collection.</typeparam>
         /// <param name="converter">A collection item conversion function.</param>
         /// <returns>Lazily converted read-only collection.</returns>
-        public ReadOnlyCollectionView<T, TOutput> Convert<TOutput>(Converter<T, TOutput> converter)
+        public ReadOnlyCollectionView<T, TOutput> Convert<TOutput>(Func<T, TOutput> converter)
             => new(collection, converter);
     }
 

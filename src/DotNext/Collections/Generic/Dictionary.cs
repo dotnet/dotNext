@@ -325,6 +325,6 @@ public static class Dictionary
     /// <param name="dictionary">A dictionary to be mapped.</param>
     /// <param name="mapper">Mapping function.</param>
     /// <returns>Read-only view of the dictionary where each value is converted in lazy manner.</returns>
-    public static ReadOnlyDictionaryView<TKey, TValue, TResult> ConvertValues<TKey, TValue, TResult>(this IReadOnlyDictionary<TKey, TValue> dictionary, Converter<TValue, TResult> mapper)
+    public static ReadOnlyDictionaryView<TKey, TValue, TResult> ConvertValues<TKey, TValue, TResult>(this IReadOnlyDictionary<TKey, TValue> dictionary, Func<TValue, TResult> mapper)
         => new(dictionary, mapper);
 }
