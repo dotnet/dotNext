@@ -149,7 +149,7 @@ public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachi
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private Task EndSnapshottingAsync([ConstantExpected] bool commit)
+    private Task EndSnapshottingAsync(bool commit)
         => snapshottingProcess is not { } task
             ? Task.CompletedTask
             : commit
