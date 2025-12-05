@@ -91,7 +91,7 @@ public static class UnmanagedMemory
         /// </summary>
         /// <param name="pointer">The pointer to a sequence of elements.</param>
         /// <param name="length">The number of elements.</param>
-        /// <returns></returns>
+        /// <returns>The memory block that represents the data located at the pointer.</returns>
         [CLSCompliant(false)]
         public static unsafe Memory<T> FromPointer(T* pointer, int length)
         {
@@ -192,11 +192,6 @@ internal unsafe class UnmanagedMemory<T> : MemoryManager<T>
 
         this.address = address;
         Length = length;
-    }
-
-    internal UnmanagedMemory(nint address, int length)
-        : this((T*)address, length)
-    {
     }
 
     internal static UnmanagedMemory<T> Empty() => new();

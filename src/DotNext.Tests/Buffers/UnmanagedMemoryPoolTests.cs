@@ -3,12 +3,14 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
+using Runtime.InteropServices;
+
 public sealed class UnmanagedMemoryPoolTests : Test
 {
     [Fact]
     public static void ReadWriteTest()
     {
-        using var owner = UnmanagedMemory.Allocate<ushort>(3);
+        using var owner = IUnmanagedMemory<ushort>.Allocate(3);
         var array = owner.Span;
         array[0] = 10;
         array[1] = 20;
@@ -30,7 +32,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void ArrayInteropTest()
     {
-        using var owner = UnmanagedMemory.Allocate<ushort>(3);
+        using var owner = IUnmanagedMemory<ushort>.Allocate(3);
         var array = owner.Span;
         array[0] = 10;
         array[1] = 20;
@@ -49,7 +51,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void ResizeTest()
     {
-        using var owner = UnmanagedMemory.Allocate<long>(5);
+        using var owner = IUnmanagedMemory<long>.Allocate(5);
         Span<long> array = owner.Span;
         array[0] = 10;
         array[1] = 20;
@@ -68,7 +70,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void SliceTest()
     {
-        using var owner = UnmanagedMemory.Allocate<long>(5);
+        using var owner = IUnmanagedMemory<long>.Allocate(5);
         Span<long> span = owner.Span;
         span[0] = 10;
         span[1] = 20;
@@ -98,7 +100,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void Allocation()
     {
-        using var manager = UnmanagedMemory.AllocateZeroed<long>(2);
+        using var manager = IUnmanagedMemory<long>.AllocateZeroed(2);
         Equal(2, manager.Length);
 
         Equal(sizeof(long) * 2U, manager.Size);
@@ -130,7 +132,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void EnumeratorTest()
     {
-        using var owner = UnmanagedMemory.Allocate<int>(3);
+        using var owner = IUnmanagedMemory<int>.Allocate(3);
         var array = owner.Span;
         array[0] = 10;
         array[1] = 20;
@@ -145,7 +147,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void ZeroMem()
     {
-        using var memory = UnmanagedMemory.Allocate<byte>(3);
+        using var memory = IUnmanagedMemory<byte>.Allocate(3);
         memory.Span[0] = 10;
         memory.Span[1] = 20;
         memory.Span[2] = 30;
@@ -160,7 +162,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void StreamInterop()
     {
-        using var memory = UnmanagedMemory.Allocate<ushort>(3);
+        using var memory = IUnmanagedMemory<ushort>.Allocate(3);
         using var ms = new MemoryStream();
         new ushort[] { 1, 2, 3 }.AsSpan().CopyTo(memory.Span);
         ms.Write(memory.Bytes);
@@ -180,7 +182,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void ToStreamConversion()
     {
-        using var memory = UnmanagedMemory.AllocateZeroed<byte>(3);
+        using var memory = IUnmanagedMemory<byte>.AllocateZeroed(3);
         new byte[] { 10, 20, 30 }.AsSpan().CopyTo(memory.Bytes);
         using var stream = memory.AsStream();
         var bytes = new byte[3];
@@ -193,7 +195,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static unsafe void Pinning()
     {
-        using var memory = UnmanagedMemory.AllocateZeroed<int>(3) as MemoryManager<int>;
+        using var memory = IUnmanagedMemory<int>.AllocateZeroed(3) as MemoryManager<int>;
         NotNull(memory);
         memory.GetSpan()[0] = 10;
         memory.GetSpan()[1] = 20;
@@ -283,7 +285,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void UnmanagedMemoryMarshalling()
     {
-        using var memory = UnmanagedMemory.Allocate<long>(2);
-        Equal(memory.Pointer.Address, Runtime.InteropServices.UnmanagedMemoryMarshaller<long>.ConvertToUnmanaged(memory));
+        using var memory = IUnmanagedMemory<long>.Allocate(2);
+        Equal(memory.Pointer.Address, UnmanagedMemoryMarshaller<long>.ConvertToUnmanaged(memory));
     }
 }

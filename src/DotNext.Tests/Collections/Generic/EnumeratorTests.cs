@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Collections.Generic;
 
 using Buffers;
+using Runtime.InteropServices;
 
 public sealed class EnumeratorTests : Test
 {
@@ -34,7 +35,7 @@ public sealed class EnumeratorTests : Test
     [Fact]
     public static void NativeMemoryEnumerator()
     {
-        using var owner = UnmanagedMemory.Allocate<int>(3);
+        using var owner = IUnmanagedMemory<int>.Allocate(3);
         owner[0] = 10;
         owner[1] = 20;
         owner[2] = 30;

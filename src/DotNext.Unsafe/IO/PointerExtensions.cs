@@ -1,5 +1,6 @@
 namespace DotNext.IO;
 
+using Buffers;
 using Runtime.InteropServices;
 
 /// <summary>
@@ -166,7 +167,12 @@ public static class PointerExtensions
         for (int count; length > 0; length -= count, source += count)
         {
             count = int.CreateSaturating(length);
-            var memory = new Buffers.UnmanagedMemory<byte>(source.Address, count).Memory;
+            Memory<byte> memory;
+            unsafe
+            {
+                memory = Memory<byte>.FromPointer(source, count);
+            }
+            
             await destination.WriteAsync(memory, token).ConfigureAwait(false);
         }
     }
@@ -188,7 +194,12 @@ public static class PointerExtensions
         var total = 0L;
         for (int bytesRead; length > 0L; length -= bytesRead, destination += bytesRead, total += bytesRead)
         {
-            var memory = new Buffers.UnmanagedMemory<byte>(destination.Address, int.CreateSaturating(length)).Memory;
+            Memory<byte> memory;
+            unsafe
+            {
+                memory = Memory<byte>.FromPointer(destination, int.CreateSaturating(length));
+            }
+
             if ((bytesRead = await source.ReadAsync(memory, token).ConfigureAwait(false)) is 0)
                 break;
         }
