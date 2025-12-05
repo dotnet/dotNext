@@ -97,7 +97,7 @@ internal readonly struct AsyncStreamBinaryAccessor(Stream stream, Memory<byte> b
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(DecodingContext context, LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider, MemoryAllocator<char>? allocator, CancellationToken token)
         => stream.ParseAsync((style, provider), IAsyncBinaryReader.Parse<T>, context, lengthFormat, buffer, allocator, token);
 
-    ValueTask<TResult> IAsyncBinaryReader.ParseAsync<TArg, TResult>(TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, DecodingContext context, DotNext.IO.LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
+    ValueTask<TResult> IAsyncBinaryReader.ParseAsync<TArg, TResult>(TArg arg, Func<ReadOnlySpan<char>, TArg, TResult> parser, DecodingContext context, DotNext.IO.LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
         => stream.ParseAsync(arg, parser, context, lengthFormat, buffer, allocator, token);
 
     ValueTask IAsyncBinaryReader.CopyToAsync(Stream output, long? count, CancellationToken token)

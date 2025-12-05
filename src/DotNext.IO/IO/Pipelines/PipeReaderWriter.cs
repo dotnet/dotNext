@@ -50,7 +50,7 @@ internal readonly struct PipeBinaryReader(PipeReader reader) : IAsyncBinaryReade
     ValueTask<T> IAsyncBinaryReader.ParseAsync<T>(DecodingContext context, LengthFormat lengthFormat, NumberStyles style, IFormatProvider? provider, MemoryAllocator<char>? allocator, CancellationToken token)
         => reader.ParseAsync((style, provider), IAsyncBinaryReader.Parse<T>, context, lengthFormat, allocator, token);
 
-    ValueTask<TResult> IAsyncBinaryReader.ParseAsync<TArg, TResult>(TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
+    ValueTask<TResult> IAsyncBinaryReader.ParseAsync<TArg, TResult>(TArg arg, Func<ReadOnlySpan<char>, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
         => reader.ParseAsync(arg, parser, context, lengthFormat, allocator, token);
 
     ValueTask IAsyncBinaryReader.CopyToAsync(Stream output, long? count, CancellationToken token)

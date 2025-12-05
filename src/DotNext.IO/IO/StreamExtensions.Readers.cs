@@ -271,7 +271,7 @@ public static partial class StreamExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static async ValueTask<TResult> ParseAsync<TArg, TResult>(this Stream stream, TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, Memory<byte> buffer, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
+    public static async ValueTask<TResult> ParseAsync<TArg, TResult>(this Stream stream, TArg arg, Func<ReadOnlySpan<char>, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, Memory<byte> buffer, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(parser);
         ArgumentException.ThrowIfEmpty(buffer);

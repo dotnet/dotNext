@@ -377,7 +377,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// <returns>The parsed block of characters.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="parser"/> is <see langword="null"/>.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
-    public TResult Parse<TArg, TResult>(TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, in DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null)
+    public TResult Parse<TArg, TResult>(TArg arg, Func<ReadOnlySpan<char>, TArg, TResult> parser, in DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null)
     {
         ArgumentNullException.ThrowIfNull(parser);
 
@@ -634,7 +634,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     }
 
     /// <inheritdoc/>
-    ValueTask<TResult> IAsyncBinaryReader.ParseAsync<TArg, TResult>(TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
+    ValueTask<TResult> IAsyncBinaryReader.ParseAsync<TArg, TResult>(TArg arg, Func<ReadOnlySpan<char>, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator, CancellationToken token)
     {
         ValueTask<TResult> result;
 
