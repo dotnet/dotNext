@@ -129,7 +129,7 @@ public partial class CommandInterpreter : Disposable
     /// </summary>
     /// <remarks>
     /// Typically this method is called by the custom implementation of
-    /// <see cref="MemoryBasedStateMachine.ApplyAsync(PersistentState.LogEntry)"/> method.
+    /// <see cref="DotNext.Net.Cluster.Consensus.Raft.StateMachine.SimpleStateMachine.ApplyAsync"/> method.
     /// </remarks>
     /// <param name="entry">The log entry to be interpreted.</param>
     /// <param name="token">The token that can be used to cancel the interpretation.</param>
@@ -146,7 +146,7 @@ public partial class CommandInterpreter : Disposable
     /// </summary>
     /// <remarks>
     /// Typically this method is called by the custom implementation of
-    /// <see cref="MemoryBasedStateMachine.ApplyAsync(PersistentState.LogEntry)"/> method.
+    /// <see cref="DotNext.Net.Cluster.Consensus.Raft.StateMachine.SimpleStateMachine.ApplyAsync"/> method.
     /// </remarks>
     /// <param name="entry">The log entry to be interpreted.</param>
     /// <param name="context">The context to be passed to the handler.</param>

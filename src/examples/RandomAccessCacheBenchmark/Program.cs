@@ -123,7 +123,7 @@ sealed class BenchmarkState
         else
         {
             using var fileHandle = File.OpenHandle(fileName, options: FileOptions.Asynchronous | FileOptions.SequentialScan);
-            buffer = Memory.AllocateExactly<byte>(CacheFileSize);
+            buffer = MemoryAllocator<byte>.Default.AllocateExactly(CacheFileSize);
             await RandomAccess.ReadAsync(fileHandle, buffer.Memory, fileOffset: 0L, token).ConfigureAwait(false);
             session.SetValue(buffer);
         }
