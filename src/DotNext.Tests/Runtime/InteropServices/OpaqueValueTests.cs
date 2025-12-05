@@ -43,4 +43,13 @@ public sealed class OpaqueValueTests : Test
         actual = default;
         NotEqual(expected, actual);
     }
+
+    [Fact]
+    public static void Marshalling()
+    {
+        using var expected = new OpaqueValue<int>(42);
+        var handle = OpaqueValueMarshaller<int>.ConvertToUnmanaged(expected);
+        var actual = OpaqueValueMarshaller<int>.ConvertToManaged(handle);
+        Equal(expected.Unbox(), actual.Unbox());
+    }
 }
