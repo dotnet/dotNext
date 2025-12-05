@@ -18,8 +18,8 @@ public static class FileUri
     // \\.\folder => file://./folder
     private const string FileScheme = "file://";
     private const char UriPathSeparator = '/';
-    private static readonly SearchValues<char> UnixDirectorySeparators = SearchValues.Create([UriPathSeparator]);
-    private static readonly SearchValues<char> WindowsDirectorySeparators = SearchValues.Create([UriPathSeparator, '\\']);
+    private static readonly SearchValues<char> UnixDirectorySeparators = SearchValues.Create(UriPathSeparator);
+    private static readonly SearchValues<char> WindowsDirectorySeparators = SearchValues.Create(UriPathSeparator, '\\');
 
     /// <summary>
     /// Encodes file name as URI.
