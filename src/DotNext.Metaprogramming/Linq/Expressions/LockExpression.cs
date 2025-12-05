@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace DotNext.Linq.Expressions;
 
@@ -93,13 +94,34 @@ public sealed class LockExpression : CustomExpression
     [DynamicDependency(DynamicallyAccessedMemberTypes.PublicMethods, typeof(Monitor))]
     public override Expression Reduce()
     {
-        var monitorEnter = typeof(Monitor).GetMethod(nameof(Monitor.Enter), [typeof(object)]);
-        Debug.Assert(monitorEnter is not null);
-        var monitorExit = typeof(Monitor).GetMethod(nameof(Monitor.Exit), [typeof(object)]);
-        Debug.Assert(monitorExit is not null);
-        var body = TryFinally(Body, Call(monitorExit, SyncRoot));
+        MethodInfo? monitorEnter, monitorExit;
+        MethodCallExpression monitorEnterCall, monitorExitCall;
+        if (SyncRoot.Type == typeof(Lock))
+        {
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public;
+            monitorEnter = typeof(Lock).GetMethod(nameof(Lock.Enter), flags, []);
+            monitorExit = typeof(Lock).GetMethod(nameof(Lock.Exit), flags, []);
+            Debug.Assert(monitorEnter is not null);
+            Debug.Assert(monitorExit is not null);
+
+            monitorEnterCall = Call(SyncRoot, monitorEnter);
+            monitorExitCall = Call(SyncRoot, monitorExit);
+        }
+        else
+        {
+            const BindingFlags flags = BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public;
+            monitorEnter = typeof(Monitor).GetMethod(nameof(Monitor.Enter), flags, [typeof(object)]);
+            monitorExit = typeof(Monitor).GetMethod(nameof(Monitor.Exit), flags, [typeof(object)]);
+            Debug.Assert(monitorEnter is not null);
+            Debug.Assert(monitorExit is not null);
+
+            monitorEnterCall = Call(monitorEnter, SyncRoot);
+            monitorExitCall = Call(monitorExit, SyncRoot);
+        }
+        
+        var body = TryFinally(Body, monitorExitCall);
         return assignment is null ?
-                Block(Call(monitorEnter, SyncRoot), body) :
-                Block(IReadOnlyList<ParameterExpression>.Singleton(SyncRoot), assignment, Call(monitorEnter, SyncRoot), body);
+                Block(monitorEnterCall, body) :
+                Block(IReadOnlyList<ParameterExpression>.Singleton(SyncRoot), assignment, monitorEnterCall, body);
     }
 }

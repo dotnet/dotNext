@@ -188,10 +188,7 @@ public ref struct SpanOwner<T>
     /// <returns>The textual representation of the rented memory.</returns>
     public readonly override string ToString() => memory.ToString();
 
-    /// <summary>
-    /// Returns the memory to the pool.
-    /// </summary>
-    public void Dispose()
+    private readonly void Clear()
     {
         if (owner is T[] array)
         {
@@ -216,7 +213,14 @@ public ref struct SpanOwner<T>
         {
             Unsafe.As<IDisposable>(owner)?.Dispose();
         }
+    }
 
+    /// <summary>
+    /// Returns the memory to the pool.
+    /// </summary>
+    public void Dispose()
+    {
+        Clear();
         this = default;
     }
 }
