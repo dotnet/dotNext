@@ -46,11 +46,11 @@ public sealed class InvocationListTests : Test
         list += Predicate<string>.Constant(true);
         Collection(list, Same(Predicate<string>.Constant(true)));
 
-        list += Predicate<object>.Constant(false);
+        list += Predicate<string>.Constant(false);
         Collection(
             list,
             Same(Predicate<string>.Constant(true)),
-            Same<Predicate<string>>(Predicate<string>.Constant(false)));
+            Same(Predicate<string>.Constant(false)));
     }
 
     [Fact]

@@ -220,6 +220,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         const int initialCharBufferSize = 128;
         const int maxBufferSize = int.MaxValue / 2;
 
+        allocator ??= MemoryAllocator<char>.Default;
         for (var charBufferSize = initialCharBufferSize; ; charBufferSize = charBufferSize <= maxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
         {
             using var charBuffer = allocator.AllocateAtLeast(charBufferSize);

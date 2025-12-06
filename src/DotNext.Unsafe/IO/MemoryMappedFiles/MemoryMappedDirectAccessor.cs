@@ -29,7 +29,9 @@ public unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
     /// The caller is responsible for disposing of the returned stream.
     /// </remarks>
     /// <returns>The stream representing virtual memory of the memory-mapped file.</returns>
-    public readonly Stream AsStream() => Stream.Create(Pointer, Size, accessor.GetFileAccess());
+    public readonly Stream AsStream() => accessor is { } acc
+        ? Stream.Create(new Pointer<byte>(ptr + acc.PointerOffset), Size, acc.GetFileAccess())
+        : Stream.Null;
 
     /// <summary>
     /// Gets a value indicating that this object doesn't represent the memory-mapped file segment.

@@ -54,7 +54,7 @@ public sealed class ListTests : Test
     public static void Indexer()
     {
         IList<long> array = [5L, 6L, 30L];
-        Equal(10L, array.IndexerGetter.Invoke(1));
+        Equal(6L, array.IndexerGetter.Invoke(1));
         array.IndexerSetter.Invoke(0, 6L);
         Equal(6L, array.IndexerGetter.Invoke(0));
     }

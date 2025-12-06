@@ -146,7 +146,7 @@ public interface IAsyncBinaryReader
         var length = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
         if (length > 0)
         {
-            result = allocator.AllocateExactly(length);
+            result = allocator.DefaultIfNull.AllocateExactly(length);
             await ReadAsync(result.Memory, token).ConfigureAwait(false);
         }
         else
@@ -175,7 +175,7 @@ public interface IAsyncBinaryReader
 
         if (lengthInBytes > 0)
         {
-            result = allocator.AllocateExactly(context.Encoding.GetMaxCharCount(lengthInBytes));
+            result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(lengthInBytes));
 
             result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(new(in context, lengthInBytes, result.Memory), token).ConfigureAwait(false));
         }
