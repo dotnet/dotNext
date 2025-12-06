@@ -6,7 +6,6 @@ using Buffers;
 using Buffers.Binary;
 using IO;
 using IO.Log;
-using StateMachine;
 
 /// <summary>
 /// Represents a log entry with binary payload.
@@ -132,5 +131,5 @@ public readonly struct BinaryLogEntry() : IBufferedLogEntry, ISupplier<MemoryAll
 
     /// <inheritdoc />
     ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-        => transformation.TransformAsync(IAsyncBinaryReader.Create(content), token);
+        => transformation.TransformAsync(new SequenceReader(content), token);
 }

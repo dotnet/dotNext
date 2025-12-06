@@ -42,7 +42,7 @@ internal partial class HttpPeerController
 
     private static (EndPoint, bool) DeserializeNeighborRequest(ReadOnlyMemory<byte> buffer)
     {
-        var reader = IAsyncBinaryReader.Create(buffer);
+        var reader = new SequenceReader(buffer);
         return DeserializeNeighborRequest(ref reader);
     }
 

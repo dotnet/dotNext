@@ -239,7 +239,7 @@ public interface IDataTransferObject
         where TTransformation : ITransformation<TResult>
     {
         if (TryGetMemory(out var memory))
-            return transformation.TransformAsync(IAsyncBinaryReader.Create(memory), token);
+            return transformation.TransformAsync(new SequenceReader(memory), token);
 
         return Length switch
         {

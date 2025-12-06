@@ -409,20 +409,6 @@ public interface IAsyncBinaryReader
         return false;
     }
 
-    /// <summary>
-    /// Creates default implementation of binary reader over sequence of bytes.
-    /// </summary>
-    /// <param name="sequence">The sequence of bytes.</param>
-    /// <returns>The binary reader for the sequence of bytes.</returns>
-    public static SequenceReader Create(ReadOnlySequence<byte> sequence) => new(sequence);
-
-    /// <summary>
-    /// Creates default implementation of binary reader over contiguous memory block.
-    /// </summary>
-    /// <param name="memory">The block of memory.</param>
-    /// <returns>The binary reader for the memory block.</returns>
-    public static SequenceReader Create(ReadOnlyMemory<byte> memory) => new(memory);
-
     internal static Stream CreateStream<TReader>(TReader reader)
         where TReader : IAsyncBinaryReader
     {

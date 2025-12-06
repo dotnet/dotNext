@@ -40,7 +40,7 @@ internal partial class HttpPeerController
 
     private static (EndPoint, bool) DeserializeDisconnectRequest(ReadOnlyMemory<byte> buffer)
     {
-        var reader = IAsyncBinaryReader.Create(buffer);
+        var reader = new SequenceReader(buffer);
         return DeserializeDisconnectRequest(ref reader);
     }
 
