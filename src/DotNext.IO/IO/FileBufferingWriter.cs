@@ -454,7 +454,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
                 break;
             case MemoryEvaluationResult.PersistExistingBuffer:
                 PersistBuffer(flushToDisk: false);
-                input.CopyTo(this.buffer.Span);
+                input.CopyTo(buffer.Span);
                 position = input.Length;
                 break;
             case MemoryEvaluationResult.PersistAll:
