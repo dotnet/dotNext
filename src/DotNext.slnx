@@ -42,6 +42,7 @@
     <File Path="../CHANGELOG.md" />
     <File Path="../README.md" />
     <File Path="../azure-pipelines.yml" />
+    <File Path="Directory.Packages.props" />
   </Folder>
   <Project Path="DotNext.IO/DotNext.IO.csproj">
     <BuildType Solution="Bench|*" Project="Release" />
