@@ -23,7 +23,6 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
-    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.0.1" />
     <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.0.1" />
   </ItemGroup>
   <ItemGroup>

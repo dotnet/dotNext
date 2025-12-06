@@ -24,7 +24,6 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
     <PackageReference Include="xunit.v3"/>
     <PackageReference Include="System.Resources.Extensions"/>
-    <PackageReference Include="Microsoft.Testing.Extensions.TrxReport"/>
   </ItemGroup>
 
   <ItemGroup>
