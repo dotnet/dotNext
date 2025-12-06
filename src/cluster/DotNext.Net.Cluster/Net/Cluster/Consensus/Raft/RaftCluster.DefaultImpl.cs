@@ -46,7 +46,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
             => writer.WriteAsync(configuration.Memory, null, token);
 
         ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-            => transformation.TransformAsync<SequenceReader>(IAsyncBinaryReader.Create(configuration.Memory), token);
+            => transformation.TransformAsync<SequenceReader>(new(configuration.Memory), token);
 
         bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
         {
@@ -66,7 +66,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     private readonly FrozenDictionary<string, string> metadata;
     private readonly Func<ILocalMember, EndPoint, RaftClusterMember> clientFactory;
     private readonly Func<ILocalMember, IServer> serverFactory;
-    private readonly MemoryAllocator<byte>? allocator;
+    private readonly MemoryAllocator<byte> allocator;
     private readonly ClusterMemberAnnouncer<EndPoint>? announcer;
     private readonly int warmupRounds;
     private readonly bool coldStart;
@@ -87,7 +87,7 @@ public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
         clientFactory = configuration.CreateClient;
         serverFactory = configuration.CreateServer;
         localMemberId = ClusterMemberId.FromEndPoint(LocalMemberAddress = configuration.PublicEndPoint);
-        allocator = configuration.MemoryAllocator;
+        allocator = configuration.MemoryAllocator.DefaultIfNull;
         announcer = configuration.Announcer;
         warmupRounds = configuration.WarmupRounds;
         coldStart = configuration.ColdStart;

@@ -325,11 +325,11 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// <param name="token">The token that can be used to cancel the initialization process.</param>
     /// <returns>The task representing asynchronous execution of the method.</returns>
     /// <seealso cref="StartFollowing"/>
-    public virtual async Task StartAsync(CancellationToken token)
+    public virtual async Task StartAsync(CancellationToken token = default)
     {
         await auditTrail.InitializeAsync(token).ConfigureAwait(false);
 
-        // local member is known then turn readiness probe into signalled state and start serving the messages from the cluster
+        // local member is known then turn readiness probe into signaled state and start serving the messages from the cluster
         foreach (var member in members.Values)
         {
             if (await DetectLocalMemberAsync(member, token).ConfigureAwait(false))
@@ -464,7 +464,7 @@ public abstract partial class RaftCluster<TMember> : Disposable, IUnresponsiveCl
     /// </summary>
     /// <param name="token">The token that can be used to cancel shutdown process.</param>
     /// <returns>The task representing asynchronous execution of the method.</returns>
-    public virtual Task StopAsync(CancellationToken token)
+    public virtual Task StopAsync(CancellationToken token = default)
     {
         return LifecycleToken.IsCancellationRequested ? Task.CompletedTask : StopAsync();
 
