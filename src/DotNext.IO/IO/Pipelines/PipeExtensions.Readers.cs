@@ -229,7 +229,7 @@ partial class PipeExtensions
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    public static async ValueTask<TResult> ParseAsync<TArg, TResult>(this PipeReader reader, TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
+    public static async ValueTask<TResult> ParseAsync<TArg, TResult>(this PipeReader reader, TArg arg, Func<ReadOnlySpan<char>, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(parser);
 
@@ -237,7 +237,7 @@ partial class PipeExtensions
         return parser(chars.Span, arg);
     }
 
-    private static async ValueTask<TResult> ParseAsync<TResult, TArg>(this PipeReader reader, TArg arg, ReadOnlySpanFunc<byte, TArg, TResult> parser, LengthFormat lengthFormat, CancellationToken token)
+    private static async ValueTask<TResult> ParseAsync<TResult, TArg>(this PipeReader reader, TArg arg, Func<ReadOnlySpan<byte>, TArg, TResult> parser, LengthFormat lengthFormat, CancellationToken token)
     {
         var length = await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
         if (length > 0)
@@ -249,7 +249,7 @@ partial class PipeExtensions
 
         return parser([], arg);
 
-        static TResult Parse(PipeReader reader, TArg arg, ReadOnlySpanFunc<byte, TArg, TResult> parser, int length, ReadOnlySequence<byte> source)
+        static TResult Parse(PipeReader reader, TArg arg, Func<ReadOnlySpan<byte>, TArg, TResult> parser, int length, ReadOnlySequence<byte> source)
         {
             var consumed = source.Start;
             try

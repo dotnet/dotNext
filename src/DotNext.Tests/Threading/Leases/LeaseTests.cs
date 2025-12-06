@@ -9,11 +9,11 @@ public sealed class LeaseTests : Test
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
         Equal(DefaultTimeout, provider.TimeToLive);
-        Null(await provider.TryRenewAsync(default, true));
-        Null(await provider.TryRenewAsync(default, false));
-        Null(await provider.ReleaseAsync(default));
+        Null(await provider.TryRenewAsync(default, true, TestToken));
+        Null(await provider.TryRenewAsync(default, false, TestToken));
+        Null(await provider.ReleaseAsync(default, TestToken));
 
-        var result = NotNull(await provider.TryAcquireOrRenewAsync(default));
+        var result = NotNull(await provider.TryAcquireOrRenewAsync(default, TestToken));
         True(result.State.Identity >> default(LeaseIdentity));
     }
 
@@ -21,20 +21,20 @@ public sealed class LeaseTests : Test
     public static async Task AcquireRelease()
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
-        var result = NotNull(await provider.TryAcquireAsync());
-        NotNull(await provider.ReleaseAsync(result.State.Identity));
+        var result = NotNull(await provider.TryAcquireAsync(TestToken));
+        NotNull(await provider.ReleaseAsync(result.State.Identity, TestToken));
 
-        await provider.AcquireAsync();
-        Null(await provider.TryAcquireAsync());
-        NotNull(await provider.UnsafeTryReleaseAsync());
+        await provider.AcquireAsync(TestToken);
+        Null(await provider.TryAcquireAsync(TestToken));
+        NotNull(await provider.UnsafeTryReleaseAsync(TestToken));
     }
 
     [Fact]
     public static async Task RenewOrAcquire()
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
-        var result = NotNull(await provider.TryAcquireOrRenewAsync(default));
-        var result2 = NotNull(await provider.TryAcquireOrRenewAsync(result.State.Identity));
+        var result = NotNull(await provider.TryAcquireOrRenewAsync(default, TestToken));
+        var result2 = NotNull(await provider.TryAcquireOrRenewAsync(result.State.Identity, TestToken));
         True(result.State.Identity << result2.State.Identity);
     }
 
@@ -42,9 +42,9 @@ public sealed class LeaseTests : Test
     public static async Task RenewAfterRelease()
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
-        var result = await provider.AcquireAsync();
-        await provider.UnsafeReleaseAsync();
-        Null(await provider.TryRenewAsync(result.State.Identity, reacquire: false));
+        var result = await provider.AcquireAsync(TestToken);
+        await provider.UnsafeReleaseAsync(TestToken);
+        Null(await provider.TryRenewAsync(result.State.Identity, reacquire: false, TestToken));
     }
 
     [Fact]
@@ -60,8 +60,8 @@ public sealed class LeaseTests : Test
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
 
-        var acquisition1 = Task.Run(async () => await provider.TryAcquireAsync());
-        var acquisition2 = Task.Run(async () => await provider.TryAcquireAsync());
+        var acquisition1 = Task.Run(async () => await provider.TryAcquireAsync(TestToken), TestToken);
+        var acquisition2 = Task.Run(async () => await provider.TryAcquireAsync(TestToken), TestToken);
 
         var tasks = await Task.WhenAll(acquisition1, acquisition2);
 
@@ -75,8 +75,8 @@ public sealed class LeaseTests : Test
         await using var consumer1 = new TestLeaseConsumer(provider);
         await using var consumer2 = new TestLeaseConsumer(provider);
 
-        var acquisition1 = Task.Run(async () => await consumer1.TryAcquireAsync());
-        var acquisition2 = Task.Run(async () => await consumer1.TryAcquireAsync());
+        var acquisition1 = Task.Run(async () => await consumer1.TryAcquireAsync(TestToken), TestToken);
+        var acquisition2 = Task.Run(async () => await consumer1.TryAcquireAsync(TestToken), TestToken);
 
         var tasks = await Task.WhenAll(acquisition1, acquisition2);
 
@@ -91,15 +91,15 @@ public sealed class LeaseTests : Test
         True(consumer.Token.IsCancellationRequested);
         True(consumer.Expiration.IsExpired);
 
-        True(await consumer.TryAcquireAsync());
+        True(await consumer.TryAcquireAsync(TestToken));
         Equal(1UL, consumer.LeaseId.Version);
         False(consumer.Token.IsCancellationRequested);
         False(consumer.Expiration.IsExpired);
 
         await consumer.Token.WaitAsync();
-        await Task.Delay(provider.TimeToLive);
+        await Task.Delay(provider.TimeToLive, TestToken);
         
-        False(await consumer.ReleaseAsync());
+        False(await consumer.ReleaseAsync(TestToken));
     }
 
     [Fact]
@@ -107,10 +107,10 @@ public sealed class LeaseTests : Test
     {
         using var provider = new TestLeaseProvider(DefaultTimeout);
         await using var consumer = new TestLeaseConsumer(provider) { ClockDriftBound = 1 };
-        True(await consumer.TryAcquireAsync());
+        True(await consumer.TryAcquireAsync(TestToken));
         var expected = consumer.Token;
 
-        True(await consumer.TryRenewAsync());
+        True(await consumer.TryRenewAsync(TestToken));
         Equal(consumer.Token, expected);
     }
 
@@ -120,8 +120,8 @@ public sealed class LeaseTests : Test
         var pause = TimeSpan.FromMilliseconds(100);
         using var provider = new TestLeaseProvider(pause);
         await using var consumer = new TestLeaseConsumer(provider);
-        True(await consumer.TryAcquireAsync());
-        await consumer.AcquireAsync(pause, Random.Shared);
+        True(await consumer.TryAcquireAsync(TestToken));
+        await consumer.AcquireAsync(pause, Random.Shared, TestToken);
     }
     
     [Fact]
@@ -130,7 +130,7 @@ public sealed class LeaseTests : Test
         var pause = TimeSpan.FromMilliseconds(500);
         using var provider = new TestLeaseProvider(pause);
         await using var consumer = new TestLeaseConsumer(provider);
-        True(await consumer.TryAcquireAsync());
+        True(await consumer.TryAcquireAsync(TestToken));
 
         var result = await InvokeAsThread(() => consumer.ExecuteAsync(Worker));
         Equal(42, result);
@@ -147,10 +147,10 @@ public sealed class LeaseTests : Test
     {
         using var provider = new TestLeaseProvider(TimeSpan.FromMilliseconds(100));
         await using var consumer = new TestLeaseConsumer(provider);
-        True(await consumer.TryAcquireAsync());
-        await provider.UnsafeReleaseAsync();
+        True(await consumer.TryAcquireAsync(TestToken));
+        await provider.UnsafeReleaseAsync(TestToken);
 
-        await ThrowsAsync<TimeoutException>(() => consumer.ExecuteAsync(Worker));
+        await ThrowsAsync<TimeoutException>(() => consumer.ExecuteAsync(Worker, TestToken));
 
         static async Task<int> Worker(CancellationToken token)
         {
@@ -166,8 +166,8 @@ public sealed class LeaseTests : Test
         CancellationToken token;
         using (var provider = new TestLeaseProvider(DefaultTimeout))
         {
-            await provider.AcquireAsync();
-            task = provider.AcquireAsync().AsTask();
+            await provider.AcquireAsync(TestToken);
+            task = provider.AcquireAsync(TestToken).AsTask();
             False(task.IsCompleted);
             token = provider.Token;
         }

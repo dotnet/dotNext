@@ -33,7 +33,7 @@ public sealed class StringBuilderConsumerTests : Test
         var sb = new StringBuilder();
         IReadOnlySpanConsumer<char> consumer = new StringBuilderConsumer(sb);
         consumer.Invoke("Hello, ".AsSpan());
-        consumer.Invoke("world!".AsMemory(), default);
+        consumer.Invoke("world!".AsMemory(), TestToken);
         Equal("Hello, world!", consumer.ToString());
     }
 }

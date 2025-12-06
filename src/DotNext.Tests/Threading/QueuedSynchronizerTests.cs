@@ -6,7 +6,7 @@ public sealed class QueuedSynchronizerTests : Test
     public static async Task ThrowOnAcquisitionAsync()
     {
         await using var synchronizer = new MySynchronizer();
-        await ThrowsAsync<ArithmeticException>(synchronizer.ThrowAsync().AsTask);
+        await ThrowsAsync<ArithmeticException>(synchronizer.ThrowAsync(TestToken).AsTask);
         False(synchronizer.TryAcquire());
     }
     

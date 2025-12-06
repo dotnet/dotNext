@@ -23,12 +23,12 @@ public sealed class AsyncEnumerableTests : Test
     {
         var list = new List<int> { 1, 10, 20 }.ToAsyncEnumerable();
         var counter = new CollectionTests.Counter<int>();
-        await list.ForEachAsync(counter.AcceptAsync);
+        await list.ForEachAsync(counter.AcceptAsync, TestToken);
         Equal(3, counter.value);
         counter.value = 0;
 
         list = new[] { 1, 2, 10, 11, 15 }.ToAsyncEnumerable();
-        await list.ForEachAsync(counter.AcceptAsync);
+        await list.ForEachAsync(counter.AcceptAsync, TestToken);
         Equal(5, counter.value);
     }
 
@@ -36,10 +36,10 @@ public sealed class AsyncEnumerableTests : Test
     public static async Task FirstOrNullTestAsync()
     {
         var array = Array.Empty<long>().ToAsyncEnumerable();
-        var element = await array.FirstOrNullAsync();
+        var element = await array.FirstOrNullAsync(TestToken);
         Null(element);
         array = new long[] { 10, 20 }.ToAsyncEnumerable();
-        element = await array.FirstOrNullAsync();
+        element = await array.FirstOrNullAsync(TestToken);
         Equal(10, element);
     }
 

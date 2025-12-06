@@ -1,3 +1,5 @@
+using static System.Threading.Timeout;
+
 namespace DotNext.Threading;
 
 [Collection(TestCollections.AsyncPrimitives)]
@@ -17,8 +19,8 @@ public sealed class AsyncEventHubTests : Test
         Equal(3, hub.Count);
 
         True(hub.Pulse(0));
-        True(hub.WaitOneAsync(0, DefaultTimeout).IsCompletedSuccessfully);
-        False(hub.WaitOneAsync(1).IsCompleted);
+        True(hub.WaitOneAsync(0, TestToken).IsCompletedSuccessfully);
+        False(hub.WaitOneAsync(1, TestToken).IsCompleted);
     }
 
     [Fact]
@@ -30,11 +32,11 @@ public sealed class AsyncEventHubTests : Test
         True(flags.Contains(0));
 
         var set = new HashSet<int>();
-        await hub.WaitAnyAsync(set, DefaultTimeout);
+        await hub.WaitAnyAsync(set, InfiniteTimeSpan, TestToken);
         Equal(0, Single(set));
 
         set.Clear();
-        await hub.WaitAnyAsync(new AsyncEventHub.EventGroup([0, 1]), set);
+        await hub.WaitAnyAsync(new AsyncEventHub.EventGroup([0, 1]), set, TestToken);
         Equal(0, Single(set));
     }
 
@@ -46,8 +48,8 @@ public sealed class AsyncEventHubTests : Test
         var flags = hub.ResetAndPulse(new AsyncEventHub.EventGroup([0]));
         True(flags.Contains(0));
 
-        await hub.WaitAnyAsync(DefaultTimeout);
-        await hub.WaitAnyAsync();
+        await hub.WaitAnyAsync(InfiniteTimeSpan, TestToken);
+        await hub.WaitAnyAsync(TestToken);
     }
     
     [Fact]
@@ -57,10 +59,10 @@ public sealed class AsyncEventHubTests : Test
 
         True(hub.ResetAndPulse(0));
 
-        await hub.WaitAnyAsync(DefaultTimeout);
+        await hub.WaitAnyAsync(InfiniteTimeSpan, TestToken);
         
         var set = new HashSet<int>();
-        await hub.WaitAnyAsync(set);
+        await hub.WaitAnyAsync(set, TestToken);
         Equal(0, Single(set));
     }
 
@@ -75,9 +77,9 @@ public sealed class AsyncEventHubTests : Test
         Contains(1, flags);
         Contains(2, flags);
 
-        await hub.WaitAllAsync(new([0, 1]), DefaultTimeout);
-        await hub.WaitAllAsync();
-        await hub.WaitAllAsync(DefaultTimeout);
+        await hub.WaitAllAsync(new([0, 1]), InfiniteTimeSpan, TestToken);
+        await hub.WaitAllAsync(TestToken);
+        await hub.WaitAllAsync(InfiniteTimeSpan, TestToken);
     }
 
     [Fact]
@@ -99,8 +101,8 @@ public sealed class AsyncEventHubTests : Test
     public static async Task CancelPendingTasks()
     {
         using var hub = new AsyncEventHub(3);
-        var task1 = hub.WaitOneAsync(0).AsTask();
-        var task2 = hub.WaitOneAsync(1).AsTask();
+        var task1 = hub.WaitOneAsync(0, TestToken).AsTask();
+        var task2 = hub.WaitOneAsync(1, TestToken).AsTask();
 
         hub.CancelSuspendedCallers(new(canceled: true));
         await ThrowsAsync<OperationCanceledException>(task1);
@@ -138,17 +140,17 @@ public sealed class AsyncEventHubTests : Test
         var group = new AsyncEventHub.EventGroup([3]);
         Throws<ArgumentOutOfRangeException>(() => hub.ResetAndPulse(group));
         Throws<ArgumentOutOfRangeException>(() => hub.Pulse(group));
-        await ThrowsAsync<ArgumentOutOfRangeException>(hub.WaitAllAsync(group).AsTask);
-        await ThrowsAsync<ArgumentOutOfRangeException>(hub.WaitAnyAsync(group).AsTask);
-        await ThrowsAsync<ArgumentOutOfRangeException>(hub.WaitAllAsync(group, DefaultTimeout).AsTask);
-        await ThrowsAsync<ArgumentOutOfRangeException>(hub.WaitAnyAsync(group, DefaultTimeout).AsTask);
+        await ThrowsAsync<ArgumentOutOfRangeException>(hub.WaitAllAsync(group, TestToken).AsTask);
+        await ThrowsAsync<ArgumentOutOfRangeException>(hub.WaitAnyAsync(group, TestToken).AsTask);
+        await ThrowsAsync<ArgumentOutOfRangeException>(hub.WaitAllAsync(group, InfiniteTimeSpan, TestToken).AsTask);
+        await ThrowsAsync<ArgumentOutOfRangeException>(hub.WaitAnyAsync(group, InfiniteTimeSpan, TestToken).AsTask);
     }
 
     [Fact]
     public static async Task OutOfOrderWaitQueueProcessing()
     {
         using var hub = new AsyncEventHub(3);
-        var task = hub.WaitOneAsync(0);
+        var task = hub.WaitOneAsync(0, TestToken);
 
         True(hub.Pulse(1));
         False(task.IsCompleted);

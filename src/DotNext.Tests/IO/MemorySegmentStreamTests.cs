@@ -82,14 +82,14 @@ public sealed class MemorySegmentStreamTests : Test
         False(stream.RemainingSpan.IsEmpty);
 
         ReadOnlyMemory<byte> dataToWrite = RandomBytes(bufferSize);
-        await stream.WriteAsync(dataToWrite);
+        await stream.WriteAsync(dataToWrite, TestToken);
         True(stream.RemainingSpan.IsEmpty);
 
         Equal(dataToWrite.Span, stream.ConsumedSpan);
 
         Memory<byte> readBuffer = new byte[buffer.Length];
         stream.Position = 0L;
-        Equal(buffer.Length, await stream.ReadAsync(readBuffer));
+        Equal(buffer.Length, await stream.ReadAsync(readBuffer, TestToken));
         Equal(dataToWrite, readBuffer);
     }
 

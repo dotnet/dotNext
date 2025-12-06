@@ -215,8 +215,8 @@ public sealed class TextStreamTests : Test
         await actual.WriteAsync("Hello, world!");
         await expected.WriteAsync("Hello, world!");
 
-        await actual.WriteAsync("123".AsMemory());
-        await expected.WriteAsync("123".AsMemory());
+        await actual.WriteAsync("123".AsMemory(), TestToken);
+        await expected.WriteAsync("123".AsMemory(), TestToken);
 
         await actual.WriteAsync('a');
         await expected.WriteAsync('a');
@@ -224,7 +224,7 @@ public sealed class TextStreamTests : Test
         await actual.WriteLineAsync();
         await expected.WriteLineAsync();
 
-        await actual.FlushAsync();
+        await actual.FlushAsync(TestToken);
         Equal(expected.ToString(), writer.WrittenSpan.ToString());
         Equal(expected.ToString(), actual.ToString());
     }
@@ -234,7 +234,7 @@ public sealed class TextStreamTests : Test
     {
         var sequence = new[] { "abc".AsMemory(), "def".AsMemory(), "g".AsMemory() }.Concat();
         await using var writer = new StringWriter();
-        await writer.WriteAsync(sequence);
+        await writer.WriteAsync(sequence, TestToken);
         Equal("abcdefg", writer.ToString());
     }
 
@@ -250,11 +250,7 @@ public sealed class TextStreamTests : Test
         var expected = new XmlSerializableType
         {
             Value = "Привет, мир!",
-            StringArray = new[]
-            {
-                    "String1",
-                    "Strin2"
-                },
+            StringArray = ["String1", "String2"],
             ByteArray = RandomBytes(128),
         };
 
@@ -272,6 +268,7 @@ public sealed class TextStreamTests : Test
             actual = (XmlSerializableType)serializer.Deserialize(reader);
         }
 
+        NotNull(actual);
         Equal(expected.Value, actual.Value);
         Equal(expected.StringArray, actual.StringArray);
         Equal(expected.ByteArray, actual.ByteArray);
@@ -280,18 +277,18 @@ public sealed class TextStreamTests : Test
     [Fact]
     public static async Task WriteInterpolatedString1Async()
     {
-        using var writer = new StringWriter();
+        await using var writer = new StringWriter();
         int x = 10, y = 20;
-        await writer.WriteAsync(null, $"{x} + {y} = {x + y}");
+        await writer.WriteAsync(null, $"{x} + {y} = {x + y}", TestToken);
         Equal($"{x} + {y} = {x + y}", writer.ToString());
     }
 
     [Fact]
     public static async Task WriteInterpolatedString2Async()
     {
-        using var writer = new StringWriter();
+        await using var writer = new StringWriter();
         int x = 10, y = 20;
-        await writer.WriteLineAsync(null, $"{x} + {y} = {x + y}");
+        await writer.WriteLineAsync(null, $"{x} + {y} = {x + y}", TestToken);
         Equal($"{x} + {y} = {x + y}{Environment.NewLine}", writer.ToString());
     }
 

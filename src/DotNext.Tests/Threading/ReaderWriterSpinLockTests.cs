@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
@@ -14,7 +15,7 @@ public sealed class ReaderWriterSpinLockTests : Test
         rwLock.EnterReadLock();
         rwLock.EnterReadLock();
         Equal(2, rwLock.CurrentReadCount);
-        False(rwLock.TryEnterWriteLock(TimeSpan.Zero));
+        False(rwLock.TryEnterWriteLock(TimeSpan.Zero, TestToken));
         True(rwLock.IsReadLockHeld);
         False(rwLock.IsWriteLockHeld);
         rwLock.ExitReadLock();
@@ -40,7 +41,7 @@ public sealed class ReaderWriterSpinLockTests : Test
         False(rwLock.IsReadLockHeld);
         True(rwLock.IsWriteLockHeld);
         False(rwLock.Validate(stamp));
-        False(rwLock.TryEnterReadLock(TimeSpan.Zero));
+        False(rwLock.TryEnterReadLock(TimeSpan.Zero, TestToken));
     }
 
     [Fact]
@@ -52,15 +53,15 @@ public sealed class ReaderWriterSpinLockTests : Test
         var task = Task.Factory.StartNew(state =>
         {
             var rwLock = (StrongBox<ReaderWriterSpinLock>)state;
-            False(rwLock.Value.TryEnterWriteLock(TimeSpan.FromMilliseconds(10)));
+            False(rwLock.Value.TryEnterWriteLock(TimeSpan.FromMilliseconds(10), TestToken));
             True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
-            True(rwLock.Value.TryEnterWriteLock(DefaultTimeout));
+            True(rwLock.Value.TryEnterWriteLock(InfiniteTimeSpan, TestToken));
             rwLock.Value.ExitWriteLock();
-        }, rwLock);
+        }, rwLock, TestToken);
 
-        await are.Task.WaitAsync(DefaultTimeout);
+        await are.Task.WaitAsync(TestToken);
         rwLock.Value.ExitWriteLock();
-        await task.WaitAsync(DefaultTimeout);
+        await task.WaitAsync(TestToken);
     }
 
     [Fact]
@@ -72,15 +73,15 @@ public sealed class ReaderWriterSpinLockTests : Test
         var task = Task.Factory.StartNew(state =>
         {
             var rwLock = (StrongBox<ReaderWriterSpinLock>)state;
-            False(rwLock.Value.TryEnterWriteLock(TimeSpan.FromMilliseconds(10)));
+            False(rwLock.Value.TryEnterWriteLock(TimeSpan.FromMilliseconds(10), TestToken));
             True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
-            True(rwLock.Value.TryEnterReadLock(DefaultTimeout));
+            True(rwLock.Value.TryEnterReadLock(InfiniteTimeSpan, TestToken));
             rwLock.Value.ExitReadLock();
-        }, rwLock);
+        }, rwLock, TestToken);
 
-        await are.Task.WaitAsync(DefaultTimeout);
+        await are.Task.WaitAsync(TestToken);
         rwLock.Value.ExitWriteLock();
-        await task.WaitAsync(DefaultTimeout);
+        await task.WaitAsync(TestToken);
     }
 
     [Fact]

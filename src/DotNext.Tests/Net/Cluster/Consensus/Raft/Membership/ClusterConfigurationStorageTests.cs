@@ -8,11 +8,6 @@ public sealed class ClusterConfigurationStorageTests : Test
 {
     private sealed class InMemoryClusterConfigurationStorage : InMemoryClusterConfigurationStorage<HttpEndPoint>
     {
-        internal InMemoryClusterConfigurationStorage()
-            : base(null)
-        {
-        }
-
         protected override HttpEndPoint Decode(ref SequenceReader reader)
             => (HttpEndPoint)reader.ReadEndPoint();
 
@@ -48,7 +43,7 @@ public sealed class ClusterConfigurationStorageTests : Test
     private static async ValueTask StorageTest(IClusterConfigurationStorage<HttpEndPoint> storage)
     {
         var events = new Queue<(HttpEndPoint, bool)>();
-        storage.ActiveConfigurationChanged += (address, added, token) =>
+        storage.ActiveConfigurationChanged += (address, added, _) =>
         {
             events.Enqueue((address, added));
             return ValueTask.CompletedTask;
@@ -85,6 +80,7 @@ public sealed class ClusterConfigurationStorageTests : Test
         True(await storage.RemoveMemberAsync(ep));
         task = storage.WaitForApplyAsync();
         False(task.IsCompleted);
+        NotNull(storage.ProposedConfiguration);
         Empty(storage.ProposedConfiguration);
 
         await storage.ApplyAsync();
@@ -100,7 +96,7 @@ public sealed class ClusterConfigurationStorageTests : Test
     public static async Task InMemoryStorage()
     {
         using var storage = new InMemoryClusterConfigurationStorage();
-        await storage.As<IClusterConfigurationStorage<HttpEndPoint>>().LoadConfigurationAsync();
+        await storage.As<IClusterConfigurationStorage<HttpEndPoint>>().LoadConfigurationAsync(TestToken);
         await StorageTest(storage);
     }
 
@@ -109,7 +105,7 @@ public sealed class ClusterConfigurationStorageTests : Test
     {
         var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         await using var storage = new PersistentClusterConfigurationStorage(path);
-        await storage.As<IClusterConfigurationStorage<HttpEndPoint>>().LoadConfigurationAsync();
+        await storage.As<IClusterConfigurationStorage<HttpEndPoint>>().LoadConfigurationAsync(TestToken);
         await StorageTest(storage);
     }
 
@@ -121,23 +117,23 @@ public sealed class ClusterConfigurationStorageTests : Test
 
         using (IClusterConfigurationStorage<HttpEndPoint> storage = new PersistentClusterConfigurationStorage(path))
         {
-            await storage.LoadConfigurationAsync();
-            True(await storage.AddMemberAsync(ep));
-            await storage.ApplyAsync();
+            await storage.LoadConfigurationAsync(TestToken);
+            True(await storage.AddMemberAsync(ep, TestToken));
+            await storage.ApplyAsync(TestToken);
         }
 
         var ep2 = new HttpEndPoint(new Uri("https://localhost:3263", UriKind.Absolute));
 
         using (IClusterConfigurationStorage<HttpEndPoint> storage = new PersistentClusterConfigurationStorage(path))
         {
-            await storage.LoadConfigurationAsync();
-            True(await storage.AddMemberAsync(ep2));
-            await storage.ApplyAsync();
+            await storage.LoadConfigurationAsync(TestToken);
+            True(await storage.AddMemberAsync(ep2, TestToken));
+            await storage.ApplyAsync(TestToken);
         }
 
         using (IClusterConfigurationStorage<HttpEndPoint> storage = new PersistentClusterConfigurationStorage(path))
         {
-            await storage.LoadConfigurationAsync();
+            await storage.LoadConfigurationAsync(TestToken);
             Null(storage.ProposedConfiguration);
             Contains(ep, storage.ActiveConfiguration);
             Contains(ep2, storage.ActiveConfiguration);
@@ -154,11 +150,11 @@ public sealed class ClusterConfigurationStorageTests : Test
 
         using (IClusterConfigurationStorage<HttpEndPoint> storage = new PersistentClusterConfigurationStorage(path))
         {
-            await storage.LoadConfigurationAsync();
-            True(await storage.AddMemberAsync(ep));
-            await storage.ApplyAsync();
+            await storage.LoadConfigurationAsync(TestToken);
+            True(await storage.AddMemberAsync(ep, TestToken));
+            await storage.ApplyAsync(TestToken);
             fingerprint = storage.As<IClusterConfigurationStorage>().ActiveConfiguration.Fingerprint;
-            configuration = await storage.As<IClusterConfigurationStorage>().ActiveConfiguration.ToByteArrayAsync();
+            configuration = await storage.As<IClusterConfigurationStorage>().ActiveConfiguration.ToByteArrayAsync(token: TestToken);
         }
 
         // create fresh storage and propose configuration
@@ -166,16 +162,18 @@ public sealed class ClusterConfigurationStorageTests : Test
 
         using (IClusterConfigurationStorage<HttpEndPoint> storage = new PersistentClusterConfigurationStorage(path))
         {
-            await storage.ProposeAsync(new SimpleConfigurationStorage(configuration, fingerprint));
+            await storage.ProposeAsync(new SimpleConfigurationStorage(configuration, fingerprint), TestToken);
             NotNull(storage.As<IClusterConfigurationStorage>().ProposedConfiguration);
+            NotNull(storage.ProposedConfiguration);
             Contains(ep, storage.ProposedConfiguration);
         }
 
         // re-read proposed configuration
         using (IClusterConfigurationStorage<HttpEndPoint> storage = new PersistentClusterConfigurationStorage(path))
         {
-            await storage.LoadConfigurationAsync();
+            await storage.LoadConfigurationAsync(TestToken);
             NotNull(storage.As<IClusterConfigurationStorage>().ProposedConfiguration);
+            NotNull(storage.ProposedConfiguration);
             Contains(ep, storage.ProposedConfiguration);
         }
     }
@@ -188,16 +186,16 @@ public sealed class ClusterConfigurationStorageTests : Test
 
         using (IClusterConfigurationStorage<HttpEndPoint> storage = new PersistentClusterConfigurationStorage(path))
         {
-            True(await storage.AddMemberAsync(ep));
-            await storage.ApplyAsync();
+            True(await storage.AddMemberAsync(ep, TestToken));
+            await storage.ApplyAsync(TestToken);
         }
 
         using (IClusterConfigurationStorage storage = new PersistentClusterConfigurationStorage(path))
         {
-            await storage.LoadConfigurationAsync();
+            await storage.LoadConfigurationAsync(TestToken);
 
             using var ms = new MemoryStream((int)storage.ActiveConfiguration.Length);
-            await storage.ActiveConfiguration.WriteToAsync(ms);
+            await storage.ActiveConfiguration.WriteToAsync(ms, token: TestToken);
             Equal(ms.Length, storage.ActiveConfiguration.Length);
         }
     }

@@ -15,9 +15,9 @@ public sealed class FileReaderTests : Test
         Equal(0L, remainingCount);
 
         var expected = RandomBytes(512);
-        await RandomAccess.WriteAsync(handle, expected, 0L);
+        await RandomAccess.WriteAsync(handle, expected, 0L, TestToken);
 
-        True(await reader.ReadAsync());
+        True(await reader.ReadAsync(TestToken));
         Equal(0L, reader.FilePosition);
         Equal(expected.Length, reader.ReadPosition);
         Throws<InvalidOperationException>(() => reader.FilePosition = 10L);
@@ -39,21 +39,21 @@ public sealed class FileReaderTests : Test
         using var reader = new FileReader(handle) { MaxBufferSize = 32 };
 
         var expected = RandomBytes(reader.MaxBufferSize * 2);
-        await RandomAccess.WriteAsync(handle, expected, 0L);
+        await RandomAccess.WriteAsync(handle, expected, 0L, TestToken);
 
-        True(await reader.ReadAsync());
+        True(await reader.ReadAsync(TestToken));
         Equal(expected.AsMemory(0, reader.Buffer.Length), reader.Buffer);
 
         reader.Consume(16);
 
-        True(await reader.ReadAsync());
+        True(await reader.ReadAsync(TestToken));
         Equal(expected.AsMemory(16, reader.Buffer.Length), reader.Buffer);
 
         reader.Consume(16);
-        True(await reader.ReadAsync());
+        True(await reader.ReadAsync(TestToken));
 
         reader.Consume(16);
-        False(await reader.ReadAsync());
+        False(await reader.ReadAsync(TestToken));
 
         reader.Reset();
     }
@@ -67,15 +67,15 @@ public sealed class FileReaderTests : Test
         using var reader = new FileReader(handle) { MaxBufferSize = 32 };
 
         var expected = RandomBytes(reader.MaxBufferSize * 2);
-        await RandomAccess.WriteAsync(handle, expected, 0L);
+        await RandomAccess.WriteAsync(handle, expected, 0L, TestToken);
 
-        True(await reader.ReadAsync());
+        True(await reader.ReadAsync(TestToken));
         Equal(expected.AsMemory(0, reader.Buffer.Length), reader.Buffer);
 
         var actual = new byte[expected.Length];
-        Equal(actual.Length, await reader.ReadAsync(actual));
+        Equal(actual.Length, await reader.ReadAsync(actual, TestToken));
         Equal(expected, actual);
-        False(await reader.ReadAsync());
+        False(await reader.ReadAsync(TestToken));
     }
 
     [Fact]
@@ -157,12 +157,12 @@ public sealed class FileReaderTests : Test
         using var reader = new FileReader(fs) { MaxBufferSize = 32 };
         var bytes = RandomBytes(1024);
 
-        await fs.WriteAsync(bytes);
-        await fs.FlushAsync();
+        await fs.WriteAsync(bytes, TestToken);
+        await fs.FlushAsync(TestToken);
 
         using var ms = new MemoryStream(1024);
         await foreach (var chunk in reader)
-            await ms.WriteAsync(chunk);
+            await ms.WriteAsync(chunk, TestToken);
 
         Equal(bytes, ms.ToArray());
     }

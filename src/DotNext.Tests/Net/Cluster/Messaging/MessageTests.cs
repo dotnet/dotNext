@@ -13,10 +13,10 @@ public sealed class MessageTests : Test
     {
         IMessage message = new TextMessage("Hello, world!", "msg");
         using var content = new MemoryStream(1024);
-        await message.WriteToAsync(content);
+        await message.WriteToAsync(content, token: TestToken);
         content.Seek(0, SeekOrigin.Begin);
         using var reader = new StreamReader(content, Encoding.UTF8, false, 1024, true);
-        Equal("Hello, world!", reader.ReadToEnd());
+        Equal("Hello, world!", await reader.ReadToEndAsync(TestToken));
     }
 
     [Fact]
@@ -24,16 +24,16 @@ public sealed class MessageTests : Test
     {
         var pipe = new Pipe();
         IMessage message = new TextMessage("Hello, world!", "msg");
-        ThreadPool.QueueUserWorkItem(async state =>
+        ThreadPool.QueueUserWorkItem(async _ =>
         {
             await message.WriteToAsync(pipe.Writer).ConfigureAwait(false);
-            pipe.Writer.Complete();
+            await pipe.Writer.CompleteAsync();
         });
         using var content = new MemoryStream();
-        await pipe.Reader.CopyToAsync(content);
+        await pipe.Reader.CopyToAsync(content, TestToken);
         content.Seek(0, SeekOrigin.Begin);
         using var reader = new StreamReader(content, Encoding.UTF8, false, 1024, true);
-        Equal("Hello, world!", reader.ReadToEnd());
+        Equal("Hello, world!", await reader.ReadToEndAsync(TestToken));
     }
 
     [Fact]
@@ -41,16 +41,16 @@ public sealed class MessageTests : Test
     {
         var pipe = new Pipe();
         IMessage message = new JsonMessage<TestJsonObject> { Name = "JsonObj", Content = new() { StringField = "Hello, world!" } };
-        ThreadPool.QueueUserWorkItem(async state =>
+        ThreadPool.QueueUserWorkItem(async _ =>
         {
             await message.WriteToAsync(pipe.Writer).ConfigureAwait(false);
-            pipe.Writer.Complete();
+            await pipe.Writer.CompleteAsync();
         });
 
         TestJsonObject obj;
         using (var content = new MemoryStream())
         {
-            await pipe.Reader.CopyToAsync(content);
+            await pipe.Reader.CopyToAsync(content, TestToken);
             content.Seek(0, SeekOrigin.Begin);
             MessageReader<TestJsonObject> reader = JsonSerializable<TestJsonObject>.TransformAsync;
             obj = await reader(new StreamMessage(content, true, "JsonObj"), CancellationToken.None);

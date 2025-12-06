@@ -34,7 +34,7 @@ public sealed class ListTests : Test
     [Fact]
     public static void ReadOnlyView()
     {
-        var view = new ReadOnlyListView<string, int>(["1", "2", "3"], new Converter<string, int>(int.Parse));
+        var view = new ReadOnlyListView<string, int>(["1", "2", "3"], int.Parse);
         Equal(3, view.Count);
         Equal(1, view[0]);
         Equal(2, view[1]);

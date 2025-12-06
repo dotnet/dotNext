@@ -10,7 +10,7 @@ public class TaskQueueTests : Test
         True(queue.CanEnqueue);
         Null(queue.HeadTask);
         False(queue.TryDequeue(out _));
-        Null(await queue.TryDequeueAsync());
+        Null(await queue.TryDequeueAsync(TestToken));
     }
 
     [Fact]
@@ -23,13 +23,13 @@ public class TaskQueueTests : Test
         False(queue.CanEnqueue);
         NotNull(queue.HeadTask);
 
-        var enqueueTask = queue.EnqueueAsync(Task.CompletedTask).AsTask();
+        var enqueueTask = queue.EnqueueAsync(Task.CompletedTask, TestToken).AsTask();
         False(enqueueTask.IsCompleted);
 
         True(queue.TryDequeue(out var task));
         True(task.IsCompleted);
 
-        await enqueueTask.WaitAsync(DefaultTimeout);
+        await enqueueTask.WaitAsync(TestToken);
         queue.Clear();
     }
 
@@ -60,7 +60,7 @@ public class TaskQueueTests : Test
         True(queue.TryEnqueue(Task.CompletedTask));
 
         var count = 0;
-        while (await queue.TryDequeueAsync() is { } task)
+        while (await queue.TryDequeueAsync(TestToken) is { } task)
         {
             Same(Task.CompletedTask, task);
             count++;
@@ -73,9 +73,9 @@ public class TaskQueueTests : Test
     public static async Task EnumerateTasks()
     {
         var queue = new TaskQueue<Task>(3);
-        await queue.EnqueueAsync(Task.Delay(10));
-        await queue.EnqueueAsync(Task.Delay(15));
-        await queue.EnqueueAsync(Task.Delay(20));
+        await queue.EnqueueAsync(Task.Delay(10, TestToken), TestToken);
+        await queue.EnqueueAsync(Task.Delay(15, TestToken), TestToken);
+        await queue.EnqueueAsync(Task.Delay(20, TestToken), TestToken);
 
         var count = 0;
         await foreach (var task in queue)
@@ -91,13 +91,13 @@ public class TaskQueueTests : Test
     public static async Task DelayedDequeue()
     {
         var queue = new TaskQueue<Task>(3);
-        var enqueueTask = queue.DequeueAsync().AsTask();
+        var enqueueTask = queue.DequeueAsync(TestToken).AsTask();
         False(enqueueTask.IsCompleted);
 
         True(queue.TryEnqueue(Task.CompletedTask));
 
-        await enqueueTask.WaitAsync(DefaultTimeout);
-        Null(await queue.TryDequeueAsync());
+        await enqueueTask.WaitAsync(TestToken);
+        Null(await queue.TryDequeueAsync(TestToken));
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class TaskQueueTests : Test
         var queue = new TaskQueue<Task>(3);
         True(queue.TryEnqueue(source.Task));
 
-        var dequeueTask = queue.DequeueAsync().AsTask();
+        var dequeueTask = queue.DequeueAsync(TestToken).AsTask();
         False(dequeueTask.IsCompleted);
 
         source.SetException(new Exception());
@@ -128,16 +128,16 @@ public class TaskQueueTests : Test
     public static async Task EnsureFreeSpace()
     {
         var queue = new TaskQueue<Task>(3);
-        await queue.EnsureFreeSpaceAsync();
+        await queue.EnsureFreeSpaceAsync(TestToken);
         
         True(queue.TryEnqueue(Task.CompletedTask));
         True(queue.TryEnqueue(Task.CompletedTask));
         True(queue.TryEnqueue(Task.CompletedTask));
 
-        var task = queue.EnsureFreeSpaceAsync().AsTask();
+        var task = queue.EnsureFreeSpaceAsync(TestToken).AsTask();
         False(task.IsCompleted);
 
         True(queue.TryDequeue(out _));
-        await task.WaitAsync(DefaultTimeout);
+        await task.WaitAsync(TestToken);
     }
 }

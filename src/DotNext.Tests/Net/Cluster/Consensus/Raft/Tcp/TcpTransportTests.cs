@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp;
 
@@ -19,7 +20,7 @@ public sealed class TcpTransportTests : TransportTestSuite
         using var ms = new MemoryStream(1024);
         rawCertificate?.CopyTo(ms);
         ms.Seek(0, SeekOrigin.Begin);
-        return new X509Certificate2(ms.ToArray(), "1234");
+        return X509CertificateLoader.LoadPkcs12(ms.ToArray(), "1234");
     }
 
     private static SslServerAuthenticationOptions CreateServerSslOptions() => new()
@@ -282,14 +283,14 @@ public sealed class TcpTransportTests : TransportTestSuite
 
         // start in parallel
         await Task.WhenAll(
-            Task.Run(() => host1.StartAsync()),
-            Task.Run(() => host2.StartAsync()),
-            Task.Run(() => host3.StartAsync()));
+            Task.Run(() => host1.StartAsync(TestToken), TestToken),
+            Task.Run(() => host2.StartAsync(TestToken), TestToken),
+            Task.Run(() => host3.StartAsync(TestToken), TestToken));
 
         var leaders = await Task.WhenAll(
-            host1.WaitForLeaderAsync(DefaultTimeout),
-            host2.WaitForLeaderAsync(DefaultTimeout),
-            host3.WaitForLeaderAsync(DefaultTimeout));
+            host1.WaitForLeaderAsync(InfiniteTimeSpan, TestToken),
+            host2.WaitForLeaderAsync(InfiniteTimeSpan, TestToken),
+            host3.WaitForLeaderAsync(InfiniteTimeSpan, TestToken));
 
         var leader = default(EndPoint);
 
@@ -305,9 +306,9 @@ public sealed class TcpTransportTests : TransportTestSuite
             }
         }
 
-        await host1.StopAsync();
-        await host2.StopAsync();
-        await host3.StopAsync();
+        await host1.StopAsync(TestToken);
+        await host2.StopAsync(TestToken);
+        await host3.StopAsync(TestToken);
 
         static RaftCluster.TcpConfiguration CreateConfiguration(int port)
         {

@@ -183,7 +183,7 @@ public sealed class CommandInterpreterTests : Test
         
         Equal(1L, entry1.Term);
         Equal(0, interpreter.Value);
-        Equal(0, await interpreter.InterpretAsync(entry1));
+        Equal(0, await interpreter.InterpretAsync(entry1, TestToken));
         Equal(42, interpreter.Value);
 
         var entry2 = new LogEntry<UnaryOperationCommand>()
@@ -193,7 +193,7 @@ public sealed class CommandInterpreterTests : Test
         };
         
         Equal(10L, entry2.Term);
-        Equal(1, await interpreter.InterpretAsync(entry2));
+        Equal(1, await interpreter.InterpretAsync(entry2, TestToken));
         Equal(-42, interpreter.Value);
     }
 
@@ -216,7 +216,7 @@ public sealed class CommandInterpreterTests : Test
         
         Equal(1L, entry1.Term);
         Equal(0, state.Value);
-        Equal(0, await interpreter.InterpretAsync(entry1));
+        Equal(0, await interpreter.InterpretAsync(entry1, TestToken));
         Equal(42, state.Value);
 
         var entry2 = new LogEntry<UnaryOperationCommand>()
@@ -226,7 +226,7 @@ public sealed class CommandInterpreterTests : Test
         };
         
         Equal(10L, entry2.Term);
-        Equal(1, await interpreter.InterpretAsync(entry2));
+        Equal(1, await interpreter.InterpretAsync(entry2, TestToken));
         Equal(-42, state.Value);
 
         var entry3 = new LogEntry<AssignCommand>()
@@ -236,7 +236,7 @@ public sealed class CommandInterpreterTests : Test
         };
         
         Equal(68L, entry3.Term);
-        Equal(3, await interpreter.InterpretAsync(entry3, string.Empty));
+        Equal(3, await interpreter.InterpretAsync(entry3, string.Empty, TestToken));
         Equal(int.MaxValue, state.Value);
 
         ValueTask BinaryOp(BinaryOperationCommand command, CancellationToken token) => CustomInterpreter.DoBinaryOperation(ref state.Value, command, token);
@@ -257,15 +257,15 @@ public sealed class CommandInterpreterTests : Test
     {
         var stateMachine = new SimpleStateMachine();
         await using var wal = new WriteAheadLog(new() { Location = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()) }, stateMachine);
-        var index = await wal.AppendAsync(new BinaryOperationCommand { X = 44, Y = 2, Type = BinaryOperation.Subtract });
+        var index = await wal.AppendAsync(new BinaryOperationCommand { X = 44, Y = 2, Type = BinaryOperation.Subtract }, token: TestToken);
         Equal(0, stateMachine.Value);
-        await wal.CommitAsync(index);
-        await wal.WaitForApplyAsync(index);
+        await wal.CommitAsync(index, TestToken);
+        await wal.WaitForApplyAsync(index, TestToken);
         Equal(42, stateMachine.Value);
 
-        index = await wal.AppendAsync(new UnaryOperationCommand { X = 42, Type = UnaryOperation.OnesComplement });
-        await wal.CommitAsync(index);
-        await wal.WaitForApplyAsync(index);
+        index = await wal.AppendAsync(new UnaryOperationCommand { X = 42, Type = UnaryOperation.OnesComplement }, token: TestToken);
+        await wal.CommitAsync(index, TestToken);
+        await wal.WaitForApplyAsync(index, TestToken);
         Equal(~42, stateMachine.Value);
     }
 }

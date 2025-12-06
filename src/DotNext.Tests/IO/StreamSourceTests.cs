@@ -104,8 +104,8 @@ public sealed class StreamSourceTests : Test
         using var dest = new MemoryStream();
         using var buffer = new SparseBufferWriter<byte>();
         buffer.Write(in sequence);
-        using var src = Stream.Create(buffer, writable: false);
-        await src.CopyToAsync(dest);
+        await using var src = Stream.Create(buffer, writable: false);
+        await src.CopyToAsync(dest, TestToken);
         dest.Position = 0;
         Equal(Data, dest.ToArray());
     }
@@ -206,13 +206,13 @@ public sealed class StreamSourceTests : Test
     [MemberData(nameof(TestBuffers))]
     public static async Task ReadMemory(ReadOnlySequence<byte> sequence)
     {
-        using var src = Stream.Create(sequence);
+        await using var src = Stream.Create(sequence);
         Memory<byte> dest = new byte[Data.Length];
-        Equal(dest.Length, await src.ReadAsync(dest));
+        Equal(dest.Length, await src.ReadAsync(dest, TestToken));
         Equal(Data, dest.ToArray());
 
         src.Position = sequence.Length - 1;
-        Equal(1, await src.ReadAsync(dest.Slice(0, 1)));
+        Equal(1, await src.ReadAsync(dest.Slice(0, 1), TestToken));
         Equal(Data[^1], dest.Span[0]);
     }
 
@@ -222,11 +222,11 @@ public sealed class StreamSourceTests : Test
     {
         using var buffer = new SparseBufferWriter<byte>();
         buffer.Write(in sequence);
-        using var src = Stream.Create(buffer, writable: false);
+        await using var src = Stream.Create(buffer, writable: false);
         Equal(src.Length, sequence.Length);
         Equal(0L, src.Position);
         Memory<byte> dest = new byte[Data.Length];
-        await src.ReadExactlyAsync(dest);
+        await src.ReadExactlyAsync(dest, TestToken);
         Equal(src.Length, src.Position);
         Equal(Data, dest.ToArray());
     }
@@ -235,13 +235,13 @@ public sealed class StreamSourceTests : Test
     [MemberData(nameof(TestBuffers))]
     public static async Task ReadArrayAsync(ReadOnlySequence<byte> sequence)
     {
-        using var src = Stream.Create(sequence);
+        await using var src = Stream.Create(sequence);
         var dest = new byte[Data.Length];
-        Equal(dest.Length, await src.ReadAsync(dest, 0, dest.Length));
+        Equal(dest.Length, await src.ReadAsync(dest, 0, dest.Length, TestToken));
         Equal(Data, dest);
 
         src.Position = sequence.Length - 1;
-        Equal(1, await src.ReadAsync(dest, 0, 1));
+        Equal(1, await src.ReadAsync(dest, 0, 1, TestToken));
         Equal(Data[^1], dest[0]);
     }
 
@@ -339,7 +339,7 @@ public sealed class StreamSourceTests : Test
     [Fact]
     public static async Task WriteNotSupported()
     {
-        using var src = Stream.Create(new ReadOnlyMemory<byte>(Data));
+        await using var src = Stream.Create(new ReadOnlyMemory<byte>(Data));
         True(src.CanRead);
         True(src.CanSeek);
         False(src.CanWrite);
@@ -349,8 +349,8 @@ public sealed class StreamSourceTests : Test
         Throws<NotSupportedException>(() => src.WriteByte(42));
         Throws<NotSupportedException>(() => src.BeginWrite(new byte[2], 0, 2, null, null));
         Throws<ArgumentException>(() => src.EndWrite(Task.CompletedTask));
-        await ThrowsAsync<NotSupportedException>(src.WriteAsync(new ReadOnlyMemory<byte>()).AsTask);
-        await ThrowsAsync<NotSupportedException>(() => src.WriteAsync(new byte[2], 0, 2));
+        await ThrowsAsync<NotSupportedException>(src.WriteAsync(ReadOnlyMemory<byte>.Empty, TestToken).AsTask);
+        await ThrowsAsync<NotSupportedException>(() => src.WriteAsync(new byte[2], 0, 2, TestToken));
     }
 
     [Fact]
@@ -366,8 +366,8 @@ public sealed class StreamSourceTests : Test
         Throws<NotSupportedException>(() => src.WriteByte(42));
         Throws<NotSupportedException>(() => src.BeginWrite(new byte[2], 0, 2, null, null));
         Throws<ArgumentException>(() => src.EndWrite(Task.CompletedTask));
-        await ThrowsAsync<NotSupportedException>(src.WriteAsync(new ReadOnlyMemory<byte>()).AsTask);
-        await ThrowsAsync<NotSupportedException>(() => src.WriteAsync(new byte[2], 0, 2));
+        await ThrowsAsync<NotSupportedException>(src.WriteAsync(ReadOnlyMemory<byte>.Empty, TestToken).AsTask);
+        await ThrowsAsync<NotSupportedException>(() => src.WriteAsync(new byte[2], 0, 2, TestToken));
     }
 
     [Fact]
@@ -508,8 +508,8 @@ public sealed class StreamSourceTests : Test
         Throws<NotSupportedException>(() => stream.Seek(-1L, SeekOrigin.End));
         Throws<NotSupportedException>(() => stream.BeginRead(new byte[2], 0, 2, null, null));
         Throws<ArgumentException>(() => stream.EndRead(Task.CompletedTask));
-        await ThrowsAsync<NotSupportedException>(stream.ReadAsync(new byte[2]).AsTask);
-        await ThrowsAsync<NotSupportedException>(() => stream.ReadAsync(new byte[2], 0, 2));
+        await ThrowsAsync<NotSupportedException>(stream.ReadAsync(new byte[2], TestToken).AsTask);
+        await ThrowsAsync<NotSupportedException>(() => stream.ReadAsync(new byte[2], 0, 2, TestToken));
     }
 
     [Fact]
@@ -617,17 +617,17 @@ public sealed class StreamSourceTests : Test
 
         await Task.WhenAll(task1, task2);
 
-        Equal(expected, task1.Result);
-        Equal(expected, task2.Result);
+        Equal(expected, await task1);
+        Equal(expected, await task2);
 
         [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
-        static async Task<byte[]> ReadStreamAsync(Stream source)
+        async Task<byte[]> ReadStreamAsync(Stream source)
         {
             source.Position = 0L;
             await Task.Yield();
 
             var result = new byte[source.Length];
-            await source.ReadExactlyAsync(result);
+            await source.ReadExactlyAsync(result, TestToken);
             return result;
         }
     }

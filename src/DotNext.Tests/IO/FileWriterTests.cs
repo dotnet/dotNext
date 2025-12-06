@@ -18,15 +18,15 @@ public sealed class FileWriterTests : Test
         Equal(0L, writer.FilePosition);
 
         var expected = RandomBytes(32);
-        await writer.WriteAsync(expected);
+        await writer.WriteAsync(expected, TestToken);
         True(writer.HasBufferedData);
         Equal(0L, writer.FilePosition);
 
-        await writer.As<IFlushable>().FlushAsync();
+        await writer.As<IFlushable>().FlushAsync(TestToken);
         Equal(expected.Length, writer.FilePosition);
 
         var actual = new byte[expected.Length];
-        await RandomAccess.ReadAsync(handle, actual, 0L);
+        await RandomAccess.ReadAsync(handle, actual, 0L, TestToken);
 
         Equal(expected, actual);
     }
@@ -40,12 +40,12 @@ public sealed class FileWriterTests : Test
         using var writer = new FileWriter(handle) { MaxBufferSize = 64 };
 
         var expected = RandomBytes(writer.Buffer.Length + 10);
-        await writer.WriteAsync(expected);
+        await writer.WriteAsync(expected, TestToken);
         False(writer.HasBufferedData);
         Equal(expected.Length, writer.FilePosition);
 
         var actual = new byte[expected.Length];
-        await RandomAccess.ReadAsync(handle, actual, 0L);
+        await RandomAccess.ReadAsync(handle, actual, 0L, TestToken);
 
         Equal(expected, actual);
     }
@@ -59,13 +59,13 @@ public sealed class FileWriterTests : Test
         using var writer = new FileWriter(handle) { MaxBufferSize = 64 };
 
         var expected = RandomBytes(writer.Buffer.Length << 2);
-        await writer.WriteAsync(expected.AsMemory(0, 63));
-        await writer.WriteAsync(expected.AsMemory(63));
+        await writer.WriteAsync(expected.AsMemory(0, 63), TestToken);
+        await writer.WriteAsync(expected.AsMemory(63), TestToken);
         False(writer.HasBufferedData);
         Equal(expected.Length, writer.FilePosition);
 
         var actual = new byte[expected.Length];
-        await RandomAccess.ReadAsync(handle, actual, 0L);
+        await RandomAccess.ReadAsync(handle, actual, 0L, TestToken);
 
         Equal(expected, actual);
     }
@@ -168,10 +168,10 @@ public sealed class FileWriterTests : Test
         writer.Buffer.Span[0] = 1;
         writer.Buffer.Span[1] = 2;
         writer.Produce(2);
-        await writer.WriteAsync();
+        await writer.WriteAsync(TestToken);
 
         var actual = new byte[102];
-        await RandomAccess.ReadAsync(handle, actual, 0L);
+        await RandomAccess.ReadAsync(handle, actual, 0L, TestToken);
         Equal(2, actual[101]);
         Equal(1, actual[100]);
     }
@@ -183,7 +183,7 @@ public sealed class FileWriterTests : Test
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle) { MaxBufferSize = 64 };
-        await writer.WriteAsync(new Blittable<Buffer512> { Value = default });
+        await writer.WriteAsync(new Blittable<Buffer512> { Value = default }, TestToken);
         False(writer.HasBufferedData);
         Equal(writer.FilePosition, Unsafe.SizeOf<Buffer512>());
     }
@@ -195,8 +195,8 @@ public sealed class FileWriterTests : Test
         using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
             FileOptions.Asynchronous | FileOptions.DeleteOnClose);
         using var writer = new FileWriter(handle) { MaxBufferSize = 64 };
-        await writer.WriteAsync(new byte[2]);
-        await writer.WriteAsync(new Blittable<Buffer512> { Value = default });
+        await writer.WriteAsync(new byte[2], TestToken);
+        await writer.WriteAsync(new Blittable<Buffer512> { Value = default }, TestToken);
         False(writer.HasBufferedData);
         Equal(writer.FilePosition, Unsafe.SizeOf<Buffer512>() + 2);
     }

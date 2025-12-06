@@ -55,7 +55,7 @@ public sealed class DictionaryTests : Test
                 {"one", "1" },
                 {"two", "2" }
             };
-        var view = new ReadOnlyDictionaryView<string, string, int>(dict, new Converter<string, int>(int.Parse));
+        var view = new ReadOnlyDictionaryView<string, string, int>(dict, int.Parse);
         Equal(1, view["one"]);
         Equal(2, view["two"]);
         True(view.TryGetValue("one", out var i));

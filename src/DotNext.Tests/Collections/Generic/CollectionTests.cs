@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Immutable;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Generic;
 
@@ -41,7 +40,7 @@ public sealed class CollectionTests : Test
     [Fact]
     public static void ReadOnlyView()
     {
-        var view = new ReadOnlyCollectionView<string, int>(new[] { "1", "2", "3" }, new Converter<string, int>(int.Parse));
+        var view = new ReadOnlyCollectionView<string, int>(["1", "2", "3"], int.Parse);
         Equal(3, view.Count);
         NotEmpty(view);
         All(view, static value => True(value is >= 0 and <= 3));
@@ -77,7 +76,7 @@ public sealed class CollectionTests : Test
         list.ForEach(counter.Accept);
         Equal(3, counter.value);
         counter.value = 0;
-        var array2 = new int[] { 1, 2, 10, 11, 15 };
+        var array2 = new[] { 1, 2, 10, 11, 15 };
         array2.ForEach(counter.Accept);
         Equal(5, counter.value);
     }
@@ -87,12 +86,12 @@ public sealed class CollectionTests : Test
     {
         IList<int> list = new List<int> { 1, 10, 20 };
         var counter = new Counter<int>();
-        await list.ForEachAsync(counter.AcceptAsync);
+        await list.ForEachAsync(counter.AcceptAsync, TestToken);
         Equal(3, counter.value);
         counter.value = 0;
         
-        var array2 = new int[] { 1, 2, 10, 11, 15 };
-        await array2.ForEachAsync(counter.AcceptAsync);
+        var array2 = new[] { 1, 2, 10, 11, 15 };
+        await array2.ForEachAsync(counter.AcceptAsync, TestToken);
         Equal(5, counter.value);
     }
 
@@ -114,7 +113,7 @@ public sealed class CollectionTests : Test
     [Fact]
     public static void ToStringTest()
     {
-        var array = new int[] { 10, 20, 30 };
+        var array = new[] { 10, 20, 30 };
         var str = array.ToString(":");
         Equal("10:20:30", str);
     }
@@ -122,7 +121,7 @@ public sealed class CollectionTests : Test
     [Fact]
     public static void Prepend()
     {
-        IEnumerable<string> items = new[] { "One", "Two" };
+        IEnumerable<string> items = ["One", "Two"];
         items = items.Prepend("Zero");
         NotEmpty(items);
         Equal(3, items.Count());
@@ -133,7 +132,7 @@ public sealed class CollectionTests : Test
     [Fact]
     public static void Append()
     {
-        IEnumerable<string> items = new[] { "One", "Two" };
+        IEnumerable<string> items = ["One", "Two"];
         items = items.Append("Three", "Four");
         NotEmpty(items);
         Equal(4, items.Count());
@@ -145,31 +144,31 @@ public sealed class CollectionTests : Test
     public static async Task IterationAsync()
     {
         var collection = Array.Empty<int>().ToAsyncEnumerable();
-        Null(await collection.FirstOrNullAsync());
-        Equal(Optional<int>.None, await collection.FirstOrNoneAsync());
-        Equal(Optional<int>.None, await collection.FirstOrNoneAsync(Predicate<int>.Constant(true)));
+        Null(await collection.FirstOrNullAsync(TestToken));
+        Equal(Optional<int>.None, await collection.FirstOrNoneAsync(TestToken));
+        Equal(Optional<int>.None, await collection.FirstOrNoneAsync(Predicate<int>.Constant(true), TestToken));
         collection = new int[] { 42 }.ToAsyncEnumerable();
-        Equal(42, await collection.FirstOrNullAsync());
-        Equal(42, await collection.FirstOrNoneAsync());
-        Equal(42, await collection.FirstOrNoneAsync(Predicate<int>.Constant(true)));
+        Equal(42, await collection.FirstOrNullAsync(TestToken));
+        Equal(42, await collection.FirstOrNoneAsync(TestToken));
+        Equal(42, await collection.FirstOrNoneAsync(Predicate<int>.Constant(true), TestToken));
     }
 
     [Fact]
     public static async Task Iteration2Async()
     {
         var collection = Array.Empty<int>().ToAsyncEnumerable();
-        Null(await collection.LastOrNullAsync());
-        Equal(Optional<int>.None, await collection.LastOrNoneAsync());
+        Null(await collection.LastOrNullAsync(TestToken));
+        Equal(Optional<int>.None, await collection.LastOrNoneAsync(TestToken));
         collection = new int[] { 42 }.ToAsyncEnumerable();
-        Equal(42, await collection.LastOrNullAsync());
-        Equal(42, await collection.LastOrNoneAsync());
+        Equal(42, await collection.LastOrNullAsync(TestToken));
+        Equal(42, await collection.LastOrNoneAsync(TestToken));
     }
 
     [Fact]
     public static async Task ConversionToAsyncEnumerable()
     {
         int index = 0;
-        await foreach (var item in new int[] { 10, 20, 30 }.ToAsyncEnumerable())
+        await foreach (var item in new[] { 10, 20, 30 }.ToAsyncEnumerable())
         {
             switch (index++)
             {
@@ -221,7 +220,7 @@ public sealed class CollectionTests : Test
     [Fact]
     public static void CopyArray()
     {
-        using var copy = new int[] { 10, 20, 30 }.Copy();
+        using var copy = new[] { 10, 20, 30 }.Copy();
         Equal(3, copy.Length);
         Equal(10, copy[0]);
         Equal(20, copy[1]);
@@ -241,7 +240,7 @@ public sealed class CollectionTests : Test
     [Fact]
     public static void CopyLinkedList()
     {
-        using var copy = new LinkedList<int>(new int[] { 10, 20, 30 }).Copy();
+        using var copy = new LinkedList<int>([10, 20, 30]).Copy();
         Equal(3, copy.Length);
         Equal(10, copy[0]);
         Equal(20, copy[1]);

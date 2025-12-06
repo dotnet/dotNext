@@ -403,7 +403,7 @@ public sealed class BufferWriterSlimTests : Test
         True(writer.Write(expected, format) > 0);
 
         using var buffer = writer.DetachOrCopyBuffer();
-        var reader = IAsyncBinaryReader.Create(buffer.Memory);
+        var reader = new SequenceReader(buffer.Memory);
         using var actual = reader.ReadBlock(format, allocator: null);
         Equal(expected, actual.Span);
     }
@@ -441,7 +441,7 @@ public sealed class BufferWriterSlimTests : Test
         MemoryOwner<char> actual;
         if (format.HasValue)
         {
-            var reader = IAsyncBinaryReader.Create(buffer.Memory);
+            var reader = new SequenceReader(buffer.Memory);
             actual = reader.Decode(encoding, format.GetValueOrDefault());
             Equal(expected, actual.Span);
         }

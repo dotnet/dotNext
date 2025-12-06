@@ -10,8 +10,8 @@ public sealed class AsyncCorrelationSourceTests : Test
         var key2 = Guid.NewGuid();
 
         var source = new AsyncCorrelationSource<Guid, int>(10);
-        var listener1 = source.WaitAsync(key1);
-        var listener2 = source.WaitAsync(key2);
+        var listener1 = source.WaitAsync(key1, TestToken);
+        var listener2 = source.WaitAsync(key2, TestToken);
 
         True(source.Pulse(key1, 10));
         Equal(10, await listener1);
@@ -29,8 +29,8 @@ public sealed class AsyncCorrelationSourceTests : Test
         var key2 = Guid.NewGuid();
 
         var source = new AsyncCorrelationSource<Guid, int>(10);
-        var listener1 = source.WaitAsync(key1);
-        var listener2 = source.WaitAsync(key2);
+        var listener1 = source.WaitAsync(key1, TestToken);
+        var listener2 = source.WaitAsync(key2, TestToken);
 
         source.PulseAll(new ArithmeticException());
 
@@ -45,8 +45,8 @@ public sealed class AsyncCorrelationSourceTests : Test
         var key2 = Guid.NewGuid();
 
         var source = new AsyncCorrelationSource<Guid, int>(10);
-        var listener1 = source.WaitAsync(key1);
-        var listener2 = source.WaitAsync(key2);
+        var listener1 = source.WaitAsync(key1, TestToken);
+        var listener2 = source.WaitAsync(key2, TestToken);
 
         source.PulseAll(new CancellationToken(true));
 
@@ -61,8 +61,8 @@ public sealed class AsyncCorrelationSourceTests : Test
         var key2 = Guid.NewGuid();
 
         var source = new AsyncCorrelationSource<Guid, int>(10);
-        var listener1 = source.WaitAsync(key1);
-        var listener2 = source.WaitAsync(key2);
+        var listener1 = source.WaitAsync(key1, TestToken);
+        var listener2 = source.WaitAsync(key2, TestToken);
 
         source.PulseAll(42);
 

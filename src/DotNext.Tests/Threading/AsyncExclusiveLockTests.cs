@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using static System.Threading.Timeout;
+
+using System.Diagnostics;
 
 namespace DotNext.Threading;
 
@@ -9,11 +11,11 @@ public sealed class AsyncExclusiveLockTests : Test
     public static async Task TrivialLock()
     {
         using var @lock = new AsyncExclusiveLock { ConcurrencyLevel = 3 };
-        True(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(10)));
-        False(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(100)));
-        await ThrowsAsync<TimeoutException>(@lock.AcquireAsync(TimeSpan.FromMilliseconds(100)).AsTask);
+        True(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(10), TestToken));
+        False(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(100), TestToken));
+        await ThrowsAsync<TimeoutException>(@lock.AcquireAsync(TimeSpan.FromMilliseconds(100), TestToken).AsTask);
         @lock.Release();
-        True(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(100)));
+        True(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(100), TestToken));
     }
 
     [Fact]
@@ -21,17 +23,17 @@ public sealed class AsyncExclusiveLockTests : Test
     {
         var are = new TaskCompletionSource();
         using var @lock = new AsyncExclusiveLock();
-        await @lock.AcquireAsync(TimeSpan.Zero);
+        await @lock.AcquireAsync(TimeSpan.Zero, TestToken);
         var task = Task.Run(async () =>
         {
-            False(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(10)));
+            False(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(10), TestToken));
             True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
-            await @lock.AcquireAsync(DefaultTimeout);
+            await @lock.AcquireAsync(InfiniteTimeSpan, TestToken);
             @lock.Release();
             return true;
-        });
+        }, TestToken);
 
-        await are.Task.WaitAsync(DefaultTimeout);
+        await are.Task.WaitAsync(TestToken);
         @lock.Release();
         True(await task);
     }
@@ -51,7 +53,7 @@ public sealed class AsyncExclusiveLockTests : Test
     {
         using var @lock = new AsyncExclusiveLock();
         True(@lock.TryAcquire());
-        var waitNode = @lock.AcquireAsync();
+        var waitNode = @lock.AcquireAsync(TestToken);
         False(waitNode.IsCompleted);
         Throws<ArgumentOutOfRangeException>(() => @lock.CancelSuspendedCallers(new CancellationToken(false)));
         @lock.CancelSuspendedCallers(new CancellationToken(true));
@@ -100,7 +102,7 @@ public sealed class AsyncExclusiveLockTests : Test
     {
         var l = new AsyncExclusiveLock();
         l.Dispose();
-        var result = l.TryAcquireAsync(System.Threading.Timeout.InfiniteTimeSpan);
+        var result = l.TryAcquireAsync(InfiniteTimeSpan, TestToken);
         await ThrowsAnyAsync<ObjectDisposedException>(result.AsTask);
     }
 
@@ -111,11 +113,11 @@ public sealed class AsyncExclusiveLockTests : Test
         Empty(l.GetSuspendedCallers());
 
         l.TrackSuspendedCallers();
-        await l.AcquireAsync();
+        await l.AcquireAsync(TestToken);
         Empty(l.GetSuspendedCallers());
 
         using var activity = new Activity("MyOperation").Start();
-        var suspendedTask = l.AcquireAsync();
+        var suspendedTask = l.AcquireAsync(TestToken);
         False(suspendedTask.IsCompleted);
         NotEmpty(l.GetSuspendedCallers());
         Equal("MyOperation", l.GetSuspendedCallers()[0] is Activity a ? a.OperationName : string.Empty);
@@ -131,12 +133,12 @@ public sealed class AsyncExclusiveLockTests : Test
         Empty(l.GetSuspendedCallers());
 
         l.TrackSuspendedCallers();
-        await l.AcquireAsync();
+        await l.AcquireAsync(TestToken);
         Empty(l.GetSuspendedCallers());
 
         const string callerInfo = "MyThread";
         l.SetCallerInformation(callerInfo);
-        var suspendedTask = l.AcquireAsync();
+        var suspendedTask = l.AcquireAsync(TestToken);
         False(suspendedTask.IsCompleted);
         NotEmpty(l.GetSuspendedCallers());
         Equal(callerInfo, l.GetSuspendedCallers().FirstOrDefault());
@@ -150,11 +152,11 @@ public sealed class AsyncExclusiveLockTests : Test
     {
         const string reason = "Hello, world!";
         using var l = new AsyncExclusiveLock();
-        True(await l.TryAcquireAsync(DefaultTimeout));
+        True(await l.TryAcquireAsync(InfiniteTimeSpan, TestToken));
 
-        var task1 = l.TryAcquireAsync(DefaultTimeout).AsTask();
-        var task2 = l.AcquireAsync().AsTask();
-        var task3 = l.TryStealAsync(reason, DefaultTimeout).AsTask();
+        var task1 = l.TryAcquireAsync(InfiniteTimeSpan, TestToken).AsTask();
+        var task2 = l.AcquireAsync(TestToken).AsTask();
+        var task3 = l.TryStealAsync(reason, InfiniteTimeSpan, TestToken).AsTask();
 
         Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task1)).Reason);
         Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task2)).Reason);
@@ -168,11 +170,11 @@ public sealed class AsyncExclusiveLockTests : Test
     {
         const string reason = "Hello, world!";
         using var l = new AsyncExclusiveLock();
-        True(await l.TryAcquireAsync(DefaultTimeout));
+        True(await l.TryAcquireAsync(InfiniteTimeSpan, TestToken));
 
-        var task1 = l.TryAcquireAsync(DefaultTimeout).AsTask();
-        var task2 = l.AcquireAsync().AsTask();
-        var task3 = l.StealAsync(reason, DefaultTimeout).AsTask();
+        var task1 = l.TryAcquireAsync(InfiniteTimeSpan, TestToken).AsTask();
+        var task2 = l.AcquireAsync(TestToken).AsTask();
+        var task3 = l.StealAsync(reason, InfiniteTimeSpan, TestToken).AsTask();
 
         Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task1)).Reason);
         Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task2)).Reason);
@@ -185,7 +187,7 @@ public sealed class AsyncExclusiveLockTests : Test
     public static void SynchronousLock()
     {
         using var l = new AsyncExclusiveLock();
-        True(l.TryAcquire(DefaultTimeout));
+        True(l.TryAcquire(InfiniteTimeSpan, TestToken));
 
         False(l.TryAcquire());
     }
@@ -194,7 +196,7 @@ public sealed class AsyncExclusiveLockTests : Test
     public static async Task MixedLock()
     {
         await using var l = new AsyncExclusiveLock();
-        True(await l.TryAcquireAsync(DefaultTimeout));
+        True(await l.TryAcquireAsync(InfiniteTimeSpan, TestToken));
 
         var t = Task.Factory.StartNew(() => l.TryAcquire(DefaultTimeout), TaskCreationOptions.LongRunning);
         l.Release();
@@ -236,10 +238,10 @@ public sealed class AsyncExclusiveLockTests : Test
         True(l.TryAcquire());
         False(l.TryAcquire());
 
-        Throws<LockRecursionException>(() => l.TryAcquire(DefaultTimeout));
+        Throws<LockRecursionException>(() => l.TryAcquire(InfiniteTimeSpan, TestToken));
         
         l.Release();
-        True(l.TryAcquire(DefaultTimeout));
+        True(l.TryAcquire(InfiniteTimeSpan, TestToken));
     }
 
     [Fact]
@@ -253,9 +255,9 @@ public sealed class AsyncExclusiveLockTests : Test
         
         True(l.TryAcquire());
 
-        var task = l.AcquireAsync().AsTask();
+        var task = l.AcquireAsync(TestToken).AsTask();
         False(task.IsCompleted);
         
-        await ThrowsAsync<ConcurrencyLimitReachedException > (l.AcquireAsync().AsTask);
+        await ThrowsAsync<ConcurrencyLimitReachedException > (l.AcquireAsync(TestToken).AsTask);
     }
 }

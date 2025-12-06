@@ -24,7 +24,7 @@ public sealed class AsyncBridgeTests : Test
     {
         using var ev = new ManualResetEvent(false);
         ThreadPool.QueueUserWorkItem(static state => state.Set(), ev, false);
-        await ev.WaitAsync(DefaultTimeout);
+        await ev.WaitAsync(TestToken);
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public sealed class AsyncBridgeTests : Test
         using var cts = new CancellationTokenSource();
 
         var task = ev.WaitAsync(cts.Token).AsTask();
-        cts.Cancel();
+        await cts.CancelAsync();
 
         var e = await ThrowsAsync<OperationCanceledException>(task);
         Equal(cts.Token, e.CancellationToken);
@@ -44,8 +44,8 @@ public sealed class AsyncBridgeTests : Test
     public static async Task AlreadySignaled()
     {
         using var ev = new ManualResetEvent(true);
-        True(await ev.WaitAsync(DefaultTimeout));
-        True(ev.WaitAsync().IsCompletedSuccessfully);
+        True(await ev.WaitAsync(DefaultTimeout, TestToken));
+        True(ev.WaitAsync(TestToken).IsCompletedSuccessfully);
     }
 
     [Fact]

@@ -17,10 +17,10 @@ public sealed class AsyncExchangerTests : Test
     [Fact]
     public static async Task ExchangerGracefulShutdown()
     {
-        using var exchanger = new AsyncExchanger<int>();
-        var task = exchanger.ExchangeAsync(42);
+        var exchanger = new AsyncExchanger<int>();
+        var task = exchanger.ExchangeAsync(42, TestToken);
         False(task.IsCompleted);
-        Equal(42, await exchanger.ExchangeAsync(52));
+        Equal(42, await exchanger.ExchangeAsync(52, TestToken));
         Equal(52, await task);
         True(exchanger.DisposeAsync().IsCompletedSuccessfully);
     }
@@ -28,11 +28,11 @@ public sealed class AsyncExchangerTests : Test
     [Fact]
     public static async Task ExchangerGracefulShutdown2()
     {
-        using var exchanger = new AsyncExchanger<int>();
-        var task = exchanger.ExchangeAsync(42);
+        var exchanger = new AsyncExchanger<int>();
+        var task = exchanger.ExchangeAsync(42, TestToken);
         var disposeTask = exchanger.DisposeAsync();
         False(disposeTask.IsCompleted);
-        await ThrowsAsync<ObjectDisposedException>(exchanger.ExchangeAsync(52).AsTask);
+        await ThrowsAsync<ObjectDisposedException>(exchanger.ExchangeAsync(52, TestToken).AsTask);
         await ThrowsAsync<ObjectDisposedException>(task.AsTask);
         await disposeTask;
     }
@@ -43,9 +43,9 @@ public sealed class AsyncExchangerTests : Test
         await using var exchanger = new AsyncExchanger<int>();
         var task = exchanger.ExchangeAsync(42, new CancellationToken(true));
         await ThrowsAsync<OperationCanceledException>(task.AsTask);
-        task = exchanger.ExchangeAsync(42);
+        task = exchanger.ExchangeAsync(42, TestToken);
         False(task.IsCompleted);
-        Equal(42, await exchanger.ExchangeAsync(56));
+        Equal(42, await exchanger.ExchangeAsync(56, TestToken));
         Equal(56, await task);
     }
 
@@ -53,11 +53,11 @@ public sealed class AsyncExchangerTests : Test
     public static async Task Termination()
     {
         await using var exchanger = new AsyncExchanger<int>();
-        var task = exchanger.ExchangeAsync(42);
+        var task = exchanger.ExchangeAsync(42, TestToken);
         exchanger.Terminate();
         await ThrowsAsync<ExchangeTerminatedException>(task.AsTask);
         True(exchanger.IsTerminated);
-        task = exchanger.ExchangeAsync(56);
+        task = exchanger.ExchangeAsync(56, TestToken);
         True(task.IsFaulted);
         await ThrowsAsync<ExchangeTerminatedException>(task.AsTask);
     }
@@ -70,7 +70,7 @@ public sealed class AsyncExchangerTests : Test
         False(exchanger.TryExchange(ref value));
         Equal(56, value);
 
-        var task = exchanger.ExchangeAsync(42);
+        var task = exchanger.ExchangeAsync(42, TestToken);
         True(exchanger.TryExchange(ref value));
         Equal(42, value);
         Equal(56, await task);
@@ -91,14 +91,14 @@ public sealed class AsyncExchangerTests : Test
         var task1 = Task.Run(async () =>
         {
             for (var i = 0; i < 200; i++)
-                Equal(52, await exchanger.ExchangeAsync(42));
-        });
+                Equal(52, await exchanger.ExchangeAsync(42, TestToken));
+        }, TestToken);
 
         var task2 = Task.Run(async () =>
         {
             for (var i = 0; i < 200; i++)
-                Equal(42, await exchanger.ExchangeAsync(52));
-        });
+                Equal(42, await exchanger.ExchangeAsync(52, TestToken));
+        }, TestToken);
 
         await Task.WhenAll(task1, task2);
     }

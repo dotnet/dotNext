@@ -1,4 +1,6 @@
-﻿namespace DotNext.Threading;
+﻿using static System.Threading.Timeout;
+
+namespace DotNext.Threading;
 
 [Collection(TestCollections.AsyncPrimitives)]
 public sealed class AsyncReaderWriterLockTests : Test
@@ -9,25 +11,25 @@ public sealed class AsyncReaderWriterLockTests : Test
         using var rwLock = new AsyncReaderWriterLock { ConcurrencyLevel = 3 };
 
         // read lock
-        True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
-        True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
-        False(await rwLock.TryEnterWriteLockAsync(TimeSpan.FromMilliseconds(20)));
+        True(await rwLock.TryEnterReadLockAsync(InfiniteTimeSpan, TestToken));
+        True(await rwLock.TryEnterReadLockAsync(InfiniteTimeSpan, TestToken));
+        False(await rwLock.TryEnterWriteLockAsync(TimeSpan.FromMilliseconds(20), TestToken));
         rwLock.Release();
-        False(await rwLock.TryEnterWriteLockAsync(TimeSpan.FromMilliseconds(20)));
+        False(await rwLock.TryEnterWriteLockAsync(TimeSpan.FromMilliseconds(20), TestToken));
         rwLock.Release();
 
         // write lock
-        True(await rwLock.TryEnterWriteLockAsync(DefaultTimeout));
-        False(await rwLock.TryEnterReadLockAsync(TimeSpan.FromMilliseconds(20)));
+        True(await rwLock.TryEnterWriteLockAsync(InfiniteTimeSpan, TestToken));
+        False(await rwLock.TryEnterReadLockAsync(TimeSpan.FromMilliseconds(20), TestToken));
         rwLock.Release();
 
         // upgrade to write lock
-        True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
-        True(await rwLock.TryUpgradeToWriteLockAsync(DefaultTimeout));
+        True(await rwLock.TryEnterReadLockAsync(InfiniteTimeSpan, TestToken));
+        True(await rwLock.TryUpgradeToWriteLockAsync(InfiniteTimeSpan, TestToken));
         False(rwLock.TryEnterWriteLock());
         Throws<SynchronizationLockException>(() => rwLock.TryUpgradeToWriteLock());
         rwLock.DowngradeFromWriteLock();
-        True(await rwLock.TryEnterReadLockAsync(DefaultTimeout));
+        True(await rwLock.TryEnterReadLockAsync(InfiniteTimeSpan, TestToken));
     }
 
     [Fact]
@@ -35,18 +37,18 @@ public sealed class AsyncReaderWriterLockTests : Test
     {
         var are = new TaskCompletionSource();
         using var rwLock = new AsyncReaderWriterLock();
-        True(await rwLock.TryEnterWriteLockAsync(TimeSpan.Zero));
+        True(await rwLock.TryEnterWriteLockAsync(TimeSpan.Zero, TestToken));
         var task = Task.Run(async () =>
         {
-            False(await rwLock.TryEnterWriteLockAsync(TimeSpan.FromMilliseconds(10)));
+            False(await rwLock.TryEnterWriteLockAsync(TimeSpan.FromMilliseconds(10), TestToken));
             True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
-            await rwLock.EnterWriteLockAsync(DefaultTimeout);
+            await rwLock.EnterWriteLockAsync(InfiniteTimeSpan, TestToken);
             rwLock.Release();
-        });
+        }, TestToken);
 
-        await are.Task.WaitAsync(DefaultTimeout);
+        await are.Task.WaitAsync(TestToken);
         rwLock.Release();
-        await task.WaitAsync(DefaultTimeout);
+        await task.WaitAsync(TestToken);
     }
 
     [Fact]
@@ -54,18 +56,18 @@ public sealed class AsyncReaderWriterLockTests : Test
     {
         var are = new TaskCompletionSource();
         using var rwLock = new AsyncReaderWriterLock();
-        await rwLock.EnterWriteLockAsync(DefaultTimeout);
+        await rwLock.EnterWriteLockAsync(InfiniteTimeSpan, TestToken);
         var task = Task.Run(async () =>
         {
-            False(await rwLock.TryEnterReadLockAsync(TimeSpan.FromMilliseconds(10)));
+            False(await rwLock.TryEnterReadLockAsync(TimeSpan.FromMilliseconds(10), TestToken));
             True(ThreadPool.QueueUserWorkItem(static ev => ev.SetResult(), are, false));
-            await rwLock.EnterReadLockAsync(DefaultTimeout);
+            await rwLock.EnterReadLockAsync(InfiniteTimeSpan, TestToken);
             rwLock.Release();
-        });
+        }, TestToken);
 
-        await are.Task.WaitAsync(DefaultTimeout);
+        await are.Task.WaitAsync(TestToken);
         rwLock.Release();
-        await task.WaitAsync(DefaultTimeout);
+        await task.WaitAsync(TestToken);
     }
 
     [Fact]
@@ -119,7 +121,7 @@ public sealed class AsyncReaderWriterLockTests : Test
         True(@lock.TryEnterReadLock());
         var task = @lock.DisposeAsync();
         False(task.IsCompleted);
-        await ThrowsAnyAsync<ObjectDisposedException>(@lock.EnterWriteLockAsync().AsTask);
+        await ThrowsAnyAsync<ObjectDisposedException>(@lock.EnterWriteLockAsync(TestToken).AsTask);
         @lock.Release();
         await task;
     }
@@ -129,12 +131,12 @@ public sealed class AsyncReaderWriterLockTests : Test
     {
         using var @lock = new AsyncReaderWriterLock();
         True(@lock.TryEnterWriteLock());
-        var acquisition1 = @lock.EnterReadLockAsync();
+        var acquisition1 = @lock.EnterReadLockAsync(TestToken);
         False(acquisition1.IsCompleted);
         var task = @lock.DisposeAsync();
         False(task.IsCompleted);
 
-        await ThrowsAnyAsync<ObjectDisposedException>(@lock.EnterReadLockAsync().AsTask);
+        await ThrowsAnyAsync<ObjectDisposedException>(@lock.EnterReadLockAsync(TestToken).AsTask);
 
         @lock.Release();
         await acquisition1;
@@ -150,8 +152,8 @@ public sealed class AsyncReaderWriterLockTests : Test
         using var @lock = new AsyncReaderWriterLock();
         True(@lock.TryEnterReadLock());
 
-        var writeLock = @lock.EnterWriteLockAsync();
-        var readLock = @lock.EnterReadLockAsync();
+        var writeLock = @lock.EnterWriteLockAsync(TestToken);
+        var readLock = @lock.EnterReadLockAsync(TestToken);
         False(writeLock.IsCompleted);
         False(readLock.IsCompleted);
 
@@ -167,11 +169,11 @@ public sealed class AsyncReaderWriterLockTests : Test
     {
         const string reason = "Hello, world!";
         using var @lock = new AsyncReaderWriterLock();
-        True(await @lock.TryEnterWriteLockAsync(DefaultTimeout));
+        True(await @lock.TryEnterWriteLockAsync(InfiniteTimeSpan, TestToken));
 
-        var task1 = @lock.TryEnterWriteLockAsync(DefaultTimeout).AsTask();
-        var task2 = @lock.TryEnterReadLockAsync(DefaultTimeout).AsTask();
-        var task3 = @lock.TryStealWriteLockAsync(reason, DefaultTimeout).AsTask();
+        var task1 = @lock.TryEnterWriteLockAsync(InfiniteTimeSpan, TestToken).AsTask();
+        var task2 = @lock.TryEnterReadLockAsync(InfiniteTimeSpan, TestToken).AsTask();
+        var task3 = @lock.TryStealWriteLockAsync(reason, InfiniteTimeSpan, TestToken).AsTask();
 
         Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task1)).Reason);
         Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task2)).Reason);
@@ -185,11 +187,11 @@ public sealed class AsyncReaderWriterLockTests : Test
     {
         const string reason = "Hello, world!";
         using var @lock = new AsyncReaderWriterLock();
-        True(await @lock.TryEnterWriteLockAsync(DefaultTimeout));
+        True(await @lock.TryEnterWriteLockAsync(InfiniteTimeSpan, TestToken));
 
-        var task1 = @lock.TryEnterWriteLockAsync(DefaultTimeout).AsTask();
-        var task2 = @lock.TryEnterReadLockAsync(DefaultTimeout).AsTask();
-        var task3 = @lock.StealWriteLockAsync(reason, DefaultTimeout).AsTask();
+        var task1 = @lock.TryEnterWriteLockAsync(InfiniteTimeSpan, TestToken).AsTask();
+        var task2 = @lock.TryEnterReadLockAsync(InfiniteTimeSpan, TestToken).AsTask();
+        var task3 = @lock.StealWriteLockAsync(reason, InfiniteTimeSpan, TestToken).AsTask();
 
         Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task1)).Reason);
         Same(reason, (await ThrowsAsync<PendingTaskInterruptedException>(task2)).Reason);
@@ -226,7 +228,7 @@ public sealed class AsyncReaderWriterLockTests : Test
     public static async Task AcquireReadWriteLockSynchronously()
     {
         using var l = new AsyncReaderWriterLock();
-        True(l.TryEnterReadLock(DefaultTimeout));
+        True(l.TryEnterReadLock(InfiniteTimeSpan, TestToken));
         Equal(1L, l.CurrentReadCount);
 
         var t = Task.Factory.StartNew(() => l.TryEnterWriteLock(DefaultTimeout), TaskCreationOptions.LongRunning);
@@ -253,7 +255,7 @@ public sealed class AsyncReaderWriterLockTests : Test
         Equal(new[] { true, true }, await Task.WhenAll(t1, t2));
         Equal(2L, l.CurrentReadCount);
 
-        bool TryEnterReadLock() => l.TryEnterReadLock(DefaultTimeout);
+        bool TryEnterReadLock() => l.TryEnterReadLock(InfiniteTimeSpan, TestToken);
     }
     
     [Fact]
@@ -262,24 +264,24 @@ public sealed class AsyncReaderWriterLockTests : Test
         using var l = new AsyncReaderWriterLock();
         True(l.TryEnterReadLock());
 
-        Throws<LockRecursionException>(() => l.TryEnterReadLock(DefaultTimeout));
-        Throws<LockRecursionException>(() => l.TryEnterWriteLock(DefaultTimeout));
+        Throws<LockRecursionException>(() => l.TryEnterReadLock(InfiniteTimeSpan, TestToken));
+        Throws<LockRecursionException>(() => l.TryEnterWriteLock(InfiniteTimeSpan, TestToken));
         
         l.Release();
-        True(l.TryEnterReadLock(DefaultTimeout));
+        True(l.TryEnterReadLock(InfiniteTimeSpan, TestToken));
     }
 
     [Fact]
     public static async Task NoDeadlockWhenUpgrade()
     {
         using var l = new AsyncReaderWriterLock();
-        await l.EnterReadLockAsync();
-        await l.EnterReadLockAsync();
+        await l.EnterReadLockAsync(TestToken);
+        await l.EnterReadLockAsync(TestToken);
 
-        var task1 = l.UpgradeToWriteLockAsync().AsTask(); // suspends
+        var task1 = l.UpgradeToWriteLockAsync(TestToken).AsTask(); // suspends
         False(task1.IsCompleted);
 
-        var task2 = l.UpgradeToWriteLockAsync().AsTask();
+        var task2 = l.UpgradeToWriteLockAsync(TestToken).AsTask();
         False(task2.IsCompleted);
         await task1;
         l.Release();
@@ -318,10 +320,10 @@ public sealed class AsyncReaderWriterLockTests : Test
         await using var l = new AsyncReaderWriterLock();
         True(l.TryEnterReadLock());
 
-        var task1 = l.EnterWriteLockAsync().AsTask();
+        var task1 = l.EnterWriteLockAsync(TestToken).AsTask();
         False(task1.IsCompleted);
 
-        var task2 = l.UpgradeToWriteLockAsync().AsTask();
+        var task2 = l.UpgradeToWriteLockAsync(TestToken).AsTask();
         False(task2.IsCompleted);
         
         await task1;

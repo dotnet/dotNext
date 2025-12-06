@@ -8,15 +8,15 @@ public sealed class AsyncCountdownEventTests : Test
     {
         using var countdown = new AsyncCountdownEvent(4);
         False(countdown.IsSet);
-        False(await countdown.WaitAsync(TimeSpan.FromMilliseconds(100)));
+        False(await countdown.WaitAsync(TimeSpan.FromMilliseconds(100), TestToken));
 
         False(countdown.Signal()); //count == 3
         False(countdown.IsSet);
-        False(await countdown.WaitAsync(TimeSpan.FromMilliseconds(100)));
+        False(await countdown.WaitAsync(TimeSpan.FromMilliseconds(100), TestToken));
 
         True(countdown.Signal(3));
         True(countdown.IsSet);
-        True(await countdown.WaitAsync(TimeSpan.FromMilliseconds(40)));
+        True(await countdown.WaitAsync(TimeSpan.FromMilliseconds(40), TestToken));
     }
 
     [Theory]
@@ -67,7 +67,7 @@ public sealed class AsyncCountdownEventTests : Test
     public static async Task AbortSuspendedCallers()
     {
         using var countdown = new AsyncCountdownEvent(4);
-        var task = countdown.WaitAsync().AsTask();
+        var task = countdown.WaitAsync(TestToken).AsTask();
         False(countdown.Reset());
         await ThrowsAsync<PendingTaskInterruptedException>(task);
     }
@@ -77,7 +77,7 @@ public sealed class AsyncCountdownEventTests : Test
     {
         const long initialCount = 4;
         using var countdown = new AsyncCountdownEvent(initialCount);
-        var task = countdown.WaitAsync().AsTask();
+        var task = countdown.WaitAsync(TestToken).AsTask();
         False(countdown.Reset(initialCount));
         await ThrowsAsync<PendingTaskInterruptedException>(task);
     }

@@ -17,8 +17,8 @@ public sealed class SequenceBinaryReaderTests : Test
         var sequence = ToReadOnlySequence<byte>(new byte[] { 1, 5, 8, 9 }, 2);
         False(sequence.IsSingleSegment);
         var result = new byte[3];
-        IAsyncBinaryReader reader = IAsyncBinaryReader.Create(sequence);
-        await reader.ReadAsync(result);
+        IAsyncBinaryReader reader = new SequenceReader(sequence);
+        await reader.ReadAsync(result, TestToken);
         Equal(1, result[0]);
         Equal(5, result[1]);
         Equal(8, result[2]);
@@ -28,9 +28,9 @@ public sealed class SequenceBinaryReaderTests : Test
     public static async Task CopyToStream()
     {
         var content = new byte[] { 1, 5, 8, 9 };
-        IAsyncBinaryReader reader = IAsyncBinaryReader.Create(ToReadOnlySequence<byte>(content, 2));
+        IAsyncBinaryReader reader = new SequenceReader(ToReadOnlySequence<byte>(content, 2));
         using var ms = new MemoryStream();
-        await reader.CopyToAsync(ms);
+        await reader.CopyToAsync(ms, token: TestToken);
         ms.Position = 0;
         Equal(content, ms.ToArray());
     }
@@ -39,12 +39,12 @@ public sealed class SequenceBinaryReaderTests : Test
     public static async Task CopyToPipe()
     {
         var expected = new byte[] { 1, 5, 8, 9 };
-        IAsyncBinaryReader reader = IAsyncBinaryReader.Create(ToReadOnlySequence<byte>(expected, 2));
+        IAsyncBinaryReader reader = new SequenceReader(ToReadOnlySequence<byte>(expected, 2));
         var pipe = new Pipe();
-        await reader.CopyToAsync(pipe.Writer);
+        await reader.CopyToAsync(pipe.Writer, token: TestToken);
         await pipe.Writer.CompleteAsync();
         var actual = new byte[expected.Length];
-        await pipe.Reader.ReadExactlyAsync(actual);
+        await pipe.Reader.ReadExactlyAsync(actual, TestToken);
         Equal(expected, actual);
     }
 
@@ -60,7 +60,7 @@ public sealed class SequenceBinaryReaderTests : Test
         writer.WriteBigEndian<short>(46);
         writer.WriteBigEndian<ushort>(47);
 
-        var reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
+        var reader = new SequenceReader(writer.WrittenMemory);
         Equal(10M, reader.Read<Blittable<decimal>>().Value);
         Equal(42L, reader.ReadLittleEndian<long>());
         Equal(43UL, reader.ReadLittleEndian<ulong>());
@@ -73,7 +73,7 @@ public sealed class SequenceBinaryReaderTests : Test
     [Fact]
     public static void ReadBlock()
     {
-        var reader = IAsyncBinaryReader.Create(new byte[] { 10, 20, 30, 40, 50, 60 });
+        var reader = new SequenceReader(new byte[] { 10, 20, 30, 40, 50, 60 });
 
         var block = new byte[3];
         reader.Read(block.AsSpan());
@@ -96,7 +96,7 @@ public sealed class SequenceBinaryReaderTests : Test
         using var ms = new MemoryStream();
         await ms.EncodeAsync(value.AsMemory(), encoding, lengthEnc, buffer);
         ms.Position = 0;
-        IAsyncBinaryReader reader = IAsyncBinaryReader.Create(ms.ToArray());
+        IAsyncBinaryReader reader = new SequenceReader(ms.ToArray());
         True(reader.TryGetRemainingBytesCount(out long remainingCount));
         Equal(ms.Length, remainingCount);
         using var result = await reader.DecodeAsync(encoding, lengthEnc);
@@ -134,7 +134,7 @@ public sealed class SequenceBinaryReaderTests : Test
         var writer = new ArrayBufferWriter<byte>();
         writer.Encode(value, encoding, LengthFormat.Compressed);
 
-        var reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
+        var reader = new SequenceReader(writer.WrittenMemory);
         Span<char> charBuffer = stackalloc char[9];
 
         var bufferWriter = new ArrayBufferWriter<char>(value.Length);
@@ -154,7 +154,7 @@ public sealed class SequenceBinaryReaderTests : Test
     public static void TryRead()
     {
         ReadOnlyMemory<byte> expected = new byte[] { 1, 2, 3 };
-        var reader = IAsyncBinaryReader.Create(expected);
+        var reader = new SequenceReader(expected);
         False(reader.IsEmpty);
 
         True(reader.TryRead(out var actual));
@@ -167,7 +167,7 @@ public sealed class SequenceBinaryReaderTests : Test
     public static void TryRead2()
     {
         ReadOnlyMemory<byte> expected = new byte[] { 1, 2, 3 };
-        var reader = IAsyncBinaryReader.Create(expected);
+        var reader = new SequenceReader(expected);
         False(reader.IsEmpty);
 
         True(reader.TryRead(4, out var actual));
@@ -184,7 +184,7 @@ public sealed class SequenceBinaryReaderTests : Test
 
         Equal(3, writer.Write(expected));
 
-        var reader = IAsyncBinaryReader.Create(writer.WrittenMemory);
+        var reader = new SequenceReader(writer.WrittenMemory);
         Equal(expected, new BigInteger(reader.ReadToEnd().FirstSpan));
     }
 }

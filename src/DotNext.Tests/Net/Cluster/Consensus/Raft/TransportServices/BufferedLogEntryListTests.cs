@@ -40,9 +40,9 @@ public sealed class BufferedLogEntryListTests : Test
 
         await using var entries = new LogEntryProducer<RaftLogEntry>(new RaftLogEntry(42L, content1, knownLength), new RaftLogEntry(43L, content2, knownLength));
         var options = new LogEntriesBufferingOptions { MemoryThreshold = 1025 };
-        using var buffered = await BufferedLogEntryList.CopyAsync(entries, options);
+        using var buffered = await BufferedLogEntryList.CopyAsync(entries, options, TestToken);
         Equal(2L, buffered.Count);
-        Equal(content1, await buffered[0].ToByteArrayAsync());
-        Equal(content2, await buffered[1].ToByteArrayAsync());
+        Equal(content1, await buffered[0].ToByteArrayAsync(token: TestToken));
+        Equal(content2, await buffered[1].ToByteArrayAsync(token: TestToken));
     }
 }

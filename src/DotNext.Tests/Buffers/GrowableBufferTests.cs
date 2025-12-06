@@ -49,7 +49,9 @@ public sealed class GrowableBufferTests : Test
             writer.Reset();
             var expectedSpan = new ReadOnlySpan<byte>(expected);
             var arg = Variant.Immutable(ref expectedSpan);
+#pragma warning disable CS9080
             writer.DynamicInvoke(in arg, 1, Variant.Empty);
+#pragma warning restore CS9080
             Equal(expectedSpan.Length, writer.WrittenCount);
         }
         finally

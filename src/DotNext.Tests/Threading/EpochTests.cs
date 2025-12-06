@@ -100,8 +100,8 @@ public sealed class EpochTests : Test
     {
         var state = new TaskCompletionSource();
 
-        await ReclaimAsync(state).WaitAsync(DefaultTimeout);
-        await state.Task.WaitAsync(DefaultTimeout);
+        await ReclaimAsync(state).WaitAsync(TestToken);
+        await state.Task.WaitAsync(TestToken);
 
         static Task ReclaimAsync(TaskCompletionSource source)
         {

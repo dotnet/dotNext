@@ -108,7 +108,7 @@ public sealed class SpanReaderTests : Test
         var exceptionThrown = false;
         try
         {
-            reader.Current.ToString();
+            NotEmpty(reader.Current.ToString());
         }
         catch (InvalidOperationException)
         {
@@ -146,7 +146,7 @@ public sealed class SpanReaderTests : Test
         var exceptionThrown = false;
         try
         {
-            writer.Current.ToString();
+            NotEmpty(writer.Current.ToString());
         }
         catch (InvalidOperationException)
         {
@@ -447,7 +447,7 @@ public sealed class SpanReaderTests : Test
         var writer = new SpanWriter<byte>(buffer);
         True(writer.Encode(expected, Encoding.UTF8, format) > 0);
 
-        var reader = IAsyncBinaryReader.Create(buffer.AsMemory(0, writer.WrittenCount));
+        var reader = new SequenceReader(buffer.AsMemory(0, writer.WrittenCount));
 
         using var actual = reader.Decode(Encoding.UTF8, lengthFormat: format);
         Equal(expected, actual.Span);
@@ -465,7 +465,7 @@ public sealed class SpanReaderTests : Test
         var writer = new SpanWriter<byte>(buffer);
         True(writer.Write(expected, format) > 0);
         
-        var reader = IAsyncBinaryReader.Create(buffer.AsMemory(0, writer.WrittenCount));
+        var reader = new SequenceReader(buffer.AsMemory(0, writer.WrittenCount));
         Equal(expected, reader.ReadBlock(format).FirstSpan);
     }
     

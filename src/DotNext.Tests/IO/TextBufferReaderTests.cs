@@ -156,7 +156,6 @@ public sealed class TextBufferReaderTests : Test
     public static void ReadLines(ReadOnlySequence<char> charData)
     {
         using var tr = TextReader.Create(charData);
-        string valueString = new(charData.ToArray());
         var data = tr.ReadLine();
         Equal("Char data \r\u3190 with", data);
 
@@ -174,16 +173,15 @@ public sealed class TextBufferReaderTests : Test
     public static async Task ReadLinesAsync(ReadOnlySequence<char> charData)
     {
         using var tr = TextReader.Create(charData);
-        string valueString = new(charData.ToArray());
-        var data = await tr.ReadLineAsync();
+        var data = await tr.ReadLineAsync(TestToken);
         Equal("Char data \r\u3190 with", data);
 
-        data = await tr.ReadLineAsync();
+        data = await tr.ReadLineAsync(TestToken);
         Equal("multiple", data);
 
-        data = await tr.ReadLineAsync();
+        data = await tr.ReadLineAsync(TestToken);
         Equal("lines", data);
 
-        Null(await tr.ReadLineAsync());
+        Null(await tr.ReadLineAsync(TestToken));
     }
 }

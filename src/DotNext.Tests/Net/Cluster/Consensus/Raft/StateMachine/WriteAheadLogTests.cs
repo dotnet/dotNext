@@ -21,12 +21,12 @@ public sealed class WriteAheadLogTests : Test
     public static async Task LockManager()
     {
         await using var lockManager = new WriteAheadLog.LockManager();
-        await lockManager.AcquireReadLockAsync();
+        await lockManager.AcquireReadLockAsync(TestToken);
 
-        var readBarrierTask = lockManager.AcquireReadBarrierAsync().AsTask();
+        var readBarrierTask = lockManager.AcquireReadBarrierAsync(TestToken).AsTask();
         lockManager.ReleaseReadLock();
 
-        await readBarrierTask.WaitAsync(DefaultTimeout);
+        await readBarrierTask.WaitAsync(TestToken);
     }
     
     [Fact]
@@ -44,9 +44,9 @@ public sealed class WriteAheadLogTests : Test
         {
             state = wal;
             Equal(0, state.Term);
-            Equal(1, await state.IncrementTermAsync(default));
+            Equal(1, await state.IncrementTermAsync(default, TestToken));
             True(state.IsVotedFor(default));
-            await state.UpdateVotedForAsync(member);
+            await state.UpdateVotedForAsync(member, TestToken);
             False(state.IsVotedFor(default));
             True(state.IsVotedFor(member));
         }
@@ -66,10 +66,10 @@ public sealed class WriteAheadLogTests : Test
     {
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         await using var auditTrail = new WriteAheadLog(new() { Location = dir }, new NoOpStateMachine());
-        await auditTrail.AppendAsync(new EmptyLogEntry { Term = 10 });
+        await auditTrail.AppendAsync(new EmptyLogEntry { Term = 10 }, TestToken);
 
         Equal(1, auditTrail.LastEntryIndex);
-        Equal(1L, await auditTrail.CommitAsync(1L));
+        Equal(1L, await auditTrail.CommitAsync(1L, TestToken));
         Equal(1, auditTrail.LastCommittedEntryIndex);
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = static (entries, snapshotIndex, _) =>
         {
@@ -79,8 +79,8 @@ public sealed class WriteAheadLogTests : Test
             False(entries[0].IsSnapshot);
             return default;
         };
-        await auditTrail.ReadAsync(new LogEntryConsumer(checker), 1L, auditTrail.LastEntryIndex);
-        Equal(0L, await auditTrail.CommitAsync(auditTrail.LastEntryIndex));
+        await auditTrail.ReadAsync(new LogEntryConsumer(checker), 1L, auditTrail.LastEntryIndex, TestToken);
+        Equal(0L, await auditTrail.CommitAsync(auditTrail.LastEntryIndex, TestToken));
     }
 
     [Fact]
@@ -91,11 +91,11 @@ public sealed class WriteAheadLogTests : Test
         await using var wal = new WriteAheadLog(new() { Location = dir }, stateMachine);
 
         const string context = "Context";
-        Equal(1L, await wal.AppendAsync(new Blittable<long> { Value = 42L }, context));
-        Equal(2L, await wal.AppendAsync(ReadOnlyMemory<byte>.Empty, context: null));
+        Equal(1L, await wal.AppendAsync(new Blittable<long> { Value = 42L }, context, TestToken));
+        Equal(2L, await wal.AppendAsync(ReadOnlyMemory<byte>.Empty, context: null, TestToken));
 
-        await wal.CommitAsync(wal.LastEntryIndex);
-        await wal.WaitForApplyAsync(2L);
+        await wal.CommitAsync(wal.LastEntryIndex, TestToken);
+        await wal.WaitForApplyAsync(2L, TestToken);
 
         Equal(context, Contains(1L, stateMachine.Context));
     }
@@ -117,9 +117,9 @@ public sealed class WriteAheadLogTests : Test
             Equal(0L, entries[0].Term);
             return default;
         };
-        await wal.ReadAsync(new LogEntryConsumer(checker) { LogEntryMetadataOnly = true }, 0L, wal.LastEntryIndex);
+        await wal.ReadAsync(new LogEntryConsumer(checker) { LogEntryMetadataOnly = true }, 0L, wal.LastEntryIndex, TestToken);
 
-        Equal(1L, await wal.AppendAsync(entry1));
+        Equal(1L, await wal.AppendAsync(entry1, TestToken));
         checker = async (entries, snapshotIndex, token) =>
         {
             Null(snapshotIndex);
@@ -131,10 +131,10 @@ public sealed class WriteAheadLogTests : Test
             return Missing.Value;
         };
 
-        await wal.ReadAsync(new LogEntryConsumer(checker), 0L, wal.LastEntryIndex);
+        await wal.ReadAsync(new LogEntryConsumer(checker), 0L, wal.LastEntryIndex, TestToken);
 
         // entry 2
-        Equal(2L, await wal.AppendAsync(entry2));
+        Equal(2L, await wal.AppendAsync(entry2, TestToken));
         checker = async (entries, snapshotIndex, token) =>
         {
             Null(snapshotIndex);
@@ -144,7 +144,7 @@ public sealed class WriteAheadLogTests : Test
             return Missing.Value;
         };
 
-        await wal.ReadAsync(new LogEntryConsumer(checker), 2L, wal.LastEntryIndex);
+        await wal.ReadAsync(new LogEntryConsumer(checker), 2L, wal.LastEntryIndex, TestToken);
     }
 
     [Fact]
@@ -154,7 +154,7 @@ public sealed class WriteAheadLogTests : Test
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         await using var wal = new WriteAheadLog(new() { Location = dir }, new NoOpStateMachine());
 
-        Equal(1L, await wal.AppendAsync(payload));
+        Equal(1L, await wal.AppendAsync(payload, token: TestToken));
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker2 = async (entries, snapshotIndex, token) =>
         {
             Null(snapshotIndex);
@@ -174,7 +174,7 @@ public sealed class WriteAheadLogTests : Test
             //execute reader inside another reader which is not possible for ConsensusOnlyState
             return await wal.ReadAsync(new LogEntryConsumer(checker2), 0L, wal.LastEntryIndex, token);
         };
-        await wal.ReadAsync(new LogEntryConsumer(checker1), 0L, wal.LastEntryIndex);
+        await wal.ReadAsync(new LogEntryConsumer(checker1), 0L, wal.LastEntryIndex, TestToken);
     }
     
     [Fact]
@@ -184,7 +184,7 @@ public sealed class WriteAheadLogTests : Test
         await using var wal = new WriteAheadLog(new() { Location = dir }, new NoOpStateMachine());
 
         ReadOnlyMemory<byte> payload = RandomBytes(64);
-        await wal.AppendAsync(payload);
+        await wal.AppendAsync(payload, token: TestToken);
 
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<long>> checker = async (entries, snapshotIndex, token) =>
         {
@@ -198,7 +198,7 @@ public sealed class WriteAheadLogTests : Test
             return await wal.AppendAsync(RandomBytes(64), token: token);
         };
 
-        var index = await wal.ReadAsync(new IO.Log.LogEntryConsumer<IRaftLogEntry, long>(checker), 0L, wal.LastEntryIndex);
+        var index = await wal.ReadAsync(new IO.Log.LogEntryConsumer<IRaftLogEntry, long>(checker), 0L, wal.LastEntryIndex, TestToken);
         Equal(2L, index);
     }
 
@@ -211,7 +211,7 @@ public sealed class WriteAheadLogTests : Test
         await using var wal = new WriteAheadLog(options, new NoOpStateMachine());
 
         var payload = new TestLogEntry(Random.Shared.GetString(Alphabet, options.ChunkSize * 2));
-        Equal(1L, await wal.AppendAsync(payload));
+        Equal(1L, await wal.AppendAsync(payload, token: TestToken));
 
         Func<IReadOnlyList<IRaftLogEntry>, long?, CancellationToken, ValueTask<Missing>> checker = async (entries, snapshotIndex, token) =>
         {
@@ -221,7 +221,7 @@ public sealed class WriteAheadLogTests : Test
             return Missing.Value;
         };
 
-        await wal.ReadAsync(new LogEntryConsumer(checker), 1L, 1L);
+        await wal.ReadAsync(new LogEntryConsumer(checker), 1L, 1L, TestToken);
     }
 
     [Theory]
@@ -236,12 +236,12 @@ public sealed class WriteAheadLogTests : Test
         var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
         await using var wal = new WriteAheadLog(new() { Location = dir, MemoryManagement = strategy }, new NoOpStateMachine());
-        
-        await wal.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5), 1L);
+
+        await wal.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5), 1L, token: TestToken);
         Equal(4L, wal.LastEntryIndex);
         Equal(0L, wal.LastCommittedEntryIndex);
 
-        await wal.AppendAsync(entry1, 1L);
+        await wal.AppendAsync(entry1, 1L, TestToken);
         Equal(1L, wal.LastEntryIndex);
         Equal(0L, wal.LastCommittedEntryIndex);
             
@@ -254,7 +254,7 @@ public sealed class WriteAheadLogTests : Test
             return Missing.Value;
         };
         
-        await wal.ReadAsync(new LogEntryConsumer(checker), 1L, wal.LastEntryIndex);
+        await wal.ReadAsync(new LogEntryConsumer(checker), 1L, wal.LastEntryIndex, TestToken);
     }
 
     [Theory]
@@ -277,17 +277,17 @@ public sealed class WriteAheadLogTests : Test
 
         await using (var wal = new WriteAheadLog(options, new NoOpStateMachine()))
         {
-            Equal(1L, await wal.AppendAsync(entry1));
-            await wal.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5), 2L);
+            Equal(1L, await wal.AppendAsync(entry1, TestToken));
+            await wal.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5), 2L, token: TestToken);
 
-            Equal(1L, await wal.CommitAsync(1L));
-            Equal(2L, await wal.CommitAsync(3L));
-            Equal(0L, await wal.CommitAsync(2L));
+            Equal(1L, await wal.CommitAsync(1L, TestToken));
+            Equal(2L, await wal.CommitAsync(3L, TestToken));
+            Equal(0L, await wal.CommitAsync(2L, TestToken));
             Equal(3L, wal.LastCommittedEntryIndex);
             Equal(5L, wal.LastEntryIndex);
 
-            await ThrowsAsync<InvalidOperationException>(wal.AppendAsync(entry1, 1L).AsTask);
-            await wal.FlushAsync();
+            await ThrowsAsync<InvalidOperationException>(wal.AppendAsync(entry1, 1L, TestToken).AsTask);
+            await wal.FlushAsync(TestToken);
         }
 
         //read again
@@ -296,11 +296,11 @@ public sealed class WriteAheadLogTests : Test
             Equal(3L, wal.LastCommittedEntryIndex);
             Equal(3L, wal.LastEntryIndex);
 
-            using var reader = await wal.ReadAsync(1L, wal.LastEntryIndex);
+            using var reader = await wal.ReadAsync(1L, wal.LastEntryIndex, TestToken);
             False(reader[0].IsSnapshot);
-            Equal(entry1.Content, await reader[0].ToStringAsync(Encoding.UTF8));
-            Equal(entry2.Content, await reader[1].ToStringAsync(Encoding.UTF8));
-            Equal(entry3.Content, await reader[2].ToStringAsync(Encoding.UTF8));
+            Equal(entry1.Content, await reader[0].ToStringAsync(Encoding.UTF8, token: TestToken));
+            Equal(entry2.Content, await reader[1].ToStringAsync(Encoding.UTF8,  token: TestToken));
+            Equal(entry3.Content, await reader[2].ToStringAsync(Encoding.UTF8,  token: TestToken));
         }
     }
 
@@ -317,9 +317,9 @@ public sealed class WriteAheadLogTests : Test
         {
             BinaryPrimitives.WriteInt64LittleEndian(buffer.Span, i);
 
-            var index = await wal.AppendAsync(buffer);
-            await wal.CommitAsync(index);
-            await wal.WaitForApplyAsync(index);
+            var index = await wal.AppendAsync(buffer, token: TestToken);
+            await wal.CommitAsync(index, TestToken);
+            await wal.WaitForApplyAsync(index, TestToken);
         }
 
         Equal(count * (0L + count - 1L) / 2L, stateMachine.Value);
@@ -337,19 +337,19 @@ public sealed class WriteAheadLogTests : Test
             for (var i = 0L; i < count; i++)
             {
                 BinaryPrimitives.WriteInt64LittleEndian(buffer.Span, i);
-                index = await wal.AppendAsync(buffer);
+                index = await wal.AppendAsync(buffer, token: TestToken);
             }
 
-            await wal.CommitAsync(index);
-            await wal.WaitForApplyAsync(index);
-            await wal.FlushAsync();
+            await wal.CommitAsync(index, TestToken);
+            await wal.WaitForApplyAsync(index, TestToken);
+            await wal.FlushAsync(TestToken);
         }
         
         await using var stateMachine = new SumStateMachine(new(dir));
         await using (var wal = new WriteAheadLog(new() { Location = dir }, stateMachine))
         {
-            await stateMachine.RestoreAsync();
-            await wal.InitializeAsync();
+            await stateMachine.RestoreAsync(TestToken);
+            await wal.InitializeAsync(TestToken);
 
             Equal(count * (0L + count - 1L) / 2L, stateMachine.Value);
         }
@@ -369,10 +369,10 @@ public sealed class WriteAheadLogTests : Test
         await using var stateMachine = new JsonStateMachine(new(dir));
         await using var wal = new WriteAheadLog(new() { Location = dir }, stateMachine);
         
-        await wal.AppendJsonAsync(new TestJsonObject { StringField = "Entry1" });
-        var index = await wal.AppendJsonAsync(new TestJsonObject { StringField = "Entry2" });
-        await wal.CommitAsync(index);
-        await wal.WaitForApplyAsync(index);
+        await wal.AppendJsonAsync(new TestJsonObject { StringField = "Entry1" }, token: TestToken);
+        var index = await wal.AppendJsonAsync(new TestJsonObject { StringField = "Entry2" },  token: TestToken);
+        await wal.CommitAsync(index, TestToken);
+        await wal.WaitForApplyAsync(index, TestToken);
         Equal(2, stateMachine.Entries.Count);
 
         var payload = stateMachine.Entries[0];

@@ -71,7 +71,7 @@ public sealed class StreamSegmentTests : Test
         using var segment = new StreamSegment(ms);
         segment.Range = (1L, 2L);
         var buffer = new byte[4];
-        Equal(2, await segment.ReadAsync(buffer, 0, buffer.Length));
+        Equal(2, await segment.ReadAsync(buffer, 0, buffer.Length, TestToken));
         Equal(3, buffer[0]);
         Equal(5, buffer[1]);
         Equal(0, buffer[2]);
@@ -108,7 +108,7 @@ public sealed class StreamSegmentTests : Test
         Throws<NotSupportedException>(() => segment.Write(new byte[2]));
         Throws<NotSupportedException>(() => segment.BeginWrite(new byte[2], 0, 2, null, null));
         Throws<InvalidOperationException>(() => segment.EndWrite(Task.CompletedTask));
-        await ThrowsAsync<NotSupportedException>(() => segment.WriteAsync(new byte[3], 0, 3));
-        await ThrowsAsync<NotSupportedException>(segment.WriteAsync(new ReadOnlyMemory<byte>()).AsTask);
+        await ThrowsAsync<NotSupportedException>(() => segment.WriteAsync(new byte[3], 0, 3, TestToken));
+        await ThrowsAsync<NotSupportedException>(segment.WriteAsync(ReadOnlyMemory<byte>.Empty, TestToken).AsTask);
     }
 }

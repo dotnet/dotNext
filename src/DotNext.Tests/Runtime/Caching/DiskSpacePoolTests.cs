@@ -23,10 +23,10 @@ public sealed class DiskSpacePoolTests : Test
 
         var last = segments.Last();
         ReadOnlyMemory<byte> expected = RandomBytes(pool.MaxSegmentSize);
-        await last.WriteAsync(expected);
+        await last.WriteAsync(expected, token: TestToken);
 
         var actual = new byte[expected.Length];
-        Equal(actual.Length, await last.ReadAsync(actual));
+        Equal(actual.Length, await last.ReadAsync(actual, token: TestToken));
         Equal(expected, actual);
 
         Disposable.Dispose(segments);
@@ -63,10 +63,10 @@ public sealed class DiskSpacePoolTests : Test
 
         await using var segment = pool.Rent();
         ReadOnlyMemory<byte> expected = RandomBytes(pool.MaxSegmentSize);
-        await segment.WriteAsync(expected);
+        await segment.WriteAsync(expected, token: TestToken);
 
         Memory<byte> actual = new byte[expected.Length];
-        Equal(actual.Length, await segment.ReadAsync(actual));
+        Equal(actual.Length, await segment.ReadAsync(actual, token: TestToken));
 
         Equal(expected, actual);
     }
@@ -88,7 +88,7 @@ public sealed class DiskSpacePoolTests : Test
 
         await using var segment = pool.Rent();
         ReadOnlyMemory<byte> expected = RandomBytes(pool.MaxSegmentSize + 1);
-        await ThrowsAsync<ArgumentOutOfRangeException>(segment.WriteAsync(expected).AsTask);
+        await ThrowsAsync<ArgumentOutOfRangeException>(segment.WriteAsync(expected, token: TestToken).AsTask);
     }
     
     [Fact]
@@ -132,15 +132,15 @@ public sealed class DiskSpacePoolTests : Test
         
         var buffer = new byte[32];
 
-        await stream.EncodeAsync(expected.AsMemory(), Encoding.UTF8, LengthFormat.LittleEndian, buffer);
+        await stream.EncodeAsync(expected.AsMemory(), Encoding.UTF8, LengthFormat.LittleEndian, buffer, TestToken);
         
         stream.Seek(0L, SeekOrigin.Begin);
 
-        using var actual = await stream.DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, buffer);
+        using var actual = await stream.DecodeAsync(Encoding.UTF8, LengthFormat.LittleEndian, buffer, token: TestToken);
         Equal(expected, actual.Span);
 
         // check EOS
-        Equal(0, await stream.ReadAsync(buffer));
+        Equal(0, await stream.ReadAsync(buffer, TestToken));
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public sealed class DiskSpacePoolTests : Test
         Throws<ObjectDisposedException>(new DiskSpacePool.Segment().CreateStream);
         Throws<ObjectDisposedException>(static () => new DiskSpacePool.Segment().Read([]));
         Throws<ObjectDisposedException>(static () => new DiskSpacePool.Segment().Write([]));
-        await ThrowsAsync<ObjectDisposedException>(new DiskSpacePool.Segment().ReadAsync(Memory<byte>.Empty).AsTask);
-        await ThrowsAsync<ObjectDisposedException>(new DiskSpacePool.Segment().WriteAsync(ReadOnlyMemory<byte>.Empty).AsTask);
+        await ThrowsAsync<ObjectDisposedException>(new DiskSpacePool.Segment().ReadAsync(Memory<byte>.Empty, token: TestToken).AsTask);
+        await ThrowsAsync<ObjectDisposedException>(new DiskSpacePool.Segment().WriteAsync(ReadOnlyMemory<byte>.Empty, token: TestToken).AsTask);
     }
 }
