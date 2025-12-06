@@ -63,6 +63,14 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
         extraBuffer = initialCapacity is 0 ? default : allocator.AllocateAtLeast(initialCapacity);
     }
 
+    /// <summary>
+    /// Initializes a new buffer writer.
+    /// </summary>
+    public BufferWriterSlim()
+    {
+        allocator = MemoryAllocator<T>.Default;
+    }
+
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [ExcludeFromCodeCoverage]
     private readonly int Overflow => Math.Max(0, position - initialBuffer.Length);
