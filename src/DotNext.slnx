@@ -27,9 +27,6 @@
     </Project>
   </Folder>
   <Folder Name="/Misc/">
-    <Project Path="DotNext.AotTests/DotNext.AotTests.csproj">
-      <BuildType Solution="Bench|*" Project="Debug" />
-    </Project>
     <Project Path="DotNext.Benchmarks.WAL/DotNext.Benchmarks.WAL.csproj">
       <BuildType Solution="Bench|*" Project="Debug" />
     </Project>
