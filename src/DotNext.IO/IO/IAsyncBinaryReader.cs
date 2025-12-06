@@ -409,6 +409,30 @@ public interface IAsyncBinaryReader
         return false;
     }
 
+    /// <summary>
+    /// Creates default implementation of the binary reader for the stream.
+    /// </summary>
+    /// <remarks>
+    /// It is recommended to use extension methods from <see cref="StreamExtensions"/> class
+    /// for decoding data from the stream. This method is intended for situation
+    /// when you need an object implementing <see cref="IAsyncBinaryReader"/> interface.
+    /// </remarks>
+    /// <param name="input">The stream to be wrapped into the reader.</param>
+    /// <param name="buffer">The buffer used for decoding data from the stream.</param>
+    /// <returns>The stream reader.</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="input"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
+    public static IAsyncBinaryReader Create(Stream input, Memory<byte> buffer)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+        ArgumentException.EnsureReadable(input);
+        ArgumentException.ThrowIfEmpty(buffer);
+
+        return ReferenceEquals(input, Stream.Null)
+            ? Empty
+            : new AsyncStreamBinaryAccessor(input, buffer);
+    }
+
     internal static Stream CreateStream<TReader>(TReader reader)
         where TReader : IAsyncBinaryReader
     {

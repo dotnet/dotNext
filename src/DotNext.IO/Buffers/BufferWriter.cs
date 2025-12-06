@@ -5,8 +5,8 @@ using System.Text;
 
 namespace DotNext.Buffers;
 
+using IO;
 using EncodingContext = DotNext.Text.EncodingContext;
-using LengthFormat = IO.LengthFormat;
 using SevenBitEncodedInt = Binary.Leb128<uint>;
 
 /// <summary>
@@ -292,5 +292,24 @@ public static class BufferWriter
         }
 
         return bytesWritten;
+    }
+
+    /// <summary>
+    /// Extends <see cref="IAsyncBinaryWriter"/> type.
+    /// </summary>
+    extension(IAsyncBinaryWriter)
+    {
+        /// <summary>
+        /// Creates default implementation of binary writer for the buffer writer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <returns>The binary writer.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="writer"/> is <see langword="null"/>.</exception>
+        public static IAsyncBinaryWriter Create(IBufferWriter<byte> writer)
+        {
+            ArgumentNullException.ThrowIfNull(writer);
+
+            return new AsyncBufferWriter(writer);
+        }
     }
 }

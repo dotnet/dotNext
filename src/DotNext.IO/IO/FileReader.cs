@@ -50,8 +50,8 @@ public partial class FileReader : Disposable, IBufferedReader
     public FileReader(FileStream source)
         : this(source.SafeFileHandle)
     {
-        if (source.CanRead is false)
-            throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentException.EnsureReadable(source);
 
         FilePosition = source.Position;
     }

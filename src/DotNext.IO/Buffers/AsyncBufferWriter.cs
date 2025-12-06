@@ -1,12 +1,12 @@
 ﻿using System.Buffers;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
+using DotNext.Text;
 
-namespace DotNext.IO;
+namespace DotNext.Buffers;
 
-using Buffers;
-using Pipelines;
-using Text;
+using IO;
+using static IO.Pipelines.PipeExtensions;
 
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct AsyncBufferWriter(IBufferWriter<byte> writer) : IAsyncBinaryWriter

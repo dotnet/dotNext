@@ -2,7 +2,6 @@ using System.Buffers;
 using System.ComponentModel;
 using System.IO.Pipelines;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.IO;
@@ -10,7 +9,6 @@ namespace DotNext.IO;
 using Buffers;
 using Buffers.Binary;
 using EncodingContext = Text.EncodingContext;
-using PipeBinaryWriter = Pipelines.PipeBinaryWriter;
 
 /// <summary>
 /// Providers a uniform way to encode the data.
@@ -296,38 +294,10 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     public static IAsyncBinaryWriter Create(Stream output, Memory<byte> buffer)
     {
         ArgumentNullException.ThrowIfNull(output);
+        ArgumentException.EnsureWritable(output);
         ArgumentException.ThrowIfEmpty(buffer);
 
         return new AsyncStreamBinaryAccessor(output, buffer);
-    }
-
-    /// <summary>
-    /// Creates default implementation of binary writer for the pipe.
-    /// </summary>
-    /// <param name="output">The stream instance.</param>
-    /// <param name="bufferSize">The maximum numbers of bytes that can be buffered in the memory without flushing.</param>
-    /// <returns>The binary writer.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> or is less than or equal to zero.</exception>
-    public static IAsyncBinaryWriter Create(PipeWriter output, long bufferSize = 0L)
-    {
-        ArgumentNullException.ThrowIfNull(output);
-        ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
-
-        return new PipeBinaryWriter(output, bufferSize);
-    }
-
-    /// <summary>
-    /// Creates default implementation of binary writer for the buffer writer.
-    /// </summary>
-    /// <param name="writer">The buffer writer.</param>
-    /// <returns>The binary writer.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="writer"/> is <see langword="null"/>.</exception>
-    public static IAsyncBinaryWriter Create(IBufferWriter<byte> writer)
-    {
-        ArgumentNullException.ThrowIfNull(writer);
-
-        return new AsyncBufferWriter(writer);
     }
 
     internal static Stream CreateStream<TWriter>(TWriter writer)

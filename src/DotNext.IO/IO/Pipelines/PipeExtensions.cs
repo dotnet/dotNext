@@ -40,4 +40,26 @@ public static partial class PipeExtensions
         /// <exception cref="ArgumentNullException"><paramref name="reader"/> is <see langword="null"/>.</exception>
         public static IAsyncBinaryReader Create(PipeReader reader) => new PipeBinaryReader(reader);
     }
+
+    /// <summary>
+    /// Extends <see cref="IAsyncBinaryWriter"/> type.
+    /// </summary>
+    extension(IAsyncBinaryWriter)
+    {
+        /// <summary>
+        /// Creates default implementation of binary writer for the pipe.
+        /// </summary>
+        /// <param name="output">The stream instance.</param>
+        /// <param name="bufferSize">The maximum numbers of bytes that can be buffered in the memory without flushing.</param>
+        /// <returns>The binary writer.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="output"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="bufferSize"/> or is less than or equal to zero.</exception>
+        public static IAsyncBinaryWriter Create(PipeWriter output, long bufferSize = 0L)
+        {
+            ArgumentNullException.ThrowIfNull(output);
+            ArgumentOutOfRangeException.ThrowIfNegative(bufferSize);
+
+            return new PipeBinaryWriter(output, bufferSize);
+        }
+    }
 }

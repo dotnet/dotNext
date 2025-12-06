@@ -48,8 +48,8 @@ public partial class FileWriter : Disposable, IFlushable, IBufferedWriter
     public FileWriter(FileStream destination)
         : this(destination.SafeFileHandle)
     {
-        if (!destination.CanWrite)
-            throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
+        ArgumentNullException.ThrowIfNull(destination);
+        ArgumentException.EnsureWritable(destination);
 
         FilePosition = destination.Position;
     }

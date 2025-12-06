@@ -3,6 +3,7 @@ using System.IO.Pipelines;
 
 namespace DotNext.Text.Json;
 
+using Buffers;
 using IO;
 using Runtime.Serialization;
 

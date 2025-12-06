@@ -5,7 +5,6 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
-using SequenceReader = IO.SequenceReader;
 
 /// <summary>
 /// Represents serializable log entry metadata that

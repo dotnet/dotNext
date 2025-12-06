@@ -6,6 +6,7 @@ namespace DotNext.IO;
 
 using Buffers.Binary;
 using Runtime.Serialization;
+using SequenceReader = Buffers.SequenceReader;
 
 /// <summary>
 /// Represents a value of blittable type as DTO.

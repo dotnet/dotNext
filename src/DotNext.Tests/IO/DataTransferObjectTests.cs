@@ -5,6 +5,8 @@ using DotNext.Runtime.Serialization;
 
 namespace DotNext.IO;
 
+using Buffers;
+
 public sealed class DataTransferObjectTests : Test
 {
     private sealed class CustomDTO(ReadOnlyMemory<byte> content, bool withLength) : BinaryTransferObject(content), IDataTransferObject

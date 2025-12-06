@@ -114,25 +114,36 @@ public static partial class StreamExtensions
     }
 
     /// <summary>
-    /// Extends <see cref="IAsyncBinaryReader"/> type.
+    /// Extends <see cref="ArgumentException"/> with the checkers for <see cref="Stream"/> type.
     /// </summary>
-    extension(IAsyncBinaryReader)
+    extension(ArgumentException)
     {
         /// <summary>
-        /// Creates default implementation of binary reader for the stream.
+        /// Ensures that the stream is writable.
         /// </summary>
-        /// <remarks>
-        /// It is recommended to use extension methods from <see cref="StreamExtensions"/> class
-        /// for decoding data from the stream. This method is intended for situation
-        /// when you need an object implementing <see cref="IAsyncBinaryReader"/> interface.
-        /// </remarks>
-        /// <param name="input">The stream to be wrapped into the reader.</param>
-        /// <param name="buffer">The buffer used for decoding data from the stream.</param>
-        /// <returns>The stream reader.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="input"/> is <see langword="null"/>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
-        public static IAsyncBinaryReader Create(Stream input, Memory<byte> buffer)
-            => ReferenceEquals(input, Stream.Null) ? IAsyncBinaryReader.Empty : new AsyncStreamBinaryAccessor(input, buffer);
+        /// <param name="stream">The stream to check.</param>
+        /// <param name="paramName">The name of the parameter providing the stream.</param>
+        /// <exception cref="ArgumentException"><see cref="Stream.CanWrite"/> is <see langword="false"/>.</exception>
+        public static void EnsureWritable(Stream stream, 
+            [CallerArgumentExpression(nameof(stream))] string? paramName = null)
+        {
+            if (!stream.CanWrite)
+                throw new ArgumentException(ExceptionMessages.StreamNotWritable, paramName);
+        }
+
+        /// <summary>
+        /// Ensures that the stream is readable.
+        /// </summary>
+        /// <param name="stream">The stream to check.</param>
+        /// <param name="paramName">The name of the parameter providing the stream.</param>
+        /// <exception cref="ArgumentException"><see cref="Stream.CanRead"/> is <see langword="false"/>.</exception>
+        public static void EnsureReadable(Stream stream,
+            [CallerArgumentExpression(nameof(stream))]
+            string? paramName = null)
+        {
+            if (!stream.CanRead)
+                throw new ArgumentException(ExceptionMessages.StreamNotReadable, paramName);
+        }
     }
     
     [InlineArray(32)]
