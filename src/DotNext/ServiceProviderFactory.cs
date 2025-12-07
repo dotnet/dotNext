@@ -398,6 +398,7 @@ public static partial class ServiceProviderFactory
         return Expression.Switch(typeof(object), requestedType, defaultResolution, null, cases);
     }
 
+    [RequiresDynamicCode("Dynamic code compilation is required to compile the resolved at run time.")]
     private static Func<Type, IReadOnlyList<object?>, object?> CreateResolver(IReadOnlyList<Type> types)
     {
         var requestedType = Expression.Parameter(typeof(Type));
