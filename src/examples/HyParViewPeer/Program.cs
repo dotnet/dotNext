@@ -82,7 +82,7 @@ static X509Certificate2 LoadCertificate()
     using var ms = new MemoryStream(1024);
     rawCertificate?.CopyTo(ms);
     ms.Seek(0, SeekOrigin.Begin);
-    return new X509Certificate2(ms.ToArray(), "1234");
+    return X509CertificateLoader.LoadPkcs12(ms.ToArray(), "1234");
 }
 
 static (Uri, RumorTimestamp) PrepareMessageId(IServiceProvider sp)
