@@ -469,7 +469,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     /// due to performance reasons.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    public readonly record struct EventGroup : IReadOnlyCollection<int>, IEnumerable<EventGroup.Enumerator, int>
+    public readonly record struct EventGroup : IReadOnlyCollection<int>
     {
         internal readonly UInt128 Mask;
 
@@ -513,6 +513,12 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         /// </summary>
         /// <returns>An enumerator over indices.</returns>
         public Enumerator GetEnumerator() => new(Mask);
+        
+        /// <inheritdoc />
+        IEnumerator<int> IEnumerable<int>.GetEnumerator() => IEnumerator<int>.Create(GetEnumerator());
+
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator() => IEnumerator<int>.Create(GetEnumerator());
 
         /// <summary>
         /// Represents an enumerator over indices.

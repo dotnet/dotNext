@@ -7,7 +7,7 @@ namespace DotNext.Collections.Specialized;
 
 using Generic;
 
-public partial class TypeMap<TValue> : IEnumerable<TypeMap<TValue>.Enumerator, TValue>
+public partial class TypeMap<TValue>
 {
     /// <summary>
     /// Gets the enumerator over the values.
@@ -65,9 +65,15 @@ public partial class TypeMap<TValue> : IEnumerable<TypeMap<TValue>.Enumerator, T
     /// </summary>
     /// <returns>The enumerator over the values.</returns>
     public Enumerator GetEnumerator() => new(entries);
+    
+    /// <inheritdoc />
+    IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator() => IEnumerator<TValue>.Create(GetEnumerator());
+
+    /// <inheritdoc />
+    IEnumerator IEnumerable.GetEnumerator() => IEnumerator<TValue>.Create(GetEnumerator());
 }
 
-public partial class TypeMap : IEnumerable<TypeMap.Enumerator, object>
+public partial class TypeMap
 {
     /// <summary>
     /// Represents an enumerator over values stored in the map.
@@ -106,4 +112,10 @@ public partial class TypeMap : IEnumerable<TypeMap.Enumerator, object>
     /// </summary>
     /// <returns>The enumerator over values in this map.</returns>
     public Enumerator GetEnumerator() => new(entries);
+    
+    /// <inheritdoc />
+    IEnumerator<object> IEnumerable<object>.GetEnumerator() => IEnumerator<object>.Create(GetEnumerator());
+
+    /// <inheritdoc />
+    IEnumerator IEnumerable.GetEnumerator() => IEnumerator<object>.Create(GetEnumerator());
 }

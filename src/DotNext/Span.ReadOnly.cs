@@ -365,23 +365,6 @@ partial class Span
         where T : unmanaged
         => BitwiseEquals(new ReadOnlySpan<T>(x), new ReadOnlySpan<T>(y));
     
-    internal static T[] ConcatToArray<T>(ReadOnlySpan<T> x, ReadOnlySpan<T> y)
-    {
-        T[] result;
-        if (x.IsEmpty && y.IsEmpty)
-        {
-            result = [];
-        }
-        else
-        {
-            result = GC.AllocateUninitializedArray<T>(x.Length + y.Length);
-            x.CopyTo(result);
-            y.CopyTo(result.AsSpan(x.Length));
-        }
-
-        return result;
-    }
-    
     private static bool CheckMask([In] ref byte data, [In]ref byte mask, int length)
     {
         // iterate by Vector

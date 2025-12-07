@@ -1,15 +1,16 @@
 using System.Buffers;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DotNext.Collections.Concurrent;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers;
+using Collections.Concurrent;
 using Collections.Generic;
 
 partial class WriteAheadLog
@@ -74,9 +75,16 @@ partial class WriteAheadLog
         public MemoryRange GetRange(ulong offset, long length) => new(this, offset, length);
 
         [StructLayout(LayoutKind.Auto)]
-        public readonly struct MemoryRange(PageManager manager, ulong offset, long length) : IEnumerable<MemoryRange.Enumerator, ReadOnlyMemory<byte>>
+        public readonly struct MemoryRange(PageManager manager, ulong offset, long length) : IEnumerable<ReadOnlyMemory<byte>>
         {
             public Enumerator GetEnumerator() => new(manager, offset, length);
+            
+            /// <inheritdoc />
+            IEnumerator<ReadOnlyMemory<byte>> IEnumerable<ReadOnlyMemory<byte>>.GetEnumerator()
+                => IEnumerator<ReadOnlyMemory<byte>>.Create(GetEnumerator());
+
+            /// <inheritdoc />
+            IEnumerator IEnumerable.GetEnumerator() => IEnumerator<ReadOnlyMemory<byte>>.Create(GetEnumerator());
 
             public bool TryGetMemory(out ReadOnlyMemory<byte> memory)
             {

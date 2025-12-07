@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
@@ -16,7 +17,7 @@ using Generic;
 /// </remarks>
 /// <typeparam name="TDelegate">The type of delegates in the list.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate>, IEnumerable<InvocationList<TDelegate>.Enumerator, TDelegate> // TODO: Workaround for https://github.com/dotnet/runtime/issues/4556
+public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // TODO: Workaround for https://github.com/dotnet/runtime/issues/4556
     where TDelegate : MulticastDelegate
 {
     /// <summary>
@@ -139,7 +140,7 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate>, IEn
             var index = Array.IndexOf(array, d);
 
             if (index >= 0)
-                array = DotNext.Span.ConcatToArray<TDelegate>(array.AsSpan(0, index), array.AsSpan(index + 1));
+                array = [..array.AsSpan(0, index), ..array.AsSpan(index + 1)];
 
             result = new(array);
         }
@@ -194,6 +195,13 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate>, IEn
     /// </summary>
     /// <returns>The enumerator over delegates.</returns>
     public Enumerator GetEnumerator() => new(list);
+
+    /// <inheritdoc/>
+    IEnumerator<TDelegate> IEnumerable<TDelegate>.GetEnumerator()
+        => IEnumerator<TDelegate>.Create(GetEnumerator());
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => IEnumerator<TDelegate>.Create(GetEnumerator());
 
     /// <summary>
     /// Gets a span over list of delegates.

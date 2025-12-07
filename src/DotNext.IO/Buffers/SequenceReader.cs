@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -849,7 +850,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
     /// Represents decoding enumerable.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct DecodingEnumerable : IEnumerable<DecodingEnumerable.Enumerator, ReadOnlyMemory<char>>, IAsyncEnumerable<ReadOnlyMemory<char>>
+    public readonly struct DecodingEnumerable : IEnumerable<ReadOnlyMemory<char>>, IAsyncEnumerable<ReadOnlyMemory<char>>
     {
         private readonly ReadOnlySequence<byte> bytes;
         private readonly DecodingContext context;
@@ -871,8 +872,15 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         public Enumerator GetEnumerator() => new(in bytes, in context, buffer);
 
         /// <inheritdoc />
+        IEnumerator<ReadOnlyMemory<char>> IEnumerable<ReadOnlyMemory<char>>.GetEnumerator()
+            => IEnumerator<ReadOnlyMemory<char>>.Create(GetEnumerator());
+
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator() => IEnumerator<ReadOnlyMemory<char>>.Create(GetEnumerator());
+
+        /// <inheritdoc />
         IAsyncEnumerator<ReadOnlyMemory<char>> IAsyncEnumerable<ReadOnlyMemory<char>>.GetAsyncEnumerator(CancellationToken token)
-            => IEnumerable<Enumerator, ReadOnlyMemory<char>>.GetAsyncEnumerator(GetEnumerator(), token);
+            => IAsyncEnumerator<ReadOnlyMemory<char>>.Create(GetEnumerator(), token);
 
         /// <summary>
         /// Represents enumerator over decoded characters.

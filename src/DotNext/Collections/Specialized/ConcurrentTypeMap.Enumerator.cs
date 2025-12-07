@@ -6,7 +6,7 @@ namespace DotNext.Collections.Specialized;
 
 using Generic;
 
-public partial class ConcurrentTypeMap<TValue> : IEnumerable<ConcurrentTypeMap<TValue>.Enumerator, TValue>
+public partial class ConcurrentTypeMap<TValue>
 {
     /// <summary>
     /// Represents an enumerator over the values in the map.
@@ -67,9 +67,15 @@ public partial class ConcurrentTypeMap<TValue> : IEnumerable<ConcurrentTypeMap<T
     /// </summary>
     /// <returns>The enumerator over the values.</returns>
     public Enumerator GetEnumerator() => new(Volatile.Read(ref entries));
+
+    /// <inheritdoc/>
+    IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator() => IEnumerator<TValue>.Create(GetEnumerator());
+    
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => IEnumerator<TValue>.Create(GetEnumerator());
 }
 
-public partial class ConcurrentTypeMap : IEnumerable<ConcurrentTypeMap.Enumerator, object>
+public partial class ConcurrentTypeMap
 {
     /// <summary>
     /// Represents an enumerator over values stored in the map.
@@ -108,4 +114,10 @@ public partial class ConcurrentTypeMap : IEnumerable<ConcurrentTypeMap.Enumerato
     /// </summary>
     /// <returns>The enumerator over values in this map.</returns>
     public Enumerator GetEnumerator() => new(entries);
+    
+    /// <inheritdoc/>
+    IEnumerator<object> IEnumerable<object>.GetEnumerator() => IEnumerator<object>.Create(GetEnumerator());
+
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => IEnumerator<object>.Create(GetEnumerator());
 }

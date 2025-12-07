@@ -7,7 +7,7 @@ namespace DotNext.Collections.Specialized;
 /// the values are associated with the types.
 /// </summary>
 /// <typeparam name="TValue">The type of the values in the map.</typeparam>
-public interface IReadOnlyTypeMap<TValue>
+public interface IReadOnlyTypeMap<TValue> : IEnumerable<TValue>
 {
     /// <summary>
     /// Determines whether the map has association between the value and the specified type.

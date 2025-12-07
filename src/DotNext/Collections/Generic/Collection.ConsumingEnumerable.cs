@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 
@@ -11,7 +12,7 @@ public static partial class Collection
     /// </summary>
     /// <typeparam name="T">The type of elements in the collection.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ConsumingEnumerable<T> : IEnumerable<ConsumingEnumerable<T>.Enumerator, T>
+    public readonly struct ConsumingEnumerable<T> : IEnumerable<T>
     {
         /// <summary>
         /// Represents consumer enumerator.
@@ -50,6 +51,12 @@ public static partial class Collection
         /// </summary>
         /// <returns>The enumerator wrapping method <see cref="IProducerConsumerCollection{T}.TryTake(out T)"/>.</returns>
         public Enumerator GetEnumerator() => new(collection);
+
+        /// <inheritdoc/>
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => IEnumerator<T>.Create(GetEnumerator());
+
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator() => IEnumerator<T>.Create(GetEnumerator());
     }
 
     /// <summary>

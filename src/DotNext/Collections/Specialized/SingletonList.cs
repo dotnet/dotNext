@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -11,7 +12,7 @@ using Generic;
 /// </summary>
 /// <typeparam name="T">The type of the element in the list.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySet<T>, IAsyncEnumerable<T>, IEnumerable<SingletonList<T>.Enumerator, T>
+public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySet<T>, IAsyncEnumerable<T>
 {
     /// <summary>
     /// The item of the list.
@@ -90,8 +91,14 @@ public struct SingletonList<T> : IReadOnlyList<T>, IList<T>, ITuple, IReadOnlySe
     public readonly Enumerator GetEnumerator() => new(Item);
 
     /// <inheritdoc />
+    readonly IEnumerator<T> IEnumerable<T>.GetEnumerator() => IEnumerator<T>.Create(GetEnumerator());
+
+    /// <inheritdoc />
+    readonly IEnumerator IEnumerable.GetEnumerator() => IEnumerator<T>.Create(GetEnumerator());
+
+    /// <inheritdoc />
     readonly IAsyncEnumerator<T> IAsyncEnumerable<T>.GetAsyncEnumerator(CancellationToken token)
-        => IEnumerable<Enumerator, T>.GetAsyncEnumerator(GetEnumerator(), token);
+        => IAsyncEnumerator<T>.Create(GetEnumerator(), token);
 
     /// <summary>
     /// Converts a value to the read-only list.

@@ -27,6 +27,16 @@ public static partial class Enumerator
 
             return true;
         }
+
+        /// <summary>
+        /// Creates the classic enumerator.
+        /// </summary>
+        /// <param name="enumerator">The enumerator to convert.</param>
+        /// <typeparam name="TEnumerator">The type of the enumerator.</typeparam>
+        /// <returns>The classic enumerator.</returns>
+        public static IEnumerator<T> Create<TEnumerator>(in TEnumerator enumerator)
+            where TEnumerator : struct, IEnumerator<TEnumerator, T>
+            => TEnumerator.ToEnumerator(enumerator);
     }
 
     /// <summary>
@@ -86,5 +96,16 @@ public static partial class Enumerator
 
             return true;
         }
+
+        /// <summary>
+        /// Creates the async enumerator.
+        /// </summary>
+        /// <param name="enumerator">The enumerator to convert.</param>
+        /// <param name="token">The token that can be used to cancel the enumeration.</param>
+        /// <typeparam name="TEnumerator">The type of the enumerator.</typeparam>
+        /// <returns>The async enumerator.</returns>
+        public static IAsyncEnumerator<T> Create<TEnumerator>(in TEnumerator enumerator, CancellationToken token)
+            where TEnumerator : struct, IEnumerator<TEnumerator, T>
+            => TEnumerator.ToAsyncEnumerator(enumerator, token);
     }
 }
