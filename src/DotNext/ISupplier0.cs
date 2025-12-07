@@ -135,6 +135,9 @@ public readonly struct ValueSupplier<T>(T value) : ISupplier<T>
     /// <param name="value">The value to wrap.</param>
     /// <returns>The wrapper over the value.</returns>
     public static implicit operator ValueSupplier<T>(T value) => new(value);
+
+    /// <inheritdoc/>
+    public override string? ToString() => value?.ToString();
 }
 
 /// <summary>
