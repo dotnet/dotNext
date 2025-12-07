@@ -12,9 +12,7 @@ public class HttpClusterMemberConfiguration : ClusterMemberConfiguration, IClust
 {
     private const string DefaultClientHandlerName = "raftClient";
 
-    private string? handlerName;
     private TimeSpan? requestTimeout;
-    private Uri? publicEndPoint;
 
     /// <summary>
     /// Gets or sets the address of the local node visible to the entire cluster.
@@ -22,20 +20,20 @@ public class HttpClusterMemberConfiguration : ClusterMemberConfiguration, IClust
     [DisallowNull]
     public Uri? PublicEndPoint
     {
-        get => publicEndPoint;
+        get;
         set
         {
             if (value is { IsAbsoluteUri: false })
                 throw new ArgumentException(ExceptionMessages.AbsoluteUriExpected(value), nameof(value));
 
-            publicEndPoint = value;
+            field = value;
         }
     }
 
     /// <summary>
     /// Gets configuration of request journal.
     /// </summary>
-    public RequestJournalConfiguration RequestJournal { get; } = new RequestJournalConfiguration();
+    public RequestJournalConfiguration RequestJournal { get; } = new();
 
     /// <summary>
     /// Specifies that each request should create individual TCP connection (no KeepAlive).
@@ -67,8 +65,8 @@ public class HttpClusterMemberConfiguration : ClusterMemberConfiguration, IClust
     /// </summary>
     public string ClientHandlerName
     {
-        get => handlerName is { Length: > 0 } ? handlerName : DefaultClientHandlerName;
-        set => handlerName = value;
+        get => field is { Length: > 0 } ? field : DefaultClientHandlerName;
+        set;
     }
 
     /// <inheritdoc />
