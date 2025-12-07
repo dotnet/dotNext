@@ -230,7 +230,7 @@ file static class Features
     private const string UseNativeAllocationFeature = "DotNext.Buffers.NativeAllocation";
 
     [FeatureSwitchDefinition(UseNativeAllocationFeature)]
-    internal static bool UseNativeAllocation { get; } = LibraryFeature.IsSupported(UseNativeAllocationFeature);
+    internal static bool UseNativeAllocation { get; } = AppContext.IsFeatureSupported(UseNativeAllocationFeature);
     
     internal static int StackallocThreshold
     {

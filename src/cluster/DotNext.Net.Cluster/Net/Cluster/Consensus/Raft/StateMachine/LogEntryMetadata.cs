@@ -170,8 +170,5 @@ file static class Features
     private const string TimestampIgnoreFeature = "DotNext.IO.WriteAheadLog.IgnoreTimestamp";
 
     [FeatureSwitchDefinition(TimestampIgnoreFeature)]
-    public static bool IsTimestampIgnored { get; } = InitializeIsTimestampIgnored();
-    
-    private static bool InitializeIsTimestampIgnored()
-        => !AppContext.TryGetSwitch(TimestampIgnoreFeature, out var enabled) || enabled;
+    public static bool IsTimestampIgnored { get; } = AppContext.IsFeatureSupported(TimestampIgnoreFeature);
 }
