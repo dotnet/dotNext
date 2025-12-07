@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -44,24 +45,25 @@ public static partial class ServiceProviderFactory
             => resolver(serviceType, services, fallback);
     }
 
-    private sealed class CachedServiceProvider : Dictionary<Type, object?>, IServiceProvider
+    private sealed class CachedServiceProvider : IServiceProvider
     {
+        private readonly FrozenDictionary<Type, object?> cache;
         private readonly IServiceProvider? fallback;
 
         internal CachedServiceProvider(IDictionary<Type, object?> services, IServiceProvider? fallback)
-            : base(services)
-            => this.fallback = fallback;
+        {
+            this.fallback = fallback;
+            cache = services.ToFrozenDictionary();
+        }
 
-        internal CachedServiceProvider(IServiceProvider? fallback, params KeyValuePair<Type, object?>[] services)
-            : base(services)
-            => this.fallback = fallback;
-
-        internal CachedServiceProvider(int capacity, IServiceProvider? fallback)
-            : base(capacity)
-            => this.fallback = fallback;
+        internal CachedServiceProvider(IServiceProvider? fallback, params ReadOnlySpan<KeyValuePair<Type, object?>> services)
+        {
+            cache = FrozenDictionary.Create(services);
+            this.fallback = fallback;
+        }
 
         object? IServiceProvider.GetService(Type serviceType)
-            => TryGetValue(serviceType, out var service) ? service : fallback?.GetService(serviceType);
+            => cache.TryGetValue(serviceType, out var service) ? service : fallback?.GetService(serviceType);
     }
 
     private sealed class CachedServiceProvider<T> : IServiceProvider
@@ -375,12 +377,11 @@ public static partial class ServiceProviderFactory
 
     private static CachedServiceProvider Create(this IReadOnlyList<Type> types, IReadOnlyList<object> services, IServiceProvider? fallback)
     {
-        var cache = new CachedServiceProvider(types.Count, fallback);
+        var cache = new Dictionary<Type, object?>(types.Count);
         for (var i = 0; i < types.Count; i++)
             cache.Add(types[i], services[i]);
 
-        cache.TrimExcess();
-        return cache;
+        return new(cache, fallback);
     }
 
     private static CachedServiceProvider Create(this IReadOnlyList<Type> types, IReadOnlyList<object> services)
