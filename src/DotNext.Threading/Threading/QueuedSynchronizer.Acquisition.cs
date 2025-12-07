@@ -41,7 +41,7 @@ partial class QueuedSynchronizer
     private protected ref struct CancellationTokenOnly : ITaskBuilder<ValueTask>
     {
         private readonly CancellationToken token;
-        private object? syncRoot;
+        private System.Threading.Lock? syncRoot;
         private ISupplier<TimeSpan, CancellationToken, ValueTask>? taskFactory;
 
         public CancellationTokenOnly(System.Threading.Lock syncRoot, CancellationToken token)
@@ -54,6 +54,7 @@ partial class QueuedSynchronizer
             else
             {
                 syncRoot.Enter();
+                this.syncRoot = syncRoot;
             }
         }
 
@@ -74,11 +75,8 @@ partial class QueuedSynchronizer
 
         void IDisposable.Dispose()
         {
-            if (syncRoot is not null)
-            {
-                Monitor.Exit(syncRoot);
-                syncRoot = null;
-            }
+            syncRoot?.Exit();
+            syncRoot = null;
         }
 
         readonly ValueTask ISupplier<ValueTask>.Invoke()
