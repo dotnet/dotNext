@@ -69,7 +69,7 @@ public static partial class ServiceProviderFactory
     private sealed class CachedServiceProvider<T> : IServiceProvider
         where T : struct, ITuple
     {
-        private static readonly Type[] ServiceTypes;
+        private static readonly ReadOnlyMemory<Type> ServiceTypes;
 
         static CachedServiceProvider()
         {
@@ -88,7 +88,7 @@ public static partial class ServiceProviderFactory
 
         object? IServiceProvider.GetService(Type serviceType)
         {
-            var index = Array.IndexOf(ServiceTypes, serviceType);
+            var index = ServiceTypes.Span.IndexOf(serviceType);
             return (uint)index < (uint)tuple.Length ? tuple[index] : fallback?.GetService(serviceType);
         }
     }
