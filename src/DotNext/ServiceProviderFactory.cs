@@ -400,7 +400,7 @@ public static partial class ServiceProviderFactory
     private static Func<Type, IReadOnlyList<object?>, object?> CreateResolver(IReadOnlyList<Type> types)
     {
         var requestedType = Expression.Parameter(typeof(Type));
-        var values = Expression.Parameter(typeof(object?[]));
+        var values = Expression.Parameter(typeof(IReadOnlyList<object?>));
         var resolverBody = MakeResolver(types, requestedType, values, Expression.Constant(null, typeof(object)));
         return Expression.Lambda<Func<Type, IReadOnlyList<object?>, object?>>(resolverBody, false, requestedType, values).Compile();
     }
@@ -413,7 +413,7 @@ public static partial class ServiceProviderFactory
     private static Func<Type, IReadOnlyList<object>, IServiceProvider, object?> CreateDelegatingResolver(IReadOnlyList<Type> types)
     {
         var requestedType = Expression.Parameter(typeof(Type));
-        var values = Expression.Parameter(typeof(object[]));
+        var values = Expression.Parameter(typeof(IReadOnlyList<object>));
         var fallbackResolver = Expression.Parameter(typeof(IServiceProvider));
         var resolverBody = MakeResolver(types, requestedType, values, Expression.Call(fallbackResolver, nameof(IServiceProvider.GetService), [], requestedType));
         return Expression.Lambda<Func<Type, IReadOnlyList<object>, IServiceProvider, object?>>(resolverBody, false, requestedType, values, fallbackResolver).Compile();
