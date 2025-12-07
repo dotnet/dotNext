@@ -153,10 +153,10 @@ public sealed class ListTests : Test
         var collection = IReadOnlyList<decimal>.Repeat(value, 0);
         Empty(collection);
 
-        collection = List.Repeat(value, 1);
+        collection = IReadOnlyList<decimal>.Repeat(value, 1);
         Collection(collection, VerifyValue);
 
-        collection = List.Repeat(value, 2);
+        collection = IReadOnlyList<decimal>.Repeat(value, 2);
         Collection(collection, VerifyValue, VerifyValue);
 
         static void VerifyValue(decimal actual) => Equal(value, actual);
