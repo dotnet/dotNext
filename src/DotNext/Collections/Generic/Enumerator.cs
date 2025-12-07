@@ -17,7 +17,7 @@ public static partial class Enumerator
         /// <param name="enumerator">Enumerator to modify. Cannot be <see langword="null"/>.</param>
         /// <param name="count">The number of elements to skip.</param>
         /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
-        public static bool operator >> (IEnumerator<T> enumerator, int count)
+        public static bool operator << (IEnumerator<T> enumerator, int count)
         {
             for (; count > 0; count--)
             {
@@ -73,7 +73,7 @@ public static partial class Enumerator
         /// <param name="count">The number of elements to skip.</param>
         /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask<bool> operator >> (IAsyncEnumerator<T> enumerator, int count)
+        public static ValueTask<bool> operator << (IAsyncEnumerator<T> enumerator, int count)
             => enumerator.SkipAsync(count);
 
         private async ValueTask<bool> SkipAsync(int count)

@@ -145,7 +145,7 @@ public readonly struct ListSegment<T> : IList<T>, IReadOnlyList<T>
     {
         var enumerator = list.GetEnumerator();
 
-        return enumerator >> startIndex
+        return enumerator << startIndex
             ? enumerator.Limit(Count)
             : Enumerable.Empty<T>().GetEnumerator();
     }
