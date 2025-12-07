@@ -11,6 +11,7 @@ namespace DotNext.Maintenance;
 using Buffers;
 using Collections.Specialized;
 using IO;
+using Runtime.CompilerServices;
 using Security.Principal;
 using static Runtime.InteropServices.UnixDomainSocketInterop;
 using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
@@ -26,7 +27,7 @@ using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
 /// such as netcat to send commands to the applications. These commands may trigger GC,
 /// clear application cache, force reconnection to DB or any other maintenance actions.
 /// </remarks>
-public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
+public abstract class ApplicationMaintenanceInterfaceHost : Disposable, IHostedService
 {
     private const int MinBufferSize = 32;
     private static readonly ReadOnlyMemory<char> NewLineMemory = Environment.NewLine.AsMemory();
@@ -36,6 +37,10 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
     private readonly int backlog = 5;
     private readonly int bufferSize = 512;
     private readonly Encoding encoding = Encoding.UTF8;
+    private readonly Socket listener;
+    private readonly CancellationTokenSource stoppingTokenSource;
+    private readonly CancellationToken stoppingToken;
+    private Task listenerTask;
 
     /// <summary>
     /// Initializes a new host.
@@ -47,6 +52,10 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
     {
         this.endPoint = endPoint ?? throw new ArgumentNullException(nameof(endPoint));
         Logger = loggerFactory?.CreateLogger(GetType()) ?? NullLogger.Instance;
+        listener = new(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Unspecified);
+        stoppingTokenSource = new();
+        stoppingToken = stoppingTokenSource.Token;
+        listenerTask = Task.CompletedTask;
     }
 
     /// <summary>
@@ -150,7 +159,7 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         return AnonymousPrincipal.Instance;
     }
 
-    private async void ProcessRequestAsync(Socket clientSocket, CancellationToken token)
+    private async void ProcessRequestAsync(Socket clientSocket)
     {
         var session = default(MaintenanceSession);
         var inputBuffer = default(BufferWriter<char>);
@@ -173,16 +182,16 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
 
                 using (var buffer = ByteBufferAllocator.AllocateAtLeast(bufferSize))
                 {
-                    commandLength = await ReadRequestAsync(clientSocket, encoding, decoder, buffer.Memory, inputBuffer, token).ConfigureAwait(false);
+                    commandLength = await ReadRequestAsync(clientSocket, encoding, decoder, buffer.Memory, inputBuffer, stoppingToken).ConfigureAwait(false);
                 }
 
                 // skip empty input
                 if (commandLength > 0)
                 {
-                    await ExecuteCommandAsync(session, inputBuffer.WrittenMemory.Slice(0, commandLength), token).ConfigureAwait(false);
+                    await ExecuteCommandAsync(session, inputBuffer.WrittenMemory.Slice(0, commandLength), stoppingToken).ConfigureAwait(false);
                 }
 
-                await clientSocket.FlushAsync(outputBuffer, token).ConfigureAwait(false);
+                await clientSocket.FlushAsync(outputBuffer, stoppingToken).ConfigureAwait(false);
                 if (session.IsInteractive)
                 {
                     inputBuffer.Clear(reuseBuffer: true);
@@ -193,11 +202,11 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
                 }
             }
 
-            await clientSocket.DisconnectAsync(reuseSocket: false, token).ConfigureAwait(false);
+            await clientSocket.DisconnectAsync(reuseSocket: false, stoppingToken).ConfigureAwait(false);
         }
-        catch (OperationCanceledException e) when (e.CancellationToken == token)
+        catch (OperationCanceledException e) when (e.CancellationToken == stoppingToken)
         {
-            // suppresss cancellation
+            // suppress cancellation
         }
         catch (SocketException e) when (e.SocketErrorCode is SocketError.Shutdown)
         {
@@ -216,26 +225,53 @@ public abstract class ApplicationMaintenanceInterfaceHost : BackgroundService
         }
     }
 
-    private void ProcessRequestAsync((Socket, CancellationToken) args)
-        => ProcessRequestAsync(args.Item1, args.Item2);
-
-    /// <summary>
-    /// Starts listening for commands to be received through Unix Domain Socket.
-    /// </summary>
-    /// <param name="token">The token associated with the lifetime of this host.</param>
-    /// <returns>The task representing command processing loop.</returns>
-    protected sealed override async Task ExecuteAsync(CancellationToken token)
+    /// <inheritdoc/>
+    public Task StartAsync(CancellationToken token)
     {
-        using var listener = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Unspecified);
-        listener.Bind(endPoint);
-        listener.Listen(backlog);
-
-        // preallocate delegate
-        for (Action<(Socket, CancellationToken)> requestProcessor = ProcessRequestAsync; !token.IsCancellationRequested;)
+        var task = Task.CompletedTask;
+        try
         {
-            var connection = await listener.AcceptAsync(token).ConfigureAwait(false);
-            ThreadPool.QueueUserWorkItem(requestProcessor, (connection, token), preferLocal: false);
+            listener.Bind(endPoint);
+            listener.Listen(backlog);
         }
+        catch (Exception e)
+        {
+            task = Task.FromException(e);
+        }
+
+        listenerTask = ListenAsync();
+        return task;
+    }
+
+    [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder))]
+    private async Task ListenAsync()
+    {
+        // preallocate delegate
+        for (var requestProcessor = ProcessRequestAsync; !stoppingToken.IsCancellationRequested;)
+        {
+            var connection = await listener.AcceptAsync(stoppingToken).ConfigureAwait(false);
+            ThreadPool.QueueUserWorkItem(requestProcessor, connection, preferLocal: false);
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task StopAsync(CancellationToken token)
+    {
+        await stoppingTokenSource.CancelAsync().ConfigureAwait(false);
+        await listenerTask.WaitAsync(token).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+        listenerTask = Task.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            stoppingTokenSource.Dispose();
+            listener.Dispose();
+        }
+        
+        base.Dispose(disposing);
     }
 
     private sealed class MaintenanceSession : TypeMap, IMaintenanceSession
