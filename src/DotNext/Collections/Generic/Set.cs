@@ -24,6 +24,11 @@ public static class Set
         /// <returns>Read-only set containing single item.</returns>
         public static IReadOnlySet<T> Singleton(T item)
             => new SingletonList<T> { Item = item };
+
+        /// <summary>
+        /// Gets the empty set.
+        /// </summary>
+        public static IReadOnlySet<T> Empty => FrozenSet<T>.Empty;
     }
 
     /// <summary>
@@ -49,7 +54,7 @@ public static class Set
 
             return minValue.CompareTo(maxValue) switch
             {
-                > 0 => FrozenSet<T>.Empty,
+                > 0 => IReadOnlySet<T>.Empty,
                 0 => Singleton(minValue),
                 < 0 => new RangeSet<T>(minValue, maxValue),
             };

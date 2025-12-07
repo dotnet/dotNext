@@ -1,4 +1,5 @@
-﻿using static InlineIL.IL;
+﻿using System.Collections.Frozen;
+using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
 using static InlineIL.TypeRef;
@@ -20,6 +21,7 @@ public static class Dictionary
     /// <typeparam name="TValue">Type of dictionary values.</typeparam>
     /// <param name="dictionary">Read-only dictionary instance.</param>
     extension<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> dictionary)
+        where TKey : notnull
     {
         /// <summary>
         /// Gets <see cref="IReadOnlyDictionary{TKey, TValue}.get_Item"/> as
@@ -71,6 +73,11 @@ public static class Dictionary
                 return Return<Func<IEnumerable<TValue>>>();
             }
         }
+        
+        /// <summary>
+        /// Gets the empty dictionary.
+        /// </summary>
+        public static IReadOnlyDictionary<TKey, TValue> Empty => FrozenDictionary<TKey, TValue>.Empty;
     }
 
     /// <summary>
