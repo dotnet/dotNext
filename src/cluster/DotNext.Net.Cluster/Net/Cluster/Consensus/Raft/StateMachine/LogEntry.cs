@@ -20,7 +20,6 @@ public readonly struct LogEntry : IInputLogEntry
     internal LogEntry(in LogEntryMetadata metadata, long index, IMemoryView? reader)
     {
         Index = index;
-        Timestamp = new(metadata.Timestamp, TimeSpan.Zero);
         CommandId = metadata.Id;
         Term = metadata.Term;
         payload = reader;
@@ -32,7 +31,6 @@ public readonly struct LogEntry : IInputLogEntry
     {
         payload = snapshot;
         Index = index;
-        Timestamp = snapshot.Timestamp;
         CommandId = snapshot.CommandId;
         Term = snapshot.Term;
     }
@@ -54,9 +52,6 @@ public readonly struct LogEntry : IInputLogEntry
     /// Gets the term of this log entry.
     /// </summary>
     public long Term { get; }
-
-    /// <inheritdoc cref="ILogEntry.Timestamp"/>
-    public DateTimeOffset Timestamp { get; }
 
     /// <inheritdoc cref="IRaftLogEntry.CommandId"/>
     public int? CommandId { get; }

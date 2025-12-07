@@ -178,7 +178,7 @@ public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachi
     [AsyncMethodBuilder(typeof(SpawningAsyncTaskMethodBuilder<>))]
     private async Task<SnapshotWriter> BeginSnapshottingAsync(long index, long term, CancellationToken token)
     {
-        var writer = new SnapshotWriter(preallocationSize: 0L, DateTime.UtcNow, Snapshot.CreateSnapshotFile(location, index, term));
+        var writer = new SnapshotWriter(preallocationSize: 0L, Snapshot.CreateSnapshotFile(location, index, term));
         try
         {
             await PersistAsync(writer, token).ConfigureAwait(false);

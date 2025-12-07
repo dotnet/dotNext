@@ -25,18 +25,14 @@ public abstract class TransportTestSuite : RaftTest
 
     private sealed class BufferedEntry : BinaryTransferObject, IRaftLogEntry
     {
-        internal BufferedEntry(long term, DateTimeOffset timestamp, bool isSnapshot, byte[] content)
+        internal BufferedEntry(long term, bool isSnapshot, byte[] content)
             : base(content)
         {
             Term = term;
-            Timestamp = timestamp;
             IsSnapshot = isSnapshot;
         }
 
         public long Term { get; }
-
-
-        public DateTimeOffset Timestamp { get; }
 
         public bool IsSnapshot { get; }
 
@@ -109,7 +105,7 @@ public abstract class TransportTestSuite : RaftTest
                     {
                         True(entries.Current.Length.HasValue);
                         buffer = await entries.Current.ToByteArrayAsync(null, token);
-                        ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.Timestamp, entries.Current.IsSnapshot, buffer));
+                        ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.IsSnapshot, buffer));
                     }
                     break;
                 case ReceiveEntriesBehavior.DropAll:
@@ -117,13 +113,13 @@ public abstract class TransportTestSuite : RaftTest
                 case ReceiveEntriesBehavior.ReceiveFirst:
                     True(await entries.MoveNextAsync());
                     buffer = await entries.Current.ToByteArrayAsync(null, token);
-                    ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.Timestamp, entries.Current.IsSnapshot, buffer));
+                    ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.IsSnapshot, buffer));
                     break;
                 case ReceiveEntriesBehavior.DropFirst:
                     True(await entries.MoveNextAsync());
                     True(await entries.MoveNextAsync());
                     buffer = await entries.Current.ToByteArrayAsync(null, token);
-                    ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.Timestamp, entries.Current.IsSnapshot, buffer));
+                    ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.IsSnapshot, buffer));
                     break;
             }
 
@@ -151,7 +147,7 @@ public abstract class TransportTestSuite : RaftTest
             Equal(10, snapshotIndex);
             True(snapshot.IsSnapshot);
             var buffer = await snapshot.ToByteArrayAsync(null, token);
-            ReceivedEntries.Add(new BufferedEntry(snapshot.Term, snapshot.Timestamp, snapshot.IsSnapshot, buffer));
+            ReceivedEntries.Add(new BufferedEntry(snapshot.Term, snapshot.IsSnapshot, buffer));
             return new()
             {
                 Term = 43L,
@@ -266,7 +262,6 @@ public abstract class TransportTestSuite : RaftTest
     private static void Equal(in BufferedEntry x, in BufferedEntry y)
     {
         Equal(x.Term, y.Term);
-        Equal(x.Timestamp, y.Timestamp);
         Equal(x.IsSnapshot, y.IsSnapshot);
         True(x.Content.Span.SequenceEqual(y.Content.Span));
     }
@@ -293,10 +288,10 @@ public abstract class TransportTestSuite : RaftTest
             Random.Shared.NextBytes(buffer = new byte[533]);
         }
 
-        var entry1 = new BufferedEntry(10L, DateTimeOffset.Now, false, buffer);
+        var entry1 = new BufferedEntry(10L, false, buffer);
         buffer = new byte[payloadSize];
         Random.Shared.NextBytes(buffer);
-        var entry2 = new BufferedEntry(11L, DateTimeOffset.Now, true, buffer);
+        var entry2 = new BufferedEntry(11L, true, buffer);
 
         var config = IClusterConfiguration.CreateEmpty(fingerprint: 42L);
         var result = await client.As<IRaftClusterMember>().AppendEntriesAsync<BufferedEntry, BufferedEntry[]>(42L, new[] { entry1, entry2 }, 1, 56, 10, config, true, CancellationToken.None);
@@ -338,7 +333,7 @@ public abstract class TransportTestSuite : RaftTest
 
         var buffer = new byte[payloadSize];
         Random.Shared.NextBytes(buffer);
-        var snapshot = new BufferedEntry(10L, DateTimeOffset.Now, true, buffer);
+        var snapshot = new BufferedEntry(10L, true, buffer);
         var result = await client.As<IRaftClusterMember>().InstallSnapshotAsync(42L, snapshot, 10L, CancellationToken.None);
         Equal(43L, result.Term);
         Equal(HeartbeatResult.ReplicatedWithLeaderTerm, result.Value);
@@ -360,13 +355,13 @@ public abstract class TransportTestSuite : RaftTest
         using var client = clientFactory(serverAddr, member, timeout);
         var buffer = new byte[payloadSize];
         Random.Shared.NextBytes(buffer);
-        var entry1 = new BufferedEntry(10L, DateTimeOffset.Now, false, buffer);
+        var entry1 = new BufferedEntry(10L, false, buffer);
         buffer = new byte[payloadSize];
         Random.Shared.NextBytes(buffer);
-        var entry2 = new BufferedEntry(11L, DateTimeOffset.Now, false, buffer);
+        var entry2 = new BufferedEntry(11L, false, buffer);
         var config = new BufferedClusterConfiguration(RandomBytes(312)) { Fingerprint = 42L };
 
-        var snapshot = new BufferedEntry(10L, DateTimeOffset.Now, true, buffer);
+        var snapshot = new BufferedEntry(10L, true, buffer);
 
         Result<HeartbeatResult> result;
         for (var i = 0; i < 100; i++)
@@ -479,7 +474,7 @@ public abstract class TransportTestSuite : RaftTest
             leader2 = await host2.WaitForLeaderAsync(DefaultTimeout);
             leader3 = await host3.WaitForLeaderAsync(DefaultTimeout);
         }
-        while (leader2 is null || leader3 is null || object.Equals(oldLeader, leader2.EndPoint) || object.Equals(oldLeader, leader3.EndPoint));
+        while (object.Equals(oldLeader, leader2.EndPoint) || object.Equals(oldLeader, leader3.EndPoint));
 
         await host2.StopAsync();
         await host3.StopAsync();

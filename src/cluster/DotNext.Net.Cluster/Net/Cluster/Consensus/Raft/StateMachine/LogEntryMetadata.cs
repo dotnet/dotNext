@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -11,22 +12,17 @@ using Runtime.CompilerServices;
 [StructLayout(LayoutKind.Sequential)] // Perf: in case of LE, we want to store the metadata in the block of memory as-is
 internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
 {
-    internal const int AlignedSize = 64; // a multiple of the system page size
-    private const int Size = sizeof(LogEntryFlags) + sizeof(int) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long);
-
-    internal readonly long Term;
-    internal readonly long Timestamp;
-    internal readonly long Length;
-    internal readonly ulong Offset;
+    public readonly long Term;
+    public readonly long Length;
+    public readonly ulong Offset;
     private readonly LogEntryFlags flags;
     private readonly int identifier;
 
-    internal LogEntryMetadata(DateTimeOffset timeStamp, long term, ulong offset, long length, int? id = null)
+    internal LogEntryMetadata(long term, ulong offset, long length, int? id = null)
     {
         Debug.Assert(AlignedSize >= Size);
 
         Term = term;
-        Timestamp = timeStamp.UtcTicks;
         Length = length;
         Offset = offset;
         flags = LogEntryFlags.None;
@@ -41,7 +37,10 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
         Debug.Assert(AlignedSize >= Size);
 
         Term = reader.ReadLittleEndian<long>();
-        Timestamp = reader.ReadLittleEndian<long>();
+
+        if (!Features.IsTimestampIgnored)
+            reader.ReadLittleEndian<long>();
+        
         Length = reader.ReadLittleEndian<long>();
         Offset = reader.ReadLittleEndian<ulong>();
         flags = (LogEntryFlags)reader.ReadLittleEndian<uint>();
@@ -59,7 +58,7 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
         // fast path without any overhead for LE byte order
         ref var ptr = ref MemoryMarshal.GetReference(input);
 
-        if (!BitConverter.IsLittleEndian)
+        if (!BitConverter.IsLittleEndian || !Features.IsTimestampIgnored)
         {
             // BE case
             Create(input, out this);
@@ -86,7 +85,23 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
 
     static LogEntryMetadata IBinaryFormattable<LogEntryMetadata>.Parse(ReadOnlySpan<byte> input) => new(input);
 
-    static int IBinaryFormattable<LogEntryMetadata>.Size => Size;
+    public static int Size
+    {
+        get
+        {
+            const int sizeWithoutTimestamp = sizeof(LogEntryFlags) // flags
+                                             + sizeof(int) // identifier
+                                             + sizeof(long) // term
+                                             + sizeof(long) // length
+                                             + sizeof(ulong); // offset
+
+            return Features.IsTimestampIgnored
+                ? sizeWithoutTimestamp
+                : sizeWithoutTimestamp + sizeof(long); // + timestamp
+        }
+    }
+
+    public static int AlignedSize => Features.IsTimestampIgnored ? 32 : 64; // a multiple of the system page size
 
     internal int? Id => HasIdentifier ? identifier : null;
 
@@ -98,14 +113,17 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static LogEntryMetadata Create<TLogEntry>(TLogEntry entry, ulong offset, long length)
         where TLogEntry : IRaftLogEntry
-        => new(entry.Timestamp, entry.Term, offset, length, entry.CommandId);
+        => new(entry.Term, offset, length, entry.CommandId);
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private void FormatSlow(Span<byte> output)
     {
         var writer = new SpanWriter<byte>(output);
         writer.WriteLittleEndian(Term);
-        writer.WriteLittleEndian(Timestamp);
+
+        if (!Features.IsTimestampIgnored)
+            writer.WriteLittleEndian(0L);
+        
         writer.WriteLittleEndian(Length);
         writer.WriteLittleEndian(Offset);
         writer.WriteLittleEndian((uint)flags);
@@ -120,7 +138,7 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
         // fast path without any overhead for LE byte order
         ref var ptr = ref MemoryMarshal.GetReference(output);
 
-        if (!BitConverter.IsLittleEndian)
+        if (!BitConverter.IsLittleEndian || !Features.IsTimestampIgnored)
         {
             // BE case
             FormatSlow(output);
@@ -145,4 +163,15 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
 
         HasIdentifier = 0x01,
     }
+}
+
+file static class Features
+{
+    private const string TimestampIgnoreFeature = "DotNext.IO.WriteAheadLog.IgnoreTimestamp";
+
+    [FeatureSwitchDefinition(TimestampIgnoreFeature)]
+    public static bool IsTimestampIgnored { get; } = InitializeIsTimestampIgnored();
+    
+    private static bool InitializeIsTimestampIgnored()
+        => !AppContext.TryGetSwitch(TimestampIgnoreFeature, out var enabled) || enabled;
 }

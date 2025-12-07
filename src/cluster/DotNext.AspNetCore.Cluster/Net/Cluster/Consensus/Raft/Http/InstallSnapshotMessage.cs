@@ -3,7 +3,6 @@ using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using static System.Globalization.CultureInfo;
-using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
@@ -26,8 +25,6 @@ internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessage<Res
         public long Term { get; init; }
 
         bool IO.Log.ILogEntry.IsSnapshot => true;
-
-        public DateTimeOffset Timestamp { get; init; }
 
         public long? Length { get; init; }
 
@@ -55,10 +52,7 @@ internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessage<Res
         private readonly IDataTransferObject snapshot;
 
         internal SnapshotContent(IRaftLogEntry snapshot)
-        {
-            Headers.LastModified = snapshot.Timestamp;
-            this.snapshot = snapshot;
-        }
+            => this.snapshot = snapshot;
 
         protected override Task SerializeToStreamAsync(Stream stream, TransportContext? context)
             => SerializeToStreamAsync(stream, context, CancellationToken.None);
@@ -86,7 +80,6 @@ internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessage<Res
         Snapshot = new ReceivedSnapshot(body)
         {
             Term = ParseHeader(headers, SnapshotTermHeader, Int64Parser),
-            Timestamp = ParseHeader(headers, HeaderNames.LastModified, Rfc1123Parser),
             Length = length,
         };
     }

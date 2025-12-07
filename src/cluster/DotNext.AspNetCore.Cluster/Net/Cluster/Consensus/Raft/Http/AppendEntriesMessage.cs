@@ -7,17 +7,14 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
-using static System.Buffers.BuffersExtensions;
 using static System.Globalization.CultureInfo;
 using AspNetMediaTypeHeaderValue = Microsoft.Net.Http.Headers.MediaTypeHeaderValue;
-using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
 using MediaTypeNames = System.Net.Mime.MediaTypeNames;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
 
 using Buffers;
-using Collections.Generic;
 using IO;
 using IO.Log;
 using Membership;
@@ -34,9 +31,9 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
     private const string CommitIndexHeader = "X-Raft-Commit-Index";
     private protected const string CommandIdHeader = "X-Raft-Command-Id";
     private protected const string CountHeader = "X-Raft-Entries-Count";
-    private protected const string ConfigurationLengthHeader = "X-Raft-Config-Length";
-    private protected const string ConfigurationFingerprintHeader = "X-Raft-Config-Fingerprint";
-    private protected const string ConfigurationCommitHeader = "X-Raft-Config-Commit";
+    private const string ConfigurationLengthHeader = "X-Raft-Config-Length";
+    private const string ConfigurationFingerprintHeader = "X-Raft-Config-Fingerprint";
+    private const string ConfigurationCommitHeader = "X-Raft-Config-Commit";
 
     private sealed class MultipartLogEntry : StreamTransferObject, IRaftLogEntry
     {
@@ -44,7 +41,6 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
             : base(section.Body, true)
         {
             Term = ParseHeader(section.Headers, RequestVoteMessage.RecordTermHeader, Int64Parser);
-            Timestamp = ParseHeader(section.Headers, HeaderNames.LastModified, Rfc1123Parser);
             CommandId = ParseHeaderAsNullable(section.Headers, CommandIdHeader, Int32Parser);
         }
 
@@ -53,8 +49,6 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
         public long Term { get; }
 
         bool ILogEntry.IsSnapshot => false;
-
-        public DateTimeOffset Timestamp { get; }
     }
 
     private class OctetStreamLogEntry : IRaftLogEntry
@@ -107,8 +101,6 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
             => TryConsume() ? ValueTask.CompletedTask : ConsumeSlowAsync();
 
         long? IDataTransferObject.Length => metadata.Length;
-
-        DateTimeOffset ILogEntry.Timestamp => metadata.Timestamp;
 
         long IRaftLogEntry.Term => metadata.Term;
 
@@ -404,8 +396,6 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
             this.configuration = configuration;
         }
 
-        internal int Count => entries.Count;
-
         private static void WriteHeader(BufferWriter<char> builder, string headerName, string headerValue)
         {
             builder.Write(headerName);
@@ -428,7 +418,6 @@ internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage
 
             // write headers
             WriteHeader(builder, RequestVoteMessage.RecordTermHeader, entry.Term.ToString(InvariantCulture));
-            WriteHeader(builder, HeaderNames.LastModified, HeaderUtils.FormatDate(entry.Timestamp));
             WriteHeader(builder, CommandIdHeader, GetCommandIdHeaderValue(entry.CommandId));
 
             // Extra CRLF to end headers (even if there are no headers)

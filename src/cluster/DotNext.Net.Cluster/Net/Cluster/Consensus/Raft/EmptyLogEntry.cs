@@ -1,18 +1,16 @@
-﻿using System.Buffers;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
 using Buffers;
 using IO;
 using IO.Log;
-using StateMachine;
 
 /// <summary>
 /// Represents No-OP entry.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct EmptyLogEntry() : ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>, IBufferedLogEntry
+public readonly struct EmptyLogEntry : ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>, IBufferedLogEntry
 {
     /// <inheritdoc/>
     int? IRaftLogEntry.CommandId => null;
@@ -37,11 +35,6 @@ public readonly struct EmptyLogEntry() : ISupplier<MemoryAllocator<byte>, Memory
     /// Gets or sets log entry term.
     /// </summary>
     public required long Term { get; init; }
-
-    /// <summary>
-    /// Gets timestamp of this log entry.
-    /// </summary>
-    public DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
 
     /// <inheritdoc/>
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)

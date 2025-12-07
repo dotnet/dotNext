@@ -223,7 +223,6 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             var entryCopy = new BinaryLogEntry
             {
                 Term = entry.Term,
-                Timestamp = entry.Timestamp,
                 Content = payload,
                 CommandId = entry.CommandId,
                 Context = entry is IInputLogEntry { Context: { } ctx } ? ctx : null,
@@ -237,7 +236,6 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
             var entryCopy = new BufferedLogEntry(((ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>)entry).Invoke(bufferAllocator))
             {
                 Term = entry.Term,
-                Timestamp = entry.Timestamp,
                 CommandId = entry.CommandId,
                 Context = entry is IInputLogEntry { Context: { } ctx } ? ctx : null,
             };

@@ -29,10 +29,9 @@ partial class WriteAheadLog
     {
         private MemoryOwner<byte> buffer = buffer;
         
-        public readonly required DateTimeOffset Timestamp { get; init; }
-        public readonly required long Term { get; init; }
-        public readonly required object? Context { get; init; }
-        public readonly required int? CommandId { get; init; }
+        public required long Term { get; init; }
+        public required object? Context { get; init; }
+        public required int? CommandId { get; init; }
 
         readonly long? IDataTransferObject.Length => buffer.Length;
 

@@ -13,26 +13,25 @@ using Buffers;
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct LogEntryMetadata
 {
-    internal const int Size = sizeof(long) + sizeof(byte) + sizeof(int) + sizeof(long) + sizeof(long);
+    public const int Size = sizeof(long) + sizeof(byte) + sizeof(int) + sizeof(long);
     private const byte NoFlags = 0;
     private const byte HasIdentifierFlag = 0x01;
 
-    private readonly long timestamp;
+    public readonly long Length, Term;
     private readonly byte flags;
     private readonly int identifier;
 
-    private LogEntryMetadata(long term, DateTimeOffset timestamp, long length, int? identifier)
+    private LogEntryMetadata(long term, long length, int? identifier)
     {
-        this.Term = term;
-        this.timestamp = timestamp.UtcTicks;
-        this.Length = length;
+        Term = term;
+        Length = length;
         flags = identifier.HasValue ? HasIdentifierFlag : NoFlags;
         this.identifier = identifier.GetValueOrDefault();
     }
 
     internal static LogEntryMetadata Create<TEntry>(TEntry entry)
         where TEntry : IRaftLogEntry
-        => new(entry.Term, entry.Timestamp, entry.Length.GetValueOrDefault(), entry.CommandId);
+        => new(entry.Term, entry.Length.GetValueOrDefault(), entry.CommandId);
 
     internal LogEntryMetadata(ReadOnlyMemory<byte> input)
         : this(new ReadOnlySequence<byte>(input), out _)
@@ -45,7 +44,6 @@ internal readonly struct LogEntryMetadata
 
         var reader = new SequenceReader(input);
         Term = reader.ReadLittleEndian<long>();
-        timestamp = reader.ReadLittleEndian<long>();
         flags = reader.ReadByte();
         identifier = reader.ReadLittleEndian<int>();
         Length = reader.ReadLittleEndian<long>();
@@ -53,19 +51,12 @@ internal readonly struct LogEntryMetadata
         position = reader.Position;
     }
 
-    internal long Term { get; }
-
-    internal long Length { get; }
-
-    internal DateTimeOffset Timestamp => new(timestamp, TimeSpan.Zero);
-
     internal int? CommandId => (flags & HasIdentifierFlag) != 0 ? identifier : null;
 
     public void Format(Span<byte> output)
     {
         var writer = new SpanWriter<byte>(output);
         writer.WriteLittleEndian(Term);
-        writer.WriteLittleEndian(timestamp);
         writer += flags;
         writer.WriteLittleEndian(identifier);
         writer.WriteLittleEndian(Length);

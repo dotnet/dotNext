@@ -20,10 +20,10 @@ partial class WriteAheadLog
         }
         
         private uint GetStartPageIndex(long index, out int offset)
-            => manager.GetPageIndex((ulong)index * LogEntryMetadata.AlignedSize, out offset);
+            => manager.GetPageIndex((ulong)index * (uint)LogEntryMetadata.AlignedSize, out offset);
 
         private uint GetEndPageIndex(long index, out int offset)
-            => manager.GetPageIndex((ulong)index * LogEntryMetadata.AlignedSize + LogEntryMetadata.AlignedSize, out offset);
+            => manager.GetPageIndex((ulong)index * (uint)LogEntryMetadata.AlignedSize + (uint)LogEntryMetadata.AlignedSize, out offset);
 
         public ValueTask FlushAsync(long fromIndex, long toIndex, CancellationToken token)
         {

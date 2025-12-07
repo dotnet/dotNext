@@ -101,8 +101,6 @@ internal partial class Server
 
         bool IDataTransferObject.IsReusable => false;
 
-        DateTimeOffset ILogEntry.Timestamp => metadata.Timestamp;
-
         int? IRaftLogEntry.CommandId => metadata.CommandId;
 
         long IRaftLogEntry.Term => metadata.Term;
