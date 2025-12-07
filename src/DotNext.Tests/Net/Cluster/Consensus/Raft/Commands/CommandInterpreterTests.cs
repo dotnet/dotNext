@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Commands;
@@ -157,7 +156,6 @@ public sealed class CommandInterpreterTests : Test
         }
     }
     
-    [Experimental("DOTNEXT001")]
     private sealed class SimpleStateMachine : NoOpSnapshotManager, IStateMachine
     {
         private readonly CustomInterpreter interpreter = new();
@@ -252,7 +250,6 @@ public sealed class CommandInterpreterTests : Test
     }
 
     [Fact]
-    [Experimental("DOTNEXT001")]
     public static async Task InterpreterWithPersistentState()
     {
         var stateMachine = new SimpleStateMachine();

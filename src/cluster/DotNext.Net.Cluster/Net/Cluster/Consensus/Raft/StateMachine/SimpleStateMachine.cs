@@ -11,7 +11,6 @@ using Commands;
 /// Represents a state machine that keeps the entire state in the memory but periodically
 /// creates a persistent snapshot for recovery.
 /// </summary>
-[Experimental("DOTNEXT001")]
 public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachine
 {
     private readonly CancellationToken lifetimeToken;

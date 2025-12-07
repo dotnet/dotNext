@@ -1,11 +1,8 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 /// <summary>
 /// Represents incremental snapshot manager.
 /// </summary>
-[Experimental("DOTNEXT001")]
 public interface ISnapshotManager
 {
     /// <summary>

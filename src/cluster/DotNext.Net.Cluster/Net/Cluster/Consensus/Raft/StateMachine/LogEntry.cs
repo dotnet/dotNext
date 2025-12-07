@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
@@ -11,7 +10,6 @@ using IO.Log;
 /// Represents the log entry maintained by <see cref="WriteAheadLog"/> instance.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-[Experimental("DOTNEXT001")]
 public readonly struct LogEntry : IInputLogEntry
 {
     // ISnapshot, or IMemoryReader, or null

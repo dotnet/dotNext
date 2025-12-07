@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using IO.Log;
 using Membership;
 using StateMachine;
 
@@ -32,7 +31,6 @@ public static class RaftClusterConfiguration
     /// <param name="services">A collection of services provided by DI container.</param>
     /// <typeparam name="TStateMachine">The type of the state machine.</typeparam>
     /// <returns>A modified collection of services.</returns>
-    [Experimental("DOTNEXT001")]
     public static IServiceCollection UseStateMachine<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TStateMachine>(
         this IServiceCollection services)
         where TStateMachine : class, IStateMachine
@@ -54,7 +52,6 @@ public static class RaftClusterConfiguration
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <typeparam name="TStateMachine">The type of the state machine.</typeparam>
     /// <returns>The task representing the state of the asynchronous operation.</returns>
-    [Experimental("DOTNEXT001")]
     public static ValueTask RestoreStateAsync<TStateMachine>(this IApplicationBuilder app, CancellationToken token = default)
         where TStateMachine : SimpleStateMachine
     {

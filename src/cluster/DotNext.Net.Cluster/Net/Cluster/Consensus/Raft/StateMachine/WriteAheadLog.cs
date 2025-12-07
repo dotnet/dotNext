@@ -15,7 +15,6 @@ using Threading.Tasks;
 /// <summary>
 /// Represents the general-purpose Raft WAL.
 /// </summary>
-[Experimental("DOTNEXT001")]
 public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentState
 {
     private const int DictionaryConcurrencyLevel = 3; // append flow and cleaner and applier
@@ -26,8 +25,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     private readonly CancellationTokenMultiplexer cancellationTokens;
     
     private volatile ExceptionDispatchInfo? backgroundTaskFailure;
-    private long lastEntryIndex; // Append lock protects modification of this field
-    
+
     // lifetime management
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private CancellationTokenSource? lifetimeTokenSource;
@@ -147,8 +145,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     /// <inheritdoc cref="IAuditTrail.LastEntryIndex"/>
     public long LastEntryIndex
     {
-        get => Atomic.Read(ref lastEntryIndex);
-        private set => Atomic.Write(ref lastEntryIndex, value);
+        get => Atomic.Read(ref field);
+        private set => Atomic.Write(ref field, value);
     }
 
     private async ValueTask<long> AppendUnbufferedAsync<TEntry>(TEntry entry, CancellationToken token)

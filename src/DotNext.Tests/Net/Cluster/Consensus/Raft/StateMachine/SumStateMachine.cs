@@ -1,11 +1,9 @@
 using System.Buffers;
 using System.Buffers.Binary;
-using System.Diagnostics.CodeAnalysis;
 using DotNext.IO;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
-[Experimental("DOTNEXT001")]
 internal sealed class SumStateMachine : SimpleStateMachine
 {
     public long Value;
