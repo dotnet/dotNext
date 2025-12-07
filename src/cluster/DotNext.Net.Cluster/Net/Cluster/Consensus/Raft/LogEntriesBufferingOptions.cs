@@ -6,7 +6,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 public class LogEntriesBufferingOptions : LogEntryBufferingOptions
 {
     private const int DefaultMemoryLimit = 10 * 1024 * 1024;
-    private int memoryLimit = DefaultMemoryLimit;
 
     /// <summary>
     /// The maximum amount of memory that can be allocated for the buffered log entry.
@@ -16,7 +15,7 @@ public class LogEntriesBufferingOptions : LogEntryBufferingOptions
     /// </remarks>
     public int MemoryLimit
     {
-        get => memoryLimit;
-        set => memoryLimit = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-    }
+        get;
+        set => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    } = DefaultMemoryLimit;
 }

@@ -12,7 +12,6 @@ public sealed class NullSafetyExpression : CustomExpression
 {
     private readonly BinaryExpression? assignment;
     private readonly bool alwaysNotNull;
-    private Expression? body;
 
     internal NullSafetyExpression(Expression target)
     {
@@ -57,8 +56,8 @@ public sealed class NullSafetyExpression : CustomExpression
     /// </summary>
     public Expression Body
     {
-        get => body ?? Empty();
-        internal set => body = value;
+        get => field ?? Empty();
+        internal set;
     }
 
     /// <summary>

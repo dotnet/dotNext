@@ -1,8 +1,6 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
-using System.IO.Pipelines;
 using System.Net;
-using System.Runtime.Versioning;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.Extensions.Logging;
 using LingerOption = System.Net.Sockets.LingerOption;
@@ -13,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft;
 using Buffers;
 using CustomTransport;
 using Membership;
-using Net.Security;
+using Security;
 using Tcp;
 using TransportServices;
 
@@ -26,11 +24,8 @@ public partial class RaftCluster
     {
         private double heartbeatThreshold;
         private ElectionTimeout electionTimeout;
-        private MemoryAllocator<byte>? allocator;
-        private ILoggerFactory? loggerFactory;
         private TimeSpan? requestTimeout;
         private int warmupRounds;
-        private EndPoint? publicAddress;
 
         private protected NodeConfiguration()
         {
@@ -51,8 +46,8 @@ public partial class RaftCluster
         [AllowNull]
         public EndPoint PublicEndPoint
         {
-            get => publicAddress ?? HostEndPoint;
-            set => publicAddress = value;
+            get => field ?? HostEndPoint;
+            set;
         }
 
         /// <summary>
@@ -106,8 +101,8 @@ public partial class RaftCluster
         [AllowNull]
         public MemoryAllocator<byte> MemoryAllocator
         {
-            get => allocator ??= ArrayPool<byte>.Shared.ToAllocator();
-            set => allocator = value;
+            get => field ??= ArrayPool<byte>.Shared.ToAllocator();
+            set;
         }
 
         /// <summary>
@@ -159,8 +154,8 @@ public partial class RaftCluster
         [CLSCompliant(false)]
         public ILoggerFactory LoggerFactory
         {
-            get => loggerFactory ?? NullLoggerFactory.Instance;
-            set => loggerFactory = value;
+            get => field ?? NullLoggerFactory.Instance;
+            set;
         }
 
         /// <inheritdoc/>
@@ -201,7 +196,6 @@ public partial class RaftCluster
     {
         private readonly IConnectionListenerFactory serverFactory;
         private readonly IConnectionFactory clientFactory;
-        private readonly IEqualityComparer<EndPoint>? endPointComparer;
         private TimeSpan? connectTimeout;
 
         /// <summary>
@@ -240,8 +234,8 @@ public partial class RaftCluster
         [AllowNull]
         public IEqualityComparer<EndPoint> EndPointComparer
         {
-            get => endPointComparer ?? EqualityComparer<EndPoint>.Default;
-            init => endPointComparer = value;
+            get => field ?? EqualityComparer<EndPoint>.Default;
+            init;
         }
 
         /// <inheritdoc />
@@ -260,8 +254,6 @@ public partial class RaftCluster
     /// </summary>
     public abstract class BuiltInTransportConfiguration : NodeConfiguration
     {
-        private int serverChannels = 10;
-
         private protected BuiltInTransportConfiguration(IPEndPoint hostAddress)
         {
             HostEndPoint = hostAddress ?? throw new ArgumentNullException(nameof(hostAddress));
@@ -280,9 +272,9 @@ public partial class RaftCluster
         /// <exception cref="ArgumentOutOfRangeException">Supplied value is equal to or less than zero.</exception>
         public int ServerBacklog
         {
-            get => serverChannels;
-            set => serverChannels = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-        }
+            get;
+            set => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        } = 10;
 
         /// <summary>
         /// Gets or sets a value that specifies the Time To Live (TTL) value of Internet Protocol (IP) packets.

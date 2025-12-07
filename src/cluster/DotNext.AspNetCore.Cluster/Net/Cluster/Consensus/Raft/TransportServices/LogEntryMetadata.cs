@@ -17,15 +17,15 @@ internal readonly struct LogEntryMetadata
     private const byte NoFlags = 0;
     private const byte HasIdentifierFlag = 0x01;
 
-    private readonly long timestamp, term, length;
+    private readonly long timestamp;
     private readonly byte flags;
     private readonly int identifier;
 
     private LogEntryMetadata(long term, DateTimeOffset timestamp, long length, int? identifier)
     {
-        this.term = term;
+        this.Term = term;
         this.timestamp = timestamp.UtcTicks;
-        this.length = length;
+        this.Length = length;
         flags = identifier.HasValue ? HasIdentifierFlag : NoFlags;
         this.identifier = identifier.GetValueOrDefault();
     }
@@ -44,18 +44,18 @@ internal readonly struct LogEntryMetadata
         Debug.Assert(input.Length >= Size);
 
         var reader = new SequenceReader(input);
-        term = reader.ReadLittleEndian<long>();
+        Term = reader.ReadLittleEndian<long>();
         timestamp = reader.ReadLittleEndian<long>();
         flags = reader.ReadByte();
         identifier = reader.ReadLittleEndian<int>();
-        length = reader.ReadLittleEndian<long>();
+        Length = reader.ReadLittleEndian<long>();
 
         position = reader.Position;
     }
 
-    internal long Term => term;
+    internal long Term { get; }
 
-    internal long Length => length;
+    internal long Length { get; }
 
     internal DateTimeOffset Timestamp => new(timestamp, TimeSpan.Zero);
 

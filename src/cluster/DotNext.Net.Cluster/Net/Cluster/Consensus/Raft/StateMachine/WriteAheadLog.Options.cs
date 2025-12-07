@@ -42,11 +42,6 @@ partial class WriteAheadLog
     [StructLayout(LayoutKind.Auto)]
     public class Options
     {
-        private readonly int chunkSize = Environment.SystemPageSize;
-        private readonly int concurrencyLevel = Environment.ProcessorCount * 2 + 1;
-        private readonly string location = string.Empty;
-        private readonly TimeSpan flushInterval;
-
         /// <summary>
         /// Gets or sets the path to the root folder to be used by the log to persist log entries.
         /// </summary>
@@ -54,11 +49,11 @@ partial class WriteAheadLog
         [Required]
         public required string Location
         {
-            get => location;
-            init => location = value is { Length: > 0 }
+            get;
+            init => field = value is { Length: > 0 }
                 ? Path.GetFullPath(value)
                 : throw new ArgumentOutOfRangeException(nameof(value));
-        }
+        } = string.Empty;
 
         /// <summary>
         /// Gets or sets the interval of the checkpoint.
@@ -71,12 +66,12 @@ partial class WriteAheadLog
         /// </value>
         public TimeSpan FlushInterval
         {
-            get => flushInterval;
+            get;
             init
             {
                 Timeout.Validate(value);
-                
-                flushInterval = value;
+
+                field = value;
             }
         }
 
@@ -86,20 +81,20 @@ partial class WriteAheadLog
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
         public int ChunkSize
         {
-            get => chunkSize;
+            get;
             init
             {
-                chunkSize = value > 0
+                field = value > 0
                     ? RoundUpToPageSize(value)
                     : throw new ArgumentOutOfRangeException(nameof(value));
-                
+
                 static int RoundUpToPageSize(int value)
                 {
                     var result = ((uint)value).RoundUp((uint)Page.MinSize);
                     return checked((int)result);
                 }
             }
-        }
+        } = Environment.SystemPageSize;
 
         /// <summary>
         /// Gets or sets an expected number of concurrent users of the log.
@@ -107,9 +102,9 @@ partial class WriteAheadLog
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
         public int ConcurrencyLevel
         {
-            get => concurrencyLevel;
-            init => concurrencyLevel = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-        }
+            get;
+            init => field = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        } = Environment.ProcessorCount * 2 + 1;
 
         /// <summary>
         /// Gets or sets the memory allocator.

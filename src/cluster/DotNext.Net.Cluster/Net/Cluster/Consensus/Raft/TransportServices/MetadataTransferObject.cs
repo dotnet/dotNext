@@ -15,14 +15,13 @@ using Text;
 internal readonly struct MetadataTransferObject : ISerializable<MetadataTransferObject>
 {
     private const LengthFormat LengthEncoding = LengthFormat.Compressed;
-    private readonly IReadOnlyDictionary<string, string>? metadata;
 
     internal MetadataTransferObject(IReadOnlyDictionary<string, string> metadata)
-        => this.metadata = metadata;
+        => this.Metadata = metadata;
 
     private static Encoding Encoding => Encoding.UTF8;
 
-    internal IReadOnlyDictionary<string, string> Metadata => metadata ?? FrozenDictionary<string, string>.Empty;
+    internal IReadOnlyDictionary<string, string> Metadata => field ?? FrozenDictionary<string, string>.Empty;
 
     long? IDataTransferObject.Length => null;
 

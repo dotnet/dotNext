@@ -10,8 +10,7 @@ partial class MultiplexedListener
     public class Options : MultiplexingOptions
     {
         private readonly TimeSpan receiveTimeout = TimeSpan.FromSeconds(60);
-        private readonly double heartbeatDrift = .5D;
-        
+
         /// <summary>
         /// Gets or sets the send/receive timeout.
         /// </summary>
@@ -25,18 +24,18 @@ partial class MultiplexedListener
                 receiveTimeout = value;
             }
         }
-        
+
         /// <summary>
         /// Determines a drift between heartbeat packet and regular network timeout.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is not in range (0..1).</exception>
         public double HeartbeatDrift
         {
-            get => heartbeatDrift;
-            init => heartbeatDrift = double.IsNormal(value) && value is > 0D and < 1D
+            get;
+            init => field = double.IsNormal(value) && value is > 0D and < 1D
                 ? value
                 : throw new ArgumentOutOfRangeException(nameof(value));
-        }
+        } = .5D;
 
         internal TimeSpan HeartbeatTimeout => receiveTimeout == InfiniteTimeSpan
             ? InfiniteTimeSpan
