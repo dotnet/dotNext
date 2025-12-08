@@ -414,7 +414,7 @@ public partial class RandomAccessCache<TKey, TValue>
 
         internal BucketList(int length)
         {
-            Span.Initialize<Bucket>(buckets = new Bucket[length]);
+            (buckets = new Bucket[length]).Initialize<Bucket>();
             fastMod = new((uint)length);
         }
 
