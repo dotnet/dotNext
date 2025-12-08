@@ -39,7 +39,7 @@ public readonly record struct OpaqueValue<T> : IDisposable
         }
         else if (ContainsReferences)
         {
-            valueOrHandle = (nint)GCHandle.Alloc(value, GCHandleType.Normal);
+            valueOrHandle = GCHandle<object>.ToIntPtr(new(value));
         }
         else if (CanBeInlined)
         {
@@ -69,8 +69,9 @@ public readonly record struct OpaqueValue<T> : IDisposable
     {
         if (ContainsReferences)
         {
-            if (GCHandle.FromIntPtrUnsafe(valueOrHandle) is { IsAllocated: true } gch)
-                gch.Free();
+            
+            if (GCHandle<object>.FromIntPtr(valueOrHandle) is { IsAllocated: true } gch)
+                gch.Dispose();
         }
         else if (CanBeInlined)
         {
@@ -107,7 +108,7 @@ public static class OpaqueValue
     {
         if (OpaqueValue<T>.ContainsReferences)
         {
-            return ref GCHandle.FromIntPtrUnsafe(value.valueOrHandle) is { IsAllocated: true, Target: { } target }
+            return ref GCHandle<object>.FromIntPtr(value.valueOrHandle) is { IsAllocated: true, Target: { } target }
                 ? ref Unsafe.Unbox<T>(target)
                 : ref Unsafe.NullRef<T>();
         }
@@ -134,17 +135,8 @@ public static class OpaqueValue
         /// Gets the value of the reference type.
         /// </summary>
         /// <value>The extracted value; or <see langword="null"/> if <paramref name="value"/> is not allocated.</value>
-        public T? Value => GCHandle.FromIntPtrUnsafe(value.valueOrHandle) is { IsAllocated: true, Target: T target }
+        public T? Value => GCHandle<object>.FromIntPtr(value.valueOrHandle) is { IsAllocated: true, Target: T target }
             ? target
             : null;
-    }
-}
-
-file static class GCHandleExtensions
-{
-    extension(GCHandle)
-    {
-        public static GCHandle FromIntPtrUnsafe(nint handle)
-            => handle is not 0 ? GCHandle.FromIntPtr(handle) : default;
     }
 }
