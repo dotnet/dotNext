@@ -108,7 +108,7 @@ public static class OpaqueValue
     {
         if (OpaqueValue<T>.ContainsReferences)
         {
-            return ref GCHandle<object>.FromIntPtr(value.valueOrHandle) is { IsAllocated: true, Target: { } target }
+            return ref GCHandle<object>.FromIntPtr(value.valueOrHandle) is { IsAllocated: true, Target: { } target and T }
                 ? ref Unsafe.Unbox<T>(target)
                 : ref Unsafe.NullRef<T>();
         }
