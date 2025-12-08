@@ -32,8 +32,7 @@ partial class QueuedSynchronizer
     {
         ArgumentNullException.ThrowIfNull(information);
 
-        if (callerInfo is not null)
-            callerInfo.Value = information;
+        callerInfo?.Value = information;
     }
 
     private object? CaptureCallerInformation() => callerInfo?.Capture();

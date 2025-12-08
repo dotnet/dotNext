@@ -7,10 +7,7 @@ public partial class SparseBufferWriter<T>
     internal abstract class MemoryChunk : Disposable
     {
         private protected MemoryChunk(MemoryChunk? previous)
-        {
-            if (previous is not null)
-                previous.Next = this;
-        }
+            => previous?.Next = this;
 
         internal abstract int FreeCapacity { get; }
 

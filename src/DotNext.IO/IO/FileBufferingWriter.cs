@@ -32,10 +32,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
             => refHolder = obj;
 
         public void Dispose()
-        {
-            if (refHolder is not null)
-                refHolder.Target = null;
-        }
+            => refHolder?.Target = null;
     }
 
     private sealed unsafe class NativeMemoryManager : MemoryManager<byte>

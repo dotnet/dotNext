@@ -176,15 +176,9 @@ public partial class RandomAccessCache<TKey, TValue>
 
             static void MakeLink(KeyValuePair? previous, KeyValuePair? next)
             {
-                if (previous is not null)
-                {
-                    previous.sieveLinks.Next = next;
-                }
+                previous?.sieveLinks.Next = next;
 
-                if (next is not null)
-                {
-                    next.sieveLinks.Previous = previous;
-                }
+                next?.sieveLinks.Previous = previous;
             }
         }
 
