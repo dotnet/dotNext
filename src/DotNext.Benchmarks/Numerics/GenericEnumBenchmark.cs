@@ -3,7 +3,7 @@ using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
 using System;
 
-namespace DotNext;
+namespace DotNext.Numerics;
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
@@ -24,11 +24,14 @@ public class GenericEnumBenchmark
     public long ToInt64UsingConstrainedCall() => ToInt64(EnvironmentVariableTarget.Machine);
 
     [Benchmark]
-    public int ToInt32UsingGenericConverter() => EnumConverter.FromEnum<EnvironmentVariableTarget, int>(EnvironmentVariableTarget.Machine);
+    public int ToInt32UsingGenericConverter()
+        => new Enum<EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine).ConvertTruncating<int>();
 
     [Benchmark]
-    public long ToInt64UsingGenericConverter() => EnumConverter.FromEnum<EnvironmentVariableTarget, long>(EnvironmentVariableTarget.Machine);
+    public long ToInt64UsingGenericConverter()
+        => new Enum<EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine).ConvertTruncating<long>();
 
     [Benchmark]
-    public EnvironmentVariableTarget ToEnumUsingGenericConverter() => EnumConverter.ToEnum<EnvironmentVariableTarget, int>(2);
+    public EnvironmentVariableTarget ToEnumUsingGenericConverter()
+        => Enum<EnvironmentVariableTarget>.CreateSaturating(2);
 }
