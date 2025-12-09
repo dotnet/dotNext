@@ -7,6 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers;
 using Buffers.Binary;
+using Numerics;
 using Runtime.CompilerServices;
 
 [StructLayout(LayoutKind.Sequential)] // Perf: in case of LE, we want to store the metadata in the block of memory as-is
@@ -43,7 +44,7 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
         
         Length = reader.ReadLittleEndian<long>();
         Offset = reader.ReadLittleEndian<ulong>();
-        flags = (LogEntryFlags)reader.ReadLittleEndian<uint>();
+        flags = reader.ReadLittleEndian<Enum<LogEntryFlags>>();
         identifier = reader.ReadLittleEndian<int>();
     }
 
@@ -126,7 +127,7 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
         
         writer.WriteLittleEndian(Length);
         writer.WriteLittleEndian(Offset);
-        writer.WriteLittleEndian((uint)flags);
+        writer.WriteLittleEndian<Enum<LogEntryFlags>>(new(flags));
         writer.WriteLittleEndian(identifier);
     }
 

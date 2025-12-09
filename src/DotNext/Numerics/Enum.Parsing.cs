@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace DotNext;
+namespace DotNext.Numerics;
 
 partial struct Enum<T>
 {

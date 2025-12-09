@@ -4,10 +4,10 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace DotNext;
+namespace DotNext.Numerics;
 
 /// <summary>
-/// Represents enum wrapper that behaves as its underlying type.
+/// Treats enum as a binary integer.
 /// </summary>
 /// <param name="value">The value to wrap.</param>
 /// <typeparam name="T">The type of the enum.</typeparam>
@@ -66,6 +66,13 @@ public readonly partial struct Enum<T>(T value) : IBinaryInteger<Enum<T>>
     /// <param name="value">The value to convert.</param>
     /// <returns>The converted value.</returns>
     public static implicit operator T(Enum<T> value) => value.value;
+
+    /// <summary>
+    /// Converts the enum value to the underlying binary integer.
+    /// </summary>
+    /// <param name="value">The value to wrap.</param>
+    /// <returns>The binary integer that represents the enum value.</returns>
+    public static explicit operator Enum<T>(T value) => new(value);
 }
 
 internal static partial class EnumHelpers

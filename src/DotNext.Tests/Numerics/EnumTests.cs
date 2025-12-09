@@ -1,6 +1,4 @@
-﻿namespace DotNext;
-
-using Numerics;
+﻿namespace DotNext.Numerics;
 
 public sealed class EnumTests : Test
 {
@@ -183,7 +181,7 @@ public sealed class EnumTests : Test
     [Fact]
     public static void PositiveNegativeValues()
     {
-        var value = new Enum<Int32Enum>(Int32Enum.One);
+        var value = (Enum<Int32Enum>)Int32Enum.One;
         True(value.IsPositive);
         False(value.IsNegative);
         True(value.IsNotZero);
@@ -197,11 +195,11 @@ public sealed class EnumTests : Test
     [Fact]
     public static void EvenOddValues()
     {
-        var value = new Enum<Int32Enum>(Int32Enum.One);
+        var value = (Enum<Int32Enum>)Int32Enum.One;
         False(value.IsEven);
         True(value.IsOdd);
 
-        value = new(Int32Enum.Two);
+        value = (Enum<Int32Enum>)Int32Enum.Two;
         True(value.IsEven);
         False(value.IsOdd);
     }
@@ -209,8 +207,8 @@ public sealed class EnumTests : Test
     [Fact]
     public static void AddSubtractValues()
     {
-        var x = new Enum<Int64Enum>(Int64Enum.One);
-        var y = new Enum<Int64Enum>(Int64Enum.One);
+        var x = (Enum<Int64Enum>)Int64Enum.One;
+        var y = (Enum<Int64Enum>)Int64Enum.One;
         Equal(Int64Enum.Two, x + y);
         Equal(Int64Enum.Zero, x - y);
     }
