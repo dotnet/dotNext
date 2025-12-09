@@ -48,6 +48,7 @@ public readonly partial struct Enum<T>(T value) : IBinaryInteger<Enum<T>>
             _ => value.GetHashCode(),
         };
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static int ConstrainedCall<TValue>(T value)
             where TValue : unmanaged
         {
