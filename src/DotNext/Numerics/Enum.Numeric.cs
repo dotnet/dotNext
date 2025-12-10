@@ -317,7 +317,7 @@ file readonly ref struct IsNegativeCheck : EnumHelpers.IChecker
 file readonly ref struct IsPositiveCheck : EnumHelpers.IChecker
 {
     static bool EnumHelpers.IChecker.Check<TValue>(TValue value)
-        => TValue.IsNegative(value);
+        => TValue.IsPositive(value);
 }
 
 file readonly ref struct IsNormalCheck : EnumHelpers.IChecker

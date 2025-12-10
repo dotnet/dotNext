@@ -187,7 +187,7 @@ public sealed class EnumTests : Test
         True(value.IsNotZero);
 
         value = default;
-        False(value.IsNegative);
+        False(value.IsPositive);
         False(value.IsNegative);
         False(value.IsNotZero);
     }
