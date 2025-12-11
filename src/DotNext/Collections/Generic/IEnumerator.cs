@@ -14,7 +14,7 @@ namespace DotNext.Collections.Generic;
 /// <typeparam name="TSelf">The value type that implements an enumerator.</typeparam>
 /// <typeparam name="T"></typeparam>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
-public interface IEnumerator<TSelf, out T>
+public interface IEnumerator<TSelf, out T> : IResettable
     where TSelf : struct, IEnumerator<TSelf, T>
 {
     /// <inheritdoc cref="IEnumerator.MoveNext()"/>
@@ -24,7 +24,7 @@ public interface IEnumerator<TSelf, out T>
     T Current { get; }
 
     /// <inheritdoc cref="IEnumerator.Reset()"/>
-    void Reset() => throw new NotSupportedException();
+    void IResettable.Reset() => throw new NotSupportedException();
 
     /// <summary>
     /// Converts ad-hoc enumerator to a generic enumerator.

@@ -58,8 +58,8 @@ public partial class ConcurrentTypeMap<TValue>
             return false;
         }
 
-        /// <inheritdoc cref="IEnumerator{TSelf, T}.Reset()"/>
-        void IEnumerator<Enumerator, TValue>.Reset() => index = nuint.MaxValue;
+        /// <inheritdoc cref="IResettable.Reset()"/>
+        void IResettable.Reset() => index = nuint.MaxValue;
     }
 
     /// <summary>
@@ -105,8 +105,8 @@ public partial class ConcurrentTypeMap
         /// <inheritdoc cref="IEnumerator{T}.Current"/>
         public readonly object Current => current ?? throw new InvalidOperationException();
         
-        /// <inheritdoc cref="IEnumerator{TSelf, T}.Reset()"/>
-        void IEnumerator<Enumerator, object>.Reset() => index = 0;
+        /// <inheritdoc cref="IResettable.Reset()"/>
+        void IResettable.Reset() => index = 0;
     }
     
     /// <summary>
