@@ -16,14 +16,14 @@ public interface ITypeMap<TValue> : IReadOnlyTypeMap<TValue>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <param name="value">The value associated with the type.</param>
     /// <exception cref="GenericArgumentException">A value associated with <typeparamref name="TKey"/> already exists.</exception>
-    void Add<TKey>(TValue value);
+    void Add<TKey>(TValue value) where TKey : allows ref struct;
 
     /// <summary>
     /// Adds or overwrites the value with the specified type.
     /// </summary>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <param name="value">The value to set.</param>
-    void Set<TKey>(TValue value);
+    void Set<TKey>(TValue value) where TKey : allows ref struct;
 
     /// <summary>
     /// Replaces the existing value with a new value.
@@ -32,14 +32,15 @@ public interface ITypeMap<TValue> : IReadOnlyTypeMap<TValue>
     /// <param name="newValue">A new value.</param>
     /// <param name="oldValue">The replaced value.</param>
     /// <returns><see langword="true"/> if value is replaced; <see langword="false"/> if a new value is added without replacement.</returns>
-    bool Set<TKey>(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue);
+    bool Set<TKey>(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
+        where TKey : allows ref struct;
 
     /// <summary>
     /// Attempts to remove the value from the map.
     /// </summary>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <returns><see langword="true"/> if the element successfully removed; otherwise, <see langword="false"/>.</returns>
-    bool Remove<TKey>();
+    bool Remove<TKey>() where TKey : allows ref struct;
 
     /// <summary>
     /// Attempts to remove the value from the map.
@@ -47,7 +48,7 @@ public interface ITypeMap<TValue> : IReadOnlyTypeMap<TValue>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <param name="value">The value of the removed element.</param>
     /// <returns><see langword="true"/> if the element successfully removed; otherwise, <see langword="false"/>.</returns>
-    bool Remove<TKey>([MaybeNullWhen(false)] out TValue value);
+    bool Remove<TKey>([MaybeNullWhen(false)] out TValue value) where TKey : allows ref struct;
 
     /// <summary>
     /// Removes all elements from this map.
@@ -64,6 +65,7 @@ public interface ITypeMap : IReadOnlyTypeMap
     private static volatile int typeLastIndex = -1;
 
     private static class TypeSlot<T>
+        where T : allows ref struct
     {
         internal static readonly int Index = Interlocked.Increment(ref typeLastIndex);
     }
@@ -74,7 +76,9 @@ public interface ITypeMap : IReadOnlyTypeMap
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <returns>The index of the type.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static int GetIndex<TKey>() => TypeSlot<TKey>.Index;
+    internal static int GetIndex<TKey>()
+        where TKey : allows ref struct
+        => TypeSlot<TKey>.Index;
 
     /// <summary>
     /// Gets the recommended initial capacity of the internal array.

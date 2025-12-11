@@ -14,7 +14,7 @@ public interface IReadOnlyTypeMap<TValue> : IEnumerable<TValue>
     /// </summary>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
-    bool ContainsKey<TKey>();
+    bool ContainsKey<TKey>() where TKey : allows ref struct;
 
     /// <summary>
     /// Attempts to get the value associated with the specified type.
@@ -22,7 +22,8 @@ public interface IReadOnlyTypeMap<TValue> : IEnumerable<TValue>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <param name="value">The value associated with the type.</param>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
-    bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value);
+    bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value)
+        where TKey : allows ref struct;
 }
 
 /// <summary>

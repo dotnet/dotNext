@@ -83,6 +83,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     /// <param name="value">The value associated with the type.</param>
     /// <exception cref="GenericArgumentException">A value associated with <typeparamref name="TKey"/> is already exist.</exception>
     public void Add<TKey>(TValue value)
+        where TKey : allows ref struct
     {
         if (!TryAdd(ITypeMap.GetIndex<TKey>(), value))
             throw new GenericArgumentException<TKey>(ExceptionMessages.KeyAlreadyExists);
@@ -102,6 +103,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <param name="value">The value to set.</param>
     public void Set<TKey>(TValue value)
+        where TKey : allows ref struct
         => Set(ITypeMap.GetIndex<TKey>(), value);
 
     private bool Set(int index, TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
@@ -132,6 +134,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     /// <param name="oldValue">The replaced value.</param>
     /// <returns><see langword="true"/> if value is replaced; <see langword="false"/> if a new value is added without replacement.</returns>
     public bool Set<TKey>(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
+        where TKey : allows ref struct
         => Set(ITypeMap.GetIndex<TKey>(), newValue, out oldValue);
 
     /// <summary>
@@ -140,6 +143,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool ContainsKey<TKey>()
+        where TKey : allows ref struct
     {
         return ContainsKey(entries, ITypeMap.GetIndex<TKey>());
 
@@ -170,6 +174,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <returns><see langword="true"/> if the element successfully removed; otherwise, <see langword="false"/>.</returns>
     public bool Remove<TKey>()
+        where TKey : allows ref struct
         => Remove(ITypeMap.GetIndex<TKey>());
 
     private bool Remove(int index, [MaybeNullWhen(false)] out TValue value)
@@ -202,6 +207,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     /// <param name="value">The value of the removed element.</param>
     /// <returns><see langword="true"/> if the element successfully removed; otherwise, <see langword="false"/>.</returns>
     public bool Remove<TKey>([MaybeNullWhen(false)] out TValue value)
+        where TKey : allows ref struct
         => Remove(ITypeMap.GetIndex<TKey>(), out value);
 
     private bool TryGetValue(int index, [MaybeNullWhen(false)] out TValue value)
@@ -224,6 +230,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     /// <param name="value">The value associated with the type.</param>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value)
+        where TKey : allows ref struct
         => TryGetValue(ITypeMap.GetIndex<TKey>(), out value);
 
     /// <summary>

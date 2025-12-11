@@ -28,4 +28,5 @@ public class GenericArgumentException(Type genericParam, string message, string?
 /// </remarks>
 /// <param name="message">The error message that explains the reason for the exception.</param>
 /// <param name="paramName">The name of generic parameter.</param>
-public class GenericArgumentException<T>(string message, string? paramName = null) : GenericArgumentException(typeof(T), message, paramName);
+public class GenericArgumentException<T>(string message, string? paramName = null): GenericArgumentException(typeof(T), message, paramName)
+    where T : allows ref struct;
