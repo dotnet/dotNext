@@ -87,15 +87,15 @@ partial struct Enum<T>
 
     /// <inheritdoc/>
     public static Enum<T> operator <<(Enum<T> value, int shiftAmount)
-        => ShiftOperation<LeftShift>(value, shiftAmount);
+        => BinaryOperation<LeftShift, int>(value, shiftAmount);
 
     /// <inheritdoc/>
     public static Enum<T> operator >> (Enum<T> value, int shiftAmount)
-        => ShiftOperation<RightShift>(value, shiftAmount);
+        => BinaryOperation<RightShift, int>(value, shiftAmount);
 
     /// <inheritdoc/>
     public static Enum<T> operator >>> (Enum<T> value, int shiftAmount)
-        => ShiftOperation<RightShiftUnsigned>(value, shiftAmount);
+        => BinaryOperation<RightShiftUnsigned, int>(value, shiftAmount);
 
     private Enum<T> BinaryOperation<TOperation>(T right)
         where TOperation : EnumHelpers.IBinaryOperation, allows ref struct
@@ -152,29 +152,30 @@ partial struct Enum<T>
         }
     }
 
-    private static Enum<T> ShiftOperation<TOperation>(Enum<T> operand, int shiftAmount)
-        where TOperation : EnumHelpers.IShiftOperation, allows ref struct
+    private static Enum<T> BinaryOperation<TOperation, TRight>(Enum<T> operand, TRight right)
+        where TOperation : EnumHelpers.IBinaryOperation<TRight>, allows ref struct
+        where TRight : allows ref struct
     {
         return UnderlyingType switch
         {
-            TypeCode.Byte => ConstrainedCall<byte>(operand, shiftAmount),
-            TypeCode.SByte => ConstrainedCall<sbyte>(operand, shiftAmount),
-            TypeCode.UInt16 => ConstrainedCall<ushort>(operand, shiftAmount),
-            TypeCode.Int16 => ConstrainedCall<short>(operand, shiftAmount),
-            TypeCode.UInt32 => ConstrainedCall<uint>(operand, shiftAmount),
-            TypeCode.Int32 => ConstrainedCall<int>(operand, shiftAmount),
-            TypeCode.UInt64 => ConstrainedCall<ulong>(operand, shiftAmount),
-            TypeCode.Int64 => ConstrainedCall<long>(operand, shiftAmount),
+            TypeCode.Byte => ConstrainedCall<byte>(operand, right),
+            TypeCode.SByte => ConstrainedCall<sbyte>(operand, right),
+            TypeCode.UInt16 => ConstrainedCall<ushort>(operand, right),
+            TypeCode.Int16 => ConstrainedCall<short>(operand, right),
+            TypeCode.UInt32 => ConstrainedCall<uint>(operand, right),
+            TypeCode.Int32 => ConstrainedCall<int>(operand, right),
+            TypeCode.UInt64 => ConstrainedCall<ulong>(operand, right),
+            TypeCode.Int64 => ConstrainedCall<long>(operand, right),
             _ => operand,
         };
         
-        static Enum<T> ConstrainedCall<TValue>(Enum<T> operand, int shiftAmount)
+        static Enum<T> ConstrainedCall<TValue>(Enum<T> operand, TRight right)
             where TValue : unmanaged, IBinaryInteger<TValue>
         {
             AssertUnderlyingType<TValue>();
 
             return Unsafe.BitCast<TValue, Enum<T>>(
-                TOperation.Invoke(Unsafe.BitCast<Enum<T>, TValue>(operand), shiftAmount));
+                TOperation.Invoke(Unsafe.BitCast<Enum<T>, TValue>(operand), right));
         }
     }
 }
@@ -193,10 +194,11 @@ partial class EnumHelpers
             where TValue : unmanaged, IBinaryInteger<TValue>;
     }
     
-    internal interface IShiftOperation
+    internal interface IBinaryOperation<in TRight>
+        where TRight : allows ref struct
     {
-        static abstract TValue Invoke<TValue>(TValue left, int shiftAmount)
-            where TValue : unmanaged, IShiftOperators<TValue, int, TValue>;
+        static abstract TValue Invoke<TValue>(TValue left, TRight right)
+            where TValue : unmanaged, IBinaryInteger<TValue>;
     }
 }
 
@@ -320,20 +322,20 @@ file readonly ref struct DecrementChecked : EnumHelpers.IUnaryOperation
         => checked(--operand);
 }
 
-file readonly ref struct LeftShift : EnumHelpers.IShiftOperation
+file readonly ref struct LeftShift : EnumHelpers.IBinaryOperation<int>
 {
-    static TValue EnumHelpers.IShiftOperation.Invoke<TValue>(TValue left, int shiftAmount)
+    static TValue EnumHelpers.IBinaryOperation<int>.Invoke<TValue>(TValue left, int shiftAmount)
         => left << shiftAmount;
 }
 
-file readonly ref struct RightShift : EnumHelpers.IShiftOperation
+file readonly ref struct RightShift : EnumHelpers.IBinaryOperation<int>
 {
-    static TValue EnumHelpers.IShiftOperation.Invoke<TValue>(TValue left, int shiftAmount)
+    static TValue EnumHelpers.IBinaryOperation<int>.Invoke<TValue>(TValue left, int shiftAmount)
         => left >> shiftAmount;
 }
 
-file readonly ref struct RightShiftUnsigned : EnumHelpers.IShiftOperation
+file readonly ref struct RightShiftUnsigned : EnumHelpers.IBinaryOperation<int>
 {
-    static TValue EnumHelpers.IShiftOperation.Invoke<TValue>(TValue left, int shiftAmount)
+    static TValue EnumHelpers.IBinaryOperation<int>.Invoke<TValue>(TValue left, int shiftAmount)
         => left >>> shiftAmount;
 }
