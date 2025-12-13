@@ -2,7 +2,6 @@
 
 namespace DotNext.Threading;
 
-using Runtime;
 using static Tasks.Synchronization;
 
 /// <summary>
@@ -13,7 +12,9 @@ using static Tasks.Synchronization;
 public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
 {
     private const string NotAvailable = "<NotAvailable>";
-    private readonly BoxedValue<bool> resettable; // used as monitor
+
+    private readonly System.Threading.Lock syncRoot;
+    private readonly bool resettable;
     private Task<T>? task;
     private Func<CancellationToken, Task<T>>? factory;
 
@@ -24,7 +25,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
     public AsyncLazy(T value)
     {
         task = Task.FromResult(value);
-        resettable = BoxedValue<bool>.Box(false);
+        syncRoot = new();
     }
 
     /// <summary>
@@ -36,7 +37,8 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
     public AsyncLazy(Func<CancellationToken, Task<T>> valueFactory, bool resettable = false)
     {
         factory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
-        this.resettable = BoxedValue<bool>.Box(resettable);
+        syncRoot = new();
+        this.resettable = resettable;
     }
 
     private void AttachFactoryErasureCallback(Task expectedTask)
@@ -47,7 +49,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
         {
             if (expectedTask is { IsCanceled: false } && ReferenceEquals(Volatile.Read(ref task), expectedTask))
             {
-                lock (resettable)
+                lock (syncRoot)
                 {
                     if (ReferenceEquals(task, expectedTask))
                         factory = null;
@@ -75,7 +77,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
         Task<T>? t;
         bool fastExit;
 
-        lock (resettable)
+        lock (syncRoot)
         {
             t = task; // read barrier is provided by monitor
 
@@ -87,7 +89,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
             {
                 Debug.Assert(factory is not null);
 
-                task = t = Task.Run(CreateAsyncFunc(factory, token));
+                task = t = Task.Run(new ValueFactory<T>(factory, token).Invoke);
                 fastExit = false;
             }
         }
@@ -103,10 +105,6 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
         }
 
         return t;
-
-        // avoid capture of 'this' reference
-        static Func<Task<T>> CreateAsyncFunc(Func<CancellationToken, Task<T>> cancelableFactory, CancellationToken token)
-            => () => cancelableFactory(token);
     }
 
     /// <summary>
@@ -129,7 +127,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
         bool result;
         if (result = resettable && Volatile.Read(ref task) is null or { IsCompleted: true })
         {
-            lock (resettable)
+            lock (syncRoot)
             {
                 if (result = task is null or { IsCompleted: true })
                     task = null;
@@ -154,4 +152,9 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
             ? t.Result?.ToString()
             : $"<{t.Status}>";
     }
+}
+
+file sealed class ValueFactory<T>(Func<CancellationToken, Task<T>> factory, CancellationToken token) : ISupplier<Task<T>>
+{
+    public Task<T> Invoke() => factory(token);
 }

@@ -34,7 +34,7 @@ public partial class TaskCompletionPipe<T>
     // detach all suspended callers to process out of the monitor lock
     private LinkedValueTaskCompletionSource<bool>? DetachWaitQueue()
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
         var result = waitQueue.First;
         waitQueue = default;
@@ -43,7 +43,7 @@ public partial class TaskCompletionPipe<T>
 
     private LinkedValueTaskCompletionSource<bool> EnqueueNode()
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
         var result = pool.Rent<Signal>();
         result.Initialize(this);

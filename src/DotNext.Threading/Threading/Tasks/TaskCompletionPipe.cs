@@ -10,6 +10,8 @@ namespace DotNext.Threading.Tasks;
 public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     where T : Task
 {
+    private readonly System.Threading.Lock syncRoot;
+    
     // Represents a number of scheduled tasks which can be greater than the number of enqueued tasks
     // because only completed task can be enqueued
     private uint scheduledTasksCount;
@@ -24,7 +26,11 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <summary>
     /// Initializes a new pipe.
     /// </summary>
-    public TaskCompletionPipe() => pool = new();
+    public TaskCompletionPipe()
+    {
+        pool = new();
+        syncRoot = new();
+    }
 
     /// <summary>
     /// Gets or sets a value indicating that this pipe supports <see cref="Completion"/> property.
@@ -42,13 +48,11 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <exception cref="PendingTaskInterruptedException"><see cref="Reset()"/> was called before completion.</exception>
     public Task Completion => Volatile.Read(in completedAll)?.Task ?? Task.FromException(new NotSupportedException());
 
-    private object SyncRoot => this;
-
     private void OnCompleted(Signal signal)
     {
         if (signal.NeedsRemoval)
         {
-            lock (SyncRoot)
+            lock (syncRoot)
             {
                 waitQueue.Remove(signal);
             }
@@ -56,7 +60,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
 
         if (signal.TryReset(out _))
         {
-            lock (SyncRoot)
+            lock (syncRoot)
             {
                 pool.Return(signal);
             }
@@ -70,7 +74,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     public void Complete()
     {
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             if (completionRequested)
                 throw new InvalidOperationException();
@@ -95,7 +99,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     {
         get
         {
-            Debug.Assert(Monitor.IsEntered(SyncRoot));
+            Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
             return scheduledTasksCount is 0U && completionRequested;
         }
@@ -106,7 +110,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
         bool result;
         ManualResetCompletionSource? suspendedCaller;
 
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             if (completionRequested)
                 throw new InvalidOperationException();
@@ -159,7 +163,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     public void Add(ReadOnlySpan<T> tasks, bool complete = false, object? userData = null)
     {
         LinkedValueTaskCompletionSource<bool>? suspendedCaller;
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             if (completionRequested)
                 throw new InvalidOperationException();
@@ -210,7 +214,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     public void Reset()
     {
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             version += 1U;
             scheduledTasksCount = 0U;
@@ -232,7 +236,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
         ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
         ValueTask<bool> result;
 
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             if (expectedVersion != version)
             {
@@ -278,7 +282,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <returns><see langword="true"/> if a task was read; otherwise, <see langword="false"/>.</returns>
     public bool TryRead([NotNullWhen(true)] out T? task, out object? userData)
     {
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             return TryDequeueCompletedTask(out task, out userData);
         }
@@ -313,7 +317,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
                 }
 
                 ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
-                lock (SyncRoot)
+                lock (syncRoot)
                 {
                     if (firstTask is not null)
                     {

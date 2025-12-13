@@ -52,6 +52,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
         }
     }
 
+    private readonly System.Threading.Lock syncRoot;
     private readonly TaskCompletionSource disposeTask;
     private ValueTaskPool<T> pool;
     private ExchangePoint? point;
@@ -64,9 +65,8 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
         pool = new();
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        syncRoot = new();
     }
-
-    private object SyncRoot => disposeTask;
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [ExcludeFromCodeCoverage]
@@ -74,7 +74,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
     private ExchangePoint RentExchangePoint(T value)
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
         var result = pool.Rent<ExchangePoint>();
         result.Initialize(this, value);
@@ -83,7 +83,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
     private void OnCompleted(ExchangePoint point)
     {
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             if (ReferenceEquals(this.point, point))
             {
@@ -93,7 +93,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
         if (point.TryReset(out _))
         {
-            lock (SyncRoot)
+            lock (syncRoot)
             {
                 pool.Return(point);
             }
@@ -140,7 +140,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             default:
                 ManualResetCompletionSource? suspendedCaller;
                 ISupplier<TimeSpan, CancellationToken, ValueTask<T>> factory;
-                lock (SyncRoot)
+                lock (syncRoot)
                 {
                     if (IsDisposed)
                     {
@@ -211,7 +211,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
         bool result;
         var suspendedCaller = default(ManualResetCompletionSource);
 
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             ObjectDisposedException.ThrowIf(IsDisposed, this);
 
@@ -248,7 +248,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// <exception cref="InvalidOperationException">The exchange is already terminated.</exception>
     public void Terminate(Exception? exception = null)
     {
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             ObjectDisposedException.ThrowIf(IsDisposed, this);
             if (termination is not null)
@@ -276,7 +276,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
     private void NotifyObjectDisposed()
     {
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             point?.TrySetException(CreateException());
             point = null;
@@ -301,7 +301,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     {
         ValueTask result;
 
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             if (point is null or { IsCompleted: true })
             {

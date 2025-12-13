@@ -71,7 +71,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         }
     }
 
-    private readonly object syncRoot;
+    private readonly Lock syncRoot;
 
     // Assuming that the map will not contain hundreds or thousands for entries.
     // If so, we can keep the lock for each entry instead of buckets as in ConcurrentDictionaryMap.
@@ -88,7 +88,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         ArgumentOutOfRangeException.ThrowIfNegative(capacity);
 
-        Span.Initialize<Entry>(entries = capacity is 0 ? [] : new Entry[capacity]);
+        Span.Initialize(entries = capacity is 0 ? [] : new Entry[capacity]);
         syncRoot = new();
     }
 
@@ -96,9 +96,8 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// Initializes a new map of recommended capacity.
     /// </summary>
     public ConcurrentTypeMap()
+        : this(ITypeMap.RecommendedCapacity)
     {
-        Span.Initialize<Entry>(entries = new Entry[ITypeMap.RecommendedCapacity]);
-        syncRoot = new();
     }
 
     private void Resize(Entry[] entries)
@@ -439,7 +438,7 @@ public partial class ConcurrentTypeMap : ITypeMap
         internal object? Set(object newValue) => Interlocked.Exchange(ref Value, newValue);
     }
 
-    private readonly object syncRoot;
+    private readonly Lock syncRoot;
     private Entry[] entries;
 
     /// <summary>
@@ -451,7 +450,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         ArgumentOutOfRangeException.ThrowIfNegative(capacity);
 
-        Span.Initialize<Entry>(entries = capacity is 0 ? [] : new Entry[capacity]);
+        Span.Initialize(entries = capacity is 0 ? [] : new Entry[capacity]);
         syncRoot = new();
     }
 
@@ -459,9 +458,8 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// Initializes a new empty set.
     /// </summary>
     public ConcurrentTypeMap()
+        : this(ITypeMap.RecommendedCapacity)
     {
-        Span.Initialize<Entry>(entries = new Entry[ITypeMap.RecommendedCapacity]);
-        syncRoot = new();
     }
 
     private void Resize(Entry[] entries)
