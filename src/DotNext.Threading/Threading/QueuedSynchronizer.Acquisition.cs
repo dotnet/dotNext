@@ -242,9 +242,10 @@ partial class QueuedSynchronizer
     private void DrainWaitQueue<T, TBuilder>(ref InterruptingTaskBuilder<T, TBuilder> builder, Exception e)
         where T : struct, IEquatable<T>
         where TBuilder : struct, ITaskBuilder<T>, allows ref struct
-        => builder.InterruptedCallers = builder.IsCompleted
-            ? null
-            : DrainWaitQueue(e);
+    {
+        if (!builder.IsCompleted)
+            DrainWaitQueue<ExceptionVisitor>(new(e), out builder.InterruptedCallers);
+    }
 
     private static void SetDynamicInvokeResult<TSupplier, TResult>(scoped ref TSupplier supplier, scoped Variant result)
         where TSupplier : struct, ISupplier<TResult>, allows ref struct

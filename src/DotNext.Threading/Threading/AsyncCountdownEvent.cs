@@ -185,7 +185,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         {
             result = state.Current is 0L;
             state.Current = state.Initial;
-            suspendedCallers = DrainWaitQueue(e);
+            DrainWaitQueue<ExceptionVisitor>(new(e), out suspendedCallers);
         }
 
         suspendedCallers?.Unwind();
@@ -216,7 +216,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         {
             result = state.Current is 0L;
             state.Current = state.Initial = count;
-            suspendedCallers = DrainWaitQueue(e);
+            DrainWaitQueue<ExceptionVisitor>(new(e), out suspendedCallers);
         }
 
         suspendedCallers?.Unwind();

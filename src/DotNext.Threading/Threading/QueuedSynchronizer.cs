@@ -85,7 +85,7 @@ public abstract partial class QueuedSynchronizer : Disposable
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (syncRoot)
         {
-            suspendedCallers = DrainWaitQueue(exception);
+            DrainWaitQueue<ExceptionVisitor>(new(exception), out suspendedCallers);
         }
 
         suspendedCallers?.Unwind();
@@ -101,7 +101,7 @@ public abstract partial class QueuedSynchronizer : Disposable
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         lock (syncRoot)
         {
-            suspendedCallers = DrainWaitQueue(reason);
+            DrainWaitQueue<ExceptionVisitor>(new(reason), out suspendedCallers);
         }
 
         suspendedCallers?.Unwind();

@@ -18,7 +18,7 @@ partial class QueuedSynchronizer
 
     private protected abstract void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor);
 
-    private protected WaitQueueVisitor GetWaitQueue(ref LinkedValueTaskCompletionSource<bool>.LinkedList suspendedCallers)
+    private WaitQueueVisitor GetWaitQueue(ref LinkedValueTaskCompletionSource<bool>.LinkedList suspendedCallers)
         => new(ref waitQueue, ref suspendedCallers);
 
     private protected LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
@@ -31,12 +31,14 @@ partial class QueuedSynchronizer
         return detachedQueue.First;
     }
 
-    private protected LinkedValueTaskCompletionSource<bool>? DrainWaitQueue(Exception e)
+    private protected bool DrainWaitQueue<TVisitor>(scoped TVisitor visitor, out LinkedValueTaskCompletionSource<bool>? suspendedCallers)
+        where TVisitor : struct, IWaitQueueVisitor, allows ref struct
     {
         var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
-        GetWaitQueue(ref detachedQueue).SignalAll(e);
-
-        return detachedQueue.First;
+        var waitQueue = GetWaitQueue(ref detachedQueue);
+        var signaled = visitor.Visit(ref waitQueue);
+        suspendedCallers = detachedQueue.First;
+        return signaled;
     }
 
     private void ReturnNode(WaitNode node)
@@ -202,18 +204,21 @@ partial class QueuedSynchronizer
             }
         }
 
-        private void SignalAll(in Result<bool> result)
+        private bool SignalAll(in Result<bool> result)
         {
+            var signaled = false;
             while (!EndOfQueue)
             {
-                SignalCurrent(in result);
+                signaled |= SignalCurrent(in result);
                 Advance();
             }
+
+            return signaled;
         }
 
-        public void SignalAll() => SignalAll(new Result<bool>(true));
+        public bool SignalAll() => SignalAll(new Result<bool>(true));
 
-        public void SignalAll(Exception e) => SignalAll(new Result<bool>(e));
+        public bool SignalAll(Exception e) => SignalAll(new Result<bool>(e));
 
         private void SignalAll(in Result<bool> result, out bool signaled)
         {
@@ -297,5 +302,17 @@ partial class QueuedSynchronizer
 
             return result;
         }
+    }
+    
+    private protected interface IWaitQueueVisitor
+    {
+        bool Visit(scoped ref WaitQueueVisitor waitQueueVisitor);
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private protected readonly ref struct ExceptionVisitor(Exception e) : IWaitQueueVisitor
+    {
+        bool IWaitQueueVisitor.Visit(scoped ref WaitQueueVisitor waitQueueVisitor)
+            => waitQueueVisitor.SignalAll(e);
     }
 }

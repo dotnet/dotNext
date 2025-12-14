@@ -40,16 +40,6 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         return signaled;
     }
 
-    private bool DrainWaitQueue<TVisitor>(scoped TVisitor visitor, out LinkedValueTaskCompletionSource<bool>? suspendedCallers)
-        where TVisitor : struct, IWaitQueueVisitor, allows ref struct
-    {
-        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
-        var waitQueue = GetWaitQueue(ref detachedQueue);
-        var signaled = visitor.Visit(ref waitQueue);
-        suspendedCallers = detachedQueue.First;
-        return signaled;
-    }
-
     /// <inheritdoc/>
     bool IAsyncEvent.Reset() => false;
 
@@ -292,11 +282,6 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
 
         void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
             => throw new NotSupportedException();
-    }
-    
-    private interface IWaitQueueVisitor
-    {
-        bool Visit(scoped ref WaitQueueVisitor waitQueueVisitor);
     }
     
     private interface IWaitQueueVisitor<out T> : IWaitQueueVisitor
