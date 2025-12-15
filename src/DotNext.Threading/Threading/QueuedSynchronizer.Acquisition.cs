@@ -36,9 +36,25 @@ partial class QueuedSynchronizer
 
         static abstract TOutput FromException(Exception e);
     }
+    
+    private interface IValueTaskBuilder : ITaskBuilder<ValueTask>
+    {
+        static bool ITaskBuilder<ValueTask>.ThrowOnTimeout => true;
+
+        static ValueTask ITaskBuilder<ValueTask>.FromException(Exception e)
+            => ValueTask.FromException(e);
+    }
+    
+    private interface IValueTaskBuilder<T> : ITaskBuilder<ValueTask<T>>
+    {
+        static bool ITaskBuilder<ValueTask<T>>.ThrowOnTimeout => false;
+
+        static ValueTask<T> ITaskBuilder<ValueTask<T>>.FromException(Exception e)
+            => ValueTask.FromException<T>(e);
+    }
 
     [StructLayout(LayoutKind.Auto)]
-    private protected ref struct CancellationTokenOnly : ITaskBuilder<ValueTask>
+    private protected ref struct CancellationTokenOnly : IValueTaskBuilder
     {
         private readonly CancellationToken token;
         private System.Threading.Lock? syncRoot;
@@ -86,10 +102,6 @@ partial class QueuedSynchronizer
             return taskFactory.Invoke(InfiniteTimeSpan, token);
         }
 
-        static bool ITaskBuilder<ValueTask>.ThrowOnTimeout => true;
-
-        static ValueTask ITaskBuilder<ValueTask>.FromException(Exception e) => ValueTask.FromException(e);
-
         void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
         {
             ArgumentOutOfRangeException.ThrowIfNotEqual(count, 0);
@@ -100,8 +112,8 @@ partial class QueuedSynchronizer
 
     [StructLayout(LayoutKind.Auto)]
     private protected ref struct TimeoutAndCancellationToken :
-        ITaskBuilder<ValueTask>,
-        ITaskBuilder<ValueTask<bool>>
+        IValueTaskBuilder,
+        IValueTaskBuilder<bool>
     {
         private readonly TimeSpan timeout;
         private readonly CancellationToken token;
@@ -184,14 +196,6 @@ partial class QueuedSynchronizer
                 SetDynamicInvokeResult<TimeoutAndCancellationToken, ValueTask<bool>>(ref this, result);
             }
         }
-
-        static bool ITaskBuilder<ValueTask>.ThrowOnTimeout => true;
-
-        static bool ITaskBuilder<ValueTask<bool>>.ThrowOnTimeout => false;
-        
-        static ValueTask ITaskBuilder<ValueTask>.FromException(Exception e) => ValueTask.FromException(e);
-        
-        static ValueTask<bool> ITaskBuilder<ValueTask<bool>>.FromException(Exception e) => ValueTask.FromException<bool>(e);
     }
 
     [StructLayout(LayoutKind.Auto)]
