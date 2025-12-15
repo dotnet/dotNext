@@ -187,11 +187,9 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     }
     
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct StateManager(ref long counter) : ILockManager<long, StateManager>, IConsumer<WaitNode>
+    private readonly ref struct StateManager(ref long counter) : ILockManager, IConsumer<WaitNode>
     {
         private readonly ref long counter = ref counter;
-
-        static StateManager ILockManager<long, StateManager>.Create(ref long state) => new(ref state);
 
         bool ILockManager.IsLockAllowed => counter > 0L;
 

@@ -217,11 +217,9 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     private protected sealed override bool IsReadyToDispose => !acquired && IsEmptyQueue;
     
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct LockManager(ref bool acquired) : ILockManager<bool, LockManager>, IConsumer<WaitNode>
+    private readonly ref struct LockManager(ref bool acquired) : ILockManager, IConsumer<WaitNode>
     {
         private readonly ref bool acquired = ref acquired;
-
-        static LockManager ILockManager<bool, LockManager>.Create(ref bool state) => new(ref state);
 
         bool ILockManager.IsLockAllowed => !acquired;
 

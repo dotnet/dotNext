@@ -35,8 +35,8 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     private bool Signal(ref WaitQueueVisitor waitQueueVisitor, bool strongLock) => strongLock
-        ? waitQueueVisitor.SignalCurrent(GetLockManager<StrongLockManager>())
-        : waitQueueVisitor.SignalCurrent(GetLockManager<WeakLockManager>());
+        ? waitQueueVisitor.SignalCurrent<StrongLockManager>(new(ref state))
+        : waitQueueVisitor.SignalCurrent<WeakLockManager>(new(ref state));
 
     private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
     {
@@ -66,20 +66,6 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// </summary>
     public bool IsStrongLockHeld => state.IsStrongLockHeld;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private TLockManager GetLockManager<TLockManager>()
-        where TLockManager : struct, ILockManager<State, TLockManager>, allows ref struct
-        => GetLockManager<State, TLockManager>(ref state);
-
-    private bool TryAcquire<TLockManager>()
-        where TLockManager : struct, ILockManager<State, TLockManager>, allows ref struct
-    {
-        ObjectDisposedException.ThrowIf(IsDisposed, this);
-
-        TryAcquire(GetLockManager<TLockManager>(), out var result).Dispose();
-        return result;
-    }
-
     /// <summary>
     /// Attempts to obtain lock synchronously without blocking caller thread.
     /// </summary>
@@ -87,7 +73,14 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <returns><see langword="true"/> if the caller entered the lock; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public bool TryAcquire(bool strongLock)
-        => strongLock ? TryAcquire<StrongLockManager>() : TryAcquire<WeakLockManager>();
+    {
+        (strongLock
+                ? TryAcquire<StrongLockManager>(new(ref state), out var acquired)
+                : TryAcquire<WeakLockManager>(new(ref state), out acquired))
+            .Dispose();
+        
+        return acquired;
+    }
 
     /// <summary>
     /// Attempts to enter the lock asynchronously, with an optional time-out.
@@ -100,11 +93,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
-    {
-        return strongLock
-            ? TryAcquireAsync<WaitNode, StrongLockManager>(GetLockManager<StrongLockManager>(), timeout, token)
-            : TryAcquireAsync<WaitNode, WeakLockManager>(GetLockManager<WeakLockManager>(), timeout, token);
-    }
+        => strongLock
+            ? TryAcquireAsync<WaitNode, StrongLockManager>(new(ref state), timeout, token)
+            : TryAcquireAsync<WaitNode, WeakLockManager>(new(ref state), timeout, token);
 
     /// <summary>
     /// Enters the lock asynchronously.
@@ -118,11 +109,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask AcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default)
-    {
-        return strongLock
-            ? AcquireAsync<WaitNode, StrongLockManager>(GetLockManager<StrongLockManager>(), token)
-            : AcquireAsync<WaitNode, WeakLockManager>(GetLockManager<WeakLockManager>(), token);
-    }
+        => strongLock
+            ? AcquireAsync<WaitNode, StrongLockManager>(new(ref state), timeout, token)
+            : AcquireAsync<WaitNode, WeakLockManager>(new(ref state), timeout, token);
 
     /// <summary>
     /// Enters the lock asynchronously.
@@ -133,11 +122,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask AcquireAsync(bool strongLock, CancellationToken token = default)
-    {
-        return strongLock
-            ? AcquireAsync<WaitNode, StrongLockManager>(GetLockManager<StrongLockManager>(), token)
-            : AcquireAsync<WaitNode, WeakLockManager>(GetLockManager<WeakLockManager>(), token);
-    }
+        => strongLock
+            ? AcquireAsync<WaitNode, StrongLockManager>(new(ref state), token)
+            : AcquireAsync<WaitNode, WeakLockManager>(new(ref state), token);
 
     /// <summary>
     /// Releases the acquired weak lock or downgrade exclusive lock to the weak lock.
@@ -230,11 +217,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct WeakLockManager(ref State state) : ILockManager<State, WeakLockManager>, IConsumer<WaitNode>
+    private readonly ref struct WeakLockManager(ref State state) : ILockManager, IConsumer<WaitNode>
     {
         private readonly ref State state = ref state;
-
-        static WeakLockManager ILockManager<State, WeakLockManager>.Create(ref State state) => new(ref state);
 
         bool ILockManager.IsLockAllowed
             => state.IsWeakLockAllowed;
@@ -253,11 +238,9 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct StrongLockManager(ref State state) : ILockManager<State, StrongLockManager>, IConsumer<WaitNode>
+    private readonly ref struct StrongLockManager(ref State state) : ILockManager, IConsumer<WaitNode>
     {
         private readonly ref State state = ref state;
-        
-        static StrongLockManager ILockManager<State, StrongLockManager>.Create(ref State state) => new(ref state);
 
         bool ILockManager.IsLockAllowed
             => state.IsStrongLockAllowed;

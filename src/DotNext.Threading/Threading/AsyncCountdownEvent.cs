@@ -289,11 +289,9 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct StateManager(ref State state) : ILockManager<State, StateManager>, IConsumer<WaitNode>
+    private readonly ref struct StateManager(ref State state) : ILockManager, IConsumer<WaitNode>
     {
         private readonly ref State state = ref state;
-
-        static StateManager ILockManager<State, StateManager>.Create(ref State state) => new(ref state);
 
         bool ILockManager.IsLockAllowed => state.IsEmpty;
         

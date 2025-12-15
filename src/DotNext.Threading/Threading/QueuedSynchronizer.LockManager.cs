@@ -13,13 +13,6 @@ partial class QueuedSynchronizer
         static virtual bool RequiresEmptyQueue => true;
     }
 
-    private protected interface ILockManager<TState, out TSelf> : ILockManager
-        where TState : struct
-        where TSelf : struct, ILockManager<TState, TSelf>, allows ref struct
-    {
-        static abstract TSelf Create(ref TState state);
-    }
-
     private bool TryAcquire<TLockManager>(TLockManager manager)
         where TLockManager : struct, ILockManager, allows ref struct
     {
@@ -154,9 +147,4 @@ partial class QueuedSynchronizer
             ref builder,
             manager);
     }
-
-    private protected static TLockManager GetLockManager<TState, TLockManager>(ref TState state)
-        where TState : struct
-        where TLockManager : struct, ILockManager<TState, TLockManager>, allows ref struct
-        => TLockManager.Create(ref state);
 }
