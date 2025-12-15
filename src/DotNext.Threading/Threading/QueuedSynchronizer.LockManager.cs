@@ -20,7 +20,7 @@ partial class QueuedSynchronizer
         static abstract TSelf Create(ref TState state);
     }
 
-    private protected bool TryAcquire<TLockManager>(TLockManager manager)
+    private bool TryAcquire<TLockManager>(TLockManager manager)
         where TLockManager : struct, ILockManager, allows ref struct
     {
         AssertInternalLockState();
@@ -34,11 +34,9 @@ partial class QueuedSynchronizer
         return false;
     }
 
-    private protected System.Threading.Lock.Scope TryAcquire<TState, TLockManager>(ref TState state, out bool acquired)
-        where TState : struct
-        where TLockManager : struct, ILockManager<TState, TLockManager>, allows ref struct
+    private protected System.Threading.Lock.Scope TryAcquire<TLockManager>(TLockManager manager, out bool acquired)
+        where TLockManager : struct, ILockManager, allows ref struct
     {
-        var manager = TLockManager.Create(ref state);
         var scope = syncRoot.EnterScope();
         acquired = TryAcquire(manager);
         return scope;

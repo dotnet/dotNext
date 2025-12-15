@@ -239,12 +239,12 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 
     private bool TryAcquireCore(TContext context)
     {
-        if (IsEmptyQueue && CanAcquire(context))
+        var acquired = IsEmptyQueue && CanAcquire(context);
+        if (acquired)
         {
             AcquireCore(context);
-            return true;
         }
 
-        return false;
+        return acquired;
     }
 }

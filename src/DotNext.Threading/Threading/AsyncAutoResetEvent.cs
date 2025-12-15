@@ -56,7 +56,7 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        TryAcquire<bool, StateManager>(ref signaled, out var result).Dispose();
+        TryAcquire(new StateManager(ref signaled), out var result).Dispose();
         return result;
     }
 

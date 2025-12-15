@@ -157,7 +157,7 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        TryAcquire<State, TLockManager>(ref state, out var result).Dispose();
+        TryAcquire(GetLockManager<TLockManager>(), out var result).Dispose();
         return result;
     }
 

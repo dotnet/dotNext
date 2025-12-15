@@ -120,6 +120,16 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     }
 
     [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct ProtectedWriteLockManager(ref State state, ulong expectedVersion) : ILockManager
+    {
+        private readonly ref State state = ref state;
+
+        public bool IsLockAllowed => state.IsValidVersionUnsafe(expectedVersion) && state.IsWriteLockAllowed;
+
+        public void AcquireLock() => state.AcquireWriteLock();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
     private readonly ref struct WriteLockManager(ref State state) : ILockManager<State, WriteLockManager>, IConsumer<WaitNode>
     {
         private readonly ref State state = ref state;
@@ -129,8 +139,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         bool ILockManager.IsLockAllowed
             => state.IsWriteLockAllowed;
 
-        void ILockManager.AcquireLock()
-            => state.AcquireWriteLock();
+        public void AcquireLock() => state.AcquireWriteLock();
 
         void IConsumer<WaitNode>.Invoke(WaitNode node)
             => Initialize(node);
@@ -138,7 +147,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         public static void Initialize(WaitNode node)
             => node.IsWriteLock = node.DrainOnReturn = true;
         
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+        public void DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
             => throw new NotSupportedException();
     }
 
@@ -322,11 +331,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         bool acquired;
         if (stamp.IsInitialized)
         {
-            using (AcquireInternalLock())
-            {
-                acquired = state.IsValidVersionUnsafe(stamp.Version) && TryAcquire(GetLockManager<WriteLockManager>());
-                InitializeLockOwner(acquired);
-            }
+            TryAcquire(new ProtectedWriteLockManager(ref state, stamp.Version), out acquired).Dispose();
         }
         else
         {
@@ -442,9 +447,8 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         where TLockManager : struct, ILockManager<State, TLockManager>, IConsumer<WaitNode>, allows ref struct
     {
         bool acquired;
-        using (AcquireInternalLock())
+        using (TryAcquire(GetLockManager<TLockManager>(), out acquired))
         {
-            acquired = TryAcquire(GetLockManager<TLockManager>());
             InitializeLockOwner(acquired);
         }
 
@@ -460,7 +464,13 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         state.ExitReadLock();
 
         suspendedCallers = DrainWaitQueue();
-        return TryAcquire(GetLockManager<WriteLockManager>());
+        var acquired = state.IsWriteLockAllowed;
+        if (acquired)
+        {
+            state.AcquireWriteLock();
+        }
+
+        return acquired;
     }
 
     private T UpgradeToWriteLockAsync<T, TBuilder>(ref TBuilder builder)

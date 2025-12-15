@@ -208,7 +208,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        TryAcquire<long, StateManager>(ref counter, out var decremented).Dispose();
+        TryAcquire(new StateManager(ref counter), out var decremented).Dispose();
         return decremented;
     }
 }

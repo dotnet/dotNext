@@ -72,7 +72,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     private bool TryAcquireCore()
     {
         bool lockTaken;
-        using (TryAcquire<bool, LockManager>(ref acquired, out lockTaken))
+        using (TryAcquire(new LockManager(ref acquired), out lockTaken))
         {
             IsLockHelpByCurrentThread = lockTaken;
         }
