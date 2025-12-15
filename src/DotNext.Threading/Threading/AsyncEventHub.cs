@@ -94,11 +94,8 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     public void Reset()
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        
-        using (AcquireInternalLock())
-        {
-            state = default;
-        }
+
+        TryAcquire(new ResetTransition(ref state), out _).Dispose();
     }
 
     /// <summary>
@@ -599,5 +596,17 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 
         static WaitNode INodeMapper<WaitNode, WaitNode>.GetValue(WaitNode node)
             => node;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct ResetTransition(ref UInt128 state) : ILockManager
+    {
+        private readonly ref UInt128 state = ref state;
+
+        bool ILockManager.IsLockAllowed => true;
+
+        void ILockManager.AcquireLock() => state = default;
+
+        static bool ILockManager.RequiresEmptyQueue => false;
     }
 }

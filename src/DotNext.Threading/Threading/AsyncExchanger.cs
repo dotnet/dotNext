@@ -18,40 +18,6 @@ using Tasks.Pooling;
 [DebuggerDisplay($"CanBeCompletedSynchronously = {{{nameof(CanBeCompletedSynchronously)}}}, Terminated = {{{nameof(IsTerminated)}}}")]
 public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 {
-    private sealed class ExchangePoint : LinkedValueTaskCompletionSource<T>
-    {
-        private AsyncExchanger<T>? owner;
-        private T? value;
-
-        internal void Initialize(AsyncExchanger<T> owner, T value)
-        {
-            this.owner = owner;
-            this.value = value;
-        }
-
-        protected override void AfterConsumed() => owner?.OnCompleted(this);
-
-        protected override void CleanUp()
-        {
-            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
-                value = default;
-
-            owner = null;
-            base.CleanUp();
-        }
-
-        internal bool TryExchange(ref T value, out bool resumable)
-        {
-            if (TrySetResult(completionData: null, completionToken: null, value, out resumable))
-            {
-                value = this.value!;
-                return true;
-            }
-
-            return false;
-        }
-    }
-
     private readonly System.Threading.Lock syncRoot;
     private readonly TaskCompletionSource disposeTask;
     private ValueTaskPool<T> pool;
@@ -322,4 +288,38 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// </summary>
     /// <returns>The task representing state of asynchronous graceful shutdown.</returns>
     public new ValueTask DisposeAsync() => base.DisposeAsync();
+    
+    private sealed class ExchangePoint : LinkedValueTaskCompletionSource<T>
+    {
+        private AsyncExchanger<T>? owner;
+        private T? value;
+
+        internal void Initialize(AsyncExchanger<T> owner, T value)
+        {
+            this.owner = owner;
+            this.value = value;
+        }
+
+        protected override void AfterConsumed() => owner?.OnCompleted(this);
+
+        protected override void CleanUp()
+        {
+            if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
+                value = default;
+
+            owner = null;
+            base.CleanUp();
+        }
+
+        internal bool TryExchange(ref T value, out bool resumable)
+        {
+            if (TrySetResult(completionData: null, completionToken: null, value, out resumable))
+            {
+                value = this.value!;
+                return true;
+            }
+
+            return false;
+        }
+    }
 }

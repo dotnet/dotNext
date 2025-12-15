@@ -17,39 +17,6 @@ using Tasks;
 [DebuggerDisplay($"Counter = {{{nameof(CurrentCount)}}}")]
 public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
 {
-    [StructLayout(LayoutKind.Auto)]
-    private struct State(long initialCount)
-    {
-        public long Current = initialCount, Initial = initialCount;
-
-        public readonly bool IsEmpty => Current is 0L;
-
-        internal void Decrement(long value = 1L)
-            => Current = long.Max(0L, Current - value);
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct StateManager(ref State state) : ILockManager<State, StateManager>, IConsumer<WaitNode>
-    {
-        private readonly ref State state = ref state;
-
-        static StateManager ILockManager<State, StateManager>.Create(ref State state) => new(ref state);
-
-        bool ILockManager.IsLockAllowed => state.IsEmpty;
-        
-        void ILockManager.AcquireLock()
-        {
-            // nothing to do here
-        }
-
-        void IConsumer<WaitNode>.Invoke(WaitNode node) => Initialize(node);
-
-        public static void Initialize(WaitNode node) => node.DrainOnReturn = false;
-
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
-    }
-
     private State state;
 
     /// <summary>
@@ -85,32 +52,15 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     {
         Debug.Assert(signalCount > 0L);
 
-        using (AcquireInternalLock())
-        {
-            checked
-            {
-                state.Initial = state.Current += signalCount;
-            }
-        }
+        TryAcquire(new AddCountAndResetTransition(ref state, signalCount), out _).Dispose();
     }
 
     private bool TryAddCountCore(long signalCount)
     {
         Debug.Assert(signalCount > 0L);
 
-        bool result;
-        using (AcquireInternalLock())
-        {
-            if (result = !state.IsEmpty)
-            {
-                checked
-                {
-                    state.Current += signalCount;
-                }
-            }
-        }
-
-        return result;
+        TryAcquire(new AddCountTransition(ref state, signalCount), out var acquired).Dispose();
+        return acquired;
     }
 
     /// <summary>
@@ -326,4 +276,68 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
         => AcquireAsync<WaitNode, StateManager>(new(ref state), token);
+    
+    [StructLayout(LayoutKind.Auto)]
+    private struct State(long initialCount)
+    {
+        public long Current = initialCount, Initial = initialCount;
+
+        public readonly bool IsEmpty => Current is 0L;
+
+        internal void Decrement(long value = 1L)
+            => Current = long.Max(0L, Current - value);
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct StateManager(ref State state) : ILockManager<State, StateManager>, IConsumer<WaitNode>
+    {
+        private readonly ref State state = ref state;
+
+        static StateManager ILockManager<State, StateManager>.Create(ref State state) => new(ref state);
+
+        bool ILockManager.IsLockAllowed => state.IsEmpty;
+        
+        void ILockManager.AcquireLock()
+        {
+            // nothing to do here
+        }
+
+        void IConsumer<WaitNode>.Invoke(WaitNode node) => Initialize(node);
+
+        public static void Initialize(WaitNode node) => node.DrainOnReturn = false;
+
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct AddCountAndResetTransition(ref State state, long signalCount) : ILockManager
+    {
+        private readonly ref State state = ref state;
+
+        bool ILockManager.IsLockAllowed => true;
+
+        void ILockManager.AcquireLock()
+            => state.Initial = checked(state.Current += signalCount);
+        
+        static bool ILockManager.RequiresEmptyQueue => false;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct AddCountTransition(ref State state, long signalCount) : ILockManager
+    {
+        private readonly ref State state = ref state;
+
+        bool ILockManager.IsLockAllowed => !state.IsEmpty;
+
+        void ILockManager.AcquireLock()
+        {
+            checked
+            {
+                state.Current += signalCount;
+            }
+        }
+
+        static bool ILockManager.RequiresEmptyQueue => false;
+    }
 }

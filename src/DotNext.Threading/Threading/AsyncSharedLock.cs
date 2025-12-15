@@ -20,87 +20,6 @@ using Tasks;
 [DebuggerDisplay($"AvailableLocks = {{{nameof(RemainingCount)}}}, StrongLockHeld = {{{nameof(IsStrongLockHeld)}}}")]
 public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 {
-    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, INodeMapper<WaitNode, bool>
-    {
-        internal bool IsStrongLock;
-
-        static bool INodeMapper<WaitNode, bool>.GetValue(WaitNode node)
-            => node.IsStrongLock;
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private struct State
-    {
-        private const long ExclusiveMode = -1L;
-
-        internal readonly long Threshold;
-        private long remainingLocks; // -1 means that the lock is acquired in exclusive mode
-
-        internal State(long concurrencyLevel) => Threshold = remainingLocks = concurrencyLevel;
-
-        internal readonly long RemainingLocks => Atomic.Read(in remainingLocks);
-
-        internal readonly bool IsWeakLockAllowed => remainingLocks > 0L;
-
-        internal void AcquireWeakLock() => Interlocked.Decrement(ref remainingLocks);
-
-        internal void ExitLock(bool downgrade)
-        {
-            remainingLocks = remainingLocks < 0L
-                ? Threshold - Unsafe.BitCast<bool, byte>(downgrade)
-                : remainingLocks + 1L;
-        }
-
-        internal readonly bool IsStrongLockHeld => remainingLocks < 0L;
-
-        internal readonly bool IsStrongLockAllowed => remainingLocks == Threshold;
-
-        internal void AcquireStrongLock() => remainingLocks = ExclusiveMode;
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct WeakLockManager(ref State state) : ILockManager<State, WeakLockManager>, IConsumer<WaitNode>
-    {
-        private readonly ref State state = ref state;
-
-        static WeakLockManager ILockManager<State, WeakLockManager>.Create(ref State state) => new(ref state);
-
-        bool ILockManager.IsLockAllowed
-            => state.IsWeakLockAllowed;
-
-        void ILockManager.AcquireLock()
-            => state.AcquireWeakLock();
-
-        void IConsumer<WaitNode>.Invoke(WaitNode node)
-        {
-            node.IsStrongLock = false;
-            node.DrainOnReturn = true;
-        }
-
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct StrongLockManager(ref State state) : ILockManager<State, StrongLockManager>, IConsumer<WaitNode>
-    {
-        private readonly ref State state = ref state;
-        
-        static StrongLockManager ILockManager<State, StrongLockManager>.Create(ref State state) => new(ref state);
-
-        bool ILockManager.IsLockAllowed
-            => state.IsStrongLockAllowed;
-
-        void ILockManager.AcquireLock()
-            => state.AcquireStrongLock();
-
-        void IConsumer<WaitNode>.Invoke(WaitNode node)
-            => node.IsStrongLock = node.DrainOnReturn = true;
-        
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
-    }
-
     private State state;
 
     /// <summary>
@@ -271,4 +190,85 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     private protected sealed override bool IsReadyToDispose => state.IsStrongLockAllowed && IsEmptyQueue;
+    
+    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, INodeMapper<WaitNode, bool>
+    {
+        internal bool IsStrongLock;
+
+        static bool INodeMapper<WaitNode, bool>.GetValue(WaitNode node)
+            => node.IsStrongLock;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private struct State
+    {
+        private const long ExclusiveMode = -1L;
+
+        internal readonly long Threshold;
+        private long remainingLocks; // -1 means that the lock is acquired in exclusive mode
+
+        internal State(long concurrencyLevel) => Threshold = remainingLocks = concurrencyLevel;
+
+        internal readonly long RemainingLocks => Atomic.Read(in remainingLocks);
+
+        internal readonly bool IsWeakLockAllowed => remainingLocks > 0L;
+
+        internal void AcquireWeakLock() => Interlocked.Decrement(ref remainingLocks);
+
+        internal void ExitLock(bool downgrade)
+        {
+            remainingLocks = remainingLocks < 0L
+                ? Threshold - Unsafe.BitCast<bool, byte>(downgrade)
+                : remainingLocks + 1L;
+        }
+
+        internal readonly bool IsStrongLockHeld => remainingLocks < 0L;
+
+        internal readonly bool IsStrongLockAllowed => remainingLocks == Threshold;
+
+        internal void AcquireStrongLock() => remainingLocks = ExclusiveMode;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct WeakLockManager(ref State state) : ILockManager<State, WeakLockManager>, IConsumer<WaitNode>
+    {
+        private readonly ref State state = ref state;
+
+        static WeakLockManager ILockManager<State, WeakLockManager>.Create(ref State state) => new(ref state);
+
+        bool ILockManager.IsLockAllowed
+            => state.IsWeakLockAllowed;
+
+        void ILockManager.AcquireLock()
+            => state.AcquireWeakLock();
+
+        void IConsumer<WaitNode>.Invoke(WaitNode node)
+        {
+            node.IsStrongLock = false;
+            node.DrainOnReturn = true;
+        }
+
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct StrongLockManager(ref State state) : ILockManager<State, StrongLockManager>, IConsumer<WaitNode>
+    {
+        private readonly ref State state = ref state;
+        
+        static StrongLockManager ILockManager<State, StrongLockManager>.Create(ref State state) => new(ref state);
+
+        bool ILockManager.IsLockAllowed
+            => state.IsStrongLockAllowed;
+
+        void ILockManager.AcquireLock()
+            => state.AcquireStrongLock();
+
+        void IConsumer<WaitNode>.Invoke(WaitNode node)
+            => node.IsStrongLock = node.DrainOnReturn = true;
+        
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
+    }
 }

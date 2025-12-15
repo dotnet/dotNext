@@ -18,139 +18,6 @@ using Tasks;
 [DebuggerDisplay($"Readers = {{{nameof(CurrentReadCount)}}}, WriteLockHeld = {{{nameof(IsWriteLockHeld)}}}")]
 public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposable
 {
-    private new sealed class WaitNode :
-        QueuedSynchronizer.WaitNode,
-        INodeMapper<WaitNode, bool>
-    {
-        internal bool IsWriteLock;
-
-        static bool INodeMapper<WaitNode, bool>.GetValue(WaitNode node)
-            => node.IsWriteLock;
-    }
-
-    // describes internal state of reader/writer lock
-    [StructLayout(LayoutKind.Auto)]
-    [SuppressMessage("Usage", "CA1001", Justification = "The disposable field is disposed in the Dispose() method")]
-    internal struct State
-    {
-        private ulong version;  // version of write lock
-
-        // number of acquired read locks
-        private long readLocks; // volatile
-        private bool writeLock;
-
-        internal readonly bool WriteLock => Volatile.Read(in writeLock);
-
-        internal void DowngradeFromWriteLock()
-        {
-            writeLock = false;
-            readLocks = 1L;
-        }
-
-        internal void ExitLock()
-        {
-            if (writeLock)
-            {
-                ExitWriteLock();
-            }
-            else
-            {
-                ExitReadLock();
-            }
-        }
-
-        private void ExitWriteLock()
-        {
-            writeLock = false;
-            readLocks = 0L;
-        }
-
-        internal void ExitReadLock() => readLocks--;
-
-        internal readonly long ReadLocks => Atomic.Read(in readLocks);
-
-        internal readonly ulong Version => Atomic.Read(in version);
-
-        internal bool IsValidVersionUnsafe(ulong expected) => version == expected;
-
-        internal bool IsValidVersion(ulong expected)
-        {
-            var currentVer = version;
-            var writeLockAcquired = writeLock;
-            Volatile.ReadBarrier();
-            
-            return currentVer == expected && !writeLockAcquired;
-        }
-
-        internal readonly bool IsWriteLockAllowed => writeLock is false && HasNoReadLocks;
-
-        internal readonly bool HasNoReadLocks => readLocks is 0L;
-
-        internal void AcquireWriteLock()
-        {
-            readLocks = 0L;
-            writeLock = true;
-            version++;
-        }
-
-        internal readonly bool IsReadLockAllowed => !writeLock;
-
-        internal void AcquireReadLock() => readLocks++;
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct ReadLockManager(ref State state) : ILockManager<State, ReadLockManager>, IConsumer<WaitNode>
-    {
-        private readonly ref State state = ref state;
-
-        static ReadLockManager ILockManager<State, ReadLockManager>.Create(ref State state) => new(ref state);
-
-        bool ILockManager.IsLockAllowed => state.IsReadLockAllowed;
-
-        void ILockManager.AcquireLock() => state.AcquireReadLock();
-
-        void IConsumer<WaitNode>.Invoke(WaitNode node)
-        {
-            node.IsWriteLock = false;
-            node.DrainOnReturn = true;
-        }
-
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct ProtectedWriteLockManager(ref State state, ulong expectedVersion) : ILockManager
-    {
-        private readonly ref State state = ref state;
-
-        public bool IsLockAllowed => state.IsValidVersionUnsafe(expectedVersion) && state.IsWriteLockAllowed;
-
-        public void AcquireLock() => state.AcquireWriteLock();
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct WriteLockManager(ref State state) : ILockManager<State, WriteLockManager>, IConsumer<WaitNode>
-    {
-        private readonly ref State state = ref state;
-        
-        static WriteLockManager ILockManager<State, WriteLockManager>.Create(ref State state) => new(ref state);
-
-        bool ILockManager.IsLockAllowed
-            => state.IsWriteLockAllowed;
-
-        public void AcquireLock() => state.AcquireWriteLock();
-
-        void IConsumer<WaitNode>.Invoke(WaitNode node)
-            => Initialize(node);
-
-        public static void Initialize(WaitNode node)
-            => node.IsWriteLock = node.DrainOnReturn = true;
-        
-        public void DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
-    }
-
     private State state;
     private ThreadLocal<bool>? lockOwnerState;
 
@@ -268,11 +135,9 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
 
         if (result && lockOwnerState is null)
         {
-            using (AcquireInternalLock())
-            {
-                lockOwnerState ??= new(trackAllValues: false);
-            }
+            TryAcquire(new LockOwnerTransition(ref lockOwnerState), out _).Dispose();
 
+            Debug.Assert(lockOwnerState is not null);
             lockOwnerState.Value = true;
         }
 
@@ -713,5 +578,150 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         }
 
         base.Dispose(disposing);
+    }
+    
+    private new sealed class WaitNode :
+        QueuedSynchronizer.WaitNode,
+        INodeMapper<WaitNode, bool>
+    {
+        internal bool IsWriteLock;
+
+        static bool INodeMapper<WaitNode, bool>.GetValue(WaitNode node)
+            => node.IsWriteLock;
+    }
+
+    // describes internal state of reader/writer lock
+    [StructLayout(LayoutKind.Auto)]
+    [SuppressMessage("Usage", "CA1001", Justification = "The disposable field is disposed in the Dispose() method")]
+    internal struct State
+    {
+        private ulong version;  // version of write lock
+
+        // number of acquired read locks
+        private long readLocks; // volatile
+        private bool writeLock;
+
+        internal readonly bool WriteLock => Volatile.Read(in writeLock);
+
+        internal void DowngradeFromWriteLock()
+        {
+            writeLock = false;
+            readLocks = 1L;
+        }
+
+        internal void ExitLock()
+        {
+            if (writeLock)
+            {
+                ExitWriteLock();
+            }
+            else
+            {
+                ExitReadLock();
+            }
+        }
+
+        private void ExitWriteLock()
+        {
+            writeLock = false;
+            readLocks = 0L;
+        }
+
+        internal void ExitReadLock() => readLocks--;
+
+        internal readonly long ReadLocks => Atomic.Read(in readLocks);
+
+        internal readonly ulong Version => Atomic.Read(in version);
+
+        internal bool IsValidVersionUnsafe(ulong expected) => version == expected;
+
+        internal bool IsValidVersion(ulong expected)
+        {
+            var currentVer = version;
+            var writeLockAcquired = writeLock;
+            Volatile.ReadBarrier();
+            
+            return currentVer == expected && !writeLockAcquired;
+        }
+
+        internal readonly bool IsWriteLockAllowed => writeLock is false && HasNoReadLocks;
+
+        internal readonly bool HasNoReadLocks => readLocks is 0L;
+
+        internal void AcquireWriteLock()
+        {
+            readLocks = 0L;
+            writeLock = true;
+            version++;
+        }
+
+        internal readonly bool IsReadLockAllowed => !writeLock;
+
+        internal void AcquireReadLock() => readLocks++;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct ReadLockManager(ref State state) : ILockManager<State, ReadLockManager>, IConsumer<WaitNode>
+    {
+        private readonly ref State state = ref state;
+
+        static ReadLockManager ILockManager<State, ReadLockManager>.Create(ref State state) => new(ref state);
+
+        bool ILockManager.IsLockAllowed => state.IsReadLockAllowed;
+
+        void ILockManager.AcquireLock() => state.AcquireReadLock();
+
+        void IConsumer<WaitNode>.Invoke(WaitNode node)
+        {
+            node.IsWriteLock = false;
+            node.DrainOnReturn = true;
+        }
+
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct ProtectedWriteLockManager(ref State state, ulong expectedVersion) : ILockManager
+    {
+        private readonly ref State state = ref state;
+
+        public bool IsLockAllowed => state.IsValidVersionUnsafe(expectedVersion) && state.IsWriteLockAllowed;
+
+        public void AcquireLock() => state.AcquireWriteLock();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct WriteLockManager(ref State state) : ILockManager<State, WriteLockManager>, IConsumer<WaitNode>
+    {
+        private readonly ref State state = ref state;
+        
+        static WriteLockManager ILockManager<State, WriteLockManager>.Create(ref State state) => new(ref state);
+
+        bool ILockManager.IsLockAllowed
+            => state.IsWriteLockAllowed;
+
+        void ILockManager.AcquireLock() => state.AcquireWriteLock();
+
+        void IConsumer<WaitNode>.Invoke(WaitNode node)
+            => Initialize(node);
+
+        public static void Initialize(WaitNode node)
+            => node.IsWriteLock = node.DrainOnReturn = true;
+        
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct LockOwnerTransition(ref ThreadLocal<bool>? tls) : ILockManager
+    {
+        private readonly ref ThreadLocal<bool>? tls = ref tls;
+        
+        bool ILockManager.IsLockAllowed => true;
+
+        void ILockManager.AcquireLock() => tls ??= new(trackAllValues: false);
+        
+        static bool ILockManager.RequiresEmptyQueue => false;
     }
 }

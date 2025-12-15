@@ -13,24 +13,6 @@ using Tasks;
 [DebuggerDisplay($"IsSet = {{{nameof(IsSet)}}}")]
 public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct StateManager(ref bool signaled) : ILockManager, IConsumer<WaitNode>
-    {
-        private readonly ref bool signaled = ref signaled;
-
-        bool ILockManager.IsLockAllowed => signaled;
-
-        void ILockManager.AcquireLock()
-        {
-            // nothing to do here
-        }
-
-        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
-
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
-    }
-
     private bool signaled;
 
     /// <summary>
@@ -91,19 +73,8 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        using (AcquireInternalLock())
-        {
-            return TryReset(ref signaled);
-        }
-        
-        static bool TryReset(ref bool signaled)
-        {
-            var result = signaled;
-            if (result)
-                signaled = false;
-
-            return result;
-        }
+        TryAcquire(new ResetTransition(ref signaled), out var acquired).Dispose();
+        return acquired;
     }
 
     /// <inheritdoc/>
@@ -130,4 +101,34 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
         => AcquireAsync<WaitNode, StateManager>(new(ref signaled), token);
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct StateManager(ref bool signaled) : ILockManager, IConsumer<WaitNode>
+    {
+        private readonly ref bool signaled = ref signaled;
+
+        bool ILockManager.IsLockAllowed => signaled;
+
+        void ILockManager.AcquireLock()
+        {
+            // nothing to do here
+        }
+
+        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
+
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct ResetTransition(ref bool signaled) : ILockManager
+    {
+        private readonly ref bool signaled = ref signaled;
+
+        bool ILockManager.IsLockAllowed => signaled;
+
+        void ILockManager.AcquireLock() => signaled = false;
+
+        static bool ILockManager.RequiresEmptyQueue => false;
+    }
 }

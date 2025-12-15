@@ -19,23 +19,6 @@ using Tasks;
 [DebuggerDisplay($"Counter = {{{nameof(Value)}}}")]
 public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 {
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct StateManager(ref long counter) : ILockManager<long, StateManager>, IConsumer<WaitNode>
-    {
-        private readonly ref long counter = ref counter;
-
-        static StateManager ILockManager<long, StateManager>.Create(ref long state) => new(ref state);
-
-        bool ILockManager.IsLockAllowed => counter > 0L;
-
-        void ILockManager.AcquireLock() => counter--;
-
-        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
-
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
-    }
-
     private long counter;
 
     /// <summary>
@@ -71,17 +54,8 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        using (AcquireInternalLock())
-        {
-            return TryReset(ref counter);
-        }
-        
-        static bool TryReset(ref long counter)
-        {
-            var result = counter > 0L;
-            counter = 0L;
-            return result;
-        }
+        TryAcquire(new ResetTransition(ref counter), out var acquired).Dispose();
+        return acquired;
     }
 
     /// <summary>
@@ -210,5 +184,34 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 
         TryAcquire(new StateManager(ref counter), out var decremented).Dispose();
         return decremented;
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct StateManager(ref long counter) : ILockManager<long, StateManager>, IConsumer<WaitNode>
+    {
+        private readonly ref long counter = ref counter;
+
+        static StateManager ILockManager<long, StateManager>.Create(ref long state) => new(ref state);
+
+        bool ILockManager.IsLockAllowed => counter > 0L;
+
+        void ILockManager.AcquireLock() => counter--;
+
+        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
+
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct ResetTransition(ref long counter) : ILockManager
+    {
+        private readonly ref long counter = ref counter;
+
+        bool ILockManager.IsLockAllowed => counter > 0L;
+
+        void ILockManager.AcquireLock() => counter = 0L;
+
+        static bool ILockManager.RequiresEmptyQueue => false;
     }
 }

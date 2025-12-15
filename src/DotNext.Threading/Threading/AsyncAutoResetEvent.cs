@@ -13,23 +13,6 @@ using Tasks;
 [DebuggerDisplay($"IsSet = {{{nameof(IsSet)}}}")]
 public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct StateManager(ref bool signaled) : ILockManager<bool, StateManager>, IConsumer<WaitNode>
-    {
-        private readonly ref bool signaled = ref signaled;
-
-        static StateManager ILockManager<bool, StateManager>.Create(ref bool state) => new(ref state);
-
-        bool ILockManager.IsLockAllowed => signaled;
-
-        void ILockManager.AcquireLock() => signaled = false;
-
-        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
-
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
-    }
-
     private bool signaled;
 
     /// <summary>
@@ -125,4 +108,21 @@ public class AsyncAutoResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
         => AcquireAsync<WaitNode, StateManager>(new(ref signaled), token);
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct StateManager(ref bool signaled) : ILockManager<bool, StateManager>, IConsumer<WaitNode>
+    {
+        private readonly ref bool signaled = ref signaled;
+
+        static StateManager ILockManager<bool, StateManager>.Create(ref bool state) => new(ref state);
+
+        bool ILockManager.IsLockAllowed => signaled;
+
+        void ILockManager.AcquireLock() => signaled = false;
+
+        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
+
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
+    }
 }

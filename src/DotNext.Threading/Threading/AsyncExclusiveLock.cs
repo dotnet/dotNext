@@ -13,23 +13,6 @@ using Tasks;
 [DebuggerDisplay($"IsLockHeld = {{{nameof(IsLockHeld)}}}")]
 public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
 {
-    [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct LockManager(ref bool acquired) : ILockManager<bool, LockManager>, IConsumer<WaitNode>
-    {
-        private readonly ref bool acquired = ref acquired;
-
-        static LockManager ILockManager<bool, LockManager>.Create(ref bool state) => new(ref state);
-
-        bool ILockManager.IsLockAllowed => !acquired;
-
-        void ILockManager.AcquireLock() => acquired = true;
-
-        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = true;
-
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
-    }
-
     private bool acquired;
     private Thread? lockOwner;
 
@@ -232,4 +215,21 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     }
 
     private protected sealed override bool IsReadyToDispose => !acquired && IsEmptyQueue;
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct LockManager(ref bool acquired) : ILockManager<bool, LockManager>, IConsumer<WaitNode>
+    {
+        private readonly ref bool acquired = ref acquired;
+
+        static LockManager ILockManager<bool, LockManager>.Create(ref bool state) => new(ref state);
+
+        bool ILockManager.IsLockAllowed => !acquired;
+
+        void ILockManager.AcquireLock() => acquired = true;
+
+        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = true;
+
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
+    }
 }
