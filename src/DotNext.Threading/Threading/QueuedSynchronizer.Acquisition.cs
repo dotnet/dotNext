@@ -12,7 +12,7 @@ using Runtime.CompilerServices;
 
 partial class QueuedSynchronizer
 {
-    private protected interface ITaskBuilder : IDisposable
+    private protected interface ITaskBuilder
     {
         void Complete(WaitNode node);
 
@@ -57,7 +57,6 @@ partial class QueuedSynchronizer
     private protected ref struct CancellationTokenOnly : IValueTaskBuilder
     {
         private readonly CancellationToken token;
-        private System.Threading.Lock? syncRoot;
         private ISupplier<TimeSpan, CancellationToken, ValueTask>? taskFactory;
 
         public CancellationTokenOnly(System.Threading.Lock syncRoot, CancellationToken token)
@@ -70,7 +69,6 @@ partial class QueuedSynchronizer
             else
             {
                 syncRoot.Enter();
-                this.syncRoot = syncRoot;
             }
         }
 
@@ -88,12 +86,6 @@ partial class QueuedSynchronizer
         void ITaskBuilder.CompletedAsFull() => taskFactory = ConcurrencyLimitReachedTaskFactory.Instance;
 
         readonly bool ITaskBuilder.IsTimedOut => false;
-
-        void IDisposable.Dispose()
-        {
-            syncRoot?.Exit();
-            syncRoot = null;
-        }
 
         readonly ValueTask ISupplier<ValueTask>.Invoke()
         {
@@ -117,7 +109,6 @@ partial class QueuedSynchronizer
     {
         private readonly TimeSpan timeout;
         private readonly CancellationToken token;
-        private System.Threading.Lock? syncRoot;
         private IValueTaskFactory? taskFactory;
 
         public TimeoutAndCancellationToken(System.Threading.Lock syncRoot, TimeSpan timeout, CancellationToken token)
@@ -132,11 +123,7 @@ partial class QueuedSynchronizer
             {
                 taskFactory = CanceledTaskFactory.Instance;
             }
-            else if (syncRoot.TryEnter(timeout))
-            {
-                this.syncRoot = syncRoot;
-            }
-            else
+            else if (!syncRoot.TryEnter(timeout))
             {
                 taskFactory = TimedOutTaskFactory.Instance;
             }
@@ -156,12 +143,6 @@ partial class QueuedSynchronizer
         void ITaskBuilder.CompletedAsFull() => taskFactory = ConcurrencyLimitReachedTaskFactory.Instance;
 
         readonly bool ITaskBuilder.IsTimedOut => timeout is { Ticks: 0L };
-
-        void IDisposable.Dispose()
-        {
-            syncRoot?.Exit();
-            syncRoot = null;
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private readonly T AsTask<T>(ISupplier<TimeSpan, CancellationToken, T> factory)
@@ -207,12 +188,6 @@ partial class QueuedSynchronizer
         public required TBuilder Builder;
         public LinkedValueTaskCompletionSource<bool>? InterruptedCallers;
 
-        void IDisposable.Dispose()
-        {
-            Builder.Dispose();
-            InterruptedCallers?.Unwind();
-        }
-
         void ITaskBuilder.Complete(WaitNode node) => Builder.Complete(node);
 
         void ITaskBuilder.CompleteAsDisposed(string objectName) => Builder.CompleteAsDisposed(objectName);
@@ -227,7 +202,11 @@ partial class QueuedSynchronizer
 
         public bool IsCompleted => Builder.IsCompleted;
 
-        T ISupplier<T>.Invoke() => Builder.Invoke();
+        T ISupplier<T>.Invoke()
+        {
+            InterruptedCallers?.Unwind();
+            return Builder.Invoke();
+        }
 
         static bool ITaskBuilder<T>.ThrowOnTimeout => TBuilder.ThrowOnTimeout;
 
@@ -242,6 +221,30 @@ partial class QueuedSynchronizer
 
     private protected TimeoutAndCancellationToken CreateTaskBuilder(TimeSpan timeout, CancellationToken token)
         => new(syncRoot, timeout, token);
+
+    private protected T BuildTask<T, TBuilder>(ref TBuilder builder)
+        where T : struct, IEquatable<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
+    {
+        if (syncRoot.IsHeldByCurrentThread)
+        {
+            syncRoot.Exit();
+        }
+
+        return builder.Invoke();
+    }
+
+    private protected T BuildTask<T, TBuilder>(Exception e)
+        where T : struct, IEquatable<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
+    {
+        if (syncRoot.IsHeldByCurrentThread)
+        {
+            syncRoot.Exit();
+        }
+
+        return TBuilder.FromException(e);
+    }
 
     private void DrainWaitQueue<T, TBuilder>(ref InterruptingTaskBuilder<T, TBuilder> builder, Exception e)
         where T : struct, IEquatable<T>

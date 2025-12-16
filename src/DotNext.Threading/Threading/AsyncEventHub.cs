@@ -313,11 +313,8 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
                 FillIndices(events, output);
                 goto default;
             default:
-                builder.Dispose();
-                break;
+                return BuildTask<T, TBuilder>(ref builder);
         }
-
-        return builder.Invoke();
     }
 
     /// <summary>
@@ -443,11 +440,8 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
                 node.WaitAll(mask);
                 goto default;
             default:
-                builder.Dispose();
-                break;
+                return BuildTask<T, TBuilder>(ref builder);
         }
-
-        return builder.Invoke();
     }
 
     private static void FillIndices(UInt128 events, ICollection<int> indices)

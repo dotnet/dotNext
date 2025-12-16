@@ -205,9 +205,9 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
             completedSynchronously = true;
         }
 
-        builder.Dispose();
+        var task = BuildTask<T, TBuilder>(ref builder);
         suspendedCallers?.Unwind();
-        return builder.Invoke();
+        return task;
     }
 
     internal ValueTask<bool> SignalAndWaitAsync(out bool completedSynchronously, TimeSpan timeout, CancellationToken token)

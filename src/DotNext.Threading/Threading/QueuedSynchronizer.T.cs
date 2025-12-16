@@ -213,14 +213,12 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
         where T : struct, IEquatable<T>
         where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
-        T result;
         if (!builder.IsCompleted)
         {
             var acquired = TryAcquireCore(context);
             if (!acquired && GetAcquisitionException(context) is { } e)
             {
-                result = TBuilder.FromException(e);
-                goto exit;
+                return BuildTask<T, TBuilder>(e);
             }
 
             if (Acquire<T, TBuilder, WaitNode>(ref builder, acquired) is { } node)
@@ -230,11 +228,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
             }
         }
 
-        result = builder.Invoke();
-
-        exit:
-        builder.Dispose();
-        return result;
+        return BuildTask<T, TBuilder>(ref builder);
     }
 
     private bool TryAcquireCore(TContext context)

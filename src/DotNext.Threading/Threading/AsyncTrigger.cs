@@ -90,11 +90,8 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
                 node.DrainOnReturn = false;
                 goto default;
             default:
-                builder.Dispose();
-                break;
+                return BuildTask<T, TBuilder>(ref builder);
         }
-
-        return builder.Invoke();
     }
 
     /// <summary>
@@ -187,7 +184,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     private T SignalAndWaitAsync<T, TBuilder, TVisitor>(ref TBuilder builder, TVisitor visitor, bool throwOnEmptyQueue)
         where T : struct, IEquatable<T>
         where TBuilder : struct, ITaskBuilder<T>, allows ref struct
-        where TVisitor : struct, IWaitQueueVisitor<T>, allows ref struct
+        where TVisitor : struct, IWaitQueueVisitor, allows ref struct
     {
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         if (builder.IsCompleted)
@@ -200,13 +197,12 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         }
         else if (throwOnEmptyQueue)
         {
-            builder.Dispose();
-            return TVisitor.EmptyQueueTask;
+            return BuildTask<T, TBuilder>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
         }
 
-        builder.Dispose();
+        var task = BuildTask<T, TBuilder>(ref builder);
         suspendedCallers?.Unwind();
-        return builder.Invoke();
+        return task;
     }
 
     /// <summary>
@@ -284,14 +280,9 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
             => throw new NotSupportedException();
     }
     
-    private interface IWaitQueueVisitor<out T> : IWaitQueueVisitor
-        where T : struct, IEquatable<T>
-    {
-        static abstract T EmptyQueueTask { get; }
-    }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct ResumingVisitor(bool resumeAll) : IWaitQueueVisitor<ValueTask>, IWaitQueueVisitor<ValueTask<bool>>
+    private readonly struct ResumingVisitor(bool resumeAll) : IWaitQueueVisitor
     {
         bool IWaitQueueVisitor.Visit(scoped ref WaitQueueVisitor waitQueueVisitor)
         {
@@ -307,12 +298,6 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
 
             return signaled;
         }
-
-        static ValueTask IWaitQueueVisitor<ValueTask>.EmptyQueueTask
-            => ValueTask.FromException(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
-
-        static ValueTask<bool> IWaitQueueVisitor<ValueTask<bool>>.EmptyQueueTask
-            => ValueTask.FromException<bool>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
     }
 
     [StructLayout(LayoutKind.Auto)]

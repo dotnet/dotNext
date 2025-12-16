@@ -49,11 +49,8 @@ partial class QueuedSynchronizer
                 manager.Invoke(node);
                 goto default;
             default:
-                builder.Dispose();
-                break;
+                return BuildTask<T, TBuilder>(ref builder);
         }
-
-        return builder.Invoke();
     }
 
     private protected ValueTask AcquireAsync<TNode, TLockManager>(TLockManager manager, TimeSpan timeout, CancellationToken token)
