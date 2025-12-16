@@ -74,6 +74,8 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     public bool TryAcquire(bool strongLock)
     {
+        ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
+        
         (strongLock
                 ? TryAcquire<StrongLockManager>(new(ref state), out var acquired)
                 : TryAcquire<WeakLockManager>(new(ref state), out acquired))
