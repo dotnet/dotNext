@@ -62,7 +62,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void ChangeCount(bool increment)
     {
-        Debug.Assert(Monitor.IsEntered(array));
+        Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
         count += increment ? +1 : -1;
         if (signal?.TrySetResult() ?? false)
@@ -71,7 +71,7 @@ public class TaskQueue<T> : IAsyncEnumerable<T>, IResettable
 
     private void MoveNext(ref int index)
     {
-        Debug.Assert(Monitor.IsEntered(array));
+        Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
         var value = index + 1;
         index = value == array.Length ? 0 : value;
