@@ -33,7 +33,7 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
         counter = initialValue;
     }
 
-    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+    private protected sealed override void DrainWaitQueue<TQueue>(ref TQueue waitQueueVisitor)
         => waitQueueVisitor.SignalAll(new StateManager(ref counter));
 
     /// <inheritdoc/>

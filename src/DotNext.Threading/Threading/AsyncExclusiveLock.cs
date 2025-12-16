@@ -23,7 +23,7 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     {
     }
 
-    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+    private protected sealed override void DrainWaitQueue<TQueue>(ref TQueue waitQueueVisitor)
         => waitQueueVisitor.SignalAll(new LockManager(ref acquired));
 
     /// <summary>

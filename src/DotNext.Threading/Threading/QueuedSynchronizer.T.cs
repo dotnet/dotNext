@@ -72,7 +72,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
     }
 
-    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+    private protected sealed override void DrainWaitQueue<TQueue>(ref TQueue waitQueueVisitor)
     {
         for (; !waitQueueVisitor.IsEndOfQueue<WaitNode, TContext>(out var context); waitQueueVisitor.Advance())
         {
