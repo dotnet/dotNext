@@ -201,21 +201,16 @@ partial class QueuedSynchronizer
             }
         }
 
-        private bool SignalAll(in Result<bool> result)
+        private void SignalAll(in Result<bool> result)
         {
-            var signaled = false;
             while (!EndOfQueue)
             {
-                signaled |= SignalCurrent(in result);
+                SignalCurrent(in result);
                 Advance();
             }
-
-            return signaled;
         }
 
-        public bool SignalAll() => SignalAll(new Result<bool>(true));
-
-        public bool SignalAll(Exception e) => SignalAll(new Result<bool>(e));
+        public void SignalAll() => SignalAll(new Result<bool>(true));
 
         private void SignalAll(in Result<bool> result, out bool signaled)
         {
@@ -310,6 +305,9 @@ partial class QueuedSynchronizer
     private protected readonly ref struct ExceptionVisitor(Exception e) : IWaitQueueVisitor
     {
         bool IWaitQueueVisitor.Visit(scoped ref WaitQueueVisitor waitQueueVisitor)
-            => waitQueueVisitor.SignalAll(e);
+        {
+            waitQueueVisitor.SignalAll(e, out var signaled);
+            return signaled;
+        }
     }
 }
