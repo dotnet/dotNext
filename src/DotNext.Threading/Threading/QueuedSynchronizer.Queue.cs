@@ -18,15 +18,12 @@ partial class QueuedSynchronizer
 
     private protected abstract void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor);
 
-    private WaitQueueVisitor GetWaitQueue(ref LinkedValueTaskCompletionSource<bool>.LinkedList suspendedCallers)
-        => new(ref waitQueue, ref suspendedCallers);
-
     private protected LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
     {
         AssertInternalLockState();
         
         var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
-        var visitor = GetWaitQueue(ref detachedQueue);
+        var visitor = new WaitQueueVisitor(ref waitQueue, ref detachedQueue);
         DrainWaitQueue(ref visitor);
         return detachedQueue.First;
     }
@@ -35,7 +32,7 @@ partial class QueuedSynchronizer
         where TVisitor : struct, IWaitQueueVisitor, allows ref struct
     {
         var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
-        var waitQueue = GetWaitQueue(ref detachedQueue);
+        var waitQueue = new WaitQueueVisitor(ref this.waitQueue, ref detachedQueue);
         var signaled = visitor.Visit(ref waitQueue);
         suspendedCallers = detachedQueue.First;
         return signaled;
