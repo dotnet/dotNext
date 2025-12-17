@@ -79,7 +79,7 @@ public sealed class AsyncTriggerTests : Test
     {
         using var trigger = new AsyncTrigger();
 
-        await ThrowsAsync<InvalidOperationException>(trigger.SignalAndWaitAsync(true, true, TestToken).AsTask);
+        await ThrowsAnyAsync<InvalidOperationException>(trigger.SignalAndWaitAsync(true, true, TestToken).AsTask);
     }
 
     private sealed class Condition : StrongBox<bool>, ISupplier<bool>

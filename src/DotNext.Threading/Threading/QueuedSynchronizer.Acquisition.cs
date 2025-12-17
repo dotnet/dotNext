@@ -20,7 +20,7 @@ partial class QueuedSynchronizer
 
         void CompleteAsTimedOut();
 
-        void CompletedAsFull();
+        void Complete<TFactory>() where TFactory : IExceptionFactory, allows ref struct;
 
         void Complete();
 
@@ -83,7 +83,7 @@ partial class QueuedSynchronizer
 
         void ITaskBuilder.Complete() => taskFactory = CompletedTaskFactory.Instance;
 
-        void ITaskBuilder.CompletedAsFull() => taskFactory = ConcurrencyLimitReachedTaskFactory.Instance;
+        void ITaskBuilder.Complete<TFactory>() => taskFactory = ExceptionTaskFactory<TFactory>.Instance;
 
         readonly bool ITaskBuilder.IsTimedOut => false;
 
@@ -139,8 +139,8 @@ partial class QueuedSynchronizer
         void ITaskBuilder.CompleteAsTimedOut() => taskFactory = TimedOutTaskFactory.Instance;
 
         void ITaskBuilder.Complete() => taskFactory = CompletedTaskFactory.Instance;
-        
-        void ITaskBuilder.CompletedAsFull() => taskFactory = ConcurrencyLimitReachedTaskFactory.Instance;
+
+        void ITaskBuilder.Complete<TFactory>() => taskFactory = ExceptionTaskFactory<TFactory>.Instance;
 
         readonly bool ITaskBuilder.IsTimedOut => timeout is { Ticks: 0L };
 
@@ -196,7 +196,7 @@ partial class QueuedSynchronizer
 
         void ITaskBuilder.Complete() => Builder.Complete();
 
-        void ITaskBuilder.CompletedAsFull() => Builder.CompletedAsFull();
+        void ITaskBuilder.Complete<TFactory>() => Builder.Complete<TFactory>();
 
         bool ITaskBuilder.IsTimedOut => Builder.IsTimedOut;
 

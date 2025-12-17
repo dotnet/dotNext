@@ -337,24 +337,21 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
         var suspendedCallers = default(LinkedValueTaskCompletionSource<bool>);
-        T task;
         switch (builder.IsCompleted)
         {
             case true:
                 goto default;
             case false when state.HasNoReadLocks:
-                task = BuildTask<T, TBuilder>(new SynchronizationLockException());
-                break;
+                builder.Complete<DefaultExceptionFactory<SynchronizationLockException>>();
+                goto default;
             case false when Acquire<T, TBuilder, WaitNode>(ref builder, TryUpgradeToWriteLock(out suspendedCallers)) is { } node:
                 WriteLockManager.Initialize(node);
                 goto default;
             default:
-                task = BuildTask<T, TBuilder>(ref builder);
+                var task = BuildTask<T, TBuilder>(ref builder);
                 suspendedCallers?.Unwind();
-                break;
+                return task;
         }
-
-        return task;
     }
 
     /// <summary>

@@ -99,7 +99,7 @@ partial class QueuedSynchronizer
         }
         else if (IsConcurrencyLimitReached)
         {
-            builder.CompletedAsFull();
+            builder.Complete<ConcurrencyLimitReachedExceptionFactory>();
         }
         else
         {

@@ -19,8 +19,8 @@ public sealed class QueuedSynchronizerTests : Test
 
         protected override bool CanAcquire(bool context) => context;
 
-        protected override Exception GetAcquisitionException(bool canAcquire)
-            => canAcquire ? null : new ArithmeticException();
+        protected override ExceptionFactory GetAcquisitionException(bool canAcquire)
+            => canAcquire ? null : ExceptionFactory.Of<ArithmeticException>();
     }
 
     [Fact]

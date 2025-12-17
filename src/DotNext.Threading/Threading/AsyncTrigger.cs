@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
@@ -197,7 +198,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         }
         else if (throwOnEmptyQueue)
         {
-            return BuildTask<T, TBuilder>(new InvalidOperationException(ExceptionMessages.EmptyWaitQueue));
+            builder.Complete<DefaultExceptionFactory<EmptyWaitQueueException>>();
         }
 
         var task = BuildTask<T, TBuilder>(ref builder);
@@ -314,4 +315,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
             return signaled;
         }
     }
+
+    [SuppressMessage("Performance", "CA1812", Justification = "False positive.")]
+    private sealed class EmptyWaitQueueException() : InvalidOperationException(ExceptionMessages.EmptyWaitQueue);
 }
