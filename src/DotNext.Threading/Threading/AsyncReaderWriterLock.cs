@@ -37,13 +37,11 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         }
     }
 
-    private bool Signal<TQueue>(ref TQueue waitQueueVisitor, bool isWriteLock)
-        where TQueue : struct, IWaitQueue, allows ref struct
-        => isWriteLock
+    private bool Signal(ref WaitQueueVisitor waitQueueVisitor, bool isWriteLock) => isWriteLock
         ? waitQueueVisitor.SignalCurrent<WriteLockManager>(new(ref state))
         : waitQueueVisitor.SignalCurrent<ReadLockManager>(new(ref state));
 
-    private protected sealed override void DrainWaitQueue<TQueue>(ref TQueue waitQueueVisitor)
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
     {
         while (!waitQueueVisitor.IsEndOfQueue<WaitNode, bool>(out var isWriteLock) && Signal(ref waitQueueVisitor, isWriteLock))
         {

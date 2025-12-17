@@ -22,7 +22,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     public AsyncManualResetEvent(bool initialState)
         => signaled = initialState;
 
-    private protected sealed override void DrainWaitQueue<TQueue>(ref TQueue waitQueueVisitor)
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
         => waitQueueVisitor.SignalAll();
 
     /// <inheritdoc/>

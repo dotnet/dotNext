@@ -23,7 +23,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
     }
 
-    private protected sealed override void DrainWaitQueue<TQueue>(ref TQueue waitQueueVisitor)
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
         => Debug.Fail("Should not be called");
 
     private bool SignalCore<TVisitor>(TVisitor visitor)
@@ -284,7 +284,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     [StructLayout(LayoutKind.Auto)]
     private readonly struct ResumingVisitor(bool resumeAll) : IWaitQueueVisitor
     {
-        bool IWaitQueueVisitor.Visit<TQueue>(scoped ref TQueue waitQueueVisitor)
+        bool IWaitQueueVisitor.Visit(scoped ref WaitQueueVisitor waitQueueVisitor)
         {
             bool signaled;
             if (resumeAll)
@@ -308,7 +308,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         public InterruptingVisitor(object? reason)
             => ExceptionDispatchInfo.SetCurrentStackTrace(exception = new() { Reason = reason });
 
-        bool IWaitQueueVisitor.Visit<TQueue>(scoped ref TQueue waitQueueVisitor)
+        bool IWaitQueueVisitor.Visit(scoped ref WaitQueueVisitor waitQueueVisitor)
         {
             waitQueueVisitor.SignalAll(exception, out bool signaled);
             return signaled;

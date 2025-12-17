@@ -35,7 +35,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     
     private static UInt128 GetBitMask(int index) => UInt128.One << index;
 
-    private protected sealed override void DrainWaitQueue<TQueue>(ref TQueue waitQueueVisitor)
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
     {
         for (; !waitQueueVisitor.IsEndOfQueue<WaitNode, WaitNode>(out var node); waitQueueVisitor.Advance())
         {

@@ -31,7 +31,7 @@ public class AsyncCountdownEvent : QueuedSynchronizer, IAsyncEvent
         state = new(initialCount);
     }
 
-    private protected sealed override void DrainWaitQueue<TQueue>(ref TQueue waitQueueVisitor) => waitQueueVisitor.SignalAll();
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor) => waitQueueVisitor.SignalAll();
 
     /// <summary>
     /// Gets the numbers of signals initially required to set the event.

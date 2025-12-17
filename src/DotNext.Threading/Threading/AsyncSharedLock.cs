@@ -34,13 +34,11 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
         state = new(ConcurrencyLevel = lockUpgradeThreshold);
     }
 
-    private bool Signal<TQueue>(ref TQueue waitQueueVisitor, bool strongLock)
-        where TQueue : struct, IWaitQueue, allows ref struct
-        => strongLock
-            ? waitQueueVisitor.SignalCurrent<StrongLockManager>(new(ref state))
-            : waitQueueVisitor.SignalCurrent<WeakLockManager>(new(ref state));
+    private bool Signal(ref WaitQueueVisitor waitQueueVisitor, bool strongLock) => strongLock
+        ? waitQueueVisitor.SignalCurrent<StrongLockManager>(new(ref state))
+        : waitQueueVisitor.SignalCurrent<WeakLockManager>(new(ref state));
 
-    private protected sealed override void DrainWaitQueue<TQueue>(ref TQueue waitQueueVisitor)
+    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
     {
         while (!waitQueueVisitor.IsEndOfQueue<WaitNode, bool>(out var strongLock) && Signal(ref waitQueueVisitor, strongLock))
         {

@@ -16,8 +16,7 @@ partial class QueuedSynchronizer
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private protected bool IsEmptyQueue => waitQueue.Length is 0L;
 
-    private protected abstract void DrainWaitQueue<TQueue>(ref TQueue waitQueueVisitor)
-        where TQueue : struct, IWaitQueue, allows ref struct;
+    private protected abstract void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor);
 
     private protected LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
     {
@@ -123,35 +122,9 @@ partial class QueuedSynchronizer
             return length is long.MaxValue || (concurrencyLimited && length == pool.MaximumRetained);
         }
     }
-    
-    private protected interface IWaitQueue
-    {
-        bool IsEndOfQueue<TNode, TResult>([MaybeNullWhen(true)] out TResult result)
-            where TNode : WaitNode, INodeMapper<TNode, TResult>;
-
-        void Advance();
-
-        bool SignalCurrent();
-
-        void SignalCurrent(Exception e);
-
-        bool SignalCurrent<TLockManager>(TLockManager manager)
-            where TLockManager : struct, ILockManager, allows ref struct;
-        
-        void SignalAll<TLockManager>(TLockManager manager)
-            where TLockManager : struct, ILockManager, allows ref struct;
-
-        void SignalAll();
-
-        void SignalAll(out bool signaled);
-
-        void SignalAll(Exception e, out bool signaled);
-
-        void SignalFirst(out bool signaled);
-    }
 
     [StructLayout(LayoutKind.Auto)]
-    private ref struct WaitQueueVisitor : IWaitQueue
+    private protected ref struct WaitQueueVisitor
     {
         private readonly ref WaitQueue queue;
         private readonly ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue;
@@ -270,7 +243,7 @@ partial class QueuedSynchronizer
     }
     
     [StructLayout(LayoutKind.Auto)]
-    private struct WaitQueue
+    private protected struct WaitQueue
     {
         private readonly TagList measurementTags;
         private LinkedValueTaskCompletionSource<bool>.LinkedList waitQueue;
@@ -325,14 +298,13 @@ partial class QueuedSynchronizer
     
     private protected interface IWaitQueueVisitor
     {
-        bool Visit<TQueue>(scoped ref TQueue waitQueueVisitor)
-            where TQueue : struct, IWaitQueue, allows ref struct;
+        bool Visit(scoped ref WaitQueueVisitor waitQueueVisitor);
     }
     
     [StructLayout(LayoutKind.Auto)]
     private protected readonly ref struct ExceptionVisitor(Exception e) : IWaitQueueVisitor
     {
-        bool IWaitQueueVisitor.Visit<TQueue>(scoped ref TQueue waitQueueVisitor)
+        bool IWaitQueueVisitor.Visit(scoped ref WaitQueueVisitor waitQueueVisitor)
         {
             waitQueueVisitor.SignalAll(e, out var signaled);
             return signaled;
