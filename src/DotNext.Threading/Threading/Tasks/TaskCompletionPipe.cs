@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks;
 
@@ -371,4 +372,10 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
         => GetAsyncEnumerator(Version, token);
 
     internal uint Version => Volatile.Read(in version);
+}
+
+file static class SupplierExtensions
+{
+    public static TResult Invoke<TResult>(this ISupplier<TimeSpan, CancellationToken, TResult> supplier, CancellationToken token)
+        => supplier.Invoke(InfiniteTimeSpan, token);
 }
