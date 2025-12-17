@@ -18,13 +18,11 @@ partial class QueuedSynchronizer
 
         void CompleteAsDisposed(string objectName);
 
-        void CompleteAsTimedOut();
+        bool TryCompleteAsTimedOut();
 
         void Complete<TFactory>() where TFactory : IExceptionFactory, allows ref struct;
 
         void Complete();
-
-        bool IsTimedOut { get; }
 
         bool IsCompleted { get; }
     }
@@ -79,13 +77,11 @@ partial class QueuedSynchronizer
 
         void ITaskBuilder.CompleteAsDisposed(string objectName) => taskFactory = new QueuedSynchronizerDisposedException(objectName);
 
-        void ITaskBuilder.CompleteAsTimedOut() => taskFactory = TimedOutTaskFactory.Instance;
-
         void ITaskBuilder.Complete() => taskFactory = CompletedTaskFactory.Instance;
 
         void ITaskBuilder.Complete<TFactory>() => taskFactory = ExceptionTaskFactory<TFactory>.Instance;
 
-        readonly bool ITaskBuilder.IsTimedOut => false;
+        readonly bool ITaskBuilder.TryCompleteAsTimedOut() => false;
 
         readonly ValueTask ISupplier<ValueTask>.Invoke()
         {
@@ -136,13 +132,18 @@ partial class QueuedSynchronizer
 
         void ITaskBuilder.CompleteAsDisposed(string objectName) => taskFactory = new QueuedSynchronizerDisposedException(objectName);
 
-        void ITaskBuilder.CompleteAsTimedOut() => taskFactory = TimedOutTaskFactory.Instance;
-
         void ITaskBuilder.Complete() => taskFactory = CompletedTaskFactory.Instance;
 
         void ITaskBuilder.Complete<TFactory>() => taskFactory = ExceptionTaskFactory<TFactory>.Instance;
 
-        readonly bool ITaskBuilder.IsTimedOut => timeout is { Ticks: 0L };
+        bool ITaskBuilder.TryCompleteAsTimedOut()
+        {
+            var timedOut = timeout is { Ticks: 0L };
+            if (timedOut)
+                taskFactory = TimedOutTaskFactory.Instance;
+
+            return timedOut;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private readonly T AsTask<T>(ISupplier<TimeSpan, CancellationToken, T> factory)
@@ -192,13 +193,11 @@ partial class QueuedSynchronizer
 
         void ITaskBuilder.CompleteAsDisposed(string objectName) => Builder.CompleteAsDisposed(objectName);
 
-        void ITaskBuilder.CompleteAsTimedOut() => Builder.CompleteAsTimedOut();
-
         void ITaskBuilder.Complete() => Builder.Complete();
 
         void ITaskBuilder.Complete<TFactory>() => Builder.Complete<TFactory>();
 
-        bool ITaskBuilder.IsTimedOut => Builder.IsTimedOut;
+        bool ITaskBuilder.TryCompleteAsTimedOut() => Builder.TryCompleteAsTimedOut();
 
         public bool IsCompleted => Builder.IsCompleted;
 

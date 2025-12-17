@@ -85,6 +85,7 @@ partial class QueuedSynchronizer
         AssertInternalLockState();
         Debug.Assert(!builder.IsCompleted);
 
+        var node = default(TNode);
         if (IsDisposingOrDisposed)
         {
             builder.CompleteAsDisposed(GetType().Name);
@@ -93,9 +94,9 @@ partial class QueuedSynchronizer
         {
             builder.Complete();
         }
-        else if (builder.IsTimedOut)
+        else if (builder.TryCompleteAsTimedOut())
         {
-            builder.CompleteAsTimedOut();
+            // nothing to do
         }
         else if (IsConcurrencyLimitReached)
         {
@@ -103,14 +104,13 @@ partial class QueuedSynchronizer
         }
         else
         {
-            var node = pool.Rent<TNode>();
+            node = pool.Rent<TNode>();
             node.Initialize(this, CaptureCallerInformation(), TBuilder.ThrowOnTimeout);
             waitQueue.Add(node);
             builder.Complete(node);
-            return node;
         }
 
-        return null;
+        return node;
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
