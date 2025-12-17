@@ -9,21 +9,19 @@ partial class MultiplexedListener
     /// </summary>
     public class Options : MultiplexingOptions
     {
-        private readonly TimeSpan receiveTimeout = TimeSpan.FromSeconds(60);
-
         /// <summary>
         /// Gets or sets the send/receive timeout.
         /// </summary>
         public TimeSpan Timeout
         {
-            get => receiveTimeout;
+            get;
             init
             {
                 Threading.Timeout.Validate(value);
 
-                receiveTimeout = value;
+                field = value;
             }
-        }
+        } = TimeSpan.FromSeconds(60);
 
         /// <summary>
         /// Determines a drift between heartbeat packet and regular network timeout.
@@ -37,8 +35,8 @@ partial class MultiplexedListener
                 : throw new ArgumentOutOfRangeException(nameof(value));
         } = .5D;
 
-        internal TimeSpan HeartbeatTimeout => receiveTimeout == InfiniteTimeSpan
+        internal TimeSpan HeartbeatTimeout => Timeout == InfiniteTimeSpan
             ? InfiniteTimeSpan
-            : receiveTimeout * HeartbeatDrift;
+            : Timeout * HeartbeatDrift;
     }
 }
