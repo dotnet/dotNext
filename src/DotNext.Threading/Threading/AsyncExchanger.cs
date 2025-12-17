@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
@@ -160,7 +161,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
     /// <exception cref="ObjectDisposedException">The object has been disposed.</exception>
     /// <exception cref="ExchangeTerminatedException">The exchange has been terminated.</exception>
     public ValueTask<T> ExchangeAsync(T value, CancellationToken token = default)
-        => ExchangeAsync(value, new(Timeout.InfiniteTicks), token);
+        => ExchangeAsync(value, InfiniteTimeSpan, token);
 
     /// <summary>
     /// Attempts to transfer the object to another flow synchronously.

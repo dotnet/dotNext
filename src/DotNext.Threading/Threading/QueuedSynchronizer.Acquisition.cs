@@ -111,7 +111,7 @@ partial class QueuedSynchronizer
         {
             this.timeout = timeout;
             this.token = token;
-            if (timeout is { Ticks: < 0L and not Timeout.InfiniteTicks or > Timeout.MaxTimeoutParameterTicks })
+            if (!Timeout.IsValid(timeout))
             {
                 taskFactory = InvalidTimeoutTaskFactory.Instance;
             }

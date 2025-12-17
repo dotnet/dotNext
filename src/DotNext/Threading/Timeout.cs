@@ -193,6 +193,14 @@ public readonly struct Timeout
     public static implicit operator TimeSpan(in Timeout timeout) => timeout.Value;
 
     /// <summary>
+    /// Gets a value indicating that the specified timeout is valid to be used in the API that supports timeouts.
+    /// </summary>
+    /// <param name="timeout">The value to validate.</param>
+    /// <returns><see langword="true"/> if <paramref name="timeout"/> is valid; otherwise, <see langword="false"/>.</returns>
+    public static bool IsValid(TimeSpan timeout)
+        => timeout is { Ticks: < 0L and not InfiniteTicks or > MaxTimeoutParameterTicks };
+
+    /// <summary>
     /// Validates the timeout.
     /// </summary>
     /// <param name="timeout">The timeout value.</param>
@@ -200,7 +208,7 @@ public readonly struct Timeout
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative and not <see cref="InfiniteTicks"/>; or greater than <see cref="MaxTimeoutParameterTicks"/>.</exception>
     public static void Validate(TimeSpan timeout, [CallerArgumentExpression(nameof(timeout))] string? parameterName = null)
     {
-        if (timeout is { Ticks: < 0L and not InfiniteTicks or > MaxTimeoutParameterTicks })
+        if (!IsValid(timeout))
             Throw(parameterName);
 
         [DoesNotReturn]
