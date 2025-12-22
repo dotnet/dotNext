@@ -198,7 +198,7 @@ public readonly struct Timeout
     /// <param name="timeout">The value to validate.</param>
     /// <returns><see langword="true"/> if <paramref name="timeout"/> is valid; otherwise, <see langword="false"/>.</returns>
     public static bool IsValid(TimeSpan timeout)
-        => timeout is { Ticks: < 0L and not InfiniteTicks or > MaxTimeoutParameterTicks };
+        => timeout is { Ticks: >= 0L and < MaxTimeoutParameterTicks or InfiniteTicks };
 
     /// <summary>
     /// Validates the timeout.
