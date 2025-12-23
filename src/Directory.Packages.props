@@ -10,7 +10,7 @@
   </ItemGroup>
   <ItemGroup>
     <!--System packages-->
-    <PackageVersion Include="System.CommandLine" Version="2.0.0-rc.2.25502.107" />
+    <PackageVersion Include="System.CommandLine" Version="2.0.1" />
     <PackageVersion Include="System.IO.Hashing" Version="10.0.0" />
     <PackageVersion Include="System.Resources.Extensions" Version="10.0.0" />
     <PackageVersion Include="System.Runtime.Caching" Version="10.0.0" />
