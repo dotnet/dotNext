@@ -28,7 +28,7 @@ using Intrinsics = Runtime.CompilerServices.AdvancedHelpers;
 /// </example>
 /// <typeparam name="T">The type of the elements in the rented memory.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public ref struct SpanOwner<T>
+public ref struct SpanOwner<T> : IDisposable
 {
     /// <summary>
     /// Global recommended number of elements that can be allocated on the stack.
