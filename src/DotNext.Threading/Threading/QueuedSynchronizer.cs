@@ -3,8 +3,6 @@ using System.Runtime.ExceptionServices;
 
 namespace DotNext.Threading;
 
-using Tasks;
-
 /// <summary>
 /// Provides a framework for implementing asynchronous locks and related synchronization primitives that rely on first-in-first-out (FIFO) wait queues.
 /// </summary>
@@ -17,11 +15,9 @@ using Tasks;
 public abstract partial class QueuedSynchronizer : Disposable
 {
     private readonly TaskCompletionSource disposeTask;
-    private readonly System.Threading.Lock syncRoot;
 
     private protected QueuedSynchronizer()
     {
-        syncRoot = new();
         disposeTask = new(TaskCreationOptions.RunContinuationsAsynchronously);
         waitQueue = new()
         {
@@ -61,10 +57,8 @@ public abstract partial class QueuedSynchronizer : Disposable
         init => concurrencyLimited = value;
     }
 
-    private protected System.Threading.Lock.Scope AcquireInternalLock() => syncRoot.EnterScope();
-
     [Conditional("DEBUG")]
-    private protected void AssertInternalLockState() => Debug.Assert(syncRoot.IsHeldByCurrentThread);
+    private void AssertInternalLockState() => Debug.Assert(waitQueue.SyncRoot.IsHeldByCurrentThread);
 
     /// <summary>
     /// Cancels all suspended callers.
@@ -78,17 +72,12 @@ public abstract partial class QueuedSynchronizer : Disposable
             throw new ArgumentOutOfRangeException(nameof(token));
 
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        
+
         var exception = new OperationCanceledException(token);
         ExceptionDispatchInfo.SetCurrentStackTrace(exception);
-        
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (syncRoot)
-        {
-            DrainWaitQueue<ExceptionVisitor>(new(exception), out suspendedCallers);
-        }
 
-        suspendedCallers?.Unwind();
+        using var queue = CaptureWaitQueue();
+        queue.SignalAll(exception);
     }
 
     private void NotifyObjectDisposed(Exception? reason = null)
@@ -98,13 +87,8 @@ public abstract partial class QueuedSynchronizer : Disposable
             ExceptionDispatchInfo.SetCurrentStackTrace(reason = CreateException());
         }
 
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (syncRoot)
-        {
-            DrainWaitQueue<ExceptionVisitor>(new(reason), out suspendedCallers);
-        }
-
-        suspendedCallers?.Unwind();
+        using var queue = CaptureWaitQueue();
+        queue.SignalAll(reason);
     }
 
     private void Dispose(bool disposing, Exception? reason)
@@ -146,7 +130,7 @@ public abstract partial class QueuedSynchronizer : Disposable
     {
         ValueTask result;
 
-        lock (syncRoot)
+        lock (waitQueue.SyncRoot)
         {
             if (this is { IsReadyToDispose: true, IsDisposed: false })
             {

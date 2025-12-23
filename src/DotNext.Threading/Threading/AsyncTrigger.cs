@@ -1,15 +1,9 @@
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
-
-using Runtime;
-using Runtime.CompilerServices;
-using Tasks;
 
 /// <summary>
 /// Represents asynchronous trigger that allows to resume and suspend
@@ -24,25 +18,23 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
     }
 
-    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
-        => Debug.Fail("Should not be called");
-
-    private bool SignalCore<TVisitor>(TVisitor visitor)
-        where TVisitor : struct, IWaitQueueVisitor
-    {
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        bool signaled;
-        using (AcquireInternalLock())
-        {
-            signaled = DrainWaitQueue(visitor, out suspendedCallers);
-        }
-
-        suspendedCallers?.Unwind();
-        return signaled;
-    }
-
     /// <inheritdoc/>
     bool IAsyncEvent.Reset() => false;
+
+    private bool Signal(bool resumeAll, ref WaitQueueScope queue)
+    {
+        bool signaled;
+        if (resumeAll)
+        {
+            queue.SignalAll(out signaled);
+        }
+        else
+        {
+            queue.SignalFirst(out signaled);
+        }
+
+        return signaled;
+    }
 
     /// <summary>
     /// Resumes the first suspended caller in the wait queue.
@@ -57,7 +49,15 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        return SignalCore(new ResumingVisitor(resumeAll));
+        var queue = CaptureWaitQueue();
+        try
+        {
+            return Signal(resumeAll, ref queue);
+        }
+        finally
+        {
+            queue.Dispose();
+        }
     }
 
     /// <summary>
@@ -70,7 +70,11 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        return SignalCore(new InterruptingVisitor(reason));
+        var e = PendingTaskInterruptedException.CreateAndFillStackTrace(reason);
+
+        using var queue = CaptureWaitQueue();
+        queue.SignalAll(e, out var signaled);
+        return signaled;
     }
 
     /// <inheritdoc/>
@@ -83,16 +87,12 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         where T : struct, IEquatable<T>
         where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
-        switch (builder.IsCompleted)
+        if (!builder.IsCompleted)
         {
-            case true:
-                goto default;
-            case false when Acquire<T, TBuilder, WaitNode>(ref builder, acquired: false) is { } node:
-                node.DrainOnReturn = false;
-                goto default;
-            default:
-                return BuildTask<T, TBuilder>(ref builder);
+            Acquire<T, TBuilder, WaitNode>(ref builder, acquired: false);
         }
+
+        return builder.Build();
     }
 
     /// <summary>
@@ -109,7 +109,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <seealso cref="Signal(bool)"/>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        var builder = CreateTaskBuilder(timeout, token);
+        var builder = BeginAcquisition(timeout, token);
         return WaitAsync<ValueTask<bool>, TimeoutAndCancellationToken>(ref builder);
     }
 
@@ -126,7 +126,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <seealso cref="Signal(bool)"/>
     public ValueTask WaitAsync(CancellationToken token = default)
     {
-        var builder = CreateTaskBuilder(token);
+        var builder = BeginAcquisition(token);
         return WaitAsync<ValueTask, CancellationTokenOnly>(ref builder);
     }
 
@@ -149,10 +149,10 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
     public ValueTask<bool> SignalAndWaitAsync(bool resumeAll, bool throwOnEmptyQueue, TimeSpan timeout, CancellationToken token = default)
     {
-        var builder = CreateTaskBuilder(timeout, token);
-        return SignalAndWaitAsync<ValueTask<bool>, TimeoutAndCancellationToken, ResumingVisitor>(
+        var builder = BeginAcquisition(timeout, token);
+        return SignalAndWaitAsync<ValueTask<bool>, TimeoutAndCancellationToken>(
             ref builder,
-            new(resumeAll),
+            resumeAll,
             throwOnEmptyQueue
         );
     }
@@ -175,34 +175,37 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="InvalidOperationException"><paramref name="throwOnEmptyQueue"/> is <see langword="true"/> and no suspended callers in the queue.</exception>
     public ValueTask SignalAndWaitAsync(bool resumeAll, bool throwOnEmptyQueue, CancellationToken token = default)
     {
-        var builder = CreateTaskBuilder(token);
-        return SignalAndWaitAsync<ValueTask, CancellationTokenOnly, ResumingVisitor>(
+        var builder = BeginAcquisition(token);
+        return SignalAndWaitAsync<ValueTask, CancellationTokenOnly>(
             ref builder,
-            new(resumeAll),
+            resumeAll,
             throwOnEmptyQueue);
     }
 
-    private T SignalAndWaitAsync<T, TBuilder, TVisitor>(ref TBuilder builder, TVisitor visitor, bool throwOnEmptyQueue)
+    private T SignalAndWaitAsync<T, TBuilder>(ref TBuilder builder, bool resumeAll, bool throwOnEmptyQueue)
         where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
-        where TVisitor : struct, IWaitQueueVisitor, allows ref struct
+        where TBuilder : struct, ITaskBuilder<T>, IWaitQueueProvider, allows ref struct
     {
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
+        WaitQueueScope queue;
         if (builder.IsCompleted)
         {
-            suspendedCallers = null;
+            queue = default;
         }
-        else if (DrainWaitQueue(visitor, out suspendedCallers))
+        else
         {
-            Acquire<T, TBuilder, WaitNode>(ref builder, acquired: false);
-        }
-        else if (throwOnEmptyQueue)
-        {
-            builder.Complete<DefaultExceptionFactory<EmptyWaitQueueException>>();
+            queue = builder.CaptureWaitQueue();
+            if (Signal(resumeAll, ref queue))
+            {
+                Acquire<T, TBuilder, WaitNode>(ref builder, acquired: false);
+            }
+            else if (throwOnEmptyQueue)
+            {
+                builder.Complete<DefaultExceptionFactory<EmptyWaitQueueException>>();
+            }
         }
 
-        var task = BuildTask<T, TBuilder>(ref builder);
-        suspendedCallers?.Unwind();
+        var task = builder.Build();
+        queue.ResumeSuspendedCallers();
         return task;
     }
 
@@ -235,9 +238,17 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
             if (condition.Invoke())
                 return true;
         } while (timeout.TryGetRemainingTime(out var remainingTime) &&
-                 await TryAcquireAsync<WaitNode, ConditionalLockManager<TCondition>>(new(ref condition), remainingTime, token).ConfigureAwait(false));
+                 await TryAcquireAsync(ref condition, remainingTime, token).ConfigureAwait(false));
 
         return false;
+    }
+
+    private ValueTask<bool> TryAcquireAsync<TCondition>(ref TCondition condition, TimeSpan timeout, CancellationToken token)
+        where TCondition : ISupplier<bool>
+    {
+        var builder = BeginAcquisition(timeout, token);
+        return EndAcquisition<ValueTask<bool>, TimeoutAndCancellationToken, WaitNode, ConditionalLockManager<TCondition>>(
+            ref builder, new(ref condition));
     }
 
     /// <summary>
@@ -259,12 +270,20 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         where TCondition : ISupplier<bool>
     {
         while (!condition.Invoke())
-            await AcquireAsync<WaitNode, ConditionalLockManager<TCondition>>(new(ref condition), token)
+            await AcquireAsync(ref condition, token)
                 .ConfigureAwait(false);
     }
 
+    private ValueTask AcquireAsync<TCondition>(ref TCondition condition, CancellationToken token)
+        where TCondition : ISupplier<bool>
+    {
+        var builder = BeginAcquisition(token);
+        return EndAcquisition<ValueTask, CancellationTokenOnly, WaitNode, ConditionalLockManager<TCondition>>(
+            ref builder, new(ref condition));
+    }
+
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct ConditionalLockManager<TCondition>(ref TCondition condition) : ILockManager, IConsumer<WaitNode>
+    private readonly ref struct ConditionalLockManager<TCondition>(ref TCondition condition) : ILockManager<WaitNode>
         where TCondition : ISupplier<bool>
     {
         private readonly ref TCondition condition = ref condition;
@@ -273,46 +292,6 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
 
         void ILockManager.AcquireLock()
         {
-        }
-
-        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
-
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
-    }
-    
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct ResumingVisitor(bool resumeAll) : IWaitQueueVisitor
-    {
-        bool IWaitQueueVisitor.Visit(scoped ref WaitQueueVisitor waitQueueVisitor)
-        {
-            bool signaled;
-            if (resumeAll)
-            {
-                waitQueueVisitor.SignalAll(out signaled);
-            }
-            else
-            {
-                waitQueueVisitor.SignalFirst(out signaled);
-            }
-
-            return signaled;
-        }
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private readonly struct InterruptingVisitor : IWaitQueueVisitor
-    {
-        private readonly PendingTaskInterruptedException exception;
-
-        public InterruptingVisitor(object? reason)
-            => ExceptionDispatchInfo.SetCurrentStackTrace(exception = new() { Reason = reason });
-
-        bool IWaitQueueVisitor.Visit(scoped ref WaitQueueVisitor waitQueueVisitor)
-        {
-            waitQueueVisitor.SignalAll(exception, out bool signaled);
-            return signaled;
         }
     }
 

@@ -74,18 +74,18 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
     }
 
-    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+    private protected sealed override void DrainWaitQueue(ref WaitQueueScope queue)
     {
-        for (; !waitQueueVisitor.IsEndOfQueue<WaitNode, TContext>(out var context); waitQueueVisitor.Advance())
+        for (; !queue.IsEndOfQueue<WaitNode, TContext>(out var context); queue.Advance())
         {
             switch (CanAcquire(context))
             {
                 case false when GetAcquisitionException(context) is { } factory:
-                    waitQueueVisitor.SignalCurrent(factory.CreateException());
+                    queue.SignalCurrent(factory.CreateException());
                     goto default;
                 case false:
                     return;
-                case true when waitQueueVisitor.SignalCurrent():
+                case true when queue.SignalCurrent():
                     AcquireCore(context);
                     goto default;
                 default:
@@ -108,16 +108,18 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        using (AcquireInternalLock())
+        var queue = CaptureWaitQueue();
+        try
         {
-            suspendedCallers = DrainWaitQueue();
+            DrainWaitQueue(ref queue);
 
             if (IsDisposing && IsReadyToDispose)
                 Dispose(true);
         }
-
-        suspendedCallers?.Unwind();
+        finally
+        {
+            queue.Dispose();
+        }
     }
 
     /// <summary>
@@ -133,17 +135,19 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        using (AcquireInternalLock())
+        var queue = CaptureWaitQueue();
+        try
         {
             ReleaseCore(context);
-            suspendedCallers = DrainWaitQueue();
+            DrainWaitQueue(ref queue);
 
             if (IsDisposing && IsReadyToDispose)
                 Dispose(true);
         }
-
-        suspendedCallers?.Unwind();
+        finally
+        {
+            queue.Dispose();
+        }
     }
 
     /// <summary>
@@ -160,7 +164,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        using (AcquireInternalLock())
+        using (CaptureWaitQueue())
         {
             return TryAcquireCore(context);
         }
@@ -177,7 +181,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected ValueTask<bool> TryAcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
     {
-        var builder = CreateTaskBuilder(timeout, token);
+        var builder = BeginAcquisition(timeout, token);
         return AcquireAsync<ValueTask<bool>, TimeoutAndCancellationToken>(context, ref builder);
     }
 
@@ -193,7 +197,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected ValueTask AcquireAsync(TContext context, TimeSpan timeout, CancellationToken token)
     {
-        var builder = CreateTaskBuilder(timeout, token);
+        var builder = BeginAcquisition(timeout, token);
         return AcquireAsync<ValueTask, TimeoutAndCancellationToken>(context, ref builder);
     }
 
@@ -207,7 +211,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
     /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
     protected ValueTask AcquireAsync(TContext context, CancellationToken token)
     {
-        var builder = CreateTaskBuilder(token);
+        var builder = BeginAcquisition(token);
         return AcquireAsync<ValueTask, CancellationTokenOnly>(context, ref builder);
     }
 
@@ -226,11 +230,10 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
         }
         else if (Acquire<T, TBuilder, WaitNode>(ref builder, acquired) is { } node)
         {
-            node.DrainOnReturn = true;
             node.Context = context;
         }
 
-        return BuildTask<T, TBuilder>(ref builder);
+        return builder.Build();
     }
 
     private bool TryAcquireCore(TContext context)

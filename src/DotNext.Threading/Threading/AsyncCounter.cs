@@ -3,10 +3,6 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using Runtime;
-using Runtime.CompilerServices;
-using Tasks;
-
 /// <summary>
 /// Represents a synchronization primitive that is signaled when its count becomes non-zero.
 /// </summary>
@@ -32,9 +28,6 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
 
         counter = initialValue;
     }
-
-    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
-        => waitQueueVisitor.SignalAll(new StateManager(ref counter));
 
     /// <inheritdoc/>
     bool IAsyncEvent.IsSet => Value > 0L;
@@ -109,29 +102,19 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     {
         Debug.Assert(delta > 0L);
 
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        using (AcquireInternalLock())
-        {
-            counter = checked(counter + delta);
-            suspendedCallers = DrainWaitQueue();
-        }
-
-        suspendedCallers?.Unwind();
+        using var queue = CaptureWaitQueue();
+        counter = checked(counter + delta);
+        queue.SignalAll(new StateManager(ref counter));
     }
 
     private bool TryIncrementCore(long maxValue)
     {
         Debug.Assert(maxValue > 0);
+        
+        using var queue = CaptureWaitQueue();
+        var result = TryIncrement(ref counter, maxValue);
+        queue.SignalAll(new StateManager(ref counter));
 
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        bool result;
-        using (AcquireInternalLock())
-        {
-            result = TryIncrement(ref counter, maxValue);
-            suspendedCallers = DrainWaitQueue();
-        }
-
-        suspendedCallers?.Unwind();
         return result;
         
         static bool TryIncrement(ref long counter, long maxValue)
@@ -161,7 +144,10 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, StateManager>(new(ref counter), timeout, token);
+    {
+        var builder = BeginAcquisition(timeout, token);
+        return EndAcquisition<ValueTask<bool>, TimeoutAndCancellationToken, WaitNode, StateManager>(ref builder, new(ref counter));
+    }
 
     /// <summary>
     /// Suspends caller if <see cref="Value"/> is zero
@@ -172,7 +158,10 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, StateManager>(new(ref counter), token);
+    {
+        var builder = BeginAcquisition(token);
+        return EndAcquisition<ValueTask, CancellationTokenOnly, WaitNode, StateManager>(ref builder, new(ref counter));
+    }
 
     /// <summary>
     /// Attempts to decrement the counter synchronously.
@@ -187,18 +176,13 @@ public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
     }
     
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct StateManager(ref long counter) : ILockManager, IConsumer<WaitNode>
+    private readonly ref struct StateManager(ref long counter) : ILockManager<WaitNode>
     {
         private readonly ref long counter = ref counter;
 
         bool ILockManager.IsLockAllowed => counter > 0L;
 
         void ILockManager.AcquireLock() => counter--;
-
-        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
-
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
     }
 
     [StructLayout(LayoutKind.Auto)]

@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Runtime.ExceptionServices;
+
 namespace DotNext.Threading;
 
 /// <summary>
@@ -16,5 +19,13 @@ public class PendingTaskInterruptedException(string? message = null, Exception? 
     {
         get;
         init;
+    }
+
+    [StackTraceHidden]
+    internal static PendingTaskInterruptedException CreateAndFillStackTrace(object? reason = null)
+    {
+        var e = new PendingTaskInterruptedException { Reason = reason };
+        ExceptionDispatchInfo.SetCurrentStackTrace(e);
+        return e;
     }
 }

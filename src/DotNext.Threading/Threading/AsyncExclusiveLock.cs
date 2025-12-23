@@ -23,8 +23,8 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     {
     }
 
-    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
-        => waitQueueVisitor.SignalAll(new LockManager(ref acquired));
+    private protected sealed override void DrainWaitQueue(ref WaitQueueScope queue)
+        => queue.SignalAll(new LockManager(ref acquired));
 
     /// <summary>
     /// Indicates that exclusive lock taken.
@@ -101,7 +101,10 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, LockManager>(new(ref acquired), timeout, token);
+    {
+        var builder = BeginAcquisition(timeout, token);
+        return EndAcquisition<ValueTask<bool>, TimeoutAndCancellationToken, WaitNode, LockManager>(ref builder, new(ref acquired));
+    }
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -115,7 +118,10 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync<WaitNode, LockManager>(new(ref acquired), timeout, token);
+    {
+        var builder = BeginAcquisition(timeout, token);
+        return EndAcquisition<ValueTask, TimeoutAndCancellationToken, WaitNode, LockManager>(ref builder, new(ref acquired));
+    }
 
     /// <summary>
     /// Enters the lock in exclusive mode asynchronously.
@@ -127,7 +133,10 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask AcquireAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, LockManager>(new(ref acquired), token);
+    {
+        var builder = BeginAcquisition(token);
+        return EndAcquisition<ValueTask, CancellationTokenOnly, WaitNode, LockManager>(ref builder, new(ref acquired));
+    }
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires the lock.
@@ -146,7 +155,14 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask<bool> TryStealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, LockManager>(reason, new(ref acquired), timeout, token);
+    {
+        var exception = PendingTaskInterruptedException.CreateAndFillStackTrace(reason);
+        var builder = BeginAcquisition(timeout, token);
+        return EndAcquisition<ValueTask<bool>, TimeoutAndCancellationToken, WaitNode, LockManager>(
+            exception,
+            ref builder,
+            new(ref acquired));
+    }
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires the lock.
@@ -166,7 +182,14 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync<WaitNode, LockManager>(reason, new(ref acquired), timeout, token);
+    {
+        var exception = PendingTaskInterruptedException.CreateAndFillStackTrace(reason);
+        var builder = BeginAcquisition(timeout, token);
+        return EndAcquisition<ValueTask, TimeoutAndCancellationToken, WaitNode, LockManager>(
+            exception,
+            ref builder,
+            new(ref acquired));
+    }
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires the lock.
@@ -184,7 +207,14 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealAsync(object? reason = null, CancellationToken token = default)
-        => AcquireAsync<WaitNode, LockManager>(reason, new(ref acquired), token);
+    {
+        var exception = PendingTaskInterruptedException.CreateAndFillStackTrace(reason);
+        var builder = BeginAcquisition(token);
+        return EndAcquisition<ValueTask, CancellationTokenOnly, WaitNode, LockManager>(
+            exception,
+            ref builder,
+            new(ref acquired));
+    }
 
     /// <summary>
     /// Releases previously acquired exclusive lock.
@@ -195,39 +225,36 @@ public class AsyncExclusiveLock : QueuedSynchronizer, IAsyncDisposable
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        ManualResetCompletionSource? suspendedCaller;
-        using (AcquireInternalLock())
+        var queue = CaptureWaitQueue();
+        try
         {
             if (!acquired)
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             acquired = false;
             lockOwner = null;
-            suspendedCaller = DrainWaitQueue();
+            DrainWaitQueue(ref queue);
 
             if (IsDisposing && IsReadyToDispose)
             {
                 Dispose(true);
             }
         }
-
-        suspendedCaller?.NotifyConsumer();
+        finally
+        {
+            queue.Dispose();
+        }
     }
 
     private protected sealed override bool IsReadyToDispose => !acquired && IsEmptyQueue;
     
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct LockManager(ref bool acquired) : ILockManager, IConsumer<WaitNode>
+    private readonly ref struct LockManager(ref bool acquired) : ILockManager<WaitNode>
     {
         private readonly ref bool acquired = ref acquired;
 
         bool ILockManager.IsLockAllowed => !acquired;
 
         void ILockManager.AcquireLock() => acquired = true;
-
-        void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = true;
-
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
     }
 }

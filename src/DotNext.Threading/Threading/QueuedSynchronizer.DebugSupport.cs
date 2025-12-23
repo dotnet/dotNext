@@ -37,14 +37,6 @@ partial class QueuedSynchronizer
 
     private object? CaptureCallerInformation() => callerInfo?.Capture();
 
-    private IReadOnlyList<object?> GetSuspendedCallersCore()
-    {
-        lock (syncRoot)
-        {
-            return waitQueue.GetSuspendedCallers();
-        }
-    }
-
     /// <summary>
     /// Gets a list of suspended callers respecting their order in wait queue.
     /// </summary>
@@ -55,7 +47,7 @@ partial class QueuedSynchronizer
     /// <seealso cref="TrackSuspendedCallers"/>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
     public IReadOnlyList<object?> GetSuspendedCallers()
-        => callerInfo is null ? [] : GetSuspendedCallersCore();
+        => callerInfo is null ? [] : waitQueue.GetSuspendedCallers();
     
     private sealed class CallerInformationStorage : ThreadLocal<object?>
     {

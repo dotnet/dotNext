@@ -4,8 +4,6 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using Runtime;
-using Runtime.CompilerServices;
 using Tasks;
 
 /// <summary>
@@ -29,23 +27,21 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
 
     private void InitializeLockOwner(bool acquired)
     {
-        AssertInternalLockState();
-        
         if (lockOwnerState is null && acquired)
         {
             lockOwnerState = new(trackAllValues: false);
         }
     }
 
-    private bool Signal(ref WaitQueueVisitor waitQueueVisitor, bool isWriteLock) => isWriteLock
-        ? waitQueueVisitor.SignalCurrent<WriteLockManager>(new(ref state))
-        : waitQueueVisitor.SignalCurrent<ReadLockManager>(new(ref state));
+    private bool Signal(ref WaitQueueScope queue, bool isWriteLock) => isWriteLock
+        ? queue.SignalCurrent<WriteLockManager>(new(ref state))
+        : queue.SignalCurrent<ReadLockManager>(new(ref state));
 
-    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+    private protected sealed override void DrainWaitQueue(ref WaitQueueScope queue)
     {
-        while (!waitQueueVisitor.IsEndOfQueue<WaitNode, bool>(out var isWriteLock) && Signal(ref waitQueueVisitor, isWriteLock))
+        while (!queue.IsEndOfQueue<WaitNode, bool>(out var isWriteLock) && Signal(ref queue, isWriteLock))
         {
-            waitQueueVisitor.Advance();
+            queue.Advance();
         }
     }
 
@@ -111,7 +107,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         => TryEnter<ReadLockManager>(new(ref state), timeout, token);
 
     private bool TryEnter<TLockManager>(TLockManager manager, TimeSpan timeout, CancellationToken token)
-        where TLockManager : struct, ILockManager, IConsumer<WaitNode>, allows ref struct
+        where TLockManager : struct, ILockManager<WaitNode>, allows ref struct
     {
         if (IsLockHelpByCurrentThread)
             throw new LockRecursionException();
@@ -119,7 +115,8 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         bool result;
         try
         {
-            result = TryAcquireAsync<WaitNode, TLockManager>(manager, timeout, token)
+            var builder = BeginAcquisition(timeout, token);
+            result = EndAcquisition<ValueTask<bool>, TimeoutAndCancellationToken, WaitNode, TLockManager>(ref builder, manager)
                 .Wait();
         }
         catch (OperationCanceledException e) when (e.CancellationToken == token)
@@ -149,7 +146,10 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryEnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, ReadLockManager>(new(ref state), timeout, token);
+    {
+        var builder = BeginAcquisition(timeout, token);
+        return EndAcquisition<ValueTask<bool>, TimeoutAndCancellationToken, WaitNode, ReadLockManager>(ref builder, new(ref state));
+    }
 
     /// <summary>
     /// Enters the lock in read mode asynchronously.
@@ -163,7 +163,10 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterReadLockAsync(TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync<WaitNode, ReadLockManager>(new(ref state), timeout, token);
+    {
+        var builder = BeginAcquisition(timeout, token);
+        return EndAcquisition<ValueTask, TimeoutAndCancellationToken, WaitNode, ReadLockManager>(ref builder, new(ref state));
+    }
 
     /// <summary>
     /// Enters the lock in read mode asynchronously.
@@ -175,7 +178,10 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterReadLockAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, ReadLockManager>(new(ref state), token);
+    {
+        var builder = BeginAcquisition(token);
+        return EndAcquisition<ValueTask, CancellationTokenOnly, WaitNode, ReadLockManager>(ref builder, new(ref state));
+    }
 
     /// <summary>
     /// Attempts to acquire write lock without blocking.
@@ -239,7 +245,10 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask<bool> TryEnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, WriteLockManager>(new(ref state), timeout, token);
+    {
+        var builder = BeginAcquisition(timeout, token);
+        return EndAcquisition<ValueTask<bool>, TimeoutAndCancellationToken, WaitNode, WriteLockManager>(ref builder, new(ref state));
+    }
 
     /// <summary>
     /// Enters the lock in write mode asynchronously.
@@ -251,7 +260,10 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterWriteLockAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, WriteLockManager>(new(ref state), token);
+    {
+        var builder = BeginAcquisition(token);
+        return EndAcquisition<ValueTask, CancellationTokenOnly, WaitNode, WriteLockManager>(ref builder, new(ref state));
+    }
 
     /// <summary>
     /// Enters the lock in write mode asynchronously.
@@ -265,7 +277,10 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="PendingTaskInterruptedException">The operation has been interrupted manually.</exception>
     public ValueTask EnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync<WaitNode, WriteLockManager>(new(ref state), timeout, token);
+    {
+        var builder = BeginAcquisition(timeout, token);
+        return EndAcquisition<ValueTask, TimeoutAndCancellationToken, WaitNode, WriteLockManager>(ref builder, new(ref state));
+    }
 
     /// <summary>
     /// Tries to upgrade the read lock to the write lock synchronously without blocking of the caller.
@@ -285,18 +300,21 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
         bool upgraded;
-        using (AcquireInternalLock())
+        var queue = CaptureWaitQueue();
+        try
         {
             if (state.HasNoReadLocks)
                 throw new SynchronizationLockException();
 
-            upgraded = TryUpgradeToWriteLock(out suspendedCallers);
+            upgraded = TryUpgradeToWriteLock(ref queue);
             InitializeLockOwner(upgraded);
         }
+        finally
+        {
+            queue.Dispose();
+        }
 
-        suspendedCallers?.Unwind();
         lockOwnerState?.Value = upgraded;
 
         return upgraded;
@@ -316,13 +334,13 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
         return acquired;
     }
 
-    private bool TryUpgradeToWriteLock(out LinkedValueTaskCompletionSource<bool>? suspendedCallers)
+    private bool TryUpgradeToWriteLock(ref WaitQueueScope queue)
     {
         Debug.Assert(state.ReadLocks > 0L);
 
         state.ExitReadLock();
 
-        suspendedCallers = DrainWaitQueue();
+        DrainWaitQueue(ref queue);
         var acquired = state.IsWriteLockAllowed;
         if (acquired)
         {
@@ -334,24 +352,28 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
 
     private T UpgradeToWriteLockAsync<T, TBuilder>(ref TBuilder builder)
         where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
+        where TBuilder : struct, ITaskBuilder<T>, IWaitQueueProvider, allows ref struct
     {
-        var suspendedCallers = default(LinkedValueTaskCompletionSource<bool>);
-        switch (builder.IsCompleted)
+        WaitQueueScope queue;
+        if (builder.IsCompleted)
         {
-            case true:
-                goto default;
-            case false when state.HasNoReadLocks:
-                builder.Complete<DefaultExceptionFactory<SynchronizationLockException>>();
-                goto default;
-            case false when Acquire<T, TBuilder, WaitNode>(ref builder, TryUpgradeToWriteLock(out suspendedCallers)) is { } node:
-                WriteLockManager.Initialize(node);
-                goto default;
-            default:
-                var task = BuildTask<T, TBuilder>(ref builder);
-                suspendedCallers?.Unwind();
-                return task;
+            queue = default;
         }
+        else if (state.HasNoReadLocks)
+        {
+            queue = default;
+            builder.Complete<DefaultExceptionFactory<SynchronizationLockException>>();
+        }
+        else
+        {
+            queue = builder.CaptureWaitQueue();
+            if (Acquire<T, TBuilder, WaitNode>(ref builder, TryUpgradeToWriteLock(ref queue)) is { } node)
+                WriteLockManager.Initialize(node);
+        }
+
+        var task = builder.Build();
+        queue.ResumeSuspendedCallers();
+        return task;
     }
 
     /// <summary>
@@ -375,7 +397,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <exception cref="SynchronizationLockException">The caller wasn't acquire the reader lock.</exception>
     public ValueTask<bool> TryUpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        var builder = CreateTaskBuilder(timeout, token);
+        var builder = BeginAcquisition(timeout, token);
         return UpgradeToWriteLockAsync<ValueTask<bool>, TimeoutAndCancellationToken>(ref builder);
     }
 
@@ -428,7 +450,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <exception cref="SynchronizationLockException">The caller wasn't acquire the reader lock.</exception>
     public ValueTask UpgradeToWriteLockAsync(CancellationToken token = default)
     {
-        var builder = CreateTaskBuilder(token);
+        var builder = BeginAcquisition(token);
         return UpgradeToWriteLockAsync<ValueTask, CancellationTokenOnly>(ref builder);
     }
 
@@ -454,7 +476,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <exception cref="SynchronizationLockException">The caller wasn't acquire the reader lock.</exception>
     public ValueTask UpgradeToWriteLockAsync(TimeSpan timeout, CancellationToken token = default)
     {
-        var builder = CreateTaskBuilder(timeout, token);
+        var builder = BeginAcquisition(timeout, token);
         return UpgradeToWriteLockAsync<ValueTask, TimeoutAndCancellationToken>(ref builder);
     }
 
@@ -470,7 +492,11 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask<bool> TryStealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, WriteLockManager>(reason, new(ref state), timeout, token);
+    {
+        var e = PendingTaskInterruptedException.CreateAndFillStackTrace(reason);
+        var builder = BeginAcquisition(timeout, token);
+        return EndAcquisition<ValueTask<bool>, TimeoutAndCancellationToken, WaitNode, WriteLockManager>(e, ref builder, new(ref state));
+    }
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires write lock.
@@ -485,7 +511,11 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealWriteLockAsync(object? reason, TimeSpan timeout, CancellationToken token = default)
-        => AcquireAsync<WaitNode, WriteLockManager>(reason, new(ref state), timeout, token);
+    {
+        var e = PendingTaskInterruptedException.CreateAndFillStackTrace(reason);
+        var builder = BeginAcquisition(timeout, token);
+        return EndAcquisition<ValueTask, TimeoutAndCancellationToken, WaitNode, WriteLockManager>(e, ref builder, new(ref state));
+    }
 
     /// <summary>
     /// Interrupts all pending callers in the queue and acquires write lock.
@@ -498,7 +528,11 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <seealso cref="PendingTaskInterruptedException"/>
     public ValueTask StealWriteLockAsync(object? reason = null, CancellationToken token = default)
-        => AcquireAsync<WaitNode, WriteLockManager>(reason, new(ref state), token);
+    {
+        var e = PendingTaskInterruptedException.CreateAndFillStackTrace(reason);
+        var builder = BeginAcquisition(token);
+        return EndAcquisition<ValueTask, CancellationTokenOnly, WaitNode, WriteLockManager>(e, ref builder, new(ref state));
+    }
 
     /// <summary>
     /// Exits previously acquired mode.
@@ -513,23 +547,25 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        using (AcquireInternalLock())
+        var queue = CaptureWaitQueue();
+        try
         {
             if (state.IsWriteLockAllowed)
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.ExitLock();
             lockOwnerState?.Value = false;
-            suspendedCallers = DrainWaitQueue();
+            DrainWaitQueue(ref queue);
 
             if (IsDisposing && IsReadyToDispose)
             {
                 Dispose(true);
             }
         }
-
-        suspendedCallers?.Unwind();
+        finally
+        {
+            queue.Dispose();
+        }
     }
 
     /// <summary>
@@ -545,17 +581,19 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        using (AcquireInternalLock())
+        var queue = CaptureWaitQueue();
+        try
         {
             if (state.IsWriteLockAllowed)
                 throw new SynchronizationLockException(ExceptionMessages.NotInLock);
 
             state.DowngradeFromWriteLock();
-            suspendedCallers = DrainWaitQueue();
+            DrainWaitQueue(ref queue);
         }
-
-        suspendedCallers?.Unwind();
+        finally
+        {
+            queue.Dispose();
+        }
     }
 
     private protected sealed override bool IsReadyToDispose => state.IsWriteLockAllowed && IsEmptyQueue;
@@ -652,7 +690,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct ReadLockManager(ref State state) : ILockManager, IConsumer<WaitNode>
+    private readonly ref struct ReadLockManager(ref State state) : ILockManager<WaitNode>
     {
         private readonly ref State state = ref state;
 
@@ -660,14 +698,8 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
 
         void ILockManager.AcquireLock() => state.AcquireReadLock();
 
-        void IConsumer<WaitNode>.Invoke(WaitNode node)
-        {
-            node.IsWriteLock = false;
-            node.DrainOnReturn = true;
-        }
-
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
+        static void ILockManager<WaitNode>.Initialize(WaitNode node)
+            => node.IsWriteLock = false;
     }
 
     [StructLayout(LayoutKind.Auto)]
@@ -681,7 +713,7 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly ref struct WriteLockManager(ref State state) : ILockManager, IConsumer<WaitNode>
+    private readonly ref struct WriteLockManager(ref State state) : ILockManager<WaitNode>
     {
         private readonly ref State state = ref state;
 
@@ -690,14 +722,8 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
 
         void ILockManager.AcquireLock() => state.AcquireWriteLock();
 
-        void IConsumer<WaitNode>.Invoke(WaitNode node)
-            => Initialize(node);
-
         public static void Initialize(WaitNode node)
-            => node.IsWriteLock = node.DrainOnReturn = true;
-        
-        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
-            => throw new NotSupportedException();
+            => node.IsWriteLock = true;
     }
 
     [StructLayout(LayoutKind.Auto)]
