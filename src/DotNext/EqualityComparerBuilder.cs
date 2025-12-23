@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
@@ -23,7 +24,7 @@ public readonly struct EqualityComparerBuilder<T>
     private const BindingFlags PublicStaticFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
     private const BindingFlags NonPublicStaticFlags = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly;
 
-    private readonly IReadOnlySet<string>? excludedFields;
+    private readonly FrozenSet<string>? excludedFields;
 
     /// <summary>
     /// Sets an array of excluded field names.
@@ -31,7 +32,7 @@ public readonly struct EqualityComparerBuilder<T>
     /// <value>An array of excluded fields.</value>
     public string[] ExcludedFields
     {
-        init => excludedFields = new HashSet<string>(value);
+        init => excludedFields = value.ToFrozenSet();
     }
 
     private bool IsIncluded(FieldInfo field) => excludedFields?.Contains(field.Name) ?? true;
@@ -118,7 +119,7 @@ public readonly struct EqualityComparerBuilder<T>
             var defaultProperty = GetDefaultEqualityComparer(expr.Type);
             Debug.Assert(defaultProperty is not null);
 
-            method = method = defaultProperty
+            method = defaultProperty
                 .DeclaringType
                 ?.GetMethod(nameof(EqualityComparer<>.GetHashCode), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 

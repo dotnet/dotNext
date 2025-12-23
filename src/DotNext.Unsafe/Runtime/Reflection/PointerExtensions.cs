@@ -2,7 +2,7 @@ using Pointer = System.Reflection.Pointer;
 
 namespace DotNext.Runtime.Reflection;
 
-using Runtime.InteropServices;
+using InteropServices;
 
 /// <summary>
 /// Provides interop later between <see cref="Pointer"/> and <see cref="Pointer{T}"/> types.
@@ -10,7 +10,7 @@ using Runtime.InteropServices;
 public static class PointerExtensions
 {
     /// <summary>
-    /// Extends
+    /// Extends <see cref="Pointer{T}"/> type.
     /// </summary>
     extension(Pointer)
     {
