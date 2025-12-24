@@ -94,21 +94,16 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// <seealso cref="Return(int)"/>
     public bool TryTake(out int result)
     {
-        return TryTake(ref bitmask, maxValue, out result);
-
-        static bool TryTake(ref ulong bitmask, int maxValue, out int result)
+        var current = Atomic.Read(in bitmask);
+        for (ulong newValue;; current = newValue)
         {
-            var current = Atomic.Read(in bitmask);
-            for (ulong newValue; ; current = newValue)
-            {
-                newValue = current & (current - 1UL); // Reset the lowest set bit, the same as BLSR instruction
-                newValue = Interlocked.CompareExchange(ref bitmask, newValue, current);
-                if (newValue == current)
-                    break;
-            }
-
-            return (result = BitOperations.TrailingZeroCount(current)) <= maxValue;
+            newValue = current & (current - 1UL); // Reset the lowest set bit, the same as BLSR instruction
+            newValue = Interlocked.CompareExchange(ref bitmask, newValue, current);
+            if (newValue == current)
+                break;
         }
+
+        return (result = BitOperations.TrailingZeroCount(current)) <= maxValue;
     }
 
     /// <summary>
