@@ -62,23 +62,6 @@ public interface ITypeMap<TValue> : IReadOnlyTypeMap<TValue>
 public interface ITypeMap : IReadOnlyTypeMap
 {
     private const int DefaultInitialCapacity = 16;
-    private static volatile int typeLastIndex = -1;
-
-    private static class TypeSlot<T>
-        where T : allows ref struct
-    {
-        internal static readonly int Index = Interlocked.Increment(ref typeLastIndex);
-    }
-
-    /// <summary>
-    /// Gets zero-based index of the specified type.
-    /// </summary>
-    /// <typeparam name="TKey">The type acting as a key.</typeparam>
-    /// <returns>The index of the type.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static int GetIndex<TKey>()
-        where TKey : allows ref struct
-        => TypeSlot<TKey>.Index;
 
     /// <summary>
     /// Gets the recommended initial capacity of the internal array.
@@ -88,7 +71,7 @@ public interface ITypeMap : IReadOnlyTypeMap
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get
         {
-            var capacity = typeLastIndex + 1;
+            var capacity = TypeSlot.Count;
 
             if (capacity < DefaultInitialCapacity)
             {

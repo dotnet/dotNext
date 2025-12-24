@@ -22,7 +22,7 @@ public partial struct UserDataStorage
                 for (var i = 0; i < array.Length; i++)
                 {
                     if ((array.GetValue(i) as ISupplier<object?>)?.Invoke() is { } value)
-                        output[UserDataSlot.ToString(typeIndex, i + 1)] = value;
+                        output[TypeSlot.ToString(typeIndex, i + 1)] = value;
                 }
             }
         }
@@ -134,7 +134,7 @@ public partial struct UserDataStorage
             }
             else
             {
-                tables = new BackingStorageEntry[UserDataSlot.SlotTypesCount];
+                tables = new BackingStorageEntry[TypeSlot.Count];
                 tables.AsSpan().Initialize();
             }
         }
