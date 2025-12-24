@@ -6,7 +6,7 @@ public sealed class ServiceProviderFactoryTests : Test
     public static void UseBuilderStyle()
     {
         var builder = IServiceProvider.CreateBuilder()
-            .Add<IConvertible>("value")
+            .Add(Func<IConvertible>.Constant("value"))
             .Add<IFormattable>(22);
 
         var provider = builder.Build();
