@@ -25,7 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <!--Misc packages-->
-    <PackageVersion Include="BenchmarkDotNet" Version="0.15.6" />
+    <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="FastMember.Signed" Version="1.5.0" />
     <PackageVersion Include="xunit.v3" Version="3.2.0" />
   </ItemGroup>
