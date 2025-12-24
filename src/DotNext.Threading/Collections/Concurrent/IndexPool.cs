@@ -50,6 +50,12 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
         bitmask = GetBitMask(this.maxValue = maxValue);
     }
 
+    private IndexPool(ulong bitmask, int maxValue)
+    {
+        this.bitmask = bitmask;
+        this.maxValue = maxValue;
+    }
+
     private static ulong GetBitMask(int maxValue) => ulong.MaxValue >>> (MaxValue - maxValue);
 
     /// <summary>
@@ -244,6 +250,12 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
 
     /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator() => IEnumerator<int>.Create(GetEnumerator());
+
+    /// <summary>
+    /// Takes all the indices atomically.
+    /// </summary>
+    /// <returns>The pool that contains all taken indices.</returns>
+    public IndexPool TakeAll() => new(Interlocked.Exchange(ref bitmask, 0UL), maxValue);
 
     /// <summary>
     /// Represents an enumerator over available indices in the pool.

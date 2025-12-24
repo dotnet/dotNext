@@ -114,12 +114,28 @@ public sealed class IndexPoolTests : Test
     public static void TakeReturnMany()
     {
         var pool = new IndexPool();
-        Span<int> indicies = stackalloc int[IndexPool.Capacity];
+        Span<int> indices = stackalloc int[IndexPool.Capacity];
 
-        Equal(IndexPool.Capacity, pool.Take(indicies));
+        Equal(IndexPool.Capacity, pool.Take(indices));
         Empty(pool);
 
-        pool.Return(indicies);
+        pool.Return(indices);
         NotEmpty(pool);
+    }
+
+    [Fact]
+    public static void TakeAll2()
+    {
+        var pool = new IndexPool { IsEmpty = true };
+        pool.Return(0);
+        pool.Return(2);
+        False(pool.IsEmpty);
+
+        var copy = pool.TakeAll();
+        Empty(pool);
+
+        Contains(0, copy);
+        Contains(2, copy);
+        DoesNotContain(1, copy);
     }
 }
