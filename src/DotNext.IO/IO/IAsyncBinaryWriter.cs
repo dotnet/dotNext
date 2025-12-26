@@ -302,7 +302,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
 
     internal static Stream CreateStream<TWriter>(TWriter writer)
         where TWriter : IAsyncBinaryWriter
-        => StreamSource.CreateAsyncWritable(new Wrapper<TWriter>(writer));
+        => Stream.CreateAsyncWritable(new Wrapper<TWriter>(writer));
 
     [StructLayout(LayoutKind.Auto)]
     private readonly struct Wrapper<TWriter>(TWriter writer) : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
