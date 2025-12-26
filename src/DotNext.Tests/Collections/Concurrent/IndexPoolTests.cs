@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace DotNext.Collections.Concurrent;
 
 public sealed class IndexPoolTests : Test
@@ -10,6 +12,7 @@ public sealed class IndexPoolTests : Test
         False(pool.TryTake(out _));
         DoesNotContain(10, pool);
         Empty(pool);
+        Equal(0, pool.GetEnumerator().RemainingCount);
     }
 
     [Fact]
@@ -31,6 +34,7 @@ public sealed class IndexPoolTests : Test
     {
         var pool = new IndexPool();
         NotEmpty(pool);
+        Equal(pool.Count, pool.GetEnumerator().RemainingCount);
 
         for (var i = 0; i <= IndexPool.MaxValue; i++)
         {
@@ -111,20 +115,7 @@ public sealed class IndexPoolTests : Test
     }
 
     [Fact]
-    public static void TakeReturnMany()
-    {
-        var pool = new IndexPool();
-        Span<int> indices = stackalloc int[IndexPool.Capacity];
-
-        Equal(IndexPool.Capacity, pool.Take(indices));
-        Empty(pool);
-
-        pool.Return(indices);
-        NotEmpty(pool);
-    }
-
-    [Fact]
-    public static void TakeAll2()
+    public static void TakeAllAndReturn()
     {
         var pool = new IndexPool { IsEmpty = true };
         pool.Return(0);
@@ -137,5 +128,27 @@ public sealed class IndexPoolTests : Test
         Contains(0, copy);
         Contains(2, copy);
         DoesNotContain(1, copy);
+
+        Span<int> span = stackalloc int[copy.Count];
+        Equal(copy.Count, copy.CopyTo(span));
+        pool.Return(span);
+        Contains(0, pool);
+        Contains(2, pool);
+    }
+
+    [Fact]
+    public static void TryAdd()
+    {
+        IProducerConsumerCollection<int> pool = new IndexPool { IsEmpty = true };
+        False(pool.IsSynchronized);
+        
+        True(pool.TryAdd(0));
+        True(pool.TryAdd(1));
+        Contains(0, pool);
+        Contains(1, pool);
+        
+        False(pool.TryAdd(int.MaxValue));
+        False(pool.TryAdd(0));
+        False(pool.TryAdd(1));
     }
 }

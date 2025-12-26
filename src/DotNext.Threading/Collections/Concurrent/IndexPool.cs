@@ -1,4 +1,4 @@
-using System.Collections;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Concurrent;
 
-using Generic;
 using Runtime;
 using Runtime.CompilerServices;
 using Threading;
@@ -16,11 +15,15 @@ using Threading;
 /// Represents a pool of integer values.
 /// </summary>
 /// <remarks>
+/// This type is perfect to the object pooling in async scenario, because it has no thread affinity
+/// in contrast to <see cref="ConcurrentBag{T}"/> class. However, its capacity is limited and doesn't
+/// scale well in case of high contention.
 /// This type is thread-safe.
 /// </remarks>
+/// <seealso cref="PartitionedIndexPool"/>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 [StructLayout(LayoutKind.Auto)]
-public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<int>, IResettable
+public partial struct IndexPool : ISupplier<int>, IConsumer<int>, IProducerConsumerCollection<int>, IResettable
 {
     private readonly int maxValue;
     private ulong bitmask;
@@ -124,35 +127,6 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
         static void ThrowOverflowException() => throw new OverflowException();
     }
 
-    /// <summary>
-    /// Takes all available indices, atomically.
-    /// </summary>
-    /// <param name="indices">
-    /// The buffer to be modified with the indices taken from the pool.
-    /// The size of the buffer should not be less than <see cref="Capacity"/>.
-    /// </param>
-    /// <returns>The number of indices written to the buffer.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="indices"/> is too small to place indices.</exception>
-    /// <seealso cref="Return(ReadOnlySpan{int})"/>
-    public int Take(Span<int> indices)
-    {
-        if (indices.Length < Capacity)
-            throw new ArgumentOutOfRangeException(nameof(indices));
-
-        var oldValue = Interlocked.Exchange(ref bitmask, 0UL);
-        var bufferOffset = 0;
-
-        for (var bitPosition = 0; bitPosition < Capacity; bitPosition++)
-        {
-            if (Contains(oldValue, bitPosition))
-            {
-                indices[bufferOffset++] = bitPosition;
-            }
-        }
-
-        return bufferOffset;
-    }
-
     /// <inheritdoc/>
     int ISupplier<int>.Invoke() => Take();
     
@@ -180,15 +154,9 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// value specified for this pool.</exception>
     public void Return(int value)
     {
-        if ((uint)value > (uint)maxValue)
-            ThrowArgumentOutOfRangeException();
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)value, (uint)maxValue, nameof(value));
 
         Interlocked.Or(ref bitmask, 1UL << value);
-
-        [DoesNotReturn]
-        [StackTraceHidden]
-        static void ThrowArgumentOutOfRangeException()
-            => throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     /// <summary>
@@ -224,27 +192,14 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     /// <param name="value">The value to check.</param>
     /// <returns><see langword="true"/> if <paramref name="value"/> is available for rent; otherwise, <see langword="false"/>.</returns>
     public readonly bool Contains(int value)
-        => (uint)value <= (uint)maxValue && Contains(Atomic.Read(in bitmask), value);
-
-    private static bool Contains(ulong bitmask, int index)
-        => (bitmask & (1UL << index)) is not 0UL;
+        => (uint)value <= (uint)maxValue && (Atomic.Read(in bitmask) & (1UL << value)) is not 0UL;
 
     /// <summary>
     /// Gets the number of available indices.
     /// </summary>
-    public readonly int Count => Math.Min(BitOperations.PopCount(bitmask), maxValue + 1);
+    public readonly int Count => Math.Min(GetCount(Atomic.Read(in bitmask)), maxValue + 1);
 
-    /// <summary>
-    /// Gets an enumerator over available indices in the pool.
-    /// </summary>
-    /// <returns>The enumerator over available indices in this pool.</returns>
-    public readonly Enumerator GetEnumerator() => new(Atomic.Read(in bitmask), maxValue);
-    
-    /// <inheritdoc />
-    IEnumerator<int> IEnumerable<int>.GetEnumerator() => IEnumerator<int>.Create(GetEnumerator());
-
-    /// <inheritdoc />
-    IEnumerator IEnumerable.GetEnumerator() => IEnumerator<int>.Create(GetEnumerator());
+    private static int GetCount(ulong bitmask) => BitOperations.PopCount(bitmask);
 
     /// <summary>
     /// Takes all the indices atomically.
@@ -253,42 +208,18 @@ public struct IndexPool : ISupplier<int>, IConsumer<int>, IReadOnlyCollection<in
     public IndexPool TakeAll() => new(Interlocked.Exchange(ref bitmask, 0UL), maxValue);
 
     /// <summary>
-    /// Represents an enumerator over available indices in the pool.
+    /// Copies the values from the pool to the specified destination, without removal of the values.
     /// </summary>
-    [StructLayout(LayoutKind.Auto)]
-    public struct Enumerator : IEnumerator<Enumerator, int>
+    /// <param name="destination">The destination buffer.</param>
+    /// <returns>The number of copied elements.</returns>
+    public readonly int CopyTo(Span<int> destination)
     {
-        private readonly ulong bitmask;
-        private readonly int maxValue;
-        private int current;
-
-        internal Enumerator(ulong bitmask, int maxValue)
+        var index = 0;
+        for (var enumerator = GetEnumerator(); enumerator.MoveNext(); index++)
         {
-            this.bitmask = bitmask;
-            this.maxValue = maxValue;
-            current = -1;
+            destination[index] = enumerator.Current;
         }
 
-        /// <summary>
-        /// Gets the current index.
-        /// </summary>
-        public readonly int Current => current;
-
-        /// <summary>
-        /// Advances to the next available index.
-        /// </summary>
-        /// <returns><see langword="true"/> if enumerator advanced successfully; otherwise, <see langword="false"/>.</returns>
-        public bool MoveNext()
-        {
-            while (++current <= maxValue)
-            {
-                if (Contains(bitmask, current))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
+        return index;
     }
 }
