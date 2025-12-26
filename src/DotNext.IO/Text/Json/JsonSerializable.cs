@@ -44,8 +44,10 @@ public record struct JsonSerializable<T> : ISerializable<JsonSerializable<T>>, I
 
         if (typeof(TWriter) == typeof(PipeBinaryWriter))
         {
-            var utf8Json = Unsafe.As<TWriter, PipeBinaryWriter>(ref writer).Writer;
-            result = new(JsonSerializer.SerializeAsync(utf8Json, value, T.TypeInfo!, token));
+            result = new(JsonSerializer.SerializeAsync(Unsafe.As<TWriter, PipeBinaryWriter>(ref writer).Writer,
+                value,
+                T.TypeInfo!,
+                token));
         }
         else if (typeof(TWriter) == typeof(AsyncStreamBinaryAccessor))
         {
