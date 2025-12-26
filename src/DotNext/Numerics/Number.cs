@@ -207,7 +207,7 @@ public static partial class Number
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(lowerBound);
 
-        if (TryGetFromTable(cachedPrimes, lowerBound, out T result))
+        if (TryGetFromTable(cachedPrimes, lowerBound, out var result))
             return result;
 
         //outside predefined table
