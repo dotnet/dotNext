@@ -42,7 +42,7 @@ public static class LengthFormatExtensions
         /// <summary>
         /// Gets the maximum amount of bytes needed to represent the length of the specified type.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        /// <exception cref="ArgumentOutOfRangeException">The format is invalid.</exception>
         public int MaxByteCount => format switch
         {
             LengthFormat.LittleEndian or LengthFormat.BigEndian => sizeof(int),
