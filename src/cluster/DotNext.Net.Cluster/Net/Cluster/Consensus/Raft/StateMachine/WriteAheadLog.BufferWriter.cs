@@ -3,12 +3,14 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
+using IO;
+
 public partial class WriteAheadLog
 {
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
     private readonly PagedBufferWriter dataPages;
     
-    private sealed class PagedBufferWriter(PageManager manager) : Disposable, IBufferWriter<byte>, IMemoryView
+    private sealed class PagedBufferWriter(PageManager manager) : Disposable, IBufferWriter<byte>, IMemoryView, IAsyncBinaryWriter
     {
         public const string LocationPrefix = "data";
         
@@ -65,7 +67,23 @@ public partial class WriteAheadLog
 
             LastWrittenAddress += (uint)count;
         }
-        
+
+        ValueTask IAsyncBinaryWriter.AdvanceAsync(int count, CancellationToken token)
+        {
+            ValueTask task;
+            if (count < 0)
+            {
+                task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(count)));
+            }
+            else
+            {
+                task = ValueTask.CompletedTask;
+                LastWrittenAddress += (uint)count;
+            }
+
+            return task;
+        }
+
         Memory<byte> IBufferWriter<byte>.GetMemory(int sizeHint)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(sizeHint);
@@ -85,6 +103,8 @@ public partial class WriteAheadLog
                 ? block
                 : throw new InsufficientMemoryException();
         }
+
+        Memory<byte> IAsyncBinaryWriter.Buffer => GetOrAdd(out var offset).Memory.Slice(offset);
 
         private MemoryManager<byte> GetOrAdd(out int offset)
             => manager.GetOrAddPage(manager.GetPageIndex(LastWrittenAddress, out offset));
