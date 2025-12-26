@@ -1,5 +1,7 @@
 ﻿namespace DotNext.IO;
 
+using Buffers.Binary;
+
 /// <summary>
 /// Describes how the length of the octet string should be encoded in binary form.
 /// </summary>
@@ -24,4 +26,28 @@ public enum LengthFormat : byte
     /// This format provides optimized binary size.
     /// </remarks>
     Compressed,
+}
+
+/// <summary>
+/// Provides extensions for <see cref="LengthFormat"/> type.
+/// </summary>
+public static class LengthFormatExtensions
+{
+    /// <summary>
+    /// Extends <see cref="LengthFormat"/> type.
+    /// </summary>
+    /// <param name="format">The value to extend.</param>
+    extension(LengthFormat format)
+    {
+        /// <summary>
+        /// Gets the maximum amount of bytes needed to represent the length of the specified type.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        public int MaxByteCount => format switch
+        {
+            LengthFormat.LittleEndian or LengthFormat.BigEndian => sizeof(int),
+            LengthFormat.Compressed => Leb128<int>.MaxSizeInBytes,
+            _ => throw new ArgumentOutOfRangeException(nameof(format)),
+        };
+    }
 }

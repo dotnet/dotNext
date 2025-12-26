@@ -60,7 +60,7 @@ public static class BufferWriter
     private static int WriteLength<TWriter>(TWriter writer, int length, LengthFormat lengthFormat)
         where TWriter : struct, IBufferWriter<byte>, allows ref struct
     {
-        var bytesWritten = WriteLength(writer.GetSpan(SevenBitEncodedInt.MaxSizeInBytes), length, lengthFormat);
+        var bytesWritten = WriteLength(writer.GetSpan(lengthFormat.MaxByteCount), length, lengthFormat);
         writer.Advance(bytesWritten);
         return bytesWritten;
     }
@@ -256,13 +256,7 @@ public static class BufferWriter
     public static int Format<T>(this IBufferWriter<byte> writer, T value, LengthFormat? lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
         where T : IUtf8SpanFormattable
     {
-        var expectedLengthSize = lengthFormat switch
-        {
-            null => 0,
-            LengthFormat.BigEndian or LengthFormat.LittleEndian => sizeof(int),
-            LengthFormat.Compressed => SevenBitEncodedInt.MaxSizeInBytes,
-            _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
-        };
+        var expectedLengthSize = lengthFormat?.MaxByteCount ?? 0;
 
         int bytesWritten;
         for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())

@@ -142,7 +142,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public async ValueTask WriteAsync(ReadOnlyMemory<byte> input, LengthFormat lengthFormat, CancellationToken token = default)
     {
-        if (FreeCapacity < Leb128<uint>.MaxSizeInBytes)
+        if (FreeCapacity < lengthFormat.MaxByteCount)
             await FlushAsync(token).ConfigureAwait(false);
 
         WriteLength(input.Length, lengthFormat);
@@ -165,7 +165,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         
         if (lengthFormat.HasValue)
         {
-            if (FreeCapacity < Leb128<uint>.MaxSizeInBytes)
+            if (FreeCapacity < lengthFormat.GetValueOrDefault().MaxByteCount)
                 await FlushAsync(token).ConfigureAwait(false);
             
             result = WriteLength(context.Encoding.GetByteCount(chars.Span), lengthFormat.GetValueOrDefault());
@@ -254,13 +254,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     private bool TryFormat<T>(T value, LengthFormat? lengthFormat, ReadOnlySpan<char> format, IFormatProvider? provider, out int bytesWritten)
         where T : IUtf8SpanFormattable
     {
-        var expectedLengthSize = lengthFormat switch
-        {
-            null => 0,
-            LengthFormat.BigEndian or LengthFormat.LittleEndian => sizeof(int),
-            LengthFormat.Compressed => Leb128<uint>.MaxSizeInBytes,
-            _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
-        };
+        var expectedLengthSize = lengthFormat?.MaxByteCount ?? 0;
 
         var buffer = BufferSpan;
         bool result;
