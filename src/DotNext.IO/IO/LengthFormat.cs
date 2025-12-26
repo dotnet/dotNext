@@ -49,5 +49,7 @@ public static class LengthFormatExtensions
             LengthFormat.Compressed => Leb128<int>.MaxSizeInBytes,
             _ => throw new ArgumentOutOfRangeException(nameof(format)),
         };
+
+        internal bool HasFixedSize => format is LengthFormat.LittleEndian or LengthFormat.BigEndian;
     }
 }

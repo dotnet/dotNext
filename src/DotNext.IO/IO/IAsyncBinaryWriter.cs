@@ -294,28 +294,40 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>The number of written bytes.</returns>
     /// <exception cref="InternalBufferOverflowException">The internal buffer cannot place all UTF-8 bytes exposed by <paramref name="value"/>.</exception>
-    ValueTask<int> FormatAsync<T>(T value, LengthFormat? lengthFormat, string? format = null, IFormatProvider? provider = null,
+    ValueTask<int> FormatAsync<T>(T value, LengthFormat lengthFormat, string? format = null, IFormatProvider? provider = null,
         CancellationToken token = default)
         where T : IUtf8SpanFormattable
-        => lengthFormat is null
-            ? FormatFastAsync(value, format, provider, token)
+        => lengthFormat.HasFixedSize
+            ? FormatFastAsync(value, lengthFormat, format, provider, token)
             : FormatSlowAsync(value, lengthFormat, format, provider, token);
 
-    private async ValueTask<int> FormatFastAsync<T>(T value, string? format, IFormatProvider? provider, CancellationToken token)
+    private async ValueTask<int> FormatFastAsync<T>(T value, LengthFormat lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
         where T : IUtf8SpanFormattable
     {
-        var buffer = Buffer;
+        var buffer =  Buffer;
 
-        if (value.TryFormat(buffer.Span, out var bytesWritten, format, provider))
+        if (TryFormat(value, lengthFormat, format, provider, buffer.Span, out var bytesWritten))
         {
             await AdvanceAsync(bytesWritten, token).ConfigureAwait(false);
         }
         else
         {
-            bytesWritten = await FormatSlowAsync(value, lengthFormat: null, format, provider, token).ConfigureAwait(false);
+            bytesWritten = await FormatSlowAsync(value, lengthFormat, format, provider, token).ConfigureAwait(false);
         }
 
         return bytesWritten;
+
+        static bool TryFormat(T value, LengthFormat lengthFormat, string? format, IFormatProvider? provider, Span<byte> buffer, out int bytesWritten)
+        {
+            var lengthBuffer = buffer.TrimLength(lengthFormat.MaxByteCount, out var payload);
+
+            var completed = value.TryFormat(payload, out bytesWritten, format, provider);
+            bytesWritten = completed
+                ? bytesWritten + WriteLength(bytesWritten, lengthFormat, lengthBuffer)
+                : 0;
+
+            return completed;
+        }
     }
 
     private async ValueTask<int> FormatSlowAsync<T>(T value, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
