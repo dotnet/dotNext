@@ -59,7 +59,7 @@ public readonly struct BinaryLogEntry<T> : IInputLogEntry, ISupplier<MemoryAlloc
 /// Represents default implementation of <see cref="IRaftLogEntry"/>.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct BinaryLogEntry : IBufferedLogEntry, ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>
+public readonly struct BinaryLogEntry : IBufferedLogEntry
 {
     private readonly ReadOnlyMemory<byte> content;
 
@@ -110,10 +110,6 @@ public readonly struct BinaryLogEntry : IBufferedLogEntry, ISupplier<MemoryAlloc
         memory = content;
         return true;
     }
-
-    /// <inheritdoc />
-    MemoryOwner<byte> ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>.Invoke(MemoryAllocator<byte> allocator)
-        => content.Span.Copy(allocator);
 
     /// <inheritdoc />
     ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
