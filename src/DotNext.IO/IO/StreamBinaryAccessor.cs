@@ -158,7 +158,7 @@ internal readonly struct AsyncStreamBinaryAccessor(Stream stream, Memory<byte> b
     ValueTask<long> IAsyncBinaryWriter.EncodeAsync(ReadOnlyMemory<char> chars, EncodingContext context, LengthFormat? lengthFormat, CancellationToken token)
         => stream.EncodeAsync(chars, context, lengthFormat, buffer, token);
 
-    ValueTask<int> IAsyncBinaryWriter.FormatAsync<T>(T value, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
+    ValueTask<int> IAsyncBinaryWriter.FormatAsync<T>(T value, LengthFormat lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
         => stream.FormatAsync(value, lengthFormat, buffer, format, provider, token);
 
     ValueTask<long> IAsyncBinaryWriter.FormatAsync<T>(T value, EncodingContext context, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, MemoryAllocator<char>? allocator, CancellationToken token)

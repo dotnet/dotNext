@@ -200,7 +200,7 @@ internal readonly struct AsyncBufferWriter(IBufferWriter<byte> writer) : IAsyncB
         return result;
     }
 
-    ValueTask<int> IAsyncBinaryWriter.FormatAsync<T>(T value, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
+    ValueTask<int> IAsyncBinaryWriter.FormatAsync<T>(T value, LengthFormat lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
     {
         ValueTask<int> result;
         if (token.IsCancellationRequested)

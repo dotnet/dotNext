@@ -177,7 +177,7 @@ internal readonly struct PipeBinaryWriter(PipeWriter writer, long bufferSize) : 
     ValueTask<long> IAsyncBinaryWriter.FormatAsync<T>(T value, EncodingContext context, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, MemoryAllocator<char>? allocator, CancellationToken token)
         => FlushIfNeededAsync(writer.Format(value, in context, lengthFormat, format, provider, allocator), token);
 
-    ValueTask<int> IAsyncBinaryWriter.FormatAsync<T>(T value, LengthFormat? lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
+    ValueTask<int> IAsyncBinaryWriter.FormatAsync<T>(T value, LengthFormat lengthFormat, string? format, IFormatProvider? provider, CancellationToken token)
         => FlushIfNeededAsync(writer.Format(value, lengthFormat, format, provider), token);
 
     ValueTask IAsyncBinaryWriter.CopyFromAsync(Stream source, long? count, CancellationToken token)
