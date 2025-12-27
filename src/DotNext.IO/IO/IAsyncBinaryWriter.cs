@@ -249,7 +249,7 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
     {
         var buffer = Buffer;
 
-        var canBeDoneSynchronously = buffer.Length <= lengthFormat.MaxByteCount;
+        var canBeDoneSynchronously = buffer.Length >= lengthFormat.MaxByteCount;
         bytesWritten = canBeDoneSynchronously
             ? WriteLength(length, lengthFormat, buffer.Span)
             : 0;

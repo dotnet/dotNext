@@ -10,7 +10,7 @@ namespace DotNext.IO;
 
 using Buffers;
 using Buffers.Binary;
-using IO.Pipelines;
+using Pipelines;
 using Text;
 
 public sealed class AsyncBinaryReaderWriterTests : Test
@@ -166,18 +166,61 @@ public sealed class AsyncBinaryReaderWriterTests : Test
 
         public new ValueTask DisposeAsync() => base.DisposeAsync();
     }
+    
+    private sealed class BufferedFileSource : Disposable, IAsyncBinaryReaderWriterSource, IFlushable
+    {
+        private readonly SafeFileHandle handle;
+        private readonly PoolingBufferedStream writer;
+        private readonly PoolingBufferedStream reader;
+
+        public BufferedFileSource(int bufferSize)
+        {
+            var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.Read,
+                FileOptions.Asynchronous | FileOptions.DeleteOnClose);
+            writer = new(handle.AsUnbufferedStream(FileAccess.Write)) { MaxBufferSize = bufferSize };
+            reader = new(handle.AsUnbufferedStream(FileAccess.Read)) { MaxBufferSize = bufferSize };
+        }
+
+        public IAsyncBinaryWriter CreateWriter() => writer;
+
+        public IAsyncBinaryReader CreateReader() => reader;
+
+        public Task FlushAsync(CancellationToken token) => writer.FlushAsync(token);
+
+        void IFlushable.Flush() => throw new NotSupportedException();
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                writer.Dispose();
+                reader.Dispose();
+                handle.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        public new ValueTask DisposeAsync() => base.DisposeAsync();
+    } 
 
     public static TheoryData<IAsyncBinaryReaderWriterSource, Encoding> GetDataForPrimitives() => new()
     {
         { new FileSource(128), Encoding.UTF8 },
         { new FileSource(1024), Encoding.UTF8 },
+        { new BufferedFileSource(128), Encoding.UTF8},
+        { new BufferedFileSource(1024), Encoding.UTF8},
         { new StreamSource(), Encoding.UTF8 },
         { new PipeSource(), Encoding.UTF8 },
         { new BufferSource(), Encoding.UTF8 },
         { new ReadOnlySequenceSource(), Encoding.UTF8 },
         { new DefaultSource(), Encoding.UTF8 },
+        
         { new FileSource(128), Encoding.Unicode },
         { new FileSource(1024), Encoding.Unicode },
+        { new BufferedFileSource(128), Encoding.Unicode},
+        { new BufferedFileSource(1024), Encoding.Unicode},
         { new StreamSource(), Encoding.Unicode },
         { new PipeSource(), Encoding.Unicode },
         { new BufferSource(), Encoding.Unicode },
