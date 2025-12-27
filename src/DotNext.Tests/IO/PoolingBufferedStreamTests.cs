@@ -175,12 +175,12 @@ public sealed class PoolingBufferedStreamTests : Test
         await using var bufferedStream = new PoolingBufferedStream(new MemoryStream(bufferSize)) { MaxBufferSize = bufferSize };
 
         var expected = RandomBytes(bufferSize);
-        IBufferedWriter writer = bufferedStream;
-        expected.CopyTo(writer.Buffer);
-        writer.Produce(expected.Length);
+        True(bufferedStream.TryGetWriteBuffer(1, out var buffer));
+        expected.CopyTo(buffer);
+        bufferedStream.Write(expected.Length);
         True(bufferedStream.HasBufferedDataToWrite);
         False(bufferedStream.HasBufferedDataToRead);
-        await writer.WriteAsync(TestToken);
+        await bufferedStream.WriteAsync(TestToken);
         
         False(bufferedStream.HasBufferedDataToWrite);
         False(bufferedStream.HasBufferedDataToRead);
@@ -198,10 +198,9 @@ public sealed class PoolingBufferedStreamTests : Test
         bufferedStream.Position = 0L;
 
         False(bufferedStream.HasBufferedDataToRead);
-        IBufferedReader reader = bufferedStream;
-        await reader.ReadAsync(TestToken);
-        True(bufferedStream.HasBufferedDataToRead);
-        Equal(expected, reader.Buffer);
+        await bufferedStream.ReadAsync(TestToken);
+        True(bufferedStream.TryGetReadBuffer(1, out var buffer));
+        Equal(expected, buffer);
     }
     
     [Fact]
@@ -211,17 +210,18 @@ public sealed class PoolingBufferedStreamTests : Test
         using var bufferedStream = new PoolingBufferedStream(new MemoryStream(bufferSize)) { MaxBufferSize = bufferSize };
         bufferedStream.WriteByte(42);
         bufferedStream.WriteByte(43);
-        Throws<InvalidOperationException>(() => bufferedStream.As<IBufferedReader>().Buffer);
-        Throws<InvalidOperationException>(() => bufferedStream.As<IBufferedReader>().Consume(1));
+        False(bufferedStream.TryGetReadBuffer(1, out _));
+        Throws<InvalidOperationException>(() => bufferedStream.Read(1));
         
         bufferedStream.Flush();
         bufferedStream.Position = 0;
         bufferedStream.Read();
-        bufferedStream.As<IBufferedReader>().Consume(1);
-        Equal<byte>([43], bufferedStream.As<IBufferedReader>().Buffer.Span);
+        bufferedStream.Read(1);
+        True(bufferedStream.TryGetReadBuffer(1, out var buffer));
+        Equal<byte>([43], buffer.Span);
 
-        Throws<InvalidOperationException>(() => bufferedStream.As<IBufferedWriter>().Buffer);
-        Throws<InvalidOperationException>(() => bufferedStream.As<IBufferedWriter>().Produce(1));
+        False(bufferedStream.TryGetWriteBuffer(1, out _));
+        Throws<InvalidOperationException>(() => bufferedStream.Write(1));
     }
 
     [Fact]
@@ -447,7 +447,8 @@ public sealed class PoolingBufferedStreamTests : Test
         False(reader.Read());
         True(reader.HasBufferedDataToRead);
 
-        Equal(bytes, reader.As<IBufferedReader>().Buffer);
+        True(reader.TryGetReadBuffer(1, out var buffer));
+        Equal(bytes, buffer);
     }
     
     [Fact]

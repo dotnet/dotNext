@@ -1,4 +1,3 @@
-using System.Buffers;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.IO;
@@ -103,53 +102,6 @@ public sealed class FileWriterTests : Test
         var expected = RandomBytes(writer.Buffer.Length + 10);
         writer.Write(expected);
         False(writer.HasBufferedData);
-        Equal(expected.Length, writer.FilePosition);
-
-        var actual = new byte[expected.Length];
-        RandomAccess.Read(handle, actual, 0L);
-
-        Equal(expected, actual);
-    }
-
-    [Fact]
-    public static void WriteUsingBufferWriter()
-    {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var fs = new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
-        using var writer = new FileWriter(fs) { MaxBufferSize = 64 };
-        False(writer.HasBufferedData);
-        Equal(0L, writer.FilePosition);
-
-        var expected = RandomBytes(32);
-        writer.As<IBufferWriter<byte>>().Write(expected);
-        True(writer.HasBufferedData);
-        Equal(0L, writer.FilePosition);
-
-        writer.Write();
-        Equal(expected.Length, writer.FilePosition);
-
-        var actual = new byte[expected.Length];
-        fs.ReadExactly(actual);
-
-        Equal(expected, actual);
-    }
-
-    [Fact]
-    public static void WriteUsingBufferWriter2()
-    {
-        var path = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        using var handle = File.OpenHandle(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, FileOptions.DeleteOnClose);
-        using var writer = new FileWriter(handle) { MaxBufferSize = 64 };
-        False(writer.HasBufferedData);
-        Equal(0L, writer.FilePosition);
-
-        var expected = RandomBytes(32);
-        expected.AsMemory().CopyTo(writer.As<IBufferWriter<byte>>().GetMemory());
-        writer.As<IBufferWriter<byte>>().Advance(expected.Length);
-        True(writer.HasBufferedData);
-        Equal(0L, writer.FilePosition);
-
-        writer.Write();
         Equal(expected.Length, writer.FilePosition);
 
         var actual = new byte[expected.Length];

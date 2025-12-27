@@ -4,7 +4,7 @@ namespace DotNext.IO;
 
 using Buffers;
 
-partial class PoolingBufferedStream : IAsyncBinaryWriter, IBufferedWriter
+partial class PoolingBufferedStream : IAsyncBinaryWriter
 {
     /// <inheritdoc/>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -15,7 +15,7 @@ partial class PoolingBufferedStream : IAsyncBinaryWriter, IBufferedWriter
             ThrowIfDisposed();
             EnsureReadBufferIsEmpty();
 
-            return WriteBuffer;
+            return EnsureBufferAllocated().Memory.Slice(writePosition);
         }
     }
 
@@ -46,30 +46,47 @@ partial class PoolingBufferedStream : IAsyncBinaryWriter, IBufferedWriter
         Reset();
     }
 
-    /// <inheritdoc/>
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    Memory<byte> IBufferedWriter.Buffer
+    /// <summary>
+    /// Tries to get the underlying buffer for write.
+    /// </summary>
+    /// <remarks>
+    /// Use <see cref="Write(int)"/> to commit the written bytes.
+    /// </remarks>
+    /// <param name="minimumSize">The minimum size of the requested buffer.</param>
+    /// <param name="buffer">The writable buffer.</param>
+    /// <returns>
+    /// <see langword="true"/> if the underlying buffer is at least of size <paramref name="minimumSize"/>;
+    /// otherwise, <see langword="false"/>.
+    /// </returns>
+    public bool TryGetWriteBuffer(int minimumSize, out Memory<byte> buffer)
     {
-        get
+        var freeCapacity = maxBufferSize - writePosition;
+        if ((uint)minimumSize > (uint)freeCapacity || HasBufferedDataToRead)
         {
-            ThrowIfDisposed();
-            EnsureReadBufferIsEmpty();
-
-            return WriteBuffer;
+            buffer = Memory<byte>.Empty;
+            return false;
         }
+
+        buffer = EnsureBufferAllocated().Memory.Slice(writePosition);
+        return true;
     }
 
-    /// <inheritdoc/>
-    void IBufferedWriter.Produce(int count)
+    /// <summary>
+    /// Marks the specified number of bytes in the internal buffer as written.
+    /// </summary>
+    /// <param name="count">The number of bytes to commit.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is larger than the available internal buffer.</exception>
+    /// <exception cref="ObjectDisposedException">The stream is disposed.</exception>
+    /// <exception cref="InvalidOperationException">The underlying read buffer is not empty.</exception>
+    /// <seealso cref="TryGetWriteBuffer"/>
+    public void Write(int count)
     {
         ThrowIfDisposed();
         EnsureReadBufferIsEmpty();
 
         var freeCapacity = maxBufferSize - writePosition;
-        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)count, (uint)freeCapacity, nameof(count));
-
-        if (count > 0 && buffer.IsEmpty)
-            buffer = Allocator.AllocateExactly(maxBufferSize);
+        if ((uint)count > (uint)freeCapacity || buffer.IsEmpty)
+            throw new ArgumentOutOfRangeException(nameof(count));
 
         writePosition += count;
     }

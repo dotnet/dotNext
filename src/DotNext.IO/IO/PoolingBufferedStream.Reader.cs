@@ -5,26 +5,45 @@ namespace DotNext.IO;
 
 using Buffers;
 
-partial class PoolingBufferedStream : IBufferedReader, IAsyncBinaryReader
+partial class PoolingBufferedStream : IAsyncBinaryReader
 {
-    /// <inheritdoc/>
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    ReadOnlyMemory<byte> IBufferedReader.Buffer
-    {
-        get
-        {
-            ThrowIfDisposed();
-            EnsureWriteBufferIsEmpty();
-
-            return ReadBuffer;
-        }
-    }
-    
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private ReadOnlyMemory<byte> ReadBuffer => buffer.Memory[readPosition..readLength];
 
-    /// <inheritdoc/>
-    void IBufferedReader.Consume(int count)
+    /// <summary>
+    /// Tries to get the read buffer
+    /// </summary>
+    /// <remarks>
+    /// Use <see cref="Read(int)"/> to mark the number of bytes read.
+    /// </remarks>
+    /// <param name="minimumSize">The expected number of available bytes to read in the underlying buffer.</param>
+    /// <param name="buffer">The readable buffer.</param>
+    /// <returns>
+    /// <see langword="true"/> if the underlying buffer is at least of size <paramref name="minimumSize"/>;
+    /// otherwise, <see langword="false"/>.
+    /// </returns>
+    public bool TryGetReadBuffer(int minimumSize, out ReadOnlyMemory<byte> buffer)
+    {
+        var bytesToRead = readLength - readPosition;
+        if ((uint)minimumSize > (uint)bytesToRead || HasBufferedDataToWrite)
+        {
+            buffer = ReadOnlyMemory<byte>.Empty;
+            return false;
+        }
+
+        buffer = ReadBuffer;
+        return true;
+    }
+
+    /// <summary>
+    /// Marks the specified number of bytes in the internal buffer as read.
+    /// </summary>
+    /// <param name="count">The number of bytes read.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is larger than the available bytes to read.</exception>
+    /// <exception cref="ObjectDisposedException">The stream is disposed.</exception>
+    /// <exception cref="InvalidOperationException">The underlying write buffer is not empty.</exception>
+    /// <seealso cref="TryGetReadBuffer"/>
+    public void Read(int count)
     {
         AssertState();
         ThrowIfDisposed();

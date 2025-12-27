@@ -156,9 +156,6 @@ public sealed partial class PoolingBufferedStream(Stream stream, bool leaveOpen 
             throw new InvalidOperationException(ExceptionMessages.ReadBufferNotEmpty);
     }
 
-    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private Memory<byte> WriteBuffer => EnsureBufferAllocated().Memory.Slice(writePosition);
-
     /// <summary>
     /// Gets a value indicating that the stream has buffered data in write buffer.
     /// </summary>

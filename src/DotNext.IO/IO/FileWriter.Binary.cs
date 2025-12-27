@@ -379,7 +379,4 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <inheritdoc />
     ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
         => WriteAsync(input, token);
-
-    /// <inheritdoc />
-    IBufferWriter<byte> IAsyncBinaryWriter.TryGetBufferWriter() => this;
 }
