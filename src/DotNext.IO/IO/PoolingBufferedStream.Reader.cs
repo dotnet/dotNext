@@ -85,14 +85,38 @@ partial class PoolingBufferedStream : IAsyncBinaryReader
     }
 
     /// <inheritdoc/>
-    async ValueTask IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, long? count, CancellationToken token)
+    ValueTask IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, long? count, CancellationToken token)
     {
         AssertState();
         ThrowIfDisposed();
 
         if (!stream.CanRead)
-            throw new NotSupportedException();
+            return ValueTask.FromException(new NotSupportedException());
 
+        return count.HasValue
+            ? CopyToAsync(consumer, count.GetValueOrDefault(), token)
+            : CopyToAsync(consumer, token);
+    }
+
+    private async ValueTask CopyToAsync<TConsumer>(TConsumer consumer, long count, CancellationToken token)
+        where TConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+    {
+        for (ReadOnlyMemory<byte> buffer;
+             count > 0L && (HasBufferedDataToRead || await ReadCoreAsync(token).ConfigureAwait(false));
+             AdvanceReader(buffer.Length))
+        {
+            buffer = ReadBuffer.TrimLength(int.CreateSaturating(count));
+            await consumer.Invoke(buffer, token).ConfigureAwait(false);
+            count -= buffer.Length;
+        }
+
+        if (count > 0L)
+            throw new EndOfStreamException();
+    } 
+
+    private async ValueTask CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
+        where TConsumer : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>
+    {
         for (ReadOnlyMemory<byte> buffer;
              HasBufferedDataToRead || await ReadCoreAsync(token).ConfigureAwait(false);
              AdvanceReader(buffer.Length))
