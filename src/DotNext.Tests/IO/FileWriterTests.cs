@@ -15,11 +15,13 @@ public sealed class FileWriterTests : Test
         using var writer = new FileWriter(handle) { MaxBufferSize = 64 };
         False(writer.HasBufferedData);
         Equal(0L, writer.FilePosition);
+        Equal(0L, writer.WritePosition);
 
         var expected = RandomBytes(32);
         await writer.WriteAsync(expected, TestToken);
         True(writer.HasBufferedData);
         Equal(0L, writer.FilePosition);
+        Equal(expected.Length, writer.WritePosition);
 
         await writer.As<IFlushable>().FlushAsync(TestToken);
         Equal(expected.Length, writer.FilePosition);
