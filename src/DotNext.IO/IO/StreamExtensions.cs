@@ -81,7 +81,7 @@ public static partial class StreamExtensions
         /// </param>
         /// <returns>The wrapper stream.</returns>
         public static MemorySegmentStream Create(Memory<byte> memory, bool skipOnOverflow = false)
-            => new(memory) { SkipOnOverflow = false };
+            => new(memory) { SkipOnOverflow = skipOnOverflow };
 
         /// <summary>
         /// Creates a slice over the specified stream.
