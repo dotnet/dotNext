@@ -220,7 +220,7 @@ public abstract partial class SimpleStateMachine : IAsyncDisposable, IStateMachi
     {
         using (cts)
         {
-            cts.Cancel();
+            await cts.CancelAsync().ConfigureAwait(false);
         }
 
         var task = Interlocked.Exchange(ref snapshottingProcess, sentinel);
