@@ -19,7 +19,7 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     private readonly LogEntryFlags flags;
     private readonly int identifier;
 
-    internal LogEntryMetadata(long term, ulong offset, long length, int? id = null)
+    private LogEntryMetadata(long term, ulong offset, long length, int? id = null)
     {
         Debug.Assert(AlignedSize >= Size);
 
@@ -67,7 +67,7 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
         else if (IntPtr.Size is sizeof(long))
         {
             // 64-bit LE case, the pointer is always aligned to 8 bytes
-            Debug.Assert(AdvancedHelpers.AddressOf(in ptr) % IntPtr.Size is 0);
+            Debug.Assert(Unsafe.AddressOf(in ptr) % IntPtr.Size is 0);
             this = Unsafe.As<byte, LogEntryMetadata>(ref ptr);
         }
         else
