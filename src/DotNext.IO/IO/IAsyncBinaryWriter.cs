@@ -430,9 +430,11 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
         => Stream.CreateAsyncWritable(new Wrapper<TWriter>(writer));
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct Wrapper<TWriter>(TWriter writer) : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
+    private struct Wrapper<TWriter>(TWriter writer) : ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>, IFlushable
         where TWriter : IAsyncBinaryWriter
     {
+        private TWriter writer = writer; // not readonly to avoid defensive copy
+        
         ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> source, CancellationToken token)
             => writer.Invoke(source, token);
 
