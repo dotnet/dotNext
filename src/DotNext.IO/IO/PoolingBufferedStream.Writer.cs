@@ -23,7 +23,9 @@ partial class PoolingBufferedStream : IAsyncBinaryWriter
     ValueTask IAsyncBinaryWriter.AdvanceAsync(int count, CancellationToken token)
     {
         AssertState();
-        ThrowIfDisposed();
+
+        if (stream is null)
+            return new(DisposedTask);
 
         if (HasBufferedDataToRead)
             return ValueTask.FromException(new InvalidOperationException(ExceptionMessages.ReadBufferNotEmpty));
