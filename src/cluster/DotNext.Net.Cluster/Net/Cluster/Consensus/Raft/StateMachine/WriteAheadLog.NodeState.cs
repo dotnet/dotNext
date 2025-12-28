@@ -7,7 +7,6 @@ using static System.Buffers.Binary.BinaryPrimitives;
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Threading;
-using IO.Log;
 using BoxedClusterMemberId = Runtime.BoxedValue<ClusterMemberId>;
 
 partial class WriteAheadLog
@@ -100,17 +99,6 @@ partial class WriteAheadLog
         {
             handle?.Dispose();
             this = default;
-        }
-    }
-    
-    /// <summary>
-    /// Indicates that the node state data is broken on the disk.
-    /// </summary>
-    public sealed class InternalStateBrokenException : IntegrityException
-    {
-        internal InternalStateBrokenException()
-            : base(ExceptionMessages.PersistentStateBroken)
-        {
         }
     }
 
