@@ -660,6 +660,13 @@ public sealed partial class PoolingBufferedStream(Stream stream, bool leaveOpen 
         AssertState();
         ThrowIfDisposed();
 
+        return SeekCore(offset, origin);
+    }
+
+    private long SeekCore(long offset, SeekOrigin origin)
+    {
+        Debug.Assert(stream is not null);
+        
         if (WriteCore())
         {
             Reset();

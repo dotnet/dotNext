@@ -83,6 +83,36 @@ partial class PoolingBufferedStream : IAsyncBinaryReader
             ? ValueTask.FromResult(reader)
             : ReadSlowAsync(reader, token);
     }
+    
+    private bool Read<TParser>(ref TParser parser)
+        where TParser : struct, IBufferReader
+    {
+        Debug.Assert(HasBufferedDataToRead);
+
+        do
+        {
+            if (ReadBuffer.TrimLength(parser.RemainingBytes) is not { IsEmpty: false } buffer)
+                return false;
+
+            parser.Invoke(buffer.Span);
+            AdvanceReader(buffer.Length);
+        }
+        while (parser.RemainingBytes > 0);
+
+        return true;
+    }
+
+    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
+    private async ValueTask<TParser> ReadSlowAsync<TParser>(TParser parser, CancellationToken token)
+        where TParser : struct, IBufferReader
+    {
+        while (await ReadCoreAsync(token).ConfigureAwait(false) && !Read(ref parser)) ;
+
+        parser.EndOfStream();
+        return parser;
+    }
+    
+    private void AdvanceReader(int count) => ConsumeUnsafe(count + readPosition);
 
     /// <inheritdoc/>
     ValueTask IAsyncBinaryReader.CopyToAsync<TConsumer>(TConsumer consumer, long? count, CancellationToken token)
@@ -125,34 +155,60 @@ partial class PoolingBufferedStream : IAsyncBinaryReader
             await consumer.Invoke(buffer, token).ConfigureAwait(false);
         }
     }
-    
-    private bool Read<TParser>(ref TParser parser)
-        where TParser : struct, IBufferReader
-    {
-        Debug.Assert(HasBufferedDataToRead);
 
-        do
+    ValueTask IAsyncBinaryReader.SkipAsync(long length, CancellationToken token)
+    {
+        ValueTask task;
+
+        switch (length)
         {
-            if (ReadBuffer.TrimLength(parser.RemainingBytes) is not { IsEmpty: false } buffer)
-                return false;
+            case < 0L:
+                task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(length)));
+                break;
+            case 0L:
+                task = ValueTask.CompletedTask;
+                break;
+            default:
+                if (stream is null)
+                {
+                    task = new(DisposedTask);
+                }
+                else if (stream.CanSeek)
+                {
+                    task = ValueTask.CompletedTask;
+                    try
+                    {
+                        if (SeekCore(length, SeekOrigin.Current) > stream.Length)
+                            throw new EndOfStreamException();
+                    }
+                    catch (Exception e)
+                    {
+                        task = ValueTask.FromException(e);
+                    }
+                }
+                else
+                {
+                    task = SkipSlowAsync(length, token);
+                }
 
-            parser.Invoke(buffer.Span);
-            AdvanceReader(buffer.Length);
+                break;
         }
-        while (parser.RemainingBytes > 0);
 
-        return true;
-    }
-
-    [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
-    private async ValueTask<TParser> ReadSlowAsync<TParser>(TParser parser, CancellationToken token)
-        where TParser : struct, IBufferReader
-    {
-        while (await ReadCoreAsync(token).ConfigureAwait(false) && !Read(ref parser)) ;
-
-        parser.EndOfStream();
-        return parser;
+        return task;
     }
     
-    private void AdvanceReader(int count) => ConsumeUnsafe(count + readPosition);
+    private ValueTask SkipSlowAsync(long length, CancellationToken token)
+    {
+        var reader = new SkippingReader(length);
+        return HasBufferedDataToRead && Read(ref reader)
+            ? ValueTask.CompletedTask
+            : SkipSlowAsync(reader, token);
+    }
+
+    private async ValueTask SkipSlowAsync(SkippingReader reader, CancellationToken token)
+    {
+        while (await ReadCoreAsync(token).ConfigureAwait(false) && !Read(ref reader)) ;
+
+        reader.EndOfStream();
+    }
 }
