@@ -374,13 +374,14 @@ public sealed class AsyncBinaryReaderWriterTests : Test
         }
     }
 
-    public static TheoryData<IAsyncBinaryReaderWriterSource> GetSources() => new()
-    {
+    public static TheoryData<IAsyncBinaryReaderWriterSource> GetSources() =>
+    [
         new StreamSource(),
         new PipeSource(),
         new BufferSource(),
         new DefaultSource(),
-    };
+        new BufferedFileSource(128)
+    ];
 
     [Theory]
     [MemberData(nameof(GetSources))]
@@ -394,8 +395,15 @@ public sealed class AsyncBinaryReaderWriterTests : Test
             {
                 var writer = source.CreateWriter();
                 await writer.CopyFromAsync(sourceStream, token: TestToken);
-                if (source is PipeSource pipe)
-                    await pipe.CompleteWriterAsync();
+                switch (source)
+                {
+                    case PipeSource pipe:
+                        await pipe.CompleteWriterAsync();
+                        break;
+                    case IFlushable flushable:
+                        await flushable.FlushAsync(TestToken);
+                        break;
+                }
 
                 var reader = source.CreateReader();
                 using var destStream = new MemoryStream(256);
@@ -416,8 +424,15 @@ public sealed class AsyncBinaryReaderWriterTests : Test
             using var sourceStream = new MemoryStream(content, false);
             var writer = source.CreateWriter();
             await writer.CopyFromAsync(sourceStream, sourceStream.Length, TestToken);
-            if (source is PipeSource pipe)
-                await pipe.CompleteWriterAsync();
+            switch (source)
+            {
+                case PipeSource pipe:
+                    await pipe.CompleteWriterAsync();
+                    break;
+                case IFlushable flushable:
+                    await flushable.FlushAsync(TestToken);
+                    break;
+            }
 
             var reader = source.CreateReader();
             using var destStream = new MemoryStream(256);
@@ -438,8 +453,15 @@ public sealed class AsyncBinaryReaderWriterTests : Test
             {
                 var writer = source.CreateWriter();
                 await writer.CopyFromAsync(sourceStream, token: TestToken);
-                if (source is PipeSource pipe)
-                    await pipe.CompleteWriterAsync();
+                switch (source)
+                {
+                    case PipeSource pipe:
+                        await pipe.CompleteWriterAsync();
+                        break;
+                    case IFlushable flushable:
+                        await flushable.FlushAsync(TestToken);
+                        break;
+                }
 
                 var reader = source.CreateReader();
                 using var destStream = new MemoryStream(256);
@@ -460,8 +482,15 @@ public sealed class AsyncBinaryReaderWriterTests : Test
             using var sourceStream = new MemoryStream(content, false);
             var writer = source.CreateWriter();
             await writer.CopyFromAsync(sourceStream, sourceStream.Length, TestToken);
-            if (source is PipeSource pipe)
-                await pipe.CompleteWriterAsync();
+            switch (source)
+            {
+                case PipeSource pipe:
+                    await pipe.CompleteWriterAsync();
+                    break;
+                case IFlushable flushable:
+                    await flushable.FlushAsync(TestToken);
+                    break;
+            }
 
             var reader = source.CreateReader();
             using var destStream = new MemoryStream(256);
@@ -482,8 +511,15 @@ public sealed class AsyncBinaryReaderWriterTests : Test
             {
                 var writer = source.CreateWriter();
                 await writer.CopyFromAsync(sourceStream, token: TestToken);
-                if (source is PipeSource pipe)
-                    await pipe.CompleteWriterAsync();
+                switch (source)
+                {
+                    case PipeSource pipe:
+                        await pipe.CompleteWriterAsync();
+                        break;
+                    case IFlushable flushable:
+                        await flushable.FlushAsync(TestToken);
+                        break;
+                }
 
                 var reader = source.CreateReader();
                 var destination = new ArrayBufferWriter<byte>(256);
@@ -504,8 +540,15 @@ public sealed class AsyncBinaryReaderWriterTests : Test
             using var sourceStream = new MemoryStream(content, false);
             var writer = source.CreateWriter();
             await writer.CopyFromAsync(sourceStream, sourceStream.Length, TestToken);
-            if (source is PipeSource pipe)
-                await pipe.CompleteWriterAsync();
+            switch (source)
+            {
+                case PipeSource pipe:
+                    await pipe.CompleteWriterAsync();
+                    break;
+                case IFlushable flushable:
+                    await flushable.FlushAsync(TestToken);
+                    break;
+            }
 
             var reader = source.CreateReader();
             var destination = new ArrayBufferWriter<byte>(256);
@@ -523,8 +566,15 @@ public sealed class AsyncBinaryReaderWriterTests : Test
             var writer = source.CreateWriter();
             await writer.WriteAsync(new byte[] { 1, 2, 3 }, token: TestToken);
             await writer.WriteAsync(new byte[] { 4, 5, 6 },  token: TestToken);
-            if (source is PipeSource pipe)
-                await pipe.CompleteWriterAsync();
+            switch (source)
+            {
+                case PipeSource pipe:
+                    await pipe.CompleteWriterAsync();
+                    break;
+                case IFlushable flushable:
+                    await flushable.FlushAsync(TestToken);
+                    break;
+            }
 
             var reader = source.CreateReader();
             Memory<byte> buffer = new byte[3];
@@ -577,10 +627,10 @@ public sealed class AsyncBinaryReaderWriterTests : Test
         Equal(0, writer.WrittenCount);
     }
 
-    private struct DummyReader(bool hasLength) : IBufferReader
+    private readonly struct DummyReader(bool hasLength) : IBufferReader
     {
-        readonly int IBufferReader.RemainingBytes => hasLength ? 1 : 0;
+        int IBufferReader.RemainingBytes => hasLength ? 1 : 0;
 
-        readonly void IReadOnlySpanConsumer<byte>.Invoke(ReadOnlySpan<byte> span) => Fail("Should never be called");
+        void IReadOnlySpanConsumer<byte>.Invoke(ReadOnlySpan<byte> span) => Fail("Should never be called");
     }
 }
