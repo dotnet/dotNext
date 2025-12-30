@@ -12,6 +12,8 @@ partial class WriteAheadLog
     private readonly struct MetadataPageManager(PageManager manager) : IDisposable
     {
         public const string LocationPrefix = "metadata";
+
+        public readonly int MetadataEntryAlignedSize = LogEntryMetadata.GetAlignedSize(Environment.SystemPageSize);
         
         public long DeletePages(long toIndex)
         {
@@ -20,10 +22,10 @@ partial class WriteAheadLog
         }
         
         private uint GetStartPageIndex(long index, out int offset)
-            => manager.GetPageIndex((ulong)index * (uint)LogEntryMetadata.AlignedSize, out offset);
+            => manager.GetPageIndex((ulong)index * (uint)MetadataEntryAlignedSize, out offset);
 
         private uint GetEndPageIndex(long index, out int offset)
-            => manager.GetPageIndex((ulong)index * (uint)LogEntryMetadata.AlignedSize + (uint)LogEntryMetadata.AlignedSize, out offset);
+            => manager.GetPageIndex((ulong)index * (uint)MetadataEntryAlignedSize + (uint)MetadataEntryAlignedSize, out offset);
 
         public ValueTask FlushAsync(long fromIndex, long toIndex, CancellationToken token)
         {
