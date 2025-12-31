@@ -13,7 +13,7 @@ partial class WriteAheadLog
     {
         public const string LocationPrefix = "metadata";
 
-        public readonly int MetadataEntryAlignedSize = LogEntryMetadata.GetAlignedSize(Environment.SystemPageSize);
+        private readonly int MetadataEntryAlignedSize = LogEntryMetadata.GetAlignedSize(manager.PageSize);
         
         public long DeletePages(long toIndex)
         {
