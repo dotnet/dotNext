@@ -61,7 +61,18 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         state = new(rootPath);
         measurementTags = configuration.MeasurementTags;
 
-        checkpoint = new(rootPath, out var lastReliablyWrittenEntryIndex, out version);
+        // checkpoint
+        long lastReliablyWrittenEntryIndex;
+        checkpoint = new(rootPath, out var version);
+        switch (version)
+        {
+            case CheckpointVersion0 cp:
+                lastReliablyWrittenEntryIndex = cp.Checkpoint;
+                break;
+            default:
+                checkpoint.Dispose();
+                throw new UnsupportedVersionException(checkpoint.Version);
+        }
         
         // page management
         {

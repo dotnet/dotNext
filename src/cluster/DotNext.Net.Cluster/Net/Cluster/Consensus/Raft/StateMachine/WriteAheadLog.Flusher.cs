@@ -9,6 +9,7 @@ using Microsoft.Win32.SafeHandles;
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers;
+using Buffers.Binary;
 using Diagnostics;
 using IO.Log;
 using Threading;
@@ -55,7 +56,7 @@ partial class WriteAheadLog
                         await Flush(flusherPreviousIndex, newIndex, token).ConfigureAwait(false);
 
                         // everything up to toIndex is flushed, save the commit index
-                        await checkpoint.UpdateAsync(newIndex, version, token).ConfigureAwait(false);
+                        await checkpoint.UpdateAsync<CheckpointVersion0>(new(newIndex), token).ConfigureAwait(false);
                         FlushDurationMeter.Record(ts.ElapsedMilliseconds);
                     }
                     finally
@@ -236,59 +237,5 @@ partial class WriteAheadLog
         }
 
         static bool IFlushTrigger.IsBackground => false;
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    private struct Checkpoint : IDisposable
-    {
-        private const int MaxSize = sizeof(long) + sizeof(uint);
-        private const string FileName = "checkpoint";
-
-        private readonly SafeFileHandle handle;
-        private readonly byte[] buffer;
-
-        internal Checkpoint(DirectoryInfo location, out long value, out uint version)
-        {
-            var path = Path.Combine(location.FullName, FileName);
-
-            // read the checkpoint
-            using (var readHandle = File.OpenHandle(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-            {
-                Span<byte> readBuf = stackalloc byte[MaxSize];
-                var reader = new SpanReader<byte>(readBuf);
-                switch (RandomAccess.Read(readHandle, readBuf, 0L))
-                {
-                    case sizeof(long):
-                        value = reader.ReadLittleEndian<long>();
-                        version = Version0;
-                        break;
-                    case MaxSize:
-                        value = reader.ReadLittleEndian<long>();
-                        version = reader.ReadLittleEndian<uint>();
-                        break;
-                    default:
-                        value = 0L;
-                        version = CurrentVersion;
-                        break;
-                }
-            }
-
-            handle = File.OpenHandle(path, FileMode.Open, FileAccess.Write, options: FileOptions.Asynchronous | FileOptions.WriteThrough);
-            buffer = GC.AllocateArray<byte>(MaxSize, pinned: true);
-        }
-
-        public ValueTask UpdateAsync(long value, uint version, CancellationToken token)
-        {
-            var writer = new SpanWriter<byte>(buffer);
-            writer.WriteLittleEndian(value);
-            writer.WriteLittleEndian(version);
-            return RandomAccess.WriteAsync(handle, buffer, fileOffset: 0L, token);
-        }
-
-        public void Dispose()
-        {
-            handle?.Dispose();
-            this = default;
-        }
     }
 }
