@@ -78,6 +78,9 @@ partial class WriteAheadLog
         /// <summary>
         /// Gets or sets the maximum size of the single chunk file, in bytes.
         /// </summary>
+        /// <remarks>
+        /// The property cannot be changed for existing WAL.
+        /// </remarks>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than or equal to zero.</exception>
         public int ChunkSize
         {
