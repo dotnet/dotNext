@@ -104,8 +104,9 @@ partial class WriteAheadLog
 
         private LogEntry Read(int index)
         {
-            var metadata = metadataPages[StartIndex + index];
-            return new(metadata, index, dataPages);
+            var absoluteIndex = StartIndex + index;
+            var metadata = metadataPages[absoluteIndex];
+            return new(metadata, absoluteIndex, dataPages);
         }
 
         public IEnumerator<LogEntry> GetEnumerator()
