@@ -379,4 +379,37 @@ public sealed class WriteAheadLogTests : Test
         payload = stateMachine.Entries[1];
         Equal("Entry2", payload.StringField.Value);
     }
+    
+    [Fact]
+    public static async Task ImportLog()
+    {
+        const long count = 1000L;
+        await using var source = new WriteAheadLog(new()
+            { Location = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()) }, new NoOpStateMachine());
+        
+        {
+            Memory<byte> buffer = new byte[sizeof(long)];
+            var index = 0L;
+            for (var i = 0L; i < count; i++)
+            {
+                BinaryPrimitives.WriteInt64LittleEndian(buffer.Span, i);
+                index = await source.AppendAsync(buffer, token: TestToken);
+            }
+
+            await source.CommitAsync(index, TestToken);
+            await source.WaitForApplyAsync(index, TestToken);
+            await source.FlushAsync(TestToken);
+        }
+
+        var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        await using var stateMachine = new SumStateMachine(new(dir));
+        await using var destination = new WriteAheadLog(new() { Location = dir, ChunkSize = Environment.SystemPageSize * 2 }, stateMachine);
+        
+        {
+            await destination.InitializeAsync(TestToken);
+            await destination.ImportAsync(source, TestToken);
+
+            Equal(count * (0L + count - 1L) / 2L, stateMachine.Value);
+        }
+    }
 }
