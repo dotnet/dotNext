@@ -31,6 +31,10 @@ public sealed class UnsupportedVersionException : MultiplexingProtocolException
 {
     internal UnsupportedVersionException(byte version)
         : base(ExceptionMessages.BadProtocolVersion(version))
-    {
-    }
+        => Version = version;
+    
+    /// <summary>
+    /// Gets the version that is not supported.
+    /// </summary>
+    public byte Version { get; }
 }

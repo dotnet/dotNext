@@ -1,15 +1,11 @@
-using System.Buffers.Binary;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
-using Microsoft.Win32.SafeHandles;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
-using Buffers;
-using Buffers.Binary;
 using Diagnostics;
 using IO.Log;
 using Threading;

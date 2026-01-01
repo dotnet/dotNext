@@ -71,7 +71,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                 break;
             default:
                 checkpoint.Dispose();
-                throw new UnsupportedVersionException(checkpoint.Version);
+                throw new UnsupportedCheckpointVersionException(checkpoint.Version);
         }
         
         // page management

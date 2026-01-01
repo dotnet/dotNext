@@ -106,20 +106,17 @@ partial class WriteAheadLog
     }
     
     /// <summary>
-    /// Represents catastrophic WAL failure.
+    /// Indicates that the checkpoint file has unsupported version.
     /// </summary>
-    public abstract class IntegrityException : Exception
+    public sealed class UnsupportedCheckpointVersionException : IntegrityException
     {
-        private protected IntegrityException()
-        {
-        }
-    }
-    
-    public sealed class UnsupportedVersionException : IntegrityException
-    {
-        internal UnsupportedVersionException(uint actualVersion)
-        {
-            
-        }
+        internal UnsupportedCheckpointVersionException(uint actualVersion)
+            : base(ExceptionMessages.BadCheckpointVersion(actualVersion))
+            => Version = actualVersion;
+        
+        /// <summary>
+        /// Gets the actual version that is not supported.
+        /// </summary>
+        public uint Version { get; }
     }
 }

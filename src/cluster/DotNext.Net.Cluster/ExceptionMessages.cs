@@ -11,11 +11,7 @@ internal static class ExceptionMessages
 {
     private static readonly ResourceManager Resources = new("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
-    internal static string EntrySetIsEmpty => (string)Resources.Get();
-
     internal static string LocalNodeNotLeader => (string)Resources.Get();
-
-    internal static string InvalidEntryIndex(long index) => Resources.Get().Format(index);
 
     internal static string InvalidAppendIndex => (string)Resources.Get();
 
@@ -29,8 +25,6 @@ internal static class ExceptionMessages
 
     internal static string UnavailableMember => (string)Resources.Get();
 
-    internal static string MissingPartition(long index) => Resources.Get().Format(index);
-
     internal static string UnknownCommand(int id) => Resources.Get().Format(id);
 
     internal static string MissingCommandId => (string)Resources.Get();
@@ -43,15 +37,7 @@ internal static class ExceptionMessages
         where T : struct, Enum
         => Resources.Get().Format(messageType.ToString());
 
-    internal static string PersistentStateBroken => (string)Resources.Get();
-
     internal static string ConcurrentMembershipUpdate => (string)Resources.Get();
-
-    internal static string LogEntryPayloadTooLarge => (string)Resources.Get();
-
-    internal static string SparseFileNotSupported => (string)Resources.Get();
-
-    internal static string InvalidPartitionFormat => (string)Resources.Get();
 
     internal static string StreamRejected => (string)Resources.Get();
 
@@ -60,4 +46,6 @@ internal static class ExceptionMessages
     internal static string ConnectionTimedOut => (string)Resources.Get();
 
     internal static string BadProtocolVersion(byte version) => Resources.Get().Format(version);
+
+    internal static string BadCheckpointVersion(uint version) => Resources.Get().Format(version);
 }
