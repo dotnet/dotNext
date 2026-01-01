@@ -21,7 +21,7 @@ internal sealed class SumStateMachine : SimpleStateMachine
 
     protected override ValueTask PersistAsync(IAsyncBinaryWriter writer, CancellationToken token)
     {
-        var bytes = long.AsBytes(ref Value).ToArray();
+        ReadOnlyMemory<byte> bytes = long.AsReadOnlyBytes(in Value).ToArray();
         return writer.Invoke(bytes, token);
     }
 
