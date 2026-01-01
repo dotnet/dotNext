@@ -4,14 +4,9 @@ using DotNext.IO;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
-internal sealed class SumStateMachine : SimpleStateMachine
+internal sealed class SumStateMachine(DirectoryInfo location) : SimpleStateMachine(new(Path.Combine(location.FullName, "db")))
 {
     public long Value;
-    
-    public SumStateMachine(DirectoryInfo location)
-        : base(new(Path.Combine(location.FullName, "db")))
-    {
-    }
 
     protected override async ValueTask RestoreAsync(FileInfo snapshotFile, CancellationToken token)
     {
