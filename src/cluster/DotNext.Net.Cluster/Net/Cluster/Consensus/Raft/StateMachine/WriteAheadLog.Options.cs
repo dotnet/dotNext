@@ -46,28 +46,33 @@ partial class WriteAheadLog
         /// No integrity check is performed.
         /// </summary>
         None = 0,
-        
+
         /// <summary>
         /// <see cref="System.IO.Hashing.Crc32"/> is applied for integrity check.
         /// </summary>
         Crc32,
-        
+
         /// <summary>
         /// <see cref="System.IO.Hashing.Crc64"/> is applied for integrity check.
         /// </summary>
         Crc64,
-        
+
         /// <summary>
         /// <see cref="System.IO.Hashing.XxHash32"/> is applied for integrity check.
         /// </summary>
         XxHash32,
-        
+
         /// <summary>
         /// <see cref="System.IO.Hashing.XxHash64"/> is applied for integrity check.
         /// </summary>
         XxHash64,
+
+        /// <summary>
+        /// <see cref="System.IO.Hashing.XxHash3"/> is applied for integrity check.
+        /// </summary>
+        XxHash3,
     }
-    
+
     /// <summary>
     /// Represents configuration options.
     /// </summary>
@@ -176,6 +181,7 @@ partial class WriteAheadLog
             IntegrityHashAlgorithm.Crc64 => new Crc64(),
             IntegrityHashAlgorithm.XxHash32 => new XxHash32(),
             IntegrityHashAlgorithm.XxHash64 => new XxHash64(),
+            IntegrityHashAlgorithm.XxHash3 => new XxHash3(),
             _ => null,
         };
         

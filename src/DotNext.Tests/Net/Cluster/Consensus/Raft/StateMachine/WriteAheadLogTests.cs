@@ -329,6 +329,7 @@ public sealed class WriteAheadLogTests : Test
     [InlineData(WriteAheadLog.IntegrityHashAlgorithm.Crc64)]
     [InlineData(WriteAheadLog.IntegrityHashAlgorithm.XxHash32)]
     [InlineData(WriteAheadLog.IntegrityHashAlgorithm.XxHash64)]
+    [InlineData(WriteAheadLog.IntegrityHashAlgorithm.XxHash3)]
     public static async Task StateRecovery(WriteAheadLog.IntegrityHashAlgorithm hashAlg)
     {
         const long count = 1000L;
