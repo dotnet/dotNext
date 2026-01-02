@@ -148,29 +148,6 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     }
 
     internal ulong End => (ulong)Length + Offset;
-    
-    public static int GetAlignedSize(int containerSize)
-    {
-        var best = int.MaxValue;
-
-        for (var i = 1; i * i <= containerSize; i++)
-        {
-            if (containerSize % i is not 0)
-                continue;
-
-            var d2 = containerSize / i;
-
-            if (i >= Size && i < best)
-                best = i;
-
-            if (d2 >= Size && d2 < best)
-                best = d2;
-        }
-
-        return best is int.MaxValue
-            ? throw new OverflowException()
-            : best;
-    }
 
     [Flags]
     private enum LogEntryFlags : uint

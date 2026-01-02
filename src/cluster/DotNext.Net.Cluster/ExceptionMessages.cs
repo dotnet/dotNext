@@ -48,4 +48,8 @@ internal static class ExceptionMessages
     internal static string BadProtocolVersion(byte version) => Resources.Get().Format(version);
 
     internal static string BadCheckpointVersion(uint version) => Resources.Get().Format(version);
+
+    internal static string LogEntryHashMismatch => (string)Resources.Get();
+
+    internal static string MissingWalPage(uint pageIndex) => Resources.Get().Format(pageIndex);
 }

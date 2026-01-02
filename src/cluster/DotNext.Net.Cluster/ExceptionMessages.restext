@@ -16,3 +16,5 @@ ConnectionClosed=The underlying connection is closed
 ConnectionTimedOut=The data cannot be sent or received on time
 BadProtocolVersion=Multiplexing protocol version is not supported: {0}
 BadCheckpointVersion=Checkpoint file version is not supported: {0}
+LogEntryHashMismatch=Log entry hash doesn't match
+MissingWalPage=WAL page {0} doesn't exist on the disk

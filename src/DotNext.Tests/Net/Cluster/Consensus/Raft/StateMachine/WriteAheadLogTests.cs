@@ -323,12 +323,17 @@ public sealed class WriteAheadLogTests : Test
         Equal(count * (0L + count - 1L) / 2L, stateMachine.Value);
     }
 
-    [Fact]
-    public static async Task StateRecovery()
+    [Theory]
+    [InlineData(WriteAheadLog.IntegrityHashAlgorithm.None)]
+    [InlineData(WriteAheadLog.IntegrityHashAlgorithm.Crc32)]
+    [InlineData(WriteAheadLog.IntegrityHashAlgorithm.Crc64)]
+    [InlineData(WriteAheadLog.IntegrityHashAlgorithm.XxHash32)]
+    [InlineData(WriteAheadLog.IntegrityHashAlgorithm.XxHash64)]
+    public static async Task StateRecovery(WriteAheadLog.IntegrityHashAlgorithm hashAlg)
     {
         const long count = 1000L;
         var dir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-        await using (var wal = new WriteAheadLog(new() { Location = dir }, new NoOpStateMachine()))
+        await using (var wal = new WriteAheadLog(new() { Location = dir, HashAlgorithm = hashAlg }, new NoOpStateMachine()))
         {
             Memory<byte> buffer = new byte[sizeof(long)];
             var index = 0L;
@@ -342,9 +347,9 @@ public sealed class WriteAheadLogTests : Test
             await wal.WaitForApplyAsync(index, TestToken);
             await wal.FlushAsync(TestToken);
         }
-        
+
         await using var stateMachine = new SumStateMachine(new(dir));
-        await using (var wal = new WriteAheadLog(new() { Location = dir }, stateMachine))
+        await using (var wal = new WriteAheadLog(new() { Location = dir, HashAlgorithm = hashAlg }, stateMachine))
         {
             await stateMachine.RestoreAsync(TestToken);
             await wal.InitializeAsync(TestToken);

@@ -1,5 +1,7 @@
 using System.Buffers;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO.Hashing;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using static System.Threading.Timeout;
@@ -19,6 +21,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
 {
     private const int DictionaryConcurrencyLevel = 3; // append flow and cleaner and applier
 
+    private readonly NonCryptographicHashAlgorithm? hash;
     private readonly MemoryAllocator<byte> bufferAllocator;
     private readonly IStateMachine stateMachine;
     private readonly CancellationToken lifetimeToken;
@@ -40,6 +43,7 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(stateMachine);
 
+        hash = configuration.CreateHashAlgorithm();
         lifetimeToken = (lifetimeTokenSource = new()).Token;
         cancellationTokens = new();
         var rootPath = new DirectoryInfo(configuration.Location);
@@ -95,8 +99,8 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
                     d = new MemoryMappedPageManager(dataLocation, configuration.ChunkSize);
                     break;
             }
-
-            metadataPages = new(m);
+            
+            metadataPages = new(m, hash?.HashLengthInBytes ?? 0);
             dataPages = new(d)
             {
                 LastWrittenAddress = metadataPages.TryGetMetadata(lastReliablyWrittenEntryIndex, out var metadata)
@@ -150,8 +154,27 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
     /// </remarks>
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns></returns>
-    public virtual Task InitializeAsync(CancellationToken token = default)
-        => WaitForApplyAsync(LastCommittedEntryIndex, token).AsTask();
+    public virtual async Task InitializeAsync(CancellationToken token = default)
+    {
+        if (hash is not null)
+            VerifyIntegrity(token);
+        
+        await WaitForApplyAsync(LastCommittedEntryIndex, token).ConfigureAwait(false);
+    }
+
+    private void VerifyIntegrity(CancellationToken token)
+    {
+        Debug.Assert(hash is not null);
+
+        // skip snapshot from verification
+        for (var index = SnapshotIndex + 1L; index <= LastEntryIndex; index++, token.ThrowIfCancellationRequested())
+        {
+            var reader = metadataPages.GetView<MetadataReader>(index);
+            var metadata = reader.Metadata;
+            dataPages.ComputeHash(hash, metadata.Offset, metadata.Length);
+            reader.CompleteAndVerifyHash(hash);
+        }
+    }
 
     /// <inheritdoc cref="IAuditTrail.LastEntryIndex"/>
     public long LastEntryIndex
@@ -440,7 +463,14 @@ public partial class WriteAheadLog : Disposable, IAsyncDisposable, IPersistentSt
         where TEntry : IRaftLogEntry
     {
         var length = long.CreateChecked(dataPages.LastWrittenAddress - startAddress);
-        metadataPages[index] = LogEntryMetadata.Create(entry, startAddress, length);
+        var writer = metadataPages.GetView<MetadataWriter>(index);
+        writer.WriteMetadata(LogEntryMetadata.Create(entry, startAddress, length));
+
+        if (hash is not null)
+        {
+            dataPages.ComputeHash(hash, startAddress, length);
+            writer.CompleteAndWriteHash(hash);
+        }
 
         if (entry is IInputLogEntry { Context: { } ctx })
         {

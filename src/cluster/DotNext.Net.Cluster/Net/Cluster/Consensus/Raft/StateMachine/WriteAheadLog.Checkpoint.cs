@@ -117,6 +117,7 @@ partial class WriteAheadLog
         /// <summary>
         /// Gets the actual version that is not supported.
         /// </summary>
+        [CLSCompliant(false)]
         public uint Version { get; }
     }
 }

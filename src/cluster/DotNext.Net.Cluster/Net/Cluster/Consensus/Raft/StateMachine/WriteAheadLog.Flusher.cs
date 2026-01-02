@@ -89,8 +89,8 @@ partial class WriteAheadLog
     {
         var metadataTask = metadataPages.FlushAsync(fromIndex, toIndex, token).AsTask();
 
-        var toMetadata = metadataPages[toIndex];
-        var fromMetadata = metadataPages[fromIndex];
+        var toMetadata = metadataPages.GetView<MetadataReader>(toIndex).Metadata;
+        var fromMetadata = metadataPages.GetView<MetadataReader>(fromIndex).Metadata;
         var dataTask = dataPages.FlushAsync(fromMetadata.Offset, toMetadata.End, token).AsTask();
 
         FlushRateMeter.Add(toIndex - fromIndex, measurementTags);

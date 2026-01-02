@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
+using System.IO.Hashing;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
@@ -117,7 +118,16 @@ public partial class WriteAheadLog
 
         IEnumerable<ReadOnlyMemory<byte>> IMemoryView.EnumerateMemoryBlocks(ulong address, long length)
             => manager.GetRange(address, length);
-        
+
+        public void ComputeHash(NonCryptographicHashAlgorithm hash, ulong offset, long length)
+        {
+            // hash data
+            foreach (var fragment in manager.GetRange(offset, length))
+            {
+                hash.Append(fragment.Span);
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

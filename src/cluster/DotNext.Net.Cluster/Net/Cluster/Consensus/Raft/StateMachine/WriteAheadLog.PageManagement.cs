@@ -66,7 +66,7 @@ partial class WriteAheadLog
         public abstract MemoryManager<byte> GetOrAddPage(uint pageIndex);
 
         public MemoryManager<byte> this[uint pageIndex]
-            => TryGetPage(pageIndex) ?? throw new ArgumentOutOfRangeException(nameof(pageIndex));
+            => TryGetPage(pageIndex) ?? throw new MissingPageException(pageIndex);
 
         public abstract MemoryManager<byte>? TryGetPage(uint pageIndex);
 
