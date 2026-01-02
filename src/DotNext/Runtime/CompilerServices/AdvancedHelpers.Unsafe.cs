@@ -59,5 +59,15 @@ partial class AdvancedHelpers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool AreCompatible<T1, T2>()
             => Unsafe.SizeOf<T1>() == Unsafe.SizeOf<T2>() && AlignOf<T1>() == AlignOf<T2>();
+        
+        internal static ref byte GetRawData(object obj)
+            => ref Unsafe.As<RawData>(obj).Data;
     }
+}
+
+file abstract class RawData
+{
+    internal byte Data;
+
+    private RawData() => throw new NotImplementedException();
 }

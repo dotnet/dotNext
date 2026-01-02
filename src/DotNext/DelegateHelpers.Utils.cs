@@ -67,12 +67,12 @@ public static partial class DelegateHelpers
 
     private static T UnboxAny<T>(this object obj)
         => typeof(T).IsValueType
-            ? Unsafe.As<byte, T>(ref AdvancedHelpers.GetRawData(obj))
+            ? Unsafe.As<byte, T>(ref Unsafe.GetRawData(obj))
             : Unsafe.As<object, T>(ref obj);
 
     private static TResult UnboxAny<T, TResult>(this object obj, T arg)
         where T : allows ref struct
         => typeof(TResult).IsValueType
-            ? Unsafe.As<byte, TResult>(ref AdvancedHelpers.GetRawData(obj))
+            ? Unsafe.As<byte, TResult>(ref Unsafe.GetRawData(obj))
             : Unsafe.As<object, TResult>(ref obj);
 }

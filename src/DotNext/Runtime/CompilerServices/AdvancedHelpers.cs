@@ -110,9 +110,6 @@ public static partial class AdvancedHelpers
         }
     }
     
-    internal static ref byte GetRawData(object obj)
-        => ref Unsafe.As<RawData>(obj).Data;
-    
     [StructLayout(LayoutKind.Sequential)]
     [ExcludeFromCodeCoverage]
     private readonly struct AlignmentHelperType<T>
@@ -120,11 +117,4 @@ public static partial class AdvancedHelpers
         private readonly byte field1;
         private readonly T field2;
     }
-}
-
-file abstract class RawData
-{
-    internal byte Data;
-
-    private RawData() => throw new NotImplementedException();
 }
