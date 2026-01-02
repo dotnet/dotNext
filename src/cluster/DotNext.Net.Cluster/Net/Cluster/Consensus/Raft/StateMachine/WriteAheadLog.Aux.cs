@@ -23,12 +23,17 @@ partial class WriteAheadLog
     {
         ArgumentNullException.ThrowIfNull(other);
 
-        using (var reader = other.CreateReader(LastCommittedEntryIndex + 1L, other.LastEntryIndex))
+        var reader = await other.ReadAsync(LastCommittedEntryIndex + 1L, other.LastEntryIndex, token).ConfigureAwait(false);
+        try
         {
             foreach (var entry in reader)
             {
                 await AppendAsync(entry, entry.Index, token).ConfigureAwait(false);
             }
+        }
+        finally
+        {
+            reader.Dispose();
         }
 
         await CommitAsync(other.LastCommittedEntryIndex, token).ConfigureAwait(false);
