@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
@@ -37,11 +36,11 @@ partial class AdvancedHelpers
         public static bool IsDefault<T>(in T value) => Unsafe.SizeOf<T>() switch
         {
             0 => true,
-            sizeof(byte) => InToRef<T, byte>(in value) is 0,
+            sizeof(byte) => Unsafe.InToRef<T, byte>(in value) is 0,
             sizeof(ushort) => Unsafe.ReadUnaligned<ushort>(ref InToRef<T, byte>(in value)) is 0,
             sizeof(uint) => Unsafe.ReadUnaligned<uint>(ref InToRef<T, byte>(in value)) is 0U,
             sizeof(ulong) => Unsafe.ReadUnaligned<ulong>(ref InToRef<T, byte>(in value)) is 0UL,
-            _ => IsZero(ref InToRef<T, byte>(in value), (nuint)Unsafe.SizeOf<T>()),
+            _ => IsZero(ref Unsafe.InToRef<T, byte>(in value), (nuint)Unsafe.SizeOf<T>()),
         };
         
         /// <summary>
@@ -52,14 +51,14 @@ partial class AdvancedHelpers
         /// <param name="output">The reference to the destination location.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Copy<T>(in T input, out T output)
-            where T : struct
+            where T : struct, allows ref struct
         {
             PushOutRef(out output);
             PushInRef(in input);
             Cpobj<T>();
             Ret();
         }
-        
+
         /// <summary>
         /// Swaps two values.
         /// </summary>
@@ -67,8 +66,13 @@ partial class AdvancedHelpers
         /// <param name="second">The second value to be replaced with <paramref name="first"/>.</param>
         /// <typeparam name="T">The type of the value.</typeparam>
         public static void Swap<T>(ref T first, ref T second)
-            => (second, first) = (first, second);
-        
+            where T : allows ref struct
+        {
+            var tmp = first;
+            first = second;
+            second = tmp;
+        }
+
         /// <summary>
         /// Determines whether the object overrides <see cref="object.Finalize()"/> method.
         /// </summary>
@@ -91,6 +95,7 @@ partial class AdvancedHelpers
     /// </summary>
     /// <typeparam name="T">The type to extend.</typeparam>
     extension<T>(T)
+        where T : allows ref struct
     {
         /// <summary>
         /// Gets the type handle.
@@ -107,8 +112,15 @@ partial class AdvancedHelpers
         /// <summary>
         /// Gets the alignment of the type, in bytes.
         /// </summary>
-        public static int Alignment => AlignOf<T>();
-        
+        public static int Alignment => Unsafe.AlignOf<T>();
+    }
+
+    /// <summary>
+    /// Provides static extensions for the arbitrary type.
+    /// </summary>
+    /// <typeparam name="T">The type to extend.</typeparam>
+    extension<T>(T)
+    {
         /// <summary>
         /// Provides unified behavior of type cast for reference and value types.
         /// </summary>

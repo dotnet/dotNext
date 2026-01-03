@@ -11,6 +11,8 @@ partial class AdvancedHelpers
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static ref TTo InToRef<TFrom, TTo>(ref readonly TFrom source)
+            where TFrom : allows ref struct
+            where TTo : allows ref struct
             => ref Unsafe.As<TFrom, TTo>(ref Unsafe.AsRef(in source));
         
         /// <summary>
@@ -21,6 +23,7 @@ partial class AdvancedHelpers
         /// <returns>An address of the given object.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe nint AddressOf<T>(ref readonly T value)
+            where T : allows ref struct
             => (nint)Unsafe.AsPointer(ref Unsafe.AsRef(in value));
         
         /// <summary>
@@ -33,7 +36,7 @@ partial class AdvancedHelpers
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void Copy<T>(in T source, out T destination, nuint count)
-            where T : unmanaged
+            where T : unmanaged, allows ref struct
         {
             Unsafe.SkipInit(out destination);
             Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in source)), ref Unsafe.As<T, byte>(ref destination), checked((nuint)count * (nuint)sizeof(T)));
@@ -47,8 +50,9 @@ partial class AdvancedHelpers
         /// <seealso href="https://en.cppreference.com/w/c/language/_Alignof">_Alignof operator in C++</seealso>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int AlignOf<T>()
+            where T : allows ref struct
             => Unsafe.SizeOf<AlignmentHelperType<T>>() - Unsafe.SizeOf<T>();
-        
+
         /// <summary>
         /// Determines whether the two types are binary compatible, i.e. both types have the same
         /// size and memory alignment.
@@ -58,6 +62,8 @@ partial class AdvancedHelpers
         /// <returns><see langword="true"/> if both types are binary compatible; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool AreCompatible<T1, T2>()
+            where T1 : allows ref struct
+            where T2 : allows ref struct
             => Unsafe.SizeOf<T1>() == Unsafe.SizeOf<T2>() && AlignOf<T1>() == AlignOf<T2>();
         
         internal static ref byte GetRawData(object obj)

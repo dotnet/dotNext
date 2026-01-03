@@ -22,6 +22,7 @@ public static partial class AdvancedHelpers
     [CLSCompliant(false)]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static ref T AsRef<T>(this TypedReference reference)
+        where T : allows ref struct
     {
         Ldarg(nameof(reference));
         Refanyval<T>();
@@ -30,12 +31,12 @@ public static partial class AdvancedHelpers
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe ref byte Advance<T>(this ref byte ptr)
-        where T : unmanaged
+        where T : unmanaged, allows ref struct
         => ref Unsafe.Add(ref ptr, sizeof(T));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out] nuint* length)
-        where T : unmanaged
+        where T : unmanaged, allows ref struct
     {
         *length -= (nuint)sizeof(T);
         return ref address.Advance<T>();
@@ -112,7 +113,8 @@ public static partial class AdvancedHelpers
     
     [StructLayout(LayoutKind.Sequential)]
     [ExcludeFromCodeCoverage]
-    private readonly struct AlignmentHelperType<T>
+    private readonly ref struct AlignmentHelperType<T>
+        where T : allows ref struct
     {
         private readonly byte field1;
         private readonly T field2;
