@@ -17,6 +17,8 @@ public sealed class BasicExtensionsTests : Test
     public static void UserDataStorage()
     {
         var slot = new UserDataSlot<long>();
+        True(slot.IsAllocated);
+        
         var str = new string('a', 3);
         str.UserData.Set(slot, 42);
         Equal(42, str.UserData.Get(slot));
@@ -25,6 +27,12 @@ public sealed class BasicExtensionsTests : Test
         GC.WaitForFullGCComplete();
         str = new string('a', 3);
         Equal(0, str.UserData.Get(slot));
+    }
+
+    [Fact]
+    public static void EmptyDataSlot()
+    {
+        False(default(UserDataSlot<long>).IsAllocated);
     }
 
     [Fact]

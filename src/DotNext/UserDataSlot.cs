@@ -10,15 +10,19 @@ namespace DotNext;
 [StructLayout(LayoutKind.Auto)]
 public readonly record struct UserDataSlot<TValue>()
 {
+    private const int AllocatedFlag = int.MinValue;
+    
     private static volatile int valueIndexCounter;
     internal static int TypeIndex => TypeSlot<TValue>.Index;
+    
+    private readonly int valueIndex = AllocatedFlag | (Interlocked.Increment(ref valueIndexCounter) - 1);
 
-    internal int ValueIndex { get; } = Interlocked.Increment(ref valueIndexCounter) - 1;
+    internal int ValueIndex => valueIndex & ~AllocatedFlag;
 
     /// <summary>
-    /// Gets a value indicating that this object was constructed using <see cref="UserDataSlot{TValue}()"/> constructor.
+    /// Gets a value indicating that this object was constructed by <see cref="UserDataSlot{TValue}()"/> constructor.
     /// </summary>
-    public bool IsAllocated => ValueIndex is not 0;
+    public bool IsAllocated => (valueIndex & AllocatedFlag) is not 0;
 
     /// <summary>
     /// Gets textual representation of this data slot
