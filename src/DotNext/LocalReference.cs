@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext;
 
+using Runtime;
+
 /// <summary>
 /// Represents a typed reference.
 /// </summary>
@@ -90,6 +92,14 @@ public readonly ref struct LocalReference<T>(ref T location) : ITypedReference<T
     /// <returns>Read-only view of the same memory location as presented by <paramref name="reference"/>.</returns>
     public static implicit operator ReadOnlyLocalReference<T>(LocalReference<T> reference)
         => new(in reference.Value);
+
+    /// <summary>
+    /// Converts typed local reference to the variant value.
+    /// </summary>
+    /// <param name="reference">The reference to convert.</param>
+    /// <returns>The variant mutable value.</returns>
+    public static implicit operator Variant(LocalReference<T> reference)
+        => reference.IsEmpty ? Variant.Empty : Variant.Mutable(ref reference.Value);
 }
 
 /// <summary>
@@ -156,4 +166,12 @@ public readonly ref struct ReadOnlyLocalReference<T>(ref readonly T location) : 
     /// <returns><see langword="true"/> if both references point to the different memory locations; otherwise, <see langword="false"/>.</returns>
     public static bool operator !=(ReadOnlyLocalReference<T> x, ReadOnlyLocalReference<T> y)
         => !x.Equals(y);
+
+    /// <summary>
+    /// Converts typed local reference to the variant value.
+    /// </summary>
+    /// <param name="reference">The reference to convert.</param>
+    /// <returns>The variant immutable value.</returns>
+    public static implicit operator Variant(ReadOnlyLocalReference<T> reference)
+        => reference.IsEmpty ? Variant.Empty : Variant.Immutable(in reference.Value);
 }

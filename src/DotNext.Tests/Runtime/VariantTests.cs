@@ -74,4 +74,20 @@ public sealed class VariantTests : Test
         
         True(thrown);
     }
+
+    [Fact]
+    public static void FromLocalReference()
+    {
+        var i = 42;
+        var reference = new LocalReference<int>(ref i);
+        Variant v = reference;
+        True(v.IsMutable);
+        i = 56;
+        Equal(56, v.Mutable<int>());
+
+        ReadOnlyLocalReference<int> roRef = reference;
+        v = roRef;
+        False(v.IsMutable);
+        Equal(56, v.Immutable<int>());
+    }
 }

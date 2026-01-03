@@ -118,7 +118,7 @@ public readonly struct ValueReference<T>(object owner, ref T fieldRef) :
     private bool SameObject(object? other) => ReferenceEquals(owner, other);
 
     private Func<T> ToFunc()
-        => AdvancedHelpers.InToRef<ValueReference<T>, ReadOnlyValueReference<T>>(in this).ToFunc();
+        => Unsafe.InToRef<ValueReference<T>, ReadOnlyValueReference<T>>(in this).ToFunc();
     
     private Action<T> ToAction()
     {
