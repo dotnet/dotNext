@@ -62,7 +62,7 @@ public readonly ref struct Variant : IEquatable<Variant>
 
     private static Variant Create<T>(ref readonly T location, bool mutable = false)
         where T : allows ref struct
-        => new(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(in location)), typeof(T), mutable);
+        => new(ref Unsafe.InToRef<T, byte>(in location), typeof(T), mutable);
 
     /// <summary>
     /// Creates immutable value and stores its type.
