@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -104,45 +105,38 @@ public readonly ref struct Variant : IEquatable<Variant>
     public ref readonly T Immutable<T>()
         where T : allows ref struct
     {
-        CheckType(TargetType, typeof(T));
+        if (!CheckType(TargetType, typeof(T)))
+            ThrowInvalidCastException();
+
         return ref Unsafe.As<byte, T>(ref location);
 
-        static void CheckType(Type? expected, Type actual)
-        {
-            if (expected is not null &&
-                expected.IsByRef
-                    ? expected.GetElementType() == actual
-                    : expected == actual)
-                return;
-
-            throw new InvalidCastException();
-        }
+        static bool CheckType(Type? expected, Type actual) => expected is not null && expected.IsByRef
+            ? expected.GetElementType() == actual
+            : expected == actual;
     }
 
     /// <summary>
     /// Tries to get the mutable reference to the underlying value.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <returns></returns>
+    /// <typeparam name="T">The expected type of the value.</typeparam>
+    /// <returns>A location of the value.</returns>
     /// <exception cref="InvalidCastException">The underlying value cannot be converted to type <typeparamref name="T"/>;
     /// or it is not mutable.</exception>
     public ref T Mutable<T>()
         where T : allows ref struct
     {
-        CheckMutableType(targetType, typeof(T));
+        if (!CheckMutableType(targetType, typeof(T)))
+            ThrowInvalidCastException();
+
         return ref Unsafe.As<byte, T>(ref location);
 
-        static void CheckMutableType(Type? expected, Type actual)
-        {
-            if (expected is not null &&
-                expected.IsByRef
-                    ? expected.GetElementType() == actual
-                    : expected == actual)
-                return;
-
-            throw new InvalidCastException();
-        }
+        static bool CheckMutableType(Type? expected, Type actual)
+            => expected is not null && expected.IsByRef && expected.GetElementType() == actual;
     }
+
+    [DoesNotReturn]
+    [StackTraceHidden]
+    private static void ThrowInvalidCastException() => throw new InvalidCastException();
 
     /// <summary>
     /// Tries to extract the underlying value.

@@ -54,4 +54,24 @@ public sealed class VariantTests : Test
         
         True(x == y);
     }
+
+    [Fact]
+    public static void ImmutableToMutable()
+    {
+        var i = 42;
+        var v = Variant.Immutable(in i);
+        v.Immutable<int>();
+
+        var thrown = false;
+        try
+        {
+            v.Mutable<int>() = 42;
+        }
+        catch (InvalidCastException)
+        {
+            thrown = true;
+        }
+        
+        True(thrown);
+    }
 }
