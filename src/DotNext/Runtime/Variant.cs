@@ -142,11 +142,11 @@ public readonly ref struct Variant : IEquatable<Variant>
     /// Tries to extract the underlying value.
     /// </summary>
     /// <returns>The underlying value.</returns>
-    /// <exception cref="InvalidCastException">The underlying value is by-ref like struct and cannot be boxed.</exception>
+    /// <exception cref="NotSupportedException">The underlying value is by-ref like struct and cannot be boxed.</exception>
     public object? ToObject() => TargetType switch
     {
         { IsVoid: true } => null,
-        { IsByRefLike: true } => throw new InvalidCastException(),
+        { IsByRefLike: true } => throw new NotSupportedException(),
         { IsValueType: true } vt => RuntimeHelpers.Box(ref location, vt.TypeHandle),
         _ => Unsafe.As<byte, object>(ref location)
     };
