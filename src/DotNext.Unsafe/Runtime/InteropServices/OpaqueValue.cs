@@ -69,7 +69,6 @@ public readonly record struct OpaqueValue<T> : IDisposable
     {
         if (ContainsReferences)
         {
-            
             if (GCHandle<object>.FromIntPtr(valueOrHandle) is { IsAllocated: true } gch)
                 gch.Dispose();
         }
