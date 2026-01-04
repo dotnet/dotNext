@@ -171,10 +171,9 @@ public interface IDataTransferObject
         where TTransformation : ITransformation<TResult>
     {
         var output = new FileBufferingWriter(asyncIO: true);
-        await using (output.ConfigureAwait(false))
+        var buffer = MemoryAllocator<byte>.Default.AllocateAtLeast(DefaultBufferSize);
+        try
         {
-            using var buffer = MemoryAllocator<byte>.Default.AllocateAtLeast(DefaultBufferSize);
-
             // serialize
             await WriteToAsync(new AsyncStreamBinaryAccessor(output, buffer.Memory), token).ConfigureAwait(false);
 
@@ -183,8 +182,19 @@ public interface IDataTransferObject
                 return await parser.TransformAsync(new SequenceReader(memory), token).ConfigureAwait(false);
 
             var input = await output.GetWrittenContentAsStreamAsync(token).ConfigureAwait(false);
-            await using (input.ConfigureAwait(false))
+            try
+            {
                 return await parser.TransformAsync(new AsyncStreamBinaryAccessor(input, buffer.Memory), token).ConfigureAwait(false);
+            }
+            finally
+            {
+                await input.DisposeAsync().ConfigureAwait(false);
+            }
+        }
+        finally
+        {
+            buffer.Dispose();
+            await output.DisposeAsync().ConfigureAwait(false);
         }
     }
 
