@@ -107,6 +107,21 @@ public partial class WriteAheadLog
 
         Memory<byte> IAsyncBinaryWriter.Buffer => GetOrAdd(out var offset).Memory.Slice(offset);
 
+        ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> source, CancellationToken token)
+        {
+            var task = ValueTask.CompletedTask;
+            try
+            {
+                Write(source.Span);
+            }
+            catch (Exception e)
+            {
+                task = ValueTask.FromException(e);
+            }
+
+            return task;
+        }
+
         private MemoryManager<byte> GetOrAdd(out int offset)
             => manager.GetOrAddPage(manager.GetPageIndex(LastWrittenAddress, out offset));
 
