@@ -1,6 +1,6 @@
 ﻿using System.Buffers;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 
 namespace DotNext.Buffers;
 
@@ -13,7 +13,7 @@ using Runtime.InteropServices;
 public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
     where T : unmanaged
 {
-    private readonly Action<IUnmanagedMemory<T>>? removeMemory;
+    private readonly Lock? syncRoot;
     private readonly int defaultBufferSize;
     private readonly Func<int, IUnmanagedMemory<T>> allocator;
     private Action? ownerDisposal;
@@ -29,8 +29,8 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
 
         const int defaultBufferSize = 32;
         MaxBufferSize = maxBufferSize;
-        this.defaultBufferSize = Math.Min(defaultBufferSize, maxBufferSize);
-        allocator = Rent<DraftAllocator<T>>;
+        this.defaultBufferSize = int.Min(defaultBufferSize, maxBufferSize);
+        allocator = Action<IUnmanagedMemory<T>>.NoOp.Rent<T, DraftAllocator<T>>;
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
         {
             ArgumentOutOfRangeException.ThrowIfNegativeOrZero(value);
 
-            defaultBufferSize = Math.Min(value, MaxBufferSize);
+            defaultBufferSize = int.Min(value, MaxBufferSize);
         }
     }
 
@@ -51,11 +51,26 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
     /// Indicates that destruction of this pool releases the memory rented by this pool.
     /// </summary>
     /// <value><see langword="true"/> to release allocated unmanaged memory when <see cref="Dispose(bool)"/> is called; otherwise, <see langword="false"/>.</value>
-    [MemberNotNullWhen(true, nameof(removeMemory))]
+    [MemberNotNullWhen(true, nameof(syncRoot))]
     public bool TrackAllocations
     {
-        get => removeMemory is not null;
-        init => removeMemory = value ? RemoveTracking : null;
+        get => syncRoot is not null;
+        init
+        {
+            Action<IUnmanagedMemory<T>> removeMemory;
+            if (value)
+            {
+                syncRoot = new();
+                removeMemory = RemoveTracking;
+            }
+            else
+            {
+                syncRoot = null;
+                removeMemory = Action<IUnmanagedMemory<T>>.NoOp;
+            }
+
+            allocator = allocator.Method.CreateDelegate<Func<int, IUnmanagedMemory<T>>>(removeMemory);
+        }
     }
 
     /// <summary>
@@ -63,22 +78,46 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
     /// </summary>
     public bool AllocateZeroedMemory
     {
-        init => allocator = value ? Rent<ZeroedAllocator<T>> : Rent<DraftAllocator<T>>;
+        init
+        {
+            var removeMemory = allocator.Target as Action<IUnmanagedMemory<T>>;
+            Debug.Assert(removeMemory is not null);
+            
+            allocator = value ? removeMemory.Rent<T, ZeroedAllocator<T>> : removeMemory.Rent<T, DraftAllocator<T>>;
+        }
     }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
     private void RemoveTracking(IUnmanagedMemory<T> owner)
-        => ownerDisposal -= owner.Dispose;
+    {
+        Debug.Assert(TrackAllocations);
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+        lock (syncRoot)
+        {
+            ownerDisposal -= owner.Dispose;
+        }
+    }
+
     private void AddTracking(IUnmanagedMemory<T> owner)
-        => ownerDisposal += owner.Dispose;
+    {
+        Debug.Assert(TrackAllocations);
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
+        lock (syncRoot)
+        {
+            ownerDisposal += owner.Dispose;
+        }
+    }
+
     private Action? ClearTracker()
     {
-        var result = ownerDisposal;
-        ownerDisposal = null;
+        Debug.Assert(TrackAllocations);
+
+        Action? result;
+        lock (syncRoot)
+        {
+            result = ownerDisposal;
+            ownerDisposal = null;
+        }
+
         return result;
     }
 
@@ -109,10 +148,6 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
         return result;
     }
 
-    private UnmanagedMemoryOwner<T, TAllocator> Rent<TAllocator>(int length)
-        where TAllocator : struct, INativeMemoryAllocator<T>, allows ref struct
-        => new PoolingUnmanagedMemoryOwner<T, TAllocator>(length, removeMemory);
-
     /// <summary>
     /// Frees the unmanaged resources used by the memory pool and optionally releases the managed resources.
     /// </summary>
@@ -125,6 +160,14 @@ public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
                 callback();
         }
     }
+}
+
+file static class AllocatorHelpers
+{
+    public static UnmanagedMemoryOwner<T, TAllocator> Rent<T, TAllocator>(this Action<IUnmanagedMemory<T>> removeMemory, int length)
+        where T : unmanaged
+        where TAllocator : struct, INativeMemoryAllocator<T>, allows ref struct
+        => new PoolingUnmanagedMemoryOwner<T, TAllocator>(length, removeMemory);
 }
 
 file sealed class PoolingUnmanagedMemoryOwner<T, TAllocator> : UnmanagedMemoryOwner<T, TAllocator>, IUnmanagedMemory<T>

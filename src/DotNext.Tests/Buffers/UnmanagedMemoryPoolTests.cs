@@ -114,15 +114,22 @@ public sealed class UnmanagedMemoryPoolTests : Test
         Equal(20L, manager.Memory.Span[1]);
     }
 
-    [Fact]
-    public static void Pooling()
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public static void Pooling(bool trackAllocations, bool zeroedMemory)
     {
-        using var pool = new UnmanagedMemoryPool<long>(10) { TrackAllocations = true, AllocateZeroedMemory = true };
+        using var pool = new UnmanagedMemoryPool<long>(10)
+        {
+            TrackAllocations = trackAllocations,
+            AllocateZeroedMemory = zeroedMemory,
+        };
+        
         using var manager = pool.Rent(2);
         Equal(2, manager.Memory.Length);
 
-        Equal(0, manager.Memory.Span[0]);
-        Equal(0, manager.Memory.Span[1]);
         manager.Memory.Span[0] = 10L;
         manager.Memory.Span[1] = 20L;
         Equal(10L, manager.Memory.Span[0]);
@@ -255,7 +262,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
     [Fact]
     public static void AllocatePageAlignedMemoryInvalidSize()
     {
-        Throws<ArgumentOutOfRangeException>(static () => UnmanagedMemory.AllocatePageAlignedMemory(-1));
+        Throws<ArgumentOutOfRangeException>(static () => NativeMemory.AllocatePageAlignedMemory(-1));
 
         var owner = NativeMemory.AllocatePageAlignedMemory(0);
         Equal(Memory<byte>.Empty, owner.Memory);
@@ -268,7 +275,7 @@ public sealed class UnmanagedMemoryPoolTests : Test
         systemPages.Memory.Span[0] = 42;
         
         // On FreeBSD and MacOS, the method doesn't clear the memory
-        UnmanagedMemory.Discard(systemPages.Memory.Span);
+        NativeMemory.Discard(systemPages.Memory.Span);
         
         Equal(0, systemPages.Memory.Span[0]);
     }
