@@ -12,7 +12,7 @@ using IO.Log;
 [StructLayout(LayoutKind.Auto)]
 public readonly struct LogEntry : IInputLogEntry
 {
-    // ISnapshot, or IMemoryReader, or null
+    // ISnapshot, or IMemoryView, or null
     private readonly object? payload;
     private readonly ulong address;
     private readonly long length;
