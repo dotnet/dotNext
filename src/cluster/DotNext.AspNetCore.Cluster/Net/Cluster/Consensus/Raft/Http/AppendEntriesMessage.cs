@@ -131,7 +131,7 @@ internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessage
         bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
         {
             memory = ReadOnlyMemory<byte>.Empty;
-            return metadata.Length == 0L;
+            return metadata.Length is 0L;
         }
     }
 
