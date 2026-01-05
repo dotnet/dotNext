@@ -287,13 +287,10 @@ public partial class Epoch
     }
 
     [StructLayout(LayoutKind.Auto)]
-    internal readonly ref struct SafeToReclaimEpoch
+    internal readonly ref struct SafeToReclaimEpoch(ref readonly Entry reference)
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly ref readonly Entry reference;
-
-        internal SafeToReclaimEpoch(ref readonly Entry reference)
-            => this.reference = ref reference;
+        private readonly ref readonly Entry reference = ref reference;
 
         internal bool IsEmpty => Unsafe.IsNullRef(in reference);
 

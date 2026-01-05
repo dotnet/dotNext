@@ -101,19 +101,19 @@ public partial class Epoch
         return scope;
     }
     
-    private void Reclaim(uint protectedEntryHandle, bool drainGlobalCache, out RecycleBin action)
+    private void Reclaim(uint protectedEntryHandle, bool drainGlobalCache, out RecycleBin bin)
     {
         if (state.TryBumpEpoch(protectedEntryHandle) is not { IsEmpty: false } garbage)
         {
-            action = default;
+            bin = default;
         }
         else if (drainGlobalCache)
         {
-            action = new(garbage.ReclaimGlobal());
+            bin = new(garbage.ReclaimGlobal());
         }
         else
         {
-            action = new(garbage.ReclaimLocal());
+            bin = new(garbage.ReclaimLocal());
         }
     }
 
@@ -232,7 +232,7 @@ public partial class Epoch
         private ReadOnlySpan<Discardable> Span => count switch
         {
             0 => ReadOnlySpan<Discardable>.Empty,
-            1 => new(in AdvancedHelpers.InToRef<object, Discardable>(in discardable)),
+            1 => new(in Unsafe.InToRef<object, Discardable>(in discardable)),
             _ => new(Unsafe.As<Discardable[]>(discardable), 0, count),
         };
 
@@ -355,7 +355,7 @@ public partial class Epoch
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
     [DebuggerDisplay($"{{{nameof(DebugView)}}}")]
-    public readonly ref struct Scope
+    public readonly ref struct Scope : IDisposable
     {
         internal readonly uint Handle;
 
