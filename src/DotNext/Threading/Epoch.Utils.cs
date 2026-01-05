@@ -101,14 +101,14 @@ public partial class Epoch
         [ThreadStatic]
         private static int? bucketForCurrentThread;
         
+        private static readonly uint RecommendedSize = BitOperations.RoundUpToPowerOf2((uint)Environment.ProcessorCount + 1U);
+        
         // cached epoch numbers
         internal readonly uint Previous = previous, Next = next;
         
         // size of the array must be a power of 2 to optimize modulo operation
         private readonly Discardable?[] callbacks = new Discardable?[RecommendedSize];
         internal ulong Counter;
-        
-        private static uint RecommendedSize => BitOperations.RoundUpToPowerOf2((uint)Environment.ProcessorCount + 1U);
 
         private readonly ref Discardable? this[int index]
         {
