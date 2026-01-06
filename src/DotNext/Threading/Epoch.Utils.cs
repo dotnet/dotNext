@@ -29,10 +29,8 @@ public partial class Epoch
         ref readonly var currentEpochState = ref entries[currentEpoch];
         var nextEpochIndex = currentEpochState.Next;
         ref readonly var previousEpochState = ref entries[currentEpochState.Previous];
-        ref readonly var nextEpochState = ref entries[nextEpochIndex];
 
         return previousEpochState.Counter is 0U
-               && nextEpochState.Counter is 0U
                && Interlocked.CompareExchange(ref globalEpoch, nextEpochIndex, currentEpoch) == currentEpoch
             ? new(in previousEpochState)
             : default;
@@ -42,7 +40,7 @@ public partial class Epoch
     {
         foreach (ref readonly var state in entries)
         {
-            if (state.Counter > 0UL)
+            if (state.Counter > 0U)
             {
                 throw new InvalidOperationException();
             }
@@ -151,7 +149,7 @@ public partial class Epoch
         
         // size of the array must be a power of 2 to optimize modulo operation
         private readonly Discardable?[] callbacks = new Discardable?[RecommendedSize];
-        internal ulong Counter;
+        internal uint Counter;
 
         private readonly ref Discardable? this[int index]
         {
