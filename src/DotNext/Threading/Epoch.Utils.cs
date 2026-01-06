@@ -208,7 +208,7 @@ public partial class Epoch
                     _ => uint.MaxValue,
                 };
 
-                var hasDeferredActions = callbacks.Any(Predicate<Discardable>.IsNotNull);
+                var hasDeferredActions = Array.Exists(callbacks, Predicate<Discardable>.IsNotNull);
                 return $"Epoch={epoch}, Threads={Counter}, DeferredActions={hasDeferredActions}";
             }
         }
