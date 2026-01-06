@@ -19,7 +19,7 @@ public static class TimeoutExtensions
         public bool IsExpired(TimeProvider provider) => timeout.IsExpiredInternal(provider);
 
         /// <summary>
-        /// Gets the remaining time, or zero if timeout is occurred.
+        /// Gets the remaining time, or <see cref="TimeSpan.Zero"/> if timeout is occurred.
         /// </summary>
         public TimeSpan RemainingTime
         {
