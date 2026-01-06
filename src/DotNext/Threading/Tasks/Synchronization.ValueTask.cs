@@ -349,7 +349,7 @@ public static partial class Synchronization
         {
             var currentThread = Thread.CurrentThread;
             if (currentThread.IsThreadPoolThread)
-                DrainLocalThreadQueue();
+                DrainThreadLocalQueue();
             
             awaiter.UnsafeOnCompleted(currentThread.Interrupt);
             try
@@ -365,7 +365,7 @@ public static partial class Synchronization
     }
 
     [UnsafeAccessor(UnsafeAccessorKind.StaticMethod, Name = "TransferAllLocalWorkItemsToHighPriorityGlobalQueue")]
-    private static extern void DrainLocalThreadQueue(
+    private static extern void DrainThreadLocalQueue(
         [UnsafeAccessorType("System.Threading.ThreadPoolWorkQueue, System.Private.CoreLib")]
         object? obj = null);
 
