@@ -34,7 +34,7 @@ public partial class Epoch
     /// Enters the current epoch, but doesn't execute any deferred actions.
     /// </summary>
     /// <remarks>
-    /// This method is reentrant and never throws an exception.
+    /// This method is reentrant and never throws an exception. It is recommended to call this method by the writer.
     /// </remarks>
     /// <param name="drainGlobalCache">
     /// <see langword="true"/> to capture all deferred actions across all threads;
@@ -51,30 +51,14 @@ public partial class Epoch
     }
 
     /// <summary>
-    /// Enters the current epoch, and optionally executes a deferred actions.
+    /// Enters the current epoch without the execution of the deferred actions.
     /// </summary>
     /// <remarks>
-    /// This method is reentrant. In case of exceptions in one or more deferred actions the method closes the scope correctly.
+    /// This method is reentrant. It is recommended to call this method by the reader.
     /// </remarks>
-    /// <param name="drainGlobalCache">
-    /// <see langword="null"/> to avoid reclamation;
-    /// <see langword="true"/> to capture all deferred actions across all threads;
-    /// <see langword="false"/> to capture actions that were deferred by the current thread at some point in the past.
-    /// </param>
     /// <returns>A scope that represents the current epoch.</returns>
     /// <exception cref="AggregateException">One or more deferred actions thrown an exception.</exception>
-    public Scope Enter(bool? drainGlobalCache = false)
-    {
-        var scope = new Scope(this);
-
-        if (drainGlobalCache.HasValue && Reclaim(scope.Handle, drainGlobalCache.GetValueOrDefault()) is { IsEmpty: false } exceptions)
-        {
-            scope.Dispose();
-            exceptions.ThrowIfNeeded();
-        }
-
-        return scope;
-    }
+    public Scope Enter() => new(this);
 
     /// <summary>
     /// Enters the current epoch, and optionally executes a deferred actions.
@@ -93,27 +77,9 @@ public partial class Epoch
     {
         scope = new(this);
 
-        UnsafeReclaim(scope.Handle, drainGlobalCache);
+        Reclaim(scope.Handle, drainGlobalCache).ThrowIfNeeded();
     }
 
-    /// <summary>
-    /// Enters the current epoch, and optionally executes a deferred actions.
-    /// </summary>
-    /// <remarks>
-    /// This method is reentrant. In case of exceptions in one or more deferred actions the aggregated exception is propagated
-    /// to the caller. There is no way for the caller to close the scope correctly.
-    /// </remarks>
-    /// <param name="drainGlobalCache">
-    /// <see langword="true"/> to capture all deferred actions across all threads;
-    /// <see langword="false"/> to capture actions that were deferred by the current thread at some point in the past.
-    /// </param>
-    /// <exception cref="AggregateException">One or more deferred actions thrown an exception.</exception>
-    public Scope UnsafeEnter(bool drainGlobalCache = false)
-    {
-        Enter(drainGlobalCache, out Scope scope);
-        return scope;
-    }
-    
     private void Reclaim(uint protectedEntryHandle, bool drainGlobalCache, out RecycleBin bin)
     {
         if (TryBumpEpoch(protectedEntryHandle) is not { IsEmpty: false } garbage)
@@ -151,31 +117,12 @@ public partial class Epoch
         return exceptions;
     }
 
-    private void UnsafeReclaim(uint protectedEntryHandle, bool drainGlobalCache)
-    {
-        if (TryBumpEpoch(protectedEntryHandle) is not { IsEmpty: false } garbage)
-        {
-            // do nothing
-        }
-        else if (drainGlobalCache)
-        {
-            foreach (var bucket in garbage.ReclaimGlobal())
-            {
-                bucket.Drain();
-            }
-        }
-        else if (garbage.ReclaimLocal() is { } bucket)
-        {
-            bucket.Drain();
-        }
-    }
-
     /// <summary>
     /// Invokes all deferred actions across all epochs.
     /// </summary>
     /// <remarks>
     /// This method is not thread-safe and cannot be called concurrently with other threads entered a protected region
-    /// with <see cref="Enter(bool?)"/>. The caller must ensure that all threads finished their work prior to this method.
+    /// with <see cref="Enter()"/>. The caller must ensure that all threads finished their work prior to this method.
     /// </remarks>
     /// <exception cref="InvalidOperationException">Not all threads relying on the current instance finished their work.</exception>
     /// <exception cref="AggregateException">One or more deferred actions throw an exception.</exception>
