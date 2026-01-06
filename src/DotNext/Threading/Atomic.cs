@@ -92,7 +92,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void Read(out T result)
     {
         Interlocked.Acquire(ref lockState);
-        AdvancedHelpers.Copy(in value, out result);
+        RuntimeHelpers.Copy(in value, out result);
         Interlocked.Release(ref lockState);
     }
 
@@ -140,8 +140,8 @@ public struct Atomic<T> : IStrongBox, ICloneable
         Interlocked.Acquire(ref lockState);
         var current = value;
         if (successful = comparer.Equals(in current, in expected))
-            AdvancedHelpers.Copy(in update, out value);
-        AdvancedHelpers.Copy(in current, out result);
+            RuntimeHelpers.Copy(in update, out value);
+        RuntimeHelpers.Copy(in current, out result);
         Interlocked.Release(ref lockState);
         return successful;
     }
@@ -189,7 +189,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         {
             // custom comparer may throw exception
             if (result = comparer.Equals(in value, in expected))
-                AdvancedHelpers.Copy(in update, out value);
+                RuntimeHelpers.Copy(in update, out value);
         }
         finally
         {
@@ -237,8 +237,8 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void Exchange(in T update, out T previous)
     {
         Interlocked.Acquire(ref lockState);
-        AdvancedHelpers.Copy(in value, out previous);
-        AdvancedHelpers.Copy(in update, out value);
+        RuntimeHelpers.Copy(in value, out previous);
+        RuntimeHelpers.Copy(in update, out value);
         Interlocked.Release(ref lockState);
     }
 
@@ -258,7 +258,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         {
             // custom updater may throw exception
             updater(ref value);
-            AdvancedHelpers.Copy(in value, out result);
+            RuntimeHelpers.Copy(in value, out result);
         }
         finally
         {
@@ -290,7 +290,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
             Interlocked.Release(ref lockState);
         }
 
-        AdvancedHelpers.Copy(in previous, out result);
+        RuntimeHelpers.Copy(in previous, out result);
     }
 
     /// <summary>
@@ -314,7 +314,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
         {
             // custom accumulator may throw exception
             accumulator(ref value, in x);
-            AdvancedHelpers.Copy(in value, out result);
+            RuntimeHelpers.Copy(in value, out result);
         }
         finally
         {
@@ -350,7 +350,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
             Interlocked.Release(ref lockState);
         }
 
-        AdvancedHelpers.Copy(in previous, out result);
+        RuntimeHelpers.Copy(in previous, out result);
     }
 
     /// <summary>
