@@ -16,9 +16,18 @@ public partial class Epoch
 
     private uint Enter()
     {
-        var currentEpoch = globalEpoch;
-        Interlocked.Increment(ref entries[currentEpoch].Counter); // acts as a barrier for 'globalEpoch' reads
-        return currentEpoch;
+        while (true)
+        {
+            var currentEpoch = globalEpoch;
+            ref var counter = ref entries[currentEpoch].Counter;
+            Interlocked.Increment(ref counter); // acts as a barrier for 'globalEpoch' reads
+
+            // Rollback the counter if we're not in the same epoch after the increment
+            if (currentEpoch == globalEpoch)
+                return currentEpoch;
+
+            Interlocked.Decrement(ref counter);
+        }
     }
 
     private void Exit(uint epoch)
