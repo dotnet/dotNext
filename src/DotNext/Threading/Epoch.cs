@@ -378,7 +378,7 @@ public partial class Epoch
         internal Scope(Epoch epoch)
         {
             this.epoch = epoch;
-            Handle = epoch.Enter();
+            Handle = epoch.EnterEpoch();
         }
 
         /// <summary>
@@ -457,7 +457,7 @@ public partial class Epoch
         /// This method is not idempotent and should not be called twice.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void Dispose() => epoch?.Exit(Handle);
+        public void Dispose() => epoch?.ExitEpoch(Handle);
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         private string DebugView => epoch is not null ? epoch.GetDebugView(Handle) : "Empty";

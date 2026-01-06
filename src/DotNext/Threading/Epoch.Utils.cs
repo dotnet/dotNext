@@ -14,7 +14,7 @@ public partial class Epoch
     [MethodImpl(MethodImplOptions.NoInlining)] // compiler-level barrier to avoid 'globalEpoch' cached reads
     private void Defer(Discardable node) => entries[globalEpoch].Defer(node);
 
-    private uint Enter()
+    private uint EnterEpoch()
     {
         while (true)
         {
@@ -30,7 +30,7 @@ public partial class Epoch
         }
     }
 
-    private void Exit(uint epoch)
+    private void ExitEpoch(uint epoch)
         => Interlocked.Decrement(ref entries[epoch].Counter);
     
     private SafeToReclaimEpoch TryBumpEpoch(uint currentEpoch)
