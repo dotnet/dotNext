@@ -12,17 +12,19 @@ public sealed class EpochTests : Test
         var state = new StrongBox<int>();
         var epoch = new Epoch();
 
-        using (var region = epoch.Enter())
+        epoch.Enter(drainGlobalCache: false, out Epoch.Scope scope);
+        using (scope)
         {
-            region.Defer(() => state.Value = 42);
+            scope.Defer(() => state.Value = 42);
         }
 
         Equal(0, state.Value);
 
-        epoch.Enter(drainGlobalCache: null).Dispose();
+        epoch.Enter().Dispose();
         Equal(0, state.Value);
 
-        epoch.Enter().Dispose();
+        epoch.Enter(drainGlobalCache: false, out scope);
+        scope.Dispose();
         Equal(0, state.Value);
 
         epoch.Enter(drainGlobalCache: true, out Epoch.RecycleBin action).Dispose();
@@ -49,9 +51,13 @@ public sealed class EpochTests : Test
             region.Dispose();
         }
 
-        epoch.Enter().Dispose();
+        epoch.Enter(drainGlobalCache: false, out region);
+        region.Dispose();
 
-        epoch.Enter().Dispose(); // causes reclamation
+        // causes reclamation
+        epoch.Enter(drainGlobalCache: false, out region);
+        region.Dispose();
+        
         True(state.IsDisposed);
     }
     
@@ -71,9 +77,13 @@ public sealed class EpochTests : Test
             region.Dispose();
         }
 
-        epoch.Enter().Dispose();
+        epoch.Enter(drainGlobalCache: false, out region);
+        region.Dispose();
 
-        epoch.Enter().Dispose(); // causes reclamation
+        // causes reclamation
+        epoch.Enter(drainGlobalCache: false, out region);
+        region.Dispose();
+        
         True(state.IsDisposed);
     }
 
@@ -83,14 +93,17 @@ public sealed class EpochTests : Test
         using var state = new ManualResetEvent(initialState: false);
         var epoch = new Epoch();
 
-        using (var region = epoch.Enter())
+        epoch.Enter(drainGlobalCache: false, out Epoch.Scope region);
+        using (region)
         {
             region.Defer(state, static state => state.Set());
         }
 
-        epoch.Enter().Dispose();
+        epoch.Enter(drainGlobalCache: false, out region);
+        region.Dispose();
 
-        epoch.Enter(drainGlobalCache: true, out Epoch.RecycleBin action).Dispose(); // causes reclamation
+        // causes reclamation
+        epoch.Enter(drainGlobalCache: true, out Epoch.RecycleBin action).Dispose();
         action.QueueCleanup();
         True(state.WaitOne(DefaultTimeout));
     }
@@ -107,14 +120,17 @@ public sealed class EpochTests : Test
         {
             var epoch = new Epoch();
 
-            using (var region = epoch.Enter())
+            epoch.Enter(drainGlobalCache: false, out Epoch.Scope region);
+            using (region)
             {
                 region.Defer(new TaskCompletionSourceWrapper(source));
             }
 
-            epoch.Enter().Dispose();
+            epoch.Enter(drainGlobalCache: false, out region);
+            region.Dispose();
 
-            epoch.Enter(drainGlobalCache: false, out Epoch.RecycleBin action).Dispose(); // causes reclamation
+            // causes reclamation
+            epoch.Enter(drainGlobalCache: false, out Epoch.RecycleBin action).Dispose();
             return action.ClearAsync();
         }
     }
@@ -193,41 +209,58 @@ public sealed class EpochTests : Test
 
         public void Push(T value)
         {
-            using var scope = epoch.UnsafeEnter();
-            Node newNode = new(value), current;
-
-            do
+            var scope = default(Epoch.Scope);
+            try
             {
-                newNode.Next = current = head;
-            } while (Interlocked.CompareExchange(ref head, newNode, current) != current);
+                epoch.Enter(drainGlobalCache: true, out scope);
+                Node newNode = new(value), current;
+
+                do
+                {
+                    newNode.Next = current = head;
+                } while (Interlocked.CompareExchange(ref head, newNode, current) != current);
+            }
+            finally
+            {
+                scope.Dispose();
+            }
         }
 
         public bool TryPop(out T value)
         {
-            using var scope = epoch.UnsafeEnter();
-            Node currentNode, newNode;
-            do
+            var scope = default(Epoch.Scope);
+            try
             {
-                currentNode = head;
-
-                if (currentNode is null)
+                epoch.Enter(drainGlobalCache: true, out scope);
+                Node currentNode, newNode;
+                do
                 {
-                    value = default;
-                    return false;
-                }
+                    currentNode = head;
 
-                newNode = currentNode.Next;
-            } while (Interlocked.CompareExchange(ref head, newNode, currentNode) != currentNode);
+                    if (currentNode is null)
+                    {
+                        value = default;
+                        return false;
+                    }
 
-            False(currentNode.IsDead);
-            value = currentNode.Value;
-            scope.Defer(currentNode, static node => node.IsDead = true);
+                    newNode = currentNode.Next;
+                } while (Interlocked.CompareExchange(ref head, newNode, currentNode) != currentNode);
+
+                False(currentNode.IsDead);
+                value = currentNode.Value;
+                scope.Defer(currentNode, static node => node.IsDead = true);
+            }
+            finally
+            {
+                scope.Dispose();
+            }
+
             return true;
         }
 
         public bool TryPeek(out T value)
         {
-            using var scope = epoch.UnsafeEnter();
+            using var scope = epoch.Enter();
             if (head is { } top)
             {
                 False(top.IsDead);
