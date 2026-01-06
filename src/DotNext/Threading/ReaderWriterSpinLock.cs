@@ -9,34 +9,13 @@ namespace DotNext.Threading;
 /// This type should not be used to synchronize access to the I/O intensive resources.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
-public partial struct ReaderWriterSpinLock
+public struct ReaderWriterSpinLock
 {
     private const int WriteLockState = int.MinValue;
     private const int NoLockState = 0;
     private const int SingleReaderState = 1;
 
     private volatile int state;
-    private uint version;    // volatile
-
-    /// <summary>
-    /// Returns a stamp that can be validated later.
-    /// </summary>
-    /// <returns>Optimistic read stamp. May be invalid.</returns>
-    public readonly LockStamp TryOptimisticRead()
-    {
-        // Ordering of version and lock state must be respected:
-        // Writer lock acquisition changes the state to Acquired and then increments the version.
-        // Optimistic reader lock reads the version and then checks Acquired lock state to avoid false positives.
-        var stamp = new LockStamp(in version);
-        return state is WriteLockState ? default : stamp;
-    }
-
-    /// <summary>
-    /// Returns <see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp.
-    /// </summary>
-    /// <param name="stamp">A stamp to check.</param>
-    /// <returns><see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp; else <see langword="false"/>.</returns>
-    public readonly bool Validate(in LockStamp stamp) => stamp.IsValid(in version) && state is not WriteLockState;
 
     /// <summary>
     /// Gets a value that indicates whether the current thread has entered the lock in write mode.
@@ -130,8 +109,6 @@ public partial struct ReaderWriterSpinLock
         for (var spinner = new SpinWait();
              Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) is not NoLockState;
              spinner.SpinOnce());
-
-        Interlocked.Increment(ref version);
     }
 
     /// <summary>
@@ -139,13 +116,7 @@ public partial struct ReaderWriterSpinLock
     /// </summary>
     /// <returns><see langword="true"/> if writer lock is acquired; otherwise, <see langword="false"/>.</returns>
     public bool TryEnterWriteLock()
-    {
-        if (Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) is not NoLockState)
-            return false;
-
-        Interlocked.Increment(ref version);
-        return true;
-    }
+        => Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) is NoLockState;
 
     private bool TryEnterWriteLock(in Timeout timeout, TimeProvider provider, CancellationToken token)
     {
@@ -157,7 +128,6 @@ public partial struct ReaderWriterSpinLock
                 return false;
         }
 
-        Interlocked.Increment(ref version);
         return true;
     }
 
