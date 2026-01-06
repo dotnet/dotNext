@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 namespace DotNext.Threading;
 
 using Collections.Generic;
-using Tasks;
 
 /// <summary>
 /// Represents a collection of asynchronous events.
