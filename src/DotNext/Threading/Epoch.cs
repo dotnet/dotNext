@@ -15,7 +15,20 @@ using Runtime.ExceptionServices;
 /// <seealso href="https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-579.pdf">Practical lock-freedom</seealso>
 public partial class Epoch
 {
-    private State state = new();
+    private uint globalEpoch;
+    
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private EpochEntryCollection entries;
+
+    /// <summary>
+    /// Initializes a new EBR implementation.
+    /// </summary>
+    public Epoch()
+    {
+        entries[0] = new(2, 1);
+        entries[1] = new(0, 2);
+        entries[2] = new(1, 0);
+    }
 
     /// <summary>
     /// Enters the current epoch, but doesn't execute any deferred actions.
@@ -31,7 +44,7 @@ public partial class Epoch
     /// <returns>A scope that represents the current epoch.</returns>
     public Scope Enter(bool drainGlobalCache, out RecycleBin bin)
     {
-        var scope = new Scope(ref state);
+        var scope = new Scope(this);
 
         Reclaim(scope.Handle, drainGlobalCache, out bin);
         return scope;
@@ -52,7 +65,7 @@ public partial class Epoch
     /// <exception cref="AggregateException">One or more deferred actions thrown an exception.</exception>
     public Scope Enter(bool? drainGlobalCache = false)
     {
-        var scope = new Scope(ref state);
+        var scope = new Scope(this);
 
         if (drainGlobalCache.HasValue && Reclaim(scope.Handle, drainGlobalCache.GetValueOrDefault()) is { IsEmpty: false } exceptions)
         {
@@ -78,7 +91,7 @@ public partial class Epoch
     /// <exception cref="AggregateException">One or more deferred actions thrown an exception.</exception>
     public void Enter(bool drainGlobalCache, out Scope scope)
     {
-        scope = new(ref state);
+        scope = new(this);
 
         UnsafeReclaim(scope.Handle, drainGlobalCache);
     }
@@ -103,7 +116,7 @@ public partial class Epoch
     
     private void Reclaim(uint protectedEntryHandle, bool drainGlobalCache, out RecycleBin bin)
     {
-        if (state.TryBumpEpoch(protectedEntryHandle) is not { IsEmpty: false } garbage)
+        if (TryBumpEpoch(protectedEntryHandle) is not { IsEmpty: false } garbage)
         {
             bin = default;
         }
@@ -120,7 +133,7 @@ public partial class Epoch
     private ExceptionAggregator Reclaim(uint protectedEntryHandle, bool drainGlobalCache)
     {
         var exceptions = new ExceptionAggregator();
-        if (state.TryBumpEpoch(protectedEntryHandle) is { IsEmpty: false } garbage)
+        if (TryBumpEpoch(protectedEntryHandle) is { IsEmpty: false } garbage)
         {
             if (drainGlobalCache)
             {
@@ -140,7 +153,7 @@ public partial class Epoch
 
     private void UnsafeReclaim(uint protectedEntryHandle, bool drainGlobalCache)
     {
-        if (state.TryBumpEpoch(protectedEntryHandle) is not { IsEmpty: false } garbage)
+        if (TryBumpEpoch(protectedEntryHandle) is not { IsEmpty: false } garbage)
         {
             // do nothing
         }
@@ -169,7 +182,7 @@ public partial class Epoch
     public void UnsafeClear()
     {
         var exceptions = new ExceptionAggregator();
-        state.UnsafeDrain(ref exceptions);
+        UnsafeDrain(ref exceptions);
         exceptions.ThrowIfNeeded();
     }
 
@@ -355,17 +368,17 @@ public partial class Epoch
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
     [DebuggerDisplay($"{{{nameof(DebugView)}}}")]
-    public readonly ref struct Scope : IDisposable
+    public readonly struct Scope : IDisposable
     {
         internal readonly uint Handle;
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly ref State state;
+        private readonly Epoch epoch;
 
-        internal Scope(ref State state)
+        internal Scope(Epoch epoch)
         {
-            this.state = ref state;
-            Handle = state.Enter();
+            this.epoch = epoch;
+            Handle = epoch.Enter();
         }
 
         /// <summary>
@@ -381,7 +394,7 @@ public partial class Epoch
         {
             ArgumentNullException.ThrowIfNull(callback);
 
-            state.Defer(new ActionNode(callback));
+            epoch.Defer(new ActionNode(callback));
         }
 
         /// <summary>
@@ -398,7 +411,7 @@ public partial class Epoch
         {
             ArgumentNullException.ThrowIfNull(callback);
 
-            state.Defer(new ActionNode<T>(arg, callback));
+            epoch.Defer(new ActionNode<T>(arg, callback));
         }
 
         /// <summary>
@@ -409,7 +422,7 @@ public partial class Epoch
         /// <typeparam name="TWorkItem">The type of the callback.</typeparam>
         public void Defer<TWorkItem>(TWorkItem workItem)
             where TWorkItem : struct, IThreadPoolWorkItem
-            => state.Defer(new WorkItem<TWorkItem>(workItem));
+            => epoch.Defer(new WorkItem<TWorkItem>(workItem));
 
         /// <summary>
         /// Registers an object to be disposed at some point in future when the resource protected by the epoch is no longer
@@ -421,7 +434,7 @@ public partial class Epoch
         {
             ArgumentNullException.ThrowIfNull(disposable);
 
-            state.Defer(new Cleanup(disposable));
+            epoch.Defer(new Cleanup(disposable));
         }
 
         /// <summary>
@@ -434,7 +447,7 @@ public partial class Epoch
         {
             ArgumentNullException.ThrowIfNull(discardable);
 
-            state.Defer(discardable);
+            epoch.Defer(discardable);
         }
 
         /// <summary>
@@ -444,21 +457,9 @@ public partial class Epoch
         /// This method is not idempotent and should not be called twice.
         /// </remarks>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public void Dispose()
-        {
-            ref var stateCopy = ref state;
-            if (Unsafe.IsNullRef(in stateCopy) is false)
-                state.Exit(Handle);
-        }
+        public void Dispose() => epoch?.Exit(Handle);
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private string DebugView
-        {
-            get
-            {
-                ref var stateCopy = ref state;
-                return Unsafe.IsNullRef(in stateCopy) ? "Empty" : stateCopy.GetDebugView(Handle);
-            }
-        }
+        private string DebugView => epoch is not null ? epoch.GetDebugView(Handle) : "Empty";
     }
 }

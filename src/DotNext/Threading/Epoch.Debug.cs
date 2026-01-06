@@ -7,9 +7,12 @@ namespace DotNext.Threading;
 public partial class Epoch
 {
     [ExcludeFromCodeCoverage]
+    private string GetDebugView(uint epoch) => entries[epoch].DebugView;
+    
+    [ExcludeFromCodeCoverage]
     private struct DebugView(Epoch epoch)
     {
         [DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-        public ReadOnlySpan<Entry> Epochs => epoch.state.Entries;
+        public ReadOnlySpan<Entry> Epochs => epoch.entries;
     }
 }

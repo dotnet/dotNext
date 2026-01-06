@@ -11,6 +11,49 @@ using Runtime.ExceptionServices;
 
 public partial class Epoch
 {
+    [MethodImpl(MethodImplOptions.NoInlining)] // compiler-level barrier to avoid 'globalEpoch' cached reads
+    private void Defer(Discardable node) => entries[globalEpoch].Defer(node);
+
+    private uint Enter()
+    {
+        var currentEpoch = globalEpoch;
+        Interlocked.Increment(ref entries[currentEpoch].Counter); // acts as a barrier for 'globalEpoch' reads
+        return currentEpoch;
+    }
+
+    private void Exit(uint epoch)
+        => Interlocked.Decrement(ref entries[epoch].Counter);
+    
+    private SafeToReclaimEpoch TryBumpEpoch(uint currentEpoch)
+    {
+        ref readonly var currentEpochState = ref entries[currentEpoch];
+        var nextEpochIndex = currentEpochState.Next;
+        ref readonly var previousEpochState = ref entries[currentEpochState.Previous];
+        ref readonly var nextEpochState = ref entries[nextEpochIndex];
+
+        return previousEpochState.Counter is 0U
+               && nextEpochState.Counter is 0U
+               && Interlocked.CompareExchange(ref globalEpoch, nextEpochIndex, currentEpoch) == currentEpoch
+            ? new(in previousEpochState)
+            : default;
+    }
+
+    private void UnsafeDrain(ref ExceptionAggregator exceptions)
+    {
+        foreach (ref readonly var state in entries)
+        {
+            if (state.Counter > 0UL)
+            {
+                throw new InvalidOperationException();
+            }
+
+            foreach (var bucket in state.DetachGlobal())
+            {
+                bucket.Drain(ref exceptions);
+            }
+        }
+    }
+    
     /// <summary>
     /// Represents an object which lifetime is controlled by <see cref="Epoch"/> internal Garbage Collector.
     /// </summary>
@@ -218,70 +261,6 @@ public partial class Epoch
                 Debug.Assert(epoch <= 2U);
 
                 return ref Unsafe.Add(ref entry, epoch);
-            }
-        }
-    }
-
-    internal struct State
-    {
-        private uint globalEpoch;
-        
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private EpochEntryCollection entries;
-
-        public State()
-        {
-            entries[0] = new(2, 1);
-            entries[1] = new(0, 2);
-            entries[2] = new(1, 0);
-        }
-
-        [UnscopedRef] internal readonly ReadOnlySpan<Entry> Entries => entries;
-
-        [MethodImpl(MethodImplOptions.NoInlining)] // compiler-level barrier to avoid 'globalEpoch' cached reads
-        internal readonly void Defer(Discardable node) => entries[globalEpoch].Defer(node);
-
-        internal uint Enter()
-        {
-            var currentEpoch = globalEpoch;
-            Interlocked.Increment(ref entries[currentEpoch].Counter); // acts as a barrier for 'globalEpoch' reads
-            return currentEpoch;
-        }
-
-        internal void Exit(uint epoch)
-            => Interlocked.Decrement(ref entries[epoch].Counter);
-
-        [ExcludeFromCodeCoverage]
-        internal readonly string GetDebugView(uint epoch) => entries[epoch].DebugView;
-
-        [UnscopedRef]
-        internal SafeToReclaimEpoch TryBumpEpoch(uint currentEpoch)
-        {
-            ref readonly var currentEpochState = ref entries[currentEpoch];
-            var nextEpochIndex = currentEpochState.Next;
-            ref readonly var previousEpochState = ref entries[currentEpochState.Previous];
-            ref readonly var nextEpochState = ref entries[nextEpochIndex];
-
-            return previousEpochState.Counter is 0U
-                   && nextEpochState.Counter is 0U
-                   && Interlocked.CompareExchange(ref globalEpoch, nextEpochIndex, currentEpoch) == currentEpoch
-                ? new(in previousEpochState)
-                : default;
-        }
-
-        internal readonly void UnsafeDrain(ref ExceptionAggregator exceptions)
-        {
-            foreach (ref readonly var state in entries)
-            {
-                if (state.Counter > 0UL)
-                {
-                    throw new InvalidOperationException();
-                }
-
-                foreach (var bucket in state.DetachGlobal())
-                {
-                    bucket.Drain(ref exceptions);
-                }
             }
         }
     }
