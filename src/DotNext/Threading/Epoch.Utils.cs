@@ -32,27 +32,27 @@ public partial class Epoch
 
     private void ExitEpoch(uint epoch)
         => Interlocked.Decrement(ref entries[epoch].Counter);
-    
+
     private RecycleBin Reclaim(uint currentEpoch, bool drainGlobalCache)
     {
         RecycleBin bin;
-        if (TryBumpEpoch(currentEpoch) is not { IsEmpty: false } garbage)
+        if (TryBumpEpoch(currentEpoch) is not { IsEmpty: false } safeToReclaimEpoch)
         {
             bin = default;
         }
         else if (drainGlobalCache)
         {
-            bin = new(garbage.ReclaimGlobal());
+            bin = new(safeToReclaimEpoch.Value.DetachGlobal());
         }
         else
         {
-            bin = new(garbage.ReclaimLocal());
+            bin = new(safeToReclaimEpoch.Value.DetachLocal());
         }
 
         return bin;
     }
-    
-    private SafeToReclaimEpoch TryBumpEpoch(uint currentEpoch)
+
+    private ReadOnlyLocalReference<Entry> TryBumpEpoch(uint currentEpoch)
     {
         ref readonly var currentEpochState = ref entries[currentEpoch];
         var nextEpochIndex = currentEpochState.Next;
@@ -289,18 +289,5 @@ public partial class Epoch
                 return ref Unsafe.Add(ref entry, epoch);
             }
         }
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    internal readonly ref struct SafeToReclaimEpoch(ref readonly Entry reference)
-    {
-        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-        private readonly ref readonly Entry reference = ref reference;
-
-        internal bool IsEmpty => Unsafe.IsNullRef(in reference);
-
-        internal Discardable? ReclaimLocal() => reference.DetachLocal();
-
-        internal DetachingEnumerable ReclaimGlobal() => reference.DetachGlobal();
     }
 }
