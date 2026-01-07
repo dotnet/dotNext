@@ -117,7 +117,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void Swap(ref T other)
     {
         Interlocked.Acquire(ref lockState);
-        AdvancedHelpers.Swap(ref value, ref other);
+        RuntimeHelpers.Swap(ref value, ref other);
         Interlocked.Release(ref lockState);
     }
 
@@ -128,7 +128,7 @@ public struct Atomic<T> : IStrongBox, ICloneable
     public void Write(in T newValue)
     {
         Interlocked.Acquire(ref lockState);
-        AdvancedHelpers.Copy(in newValue, out value);
+        RuntimeHelpers.Copy(in newValue, out value);
         Interlocked.Release(ref lockState);
     }
 
