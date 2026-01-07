@@ -121,7 +121,7 @@ public partial class Epoch
         /// <summary>
         /// Gets a value indicating that the action is empty.
         /// </summary>
-        public bool IsEmpty => Span.IsEmpty;
+        public bool IsEmpty => count is 0;
 
         /// <summary>
         /// Invokes all deferred actions.
