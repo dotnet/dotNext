@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace DotNext.Threading;
 
 [DebuggerTypeProxy(typeof(DebugView))]
-public partial class Epoch
+partial class Epoch
 {
     [ExcludeFromCodeCoverage]
     private string GetDebugView(uint epoch) => entries[epoch].DebugView;

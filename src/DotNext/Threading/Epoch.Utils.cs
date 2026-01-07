@@ -9,7 +9,7 @@ namespace DotNext.Threading;
 using IO.Hashing;
 using Runtime.ExceptionServices;
 
-public partial class Epoch
+partial class Epoch
 {
     private void Defer(uint epoch, Discardable node)
         => entries[epoch].Defer(node);
