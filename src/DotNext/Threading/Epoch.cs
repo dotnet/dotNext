@@ -12,7 +12,7 @@ using Runtime.ExceptionServices;
 /// Implements epoch-based reclamation.
 /// </summary>
 /// <seealso href="https://www.cl.cam.ac.uk/techreports/UCAM-CL-TR-579.pdf">Practical lock-freedom</seealso>
-public partial class Epoch
+public sealed partial class Epoch
 {
     private uint globalEpoch;
     
