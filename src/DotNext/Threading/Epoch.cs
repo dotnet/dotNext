@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -335,7 +334,6 @@ public partial class Epoch
         /// <remarks>
         /// This method is not idempotent and should not be called twice.
         /// </remarks>
-        [EditorBrowsable(EditorBrowsableState.Never)]
         public void Dispose() => state?.ExitEpoch(handle);
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
