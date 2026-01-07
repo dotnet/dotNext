@@ -12,10 +12,10 @@ public sealed class EpochTests : Test
         var state = new StrongBox<int>();
         var epoch = new Epoch();
 
-        epoch.Enter(drainGlobalCache: false, out Epoch.Scope scope);
-        using (scope)
+        using (var region = epoch.Enter())
         {
-            scope.Defer(() => state.Value = 42);
+            region.Defer(() => state.Value = 42);
+            True(region.Reclaim().IsEmpty);
         }
 
         Equal(0, state.Value);
@@ -23,66 +23,60 @@ public sealed class EpochTests : Test
         epoch.Enter().Dispose();
         Equal(0, state.Value);
 
-        epoch.Enter(drainGlobalCache: false, out scope);
-        scope.Dispose();
-        Equal(0, state.Value);
-
-        epoch.Enter(drainGlobalCache: true, out Epoch.RecycleBin action).Dispose();
-        False(action.IsEmpty);
-        Equal(0, state.Value);
-
-        action.Clear(throwOnFirstException);
+        using (var region = epoch.Enter())
+        {
+            var bin = region.Reclaim(drainGlobalCache: true);
+            False(bin.IsEmpty);
+            bin.Clear(throwOnFirstException);
+        }
+        
         Equal(42, state.Value);
     }
-
+    
     [Fact]
-    public static void Reclamation()
+    public static void DiscardableReclamation()
     {
-        var state = new DisposableObject();
+        var state = new DiscardableObject();
         var epoch = new Epoch();
 
-        epoch.Enter(drainGlobalCache: false, out Epoch.Scope region);
-        try
+        using (var region = epoch.Enter())
         {
-            region.RegisterForDispose(state);
-        }
-        finally
-        {
-            region.Dispose();
+            region.RegisterForDiscard(state);
+            True(region.Reclaim().IsEmpty);
         }
 
-        epoch.Enter(drainGlobalCache: false, out region);
-        region.Dispose();
+        False(state.IsDisposed);
 
-        // causes reclamation
-        epoch.Enter(drainGlobalCache: false, out region);
-        region.Dispose();
+        using (var region = epoch.Enter())
+        {
+            var bin = region.Reclaim(drainGlobalCache: true);
+            False(bin.IsEmpty);
+            bin.Clear();
+        }
         
         True(state.IsDisposed);
     }
     
     [Fact]
-    public static void Reclamation2()
+    public static void DisposableReclamation()
     {
-        var state = new DiscardableObject();
+        var state = new DisposableObject();
         var epoch = new Epoch();
 
-        epoch.Enter(drainGlobalCache: false, out Epoch.Scope region);
-        try
+        using (var region = epoch.Enter())
         {
-            region.RegisterForDiscard(state);
-        }
-        finally
-        {
-            region.Dispose();
+            region.RegisterForDispose(state);
+            True(region.Reclaim().IsEmpty);
         }
 
-        epoch.Enter(drainGlobalCache: false, out region);
-        region.Dispose();
+        False(state.IsDisposed);
 
-        // causes reclamation
-        epoch.Enter(drainGlobalCache: false, out region);
-        region.Dispose();
+        using (var region = epoch.Enter())
+        {
+            var bin = region.Reclaim(drainGlobalCache: true);
+            False(bin.IsEmpty);
+            bin.Clear();
+        }
         
         True(state.IsDisposed);
     }
@@ -93,18 +87,21 @@ public sealed class EpochTests : Test
         using var state = new ManualResetEvent(initialState: false);
         var epoch = new Epoch();
 
-        epoch.Enter(drainGlobalCache: false, out Epoch.Scope region);
-        using (region)
+        using (var region = epoch.Enter())
         {
-            region.Defer(state, static state => state.Set());
+            region.Defer(state, static s => s.Set());
+            True(region.Reclaim().IsEmpty);
         }
 
-        epoch.Enter(drainGlobalCache: false, out region);
-        region.Dispose();
+        False(state.WaitOne(0));
 
-        // causes reclamation
-        epoch.Enter(drainGlobalCache: true, out Epoch.RecycleBin action).Dispose();
-        action.QueueCleanup();
+        using (var region = epoch.Enter())
+        {
+            var bin = region.Reclaim(drainGlobalCache: true);
+            False(bin.IsEmpty);
+            bin.QueueCleanup();
+        }
+        
         True(state.WaitOne(DefaultTimeout));
     }
 
@@ -112,27 +109,23 @@ public sealed class EpochTests : Test
     public static async Task AsyncReclamation2()
     {
         var state = new TaskCompletionSource();
-
-        await ReclaimAsync(state).WaitAsync(TestToken);
-        await state.Task.WaitAsync(TestToken);
-
-        static Task ReclaimAsync(TaskCompletionSource source)
+        var epoch = new Epoch();
+        using (var region = epoch.Enter())
         {
-            var epoch = new Epoch();
-
-            epoch.Enter(drainGlobalCache: false, out Epoch.Scope region);
-            using (region)
-            {
-                region.Defer(new TaskCompletionSourceWrapper(source));
-            }
-
-            epoch.Enter(drainGlobalCache: false, out region);
-            region.Dispose();
-
-            // causes reclamation
-            epoch.Enter(drainGlobalCache: false, out Epoch.RecycleBin action).Dispose();
-            return action.ClearAsync();
+            region.Defer(new TaskCompletionSourceWrapper(state));
+            True(region.Reclaim().IsEmpty);
         }
+
+        False(state.Task.IsCanceled);
+
+        using (var region = epoch.Enter())
+        {
+            var bin = region.Reclaim(drainGlobalCache: true);
+            False(bin.IsEmpty);
+            await bin.ClearAsync();
+        }
+
+        await state.Task;
     }
 
     [Fact]
@@ -209,29 +202,27 @@ public sealed class EpochTests : Test
 
         public void Push(T value)
         {
-            var scope = default(Epoch.Scope);
-            try
+            Epoch.RecycleBin bin;
+            using (var scope = epoch.Enter())
             {
-                epoch.Enter(drainGlobalCache: true, out scope);
                 Node newNode = new(value), current;
 
                 do
                 {
                     newNode.Next = current = head;
                 } while (Interlocked.CompareExchange(ref head, newNode, current) != current);
+
+                bin = scope.Reclaim(drainGlobalCache: true);
             }
-            finally
-            {
-                scope.Dispose();
-            }
+
+            bin.Clear();
         }
 
         public bool TryPop(out T value)
         {
-            var scope = default(Epoch.Scope);
-            try
+            Epoch.RecycleBin bin;
+            using (var scope = epoch.Enter())
             {
-                epoch.Enter(drainGlobalCache: true, out scope);
                 Node currentNode, newNode;
                 do
                 {
@@ -249,12 +240,11 @@ public sealed class EpochTests : Test
                 False(currentNode.IsDead);
                 value = currentNode.Value;
                 scope.Defer(currentNode, static node => node.IsDead = true);
-            }
-            finally
-            {
-                scope.Dispose();
+
+                bin = scope.Reclaim(drainGlobalCache: true);
             }
 
+            bin.Clear();
             return true;
         }
 

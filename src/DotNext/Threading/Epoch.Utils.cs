@@ -11,8 +11,8 @@ using Runtime.ExceptionServices;
 
 public partial class Epoch
 {
-    [MethodImpl(MethodImplOptions.NoInlining)] // compiler-level barrier to avoid 'globalEpoch' cached reads
-    private void Defer(Discardable node) => entries[globalEpoch].Defer(node);
+    private void Defer(uint epoch, Discardable node)
+        => entries[epoch].Defer(node);
 
     private uint EnterEpoch()
     {
@@ -32,6 +32,25 @@ public partial class Epoch
 
     private void ExitEpoch(uint epoch)
         => Interlocked.Decrement(ref entries[epoch].Counter);
+    
+    private RecycleBin Reclaim(uint currentEpoch, bool drainGlobalCache)
+    {
+        RecycleBin bin;
+        if (TryBumpEpoch(currentEpoch) is not { IsEmpty: false } garbage)
+        {
+            bin = default;
+        }
+        else if (drainGlobalCache)
+        {
+            bin = new(garbage.ReclaimGlobal());
+        }
+        else
+        {
+            bin = new(garbage.ReclaimLocal());
+        }
+
+        return bin;
+    }
     
     private SafeToReclaimEpoch TryBumpEpoch(uint currentEpoch)
     {
