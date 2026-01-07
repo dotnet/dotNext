@@ -328,7 +328,7 @@ public static partial class Synchronization
 
     private static void Wait<TAwaiter, TProvider>(ref TAwaiter awaiter)
         where TAwaiter : struct, ICriticalNotifyCompletion
-        where TProvider : struct, IAwaiterStateProvider<TAwaiter>
+        where TProvider : struct, IAwaiterStateProvider<TAwaiter>, allows ref struct
     {
         if (!SpinWait(ref awaiter))
             BlockingWait(ref awaiter);
@@ -376,7 +376,7 @@ public static partial class Synchronization
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct ValueTaskStateProvider : IAwaiterStateProvider<ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter>
+    private readonly ref struct ValueTaskStateProvider : IAwaiterStateProvider<ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter>
     {
         static bool IAwaiterStateProvider<ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter>.IsCompleted(
             ref ConfiguredValueTaskAwaitable.ConfiguredValueTaskAwaiter awaiter)
@@ -384,7 +384,7 @@ public static partial class Synchronization
     }
 
     [StructLayout(LayoutKind.Auto)]
-    private readonly struct ValueTaskStateProvider<T> : IAwaiterStateProvider<ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter>
+    private readonly ref struct ValueTaskStateProvider<T> : IAwaiterStateProvider<ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter>
     {
         static bool IAwaiterStateProvider<ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter>.IsCompleted(
             ref ConfiguredValueTaskAwaitable<T>.ConfiguredValueTaskAwaiter awaiter)
