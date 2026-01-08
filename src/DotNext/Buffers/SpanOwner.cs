@@ -1,11 +1,12 @@
 ﻿using System.Buffers;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
-using Intrinsics = Runtime.Intrinsics;
+using Intrinsics = Runtime.CompilerServices.AdvancedHelpers;
 
 /// <summary>
 /// Represents the memory obtained from the pool or allocated
@@ -27,7 +28,7 @@ using Intrinsics = Runtime.Intrinsics;
 /// </example>
 /// <typeparam name="T">The type of the elements in the rented memory.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public ref struct SpanOwner<T>
+public ref struct SpanOwner<T> : IDisposable
 {
     /// <summary>
     /// Global recommended number of elements that can be allocated on the stack.
@@ -187,10 +188,7 @@ public ref struct SpanOwner<T>
     /// <returns>The textual representation of the rented memory.</returns>
     public readonly override string ToString() => memory.ToString();
 
-    /// <summary>
-    /// Returns the memory to the pool.
-    /// </summary>
-    public void Dispose()
+    private readonly void Clear()
     {
         if (owner is T[] array)
         {
@@ -215,7 +213,14 @@ public ref struct SpanOwner<T>
         {
             Unsafe.As<IDisposable>(owner)?.Dispose();
         }
+    }
 
+    /// <summary>
+    /// Returns the memory to the pool.
+    /// </summary>
+    public void Dispose()
+    {
+        Clear();
         this = default;
     }
 }
@@ -224,9 +229,8 @@ file static class Features
 {
     private const string UseNativeAllocationFeature = "DotNext.Buffers.NativeAllocation";
 
-    // TODO: [FeatureSwitchDefinition(EnableNativeAllocationFeature)]
-    internal static bool UseNativeAllocation
-        => LibraryFeature.IsSupported(UseNativeAllocationFeature);
+    [FeatureSwitchDefinition(UseNativeAllocationFeature)]
+    internal static bool UseNativeAllocation { get; } = AppContext.IsFeatureSupported(UseNativeAllocationFeature);
     
     internal static int StackallocThreshold
     {

@@ -134,14 +134,24 @@ public abstract class Disposable : IDisposable
         GC.SuppressFinalize(this);
     }
 
+    private static void Dispose<TDisposable, TEnumerator>(TEnumerator enumerator)
+        where TDisposable : IDisposable?
+        where TEnumerator : IEnumerator<TDisposable>, allows ref struct
+    {
+        while (enumerator.MoveNext())
+        {
+            enumerator.Current?.Dispose();
+        }
+    }
+
     /// <summary>
     /// Disposes many objects.
     /// </summary>
     /// <param name="objects">An array of objects to dispose.</param>
     public static void Dispose(IEnumerable<IDisposable?> objects)
     {
-        foreach (var obj in objects)
-            obj?.Dispose();
+        using var enumerator = objects.GetEnumerator();
+        Dispose(enumerator);
     }
 
     /// <summary>
@@ -149,7 +159,7 @@ public abstract class Disposable : IDisposable
     /// </summary>
     /// <param name="objects">An array of objects to dispose.</param>
     /// <returns>The task representing asynchronous execution of this method.</returns>
-    public static async ValueTask DisposeAsync(IEnumerable<IAsyncDisposable?> objects)
+    public static async ValueTask DisposeAsync(params IEnumerable<IAsyncDisposable?> objects)
     {
         foreach (var obj in objects)
         {
@@ -162,20 +172,9 @@ public abstract class Disposable : IDisposable
     /// Disposes many objects in safe manner.
     /// </summary>
     /// <param name="objects">An array of objects to dispose.</param>
-    public static void Dispose<T>(ReadOnlySpan<T> objects)
-        where T : IDisposable?
-    {
-        foreach (var obj in objects)
-            obj?.Dispose();
-    }
-
-    /// <summary>
-    /// Disposes many objects in safe manner.
-    /// </summary>
-    /// <param name="objects">An array of objects to dispose.</param>
-    /// <returns>The task representing asynchronous execution of this method.</returns>
-    public static ValueTask DisposeAsync(params IAsyncDisposable?[] objects)
-        => DisposeAsync(objects.AsEnumerable());
+    public static void Dispose<TDisposable>(params ReadOnlySpan<TDisposable> objects)
+        where TDisposable : IDisposable?
+        => Dispose<TDisposable, ReadOnlySpan<TDisposable>.Enumerator>(objects.GetEnumerator());
 
     /// <summary>
     /// Finalizes this object.

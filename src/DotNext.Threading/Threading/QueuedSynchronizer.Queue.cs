@@ -16,27 +16,8 @@ partial class QueuedSynchronizer
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     private protected bool IsEmptyQueue => waitQueue.Length is 0L;
 
-    private protected abstract void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor);
-
-    private protected WaitQueueVisitor GetWaitQueue(ref LinkedValueTaskCompletionSource<bool>.LinkedList suspendedCallers)
-        => new(ref waitQueue, ref suspendedCallers);
-
-    private protected LinkedValueTaskCompletionSource<bool>? DrainWaitQueue()
+    private protected virtual void DrainWaitQueue(ref WaitQueueScope queue)
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
-        
-        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
-        var visitor = GetWaitQueue(ref detachedQueue);
-        DrainWaitQueue(ref visitor);
-        return detachedQueue.First;
-    }
-
-    private protected LinkedValueTaskCompletionSource<bool>? DrainWaitQueue(Exception e)
-    {
-        var detachedQueue = new LinkedValueTaskCompletionSource<bool>.LinkedList();
-        GetWaitQueue(ref detachedQueue).SignalAll(e);
-
-        return detachedQueue.First;
     }
 
     private void ReturnNode(WaitNode node)
@@ -55,7 +36,7 @@ partial class QueuedSynchronizer
 
     private void BackToPool(WaitNode node)
     {
-        lock (SyncRoot)
+        lock (waitQueue.SyncRoot)
         {
             pool.Return(node);
         }
@@ -63,30 +44,32 @@ partial class QueuedSynchronizer
 
     private void RemoveAndDrainIfNeeded(WaitNode node)
     {
-        var syncRoot = SyncRoot;
-        var suspendedCallers = default(LinkedValueTaskCompletionSource<bool>);
-        Monitor.Enter(syncRoot);
-        try
+        WaitQueueScope scope;
+        lock (waitQueue.SyncRoot)
         {
-            suspendedCallers = waitQueue.Remove(node) && node.DrainOnReturn
-                ? DrainWaitQueue()
-                : null;
+            if (waitQueue.Remove(node))
+            {
+                scope = new(ref waitQueue);
+                DrainWaitQueue(ref scope);
+            }
+            else
+            {
+                scope = default;
+            }
         }
-        finally
-        {
-            Monitor.Exit(syncRoot);
-            suspendedCallers?.Unwind();
-        }
+
+        scope.ResumeSuspendedCallers();
     }
 
     private protected TNode? Acquire<T, TBuilder, TNode>(ref TBuilder builder, bool acquired)
         where T : struct, IEquatable<T>
         where TNode : WaitNode, new()
-        where TBuilder : struct, ITaskBuilder<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
-        Debug.Assert(Monitor.IsEntered(SyncRoot));
+        AssertInternalLockState();
         Debug.Assert(!builder.IsCompleted);
 
+        var node = default(TNode);
         if (IsDisposingOrDisposed)
         {
             builder.CompleteAsDisposed(GetType().Name);
@@ -95,24 +78,23 @@ partial class QueuedSynchronizer
         {
             builder.Complete();
         }
-        else if (builder.IsTimedOut)
+        else if (builder.TryCompleteAsTimedOut())
         {
-            builder.CompleteAsTimedOut();
+            // nothing to do
         }
         else if (IsConcurrencyLimitReached)
         {
-            builder.CompletedAsFull();
+            builder.Complete<ConcurrencyLimitReachedExceptionFactory>();
         }
         else
         {
-            var node = pool.Rent<TNode>();
+            node = pool.Rent<TNode>();
             node.Initialize(this, CaptureCallerInformation(), TBuilder.ThrowOnTimeout);
             waitQueue.Add(node);
             builder.Complete(node);
-            return node;
         }
 
-        return null;
+        return node;
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
@@ -125,19 +107,34 @@ partial class QueuedSynchronizer
         }
     }
 
+    /// <summary>
+    /// Captures the wait queue and acquires the internal lock.
+    /// </summary>
+    /// <remarks>
+    /// The internal lock must be released with <see cref="WaitQueueScope.Dispose()"/>
+    /// </remarks>
+    /// <returns>The captured wait queue.</returns>
+    private protected WaitQueueScope CaptureWaitQueue()
+    {
+        waitQueue.SyncRoot.Enter();
+        return new(ref waitQueue);
+    }
+
     [StructLayout(LayoutKind.Auto)]
-    private protected ref struct WaitQueueVisitor
+    private protected ref struct WaitQueueScope : IDisposable
     {
         private readonly ref WaitQueue queue;
-        private readonly ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue;
+        private LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue;
         private LinkedValueTaskCompletionSource<bool>? current, next;
 
-        public WaitQueueVisitor(ref WaitQueue queue, ref LinkedValueTaskCompletionSource<bool>.LinkedList detachedQueue)
+        public WaitQueueScope(ref WaitQueue queue)
         {
             this.queue = ref queue;
-            this.detachedQueue = ref detachedQueue;
             next = (current = queue.First)?.Next;
         }
+
+        public readonly void ResumeSuspendedCallers()
+            => detachedQueue.First?.Unwind();
 
         private readonly bool EndOfQueue => current is null;
 
@@ -182,8 +179,8 @@ partial class QueuedSynchronizer
 
         public void SignalCurrent(Exception e) => SignalCurrent(result: new(e));
 
-        public bool SignalCurrent<TLockManager>(ref TLockManager manager)
-            where TLockManager : struct, ILockManager
+        public bool SignalCurrent<TLockManager>(TLockManager manager)
+            where TLockManager : struct, ILockManager, allows ref struct
         {
             if (!manager.IsLockAllowed)
                 return false;
@@ -194,10 +191,10 @@ partial class QueuedSynchronizer
             return true;
         }
 
-        public void SignalAll<TLockManager>(ref TLockManager manager)
-            where TLockManager : struct, ILockManager
+        public void SignalAll<TLockManager>(TLockManager manager)
+            where TLockManager : struct, ILockManager, allows ref struct
         {
-            while (!EndOfQueue && SignalCurrent(ref manager))
+            while (!EndOfQueue && SignalCurrent(manager))
             {
                 Advance();
             }
@@ -212,9 +209,9 @@ partial class QueuedSynchronizer
             }
         }
 
-        public void SignalAll() => SignalAll(new Result<bool>(true));
-
         public void SignalAll(Exception e) => SignalAll(new Result<bool>(e));
+
+        public void SignalAll() => SignalAll(new Result<bool>(true));
 
         private void SignalAll(in Result<bool> result, out bool signaled)
         {
@@ -244,11 +241,24 @@ partial class QueuedSynchronizer
         
         public void SignalFirst(out bool signaled)
             => SignalFirst(new Result<bool>(true), out signaled);
+
+        /// <summary>
+        /// Releases the internal lock and resumes the suspended callers.
+        /// </summary>
+        /// <remarks>
+        /// Must not be called if this object wasn't constructed with <see cref="QueuedSynchronizer.CaptureWaitQueue"/>.
+        /// </remarks>
+        public readonly void Dispose()
+        {
+            queue.SyncRoot.Exit();
+            ResumeSuspendedCallers();
+        }
     }
     
     [StructLayout(LayoutKind.Auto)]
-    private protected struct WaitQueue
+    private protected struct WaitQueue()
     {
+        internal readonly System.Threading.Lock SyncRoot = new();
         private readonly TagList measurementTags;
         private LinkedValueTaskCompletionSource<bool>.LinkedList waitQueue;
         private long length;
@@ -279,6 +289,14 @@ partial class QueuedSynchronizer
         }
 
         public readonly IReadOnlyList<object?> GetSuspendedCallers()
+        {
+            lock (SyncRoot)
+            {
+                return GetSuspendedCallersCore();
+            }
+        }
+
+        private readonly IReadOnlyList<object?> GetSuspendedCallersCore()
         {
             object?[] result;
             var current = waitQueue.First as WaitNode;

@@ -99,7 +99,7 @@ public sealed class SoftReferenceTests : Test
         IOptionMonad<object> monad = new SoftReference<object>(null);
         False(monad.HasValue);
         False(monad.TryGet(out _));
-        Equal(string.Empty, monad.OrInvoke(Func.Constant(string.Empty)));
+        Equal(string.Empty, monad.OrInvoke(Func<string>.Constant(string.Empty)));
         Null(monad.ValueOrDefault);
         Equal(string.Empty, monad.Or(string.Empty));
 
@@ -108,6 +108,6 @@ public sealed class SoftReferenceTests : Test
         True(monad.TryGet(out var target));
         Same(monad.ValueOrDefault, target);
         Same(target, monad.Or(string.Empty));
-        Same(target, monad.OrInvoke(Func.Constant(string.Empty)));
+        Same(target, monad.OrInvoke(Func<string>.Constant(string.Empty)));
     }
 }

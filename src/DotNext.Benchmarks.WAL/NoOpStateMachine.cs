@@ -1,10 +1,7 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace DotNext.Benchmarks.WAL;
 
 using Net.Cluster.Consensus.Raft.StateMachine;
 
-[Experimental("DOTNEXT001")]
 internal sealed class NoOpStateMachine : IStateMachine
 {
     ISnapshot? ISnapshotManager.Snapshot => null;

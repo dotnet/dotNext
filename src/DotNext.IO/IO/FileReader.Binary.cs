@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -148,7 +147,7 @@ public partial class FileReader : IAsyncBinaryReader
         var length = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
         if (length > 0)
         {
-            result = allocator.AllocateExactly(length);
+            result = allocator.DefaultIfNull.AllocateExactly(length);
             await ReadAsync<MemoryBlockReader>(new(result.Memory), token).ConfigureAwait(false);
         }
         else
@@ -177,7 +176,7 @@ public partial class FileReader : IAsyncBinaryReader
 
         if (lengthInBytes > 0)
         {
-            result = allocator.AllocateExactly(context.Encoding.GetMaxCharCount(lengthInBytes));
+            result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(lengthInBytes));
 
             result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(new(in context, lengthInBytes, result.Memory), token).ConfigureAwait(false));
         }

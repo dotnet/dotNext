@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace DotNext.Collections.Concurrent;
 
 public sealed class IndexPoolTests : Test
@@ -10,6 +12,7 @@ public sealed class IndexPoolTests : Test
         False(pool.TryTake(out _));
         DoesNotContain(10, pool);
         Empty(pool);
+        Equal(0, pool.GetEnumerator().RemainingCount);
     }
 
     [Fact]
@@ -31,6 +34,7 @@ public sealed class IndexPoolTests : Test
     {
         var pool = new IndexPool();
         NotEmpty(pool);
+        Equal(pool.Count, pool.GetEnumerator().RemainingCount);
 
         for (var i = 0; i <= IndexPool.MaxValue; i++)
         {
@@ -65,13 +69,13 @@ public sealed class IndexPoolTests : Test
     {
         var pool = new IndexPool();
         var expected = new int[pool.Count];
-        Span.ForEach(expected, static (ref int value, int index) => value = index);
+        expected.ForEach(static (element, index) => element.Value = index);
 
         Equal(expected, pool.ToArray());
 
         while (pool.TryTake(out _))
         {
-            // take all indicies
+            // take all indices
         }
 
         Equal(Array.Empty<int>(), pool.ToArray());
@@ -111,15 +115,40 @@ public sealed class IndexPoolTests : Test
     }
 
     [Fact]
-    public static void TakeReturnMany()
+    public static void TakeAllAndReturn()
     {
-        var pool = new IndexPool();
-        Span<int> indicies = stackalloc int[IndexPool.Capacity];
+        var pool = new IndexPool { IsEmpty = true };
+        pool.Return(0);
+        pool.Return(2);
+        False(pool.IsEmpty);
 
-        Equal(IndexPool.Capacity, pool.Take(indicies));
+        var copy = pool.TakeAll();
         Empty(pool);
 
-        pool.Return(indicies);
-        NotEmpty(pool);
+        Contains(0, copy);
+        Contains(2, copy);
+        DoesNotContain(1, copy);
+
+        Span<int> span = stackalloc int[copy.Count];
+        Equal(copy.Count, copy.CopyTo(span));
+        pool.Return(span);
+        Contains(0, pool);
+        Contains(2, pool);
+    }
+
+    [Fact]
+    public static void TryAdd()
+    {
+        IProducerConsumerCollection<int> pool = new IndexPool { IsEmpty = true };
+        False(pool.IsSynchronized);
+        
+        True(pool.TryAdd(0));
+        True(pool.TryAdd(1));
+        Contains(0, pool);
+        Contains(1, pool);
+        
+        False(pool.TryAdd(int.MaxValue));
+        False(pool.TryAdd(0));
+        False(pool.TryAdd(1));
     }
 }

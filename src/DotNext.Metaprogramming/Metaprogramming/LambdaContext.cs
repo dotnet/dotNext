@@ -249,8 +249,5 @@ public readonly struct LambdaContext : IReadOnlyList<ParameterExpression>, IDisp
 
     /// <inheritdoc/>
     void IDisposable.Dispose()
-    {
-        if (lambda is not null)
-            lambda.Target = null;
-    }
+        => lambda?.Target = null;
 }

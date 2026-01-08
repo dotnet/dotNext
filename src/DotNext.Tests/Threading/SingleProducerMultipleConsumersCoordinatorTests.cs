@@ -7,12 +7,12 @@ public sealed class SingleProducerMultipleConsumersCoordinatorTests : Test
     public static async Task ValveSwitch()
     {
         using var coordinator = new SingleProducerMultipleConsumersCoordinator();
-        var task1 = coordinator.WaitAsync().AsTask();
-        var task2 = coordinator.WaitAsync().AsTask();
+        var task1 = coordinator.WaitAsync(TestToken).AsTask();
+        var task2 = coordinator.WaitAsync(TestToken).AsTask();
         coordinator.SwitchValve();
 
-        var task3 = coordinator.WaitAsync().AsTask();
-        var task4 = coordinator.WaitAsync().AsTask();
+        var task3 = coordinator.WaitAsync(TestToken).AsTask();
+        var task4 = coordinator.WaitAsync(TestToken).AsTask();
 
         coordinator.Drain();
         await task1;

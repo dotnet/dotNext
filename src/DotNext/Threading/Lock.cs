@@ -12,12 +12,13 @@ namespace DotNext.Threading;
 /// The lock acquisition may block the caller thread.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
-public struct Lock : IDisposable, IEquatable<Lock>
+public partial struct Lock : IDisposable, IEquatable<Lock>
 {
     internal enum Type : byte
     {
         None = 0,
         Monitor,
+        ExclusiveLock,
         ReadLock,
         UpgradeableReadLock,
         WriteLock,
@@ -59,6 +60,9 @@ public struct Lock : IDisposable, IEquatable<Lock>
             {
                 case Type.Monitor:
                     System.Threading.Monitor.Exit(lockedObject);
+                    break;
+                case Type.ExclusiveLock:
+                    As<System.Threading.Lock>(lockedObject).Exit();
                     break;
                 case Type.ReadLock:
                     As<ReaderWriterLockSlim>(lockedObject).ExitReadLock();
@@ -118,7 +122,7 @@ public struct Lock : IDisposable, IEquatable<Lock>
     /// Creates monitor-based lock control object but doesn't acquire the lock.
     /// </summary>
     /// <param name="obj">Monitor lock target.</param>
-    /// <returns>The lock representing monitor.</returns>
+    /// <returns>The lock representing the monitor.</returns>
     public static Lock Monitor(object obj) => new(obj ?? throw new ArgumentNullException(nameof(obj)), Type.Monitor, false);
 
     /// <summary>
@@ -129,6 +133,28 @@ public struct Lock : IDisposable, IEquatable<Lock>
     /// </remarks>
     /// <returns>The exclusive lock.</returns>
     public static Lock Monitor() => new(new object(), Type.Monitor, true);
+
+    /// <summary>
+    /// Creates exclusive lock.
+    /// </summary>
+    /// <param name="locker">The locker object.</param>
+    /// <returns>The exclusive lock.</returns>
+    public static Lock ExclusiveLock(System.Threading.Lock locker)
+#pragma warning disable CS9216
+        => new(locker ?? throw new ArgumentNullException(nameof(locker)), Type.ExclusiveLock, false);
+#pragma warning restore CS9216
+
+    /// <summary>
+    /// Creates exclusive lock.
+    /// </summary>
+    /// <remarks>
+    /// Constructed lock owns the <see cref="System.Threading.Lock"/> instance.
+    /// </remarks>
+    /// <returns>The exclusive lock.</returns>
+    public static Lock ExclusiveLock()
+#pragma warning disable CS9216
+        => new(new System.Threading.Lock(), Type.ExclusiveLock, true);
+#pragma warning restore CS9216
 
     /// <summary>
     /// Creates read lock but doesn't acquire it.
@@ -155,6 +181,9 @@ public struct Lock : IDisposable, IEquatable<Lock>
             case Type.Monitor:
                 Debug.Assert(lockedObject is not null);
                 break;
+            case Type.ExclusiveLock:
+                Debug.Assert(lockedObject is System.Threading.Lock);
+                break;
             case Type.ReadLock or Type.WriteLock or Type.UpgradeableReadLock:
                 Debug.Assert(lockedObject is ReaderWriterLockSlim);
                 break;
@@ -180,6 +209,9 @@ public struct Lock : IDisposable, IEquatable<Lock>
             case Type.Monitor:
                 System.Threading.Monitor.Enter(lockedObject);
                 break;
+            case Type.ExclusiveLock:
+                As<System.Threading.Lock>(lockedObject).Enter();
+                break;
             case Type.ReadLock:
                 As<ReaderWriterLockSlim>(lockedObject).EnterReadLock();
                 break;
@@ -204,6 +236,7 @@ public struct Lock : IDisposable, IEquatable<Lock>
         return type switch
         {
             Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject),
+            Type.ExclusiveLock => As<System.Threading.Lock>(lockedObject).TryEnter(),
             Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(0),
             Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(0),
             Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(0),
@@ -236,6 +269,7 @@ public struct Lock : IDisposable, IEquatable<Lock>
         return type switch
         {
             Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject, timeout),
+            Type.ExclusiveLock => As<System.Threading.Lock>(lockedObject).TryEnter(timeout),
             Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(timeout),
             Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(timeout),
             Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(timeout),
@@ -301,19 +335,19 @@ public struct Lock : IDisposable, IEquatable<Lock>
     /// </summary>
     /// <param name="other">Other lock to compare.</param>
     /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
-    public override readonly bool Equals([NotNullWhen(true)] object? other) => other is Lock @lock && Equals(in @lock);
+    public readonly override bool Equals([NotNullWhen(true)] object? other) => other is Lock @lock && Equals(in @lock);
 
     /// <summary>
     /// Computes hash code of this lock.
     /// </summary>
     /// <returns>The hash code of this lock.</returns>
-    public override readonly int GetHashCode() => HashCode.Combine(lockedObject, type, owner);
+    public readonly override int GetHashCode() => HashCode.Combine(lockedObject, type, owner);
 
     /// <summary>
     /// Returns actual type of this lock in the form of the string.
     /// </summary>
     /// <returns>The actual type of this lock.</returns>
-    public override readonly string ToString() => type.ToString();
+    public readonly override string ToString() => type.ToString();
 
     /// <summary>
     /// Determines whether two locks are the same.
@@ -332,72 +366,4 @@ public struct Lock : IDisposable, IEquatable<Lock>
     /// <returns><see langword="true"/>, if both are not the same; otherwise, <see langword="false"/>.</returns>
     public static bool operator !=(in Lock first, in Lock second)
         => !first.Equals(in second);
-
-    /// <summary>
-    /// Tries to acquire an exclusive lock on the specified object with cancellation support.
-    /// </summary>
-    /// <param name="obj">The object on which to acquire the lock.</param>
-    /// <param name="timeout">Time to wait for the lock.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <param name="throwOnCancellation">
-    /// <see langword="true"/> to throw <see cref="OperationCanceledException"/> if <paramref name="token"/> is canceled during the lock acquisition;
-    /// <see langword="false"/> to return <see langword="false"/>.
-    /// </param>
-    /// <returns><see langword="true"/> if the monitor acquired successfully; <see langword="false"/> if timeout occurred or <paramref name="token"/> canceled.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is invalid.</exception>
-    /// <exception cref="OperationCanceledException"><paramref name="token"/> interrupts lock acquisition and <paramref name="throwOnCancellation"/> is <see langword="true"/>.</exception>
-    public static bool TryEnterMonitor(object obj, TimeSpan timeout, CancellationToken token, [ConstantExpected] bool throwOnCancellation = false)
-    {
-        ArgumentNullException.ThrowIfNull(obj);
-        Timeout.Validate(timeout);
-        
-        var result = false;
-        if (token.CanBeCanceled)
-        {
-            var registration = token.UnsafeRegister(Interrupt, Thread.CurrentThread);
-            try
-            {
-                result = System.Threading.Monitor.TryEnter(obj, timeout);
-            }
-            catch (ThreadInterruptedException e) when (token.IsCancellationRequested)
-            {
-                if (throwOnCancellation)
-                    throw new OperationCanceledException(e.Message, e, token);
-                
-                goto exit;
-            }
-            finally
-            {
-                registration.Dispose();
-            }
-
-            // make sure that the interruption was not called on this thread concurrently with registration.Dispose()
-            if (token.IsCancellationRequested)
-            {
-                try
-                {
-                    Thread.Sleep(0); // reset interrupted state
-                }
-                catch (ThreadInterruptedException)
-                {
-                    // suspend exception
-                }
-            }
-            
-            static void Interrupt(object? thread)
-            {
-                Debug.Assert(thread is Thread);
-            
-                As<Thread>(thread).Interrupt();
-            }
-        }
-        else
-        {
-            result = System.Threading.Monitor.TryEnter(obj, timeout);
-        }
-
-        exit:
-        return result;
-    }
 }

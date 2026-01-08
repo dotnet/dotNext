@@ -1,3 +1,4 @@
+using static System.Threading.Timeout;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading;
@@ -144,7 +145,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<TValue> WaitAsync(TKey eventId, object? userData, TimeSpan timeout, CancellationToken token = default)
     {
-        return timeout is { Ticks: < 0L and not Timeout.InfiniteTicks }
+        return !Timeout.IsValid(timeout)
             ? ValueTask.FromException<TValue>(new ArgumentOutOfRangeException(nameof(timeout)))
             : token.IsCancellationRequested
             ? ValueTask.FromCanceled<TValue>(token)
@@ -178,5 +179,5 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     /// <returns>The task representing the event arrival.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<TValue> WaitAsync(TKey eventId, CancellationToken token = default)
-        => WaitAsync(eventId, new(Timeout.InfiniteTicks), token);
+        => WaitAsync(eventId, InfiniteTimeSpan, token);
 }

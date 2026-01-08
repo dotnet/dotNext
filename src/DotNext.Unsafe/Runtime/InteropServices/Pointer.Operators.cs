@@ -62,7 +62,7 @@ partial struct Pointer<T> :
     public static unsafe Pointer<T> operator +(Pointer<T> pointer, nint offset)
     {
         if (pointer.IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         return new(pointer.value + offset);
     }
@@ -80,7 +80,7 @@ partial struct Pointer<T> :
     public static unsafe Pointer<T> operator checked +(Pointer<T> pointer, nint offset)
     {
         if (pointer.IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         return new(checked((nint)pointer.value + offset));
     }
@@ -122,7 +122,7 @@ partial struct Pointer<T> :
     public static unsafe Pointer<T> operator -(Pointer<T> pointer, nint offset)
     {
         if (pointer.IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         return new(pointer.value - offset);
     }
@@ -140,7 +140,7 @@ partial struct Pointer<T> :
     public static Pointer<T> operator checked -(Pointer<T> pointer, nint offset)
     {
         if (pointer.IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         return new(checked(pointer.Address - offset));
     }
@@ -207,7 +207,7 @@ partial struct Pointer<T> :
     public static unsafe Pointer<T> operator +(Pointer<T> pointer, nuint offset)
     {
         if (pointer.IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         return new(pointer.value + offset);
     }
@@ -226,7 +226,7 @@ partial struct Pointer<T> :
     public static unsafe Pointer<T> operator checked +(Pointer<T> pointer, nuint offset)
     {
         if (pointer.IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         return new(checked((nuint)pointer.value + offset));
     }
@@ -245,7 +245,7 @@ partial struct Pointer<T> :
     public static unsafe Pointer<T> operator -(Pointer<T> pointer, nuint offset)
     {
         if (pointer.IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         return new(pointer.value - offset);
     }
@@ -264,7 +264,7 @@ partial struct Pointer<T> :
     public static unsafe Pointer<T> operator checked -(Pointer<T> pointer, nuint offset)
     {
         if (pointer.IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         return new(checked((nuint)pointer.value - offset));
     }
@@ -408,15 +408,28 @@ partial struct Pointer<T> :
     /// <param name="ptr">The pointer to check.</param>
     /// <returns><see langword="true"/>, if this pointer is not zero; otherwise, <see langword="false"/>.</returns>
     public static bool operator !(Pointer<T> ptr) => ptr.IsNull;
-    
+
+    /// <summary>
+    /// Casts the pointer to the smallest possible element name.
+    /// </summary>
+    /// <param name="pointer">The pointer to cast.</param>
+    /// <returns>The pointer to <see cref="byte"/> type.</returns>
+    public static implicit operator Pointer<byte>(Pointer<T> pointer)
+        => Unsafe.BitCast<Pointer<T>, Pointer<byte>>(pointer);
+
     /// <summary>
     /// Gets the reference to the unmanaged memory.
     /// </summary>
-    /// <param name="pointer">The memory block.</param>
+    /// <param name="pointer">The pointer to the memory block.</param>
     /// <returns>The reference to the unmanaged memory.</returns>
-    public static unsafe implicit operator ValueReference<T>(Pointer<T> pointer)
-    {
-        T* ptr = pointer;
-        return ptr is not null ? new(ref *ptr) : default;
-    }
+    public static implicit operator ValueReference<T>(Pointer<T> pointer)
+        => pointer.IsNull ? default : new(ref pointer.Value);
+
+    /// <summary>
+    /// Gets the local reference to the unmanaged memory.
+    /// </summary>
+    /// <param name="pointer">The pointer to the memory block.</param>
+    /// <returns>The local reference to the unmanaged memory.</returns>
+    public static implicit operator LocalReference<T>(Pointer<T> pointer)
+        => new(ref pointer.Value);
 }

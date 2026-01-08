@@ -15,7 +15,7 @@ internal interface ILexicalScope
 /// Represents lexical scope that can be converted into the expression.
 /// </summary>
 /// <typeparam name="TExpression">The expression represented by the statement.</typeparam>
-/// <typeparam name="TDelegate">The delegate type that points to the method producing a set of instructions inside of lexical scope.</typeparam>
+/// <typeparam name="TDelegate">The delegate type that points to the method producing a set of instructions inside the lexical scope.</typeparam>
 internal interface ILexicalScope<out TExpression, TDelegate> : ILexicalScope
     where TDelegate : MulticastDelegate
 {

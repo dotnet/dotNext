@@ -12,8 +12,8 @@ public sealed class DictionaryTests : Test
                 {"one", 1},
                 {"two", 2}
             };
-        Equal(1, Dictionary.Indexer<string, int>.ReadOnly.Invoke(dict, "one"));
-        Equal(2, dict.IndexerGetter().Invoke("two"));
+        
+        Equal(2, dict.IndexerGetter.Invoke("two"));
     }
 
     [Fact]
@@ -24,12 +24,14 @@ public sealed class DictionaryTests : Test
                 {"one", 1},
                 {"two", 2}
             };
-        Equal(1, Dictionary.Indexer<string, int>.Getter.Invoke(dict, "one"));
-        Equal(2, dict.IndexerGetter().Invoke("two"));
-        dict.IndexerSetter().Invoke("two", 3);
-        Equal(3, dict.IndexerGetter().Invoke("two"));
-        Dictionary.Indexer<string, int>.Setter.Invoke(dict, "three", 3);
-        Equal(3, dict.IndexerGetter().Invoke("three"));
+        
+        Equal(2, dict.IndexerGetter.Invoke("two"));
+        dict.IndexerSetter.Invoke("two", 3);
+        
+        Equal(3, dict.IndexerGetter.Invoke("two"));
+        
+        dict.IndexerSetter.Invoke("three", 3);
+        Equal(3, dict.IndexerGetter.Invoke("three"));
     }
 
     [Fact]
@@ -53,7 +55,7 @@ public sealed class DictionaryTests : Test
                 {"one", "1" },
                 {"two", "2" }
             };
-        var view = new ReadOnlyDictionaryView<string, string, int>(dict, new Converter<string, int>(int.Parse));
+        var view = new ReadOnlyDictionaryView<string, string, int>(dict, int.Parse);
         Equal(1, view["one"]);
         Equal(2, view["two"]);
         True(view.TryGetValue("one", out var i));
@@ -138,8 +140,8 @@ public sealed class DictionaryTests : Test
                 {"two", 2}
             };
 
-        Equal(new HashSet<string>(new[] { "one", "two" }), Enumerable.ToHashSet(dict.KeysGetter().Invoke()));
-        Equal(new HashSet<int>(new[] { 1, 2 }), Enumerable.ToHashSet(dict.ValuesGetter().Invoke()));
+        Equal(new HashSet<string>(new[] { "one", "two" }), Enumerable.ToHashSet(dict.KeysGetter.Invoke()));
+        Equal(new HashSet<int>(new[] { 1, 2 }), Enumerable.ToHashSet(dict.ValuesGetter.Invoke()));
     }
 
     [Fact]
@@ -151,7 +153,7 @@ public sealed class DictionaryTests : Test
                 {"two", 2}
             };
 
-        Equal(new HashSet<string>(new[] { "one", "two" }), Enumerable.ToHashSet(dict.KeysGetter().Invoke()));
-        Equal(new HashSet<int>(new[] { 1, 2 }), Enumerable.ToHashSet(dict.ValuesGetter().Invoke()));
+        Equal(new HashSet<string>(new[] { "one", "two" }), Enumerable.ToHashSet(dict.KeysGetter.Invoke()));
+        Equal(new HashSet<int>(new[] { 1, 2 }), Enumerable.ToHashSet(dict.ValuesGetter.Invoke()));
     }
 }

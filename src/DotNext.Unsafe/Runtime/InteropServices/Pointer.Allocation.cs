@@ -1,6 +1,9 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.InteropServices;
+
+using CompilerServices;
 
 partial struct Pointer<T>
 {
@@ -8,7 +11,7 @@ partial struct Pointer<T>
     {
         var address = INativeMemoryAllocator<T>.IsNaturallyAligned
             ? NativeMemory.Alloc((uint)sizeof(T))
-            : NativeMemory.AlignedAlloc((uint)sizeof(T), (uint)Intrinsics.AlignOf<T>());
+            : NativeMemory.AlignedAlloc((uint)sizeof(T), (uint)Unsafe.AlignOf<T>());
 
         return new((T*)address);
     }

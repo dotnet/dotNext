@@ -34,7 +34,7 @@ public sealed class TimeoutSource : IDisposable, IAsyncDisposable
         Token = source.Token;
         timer = provider.CreateTimer(OnTimeout, this, InfiniteTimeSpan, InfiniteTimeSpan);
         
-        Interlocked.MemoryBarrier();
+        Volatile.WriteBarrier();
         rootRegistration = token.UnsafeRegister(OnCanceled, this);
 
         static void OnCanceled(object? state)

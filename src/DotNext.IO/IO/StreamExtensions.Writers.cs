@@ -30,7 +30,7 @@ public static partial class StreamExtensions
         where T : IBinaryFormattable<T>
     {
         if (buffer.Length < T.Size)
-            return ValueTask.FromException(new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer)));
+            return ValueTask.FromException(ArgumentException.BufferTooSmall(nameof(buffer)));
 
         buffer = buffer.Slice(0, T.Size);
         value.Format(buffer.Span);
@@ -53,7 +53,7 @@ public static partial class StreamExtensions
     {
         return value.TryWriteLittleEndian(buffer.Span, out var bytesWritten)
             ? stream.WriteAsync(buffer.Slice(0, bytesWritten), token)
-            : ValueTask.FromException(new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer)));
+            : ValueTask.FromException(ArgumentException.BufferTooSmall(nameof(buffer)));
     }
 
     /// <summary>
@@ -72,7 +72,7 @@ public static partial class StreamExtensions
     {
         return value.TryWriteBigEndian(buffer.Span, out var bytesWritten)
             ? stream.WriteAsync(buffer.Slice(0, bytesWritten), token)
-            : ValueTask.FromException(new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer)));
+            : ValueTask.FromException(ArgumentException.BufferTooSmall(nameof(buffer)));
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ public static partial class StreamExtensions
     {
         var maxChars = buffer.Length / context.Encoding.GetMaxByteCount(1);
         if (maxChars is 0)
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+            throw ArgumentException.BufferTooSmall(nameof(buffer));
 
         long result;
         int bytesWritten;
@@ -156,9 +156,10 @@ public static partial class StreamExtensions
     public static async ValueTask<long> FormatAsync<T>(this Stream stream, T value, EncodingContext context, LengthFormat? lengthFormat, Memory<byte> buffer, string? format = null, IFormatProvider? provider = null, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
         where T : ISpanFormattable
     {
-        ThrowIfEmpty(buffer);
+        ArgumentException.ThrowIfEmpty(buffer);
 
         const int maxBufferSize = int.MaxValue / 2;
+        allocator ??= MemoryAllocator<char>.Default;
 
         for (var charBufferSize = SpanOwner<char>.StackallocThreshold; ; charBufferSize = charBufferSize <= maxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
         {
@@ -191,7 +192,7 @@ public static partial class StreamExtensions
         Memory<byte> bufferForLength;
         if (lengthFormat.HasValue)
         {
-            bufferForLength = buffer.Slice(0, Leb128<uint>.MaxSizeInBytes);
+            bufferForLength = buffer.Slice(0, lengthFormat.GetValueOrDefault().MaxByteCount);
             buffer = buffer.Slice(bufferForLength.Length);
         }
         else
@@ -200,7 +201,7 @@ public static partial class StreamExtensions
         }
 
         if (!value.TryFormat(buffer.Span, out var dataSize, format, provider))
-            throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+            throw ArgumentException.BufferTooSmall(nameof(buffer));
 
         if (!bufferForLength.IsEmpty)
         {

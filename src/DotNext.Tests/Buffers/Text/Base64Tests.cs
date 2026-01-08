@@ -220,11 +220,11 @@ public sealed class Base64Tests : Test
         // encode
         using (var source = new MemoryStream(expected))
         {
-            using var destination = new StringWriter();
+            await using var destination = new StringWriter();
 
-            await foreach (var chunk in Base64Encoder.EncodeToUtf16Async(source.ReadAllAsync(16)))
+            await foreach (var chunk in Base64Encoder.EncodeToUtf16Async(source.ReadAllAsync(16, token:TestToken), token: TestToken))
             {
-                await destination.WriteAsync(chunk);
+                await destination.WriteAsync(chunk, TestToken);
             }
 
             await destination.FlushAsync();
@@ -236,12 +236,12 @@ public sealed class Base64Tests : Test
         {
             using var destination = new MemoryStream(expected.Length);
 
-            await foreach (var chunk in Base64Decoder.DecodeFromUtf16Async(source.ReadAllAsync(16)))
+            await foreach (var chunk in Base64Decoder.DecodeFromUtf16Async(source.ReadAllAsync(16, token: TestToken), token: TestToken))
             {
-                await destination.WriteAsync(chunk);
+                await destination.WriteAsync(chunk, TestToken);
             }
 
-            await destination.FlushAsync();
+            await destination.FlushAsync(TestToken);
             Equal(expected, destination.ToArray());
         }
     }
@@ -262,12 +262,12 @@ public sealed class Base64Tests : Test
         {
             using var destination = new MemoryStream();
 
-            await foreach (var chunk in Base64Encoder.EncodeToUtf8Async(source.ReadAllAsync(16)))
+            await foreach (var chunk in Base64Encoder.EncodeToUtf8Async(source.ReadAllAsync(16, token: TestToken), token: TestToken))
             {
-                await destination.WriteAsync(chunk);
+                await destination.WriteAsync(chunk, TestToken);
             }
 
-            await destination.FlushAsync();
+            await destination.FlushAsync(TestToken);
             base64 = destination.ToArray();
         }
 
@@ -276,12 +276,12 @@ public sealed class Base64Tests : Test
         {
             using var destination = new MemoryStream(expected.Length);
 
-            await foreach (var chunk in Base64Decoder.DecodeFromUtf8Async(source.ReadAllAsync(16)))
+            await foreach (var chunk in Base64Decoder.DecodeFromUtf8Async(source.ReadAllAsync(16, token: TestToken), token: TestToken))
             {
-                await destination.WriteAsync(chunk);
+                await destination.WriteAsync(chunk, TestToken);
             }
 
-            await destination.FlushAsync();
+            await destination.FlushAsync(TestToken);
             Equal(expected, destination.ToArray());
         }
     }

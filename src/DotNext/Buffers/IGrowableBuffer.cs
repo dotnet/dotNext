@@ -1,8 +1,12 @@
+using System.Buffers;
 using System.ComponentModel;
 using Debug = System.Diagnostics.Debug;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Buffers;
+
+using Runtime;
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Represents common interface for growable buffer writers.
@@ -14,7 +18,7 @@ namespace DotNext.Buffers;
 /// </remarks>
 /// <typeparam name="T">The type of the elements in the buffer.</typeparam>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
-public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IResettable
+public interface IGrowableBuffer<T> : IBufferWriter<T>, IReadOnlySpanConsumer<T>, IDisposable, IResettable
 {
     /// <summary>
     /// Represents default initial buffer size.
@@ -28,13 +32,6 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
     long WrittenCount { get; }
 
     /// <summary>
-    /// Gets the maximum number of elements
-    /// that can hold this buffer.
-    /// </summary>
-    /// <value>The maximum number of elements; or <see langword="null"/> if this buffer has no limits.</value>
-    long? Capacity => null;
-
-    /// <summary>
     /// Writes the memory block.
     /// </summary>
     /// <param name="input">The memory block to be written.</param>
@@ -44,6 +41,25 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
     /// <inheritdoc />
     void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> input)
         => Write(input);
+
+    /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
+    {
+        switch (count)
+        {
+            case 1:
+                Write(args.Immutable<ReadOnlySpan<T>>());
+                break;
+            case 2:
+                result.Mutable<ValueTask>() = Invoke(
+                    GetArgument<ReadOnlyMemory<T>>(in args, 0),
+                    GetArgument<CancellationToken>(in args, 1)
+                );
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(count));
+        }
+    }
 
     /// <summary>
     /// Writes single element to this buffer.
@@ -62,7 +78,7 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
     /// <typeparam name="TConsumer">The type of the object that represents the consumer.</typeparam>
     /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
     void CopyTo<TConsumer>(TConsumer consumer)
-        where TConsumer : IReadOnlySpanConsumer<T>;
+        where TConsumer : IReadOnlySpanConsumer<T>, allows ref struct;
 
     /// <summary>
     /// Passes the contents of this writer to the callback asynchronously.
@@ -86,22 +102,13 @@ public interface IGrowableBuffer<T> : IReadOnlySpanConsumer<T>, IDisposable, IRe
     int CopyTo(Span<T> output);
 
     /// <summary>
-    /// Clears the contents of the writer.
-    /// </summary>
-    /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
-    void Clear();
-
-    /// <inheritdoc />
-    void IResettable.Reset() => Clear();
-
-    /// <summary>
     /// Attempts to get written content as contiguous block of memory.
     /// </summary>
     /// <param name="block">The block representing written content.</param>
     /// <returns><see langword="true"/> if the written content can be represented as contiguous block of memory; otherwise, <see langword="false"/>.</returns>
     bool TryGetWrittenContent(out ReadOnlyMemory<T> block);
 
-    internal static bool GetBufferSize(int sizeHint, int capacity, int writtenCount, out int newSize)
+    private protected static bool GetBufferSize(int sizeHint, int capacity, int writtenCount, out int newSize)
     {
         Debug.Assert(sizeHint >= 0);
         Debug.Assert(capacity >= 0);

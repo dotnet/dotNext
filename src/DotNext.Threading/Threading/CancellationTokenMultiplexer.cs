@@ -29,7 +29,7 @@ public sealed partial class CancellationTokenMultiplexer
     /// </summary>
     /// <param name="tokens">The tokens to be combined.</param>
     /// <returns>The scope that contains a single multiplexed token.</returns>
-    public Scope Combine(ReadOnlySpan<CancellationToken> tokens) // TODO: use params
+    public Scope Combine(params ReadOnlySpan<CancellationToken> tokens)
     {
         Scope scope;
         switch (tokens)
@@ -73,7 +73,7 @@ public sealed partial class CancellationTokenMultiplexer
     /// <param name="tokens">The tokens to be combined.</param>
     /// <returns>The scope that represents the multiplexed token.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative or too large.</exception>
-    public Scope Combine(TimeSpan timeout, ReadOnlySpan<CancellationToken> tokens) => timeout.Ticks switch
+    public Scope Combine(TimeSpan timeout, params ReadOnlySpan<CancellationToken> tokens) => timeout.Ticks switch
     {
         0L => new(TimedOutToken),
         Timeout.InfiniteTicks => Combine(tokens),
@@ -86,7 +86,7 @@ public sealed partial class CancellationTokenMultiplexer
     /// </summary>
     /// <param name="tokens">The tokens to be combined.</param>
     /// <returns>The scope that represents the multiplexed token.</returns>
-    public ScopeWithTimeout CombineAndSetTimeoutLater(ReadOnlySpan<CancellationToken> tokens) // TODO: use params
+    public ScopeWithTimeout CombineAndSetTimeoutLater(params ReadOnlySpan<CancellationToken> tokens)
         => new(this, tokens);
 
     private void Return(PooledCancellationTokenSource source)

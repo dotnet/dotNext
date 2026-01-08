@@ -5,7 +5,7 @@ using Base64 = System.Buffers.Text.Base64;
 
 namespace DotNext.Buffers.Text;
 
-using static Runtime.Intrinsics;
+using static Runtime.CompilerServices.AdvancedHelpers;
 
 /// <summary>
 /// Represents base64 encoder suitable for encoding large binary
@@ -72,7 +72,7 @@ public partial struct Base64Encoder : IBufferedEncoder<byte>, IBufferedEncoder<c
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     [UnscopedRef]
-    private Span<byte> Buffer => Span.AsBytes(ref reservedBuffer);
+    private Span<byte> Buffer => ushort.AsBytes(ref reservedBuffer);
 
     [ExcludeFromCodeCoverage]
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]

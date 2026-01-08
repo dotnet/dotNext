@@ -105,9 +105,12 @@ public readonly struct Timeout
     public bool IsInfinite => created.IsEmpty;
 
     /// <summary>
-    /// Indicates that timeout is occurred.
+    /// Indicates that the timeout is occurred.
     /// </summary>
-    public bool IsExpired => !IsInfinite && created.Elapsed > timeout;
+    /// <value><see langword="true"/> if timeout is occurred; otherwise, <see langword="false"/>.</value>
+    public bool IsExpired => IsExpiredInternal(TimeProvider.System);
+    
+    internal bool IsExpiredInternal(TimeProvider provider) => !IsInfinite && created.GetElapsedTime(provider) > timeout;
 
     /// <summary>
     /// Throws <see cref="TimeoutException"/> if timeout occurs.
@@ -190,6 +193,14 @@ public readonly struct Timeout
     public static implicit operator TimeSpan(in Timeout timeout) => timeout.Value;
 
     /// <summary>
+    /// Gets a value indicating that the specified timeout is valid to be used in the API that supports timeouts.
+    /// </summary>
+    /// <param name="timeout">The value to validate.</param>
+    /// <returns><see langword="true"/> if <paramref name="timeout"/> is valid; otherwise, <see langword="false"/>.</returns>
+    public static bool IsValid(TimeSpan timeout)
+        => timeout is { Ticks: >= 0L and < MaxTimeoutParameterTicks or InfiniteTicks };
+
+    /// <summary>
     /// Validates the timeout.
     /// </summary>
     /// <param name="timeout">The timeout value.</param>
@@ -197,7 +208,7 @@ public readonly struct Timeout
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative and not <see cref="InfiniteTicks"/>; or greater than <see cref="MaxTimeoutParameterTicks"/>.</exception>
     public static void Validate(TimeSpan timeout, [CallerArgumentExpression(nameof(timeout))] string? parameterName = null)
     {
-        if (timeout is { Ticks: < 0L and not InfiniteTicks or > MaxTimeoutParameterTicks })
+        if (!IsValid(timeout))
             Throw(parameterName);
 
         [DoesNotReturn]

@@ -3,6 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
+using Runtime;
+using Runtime.CompilerServices;
+
 /// <summary>
 /// Represents functional interface returning no value
 /// and accepting the single argument of type <see cref="ReadOnlySpan{T}"/>.
@@ -22,6 +25,25 @@ public interface IReadOnlySpanConsumer<T> : ISupplier<ReadOnlyMemory<T>, Cancell
     /// </summary>
     /// <param name="span">The span of elements.</param>
     void Invoke(ReadOnlySpan<T> span);
+
+    /// <inheritdoc/>
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
+    {
+        switch (count)
+        {
+            case 1:
+                Invoke(args.Immutable<ReadOnlySpan<T>>());
+                break;
+            case 2:
+                result.Mutable<ValueTask>() = Invoke(
+                    GetArgument<ReadOnlyMemory<T>>(in args, 0),
+                    GetArgument<CancellationToken>(in args, 1)
+                );
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(count));
+        }
+    }
 
     /// <inheritdoc />
     ValueTask ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<T> input, CancellationToken token)
@@ -82,6 +104,41 @@ public readonly unsafe struct ReadOnlySpanConsumer<T, TArg> : IReadOnlySpanConsu
 
     /// <inheritdoc />
     void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> span) => ptr(span, arg);
+
+    /// <inheritdoc />
+    ValueTask ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<T> input, CancellationToken token)
+        => Invoke(input, token);
+    
+    private ValueTask Invoke(ReadOnlyMemory<T> input, CancellationToken token)
+    {
+        ValueTask result;
+        if (token.IsCancellationRequested)
+        {
+            result = ValueTask.FromCanceled(token);
+        }
+        else
+        {
+            result = new();
+            try
+            {
+                ptr(input.Span, arg);
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException(e);
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Converts this supplier to the delegate of type <see cref="ReadOnlySpanAction{T, TArg}"/>.
+    /// </summary>
+    /// <param name="consumer">The value representing the pointer to the method.</param>
+    /// <returns>The delegate representing the wrapped method.</returns>
+    public static explicit operator ReadOnlySpanAction<T, TArg>(ReadOnlySpanConsumer<T, TArg> consumer)
+        => ReadOnlySpanAction<T, TArg>.FromPointer(consumer.ptr);
 }
 
 /// <summary>
@@ -118,6 +175,9 @@ public readonly struct DelegatingReadOnlySpanConsumer<T, TArg> : IReadOnlySpanCo
 
     /// <inheritdoc />
     ValueTask ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<T> input, CancellationToken token)
+        => Invoke(input, token);
+    
+    private ValueTask Invoke(ReadOnlyMemory<T> input, CancellationToken token)
     {
         ValueTask result;
         if (token.IsCancellationRequested)

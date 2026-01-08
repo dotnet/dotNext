@@ -4,6 +4,9 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.InteropServices;
 
+using IO;
+using Reflection;
+
 public sealed class PointerTests : Test
 {
     [Fact]
@@ -16,10 +19,10 @@ public sealed class PointerTests : Test
         ptr.WriteTo(ms, array.Length);
         Equal(6L, ms.Length);
         True(ms.TryGetBuffer(out var buffer));
-        buffer.AsSpan().ForEach(static (ref byte value, int _) =>
+        buffer.AsSpan().ForEach(static (element, _) =>
         {
-            if (value == 1)
-                value = 20;
+            if (element.Value is 1)
+                element.Value = 20;
         });
         ms.Position = 0;
         Equal(6, ptr.ReadFrom(ms, array.Length));
@@ -33,16 +36,16 @@ public sealed class PointerTests : Test
         using var pinned = array.Pin();
         using var ms = new MemoryStream();
         var ptr = (Pointer<ushort>)pinned;
-        await ptr.WriteToAsync(ms, array.Length);
+        await ptr.WriteToAsync(ms, array.Length, TestToken);
         Equal(6L, ms.Length);
         True(ms.TryGetBuffer(out var buffer));
-        buffer.AsSpan().ForEach(static (ref byte value, int _) =>
+        buffer.AsSpan().ForEach(static (element, _) =>
         {
-            if (value == 1)
-                value = 20;
+            if (element.Value is 1)
+                element.Value = 20;
         });
         ms.Position = 0;
-        Equal(6, await ptr.ReadFromAsync(ms, array.Length));
+        Equal(6, await ptr.ReadFromAsync(ms, array.Length, TestToken));
         Equal(20, ptr[0]);
     }
 
@@ -123,7 +126,7 @@ public sealed class PointerTests : Test
     public static unsafe void ToStreamConversion()
     {
         Pointer<byte> ptr = stackalloc byte[] { 10, 20, 30 };
-        using var stream = ptr.AsStream(3);
+        using var stream = Stream.Create(ptr, 3);
         var bytes = new byte[3];
         Equal(3, stream.Read(bytes, 0, 3));
         Equal(10, bytes[0]);
@@ -251,7 +254,7 @@ public sealed class PointerTests : Test
     {
         Pointer<int> ptr = stackalloc int[1];
         ptr.Value = 42;
-        var obj = ptr.GetBoxedPointer();
+        var obj = Pointer.Box(ptr);
         IsType<Pointer>(obj);
         Equal(ptr.Address, new IntPtr(Pointer.Unbox(obj)));
     }

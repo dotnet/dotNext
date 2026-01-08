@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using IO.Log;
 using Membership;
 using StateMachine;
 
@@ -27,34 +26,11 @@ public static class RaftClusterConfiguration
         => services.AddSingleton<IClusterMemberLifetime, TConfig>();
 
     /// <summary>
-    /// Registers custom persistence engine for the Write-Ahead Log based on <see cref="PersistentState"/> class.
-    /// </summary>
-    /// <remarks>
-    /// If background compaction is configured for WAL then you can implement
-    /// <see cref="IO.Log.ILogCompactionSupport"/> interface to provide custom logic for log compaction.
-    /// </remarks>
-    /// <typeparam name="TPersistentState">The type representing custom persistence engine.</typeparam>
-    /// <param name="services">A collection of services provided by DI container.</param>
-    /// <returns>A modified collection of services.</returns>
-    public static IServiceCollection UsePersistenceEngine<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TPersistentState>(this IServiceCollection services)
-        where TPersistentState : PersistentState
-    {
-        Func<IServiceProvider, TPersistentState> engineCast = ServiceProviderServiceExtensions.GetRequiredService<TPersistentState>;
-
-        return services.AddSingleton<TPersistentState>()
-            .AddSingleton<IPersistentState>(engineCast)
-            .AddSingleton<PersistentState>(engineCast)
-            .AddSingleton<IAuditTrail<IRaftLogEntry>>(engineCast)
-            .AddHostedService<BackgroundCompactionService>();
-    }
-
-    /// <summary>
     /// Registers the state machine and the write-ahead log for it.
     /// </summary>
     /// <param name="services">A collection of services provided by DI container.</param>
     /// <typeparam name="TStateMachine">The type of the state machine.</typeparam>
     /// <returns>A modified collection of services.</returns>
-    [Experimental("DOTNEXT001")]
     public static IServiceCollection UseStateMachine<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TStateMachine>(
         this IServiceCollection services)
         where TStateMachine : class, IStateMachine
@@ -76,37 +52,11 @@ public static class RaftClusterConfiguration
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <typeparam name="TStateMachine">The type of the state machine.</typeparam>
     /// <returns>The task representing the state of the asynchronous operation.</returns>
-    [Experimental("DOTNEXT001")]
     public static ValueTask RestoreStateAsync<TStateMachine>(this IApplicationBuilder app, CancellationToken token = default)
         where TStateMachine : SimpleStateMachine
     {
         var stateMachine = app.ApplicationServices.GetRequiredService<TStateMachine>();
         return stateMachine.RestoreAsync(token);
-    }
-
-    /// <summary>
-    /// Registers custom persistence engine for the Write-Ahead Log based on <see cref="PersistentState"/> class.
-    /// </summary>
-    /// <remarks>
-    /// If background compaction is configured for WAL then you can implement
-    /// <see cref="IO.Log.ILogCompactionSupport"/> interface to provide custom logic for log compaction.
-    /// </remarks>
-    /// <typeparam name="TEngine">An interface used for interaction with the persistence engine.</typeparam>
-    /// <typeparam name="TImplementation">The type representing custom persistence engine.</typeparam>
-    /// <param name="services">A collection of services provided by DI container.</param>
-    /// <returns>A modified collection of services.</returns>
-    public static IServiceCollection UsePersistenceEngine<TEngine, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TImplementation>(this IServiceCollection services)
-        where TEngine : class
-        where TImplementation : PersistentState, TEngine
-    {
-        Func<IServiceProvider, TImplementation> engineCast = ServiceProviderServiceExtensions.GetRequiredService<TImplementation>;
-
-        return services.AddSingleton<TImplementation>()
-            .AddSingleton<TEngine>(engineCast)
-            .AddSingleton<IPersistentState>(engineCast)
-            .AddSingleton<PersistentState>(engineCast)
-            .AddSingleton<IAuditTrail<IRaftLogEntry>>(engineCast)
-            .AddHostedService<BackgroundCompactionService>();
     }
 
     /// <summary>

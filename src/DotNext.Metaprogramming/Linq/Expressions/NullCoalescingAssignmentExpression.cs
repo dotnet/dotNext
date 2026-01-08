@@ -8,7 +8,7 @@ namespace DotNext.Linq.Expressions;
 /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/null-coalescing-assignment">Null-coalescing assignment.</seealso>
 public sealed class NullCoalescingAssignmentExpression : CustomExpression
 {
-    internal NullCoalescingAssignmentExpression(Expression left, Expression right)
+    private NullCoalescingAssignmentExpression(Expression left, Expression right)
     {
         ArgumentNullException.ThrowIfNull(left);
         ArgumentNullException.ThrowIfNull(right);

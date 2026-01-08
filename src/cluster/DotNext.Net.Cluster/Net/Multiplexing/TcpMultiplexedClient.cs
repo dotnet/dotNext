@@ -63,20 +63,18 @@ public class TcpMultiplexedClient(EndPoint address, TcpMultiplexedClient.Options
     /// </summary>
     public new class Options : MultiplexedClient.Options
     {
-        private readonly TimeSpan connectTimeout = TimeSpan.FromSeconds(30);
-
         /// <summary>
         /// Gets or sets connection timeout.
         /// </summary>
         public TimeSpan ConnectTimeout
         {
-            get => connectTimeout;
+            get;
             init
             {
                 Threading.Timeout.Validate(value);
 
-                connectTimeout = value;
+                field = value;
             }
-        }
+        } = TimeSpan.FromSeconds(30);
     }
 }

@@ -228,12 +228,11 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         return new Enumerator(first);
     }
-
+    
     /// <inheritdoc />
     IEnumerator<ReadOnlyMemory<T>> IEnumerable<ReadOnlyMemory<T>>.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, ReadOnlyMemory<T>>();
+        => IEnumerator<ReadOnlyMemory<T>>.Create(GetEnumerator());
 
     /// <inheritdoc />
-    IEnumerator IEnumerable.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, ReadOnlyMemory<T>>();
+    IEnumerator IEnumerable.GetEnumerator() => IEnumerator<ReadOnlyMemory<T>>.Create(GetEnumerator());
 }

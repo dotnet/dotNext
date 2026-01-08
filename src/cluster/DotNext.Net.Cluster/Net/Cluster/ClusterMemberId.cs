@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -10,7 +11,6 @@ namespace DotNext.Net.Cluster;
 using Buffers;
 using Buffers.Binary;
 using IO.Hashing;
-using Hex = Buffers.Text.Hex;
 using HttpEndPoint = Http.HttpEndPoint;
 
 /// <summary>
@@ -186,7 +186,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     {
         var writer = new SpanWriter<byte>(stackalloc byte[Size]);
         writer.Write(this);
-        return Hex.EncodeToUtf16(writer.WrittenSpan);
+        return Convert.ToHexString(writer.WrittenSpan);
     }
 
     /// <summary>
@@ -200,7 +200,7 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
         Span<byte> bytes = stackalloc byte[Size];
 
         bool result;
-        value = (result = Hex.DecodeFromUtf16(identifier, bytes) == bytes.Length)
+        value = (result = Convert.FromHexString(identifier, bytes, out _, out _) is OperationStatus.Done)
             ? new(bytes)
             : default;
         return result;

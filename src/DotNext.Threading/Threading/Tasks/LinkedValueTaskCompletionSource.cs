@@ -24,11 +24,9 @@ internal abstract class LinkedValueTaskCompletionSource<T> : ValueTaskCompletion
 
     internal void Detach()
     {
-        if (Previous is not null)
-            Previous.Next = Next;
+        Previous?.Next = Next;
 
-        if (Next is not null)
-            Next.Previous = Previous;
+        Next?.Previous = Previous;
 
         Next = Previous = null;
     }

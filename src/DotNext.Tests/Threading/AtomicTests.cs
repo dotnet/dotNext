@@ -3,150 +3,60 @@
 public sealed class AtomicTests : Test
 {
     [Fact]
-    public static void AtomicFloatTest()
-    {
-        float i = 80;
-        Equal(80, Atomic.GetAndAccumulate(ref i, 10, static (x, y) => x + y));
-        Equal(90, i);
-        Equal(10, Atomic.AccumulateAndGet(ref i, 80, static (x, y) => x - y));
-        Equal(10, i);
-
-        Equal(42, Atomic.UpdateAndGet(ref i, static current => 42));
-        Equal(42, Atomic.GetAndUpdate(ref i, static current => 52));
-        Equal(52, i);
-    }
-
-    [Fact]
-    public static void AtomicDoubleTest()
-    {
-        double i = 80;
-        Equal(80, Atomic.GetAndAccumulate(ref i, 10, static (x, y) => x + y));
-        Equal(90, i);
-        Equal(10, Atomic.AccumulateAndGet(ref i, 80, static (x, y) => x - y));
-        Equal(10, i);
-
-        Equal(42, Atomic.UpdateAndGet(ref i, static current => 42));
-        Equal(42, Atomic.GetAndUpdate(ref i, static current => 52));
-        Equal(52, i);
-    }
-
-    [Fact]
-    public static void AtomicIntTest()
-    {
-        var i = 80;
-        Equal(80, Atomic.GetAndAccumulate(ref i, 10, static (x, y) => x + y));
-        Equal(90, i);
-        Equal(10, Atomic.AccumulateAndGet(ref i, 80, static (x, y) => x - y));
-        Equal(10, i);
-
-        Equal(42, Atomic.UpdateAndGet(ref i, static current => 42));
-        Equal(42, Atomic.GetAndUpdate(ref i, static current => 52));
-        Equal(52, i);
-    }
-
-    [Fact]
-    public static void AtomicUIntTest()
-    {
-        uint i = 80U;
-        Equal(80U, Atomic.GetAndAccumulate(ref i, 10U, static (x, y) => x + y));
-        Equal(90U, i);
-        Equal(10U, Atomic.AccumulateAndGet(ref i, 80U, static (x, y) => x - y));
-        Equal(10U, i);
-
-        Equal(42U, Atomic.UpdateAndGet(ref i, static current => 42U));
-        Equal(42U, Atomic.GetAndUpdate(ref i, static current => 52U));
-        Equal(52U, i);
-    }
-
-    [Fact]
     public static void AtomicULongTest()
     {
         var i = 80UL;
-        Equal(80UL, Atomic.GetAndAccumulate(ref i, 10UL, static (x, y) => x + y));
+        Equal(80UL, Atomic.Read(in i));
+        
+        Atomic.Write(ref i, 90UL);
         Equal(90UL, i);
-        Equal(10UL, Atomic.AccumulateAndGet(ref i, 80UL, static (x, y) => x - y));
-        Equal(10UL, i);
-
-        Equal(42UL, Atomic.UpdateAndGet(ref i, static current => 42UL));
-        Equal(42UL, Atomic.GetAndUpdate(ref i, static current => 52UL));
-        Equal(52UL, i);
     }
 
     [Fact]
     public static void AtomicLongTest()
     {
         var i = 80L;
-        Equal(80, Atomic.GetAndAccumulate(ref i, 10, static (x, y) => x + y));
-        Equal(90, i);
-        Equal(10, Atomic.AccumulateAndGet(ref i, 80, static (x, y) => x - y));
-        Equal(10, i);
-
-        Equal(42, Atomic.UpdateAndGet(ref i, static current => 42));
-        Equal(42, Atomic.GetAndUpdate(ref i, static current => 52));
-        Equal(52, i);
+        Equal(80L, Atomic.Read(in i));
+        
+        Atomic.Write(ref i, 90L);
+        Equal(90L, i);
+    }
+    
+    [Fact]
+    public static void AtomicDoubleTest()
+    {
+        var i = 80D;
+        Equal(80D, Atomic.Read(in i));
+        
+        Atomic.Write(ref i, 90D);
+        Equal(90D, i);
     }
 
     [Fact]
     public static void AtomicBooleanTest()
     {
-        var value = new Atomic.Boolean(false);
-        False(value.Equals(true));
-        True(value.Equals(false));
-        True(value.FalseToTrue());
-        False(value.FalseToTrue());
-        True(value.TrueToFalse());
-        False(value.TrueToFalse());
-        True(value.NegateAndGet());
-        True(value.GetAndNegate());
-        False(value.Value);
-        value.Value = true;
-        True(value.Value);
-        True(value.GetAndSet(false));
-        False(value.Value);
-        True(value.SetAndGet(true));
-        True(value.Value);
-        Equal(bool.TrueString, value.ToString());
-        True(value.GetAndAccumulate(false, static (current, update) =>
+        var value = false;
+        True(Interlocked.FalseToTrue(ref value));
+        False(Interlocked.FalseToTrue(ref value));
+        True(Interlocked.TrueToFalse(ref value));
+        False(Interlocked.TrueToFalse(ref value));
+        True(Interlocked.NegateAndGet(ref value));
+        True(Interlocked.GetAndNegate(ref value));
+        False(value);
+        value = true;
+        True(Interlocked.GetAndAccumulate(ref value, false, static (current, update) =>
         {
             True(current);
             False(update);
             return current & update;
         }));
-        False(value.Value);
-        True(value.AccumulateAndGet(true, static (current, update) => current | update));
-        True(value.Value);
-        True(value.GetAndUpdate(static x => !x));
-        False(value.Value);
-        True(value.UpdateAndGet(static x => !x));
-        True(value.Value);
-    }
+        False(value);
+        True(Interlocked.AccumulateAndGet(ref value, true, static (current, update) => current | update));
+        True(value);
 
-    [Fact]
-    public static void AtomicIntPtrTest()
-    {
-        nint i = 80;
-        Equal(80, Atomic.GetAndAccumulate(ref i, 10, static (x, y) => x + y));
-        Equal(90, i);
-        Equal(10, Atomic.AccumulateAndGet(ref i, 80, static (x, y) => x - y));
-        Equal(10, i);
-
-        Equal(42, Atomic.UpdateAndGet(ref i, static current => 42));
-        Equal(42, Atomic.GetAndUpdate(ref i, static current => 52));
-        Equal(52, i);
-    }
-
-    [Fact]
-    public static void AtomicUIntPtrTest()
-    {
-        nuint i = 80U;
-        Equal(80U, Atomic.GetAndAccumulate(ref i, 10U, static (x, y) => x + y));
-        Equal(90U, i);
-        Equal(10U, Atomic.AccumulateAndGet(ref i, 80U, static (x, y) => x - y));
-        Equal(10U, i);
-
-        Equal(42U, Atomic.UpdateAndGet(ref i, static current => 42U));
-        Equal(42U, Atomic.GetAndUpdate(ref i, static current => 52U));
-        Equal(52U, i);
+        value = false;
+        True(Interlocked.UpdateAndGet(ref value, static x => !x));
+        True(value);
     }
 
     [Fact]

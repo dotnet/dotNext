@@ -146,7 +146,7 @@ public interface IAsyncBinaryReader
         var length = await ReadLengthAsync(lengthFormat, token).ConfigureAwait(false);
         if (length > 0)
         {
-            result = allocator.AllocateExactly(length);
+            result = allocator.DefaultIfNull.AllocateExactly(length);
             await ReadAsync(result.Memory, token).ConfigureAwait(false);
         }
         else
@@ -175,7 +175,7 @@ public interface IAsyncBinaryReader
 
         if (lengthInBytes > 0)
         {
-            result = allocator.AllocateExactly(context.Encoding.GetMaxCharCount(lengthInBytes));
+            result = allocator.DefaultIfNull.AllocateExactly(context.Encoding.GetMaxCharCount(lengthInBytes));
 
             result.TryResize(await ReadAsync<int, CharBufferDecodingReader>(new(in context, lengthInBytes, result.Memory), token).ConfigureAwait(false));
         }
@@ -229,7 +229,7 @@ public interface IAsyncBinaryReader
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-    async ValueTask<TResult> ParseAsync<TArg, TResult>(TArg arg, ReadOnlySpanFunc<char, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
+    async ValueTask<TResult> ParseAsync<TArg, TResult>(TArg arg, Func<ReadOnlySpan<char>, TArg, TResult> parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator<char>? allocator = null, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(parser);
 
@@ -410,7 +410,7 @@ public interface IAsyncBinaryReader
     }
 
     /// <summary>
-    /// Creates default implementation of binary reader for the stream.
+    /// Creates default implementation of the binary reader for the stream.
     /// </summary>
     /// <remarks>
     /// It is recommended to use extension methods from <see cref="StreamExtensions"/> class
@@ -423,48 +423,20 @@ public interface IAsyncBinaryReader
     /// <exception cref="ArgumentNullException"><paramref name="input"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentException"><paramref name="buffer"/> is empty.</exception>
     public static IAsyncBinaryReader Create(Stream input, Memory<byte> buffer)
-        => ReferenceEquals(input, Stream.Null) ? Empty : new AsyncStreamBinaryAccessor(input, buffer);
+    {
+        ArgumentNullException.ThrowIfNull(input);
+        ArgumentException.EnsureReadable(input);
+        ArgumentException.ThrowIfEmpty(buffer);
 
-    /// <summary>
-    /// Creates default implementation of binary reader over sequence of bytes.
-    /// </summary>
-    /// <param name="sequence">The sequence of bytes.</param>
-    /// <returns>The binary reader for the sequence of bytes.</returns>
-    public static SequenceReader Create(ReadOnlySequence<byte> sequence) => new(sequence);
+        return ReferenceEquals(input, Stream.Null)
+            ? Empty
+            : new AsyncStreamBinaryAccessor(input, buffer);
+    }
 
-    /// <summary>
-    /// Creates default implementation of binary reader over contiguous memory block.
-    /// </summary>
-    /// <param name="memory">The block of memory.</param>
-    /// <returns>The binary reader for the memory block.</returns>
-    public static SequenceReader Create(ReadOnlyMemory<byte> memory) => new(memory);
-
-    /// <summary>
-    /// Creates default implementation of binary reader for the specifed pipe reader.
-    /// </summary>
-    /// <remarks>
-    /// It is recommended to use extension methods from <see cref="Pipelines.PipeExtensions"/> class
-    /// for decoding data from the stream. This method is intended for situation
-    /// when you need an object implementing <see cref="IAsyncBinaryReader"/> interface.
-    /// </remarks>
-    /// <param name="reader">The pipe reader.</param>
-    /// <returns>The binary reader.</returns>
-    /// <exception cref="ArgumentNullException"><paramref name="reader"/> is <see langword="null"/>.</exception>
-    public static IAsyncBinaryReader Create(PipeReader reader) => new PipeBinaryReader(reader);
-
-    internal static Stream GetStream<TReader>(TReader reader, out bool keepAlive)
+    internal static Stream CreateStream<TReader>(TReader reader)
         where TReader : IAsyncBinaryReader
     {
-        if (keepAlive = typeof(TReader) == typeof(AsyncStreamBinaryAccessor))
-            return Unsafe.As<TReader, AsyncStreamBinaryAccessor>(ref reader).Stream;
-
-        if (typeof(TReader) == typeof(PipeBinaryReader))
-            return Unsafe.As<TReader, PipeBinaryReader>(ref reader).AsStream();
-
-        if (typeof(TReader) == typeof(SequenceReader))
-            return Unsafe.As<TReader, SequenceReader>(ref reader).ReadToEnd().AsStream();
-
-        return StreamSource.AsStream(ReadAsync, reader);
+        return Stream.CreateAsyncReadOnly(ReadAsync, reader);
 
         [AsyncMethodBuilder(typeof(PoolingAsyncValueTaskMethodBuilder<>))]
         static async ValueTask<int> ReadAsync(Memory<byte> buffer, TReader reader, CancellationToken token)

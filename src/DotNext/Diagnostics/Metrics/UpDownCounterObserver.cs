@@ -17,7 +17,15 @@ public sealed class UpDownCounterObserver<TMeasurement>(MeasurementFilter<UpDown
     /// <summary>
     /// Gets the instant value of the counter.
     /// </summary>
-    public TMeasurement Value => VolatileRead(ref measurement);
+    public TMeasurement Value
+    {
+        get
+        {
+            var result = measurement;
+            Volatile.ReadBarrier();
+            return result;
+        }
+    }
 
     private static void Aggregate(ref TMeasurement measurement, TMeasurement value)
     {

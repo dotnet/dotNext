@@ -11,20 +11,20 @@ internal sealed class DecodingTextReader : TextBufferReader
 {
     private readonly Encoding encoding;
     private readonly Decoder decoder;
-    private readonly MemoryAllocator<char>? allocator;
+    private readonly MemoryAllocator<char> allocator;
     private ReadOnlySequence<byte> sequence;
     private MemoryOwner<char> buffer;
     private int charPos, charLen;
 
-    internal DecodingTextReader(ReadOnlySequence<byte> sequence, Encoding encoding, int bufferSize, MemoryAllocator<char>? allocator)
+    internal DecodingTextReader(in ReadOnlySequence<byte> sequence, Encoding encoding, int bufferSize, MemoryAllocator<char>? allocator)
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(bufferSize);
+        ArgumentNullException.ThrowIfNull(encoding);
 
-        this.encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
+        this.encoding = encoding;
         decoder = encoding.GetDecoder();
         this.sequence = sequence;
-        this.allocator = allocator;
-        buffer = allocator.AllocateAtLeast(bufferSize);
+        buffer = (this.allocator = allocator.DefaultIfNull).AllocateAtLeast(bufferSize);
     }
 
     private Span<char> Buffer => buffer.Span;
@@ -63,7 +63,7 @@ internal sealed class DecodingTextReader : TextBufferReader
         int writtenCount, result = 0;
         if (charPos < charLen)
         {
-            ReadyToReadChars.CopyTo(buffer, out writtenCount);
+            writtenCount = ReadyToReadChars >> buffer;
             charPos += writtenCount;
             buffer = buffer.Slice(writtenCount);
             result += writtenCount;
@@ -97,7 +97,7 @@ internal sealed class DecodingTextReader : TextBufferReader
         {
             do
             {
-                ref var first = ref Memory.GetReference(in buffer);
+                ref var first = ref buffer.DataRef;
 
                 do
                 {
@@ -118,9 +118,9 @@ internal sealed class DecodingTextReader : TextBufferReader
                     }
 
                     if ((uint)newLineBufferPosition > 0U)
-                        result.Write(newLine.Slice(0, newLineBufferPosition));
+                        result += newLine.Slice(0, newLineBufferPosition);
 
-                    result.Add(ch);
+                    result += ch;
                     newLineBufferPosition = 0;
                 }
                 while (++charPos < charLen);
@@ -129,7 +129,7 @@ internal sealed class DecodingTextReader : TextBufferReader
 
             // add trailing characters recognized as a part of uncompleted line termination
             if ((uint)newLineBufferPosition > 0U)
-                result.Write(newLine.Slice(0, newLineBufferPosition));
+                result += newLine.Slice(0, newLineBufferPosition);
 
             exit:
             return (uint)result.WrittenCount > 0U ? new string(result.WrittenSpan) : string.Empty;

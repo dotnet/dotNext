@@ -3,55 +3,20 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
-using Tasks;
-
 /// <summary>
 /// Represents asynchronous version of <see cref="ManualResetEvent"/>.
 /// </summary>
 [DebuggerDisplay($"IsSet = {{{nameof(IsSet)}}}")]
 public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
 {
-    [StructLayout(LayoutKind.Auto)]
-    private struct StateManager : ILockManager, IConsumer<WaitNode>
-    {
-        internal bool Value;
-
-        internal StateManager(bool initialState)
-            => Value = initialState;
-
-        internal bool TryReset()
-        {
-            var result = Value;
-
-            if (result)
-                Value = false;
-
-            return result;
-        }
-
-        readonly bool ILockManager.IsLockAllowed => Value;
-
-        readonly void ILockManager.AcquireLock()
-        {
-            // nothing to do here
-        }
-
-        readonly void IConsumer<WaitNode>.Invoke(WaitNode node) => node.DrainOnReturn = false;
-    }
-
-    private StateManager manager;
+    private bool signaled;
 
     /// <summary>
     /// Initializes a new asynchronous reset event in the specified state.
     /// </summary>
     /// <param name="initialState"><see langword="true"/> to set the initial state signaled; <see langword="false"/> to set the initial state to non signaled.</param>
     public AsyncManualResetEvent(bool initialState)
-    {
-        manager = new(initialState);
-    }
-
-    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
-        => waitQueueVisitor.SignalAll();
+        => signaled = initialState;
 
     /// <inheritdoc/>
     EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.ManualReset;
@@ -59,7 +24,7 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <summary>
     /// Indicates whether this event is set.
     /// </summary>
-    public bool IsSet => Volatile.Read(ref manager.Value);
+    public bool IsSet => Volatile.Read(in signaled);
 
     /// <summary>
     /// Sets the state of the event to signaled, allowing one or more awaiters to proceed.
@@ -79,16 +44,11 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        bool result;
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
-        {
-            result = !manager.Value;
-            manager.Value = !autoReset;
-            suspendedCallers = DrainWaitQueue();
-        }
+        using var queue = CaptureWaitQueue();
+        var result = !signaled;
+        signaled = !autoReset;
+        queue.SignalAll();
 
-        suspendedCallers?.Unwind();
         return result;
     }
 
@@ -101,11 +61,8 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        Monitor.Enter(SyncRoot);
-        var result = manager.TryReset();
-        Monitor.Exit(SyncRoot);
-
-        return result;
+        TryAcquire(new ResetTransition(ref signaled), out var acquired).Dispose();
+        return acquired;
     }
 
     /// <inheritdoc/>
@@ -121,7 +78,10 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-        => TryAcquireAsync<WaitNode, StateManager>(ref manager, timeout, token);
+    {
+        var builder = BeginAcquisition(timeout, token);
+        return EndAcquisition<ValueTask<bool>, TimeoutAndCancellationToken, WaitNode, StateManager>(ref builder, new(ref signaled));
+    }
 
     /// <summary>
     /// Turns caller into idle state until the current event is set.
@@ -131,5 +91,33 @@ public class AsyncManualResetEvent : QueuedSynchronizer, IAsyncResetEvent
     /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public ValueTask WaitAsync(CancellationToken token = default)
-        => AcquireAsync<WaitNode, StateManager>(ref manager, token);
+    {
+        var builder = BeginAcquisition(token);
+        return EndAcquisition<ValueTask, CancellationTokenOnly, WaitNode, StateManager>(ref builder, new(ref signaled));
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct StateManager(ref bool signaled) : ILockManager<WaitNode>
+    {
+        private readonly ref bool signaled = ref signaled;
+
+        bool ILockManager.IsLockAllowed => signaled;
+
+        void ILockManager.AcquireLock()
+        {
+            // nothing to do here
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct ResetTransition(ref bool signaled) : ILockManager
+    {
+        private readonly ref bool signaled = ref signaled;
+
+        bool ILockManager.IsLockAllowed => signaled;
+
+        void ILockManager.AcquireLock() => signaled = false;
+
+        static bool ILockManager.RequiresEmptyQueue => false;
+    }
 }

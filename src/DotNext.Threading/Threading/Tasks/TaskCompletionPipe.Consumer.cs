@@ -3,8 +3,6 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks;
 
-using static Collections.Generic.AsyncEnumerable;
-
 /// <summary>
 /// Provides various extension methods for <see cref="TaskCompletionPipe{T}"/> class.
 /// </summary>
@@ -25,7 +23,7 @@ public static class TaskCompletionPipe
     /// <param name="tasks">A collection of tasks.</param>
     /// <typeparam name="T">The result type of tasks.</typeparam>
     /// <returns>A collection over task results to be available as they complete.</returns>
-    public static Consumer<T> Consume<T>(this ReadOnlySpan<Task<T>> tasks)
+    public static Consumer<T> Consume<T>(params ReadOnlySpan<Task<T>> tasks)
     {
         Consumer<T> result;
         if (tasks.IsEmpty)
@@ -37,31 +35,6 @@ public static class TaskCompletionPipe
             var pipe = new TaskCompletionPipe<Task<T>>();
             pipe.Add(tasks, complete: true);
             result = new(pipe);
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Creates a collection over tasks to be available as they complete.
-    /// </summary>
-    /// <param name="tasks">A collection of tasks.</param>
-    /// <typeparam name="T">The type of tasks.</typeparam>
-    /// <returns>A collection over tasks to be available as they complete.</returns>
-    public static IAsyncEnumerable<T> WhenEach<T>(ReadOnlySpan<T> tasks) // TODO: Remove in .NET 9/10 in favor of Task.WhenEach
-        where T : Task
-    {
-        IAsyncEnumerable<T> result;
-
-        if (tasks.IsEmpty)
-        {
-            result = Empty<T>();
-        }
-        else
-        {
-            var pipe = new TaskCompletionPipe<T>();
-            pipe.Add(tasks, complete: true);
-            result = pipe;
         }
 
         return result;
@@ -98,6 +71,6 @@ public static class TaskCompletionPipe
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The asynchronous enumerator over completed tasks.</returns>
         public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken token = default)
-            => pipe is null ? Empty<T>().GetAsyncEnumerator(token) : GetAsyncEnumerator<T>(pipe, pipe.Version, token);
+            => pipe is null ? AsyncEnumerable.Empty<T>().GetAsyncEnumerator(token) : GetAsyncEnumerator<T>(pipe, pipe.Version, token);
     }
 }

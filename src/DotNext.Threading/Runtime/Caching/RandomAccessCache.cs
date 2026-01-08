@@ -91,7 +91,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     {
         var hashCode = keyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
-        var cts = cancellationTokens.Combine([token, lifetimeToken]);
+        var cts = cancellationTokens.Combine(token, lifetimeToken);
         var bucketLock = default(AsyncExclusiveLock);
         try
         {
@@ -103,7 +103,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 for (BucketList newCopy;; bucketsCopy = newCopy)
                 {
                     bucketsCopy.GetByHash(hashCode, out bucket);
-                    await bucket.Value.Lock.AcquireAsync(timeout.GetRemainingTimeOrZero(), cts.Token).ConfigureAwait(false);
+                    await bucket.Value.Lock.AcquireAsync(timeout.RemainingTime, cts.Token).ConfigureAwait(false);
                     bucketLock = bucket.Value.Lock;
 
                     newCopy = buckets;
@@ -177,7 +177,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     {
         var hashCode = keyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
-        var cts = cancellationTokens.Combine([token, lifetimeToken]);
+        var cts = cancellationTokens.Combine(token, lifetimeToken);
         var bucketLock = default(AsyncExclusiveLock);
         try
         {
@@ -189,7 +189,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
                 for (BucketList newCopy;; bucketsCopy = newCopy)
                 {
                     bucketsCopy.GetByHash(hashCode, out bucket);
-                    await bucket.Value.Lock.AcquireAsync(timeout.GetRemainingTimeOrZero(), cts.Token).ConfigureAwait(false);
+                    await bucket.Value.Lock.AcquireAsync(timeout.RemainingTime, cts.Token).ConfigureAwait(false);
                     bucketLock = bucket.Value.Lock;
 
                     newCopy = buckets;
@@ -297,7 +297,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     {
         var hashCode = keyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
-        var cts = cancellationTokens.Combine([token, lifetimeToken]);
+        var cts = cancellationTokens.Combine(token, lifetimeToken);
         var bucketLock = default(AsyncExclusiveLock);
         try
         {
@@ -371,7 +371,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     {
         var hashCode = keyComparer?.GetHashCode(key) ?? EqualityComparer<TKey>.Default.GetHashCode(key);
 
-        var cts = cancellationTokens.Combine([token, lifetimeToken]);
+        var cts = cancellationTokens.Combine(token, lifetimeToken);
         var bucketLock = default(AsyncExclusiveLock);
         KeyValuePair? removedPair;
         try
@@ -452,7 +452,7 @@ public partial class RandomAccessCache<TKey, TValue> : Disposable, IAsyncDisposa
     /// <exception cref="ObjectDisposedException">The cache is disposed.</exception>
     public async ValueTask InvalidateAsync(CancellationToken token = default)
     {
-        var cts = cancellationTokens.Combine([token, lifetimeToken]);
+        var cts = cancellationTokens.Combine(token, lifetimeToken);
         var bucketsCopy = buckets;
         var lockCount = 0;
         try

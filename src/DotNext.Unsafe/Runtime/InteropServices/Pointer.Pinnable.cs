@@ -10,7 +10,7 @@ partial struct Pointer<T> : IPinnable
         ArgumentOutOfRangeException.ThrowIfNegative(elementIndex);
         
         if (IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         return new(value + elementIndex);
     }

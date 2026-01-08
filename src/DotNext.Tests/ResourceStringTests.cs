@@ -9,7 +9,7 @@ public sealed class ResourceStringTests : Test
     {
         foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
         {
-            if (asm.FullName.StartsWith("DotNext"))
+            if (asm.FullName?.StartsWith("DotNext") ?? false)
             {
                 var exceptionMessagesType = asm.GetType("DotNext.ExceptionMessages");
                 if (exceptionMessagesType is null)

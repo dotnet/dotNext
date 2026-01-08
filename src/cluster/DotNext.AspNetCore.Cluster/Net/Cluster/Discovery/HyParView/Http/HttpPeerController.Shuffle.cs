@@ -48,7 +48,7 @@ internal partial class HttpPeerController
 
     private static IReadOnlySet<EndPoint> DeserializeShuffleReply(ReadOnlyMemory<byte> buffer)
     {
-        var reader = IAsyncBinaryReader.Create(buffer);
+        var reader = new SequenceReader(buffer);
         return DeserializeShuffleReply(ref reader);
     }
 
@@ -131,7 +131,7 @@ internal partial class HttpPeerController
 
     private static (EndPoint, EndPoint, int, IReadOnlySet<EndPoint>) DeserializeShuffleRequest(ReadOnlyMemory<byte> buffer)
     {
-        var reader = IAsyncBinaryReader.Create(buffer);
+        var reader = new SequenceReader(buffer);
         return DeserializeShuffleRequest(ref reader);
     }
 

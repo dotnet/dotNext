@@ -2,14 +2,14 @@
 
 namespace DotNext.Runtime.CompilerServices;
 
-using static Linq.Expressions.ExpressionBuilder;
+using Linq.Expressions;
 
 internal sealed class StateIdExpression : StateMachineExpression
 {
-    public override ConstantExpression Reduce() => 0U.Const();
+    public override ConstantExpression Reduce() => 0U.Quoted;
 
-    internal static MemberExpression Get(ParameterExpression stateMachine)
-        => stateMachine.Property(nameof(AsyncStateMachine<ValueTuple>.StateId));
+    private static MemberExpression Get(ParameterExpression stateMachine)
+        => stateMachine.Property(nameof(AsyncStateMachine<>.StateId));
 
     internal override MemberExpression Reduce(ParameterExpression stateMachine)
         => Get(stateMachine);

@@ -80,7 +80,7 @@ public class CancellationTokenMultiplexerTests : Test
         using var cts = new CancellationTokenSource();
         var multiplexer = new CancellationTokenMultiplexer();
 
-        await using var scope = multiplexer.Combine(TimeSpan.FromMilliseconds(timeout), [cts.Token]);
+        await using var scope = multiplexer.Combine(TimeSpan.FromMilliseconds(timeout), cts.Token);
         await scope.Token.WaitAsync();
 
         Equal(scope.Token, scope.CancellationOrigin);
@@ -93,7 +93,7 @@ public class CancellationTokenMultiplexerTests : Test
     {
         var multiplexer = new CancellationTokenMultiplexer();
 
-        await using var scope = multiplexer.CombineAndSetTimeoutLater([]);
+        await using var scope = multiplexer.CombineAndSetTimeoutLater();
         False(scope.Token.IsCancellationRequested);
 
         scope.Timeout = TimeSpan.FromMilliseconds(0);
@@ -143,7 +143,7 @@ public class CancellationTokenMultiplexerTests : Test
     {
         var multiplexer = new CancellationTokenMultiplexer();
 
-        var scope = multiplexer.CombineAndSetTimeoutLater([]);
+        var scope = multiplexer.CombineAndSetTimeoutLater();
         var source = new TaskCompletionSource<bool>();
         await using var registration = scope.Token.Register(() =>
         {

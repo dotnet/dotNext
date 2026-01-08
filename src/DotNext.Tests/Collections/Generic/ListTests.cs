@@ -34,7 +34,7 @@ public sealed class ListTests : Test
     [Fact]
     public static void ReadOnlyView()
     {
-        var view = new ReadOnlyListView<string, int>(["1", "2", "3"], new Converter<string, int>(int.Parse));
+        var view = new ReadOnlyListView<string, int>(["1", "2", "3"], int.Parse);
         Equal(3, view.Count);
         Equal(1, view[0]);
         Equal(2, view[1]);
@@ -47,19 +47,16 @@ public sealed class ListTests : Test
     public static void ReadOnlyIndexer()
     {
         IReadOnlyList<long> array = [5L, 6L, 20L];
-        Equal(20L, List.Indexer<long>.ReadOnly(array, 2));
-        Equal(6L, array.IndexerGetter().Invoke(1));
+        Equal(6L, array.IndexerGetter.Invoke(1));
     }
 
     [Fact]
     public static void Indexer()
     {
         IList<long> array = [5L, 6L, 30L];
-        Equal(30L, List.Indexer<long>.Getter(array, 2));
-        List.Indexer<long>.Setter(array, 1, 10L);
-        Equal(10L, array.IndexerGetter().Invoke(1));
-        array.IndexerSetter().Invoke(0, 6L);
-        Equal(6L, array.IndexerGetter().Invoke(0));
+        Equal(6L, array.IndexerGetter.Invoke(1));
+        array.IndexerSetter.Invoke(0, 6L);
+        Equal(6L, array.IndexerGetter.Invoke(0));
     }
 
     [Fact]
@@ -144,7 +141,7 @@ public sealed class ListTests : Test
     [Fact]
     public static void SingletonCollection()
     {
-        var collection = List.Singleton(42);
+        var collection = IReadOnlyList<int>.Singleton(42);
         NotEmpty(collection);
         Equal(42, collection.First());
     }
@@ -153,13 +150,13 @@ public sealed class ListTests : Test
     public static void Repeat()
     {
         const decimal value = 42M;
-        var collection = List.Repeat(value, 0);
+        var collection = IReadOnlyList<decimal>.Repeat(value, 0);
         Empty(collection);
 
-        collection = List.Repeat(value, 1);
+        collection = IReadOnlyList<decimal>.Repeat(value, 1);
         Collection(collection, VerifyValue);
 
-        collection = List.Repeat(value, 2);
+        collection = IReadOnlyList<decimal>.Repeat(value, 2);
         Collection(collection, VerifyValue, VerifyValue);
 
         static void VerifyValue(decimal actual) => Equal(value, actual);

@@ -32,7 +32,7 @@ internal sealed unsafe class MappedMemory : MemoryManager<byte>, IMappedMemory
 
     Span<byte> IUnmanagedMemory<byte>.Span => GetSpan();
 
-    public Stream AsStream() => Pointer.AsStream(accessor.Capacity, accessor.GetFileAccess());
+    public Stream AsStream() => Stream.Create(Pointer, accessor.Capacity, accessor.GetFileAccess());
 
     public void Flush() => accessor.Flush();
 

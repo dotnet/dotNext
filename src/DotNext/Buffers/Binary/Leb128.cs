@@ -31,7 +31,7 @@ public struct Leb128<T> : ISupplier<T>, IResettable
 
     static Leb128()
     {
-        var bitCount = Number.GetMaxByteCount<T>() * 8;
+        var bitCount = Number.get_MaxByteCount<T>() * 8;
         bitCount = Math.DivRem(bitCount, 7, out var remainder);
         bitCount += Unsafe.BitCast<bool, byte>(remainder is not 0);
         
@@ -60,7 +60,7 @@ public struct Leb128<T> : ISupplier<T>, IResettable
         const byte signBit = 0x40;
 
         // return back sign bit for signed integers
-        if (Number.IsSigned<T>() && !nextOctetExpected && shift < MaxSizeInBits && (b & signBit) is not 0)
+        if (Number.get_IsSigned<T>() && !nextOctetExpected && shift < MaxSizeInBits && (b & signBit) is not 0)
             value |= T.AllBitsSet << shift;
 
         return nextOctetExpected;
@@ -171,7 +171,7 @@ public struct Leb128<T> : ISupplier<T>, IResettable
             if (completed)
                 return false;
 
-            if (Number.IsSigned<T>())
+            if (Number.get_IsSigned<T>())
             {
                 MoveNextSigned();
             }

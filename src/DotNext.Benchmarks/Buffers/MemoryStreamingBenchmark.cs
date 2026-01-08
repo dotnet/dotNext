@@ -47,7 +47,7 @@ public class MemoryStreamingBenchmark
     public void WriteToSparseBuffer()
     {
         using var buffer = new SparseBufferWriter<byte>(4096, SparseBufferGrowth.Exponential);
-        using var ms = buffer.AsStream(false);
+        using var ms = Stream.Create(buffer, writable: true);
         Write(ms);
     }
 
@@ -55,7 +55,7 @@ public class MemoryStreamingBenchmark
     public void WriteToGrowableBuffer()
     {
         using var buffer = new PoolingArrayBufferWriter<byte>();
-        using var ms = buffer.AsStream();
+        using var ms = Stream.CreateWritable(buffer, flush: null, flushAsync: null);
         Write(ms);
     }
 

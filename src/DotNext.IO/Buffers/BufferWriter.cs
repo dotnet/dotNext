@@ -5,8 +5,8 @@ using System.Text;
 
 namespace DotNext.Buffers;
 
+using IO;
 using EncodingContext = DotNext.Text.EncodingContext;
-using LengthFormat = IO.LengthFormat;
 using SevenBitEncodedInt = Binary.Leb128<uint>;
 
 /// <summary>
@@ -57,12 +57,16 @@ public static class BufferWriter
         return writer(ref destination, (uint)value);
     }
 
-    internal static int WriteLength(this IBufferWriter<byte> buffer, int length, LengthFormat lengthFormat)
+    private static int WriteLength<TWriter>(TWriter writer, int length, LengthFormat lengthFormat)
+        where TWriter : struct, IBufferWriter<byte>, allows ref struct
     {
-        var bytesWritten = WriteLength(buffer.GetSpan(SevenBitEncodedInt.MaxSizeInBytes), length, lengthFormat);
-        buffer.Advance(bytesWritten);
+        var bytesWritten = WriteLength(writer.GetSpan(lengthFormat.MaxByteCount), length, lengthFormat);
+        writer.Advance(bytesWritten);
         return bytesWritten;
     }
+
+    internal static int WriteLength(this IBufferWriter<byte> buffer, int length, LengthFormat lengthFormat)
+        => WriteLength<BufferWriterReference<byte>>(new(buffer), length, lengthFormat);
 
     internal static int WriteLength(Span<byte> buffer, int length, LengthFormat lengthFormat)
     {
@@ -70,11 +74,40 @@ public static class BufferWriter
         return writer.WriteLength(length, lengthFormat);
     }
 
-    private static int WriteLength(this ref BufferWriterSlim<byte> buffer, int length, LengthFormat lengthFormat)
+    private static int Encode<TWriter>(TWriter writer, ReadOnlySpan<char> chars, in EncodingContext context, LengthFormat? lengthFormat)
+        where TWriter : struct, IBufferWriter<byte>, allows ref struct
     {
-        var bytesWritten = WriteLength(buffer.GetSpan(SevenBitEncodedInt.MaxSizeInBytes), length, lengthFormat);
-        buffer.Advance(bytesWritten);
-        return bytesWritten;
+        Span<byte> buffer;
+        int byteCount, result;
+        if (lengthFormat.HasValue)
+        {
+            byteCount = context.Encoding.GetByteCount(chars);
+            result = WriteLength(writer, byteCount, lengthFormat.GetValueOrDefault());
+
+            buffer = writer.GetSpan(byteCount);
+            byteCount = context.TryGetEncoder() is { } encoder
+                ? encoder.GetBytes(chars, buffer, flush: true)
+                : context.Encoding.GetBytes(chars, buffer);
+
+            result += byteCount;
+            writer.Advance(byteCount);
+        }
+        else
+        {
+            result = 0;
+            var encoder = context.GetEncoder();
+            byteCount = context.Encoding.GetMaxByteCount(1);
+            for (int charsUsed, bytesWritten; !chars.IsEmpty; chars = chars.Slice(charsUsed), result += bytesWritten)
+            {
+                buffer = writer.GetSpan(byteCount);
+                var maxChars = buffer.Length / byteCount;
+
+                encoder.Convert(chars, buffer, chars.Length <= maxChars, out charsUsed, out bytesWritten, out _);
+                writer.Advance(bytesWritten);
+            }
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -85,17 +118,9 @@ public static class BufferWriter
     /// <param name="context">The encoding context.</param>
     /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
     /// <returns>The number of written bytes.</returns>
-    public static long Encode(this IBufferWriter<byte> writer, ReadOnlySpan<char> chars, in EncodingContext context, LengthFormat? lengthFormat = null)
-    {
-        var result = lengthFormat.HasValue
-            ? writer.WriteLength(context.Encoding.GetByteCount(chars), lengthFormat.GetValueOrDefault())
-            : 0L;
-
-        context.GetEncoder().Convert(chars, writer, true, out var bytesWritten, out _);
-        result += bytesWritten;
-
-        return result;
-    }
+    public static int Encode(this IBufferWriter<byte> writer, ReadOnlySpan<char> chars, in EncodingContext context,
+        LengthFormat? lengthFormat = null)
+        => Encode<BufferWriterReference<byte>>(new(writer), chars, in context, lengthFormat);
 
     /// <summary>
     /// Encodes string using the specified encoding.
@@ -134,7 +159,7 @@ public static class BufferWriter
         
         return result;
     }
-    
+
     /// <summary>
     /// Encodes string using the specified encoding.
     /// </summary>
@@ -145,40 +170,8 @@ public static class BufferWriter
     /// <returns>The number of written bytes.</returns>
     public static int Encode(this ref BufferWriterSlim<byte> writer, scoped ReadOnlySpan<char> chars, in EncodingContext context,
         LengthFormat? lengthFormat = null)
-    {
-        Span<byte> buffer;
-        int byteCount, result;
-        if (lengthFormat.HasValue)
-        {
-            byteCount = context.Encoding.GetByteCount(chars);
-            result = writer.WriteLength(byteCount, lengthFormat.GetValueOrDefault());
+        => Encode<BufferWriterSlim<byte>.Ref>(new(ref writer), chars, in context, lengthFormat);
 
-            buffer = writer.GetSpan(byteCount);
-            byteCount = context.TryGetEncoder() is { } encoder
-                ? encoder.GetBytes(chars, buffer, flush: true)
-                : context.Encoding.GetBytes(chars, buffer);
-
-            result += byteCount;
-            writer.Advance(byteCount);
-        }
-        else
-        {
-            result = 0;
-            var encoder = context.GetEncoder();
-            byteCount = context.Encoding.GetMaxByteCount(1);
-            for (int charsUsed, bytesWritten; !chars.IsEmpty; chars = chars.Slice(charsUsed), result += bytesWritten)
-            {
-                buffer = writer.GetSpan(byteCount);
-                var maxChars = buffer.Length / byteCount;
-
-                encoder.Convert(chars, buffer, chars.Length <= maxChars, out charsUsed, out bytesWritten, out _);
-                writer.Advance(bytesWritten);
-            }
-        }
-
-        return result;
-    }
-    
     /// <summary>
     /// Writes a sequence of bytes prefixed with the length.
     /// </summary>
@@ -188,8 +181,8 @@ public static class BufferWriter
     /// <returns>A number of bytes written.</returns>
     public static int Write(this ref BufferWriterSlim<byte> writer, scoped ReadOnlySpan<byte> value, LengthFormat lengthFormat)
     {
-        var result = writer.WriteLength(value.Length, lengthFormat);
-        writer.Write(value);
+        var result = WriteLength<BufferWriterSlim<byte>.Ref>(new(ref writer), value.Length, lengthFormat);
+        writer += value;
         result += value.Length;
         
         return result;
@@ -230,6 +223,8 @@ public static class BufferWriter
     public static long Format<T>(this IBufferWriter<byte> writer, T value, in EncodingContext context, LengthFormat? lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null, MemoryAllocator<char>? allocator = null)
         where T : ISpanFormattable
     {
+        allocator ??= MemoryAllocator<char>.Default;
+        
         // attempt to allocate char buffer on the stack
         Span<char> charBuffer = stackalloc char[SpanOwner<char>.StackallocThreshold];
         if (!TryFormat(writer, value, charBuffer, in context, lengthFormat, format, provider, out var bytesWritten))
@@ -261,13 +256,7 @@ public static class BufferWriter
     public static int Format<T>(this IBufferWriter<byte> writer, T value, LengthFormat? lengthFormat, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
         where T : IUtf8SpanFormattable
     {
-        var expectedLengthSize = lengthFormat switch
-        {
-            null => 0,
-            LengthFormat.BigEndian or LengthFormat.LittleEndian => sizeof(int),
-            LengthFormat.Compressed => SevenBitEncodedInt.MaxSizeInBytes,
-            _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
-        };
+        var expectedLengthSize = lengthFormat?.MaxByteCount ?? 0;
 
         int bytesWritten;
         for (int bufferSize = 0; ; bufferSize = bufferSize <= MaxBufferSize ? bufferSize << 1 : throw new InsufficientMemoryException())
@@ -300,25 +289,21 @@ public static class BufferWriter
     }
 
     /// <summary>
-    /// Encodes formattable string as a sequence of bytes.
+    /// Extends <see cref="IAsyncBinaryWriter"/> type.
     /// </summary>
-    /// <param name="writer">The output buffer.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The preallocated buffer to be used for placing characters during encoding.</param>
-    /// <param name="provider">The format provider.</param>
-    /// <param name="handler">The interpolated string handler.</param>
-    /// <returns>The number of produced bytes.</returns>
-    public static int Interpolate(this IBufferWriter<byte> writer, in EncodingContext context, Span<char> buffer, IFormatProvider? provider, [InterpolatedStringHandlerArgument(nameof(writer), nameof(context), nameof(buffer), nameof(provider))] in EncodingInterpolatedStringHandler handler)
-        => handler.WrittenCount;
+    extension(IAsyncBinaryWriter)
+    {
+        /// <summary>
+        /// Creates default implementation of binary writer for the buffer writer.
+        /// </summary>
+        /// <param name="writer">The buffer writer.</param>
+        /// <returns>The binary writer.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="writer"/> is <see langword="null"/>.</exception>
+        public static IAsyncBinaryWriter Create(IBufferWriter<byte> writer)
+        {
+            ArgumentNullException.ThrowIfNull(writer);
 
-    /// <summary>
-    /// Encodes formattable string as a sequence of bytes.
-    /// </summary>
-    /// <param name="writer">The output buffer.</param>
-    /// <param name="context">The encoding context.</param>
-    /// <param name="buffer">The preallocated buffer to be used for placing characters during encoding.</param>
-    /// <param name="handler">The interpolated string handler.</param>
-    /// <returns>The number of produced bytes.</returns>
-    public static int Interpolate(this IBufferWriter<byte> writer, in EncodingContext context, Span<char> buffer, [InterpolatedStringHandlerArgument(nameof(writer), nameof(context), nameof(buffer))] in EncodingInterpolatedStringHandler handler)
-        => Interpolate(writer, in context, buffer, provider: null, in handler);
+            return new AsyncBufferWriter(writer);
+        }
+    }
 }

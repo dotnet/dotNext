@@ -3,8 +3,8 @@ using System.Reflection;
 
 namespace DotNext.Linq.Expressions;
 
-using static Reflection.DisposableType;
-using List = Collections.Generic.List;
+using Collections.Generic;
+using Reflection;
 
 /// <summary>
 /// Represents <c>using</c> or <c>await using</c> expression.
@@ -22,11 +22,10 @@ public sealed class UsingExpression : CustomExpression
     private readonly MethodInfo disposeMethod;
     private readonly BinaryExpression? assignment;
     private readonly bool? configureAwait;  // null for synchronous expression
-    private Expression? body;
 
     internal UsingExpression(Expression resource)
     {
-        disposeMethod = resource.Type.GetDisposeMethod() ?? throw new ArgumentException(ExceptionMessages.DisposePatternExpected(resource.Type), nameof(resource));
+        disposeMethod = resource.Type.DisposeMethod ?? throw new ArgumentException(ExceptionMessages.DisposePatternExpected(resource.Type), nameof(resource));
         if (resource is ParameterExpression param)
         {
             assignment = null;
@@ -40,7 +39,7 @@ public sealed class UsingExpression : CustomExpression
 
     internal UsingExpression(Expression resource, bool configureAwait)
     {
-        disposeMethod = resource.Type.GetDisposeAsyncMethod() ?? throw new ArgumentException(ExceptionMessages.DisposePatternExpected(resource.Type), nameof(resource));
+        disposeMethod = resource.Type.DisposeAsyncMethod ?? throw new ArgumentException(ExceptionMessages.DisposePatternExpected(resource.Type), nameof(resource));
         if (resource is ParameterExpression param)
         {
             assignment = null;
@@ -112,8 +111,8 @@ public sealed class UsingExpression : CustomExpression
     /// </summary>
     public Expression Body
     {
-        get => body ?? Empty();
-        internal set => body = value;
+        get => field ?? Empty();
+        internal set;
     }
 
     /// <summary>
@@ -156,6 +155,6 @@ public sealed class UsingExpression : CustomExpression
 
         return assignment is null ?
             MakeTry(Type, Body, Block(typeof(void), disposeCall, Assign(Resource, Default(Resource.Type))), null, null) :
-            Block(Type, List.Singleton(Resource), assignment, TryFinally(Body, disposeCall));
+            Block(Type, IReadOnlyList<ParameterExpression>.Singleton(Resource), assignment, TryFinally(Body, disposeCall));
     }
 }

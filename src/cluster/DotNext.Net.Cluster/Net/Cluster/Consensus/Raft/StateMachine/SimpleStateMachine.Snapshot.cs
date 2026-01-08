@@ -19,20 +19,19 @@ partial class SimpleStateMachine
         private readonly string sourceFileName;
         internal readonly FileInfo Destination;
 
-        public SnapshotWriter(long preallocationSize, DateTime creationTime, FileInfo destination)
-            : base(CreateTempSnapshot(preallocationSize, creationTime, out var sourceFileName))
+        public SnapshotWriter(long preallocationSize, FileInfo destination)
+            : base(CreateTempSnapshot(preallocationSize, out var sourceFileName))
         {
             this.sourceFileName = sourceFileName;
             Destination = destination;
         }
 
-        private static SafeFileHandle CreateTempSnapshot(long preallocationSize, DateTime creationTime, out string sourceFileName)
+        private static SafeFileHandle CreateTempSnapshot(long preallocationSize, out string sourceFileName)
         {
             sourceFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             var handle = File.OpenHandle(sourceFileName, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None,
                 preallocationSize: preallocationSize);
             File.SetAttributes(handle, FileAttributes.NotContentIndexed);
-            File.SetCreationTimeUtc(handle, creationTime);
             return handle;
         }
 
@@ -84,20 +83,18 @@ partial class SimpleStateMachine
         long? IDataTransferObject.Length => File.Length;
 
         bool IDataTransferObject.IsReusable => true;
-
-        public DateTimeOffset Timestamp => File.CreationTimeUtc;
         
         public long Index { get; }
         
         public long Term { get; }
 
-        public SnapshotWriter CreateWriter(long preallocationSize, DateTime creationTime)
-            => new(preallocationSize, creationTime, File);
+        private SnapshotWriter CreateWriter(long preallocationSize)
+            => new(preallocationSize, File);
 
         public async ValueTask ReadFromAsync<TEntry>(TEntry entry, CancellationToken token)
             where TEntry : ILogEntry
         {
-            var writer = CreateWriter(entry.Length.GetValueOrDefault(), entry.Timestamp.UtcDateTime);
+            var writer = CreateWriter(entry.Length.GetValueOrDefault());
             try
             {
                 await entry.WriteToAsync(writer, token).ConfigureAwait(false);

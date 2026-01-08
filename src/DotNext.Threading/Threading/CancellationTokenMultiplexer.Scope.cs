@@ -10,10 +10,7 @@ using MultiplexerOrToken = ValueTuple<object>;
 
 partial class CancellationTokenMultiplexer
 {
-    private interface IMultiplexedTokenScope : IMultiplexedCancellationTokenSource, IDisposable, IAsyncDisposable
-    {
-        bool IsTimedOut { get; }
-    }
+    private interface IMultiplexedTokenScope : IMultiplexedCancellationTokenSourceWithTimeout, IDisposable, IAsyncDisposable;
     
     /// <summary>
     /// Represents a scope that controls the lifetime of the multiplexed cancellation token.

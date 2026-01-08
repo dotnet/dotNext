@@ -2,13 +2,7 @@ using System.IO.Pipelines;
 
 namespace DotNext.IO.Pipelines;
 
-/// <summary>
-/// Represents duplex stream suitable for reading and writing from the duplex pipe.
-/// </summary>
-/// <param name="pipe">The duplex pipe.</param>
-/// <param name="leaveInputOpen"><see langword="true"/> to leave <see cref="IDuplexPipe.Input"/> available for reads; otherwise, <see langword="false"/>.</param>
-/// <param name="leaveOutputOpen"><see langword="true"/> to leave <see cref="IDuplexPipe.Output"/> available for writes; otherwise, <see langword="false"/>.</param>
-public sealed class DuplexStream(IDuplexPipe pipe, bool leaveInputOpen = false, bool leaveOutputOpen = false) : Stream
+internal sealed class DuplexStream(IDuplexPipe pipe, bool leaveInputOpen = false, bool leaveOutputOpen = false) : Stream
 {
     private readonly Stream reader = pipe.Input.AsStream(leaveInputOpen);
     private readonly Stream writer = pipe.Output.AsStream(leaveOutputOpen);

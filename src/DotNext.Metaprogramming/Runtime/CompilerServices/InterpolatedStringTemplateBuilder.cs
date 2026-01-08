@@ -8,6 +8,7 @@ using static System.Globalization.CultureInfo;
 namespace DotNext.Runtime.CompilerServices;
 
 using Buffers;
+using Text;
 
 /// <summary>
 /// Represents a builder of the lambda expression
@@ -40,9 +41,8 @@ public struct InterpolatedStringTemplateBuilder(int literalLength, int formatted
             this.argumentType = argumentType;
         }
 
-        internal void WriteStatement(IList<Expression> statements, ParameterExpression provider, ParameterExpression handler, out ParameterExpression? inputVar)
+        internal void WriteStatement(IList<Expression> statements, ParameterExpression handler, out ParameterExpression? inputVar)
         {
-            Debug.Assert(provider.Type == typeof(IFormatProvider));
             Debug.Assert(handler.Type == typeof(BufferWriterSlimInterpolatedStringHandler));
 
             Expression statement;
@@ -74,26 +74,26 @@ public struct InterpolatedStringTemplateBuilder(int literalLength, int formatted
         {
             if (argumentType is null)
             {
-                output.Write(literalOrFormat);
+                output += literalOrFormat;
                 return;
             }
 
-            output.Add('{');
+            output += '{';
             output.Format(position++, provider: InvariantCulture);
 
             if (alignment is not 0)
             {
-                output.Add(',');
+                output += ',';
                 output.Format(alignment, provider: InvariantCulture);
             }
 
             if (literalOrFormat is { Length: > 0 })
             {
-                output.Add(':');
-                output.Write(literalOrFormat);
+                output += ':';
+                output += literalOrFormat;
             }
 
-            output.Add('}');
+            output += '}';
         }
     }
 
@@ -182,7 +182,7 @@ public struct InterpolatedStringTemplateBuilder(int literalLength, int formatted
 
         foreach (ref readonly var segment in SegmentsSpan)
         {
-            segment.WriteStatement(statements, providerParameter, handlerLocal, out var parameter);
+            segment.WriteStatement(statements, handlerLocal, out var parameter);
 
             if (parameter is not null)
                 parameters.Add(parameter);
@@ -195,7 +195,7 @@ public struct InterpolatedStringTemplateBuilder(int literalLength, int formatted
 
         // try-finally block to dispose the writer
         expr = Expression.Block(statements);
-        expr = Expression.TryFinally(expr, Expression.Call(writerLocal, nameof(BufferWriterSlim<char>.Dispose), []));
+        expr = Expression.TryFinally(expr, Expression.Call(writerLocal, nameof(BufferWriterSlim<>.Dispose), []));
         expr = Expression.Block([preallocatedBufferLocal, writerLocal, handlerLocal], expr);
 
         return Expression.Lambda(

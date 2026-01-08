@@ -7,14 +7,14 @@ namespace DotNext.Collections.Specialized;
 /// the values are associated with the types.
 /// </summary>
 /// <typeparam name="TValue">The type of the values in the map.</typeparam>
-public interface IReadOnlyTypeMap<TValue>
+public interface IReadOnlyTypeMap<TValue> : IEnumerable<TValue>
 {
     /// <summary>
     /// Determines whether the map has association between the value and the specified type.
     /// </summary>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
-    bool ContainsKey<TKey>();
+    bool ContainsKey<TKey>() where TKey : allows ref struct;
 
     /// <summary>
     /// Attempts to get the value associated with the specified type.
@@ -22,7 +22,8 @@ public interface IReadOnlyTypeMap<TValue>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <param name="value">The value associated with the type.</param>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
-    bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value);
+    bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value)
+        where TKey : allows ref struct;
 }
 
 /// <summary>

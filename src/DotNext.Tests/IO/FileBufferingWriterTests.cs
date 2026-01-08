@@ -84,10 +84,10 @@ public sealed class FileBufferingWriterTests : Test
         for (byte i = 0; i < byte.MaxValue; i++)
             bytes[i] = i;
 
-        await writer.WriteAsync(bytes, 0, 200);
-        await writer.WriteAsync(bytes.AsMemory(200));
+        await writer.WriteAsync(bytes, 0, 200, TestToken);
+        await writer.WriteAsync(bytes.AsMemory(200), TestToken);
         Equal(bytes.Length, writer.Length);
-        using var manager = await writer.GetWrittenContentAsync();
+        using var manager = await writer.GetWrittenContentAsync(TestToken);
         Equal(bytes, manager.Memory.ToArray());
     }
 
@@ -102,14 +102,14 @@ public sealed class FileBufferingWriterTests : Test
         for (byte i = 0; i < byte.MaxValue; i++)
             bytes[i] = i;
 
-        await writer.WriteAsync(bytes, 0, byte.MaxValue);
-        await writer.WriteAsync(bytes.AsMemory(byte.MaxValue));
+        await writer.WriteAsync(bytes, 0, byte.MaxValue, TestToken);
+        await writer.WriteAsync(bytes.AsMemory(byte.MaxValue), TestToken);
         Equal(bytes.Length, writer.Length);
-        using (var manager = await writer.GetWrittenContentAsync())
+        using (var manager = await writer.GetWrittenContentAsync(TestToken))
             Equal(bytes, manager.Memory.ToArray());
-        await writer.WriteAsync(new byte[] { 3, 4, 5 }.AsMemory());
+        await writer.WriteAsync(new byte[] { 3, 4, 5 }.AsMemory(), TestToken);
         writer.WriteByte(6);
-        using (var manager = await writer.GetWrittenContentAsync(500..))
+        using (var manager = await writer.GetWrittenContentAsync(500.., TestToken))
         {
             Equal(new byte[] { 3, 4, 5, 6 }, manager.Memory.ToArray());
         }
@@ -144,10 +144,10 @@ public sealed class FileBufferingWriterTests : Test
         for (byte i = 0; i < byte.MaxValue; i++)
             bytes[i] = i;
 
-        await writer.WriteAsync(bytes, 0, byte.MaxValue);
-        await writer.WriteAsync(bytes.AsMemory(byte.MaxValue));
+        await writer.WriteAsync(bytes, 0, byte.MaxValue, TestToken);
+        await writer.WriteAsync(bytes.AsMemory(byte.MaxValue), TestToken);
         Equal(bytes.Length, writer.Length);
-        using var manager = await writer.GetWrittenContentAsync(0..255);
+        using var manager = await writer.GetWrittenContentAsync(..255, TestToken);
         Equal(bytes.AsMemory(0, 255).ToArray(), manager.Memory.ToArray());
     }
 
@@ -193,8 +193,8 @@ public sealed class FileBufferingWriterTests : Test
         Throws<NotSupportedException>(() => writer.Read(new byte[10], 0, 10));
         Throws<NotSupportedException>(() => writer.BeginRead(new byte[10], 0, 10, null, null));
         Throws<ArgumentException>(() => writer.EndRead(Task.CompletedTask));
-        await ThrowsAsync<NotSupportedException>(() => writer.ReadAsync(new byte[10], 0, 10));
-        await ThrowsAsync<NotSupportedException>(writer.ReadAsync(new byte[10], CancellationToken.None).AsTask);
+        await ThrowsAsync<NotSupportedException>(() => writer.ReadAsync(new byte[10], 0, 10, TestToken));
+        await ThrowsAsync<NotSupportedException>(writer.ReadAsync(new byte[10], TestToken).AsTask);
     }
 
     [Theory]
@@ -231,7 +231,7 @@ public sealed class FileBufferingWriterTests : Test
         writer.Write(bytes.AsSpan(byte.MaxValue));
         Equal(bytes.Length, writer.Length);
         var ms = new ArrayBufferWriter<byte>();
-        writer.CopyTo(ms);
+        writer.CopyTo(ms, token: TestToken);
         Equal(bytes, ms.WrittenSpan.ToArray());
     }
 
@@ -246,11 +246,11 @@ public sealed class FileBufferingWriterTests : Test
         for (byte i = 0; i < byte.MaxValue; i++)
             bytes[i] = i;
 
-        await writer.WriteAsync(bytes, 0, byte.MaxValue);
-        await writer.WriteAsync(bytes.AsMemory(byte.MaxValue));
+        await writer.WriteAsync(bytes, 0, byte.MaxValue, TestToken);
+        await writer.WriteAsync(bytes.AsMemory(byte.MaxValue), TestToken);
         Equal(bytes.Length, writer.Length);
         using var ms = new MemoryStream(500);
-        await writer.CopyToAsync(ms);
+        await writer.CopyToAsync(ms, TestToken);
         Equal(bytes, ms.ToArray());
     }
 
@@ -265,11 +265,11 @@ public sealed class FileBufferingWriterTests : Test
         for (byte i = 0; i < byte.MaxValue; i++)
             bytes[i] = i;
 
-        await writer.WriteAsync(bytes, 0, byte.MaxValue);
-        await writer.WriteAsync(bytes.AsMemory(byte.MaxValue));
+        await writer.WriteAsync(bytes, 0, byte.MaxValue, TestToken);
+        await writer.WriteAsync(bytes.AsMemory(byte.MaxValue), TestToken);
         Equal(bytes.Length, writer.Length);
         var ms = new ArrayBufferWriter<byte>();
-        await writer.CopyToAsync(ms);
+        await writer.CopyToAsync(ms, token: TestToken);
         Equal(bytes, ms.WrittenSpan.ToArray());
     }
 
@@ -307,8 +307,8 @@ public sealed class FileBufferingWriterTests : Test
         writer.Write(bytes.AsSpan(byte.MaxValue));
         Equal(bytes.Length, writer.Length);
         var buffer = new byte[100];
-        Equal(buffer.Length, await writer.CopyToAsync(buffer));
-        Equal(bytes[0..100], buffer);
+        Equal(buffer.Length, await writer.CopyToAsync(buffer, token: TestToken));
+        Equal(bytes[..100], buffer);
     }
 
     [Fact]
@@ -325,14 +325,14 @@ public sealed class FileBufferingWriterTests : Test
     public static async Task WriteDuringReadAsync()
     {
         using var writer = new FileBufferingWriter();
-        writer.Write(stackalloc byte[] { 1, 2, 3 });
+        writer.Write([1, 2, 3]);
         using var manager = writer.GetWrittenContent();
         Equal(new byte[] { 1, 2, 3 }, manager.Memory.ToArray());
-        Throws<InvalidOperationException>(writer.As<IGrowableBuffer<byte>>().Clear);
+        Throws<InvalidOperationException>(writer.As<IGrowableBuffer<byte>>().Reset);
         Throws<InvalidOperationException>(() => writer.WriteByte(2));
         Throws<InvalidOperationException>(writer.GetWrittenContent);
-        await ThrowsAsync<InvalidOperationException>(() => writer.WriteAsync(new byte[2], 0, 2));
-        await ThrowsAsync<InvalidOperationException>(writer.GetWrittenContentAsync().AsTask);
+        await ThrowsAsync<InvalidOperationException>(() => writer.WriteAsync(new byte[2], 0, 2, TestToken));
+        await ThrowsAsync<InvalidOperationException>(writer.GetWrittenContentAsync(TestToken).AsTask);
     }
 
     [Fact]
@@ -359,7 +359,7 @@ public sealed class FileBufferingWriterTests : Test
         using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
         await DictionarySerializer.SerializeAsync(dict, writer, buffer);
         using var manager = writer.GetWrittenContent();
-        using var source = StreamSource.AsStream(manager.Memory);
+        using var source = StreamSource.Create(manager.Memory);
         Equal(dict, await DictionarySerializer.DeserializeAsync(source, buffer));
     }
 
@@ -428,16 +428,16 @@ public sealed class FileBufferingWriterTests : Test
                 {"Key2", "Value2"}
             };
         using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: true);
-        await JsonSerializer.SerializeAsync(writer, dict);
-        await using (var source = await writer.GetWrittenContentAsStreamAsync())
+        await JsonSerializer.SerializeAsync(writer, dict, cancellationToken: TestToken);
+        await using (var source = await writer.GetWrittenContentAsStreamAsync(TestToken))
         {
-            Equal(dict, await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(source));
+            Equal(dict, await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(source, cancellationToken: TestToken));
         }
 
         // reuse reader stream
-        await using (var source = await writer.GetWrittenContentAsStreamAsync())
+        await using (var source = await writer.GetWrittenContentAsStreamAsync(TestToken))
         {
-            Equal(dict, await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(source));
+            Equal(dict, await JsonSerializer.DeserializeAsync<Dictionary<string, string>>(source, cancellationToken: TestToken));
         }
     }
 
@@ -466,13 +466,10 @@ public sealed class FileBufferingWriterTests : Test
     [Fact]
     public static void NotEnoughMemory()
     {
-        using var writer = new FileBufferingWriter(memoryThreshold: 10, asyncIO: false);
-        var bytes = new byte[500];
-        for (byte i = 0; i < byte.MaxValue; i++)
-            bytes[i] = i;
+        const int threshold = 10;
+        using var writer = new FileBufferingWriter(memoryThreshold: threshold, asyncIO: false);
 
-        IBufferWriter<byte> buffer = writer;
-        Throws<InsufficientMemoryException>(() => buffer.Write(bytes));
+        Throws<InsufficientMemoryException>(() => writer.As<IBufferWriter<byte>>().GetSpan(threshold + 1));
     }
 
     private sealed class CallbackChecker : TaskCompletionSource<bool>
@@ -537,7 +534,7 @@ public sealed class FileBufferingWriterTests : Test
         writer.EndWrite(ar);
 
         Equal(bytes.Length, writer.Length);
-        using var manager = await writer.GetWrittenContentAsync();
+        using var manager = await writer.GetWrittenContentAsync(TestToken);
         Equal(bytes, manager.Memory.ToArray());
     }
 
@@ -570,8 +567,8 @@ public sealed class FileBufferingWriterTests : Test
         for (byte i = 0; i < byte.MaxValue; i++)
             bytes[i] = i;
 
-        await writer.WriteAsync(bytes, 0, 450);
-        await writer.WriteAsync(bytes.AsMemory(450));
+        await writer.WriteAsync(bytes, 0, 450, TestToken);
+        await writer.WriteAsync(bytes.AsMemory(450), TestToken);
         Equal(bytes.Length, writer.Length);
         using var source = writer.GetWrittenContent(10);
         Equal(bytes, source.Sequence.ToArray());

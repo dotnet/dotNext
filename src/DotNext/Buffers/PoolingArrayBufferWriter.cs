@@ -6,8 +6,6 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
 
-using static Runtime.Intrinsics;
-
 /// <summary>
 /// Represents memory writer that is backed by the array obtained from the pool.
 /// </summary>
@@ -119,14 +117,14 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)index, (uint)position, nameof(index));
 
-        if (items.IsEmpty)
+        if (items is [])
             goto exit;
 
-        if (buffer.GetLength() is 0U)
+        if (buffer is [])
         {
             buffer = pool.Rent(items.Length);
         }
-        else if ((uint)position + (uint)items.Length <= buffer.GetLength())
+        else if ((uint)position + (uint)items.Length <= Array.GetLength(buffer))
         {
             CopyFast(buffer, index, buffer, index + items.Length, position - index);
         }
@@ -160,18 +158,18 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)index, (uint)position, nameof(index));
 
-        if (buffer.GetLength() is 0U)
+        if (buffer is [])
         {
             buffer = pool.Rent(items.Length);
         }
-        else if ((uint)index + (uint)items.Length <= buffer.GetLength())
+        else if ((uint)index + (uint)items.Length <= Array.GetLength(buffer))
         {
             if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
                 Array.Clear(buffer, index, position - index);
         }
         else
         {
-            Debug.Assert(buffer.Length > 0);
+            Debug.Assert(buffer is not []);
 
             var newBuffer = pool.Rent(index + items.Length);
             CopyFast(buffer, newBuffer, index);
@@ -252,7 +250,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
-        if (buffer.GetLength() is 0)
+        if (buffer is [])
         {
             // nothing to do
         }
@@ -358,7 +356,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfNegative(count);
 
-        if (buffer.GetLength() is 0)
+        if (buffer is [])
         {
             // nothing to do
         }
@@ -391,7 +389,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfNegative(count);
 
-        if (buffer.GetLength() is 0)
+        if (buffer is [])
         {
             // nothing to do
         }
@@ -403,7 +401,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
         }
         else if (count > 0)
         {
-            Debug.Assert(buffer.Length > 0);
+            Debug.Assert(buffer is not []);
 
             var newSize = position - count;
             var newBuffer = pool.Rent(newSize);
@@ -442,7 +440,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     private protected override void Resize(int newSize)
     {
         var newBuffer = pool.Rent(newSize);
-        if (buffer.GetLength() > 0U)
+        if (buffer is not [])
         {
             CopyFast(buffer, newBuffer, position);
             ReturnBuffer();
@@ -457,7 +455,7 @@ public sealed class PoolingArrayBufferWriter<T>(ArrayPool<T>? pool = null) : Buf
     {
         if (disposing)
         {
-            if (buffer.GetLength() > 0U)
+            if (buffer is not [])
             {
                 ReturnBuffer();
                 buffer = [];

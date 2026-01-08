@@ -9,14 +9,12 @@ using IO;
 // For that purpose we are using growable buffer which relies on the pooled memory
 internal sealed class InMemoryMessage : Disposable, IBufferedMessage
 {
-    private readonly int initialSize;
     private MemoryOwner<byte> buffer;
 
-    internal InMemoryMessage(string name, ContentType type, int initialSize)
+    internal InMemoryMessage(string name, ContentType type)
     {
         Name = name;
         Type = type;
-        this.initialSize = initialSize;
     }
 
     public string Name { get; }
@@ -44,7 +42,7 @@ internal sealed class InMemoryMessage : Disposable, IBufferedMessage
     }
 
     ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
-        => transformation.TransformAsync(IAsyncBinaryReader.Create(Content), token);
+        => transformation.TransformAsync(new SequenceReader(Content), token);
 
     bool IDataTransferObject.TryGetMemory(out ReadOnlyMemory<byte> memory)
     {

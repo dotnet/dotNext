@@ -24,9 +24,5 @@ public readonly struct LoopContext : IDisposable
     internal LabelTarget BreakLabel => Labels.BreakLabel;
 
     /// <inheritdoc/>
-    void IDisposable.Dispose()
-    {
-        if (loop is not null)
-            loop.Target = null;
-    }
+    void IDisposable.Dispose() => loop?.Target = null;
 }

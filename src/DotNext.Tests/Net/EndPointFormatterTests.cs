@@ -53,7 +53,7 @@ public sealed class EndPointFormatterTests : Test
             writer.Dispose();
         }
 
-        var reader = IAsyncBinaryReader.Create(data);
+        var reader = new SequenceReader(data);
         Equal(expected, reader.ReadEndPoint(), comparer);
     }
 
@@ -63,7 +63,7 @@ public sealed class EndPointFormatterTests : Test
     {
         using var buffer = expected.GetBytes();
 
-        var reader = IAsyncBinaryReader.Create(buffer.Memory);
+        var reader = new SequenceReader(buffer.Memory);
         Equal(expected, reader.ReadEndPoint(), comparer);
     }
 }

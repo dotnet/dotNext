@@ -12,9 +12,9 @@ public sealed class AsyncCounterTests : Test
             counter.Increment(2L);
             counter.Increment(0L);
             Equal(2, counter.Value);
-            True(await counter.WaitAsync(TimeSpan.Zero));
-            True(await counter.WaitAsync(TimeSpan.Zero));
-            False(await counter.WaitAsync(TimeSpan.Zero));
+            True(await counter.WaitAsync(TimeSpan.Zero, TestToken));
+            True(await counter.WaitAsync(TimeSpan.Zero, TestToken));
+            False(await counter.WaitAsync(TimeSpan.Zero, TestToken));
             Equal(0, counter.Value);
             False(counter.As<IAsyncEvent>().Reset());
         }
@@ -24,9 +24,9 @@ public sealed class AsyncCounterTests : Test
             True(counter.Signal());
             True(counter.Signal());
             True(counter.IsSet);
-            True(await counter.WaitAsync(TimeSpan.Zero));
-            True(await counter.WaitAsync(TimeSpan.Zero));
-            False(await counter.WaitAsync(TimeSpan.Zero));
+            True(await counter.WaitAsync(TimeSpan.Zero, TestToken));
+            True(await counter.WaitAsync(TimeSpan.Zero, TestToken));
+            False(await counter.WaitAsync(TimeSpan.Zero, TestToken));
             False(counter.IsSet);
         }
     }
@@ -63,8 +63,8 @@ public sealed class AsyncCounterTests : Test
     public static async Task DecrementTwice()
     {
         using var counter = new AsyncCounter(0);
-        var task1 = counter.WaitAsync().AsTask();
-        var task2 = counter.WaitAsync().AsTask();
+        var task1 = counter.WaitAsync(TestToken).AsTask();
+        var task2 = counter.WaitAsync(TestToken).AsTask();
 
         counter.Increment();
         var t = await Task.WhenAny(task1, task2);

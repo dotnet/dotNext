@@ -6,13 +6,11 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Linq.Expressions;
 
-using Intrinsics = Runtime.Intrinsics;
-
 internal sealed class MetaExpression : DynamicMetaObject
 {
     private static readonly MethodInfo AsExpressionBuilderMethod = new Func<object?, ISupplier<Expression>?>(Unsafe.As<ISupplier<Expression>>).Method;
     private static readonly MethodInfo AsExpressionMethod = new Func<object?, Expression?>(Unsafe.As<Expression>).Method;
-    private static readonly MethodInfo BuildMethod = typeof(ISupplier<Expression>).GetMethod(nameof(ISupplier<Expression>.Invoke), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)!;
+    private static readonly MethodInfo BuildMethod = typeof(ISupplier<Expression>).GetMethod(nameof(ISupplier<>.Invoke), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)!;
     private static readonly MethodInfo MakeUnaryMethod = new Func<ExpressionType, Expression, Type, UnaryExpression>(Expression.MakeUnary).Method;
     private static readonly MethodInfo MakeBinaryMethod = new Func<ExpressionType, Expression, Expression, BinaryExpression>(Expression.MakeBinary).Method;
     private static readonly MethodInfo PropertyOrFieldMethod = new Func<Expression, string, MemberExpression>(Expression.PropertyOrField).Method;
@@ -70,18 +68,18 @@ internal sealed class MetaExpression : DynamicMetaObject
             }
         }
 
-        return Expression.Call(typeof(ExpressionBuilder), nameof(ExpressionBuilder.Const), [arg.Expression.Type], arg.Expression);
+        return Expression.Call(typeof(ExpressionBuilder), nameof(ExpressionBuilder.get_Quoted), [arg.Expression.Type], arg.Expression);
     }
 
     private static IReadOnlyList<Expression> ToExpressions(DynamicMetaObject[] args, out BindingRestrictions restrictions)
     {
         restrictions = BindingRestrictions.Empty;
 
-        if (Intrinsics.GetLength(args) is 0U)
+        if (args is [])
             return [];
 
         var result = new Expression[args.LongLength];
-        for (nuint i = 0; i < Intrinsics.GetLength(args); i++)
+        for (nuint i = 0; i < Array.GetLength(args); i++)
         {
             result[i] = ToExpression(args[i], out var r);
             restrictions = restrictions.Merge(r);
@@ -98,14 +96,14 @@ internal sealed class MetaExpression : DynamicMetaObject
     public override DynamicMetaObject BindUnaryOperation(UnaryOperationBinder binder)
     {
         var binding = PrepareExpression();
-        binding = Expression.Call(MakeUnaryMethod, binder.Operation.Const(), binding, default(Type).Const());
+        binding = Expression.Call(MakeUnaryMethod, binder.Operation.Quoted, binding, default(Type).Quoted);
         return new MetaExpression(binding, CreateRestrictions());
     }
 
     public override DynamicMetaObject BindSetMember(SetMemberBinder binder, DynamicMetaObject value)
     {
         var binding = PrepareExpression();
-        binding = Expression.Call(PropertyOrFieldMethod, binding, binder.Name.Const());
+        binding = Expression.Call(PropertyOrFieldMethod, binding, binder.Name.Quoted);
         binding = Expression.Call(AssignMethod, binding, ToExpression(value, out var restrictions));
         return new MetaExpression(binding, CreateRestrictions().Merge(restrictions));
     }
@@ -120,7 +118,7 @@ internal sealed class MetaExpression : DynamicMetaObject
     public override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args)
     {
         var binding = PrepareExpression();
-        binding = Expression.Call(CallMethod, binding, binder.Name.Const(), Expression.NewArrayInit(typeof(Expression), ToExpressions(args, out var restrictions)));
+        binding = Expression.Call(CallMethod, binding, binder.Name.Quoted, Expression.NewArrayInit(typeof(Expression), ToExpressions(args, out var restrictions)));
         return new MetaExpression(binding, CreateRestrictions().Merge(restrictions));
     }
 
@@ -142,14 +140,14 @@ internal sealed class MetaExpression : DynamicMetaObject
     public override DynamicMetaObject BindGetMember(GetMemberBinder binder)
     {
         var binding = PrepareExpression();
-        binding = Expression.Call(PropertyOrFieldMethod, binding, binder.Name.Const());
+        binding = Expression.Call(PropertyOrFieldMethod, binding, binder.Name.Quoted);
         return new MetaExpression(binding, CreateRestrictions());
     }
 
     public override DynamicMetaObject BindBinaryOperation(BinaryOperationBinder binder, DynamicMetaObject arg)
     {
         var left = PrepareExpression();
-        left = Expression.Call(MakeBinaryMethod, binder.Operation.Const(), left, ToExpression(arg, out var restrictions));
+        left = Expression.Call(MakeBinaryMethod, binder.Operation.Quoted, left, ToExpression(arg, out var restrictions));
         return new MetaExpression(left, CreateRestrictions().Merge(restrictions));
     }
 

@@ -2,123 +2,14 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
 namespace DotNext.Linq.Expressions;
-
-using Reflection;
 
 /// <summary>
 /// Provides extension methods to simplify construction of complex expressions.
 /// </summary>
 public static partial class ExpressionBuilder
 {
-    /// <summary>
-    /// Constructs unary plus expression.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>+a</c>.
-    /// </remarks>
-    /// <param name="expression">The operand.</param>
-    /// <returns>Unary expression.</returns>
-    public static UnaryExpression UnaryPlus(this Expression expression)
-        => Expression.UnaryPlus(expression);
-
-    /// <summary>
-    /// Constructs negate expression.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>-a</c>.
-    /// </remarks>
-    /// <param name="expression">The operand.</param>
-    /// <param name="checked"><see langword="true"/> to perform checked arithmetic operation; otherwise, <see langword="false"/>.</param>
-    /// <returns>Unary expression.</returns>
-    public static UnaryExpression Negate(this Expression expression, bool @checked = false)
-        => @checked ? Expression.NegateChecked(expression) : Expression.Negate(expression);
-
-    /// <summary>
-    /// Constructs logical NOT expression.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>!a</c>.
-    /// </remarks>
-    /// <param name="expression">The operand.</param>
-    /// <returns>Unary expression.</returns>
-    public static UnaryExpression Not(this Expression expression)
-        => Expression.Not(expression);
-
-    /// <summary>
-    /// Constructs ones complement.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>~a</c>.
-    /// </remarks>
-    /// <param name="expression">The operand.</param>
-    /// <returns>Unary expression.</returns>
-    public static UnaryExpression OnesComplement(this Expression expression)
-        => Expression.OnesComplement(expression);
-
-    /// <summary>
-    /// Constructs binary logical AND expression.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a &amp; b</c>.
-    /// </remarks>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <returns>Binary expression.</returns>
-    public static BinaryExpression And(this Expression left, Expression right)
-        => Expression.And(left, right);
-
-    /// <summary>
-    /// Constructs binary logical OR expression.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a | b</c>.
-    /// </remarks>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <returns>Binary expression.</returns>
-    public static BinaryExpression Or(this Expression left, Expression right)
-        => Expression.Or(left, right);
-
-    /// <summary>
-    /// Constructs binary logical exclusive OR expression.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a ^ b</c>.
-    /// </remarks>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <returns>Binary expression.</returns>
-    public static BinaryExpression Xor(this Expression left, Expression right)
-        => Expression.ExclusiveOr(left, right);
-
-    /// <summary>
-    /// Constructs arithmetic remainder expression.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a % b</c>.
-    /// </remarks>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <returns>Binary expression.</returns>
-    public static BinaryExpression Modulo(this Expression left, Expression right)
-        => Expression.Modulo(left, right);
-
-    /// <summary>
-    /// Constructs binary arithmetic addition expression.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a + b</c>.
-    /// </remarks>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <param name="checked"><see langword="true"/> to perform checked arithmetic operation; otherwise, <see langword="false"/>.</param>
-    /// <returns>Binary expression.</returns>
-    public static BinaryExpression Add(this Expression left, Expression right, bool @checked = false)
-        => @checked ? Expression.AddChecked(left, right) : Expression.Add(left, right);
-
     private static MethodCallExpression Concat(Expression[] strings) => strings.LongLength switch
     {
         2 => CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1]),
@@ -135,92 +26,6 @@ public static partial class ExpressionBuilder
     /// <returns>An expression presenting concatenation.</returns>
     public static MethodCallExpression Concat(this Expression first, params Expression[] other)
         => Concat([first, .. other]);
-
-    /// <summary>
-    /// Constructs binary arithmetic subtraction expression.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a - b</c>.
-    /// </remarks>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <param name="checked"><see langword="true"/> to perform checked arithmetic operation; otherwise, <see langword="false"/>.</param>
-    /// <returns>Binary expression.</returns>
-    public static BinaryExpression Subtract(this Expression left, Expression right, bool @checked = false)
-        => @checked ? Expression.SubtractChecked(left, right) : Expression.Subtract(left, right);
-
-    /// <summary>
-    /// Constructs binary arithmetic multiplication expression.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a * b</c>.
-    /// </remarks>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <param name="checked"><see langword="true"/> to perform checked arithmetic operation; otherwise, <see langword="false"/>.</param>
-    /// <returns>Binary expression.</returns>
-    public static BinaryExpression Multiply(this Expression left, Expression right, bool @checked = false)
-        => @checked ? Expression.MultiplyChecked(left, right) : Expression.Multiply(left, right);
-
-    /// <summary>
-    /// Constructs binary arithmetic division expression.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a / b</c>.
-    /// </remarks>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <returns>Binary expression.</returns>
-    public static BinaryExpression Divide(this Expression left, Expression right)
-        => Expression.Divide(left, right);
-
-    /// <summary>
-    /// Constructs "greater than" numeric comparison.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a &gt; b</c>.
-    /// </remarks>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <returns>Binary expression.</returns>
-    public static BinaryExpression GreaterThan(this Expression left, Expression right)
-        => Expression.GreaterThan(left, right);
-
-    /// <summary>
-    /// Constructs "less than" numeric comparison.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a &lt; b</c>.
-    /// </remarks>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <returns>Binary expression.</returns>
-    public static BinaryExpression LessThan(this Expression left, Expression right)
-        => Expression.LessThan(left, right);
-
-    /// <summary>
-    /// Constructs "greater than or equal" numeric comparison.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a &gt;= b</c>.
-    /// </remarks>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <returns>Binary expression.</returns>
-    public static BinaryExpression GreaterThanOrEqual(this Expression left, Expression right)
-        => Expression.GreaterThanOrEqual(left, right);
-
-    /// <summary>
-    /// Constructs "less than or equal" numeric comparison.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a &lt;= b</c>.
-    /// </remarks>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <returns>Binary expression.</returns>
-    public static BinaryExpression LessThanOrEqual(this Expression left, Expression right)
-        => Expression.LessThanOrEqual(left, right);
 
     /// <summary>
     /// Constructs equality comparison.
@@ -247,58 +52,6 @@ public static partial class ExpressionBuilder
         => Expression.NotEqual(left, right);
 
     /// <summary>
-    /// Constructs <see langword="null"/> check.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a is null</c>.
-    /// </remarks>
-    /// <param name="operand">The operand.</param>
-    /// <returns><see langword="null"/> check operation.</returns>
-    public static Expression IsNull(this Expression operand)
-    {
-        // handle nullable value type
-        Type? underlyingType = Nullable.GetUnderlyingType(operand.Type);
-        if (underlyingType is not null)
-            return operand.Property(nameof(Nullable<int>.HasValue)).Not();
-
-        // handle optional type
-        underlyingType = Optional.GetUnderlyingType(operand.Type);
-        if (underlyingType is not null)
-            return operand.Property(nameof(Optional<int>.HasValue)).Not();
-
-        // handle reference type or value type
-        return operand.Type is { IsValueType: false, IsPointer: false, IsPrimitive: false }
-            ? Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type))
-            : Const(false);
-    }
-
-    /// <summary>
-    /// Constructs <see langword="null"/> check.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>!(a is null)</c>.
-    /// </remarks>
-    /// <param name="operand">The operand.</param>
-    /// <returns><see langword="null"/> check operation.</returns>
-    public static Expression IsNotNull(this Expression operand)
-    {
-        // handle nullable value type
-        var underlyingType = Nullable.GetUnderlyingType(operand.Type);
-        if (underlyingType is not null)
-            return operand.Property(nameof(Nullable<int>.HasValue));
-
-        // handle optional type
-        underlyingType = Optional.GetUnderlyingType(operand.Type);
-        if (underlyingType is not null)
-            return operand.Property(nameof(Optional<int>.HasValue));
-
-        // handle reference type or value type
-        return operand.Type is { IsValueType: false, IsPointer: false, IsPrimitive: false }
-            ? Expression.ReferenceNotEqual(operand, Expression.Constant(null, operand.Type))
-            : Const(true);
-    }
-
-    /// <summary>
     /// Constructs raising a number to a power expression.
     /// </summary>
     /// <remarks>
@@ -309,31 +62,6 @@ public static partial class ExpressionBuilder
     /// <returns>Binary expression.</returns>
     public static BinaryExpression Power(this Expression left, Expression right)
         => Expression.Power(left, right);
-
-    /// <summary>
-    /// Constructs bitwise left-shift expression.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a &lt;&lt; b</c> in Visual Basic.
-    /// </remarks>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <returns>Binary expression.</returns>
-    public static BinaryExpression LeftShift(this Expression left, Expression right)
-        => Expression.LeftShift(left, right);
-
-    /// <summary>
-    /// Constructs bitwise right-shift expression.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a &gt;&gt; b</c> in Visual Basic.
-    /// </remarks>
-    /// <param name="left">The left operand.</param>
-    /// <param name="right">The right operand.</param>
-    /// <param name="isUnsigned"><see langword="true"/> to perform unsigned right sift; otherwise, <see langword="false"/>.</param>
-    /// <returns>Binary expression.</returns>
-    public static Expression RightShift(this Expression left, Expression right, bool isUnsigned = false)
-        => isUnsigned ? new UnsignedRightShiftExpression(left, right) : Expression.RightShift(left, right);
 
     /// <summary>
     /// Constructs an expression that decrements given expression by 1 and assigns the result back to the expression.
@@ -500,7 +228,7 @@ public static partial class ExpressionBuilder
     /// <param name="left">The assignee.</param>
     /// <returns>Binary expression.</returns>
     public static BinaryExpression AssignDefault(this ParameterExpression left)
-        => left.Assign(left.Type.Default());
+        => left.Assign(left.Type.DefaultExpr);
 
     /// <summary>
     /// Constructs assignment expression.
@@ -511,7 +239,7 @@ public static partial class ExpressionBuilder
     /// <param name="left">The assignee.</param>
     /// <returns>Binary expression.</returns>
     public static BinaryExpression AssignDefault(this MemberExpression left)
-        => left.Assign(left.Type.Default());
+        => left.Assign(left.Type.DefaultExpr);
 
     /// <summary>
     /// Constructs assignment expression.
@@ -522,7 +250,7 @@ public static partial class ExpressionBuilder
     /// <param name="left">The assignee.</param>
     /// <returns>Binary expression.</returns>
     public static BinaryExpression AssignDefault(this IndexExpression left)
-        => left.Assign(left.Type.Default());
+        => left.Assign(left.Type.DefaultExpr);
 
     /// <summary>
     /// Constructs assignment expression.
@@ -788,10 +516,10 @@ public static partial class ExpressionBuilder
     /// <param name="instance"><c>this</c> argument.</param>
     /// <param name="property">Property metadata.</param>
     /// <param name="index0">The first index.</param>
-    /// <param name="indicies">The rest of the indexer arguments.</param>
+    /// <param name="indices">The rest of the indexer arguments.</param>
     /// <returns>Property access expression.</returns>
-    public static IndexExpression Property(this Expression instance, PropertyInfo property, Expression index0, params Expression[] indicies)
-        => Expression.Property(instance, property, indicies.Prepend(index0));
+    public static IndexExpression Property(this Expression instance, PropertyInfo property, Expression index0, params Expression[] indices)
+        => Expression.Property(instance, property, indices.Prepend(index0));
 
     /// <summary>
     /// Constructs instance property access expression declared in the given interface or base type.
@@ -820,12 +548,12 @@ public static partial class ExpressionBuilder
     /// <param name="interfaceType">The interface or base class declaring property.</param>
     /// <param name="propertyName">The name of the instance property or indexer.</param>
     /// <param name="index0">The first index.</param>
-    /// <param name="indicies">The rest of the indexer arguments.</param>
+    /// <param name="indices">The rest of the indexer arguments.</param>
     /// <returns>Property access expression.</returns>
-    public static IndexExpression Property(this Expression instance, Type interfaceType, string propertyName, Expression index0, params Expression[] indicies)
+    public static IndexExpression Property(this Expression instance, Type interfaceType, string propertyName, Expression index0, params Expression[] indices)
     {
         return interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance) is { } property
-            ? Property(instance, property, index0, indicies)
+            ? Property(instance, property, index0, indices)
             : throw new MissingMemberException(interfaceType.FullName, propertyName);
     }
 
@@ -850,10 +578,10 @@ public static partial class ExpressionBuilder
     /// <param name="instance"><c>this</c> argument.</param>
     /// <param name="propertyName">The name of the instance indexer.</param>
     /// <param name="index0">The first index.</param>
-    /// <param name="indicies">The rest of the indexer arguments.</param>
+    /// <param name="indices">The rest of the indexer arguments.</param>
     /// <returns>Property access expression.</returns>
-    public static IndexExpression Property(this Expression instance, string propertyName, Expression index0, params Expression[] indicies)
-        => Expression.Property(instance, propertyName, [index0, .. indicies]);
+    public static IndexExpression Property(this Expression instance, string propertyName, Expression index0, params Expression[] indices)
+        => Expression.Property(instance, propertyName, [index0, .. indices]);
 
     /// <summary>
     /// Constructs instance field access expression.
@@ -886,10 +614,10 @@ public static partial class ExpressionBuilder
     /// The equivalent code is <c>a.b[i]</c>.
     /// </remarks>
     /// <param name="array">The array expression.</param>
-    /// <param name="indexes">Array element indicies.</param>
+    /// <param name="indices">Array element indices.</param>
     /// <returns>Array element access expression.</returns>
-    public static IndexExpression ElementAt(this Expression array, params Expression[] indexes)
-        => Expression.ArrayAccess(array, indexes);
+    public static IndexExpression ElementAt(this Expression array, params Expression[] indices)
+        => Expression.ArrayAccess(array, indices);
 
     /// <summary>
     /// Constructs collection or array element access expression.
@@ -898,7 +626,7 @@ public static partial class ExpressionBuilder
     /// <param name="index">The index of the collection or array element.</param>
     /// <returns>The collection access expression.</returns>
     /// <exception cref="ArgumentException"><paramref name="collection"/> doesn't provide implicit support of Index expression.</exception>
-    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">Ranges and Indicies</seealso>
+    /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">Ranges and Indices</seealso>
     public static CollectionAccessExpression ElementAt(this Expression collection, ItemIndexExpression index)
         => new(collection, index);
 
@@ -920,34 +648,6 @@ public static partial class ExpressionBuilder
     /// <returns>The slice of collection or array.</returns>
     public static SliceExpression Slice(this Expression collection, Expression range)
         => new(collection, range);
-
-    /// <summary>
-    /// Constructs array length expression.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>a.LongLength</c>.
-    /// </remarks>
-    /// <param name="array">The array expression.</param>
-    /// <returns>Array length expression.</returns>
-    public static UnaryExpression ArrayLength(this Expression array)
-        => Expression.ArrayLength(array);
-
-    /// <summary>
-    /// Constructs expression representing count of items in the collection or string.
-    /// </summary>
-    /// <remarks>
-    /// The input expression must be of type <see cref="string"/>, <see cref="StringBuilder"/>, array or any type
-    /// implementing <see cref="ICollection{T}"/> or <see cref="IReadOnlyCollection{T}"/>.
-    /// </remarks>
-    /// <param name="collection">The expression representing collection.</param>
-    /// <returns>The expression providing access to the appropriate property indicating the number of items in the collection.</returns>
-    public static MemberExpression Count(this Expression collection)
-    {
-        if (collection.Type == typeof(string) || collection.Type == typeof(StringBuilder))
-            return Expression.Property(collection, nameof(string.Length));
-        var interfaceType = collection.Type.GetImplementedCollection() ?? throw new ArgumentException(ExceptionMessages.CollectionImplementationExpected);
-        return Expression.Property(collection, interfaceType, nameof(Count));
-    }
 
     /// <summary>
     /// Constructs expression that calls <see cref="object.ToString"/>.
@@ -1114,40 +814,17 @@ public static partial class ExpressionBuilder
     public static UnaryExpression Throw(this Expression exception, Type? type = null) => Expression.Throw(exception, type ?? typeof(void));
 
     /// <summary>
-    /// Converts arbitrary value into constant expression.
+    /// Extends arbitrary type.
     /// </summary>
-    /// <typeparam name="T">The type of constant.</typeparam>
-    /// <param name="value">The constant value.</param>
-    /// <returns>The expression representing constant.</returns>
-    public static ConstantExpression Const<T>(this T value) => Expression.Constant(value, typeof(T));
-
-    /// <summary>
-    /// Constructs type default value supplier.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>default(T)</c>.
-    /// </remarks>
-    /// <param name="type">The target type.</param>
-    /// <returns>The type default value expression.</returns>
-    public static DefaultExpression Default(this Type type) => Expression.Default(type);
-
-    /// <summary>
-    /// Constructs type instantiation expression.
-    /// </summary>
-    /// <remarks>
-    /// The equivalent code is <c>new T()</c>.
-    /// </remarks>
-    /// <param name="type">The type to be instantiated.</param>
-    /// <param name="args">The list of arguments to be passed into constructor.</param>
-    /// <returns>Instantiation expression.</returns>
-    public static NewExpression New(this Type type, params Expression[] args)
+    /// <param name="value">The value to extend.</param>
+    /// <typeparam name="T">The type of the value.</typeparam>
+    extension<T>(T value)
     {
-        if (args.LongLength is 0L)
-            return Expression.New(type);
-
-        return type.GetConstructor(Array.ConvertAll(args, static arg => arg.Type)) is { } ctor
-            ? Expression.New(ctor, args)
-            : throw new MissingMethodException(type.FullName, ConstructorInfo.ConstructorName);
+        /// <summary>
+        /// Converts arbitrary value into constant expression.
+        /// </summary>
+        /// <value>The expression representing constant.</value>
+        public ConstantExpression Quoted => Expression.Constant(value, typeof(T));
     }
 
     /// <summary>
@@ -1299,8 +976,6 @@ public static partial class ExpressionBuilder
     public static MutationExpression With(this Expression obj, MemberBindings bindings)
         => MutationExpression.Create(obj, bindings);
 
-    internal static MethodCallExpression Breakpoint() => CallStatic(typeof(Debugger), nameof(Debugger.Break));
-
     internal static MethodCallExpression Assert(this Expression test, string? message)
     {
         ArgumentNullException.ThrowIfNull(test);
@@ -1308,7 +983,7 @@ public static partial class ExpressionBuilder
             throw new ArgumentException(ExceptionMessages.TypeExpected<bool>(), nameof(test));
 
         return message is { Length: > 0 }
-            ? CallStatic(typeof(Debug), nameof(Debug.Assert), test, Const(message))
+            ? CallStatic(typeof(Debug), nameof(Debug.Assert), test, message.Quoted)
             : CallStatic(typeof(Debug), nameof(Debug.Assert), test);
     }
 
@@ -1356,15 +1031,7 @@ public static partial class ExpressionBuilder
     /// <param name="fromEnd">A boolean indicating if the index is from the start (<see langword="false"/>) or from the end (<see langword="true"/>) of a collection.</param>
     /// <returns>Index expression.</returns>
     public static ItemIndexExpression Index(this int value, bool fromEnd)
-        => Index(Const(value), fromEnd);
-
-    /// <summary>
-    /// Converts index to equivalent expression.
-    /// </summary>
-    /// <param name="index">The index value.</param>
-    /// <returns>Index expression.</returns>
-    public static ItemIndexExpression Quote(this in Index index)
-        => Index(index.Value, index.IsFromEnd);
+        => Index(value.Quoted, fromEnd);
 
     /// <summary>
     /// Constructs range.
@@ -1382,15 +1049,7 @@ public static partial class ExpressionBuilder
     /// <param name="end">The exclusive end index of the range.</param>
     /// <returns>The range expression.</returns>
     public static RangeExpression To(this ItemIndexExpression start, Index end)
-        => start.To(end.Quote());
-
-    /// <summary>
-    /// Converts range to equivalent expression.
-    /// </summary>
-    /// <param name="range">The range to convert.</param>
-    /// <returns>The expression representing given range.</returns>
-    public static RangeExpression Quote(this in Range range)
-        => range.Start.Quote().To(range.End.Quote());
+        => start.To(end.Quoted);
 
     /// <summary>
     /// Constructs null-coalescing assignment expression.
@@ -1430,26 +1089,6 @@ public static partial class ExpressionBuilder
     /// <exception cref="ArgumentException"><paramref name="right"/> is not assignable to <paramref name="left"/>.</exception>
     public static NullCoalescingAssignmentExpression NullCoalescingAssignment(this IndexExpression left, Expression right)
         => new(left, right);
-
-    /// <summary>
-    /// Converts value type to the expression of <see cref="Nullable{T}"/> type.
-    /// </summary>
-    /// <remarks>
-    /// If <paramref name="expression"/> is of pointer of reference type then
-    /// method returns unmodified expression.
-    /// </remarks>
-    /// <param name="expression">The expression to be converted.</param>
-    /// <returns>The nullable expression.</returns>
-    public static Expression AsNullable(this Expression expression)
-        => Nullable.GetUnderlyingType(expression.Type) is null && expression.Type is { IsPointer: false, IsValueType: true } ? Expression.Convert(expression, typeof(Nullable<>).MakeGenericType(expression.Type)) : expression;
-
-    /// <summary>
-    /// Creates the expression of <see cref="Optional{T}"/> type.
-    /// </summary>
-    /// <param name="expression">The expression to be converted.</param>
-    /// <returns>The expression of <see cref="Optional{T}"/> type.</returns>
-    public static Expression AsOptional(this Expression expression)
-        => Expression.Convert(expression, typeof(Optional<>).MakeGenericType(expression.Type));
 
     /// <summary>
     /// Converts compound expression to its safe equivalent

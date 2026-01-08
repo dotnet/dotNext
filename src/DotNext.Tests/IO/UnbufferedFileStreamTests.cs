@@ -53,13 +53,13 @@ public sealed class UnbufferedFileStreamTests : Test
         Equal(3L, stream.Length);
         Equal(0L, stream.Position);
 
-        await stream.WriteAsync(expected);
+        await stream.WriteAsync(expected, TestToken);
         Equal(3L, stream.Position);
         await stream.FlushAsync(CancellationToken.None);
 
         stream.Seek(0L, SeekOrigin.Begin);
         var actual = new byte[expected.Length];
-        Equal(3, await stream.ReadAsync(actual));
+        Equal(3, await stream.ReadAsync(actual, TestToken));
         Equal(3L, stream.Position);
 
         Equal(expected, actual);

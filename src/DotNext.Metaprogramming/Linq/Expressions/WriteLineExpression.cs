@@ -32,7 +32,7 @@ public sealed class WriteLineExpression : CustomExpression
     }
 
     /// <summary>
-    /// Always returns <see cref="void"/>.
+    /// Always returns <see cref="Void"/>.
     /// </summary>
     public override Type Type => typeof(void);
 
@@ -67,7 +67,7 @@ public sealed class WriteLineExpression : CustomExpression
         System.Diagnostics.Debug.Assert(writeLineMethod is not null);
         var firstParam = writeLineMethod.GetParameters()[0].ParameterType;
         if (firstParam != value.Type && value.Type.IsValueType)
-            value = Expression.Convert(value, typeof(object));
+            value = Convert(value, typeof(object));
 
         return Call(stream, writeLineMethod, value);
     }

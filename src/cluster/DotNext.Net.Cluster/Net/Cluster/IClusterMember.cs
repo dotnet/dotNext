@@ -1,9 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace DotNext.Net.Cluster;
+﻿namespace DotNext.Net.Cluster;
 
 using Collections.Specialized;
-using Threading;
 
 /// <summary>
 /// Represents cluster member.
@@ -63,10 +60,11 @@ public interface IClusterMember : IPeer
     /// <param name="status">The member status holder.</param>
     /// <param name="newState">A new state of the member.</param>
     /// <param name="memberStatusChanged">A collection of event handlers.</param>
-    protected static void OnMemberStatusChanged<TMember>(TMember member, ref ClusterMemberStatus status, ClusterMemberStatus newState, InvocationList<Action<ClusterMemberStatusChangedEventArgs<TMember>>> memberStatusChanged)
+    protected static void OnMemberStatusChanged<TMember>(TMember member, ref ClusterMemberStatus status, ClusterMemberStatus newState,
+        InvocationList<Action<ClusterMemberStatusChangedEventArgs<TMember>>> memberStatusChanged)
         where TMember : class, IClusterMember
     {
-        var previousState = (ClusterMemberStatus)Interlocked.Exchange(ref Unsafe.As<ClusterMemberStatus, int>(ref status), (int)newState);
+        var previousState = Interlocked.Exchange(ref status, newState);
         if (previousState != newState && !memberStatusChanged.IsEmpty)
             memberStatusChanged.Invoke(new ClusterMemberStatusChangedEventArgs<TMember>(member, previousState, newState));
     }

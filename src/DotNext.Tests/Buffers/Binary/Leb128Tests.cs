@@ -1,8 +1,7 @@
 using System.Numerics;
+using DotNext.IO;
 
 namespace DotNext.Buffers.Binary;
-
-using static IO.StreamSource;
 
 public sealed class Leb128Tests : Test
 {
@@ -49,7 +48,7 @@ public sealed class Leb128Tests : Test
     public static void CompatibilityWithBinaryReader(int expected)
     {
         var buffer = new byte[Leb128<int>.MaxSizeInBytes];
-        using var reader = new BinaryReader(new ReadOnlyMemory<byte>(buffer).AsStream());
+        using var reader = new BinaryReader(Stream.Create(new ReadOnlyMemory<byte>(buffer)));
         True(Leb128<uint>.TryGetBytes((uint)expected, buffer, out _));
         Equal(expected, reader.Read7BitEncodedInt());
     }

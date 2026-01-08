@@ -6,11 +6,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DotNext.Collections.Concurrent;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.StateMachine;
 
 using Buffers;
+using Collections.Concurrent;
 using Collections.Generic;
 
 partial class WriteAheadLog
@@ -66,7 +66,7 @@ partial class WriteAheadLog
         public abstract MemoryManager<byte> GetOrAddPage(uint pageIndex);
 
         public MemoryManager<byte> this[uint pageIndex]
-            => TryGetPage(pageIndex) ?? throw new ArgumentOutOfRangeException(nameof(pageIndex));
+            => TryGetPage(pageIndex) ?? throw new MissingPageException(pageIndex);
 
         public abstract MemoryManager<byte>? TryGetPage(uint pageIndex);
 
@@ -78,14 +78,13 @@ partial class WriteAheadLog
         public readonly struct MemoryRange(PageManager manager, ulong offset, long length) : IEnumerable<ReadOnlyMemory<byte>>
         {
             public Enumerator GetEnumerator() => new(manager, offset, length);
-
-            private IEnumerator<ReadOnlyMemory<byte>> ToClassicEnumerator()
-                => GetEnumerator().ToClassicEnumerator<Enumerator, ReadOnlyMemory<byte>>();
-
+            
+            /// <inheritdoc />
             IEnumerator<ReadOnlyMemory<byte>> IEnumerable<ReadOnlyMemory<byte>>.GetEnumerator()
-                => ToClassicEnumerator();
+                => IEnumerator<ReadOnlyMemory<byte>>.Create(GetEnumerator());
 
-            IEnumerator IEnumerable.GetEnumerator() => ToClassicEnumerator();
+            /// <inheritdoc />
+            IEnumerator IEnumerable.GetEnumerator() => IEnumerator<ReadOnlyMemory<byte>>.Create(GetEnumerator());
 
             public bool TryGetMemory(out ReadOnlyMemory<byte> memory)
             {
@@ -104,7 +103,7 @@ partial class WriteAheadLog
 
                 static ReadOnlySequence<byte> ReadMultiSegment(ref Enumerator enumerator)
                 {
-                    var buffer = new ReadOnlyMemoryArray();
+                    var buffer = new InlineArray3<ReadOnlyMemory<byte>>();
                     var writer = new BufferWriterSlim<ReadOnlyMemory<byte>>(buffer);
                     writer.Add() = enumerator.Current;
 
@@ -113,7 +112,7 @@ partial class WriteAheadLog
                         writer.Add() = enumerator.Current;
                     }
 
-                    return Memory.ToReadOnlySequence(writer.WrittenSpan);
+                    return ReadOnlyMemory<byte>.Concat(writer.WrittenSpan);
                 }
             }
 
@@ -154,12 +153,6 @@ partial class WriteAheadLog
 
                     return false;
                 }
-            }
-
-            [InlineArray(3)]
-            private struct ReadOnlyMemoryArray
-            {
-                private ReadOnlyMemory<byte> element0;
             }
         }
     }

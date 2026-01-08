@@ -7,6 +7,7 @@ namespace DotNext.Extensions.Logging;
 
 using Buffers;
 using Diagnostics;
+using Text;
 
 [ExcludeFromCodeCoverage]
 internal sealed class AdvancedDebugProvider : Disposable, ILoggerProvider

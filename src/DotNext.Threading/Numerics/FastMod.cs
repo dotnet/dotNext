@@ -13,9 +13,7 @@ namespace DotNext.Numerics;
 [CLSCompliant(false)]
 public readonly struct FastMod(uint divisor)
 {
-    private readonly ulong multiplier = Is64BitProcess ? ulong.MaxValue / divisor + 1UL : 0UL;
-
-    private static bool Is64BitProcess => IntPtr.Size is sizeof(ulong);
+    private readonly ulong multiplier = Environment.Is64BitProcess ? ulong.MaxValue / divisor + 1UL : 0UL;
 
     /// <summary>
     /// Gets remainder.
@@ -23,7 +21,7 @@ public readonly struct FastMod(uint divisor)
     /// <param name="dividend">The value.</param>
     /// <returns>The remainder.</returns>
     public uint GetRemainder(uint dividend)
-        => Is64BitProcess ? GetRemainderFast(dividend) : dividend % divisor;
+        => Environment.Is64BitProcess ? GetRemainderFast(dividend) : dividend % divisor;
 
     // Daniel Lemire's fastmod algorithm: https://lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/
     private uint GetRemainderFast(uint value)

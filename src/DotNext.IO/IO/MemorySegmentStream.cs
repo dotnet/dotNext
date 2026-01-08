@@ -49,8 +49,8 @@ public sealed class MemorySegmentStream(Memory<byte> data) : ModernStream
     public override int Read(Span<byte> buffer)
     {
         AssertState();
-        
-        RemainingSpan.CopyTo(buffer, out var count);
+
+        var count = RemainingSpan >> buffer;
         position += count;
         return count;
     }

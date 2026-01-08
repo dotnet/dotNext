@@ -6,6 +6,9 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Buffers;
 
+using Runtime;
+using Runtime.CompilerServices;
+
 /// <summary>
 /// Represents builder of the sparse memory buffer.
 /// </summary>
@@ -20,7 +23,7 @@ namespace DotNext.Buffers;
 public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISupplier<ReadOnlySequence<T>>
 {
     private readonly int chunkSize;
-    private readonly MemoryAllocator<T>? allocator;
+    private readonly MemoryAllocator<T> allocator;
     private readonly unsafe delegate*<int, ref int, int> growth;
     private int chunkIndex; // used for linear and exponential allocation strategies only
     private MemoryChunk? first;
@@ -41,7 +44,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(chunkSize);
 
         this.chunkSize = chunkSize;
-        this.allocator = allocator;
+        this.allocator = allocator.DefaultIfNull;
 
         unsafe
         {
@@ -195,6 +198,9 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public void Add(T item) => Write(new(ref item));
 
+    /// <inheritdoc cref="Add(T)"/>
+    public void operator += (T item) => Add(item);
+
     /// <inheritdoc />
     void IGrowableBuffer<T>.Write(T value) => Add(value);
 
@@ -217,7 +223,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public void CopyTo<TConsumer>(TConsumer consumer)
-        where TConsumer : IReadOnlySpanConsumer<T>
+        where TConsumer : IReadOnlySpanConsumer<T>, allows ref struct
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         for (var current = first; current is not null; current = current.Next)
@@ -258,8 +264,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
         var total = 0;
         for (MemoryChunk? current = first; current is not null && !output.IsEmpty; current = current.Next)
         {
-            var buffer = current.WrittenMemory.Span;
-            buffer.CopyTo(output, out var writtenCount);
+            var writtenCount = current.WrittenMemory.Span >> output;
             output = output.Slice(writtenCount);
             total += writtenCount;
         }
@@ -279,8 +284,37 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     }
 
     /// <inheritdoc />
+    void IResettable.Reset() => Clear();
+
+    /// <inheritdoc />
     ReadOnlySequence<T> ISupplier<ReadOnlySequence<T>>.Invoke()
-        => TryGetWrittenContent(out var segment) ? new ReadOnlySequence<T>(segment) : Memory.ToReadOnlySequence(this);
+        => WrittenSequence;
+    
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private ReadOnlySequence<T> WrittenSequence
+        => TryGetWrittenContent(out var segment) ? new ReadOnlySequence<T>(segment) : Memory.Concat(this);
+    
+    /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
+    {
+        switch (count)
+        {
+            case 0:
+                result.Mutable<ReadOnlySequence<T>>() = WrittenSequence;
+                break;
+            case 1:
+                Write(args.Immutable<ReadOnlySpan<T>>());
+                break;
+            case 2:
+                result.Mutable<ValueTask>() = this.As<ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>>().Invoke(
+                    IFunctional.GetArgument<ReadOnlyMemory<T>>(in args, 0),
+                    IFunctional.GetArgument<CancellationToken>(in args, 1)
+                );
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(count));
+        }
+    }
 
     private void ReleaseChunks()
     {

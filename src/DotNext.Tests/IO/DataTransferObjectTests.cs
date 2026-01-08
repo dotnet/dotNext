@@ -5,6 +5,8 @@ using DotNext.Runtime.Serialization;
 
 namespace DotNext.IO;
 
+using Buffers;
+
 public sealed class DataTransferObjectTests : Test
 {
     private sealed class CustomDTO(ReadOnlyMemory<byte> content, bool withLength) : BinaryTransferObject(content), IDataTransferObject
@@ -17,9 +19,9 @@ public sealed class DataTransferObjectTests : Test
     {
         const string testString = "abcdef";
         using var ms = new MemoryStream(Encoding.Unicode.GetBytes(testString));
-        using var dto = new StreamTransferObject(ms, false);
+        await using var dto = new StreamTransferObject(ms, false);
         Equal(ms.Length, dto.As<IDataTransferObject>().Length);
-        Equal(testString, await dto.ToStringAsync(Encoding.Unicode));
+        Equal(testString, await dto.ToStringAsync(Encoding.Unicode, token: TestToken));
     }
 
     [Fact]
@@ -30,10 +32,10 @@ public sealed class DataTransferObjectTests : Test
         Equal(3L, dto.Length);
         True(dto.IsReusable);
         using var ms = new MemoryStream();
-        await dto.WriteToAsync(ms);
+        await dto.WriteToAsync(ms, token: TestToken);
         Equal(3, ms.Length);
         Equal(content, ms.ToArray());
-        Equal(content, await dto.ToByteArrayAsync());
+        Equal(content, await dto.ToByteArrayAsync(token: TestToken));
     }
 
     [Fact]
@@ -44,7 +46,7 @@ public sealed class DataTransferObjectTests : Test
         Equal(3L, dto.Length);
         True(dto.IsReusable);
         var writer = new ArrayBufferWriter<byte>();
-        await dto.WriteToAsync(writer);
+        await dto.WriteToAsync(writer, TestToken);
         Equal(3, writer.WrittenCount);
         Equal(content, writer.WrittenSpan.ToArray());
     }
@@ -58,10 +60,10 @@ public sealed class DataTransferObjectTests : Test
         Equal(sizeof(long), dto.As<IDataTransferObject>().Length);
         True(dto.As<IDataTransferObject>().IsReusable);
         var writer = new ArrayBufferWriter<byte>();
-        await dto.WriteToAsync(writer);
+        await dto.WriteToAsync(writer, TestToken);
         Equal(sizeof(long), writer.WrittenCount);
         Equal(expected, BitConverter.ToInt64(writer.WrittenSpan));
-        var memory = await dto.ToByteArrayAsync();
+        var memory = await dto.ToByteArrayAsync(token: TestToken);
         Equal(expected, BitConverter.ToInt64(memory, 0));
     }
 
@@ -71,7 +73,7 @@ public sealed class DataTransferObjectTests : Test
         var expected = 42L;
         using var dto = new MemoryTransferObject(sizeof(long));
         Span.AsReadOnlyBytes(in expected).CopyTo(dto.Content.Span);
-        using var memory = await dto.ToMemoryAsync();
+        using var memory = await dto.ToMemoryAsync(token: TestToken);
         Equal(expected, BitConverter.ToInt64(memory.Span));
     }
 
@@ -82,14 +84,14 @@ public sealed class DataTransferObjectTests : Test
         var bytes = new byte[sizeof(decimal)];
         Span.AsReadOnlyBytes(in expected).CopyTo(bytes);
         var dto = new BinaryTransferObject(bytes);
-        Equal(expected, (await ISerializable<BlittableTransferObject<decimal>>.TransformAsync(dto)).Content);
+        Equal(expected, (await ISerializable<BlittableTransferObject<decimal>>.TransformAsync(dto, TestToken)).Content);
     }
 
     [Fact]
     public static async Task DecodeUsingDelegate()
     {
         var dto = new BlittableTransferObject<long> { Content = 42L };
-        Equal(42L, (await dto.TransformAsync((reader, token) => reader.ReadAsync<Blittable<long>>(token))).Value);
+        Equal(42L, (await dto.TransformAsync((reader, token) => reader.ReadAsync<Blittable<long>>(token), TestToken)).Value);
     }
 
     [Theory]
@@ -103,7 +105,7 @@ public sealed class DataTransferObjectTests : Test
         IDataTransferObject dto = new CustomDTO(data, withLength);
         True(dto.IsReusable);
         True(withLength == dto.Length.HasValue);
-        Equal(data, await dto.ToByteArrayAsync());
+        Equal(data, await dto.ToByteArrayAsync(token: TestToken));
     }
 
     [Fact]
@@ -115,7 +117,7 @@ public sealed class DataTransferObjectTests : Test
         True(empty.TryGetMemory(out var memory));
         True(memory.IsEmpty);
 
-        Empty(await empty.ToByteArrayAsync());
+        Empty(await empty.ToByteArrayAsync(token: TestToken));
 
         var writer = new ArrayBufferWriter<byte>();
         True(empty.WriteToAsync(IAsyncBinaryWriter.Create(writer), CancellationToken.None).IsCompletedSuccessfully);

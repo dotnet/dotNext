@@ -10,7 +10,7 @@ using Text.Json;
 /// </summary>
 /// <typeparam name="T">JSON-serializable type.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct JsonLogEntry<T>() : IInputLogEntry
+public readonly struct JsonLogEntry<T> : IInputLogEntry
     where T : IJsonSerializable<T>
 {
     /// <summary>
@@ -22,11 +22,6 @@ public readonly struct JsonLogEntry<T>() : IInputLogEntry
     /// Gets Term value associated with this log entry.
     /// </summary>
     public required long Term { get; init; }
-
-    /// <summary>
-    /// Gets the timestamp of this log entry.
-    /// </summary>
-    public DateTimeOffset Timestamp { get; } = DateTimeOffset.UtcNow;
 
     /// <inheritdoc />
     long? IDataTransferObject.Length => null;

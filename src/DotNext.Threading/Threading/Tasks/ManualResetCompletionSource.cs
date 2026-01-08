@@ -95,9 +95,9 @@ public abstract partial class ManualResetCompletionSource
     /// <returns>The version of the uncompleted task.</returns>
     public short Reset()
     {
-        Monitor.Enter(SyncRoot);
+        SyncRoot.Enter();
         var stateCopy = ResetCore(out var token);
-        Monitor.Exit(SyncRoot);
+        SyncRoot.Exit();
 
         stateCopy.Dispose();
         CleanUp();
@@ -114,10 +114,10 @@ public abstract partial class ManualResetCompletionSource
     {
         bool result;
 
-        if (result = Monitor.TryEnter(SyncRoot))
+        if (result = SyncRoot.TryEnter())
         {
             var stateCopy = ResetCore(out token);
-            Monitor.Exit(SyncRoot);
+            SyncRoot.Exit();
 
             stateCopy.Dispose();
             CleanUp();
@@ -185,11 +185,11 @@ public abstract partial class ManualResetCompletionSource
 
         // code block doesn't have any calls leading to exceptions
         // so replace try-finally with manually cloned code
-        Monitor.Enter(SyncRoot);
+        SyncRoot.Enter();
         if (token != versionAndStatus.Version)
         {
             errorMessage = ExceptionMessages.InvalidSourceToken;
-            Monitor.Exit(SyncRoot);
+            SyncRoot.Exit();
             goto invalid_state;
         }
 
@@ -197,14 +197,14 @@ public abstract partial class ManualResetCompletionSource
         {
             default:
                 errorMessage = ExceptionMessages.InvalidSourceState;
-                Monitor.Exit(SyncRoot);
+                SyncRoot.Exit();
                 goto invalid_state;
             case ManualResetCompletionSourceStatus.WaitForConsumption:
-                Monitor.Exit(SyncRoot);
+                SyncRoot.Exit();
                 break;
             case ManualResetCompletionSourceStatus.Activated:
                 this.continuation = continuation;
-                Monitor.Exit(SyncRoot);
+                SyncRoot.Exit();
                 goto exit;
         }
 

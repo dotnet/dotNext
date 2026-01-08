@@ -7,7 +7,7 @@ public sealed class SetTests : Test
     [Fact]
     public static void SingletonSet()
     {
-        var set = Set.Singleton(10);
+        var set = IReadOnlySet<int>.Singleton(10);
 
         // contains
         True(set.Contains(10));
@@ -32,14 +32,14 @@ public sealed class SetTests : Test
     [Fact]
     public static void EmptySet()
     {
-        var set = Set.Range<long, DisclosedEndpoint<long>, DisclosedEndpoint<long>>(0L, 1L);
+        var set = IReadOnlySet<long>.Range(0L.Disclosed, 1L.Disclosed);
         Empty(set);
     }
 
     [Fact]
     public static void SingletonSet2()
     {
-        var set = Set.Range<long, EnclosedEndpoint<long>, DisclosedEndpoint<long>>(0L, 1L);
+        var set = IReadOnlySet<long>.Range(0L.Enclosed, 1L.Disclosed);
         NotEmpty(set);
         Single(set, 0L);
     }
@@ -47,7 +47,7 @@ public sealed class SetTests : Test
     [Fact]
     public static void SetEquals()
     {
-        var expected = Set.Range<long, EnclosedEndpoint<long>, DisclosedEndpoint<long>>(0L, 3L);
+        var expected = IReadOnlySet<long>.Range(0L.Enclosed, 3L.Disclosed);
         True(expected.Contains(0L));
         True(expected.Contains(1L));
         True(expected.Contains(2L));
@@ -61,7 +61,7 @@ public sealed class SetTests : Test
     [Fact]
     public static void SetOperations()
     {
-        var set = Set.Range<long, EnclosedEndpoint<long>, DisclosedEndpoint<long>>(0L, 3L);
+        var set = IReadOnlySet<long>.Range(0L.Enclosed, 3L.Disclosed);
 
         True(set.IsSupersetOf(ImmutableHashSet<long>.Empty));
         True(set.IsProperSupersetOf(ImmutableHashSet<long>.Empty));

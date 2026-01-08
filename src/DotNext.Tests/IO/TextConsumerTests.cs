@@ -30,8 +30,8 @@ public sealed class TextConsumerTests : Test
     {
         using var ms = new StringWriter();
         IReadOnlySpanConsumer<char> consumer = new TextConsumer(ms);
-        consumer.Invoke(stackalloc char[] { '1', '2' });
-        consumer.Invoke(new char[] { '3', '4' }, default);
+        consumer.Invoke(['1', '2']);
+        consumer.Invoke(new[] { '3', '4' }, TestToken);
         Equal("1234", ms.ToString());
     }
 }

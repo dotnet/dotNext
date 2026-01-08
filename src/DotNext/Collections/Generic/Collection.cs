@@ -1,6 +1,6 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks.Sources;
 
 namespace DotNext.Collections.Generic;
 
@@ -10,82 +10,92 @@ namespace DotNext.Collections.Generic;
 public static partial class Collection
 {
     /// <summary>
-    /// Returns lazily converted read-only collection.
+    /// Extends <see cref="ICollection{T}"/>.
     /// </summary>
-    /// <typeparam name="TInput">Type of items in the source collection.</typeparam>
-    /// <typeparam name="TOutput">Type of items in the target collection.</typeparam>
-    /// <param name="collection">Read-only collection to convert.</param>
-    /// <param name="converter">A collection item conversion function.</param>
-    /// <returns>Lazily converted read-only collection.</returns>
-    public static ReadOnlyCollectionView<TInput, TOutput> Convert<TInput, TOutput>(this IReadOnlyCollection<TInput> collection, Converter<TInput, TOutput> converter)
-        => new(collection, converter);
-
-    /// <summary>
-    /// Converts collection into single-dimensional array.
-    /// </summary>
-    /// <typeparam name="T">Type of collection items.</typeparam>
-    /// <param name="collection">A collection to convert.</param>
-    /// <returns>Array of collection items.</returns>
-    public static T[] ToArray<T>(ICollection<T> collection)
-    {
-        T[] result;
-        var count = collection.Count;
-        if (count is 0)
-        {
-            result = [];
-        }
-        else
-        {
-            result = GC.AllocateUninitializedArray<T>(count);
-            collection.CopyTo(result, 0);
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Converts read-only collection into single-dimensional array.
-    /// </summary>
-    /// <typeparam name="T">Type of collection items.</typeparam>
-    /// <param name="collection">A collection to convert.</param>
-    /// <returns>Array of collection items.</returns>
-    public static T[] ToArray<T>(IReadOnlyCollection<T> collection)
-    {
-        var count = collection.Count;
-        if (count is 0)
-            return [];
-
-        var result = GC.AllocateUninitializedArray<T>(count);
-        nuint index = 0;
-
-        foreach (var item in collection)
-            result[index++] = item;
-
-        return result;
-    }
-
-    /// <summary>
-    /// Adds multiple items into collection.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the collection.</typeparam>
     /// <param name="collection">A collection to modify.</param>
-    /// <param name="items">An items to add into collection.</param>
-    public static void AddAll<T>(this ICollection<T> collection, IEnumerable<T> items)
+    /// <typeparam name="T">Type of collection items.</typeparam>
+    extension<T>(ICollection<T> collection)
     {
-        switch (collection)
+        /// <summary>
+        /// Converts collection into single-dimensional array.
+        /// </summary>
+        /// <param name="col">A collection to convert.</param>
+        /// <returns>Array of collection items.</returns>
+        public static T[] ToArray(ICollection<T> col)
         {
-            case null:
-                throw new ArgumentNullException(nameof(collection));
-            case List<T> list:
-                list.AddRange(items);
-                break;
-            case HashSet<T> set:
-                set.UnionWith(items);
-                break;
-            default:
-                items.ForEach(collection.Add);
-                break;
+            T[] result;
+            var count = col.Count;
+            if (count is 0)
+            {
+                result = [];
+            }
+            else
+            {
+                result = GC.AllocateUninitializedArray<T>(count);
+                col.CopyTo(result, 0);
+            }
+
+            return result;
         }
+        
+        /// <summary>
+        /// Adds multiple items into collection.
+        /// </summary>
+        /// <param name="items">An items to add into collection.</param>
+        public void AddAll(IEnumerable<T> items)
+        {
+            switch (collection)
+            {
+                case null:
+                    throw new ArgumentNullException(nameof(collection));
+                case List<T> list:
+                    list.AddRange(items);
+                    break;
+                case HashSet<T> set:
+                    set.UnionWith(items);
+                    break;
+                default:
+                    items.ForEach(collection.Add);
+                    break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Extends <see cref="IReadOnlyCollection{T}"/> type.
+    /// </summary>
+    /// <typeparam name="T">Type of collection items.</typeparam>
+    /// <param name="collection">A collection to convert.</param>
+    extension<T>(IReadOnlyCollection<T> collection)
+    {
+        /// <summary>
+        /// Converts read-only collection into single-dimensional array.
+        /// </summary>
+        /// <param name="col">A collection to convert.</param>
+        /// <returns>Array of collection items.</returns>
+        public static T[] ToArray(IReadOnlyCollection<T> col)
+        {
+            var count = col.Count;
+            if (count is 0)
+                return [];
+
+            var result = GC.AllocateUninitializedArray<T>(count);
+            nuint index = 0;
+
+            foreach (var item in col)
+                result[index++] = item;
+
+            return result;
+        }
+        
+        /// <summary>
+        /// Returns lazily converted read-only collection.
+        /// </summary>
+        /// <typeparam name="TOutput">Type of items in the target collection.</typeparam>
+        /// <param name="converter">A collection item conversion function.</param>
+        /// <returns>Lazily converted read-only collection.</returns>
+        public ReadOnlyCollectionView<T, TOutput> Convert<TOutput>(Func<T, TOutput> converter)
+            => new(collection, converter);
     }
 
     /// <summary>
@@ -98,8 +108,8 @@ public static partial class Collection
     public static int SequenceHashCode<T>(this IEnumerable<T> sequence, bool salted = true)
     {
         const int hashSalt = -1521134295;
-        var hashCode = sequence.Aggregate(-910176598, static (hash, obj) => (hash * hashSalt) + (obj is null ? 0 : EqualityComparer<T>.Default.GetHashCode(obj)));
-        return salted ? (hashCode * hashSalt) + RandomExtensions.BitwiseHashSalt : hashCode;
+        var hashCode = sequence.Aggregate(-910176598, static (hash, obj) => hash * hashSalt + (obj is null ? 0 : EqualityComparer<T>.Default.GetHashCode(obj)));
+        return salted ? hashCode * hashSalt + RandomExtensions.BitwiseHashSalt : hashCode;
     }
 
     internal static bool SequenceEqual<T>(IEnumerable<T>? first, IEnumerable<T>? second)
@@ -116,7 +126,7 @@ public static partial class Collection
         switch (collection)
         {
             case List<T> list:
-                Span.ForEach(CollectionsMarshal.AsSpan(list), action);
+                list.ForEach(action);
                 break;
             case T[] array:
                 Array.ForEach(array, action);
@@ -227,90 +237,6 @@ public static partial class Collection
     }
 
     /// <summary>
-    /// Obtains element at the specified index in the sequence.
-    /// </summary>
-    /// <remarks>
-    /// This method is optimized for types <see cref="IList{T}"/>
-    /// and <see cref="IReadOnlyList{T}"/>.
-    /// </remarks>
-    /// <typeparam name="T">Type of elements in the sequence.</typeparam>
-    /// <param name="collection">Source collection.</param>
-    /// <param name="index">Index of the element to read.</param>
-    /// <param name="element">Obtained element.</param>
-    /// <returns><see langword="true"/>, if element is available in the collection and obtained successfully; otherwise, <see langword="false"/>.</returns>
-    public static bool ElementAt<T>(this IEnumerable<T> collection, int index, [MaybeNullWhen(false)] out T element)
-    {
-        return collection switch
-        {
-            null => throw new ArgumentNullException(nameof(collection)),
-            List<T> list => Span.ElementAt(CollectionsMarshal.AsSpan(list), index, out element),
-            T[] array => Span.ElementAt(array, index, out element),
-            LinkedList<T> list => NodeValueAt(list, index, out element),
-            IList<T> list => ListElementAt(list, index, out element),
-            IReadOnlyList<T> readOnlyList => ReadOnlyListElementAt(readOnlyList, index, out element),
-            _ => ElementAtSlow(collection, index, out element),
-        };
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        static bool NodeValueAt(LinkedList<T> list, int matchIndex, [MaybeNullWhen(false)] out T element)
-        {
-            // slow but no memory allocation
-            var index = 0;
-            for (var node = list.First; node is not null; node = node.Next)
-            {
-                if (index++ == matchIndex)
-                {
-                    element = node.Value;
-                    return true;
-                }
-            }
-
-            element = default;
-            return false;
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        static bool ElementAtSlow(IEnumerable<T> collection, int index, [MaybeNullWhen(false)] out T element)
-        {
-            using var enumerator = collection.GetEnumerator();
-            
-            // enumerator.Skip(index + 1) may overflow, replace it with two calls
-            if (enumerator.Skip(index) && enumerator.MoveNext())
-            {
-                element = enumerator.Current;
-                return true;
-            }
-
-            element = default;
-            return false;
-        }
-
-        static bool ListElementAt(IList<T> list, int index, [MaybeNullWhen(false)] out T element)
-        {
-            if ((uint)index < (uint)list.Count)
-            {
-                element = list[index];
-                return true;
-            }
-
-            element = default;
-            return false;
-        }
-
-        static bool ReadOnlyListElementAt(IReadOnlyList<T> list, int index, [MaybeNullWhen(false)] out T element)
-        {
-            if ((uint)index < (uint)list.Count)
-            {
-                element = list[index];
-                return true;
-            }
-
-            element = default;
-            return false;
-        }
-    }
-
-    /// <summary>
     /// Skip <see langword="null"/> values in the collection.
     /// </summary>
     /// <typeparam name="T">Type of elements in the collection.</typeparam>
@@ -359,31 +285,91 @@ public static partial class Collection
     /// <typeparam name="T">The type of the elements in the collection.</typeparam>
     /// <returns>The asynchronous wrapper over the synchronous collection of elements.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="enumerable"/> is <see langword="null"/>.</exception>
-    public static IAsyncEnumerable<T> ToAsyncEnumerable<T>(this IEnumerable<T> enumerable, bool yieldIteration = false)
+    public static IAsyncEnumerable<T> ToAsyncEnumerable<T>(this IEnumerable<T> enumerable, bool yieldIteration)
     {
         ArgumentNullException.ThrowIfNull(enumerable);
 
         return yieldIteration
-            ? new AsyncEnumerable.Proxy<T, AsyncEnumerable.YieldingEnumerator<T>>(enumerable)
-            : new AsyncEnumerable.Proxy<T, AsyncEnumerable.Enumerator<T>>(enumerable);
+            ? new YieldingEnumerable<T>(enumerable)
+            : enumerable.ToAsyncEnumerable();
     }
+}
 
-    /// <summary>
-    /// Converts ad-hoc enumerator to a generic enumerator.
-    /// </summary>
-    /// <param name="enumerator">Ad-hoc enumerator.</param>
-    /// <returns>The enumerator over values of type <typeparamref name="T"/>.</returns>
-    public static IEnumerator<T> ToClassicEnumerator<TEnumerator, T>(this TEnumerator enumerator)
-        where TEnumerator : struct, IEnumerator<TEnumerator, T>
-        => TEnumerator.ToEnumerator(enumerator);
-    
-    /// <summary>
-    /// Converts ad-hoc enumerator to a generic enumerator.
-    /// </summary>
-    /// <param name="enumerator">Ad-hoc enumerator.</param>
-    /// <param name="token">The token that can be used to cancel the enumeration.</param>
-    /// <returns>The enumerator over values of type <typeparamref name="T"/>.</returns>
-    public static IAsyncEnumerator<T> ToAsyncEnumerator<TEnumerator, T>(this TEnumerator enumerator, CancellationToken token)
-        where TEnumerator : struct, IEnumerator<TEnumerator, T>
-        => TEnumerator.ToEnumerator(enumerator, token);
+file sealed class YieldingEnumerable<T>(IEnumerable<T> enumerable) : IAsyncEnumerable<T>
+{
+    IAsyncEnumerator<T> IAsyncEnumerable<T>.GetAsyncEnumerator(CancellationToken token)
+        => new YieldingEnumerator(enumerable, token);
+
+    private sealed class YieldingEnumerator(IEnumerable<T> enumerable, CancellationToken token) :
+        IAsyncEnumerator<T>,
+        IThreadPoolWorkItem,
+        IValueTaskSource<bool>
+    {
+        private readonly IEnumerator<T> enumerator = enumerable.GetEnumerator();
+        private ManualResetValueTaskSourceCore<bool> source = new() { RunContinuationsAsynchronously = false };
+
+        T IAsyncEnumerator<T>.Current => enumerator.Current;
+
+        ValueTask<bool> IAsyncEnumerator<T>.MoveNextAsync()
+        {
+            var version = source.Version;
+            ThreadPool.UnsafeQueueUserWorkItem(this, preferLocal: false);
+            return new(this, version);
+        }
+
+        void IThreadPoolWorkItem.Execute()
+        {
+            if (token.IsCancellationRequested)
+            {
+                source.SetException(new OperationCanceledException(token));
+            }
+            else
+            {
+                bool result;
+                try
+                {
+                    result = enumerator.MoveNext();
+                }
+                catch (Exception e)
+                {
+                    source.SetException(e);
+                    return;
+                }
+
+                source.SetResult(result);
+            }
+        }
+
+        bool IValueTaskSource<bool>.GetResult(short version)
+        {
+            try
+            {
+                return source.GetResult(version);
+            }
+            finally
+            {
+                source.Reset();
+            }
+        }
+
+        ValueTaskSourceStatus IValueTaskSource<bool>.GetStatus(short version) => source.GetStatus(version);
+
+        void IValueTaskSource<bool>.OnCompleted(Action<object?> continuation, object? state, short version, ValueTaskSourceOnCompletedFlags flags)
+            => source.OnCompleted(continuation, state, version, flags);
+
+        ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            var task = ValueTask.CompletedTask;
+            try
+            {
+                enumerator.Dispose();
+            }
+            catch (Exception e)
+            {
+                task = ValueTask.FromException(e);
+            }
+
+            return task;
+        }
+    }
 }

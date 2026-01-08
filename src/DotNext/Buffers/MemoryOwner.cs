@@ -1,10 +1,12 @@
 using System.Buffers;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers;
+
+using Runtime;
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Represents unified representation of the memory rented using various
@@ -31,7 +33,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
         this.length = length;
     }
 
-    internal MemoryOwner(ArrayPool<T> pool, int length, [ConstantExpected] bool exactSize)
+    internal MemoryOwner(ArrayPool<T> pool, int length, bool exactSize)
     {
         Debug.Assert(pool is not null);
 
@@ -250,7 +252,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
         {
             AssertValid();
 
-            return MemoryMarshal.CreateSpan(ref First, length);
+            return MemoryMarshal.CreateSpan(ref DataRef, length);
         }
     }
 
@@ -269,8 +271,26 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     /// <inheritdoc/>
     readonly ReadOnlyMemory<T> ISupplier<ReadOnlyMemory<T>>.Invoke() => Memory;
 
+    /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
+    readonly void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
+    {
+        ArgumentOutOfRangeException.ThrowIfNotEqual(count, 0);
+
+        if (result.TargetType == typeof(Memory<T>))
+        {
+            result.Mutable<Memory<T>>() = Memory;
+        }
+        else
+        {
+            result.Mutable<ReadOnlyMemory<T>>() = Memory;
+        }
+    }
+
+    /// <summary>
+    /// Gets managed pointer to the first element in the rented memory block.
+    /// </summary>
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    internal readonly ref T First
+    public readonly ref T DataRef
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => ref array is not null
@@ -293,7 +313,7 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
             AssertValid();
             ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual((uint)index, (uint)length, nameof(index));
 
-            return ref Unsafe.Add(ref First, index);
+            return ref Unsafe.Add(ref DataRef, index);
         }
     }
 

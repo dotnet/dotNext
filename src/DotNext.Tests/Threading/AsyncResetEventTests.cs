@@ -1,3 +1,5 @@
+using static System.Threading.Timeout;
+
 namespace DotNext.Threading;
 
 using Diagnostics;
@@ -13,8 +15,8 @@ public sealed class AsyncResetEventTests : Test
         False(resetEvent.IsSet);
         var t = Task.Run(async () =>
         {
-            True(await resetEvent.WaitAsync(DefaultTimeout));
-        });
+            True(await resetEvent.WaitAsync(InfiniteTimeSpan, TestToken));
+        }, TestToken);
 
         True(resetEvent.Signal());
         await t;
@@ -23,8 +25,8 @@ public sealed class AsyncResetEventTests : Test
 
         t = Task.Run(async () =>
         {
-            True(await resetEvent.WaitAsync(DefaultTimeout));
-        });
+            True(await resetEvent.WaitAsync(InfiniteTimeSpan, TestToken));
+        }, TestToken);
 
         True(resetEvent.Signal());
         await t;
@@ -35,14 +37,14 @@ public sealed class AsyncResetEventTests : Test
     public static async Task SetResetForManualEvent()
     {
         using IAsyncResetEvent mre = new AsyncManualResetEvent(false);
-        False(await mre.WaitAsync(TimeSpan.Zero));
+        False(await mre.WaitAsync(TimeSpan.Zero, TestToken));
         True(mre.Signal());
-        True(await mre.WaitAsync(TimeSpan.Zero));
-        True(await mre.WaitAsync(TimeSpan.Zero));
+        True(await mre.WaitAsync(TimeSpan.Zero, TestToken));
+        True(await mre.WaitAsync(TimeSpan.Zero, TestToken));
         False(mre.Signal());
-        True(await mre.WaitAsync(TimeSpan.Zero));
+        True(await mre.WaitAsync(TimeSpan.Zero, TestToken));
         True(mre.Reset());
-        False(await mre.WaitAsync(TimeSpan.Zero));
+        False(await mre.WaitAsync(TimeSpan.Zero, TestToken));
     }
 
     [Fact]
@@ -50,13 +52,13 @@ public sealed class AsyncResetEventTests : Test
     {
         using var resetEvent = new AsyncManualResetEvent(false) { ConcurrencyLevel = 3 };
         False(resetEvent.IsSet);
-        var t = resetEvent.WaitAsync(DefaultTimeout);
+        var t = resetEvent.WaitAsync(TestToken);
 
         True(resetEvent.Set(true));
         await t;
 
         False(resetEvent.IsSet);
-        False(await resetEvent.WaitAsync(TimeSpan.Zero));
+        False(await resetEvent.WaitAsync(TimeSpan.Zero, TestToken));
     }
 
     [Fact]
@@ -74,13 +76,13 @@ public sealed class AsyncResetEventTests : Test
     {
         using IAsyncResetEvent are = new AsyncAutoResetEvent(false);
         Equal(EventResetMode.AutoReset, are.ResetMode);
-        False(await are.WaitAsync(TimeSpan.Zero));
+        False(await are.WaitAsync(TimeSpan.Zero, TestToken));
         True(are.Signal());
-        True(await are.WaitAsync(TimeSpan.Zero));
-        False(await are.WaitAsync(TimeSpan.Zero));
+        True(await are.WaitAsync(TimeSpan.Zero, TestToken));
+        False(await are.WaitAsync(TimeSpan.Zero, TestToken));
         True(are.Signal());
         True(are.Reset());
-        False(await are.WaitAsync(TimeSpan.FromMilliseconds(100)));
+        False(await are.WaitAsync(TimeSpan.FromMilliseconds(100), TestToken));
     }
 
     [Fact]
@@ -93,13 +95,13 @@ public sealed class AsyncResetEventTests : Test
         {
             while (start.Elapsed < TimeSpan.FromSeconds(1))
                 ev.Set();
-        });
+        }, TestToken);
 
         var consumer = Task.Run(async () =>
         {
             while (!producer.IsCompleted)
-                await ev.WaitAsync(TimeSpan.FromMilliseconds(1));
-        });
+                await ev.WaitAsync(TimeSpan.FromMilliseconds(1), TestToken);
+        }, TestToken);
 
         await producer;
         ev.Set();

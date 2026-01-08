@@ -1,12 +1,10 @@
 using System.Numerics;
-using System.Runtime.InteropServices;
 using System.Text;
-using DotNext.IO;
-using DotNext.Text;
 
 namespace DotNext.Buffers;
 
 using Binary;
+using IO;
 
 public sealed class SpanReaderTests : Test
 {
@@ -30,12 +28,15 @@ public sealed class SpanReaderTests : Test
         segment[3] = 50;
         Equal(5, writer.WrittenCount);
         Equal(0, writer.FreeCapacity);
-        Equal(new int[] { 10, 20, 30, 40, 50 }, writer.WrittenSpan.ToArray());
+        Equal(new [] { 10, 20, 30, 40, 50 }, writer.WrittenSpan.ToArray());
 
         var exceptionThrown = false;
         try
         {
-            writer.Add(42);
+            checked
+            {
+                writer += 42;
+            }
         }
         catch (InternalBufferOverflowException)
         {
@@ -107,7 +108,7 @@ public sealed class SpanReaderTests : Test
         var exceptionThrown = false;
         try
         {
-            reader.Current.ToString();
+            NotEmpty(reader.Current.ToString());
         }
         catch (InvalidOperationException)
         {
@@ -145,7 +146,7 @@ public sealed class SpanReaderTests : Test
         var exceptionThrown = false;
         try
         {
-            writer.Current.ToString();
+            NotEmpty(writer.Current.ToString());
         }
         catch (InvalidOperationException)
         {
@@ -154,6 +155,22 @@ public sealed class SpanReaderTests : Test
 
         True(exceptionThrown);
         False(writer.TryWrite(new byte[1]));
+
+        exceptionThrown = false;
+        try
+        {
+            checked
+            {
+                writer += new byte[1];
+            }
+        }
+        catch (InternalBufferOverflowException)
+        {
+            exceptionThrown = true;
+        }
+        
+        True(exceptionThrown);
+        
         False(writer.TryWrite(1));
         False(writer.TrySlide(2, out _));
         False(writer.TryAdd(1));
@@ -403,7 +420,7 @@ public sealed class SpanReaderTests : Test
     [InlineData(124)]
     public static void WriteStringBuilder(int stringLength)
     {
-        var str = Random.Shared.NextString(Alphabet, stringLength);
+        var str = Random.Shared.GetString(Alphabet, stringLength);
 
         var builder = new StringBuilder();
         for (var i = 0; i < 3; i++)
@@ -430,7 +447,7 @@ public sealed class SpanReaderTests : Test
         var writer = new SpanWriter<byte>(buffer);
         True(writer.Encode(expected, Encoding.UTF8, format) > 0);
 
-        var reader = IAsyncBinaryReader.Create(buffer.AsMemory(0, writer.WrittenCount));
+        var reader = new SequenceReader(buffer.AsMemory(0, writer.WrittenCount));
 
         using var actual = reader.Decode(Encoding.UTF8, lengthFormat: format);
         Equal(expected, actual.Span);
@@ -448,7 +465,7 @@ public sealed class SpanReaderTests : Test
         var writer = new SpanWriter<byte>(buffer);
         True(writer.Write(expected, format) > 0);
         
-        var reader = IAsyncBinaryReader.Create(buffer.AsMemory(0, writer.WrittenCount));
+        var reader = new SequenceReader(buffer.AsMemory(0, writer.WrittenCount));
         Equal(expected, reader.ReadBlock(format).FirstSpan);
     }
     

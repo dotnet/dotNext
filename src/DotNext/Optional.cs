@@ -8,8 +8,8 @@ using System.Text.Json.Serialization;
 
 namespace DotNext;
 
+using Runtime;
 using Runtime.CompilerServices;
-using Intrinsics = Runtime.Intrinsics;
 
 /// <summary>
 /// Various extension and factory methods for constructing optional value.
@@ -27,13 +27,22 @@ public static class Optional
         => (await task.ConfigureAwait(false)).OrNull();
 
     /// <summary>
-    /// Returns the value if present; otherwise return default value.
+    /// Extends <see cref="Task{T}"/>.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
-    /// <param name="task">The task returning optional value.</param>
-    /// <param name="defaultValue">The value to be returned if there is no value present.</param>
-    /// <returns>The value, if present, otherwise default.</returns>
-    public static async Task<T?> Or<T>(this Task<Optional<T>> task, T? defaultValue)
+    extension<T>(Task<Optional<T>>)
+    {
+        /// <summary>
+        /// Returns the value if present; otherwise return default value.
+        /// </summary>
+        /// <param name="task">The task returning optional value.</param>
+        /// <param name="defaultValue">The value to be returned if there is no value present.</param>
+        /// <returns>The value, if present, otherwise default.</returns>
+        public static Task<T?> operator |(Task<Optional<T>> task, T? defaultValue)
+            => Or(task, defaultValue);
+    }
+
+    private static async Task<T?> Or<T>(Task<Optional<T>> task, T? defaultValue)
         => (await task.ConfigureAwait(false)).Or(defaultValue);
 
     /// <summary>
@@ -74,7 +83,7 @@ public static class Optional
         var optional = await task.ConfigureAwait(false);
         return optional.HasValue
             ? await converter.Invoke(optional.ValueOrDefault, token).ConfigureAwait(false)
-            : optional.IsNull && Intrinsics.IsNullable<TOutput>()
+            : optional.IsNull && AdvancedHelpers.IsNullable<TOutput>()
                 ? new(default)
                 : Optional<TOutput>.None;
     }
@@ -133,18 +142,24 @@ public static class Optional
         => (await task.ConfigureAwait(false)).If(condition);
 
     /// <summary>
-    /// Indicates that specified type is optional type.
+    /// Extends <see cref="Type"/> type.
     /// </summary>
     /// <param name="optionalType">The type to check.</param>
-    /// <returns><see langword="true"/>, if specified type is optional type; otherwise, <see langword="false"/>.</returns>
-    public static bool IsOptional(this Type optionalType) => optionalType.IsConstructedGenericType && optionalType.GetGenericTypeDefinition() == typeof(Optional<>);
+    extension(Type optionalType)
+    {
+        /// <summary>
+        /// Indicates that specified type is optional type.
+        /// </summary>
+        /// <returns><see langword="true"/>, if specified type is optional type; otherwise, <see langword="false"/>.</returns>
+        public bool IsOptional => optionalType.IsConstructedGenericType && optionalType.GetGenericTypeDefinition() == typeof(Optional<>);
+    }
 
     /// <summary>
     /// Returns the underlying type argument of the specified optional type.
     /// </summary>
     /// <param name="optionalType">Optional type.</param>
     /// <returns>Underlying type argument of the optional type; otherwise, <see langword="null"/>.</returns>
-    public static Type? GetUnderlyingType(Type optionalType) => IsOptional(optionalType) ? optionalType.GetGenericArguments()[0] : null;
+    public static Type? GetUnderlyingType(Type optionalType) => optionalType.IsOptional ? optionalType.GetGenericArguments()[0] : null;
 
     /// <summary>
     /// Constructs optional value from nullable value type.
@@ -465,7 +480,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     public T? ValueOrDefault => value;
 
     /// <summary>
-    /// If a value is present, returns the value, otherwise throw exception.
+    /// If a value is present, returns the value, otherwise throws an exception.
     /// </summary>
     /// <exception cref="InvalidOperationException">No value is present.</exception>
     [DisallowNull]
@@ -560,7 +575,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<TResult> Convert<TResult, TConverter>(TConverter converter)
         where TConverter : struct, ISupplier<T, TResult>
-        => HasValue ? converter.Invoke(value) : IsNull && Intrinsics.IsNullable<TResult>() ? new(default) : Optional<TResult>.None;
+        => HasValue ? converter.Invoke(value) : IsNull && RuntimeHelpers.IsNullable<TResult>() ? new(default) : Optional<TResult>.None;
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
@@ -609,8 +624,14 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     public unsafe Optional<TResult> Convert<TResult>(delegate*<T, Optional<TResult>> mapper)
         => ConvertOptional<TResult, Supplier<T, Optional<TResult>>>(mapper);
 
-    /// <inheritdoc cref="IFunctional{TDelegate}.ToDelegate()"/>
-    Func<object?> IFunctional<Func<object?>>.ToDelegate() => Func.Constant<object?>(kind is NotEmptyValue ? value : null);
+    /// <inheritdoc/>
+    void IFunctional.DynamicInvoke(ref readonly Variant args, int count, scoped Variant result)
+    {
+        // Do not modify the result if value is undefined
+        ref var res = ref ISupplier<object?>.PrepareInvocation(count, result);
+        if (kind is not UndefinedValue)
+            res = value;
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<T> If<TPredicate>(TPredicate condition)

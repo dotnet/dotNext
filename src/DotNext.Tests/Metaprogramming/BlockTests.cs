@@ -82,17 +82,22 @@ public sealed class BlockTests : Test
     [Fact]
     public static void LockTest()
     {
-        var lambda = Lambda<Action<StringBuilder>>(static fun =>
+        LockTest<object>(new());
+        LockTest<Lock>(new());
+
+        static void LockTest<T>(T obj)
+            where T : class
         {
-            Lock(fun[0], () =>
-            {
-                Call(fun[0], nameof(StringBuilder.Append), 'a'.Const());
-            });
-        })
-        .Compile();
-        var builder = new StringBuilder();
-        lambda(builder);
-        Equal("a", builder.ToString());
+            var lambda = Lambda<Action<T, StringBuilder>>(static fun =>
+                {
+                    Lock(fun[0], () => { Call(fun[1], nameof(StringBuilder.Append), 'a'.Quoted); });
+                })
+                .Compile();
+
+            var builder = new StringBuilder();
+            lambda(obj, builder);
+            Equal("a", builder.ToString());
+        }
     }
 
     [Theory]
@@ -104,7 +109,7 @@ public sealed class BlockTests : Test
         {
             AwaitUsing(fun[0], () =>
             {
-                Assign(result, 42L.Const());
+                Assign(result, 42L.Quoted);
             }, configureAwait);
         })
        .Compile();

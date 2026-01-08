@@ -1,5 +1,9 @@
-﻿namespace DotNext;
+﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 
+namespace DotNext;
+
+using Runtime;
 using Runtime.CompilerServices;
 
 public sealed class ResultTests : Test
@@ -291,19 +295,26 @@ public sealed class ResultTests : Test
     }
 
     [Fact]
-    public static void ResultToDelegate()
+    public static void DynamicInvokeResult()
     {
-        IFunctional<Func<object>> functional = Result.FromException<int>(new Exception());
-        Null(functional.ToDelegate().Invoke());
+        IFunctional functional = Result.FromException<int>(new Exception());
+        object result = Missing.Value;
+        functional.DynamicInvoke(ref Unsafe.NullRef<Variant>(), 0, Variant.Mutable(ref result));
+        Same(Missing.Value, result);
 
         functional = new Result<int>(42);
-        Equal(42, functional.ToDelegate().Invoke());
+        functional.DynamicInvoke(ref Unsafe.NullRef<Variant>(), 0, Variant.Mutable(ref result));
+        Equal(42, result);
 
         functional = new Result<int, EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine);
-        Null(functional.ToDelegate().Invoke());
+        result = Missing.Value;
+        functional.DynamicInvoke(ref Unsafe.NullRef<Variant>(), 0, Variant.Mutable(ref result));
+        Same(Missing.Value, result);
 
         functional = new Result<int, EnvironmentVariableTarget>();
-        NotNull(functional.ToDelegate().Invoke());
+        result = null;
+        functional.DynamicInvoke(ref Unsafe.NullRef<Variant>(), 0, Variant.Mutable(ref result));
+        NotNull(result);
     }
 
     private static TResult FromError<TError, TResult>(TError error)

@@ -43,19 +43,16 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
         private volatile nint handle;
 
         private protected StateTransitionWorkItem(RaftState<TMember> state)
-            => handle = (nint)GCHandle.Alloc(state, GCHandleType.Weak);
+            => handle = WeakGCHandle<RaftState<TMember>>.ToIntPtr(new(state));
 
         private RaftState<TMember>? Target
         {
             get
             {
-                var handle = this.handle;
+                var weakHandle = WeakGCHandle<RaftState<TMember>>.FromIntPtr(handle);
+                if (!weakHandle.IsAllocated || !weakHandle.TryGetTarget(out var target))
+                    target = null;
 
-                var target = handle is not ZeroHandle
-                    ? GCHandle.FromIntPtr(handle).Target as RaftState<TMember>
-                    : null;
-
-                GC.KeepAlive(this); // to prevent finalization of the work item
                 return target;
             }
         }
@@ -64,10 +61,9 @@ internal abstract class RaftState<TMember> : Disposable, IAsyncDisposable
 
         private void ClearCore()
         {
-            var handle = Interlocked.Exchange(ref this.handle, ZeroHandle);
-
-            if (handle is not ZeroHandle)
-                GCHandle.FromIntPtr(handle).Free();
+            if (WeakGCHandle<RaftState<TMember>>
+                    .FromIntPtr(Interlocked.Exchange(ref handle, ZeroHandle)) is { IsAllocated: true } weakHandle)
+                weakHandle.Dispose();
         }
 
         public void Clear()

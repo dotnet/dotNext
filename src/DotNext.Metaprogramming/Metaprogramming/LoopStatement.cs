@@ -4,10 +4,6 @@ namespace DotNext.Metaprogramming;
 
 internal sealed class LoopStatement : LoopLexicalScope, ILexicalScope<LoopExpression, Action>, ILexicalScope<LoopExpression, Action<LoopContext>>
 {
-    internal LoopStatement()
-    {
-    }
-
     LoopExpression ILexicalScope<LoopExpression, Action>.Build(Action scope)
     {
         scope();

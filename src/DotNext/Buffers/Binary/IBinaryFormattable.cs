@@ -9,7 +9,7 @@ namespace DotNext.Buffers.Binary;
 /// </summary>
 /// <typeparam name="TSelf">The implementing type.</typeparam>
 public interface IBinaryFormattable<out TSelf>
-    where TSelf : IBinaryFormattable<TSelf>
+    where TSelf : IBinaryFormattable<TSelf>, allows ref struct
 {
     /// <summary>
     /// Gets size of the object, in bytes.
@@ -20,14 +20,14 @@ public interface IBinaryFormattable<out TSelf>
     /// Formats object as a sequence of bytes.
     /// </summary>
     /// <param name="destination">The output buffer.</param>
-    void Format(Span<byte> destination);
+    void Format(scoped Span<byte> destination);
 
     /// <summary>
     /// Restores the object from its binary representation.
     /// </summary>
     /// <param name="source">The input buffer.</param>
     /// <returns>The restored object.</returns>
-    public static abstract TSelf Parse(ReadOnlySpan<byte> source);
+    public static abstract TSelf Parse(scoped ReadOnlySpan<byte> source);
 
     /// <summary>
     /// Attempts to restore the object from its binary representation.
@@ -35,7 +35,7 @@ public interface IBinaryFormattable<out TSelf>
     /// <param name="source">The input buffer.</param>
     /// <param name="result">The restored object.</param>
     /// <returns><see langword="true"/> if the parsing done successfully; otherwise, <see langword="false"/>.</returns>
-    public static bool TryParse(ReadOnlySpan<byte> source, [NotNullWhen(true)] out TSelf? result)
+    public static bool TryParse(scoped ReadOnlySpan<byte> source, [NotNullWhen(true)] out TSelf? result)
     {
         if (source.Length >= TSelf.Size)
         {
@@ -55,7 +55,7 @@ public interface IBinaryFormattable<out TSelf>
     /// <returns>The buffer containing formatted value.</returns>
     public static MemoryOwner<byte> Format(TSelf value, MemoryAllocator<byte>? allocator = null)
     {
-        var result = allocator.AllocateExactly(TSelf.Size);
+        var result = allocator.DefaultIfNull.AllocateExactly(TSelf.Size);
         value.Format(result.Span);
         return result;
     }

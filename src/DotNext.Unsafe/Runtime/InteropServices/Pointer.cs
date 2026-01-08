@@ -1,11 +1,12 @@
 using System.Buffers;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Pointer = System.Reflection.Pointer;
 
 namespace DotNext.Runtime.InteropServices;
+
+using CompilerServices;
 
 /// <summary>
 /// CLS-compliant typed pointer for .NET languages without direct support of pointer data type.
@@ -22,7 +23,6 @@ public readonly partial struct Pointer<T> :
     IComparable<Pointer<T>>,
     IStrongBox,
     ISupplier<nint>,
-    ISupplier<nuint>,
     ISpanFormattable
     where T : unmanaged
 {
@@ -59,23 +59,11 @@ public readonly partial struct Pointer<T> :
     {
     }
 
-    [DoesNotReturn]
-    [StackTraceHidden]
-    private static void ThrowNullPointerException() => throw new NullPointerException();
-
-    /// <summary>
-    /// Gets boxed pointer.
-    /// </summary>
-    /// <returns>The boxed pointer.</returns>
-    /// <seealso cref="Pointer"/>
-    [CLSCompliant(false)]
-    public unsafe object GetBoxedPointer() => Pointer.Box(value, typeof(T*));
-
     /// <summary>
     /// Determines whether this pointer is aligned
     /// to the size of <typeparamref name="T"/>.
     /// </summary>
-    public bool IsAligned => Address % Intrinsics.AlignOf<T>() is 0;
+    public bool IsAligned => Address % Unsafe.AlignOf<T>() is 0;
 
     /// <summary>
     /// Fills the elements of the array with a specified value.
@@ -87,7 +75,7 @@ public readonly partial struct Pointer<T> :
     public unsafe void Fill(T value, nuint count)
     {
         if (IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         var pointer = this.value;
         if (sizeof(T) is sizeof(byte))
@@ -131,7 +119,7 @@ public readonly partial struct Pointer<T> :
         get
         {
             if (IsNull)
-                ThrowNullPointerException();
+                NullPointerException.Throw();
 
             return ref value[index];
         }
@@ -146,11 +134,11 @@ public readonly partial struct Pointer<T> :
     public unsafe void Swap(Pointer<T> other)
     {
         if (IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         ArgumentNullException.ThrowIfNull(other.value, nameof(other));
 
-        Intrinsics.Swap(value, other.value);
+        NativeMemory.Swap(value, other.value);
     }
 
     /// <inheritdoc/>
@@ -169,7 +157,7 @@ public readonly partial struct Pointer<T> :
     public unsafe void Clear(nuint count)
     {
         if (IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         var pointer = value;
         if (sizeof(T) is sizeof(byte))
@@ -193,7 +181,7 @@ public readonly partial struct Pointer<T> :
     public void Clear()
     {
         if (IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         Value = default;
     }
@@ -206,7 +194,7 @@ public readonly partial struct Pointer<T> :
     public unsafe void CopyTo(Span<T> destination)
     {
         if (IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         new ReadOnlySpan<T>(value, destination.Length).CopyTo(destination);
     }
@@ -222,7 +210,7 @@ public readonly partial struct Pointer<T> :
     public unsafe void CopyTo(Pointer<T> destination, nuint count)
     {
         if (IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         ArgumentNullException.ThrowIfNull(destination.value, nameof(destination));
 
@@ -232,7 +220,7 @@ public readonly partial struct Pointer<T> :
         }
         else
         {
-            Intrinsics.Copy(in *value, out *destination.value, count);
+            Unsafe.Copy(in *value, out *destination.value, count);
         }
     }
 
@@ -257,7 +245,7 @@ public readonly partial struct Pointer<T> :
             length = checked(sizeof(T) * length);
             result = GC.AllocateUninitializedArray<byte>(length, pinned: true);
 
-            Intrinsics.Copy(in Unsafe.AsRef<byte>(value), out MemoryMarshal.GetArrayDataReference(result), (nuint)length);
+            Unsafe.Copy(in Unsafe.AsRef<byte>(value), out MemoryMarshal.GetArrayDataReference(result), (nuint)length);
         }
 
         return result;
@@ -283,7 +271,7 @@ public readonly partial struct Pointer<T> :
         else
         {
             result = GC.AllocateUninitializedArray<T>(length, pinned: true);
-            Intrinsics.Copy(in value[0], out MemoryMarshal.GetArrayDataReference(result), (nuint)length);
+            Unsafe.Copy(in value[0], out MemoryMarshal.GetArrayDataReference(result), (nuint)length);
         }
 
         return result;
@@ -316,7 +304,9 @@ public readonly partial struct Pointer<T> :
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe Pointer<TOther> As<TOther>()
         where TOther : unmanaged
-        => sizeof(T) >= sizeof(TOther) ? new Pointer<TOther>(Address) : throw new GenericArgumentException<TOther>(ExceptionMessages.WrongTargetTypeSize, nameof(TOther));
+        => sizeof(T) >= sizeof(TOther) 
+            ? Unsafe.BitCast<Pointer<T>, Pointer<TOther>>(this)
+            : throw new GenericArgumentException<TOther>(ExceptionMessages.WrongTargetTypeSize, nameof(TOther));
 
     /// <summary>
     /// Gets the value stored in the memory identified by this pointer.
@@ -336,7 +326,7 @@ public readonly partial struct Pointer<T> :
     public unsafe T GetUnaligned()
     {
         if (IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         return Unsafe.ReadUnaligned<T>(value);
     }
@@ -352,7 +342,7 @@ public readonly partial struct Pointer<T> :
     public unsafe T GetUnaligned(nuint index)
     {
         if (IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         return Unsafe.ReadUnaligned<T>(value + index);
     }
@@ -366,7 +356,7 @@ public readonly partial struct Pointer<T> :
     public unsafe void SetUnaligned(T value)
     {
         if (IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         Unsafe.WriteUnaligned(this.value, value);
     }
@@ -382,7 +372,7 @@ public readonly partial struct Pointer<T> :
     public unsafe void SetUnaligned(T value, nuint index)
     {
         if (IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         Unsafe.WriteUnaligned(this.value + index, value);
     }
@@ -399,18 +389,15 @@ public readonly partial struct Pointer<T> :
         if (value == other.value)
             return 0;
         if (IsNull)
-            ThrowNullPointerException();
+            NullPointerException.Throw();
 
         ArgumentNullException.ThrowIfNull(other.value, nameof(other));
 
-        return Intrinsics.Compare(value, other, checked(count * (uint)sizeof(T)));
+        return NativeMemory.Compare(value, other, checked(count * (uint)sizeof(T)));
     }
 
     /// <inheritdoc/>
     nint ISupplier<nint>.Invoke() => Address;
-
-    /// <inheritdoc/>
-    unsafe nuint ISupplier<nuint>.Invoke() => (nuint)value;
 
     /// <summary>
     /// Converts this pointer the memory owner.
@@ -456,7 +443,7 @@ public readonly partial struct Pointer<T> :
     /// Computes hash code of the pointer itself (i.e. address), not of the memory content.
     /// </summary>
     /// <returns>The hash code of this pointer.</returns>
-    public override unsafe int GetHashCode() => Intrinsics.PointerHashCode(value);
+    public override unsafe int GetHashCode() => NativeMemory.PointerHashCode(value);
 
     /// <summary>
     /// Indicates that this pointer represents the same memory location as other pointer.

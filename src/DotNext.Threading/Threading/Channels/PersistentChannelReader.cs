@@ -24,20 +24,21 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
 
     private sealed class SingleReaderBuffer : IReadBuffer
     {
-        private Atomic.Boolean readyToRead;
         [AllowNull]
         private T value;
+
+        private bool readyToRead;
 
         void IReadBuffer.Add(T item)
         {
             value = item;
-            readyToRead.Value = true;
+            Volatile.Write(ref readyToRead, true);
         }
 
         bool IReadBuffer.TryRead([MaybeNullWhen(false)] out T result)
         {
             bool success;
-            result = (success = readyToRead.TrueToFalse())
+            result = (success = Interlocked.TrueToFalse(ref readyToRead))
                 ? value
                 : default;
 

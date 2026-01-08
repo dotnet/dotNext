@@ -71,7 +71,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         }
     }
 
-    private readonly object syncRoot;
+    private readonly Lock syncRoot;
 
     // Assuming that the map will not contain hundreds or thousands for entries.
     // If so, we can keep the lock for each entry instead of buckets as in ConcurrentDictionaryMap.
@@ -88,7 +88,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         ArgumentOutOfRangeException.ThrowIfNegative(capacity);
 
-        Span.Initialize<Entry>(entries = capacity is 0 ? [] : new Entry[capacity]);
+        Span.Initialize(entries = capacity is 0 ? [] : new Entry[capacity]);
         syncRoot = new();
     }
 
@@ -96,9 +96,8 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// Initializes a new map of recommended capacity.
     /// </summary>
     public ConcurrentTypeMap()
+        : this(ITypeMap.RecommendedCapacity)
     {
-        Span.Initialize<Entry>(entries = new Entry[ITypeMap.RecommendedCapacity]);
-        syncRoot = new();
     }
 
     private void Resize(Entry[] entries)
@@ -160,7 +159,8 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <param name="value">The value associated with the type.</param>
     /// <returns><see langword="true"/> if the value is added; otherwise, <see langword="false"/>.</returns>
     public bool TryAdd<TKey>(TValue value)
-        => TryAdd(ITypeMap.GetIndex<TKey>(), value);
+        where TKey : allows ref struct
+        => TryAdd(TypeSlot<TKey>.Index, value);
 
     private void Set(int index, TValue value)
     {
@@ -188,7 +188,8 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <param name="value">The value to set.</param>
     public void Set<TKey>(TValue value)
-        => Set(ITypeMap.GetIndex<TKey>(), value);
+        where TKey : allows ref struct
+        => Set(TypeSlot<TKey>.Index, value);
 
     /// <summary>
     /// Determines whether the map has association between the value and the specified type.
@@ -196,8 +197,9 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool ContainsKey<TKey>()
+        where TKey : allows ref struct
     {
-        return ContainsKey(Volatile.Read(ref entries), ITypeMap.GetIndex<TKey>());
+        return ContainsKey(Volatile.Read(ref entries), TypeSlot<TKey>.Index);
 
         static bool ContainsKey(Entry[] entries, int index)
             => (uint)index < (uint)entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).HasValue;
@@ -240,7 +242,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <param name="added"><see langword="true"/> if the value is added; <see langword="false"/> if the value is already exist.</param>
     /// <returns>The existing value; or <paramref name="value"/> if added.</returns>
     public TValue GetOrAdd<TKey>(TValue value, out bool added)
-        => GetOrAdd(ITypeMap.GetIndex<TKey>(), value, out added);
+        => GetOrAdd(TypeSlot<TKey>.Index, value, out added);
 
     private bool AddOrUpdate(int index, TValue value)
     {
@@ -273,7 +275,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <see langword="false"/> if the existing value is updated with <paramref name="value"/>.
     /// </returns>
     public bool AddOrUpdate<TKey>(TValue value)
-        => AddOrUpdate(ITypeMap.GetIndex<TKey>(), value);
+        => AddOrUpdate(TypeSlot<TKey>.Index, value);
 
     private bool Set(int index, TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
     {
@@ -308,7 +310,8 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <param name="oldValue">The replaced value.</param>
     /// <returns><see langword="true"/> if value is replaced; <see langword="false"/> if a new value is added without replacement.</returns>
     public bool Set<TKey>(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
-        => Set(ITypeMap.GetIndex<TKey>(), newValue, out oldValue);
+        where TKey : allows ref struct
+        => Set(TypeSlot<TKey>.Index, newValue, out oldValue);
 
     private bool Remove(int index, [MaybeNullWhen(false)] out TValue value)
     {
@@ -342,14 +345,17 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <param name="value">The value of the removed element.</param>
     /// <returns><see langword="true"/> if the element successfully removed; otherwise, <see langword="false"/>.</returns>
     public bool Remove<TKey>([MaybeNullWhen(false)] out TValue value)
-        => Remove(ITypeMap.GetIndex<TKey>(), out value);
+        where TKey : allows ref struct
+        => Remove(TypeSlot<TKey>.Index, out value);
 
     /// <summary>
     /// Attempts to remove the value from the map.
     /// </summary>
     /// <typeparam name="TKey">The type acting as a key.</typeparam>
     /// <returns><see langword="true"/> if the element successfully removed; otherwise, <see langword="false"/>.</returns>
-    public bool Remove<TKey>() => Remove<TKey>(out _);
+    public bool Remove<TKey>()
+        where TKey : allows ref struct
+        => Remove<TKey>(out _);
 
     private bool TryGetValue(int index, [MaybeNullWhen(false)] out TValue value)
     {
@@ -382,7 +388,8 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// <param name="value">The value associated with the type.</param>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool TryGetValue<TKey>([MaybeNullWhen(false)] out TValue value)
-        => TryGetValue(ITypeMap.GetIndex<TKey>(), out value);
+        where TKey : allows ref struct
+        => TryGetValue(TypeSlot<TKey>.Index, out value);
 
     /// <summary>
     /// Removes all elements from this map.
@@ -431,7 +438,7 @@ public partial class ConcurrentTypeMap : ITypeMap
         internal object? Set(object newValue) => Interlocked.Exchange(ref Value, newValue);
     }
 
-    private readonly object syncRoot;
+    private readonly Lock syncRoot;
     private Entry[] entries;
 
     /// <summary>
@@ -443,7 +450,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         ArgumentOutOfRangeException.ThrowIfNegative(capacity);
 
-        Span.Initialize<Entry>(entries = capacity is 0 ? [] : new Entry[capacity]);
+        Span.Initialize(entries = capacity is 0 ? [] : new Entry[capacity]);
         syncRoot = new();
     }
 
@@ -451,9 +458,8 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// Initializes a new empty set.
     /// </summary>
     public ConcurrentTypeMap()
+        : this(ITypeMap.RecommendedCapacity)
     {
-        Span.Initialize<Entry>(entries = new Entry[ITypeMap.RecommendedCapacity]);
-        syncRoot = new();
     }
 
     private void Resize(Entry[] entries)
@@ -499,7 +505,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <param name="value">The value to be added.</param>
     /// <returns><see langword="true"/> if the value is added; otherwise, <see langword="false"/>.</returns>
     public bool TryAdd<T>([DisallowNull] T value)
-        => TryAdd(ITypeMap.GetIndex<T>(), value);
+        => TryAdd(TypeSlot<T>.Index, value);
 
     /// <inheritdoc />
     void ITypeMap.Add<T>([DisallowNull] T value)
@@ -527,12 +533,12 @@ public partial class ConcurrentTypeMap : ITypeMap
 
     /// <inheritdoc cref="ITypeMap.Set{T}(T)"/>
     public void Set<T>([DisallowNull] T value)
-        => Set(ITypeMap.GetIndex<T>(), value);
+        => Set(TypeSlot<T>.Index, value);
 
     /// <inheritdoc cref="IReadOnlyTypeMap.Contains{T}"/>
     public bool Contains<T>()
     {
-        return ContainsKey(Volatile.Read(ref entries), ITypeMap.GetIndex<T>());
+        return ContainsKey(Volatile.Read(ref entries), TypeSlot<T>.Index);
 
         static bool ContainsKey(Entry[] entries, int index)
             => (uint)index < (uint)entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).Value is T;
@@ -555,14 +561,14 @@ public partial class ConcurrentTypeMap : ITypeMap
     }
 
     /// <summary>
-    /// Attempts to add a new value or returns existing value, atomitcally.
+    /// Attempts to add a new value or returns existing value, atomically.
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="value">The value to be added.</param>
     /// <param name="added"><see langword="true"/> if the value is added; <see langword="false"/> if the value is already exist.</param>
     /// <returns>The existing value; or <paramref name="value"/> if added.</returns>
     public T GetOrAdd<T>([DisallowNull] T value, out bool added)
-        => (T)GetOrAdd(ITypeMap.GetIndex<T>(), value, out added);
+        => (T)GetOrAdd(TypeSlot<T>.Index, value, out added);
 
     private bool AddOrUpdate(int index, object value)
     {
@@ -589,7 +595,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <see langword="false"/> if the existing value is updated with <paramref name="value"/>.
     /// </returns>
     public bool AddOrUpdate<T>([DisallowNull] T value)
-        => AddOrUpdate(ITypeMap.GetIndex<T>(), value);
+        => AddOrUpdate(TypeSlot<T>.Index, value);
 
     private bool Set<T>(int index, object newValue, [NotNullWhen(true)] out T? oldValue)
     {
@@ -617,7 +623,7 @@ public partial class ConcurrentTypeMap : ITypeMap
 
     /// <inheritdoc cref="ITypeMap.Set{T}(T, out T)"/>
     public bool Set<T>([DisallowNull] T newValue, [NotNullWhen(true)] out T? oldValue)
-        => Set(ITypeMap.GetIndex<T>(), newValue, out oldValue);
+        => Set(TypeSlot<T>.Index, newValue, out oldValue);
 
     private bool Remove(int index)
     {
@@ -636,7 +642,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     }
 
     /// <inheritdoc cref="ITypeMap.Remove{T}()"/>
-    public bool Remove<T>() => Remove(ITypeMap.GetIndex<T>());
+    public bool Remove<T>() => Remove(TypeSlot<T>.Index);
 
     private bool Remove<T>(int index, [NotNullWhen(true)] out T? value)
     {
@@ -664,7 +670,7 @@ public partial class ConcurrentTypeMap : ITypeMap
 
     /// <inheritdoc cref="ITypeMap.Remove{T}(out T)"/>
     public bool Remove<T>([NotNullWhen(true)] out T? value)
-        => Remove(ITypeMap.GetIndex<T>(), out value);
+        => Remove(TypeSlot<T>.Index, out value);
 
     /// <inheritdoc cref="ITypeMap.Clear()"/>
     public void Clear()
@@ -701,5 +707,5 @@ public partial class ConcurrentTypeMap : ITypeMap
 
     /// <inheritdoc cref="IReadOnlyTypeMap.TryGetValue{T}(out T)"/>
     public bool TryGetValue<T>([NotNullWhen(true)] out T? value)
-        => TryGetValue(ITypeMap.GetIndex<T>(), out value);
+        => TryGetValue(TypeSlot<T>.Index, out value);
 }

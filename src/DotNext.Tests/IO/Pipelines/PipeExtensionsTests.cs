@@ -25,12 +25,12 @@ public sealed class PipeExtensionsTests : Test
 
         var pipe = new Pipe();
         WriteValuesAsync(pipe.Writer);
-        Equal(42L, await pipe.Reader.ReadLittleEndianAsync<long>());
-        Equal(43UL, await pipe.Reader.ReadLittleEndianAsync<ulong>());
-        Equal(44, await pipe.Reader.ReadLittleEndianAsync<int>());
-        Equal(45U, await pipe.Reader.ReadBigEndianAsync<uint>());
-        Equal(46, await pipe.Reader.ReadBigEndianAsync<short>());
-        Equal(47, await pipe.Reader.ReadBigEndianAsync<ushort>());
+        Equal(42L, await pipe.Reader.ReadLittleEndianAsync<long>(TestToken));
+        Equal(43UL, await pipe.Reader.ReadLittleEndianAsync<ulong>(TestToken));
+        Equal(44, await pipe.Reader.ReadLittleEndianAsync<int>(TestToken));
+        Equal(45U, await pipe.Reader.ReadBigEndianAsync<uint>(TestToken));
+        Equal(46, await pipe.Reader.ReadBigEndianAsync<short>(TestToken));
+        Equal(47, await pipe.Reader.ReadBigEndianAsync<ushort>(TestToken));
     }
 
     [Fact]
@@ -46,8 +46,8 @@ public sealed class PipeExtensionsTests : Test
         WriteValueAsync(new byte[] { 1, 5, 8, 9, 10 }, pipe.Writer);
         var portion1 = new byte[3];
         var portion2 = new byte[2];
-        await pipe.Reader.ReadExactlyAsync(portion1);
-        await pipe.Reader.ReadExactlyAsync(portion2);
+        await pipe.Reader.ReadExactlyAsync(portion1, TestToken);
+        await pipe.Reader.ReadExactlyAsync(portion2, TestToken);
         Equal(1, portion1[0]);
         Equal(5, portion1[1]);
         Equal(8, portion1[2]);
@@ -67,7 +67,7 @@ public sealed class PipeExtensionsTests : Test
         var pipe = new Pipe();
         WriteValueAsync(new byte[] { 1, 5, 8, 9, 10 }, pipe.Writer);
         Memory<byte> result = new byte[124];
-        await ThrowsAsync<EndOfStreamException>(() => pipe.Reader.ReadExactlyAsync(result).AsTask());
+        await ThrowsAsync<EndOfStreamException>(() => pipe.Reader.ReadExactlyAsync(result, TestToken).AsTask());
     }
 
     [Fact]
@@ -83,8 +83,8 @@ public sealed class PipeExtensionsTests : Test
         WriteValueAsync(new byte[] { 1, 5, 8, 9, 10 }, pipe.Writer);
         var portion1 = new byte[3];
         var portion2 = new byte[2];
-        Equal(3, await pipe.Reader.ReadAsync(portion1));
-        Equal(2, await pipe.Reader.ReadAsync(portion2));
+        Equal(3, await pipe.Reader.ReadAsync(portion1, TestToken));
+        Equal(2, await pipe.Reader.ReadAsync(portion2, TestToken));
         Equal(1, portion1[0]);
         Equal(5, portion1[1]);
         Equal(8, portion1[2]);
@@ -97,14 +97,14 @@ public sealed class PipeExtensionsTests : Test
     {
         static async void WriteValueAsync(Memory<byte> memory, PipeWriter writer)
         {
-            await writer.WriteAsync(memory);
+            await writer.WriteAsync(memory, TestToken);
             await writer.CompleteAsync();
         }
 
         var pipe = new Pipe();
         WriteValueAsync(new byte[] { 1, 5, 8, 9, 10 }, pipe.Writer);
         Memory<byte> result = new byte[124];
-        Equal(5, await pipe.Reader.ReadAsync(result));
+        Equal(5, await pipe.Reader.ReadAsync(result, TestToken));
     }
 
     [Fact]
@@ -114,13 +114,13 @@ public sealed class PipeExtensionsTests : Test
         {
             writer.WriteLittleEndian(20L);
             writer.WriteLittleEndian(0L);
-            await writer.FlushAsync();
+            await writer.FlushAsync(TestToken);
             await writer.CompleteAsync();
         }
 
         var pipe = new Pipe();
         WriteValueAsync(pipe.Writer);
-        Equal(20, await pipe.Reader.ReadLittleEndianAsync<Int128>());
+        Equal(20, await pipe.Reader.ReadLittleEndianAsync<Int128>(TestToken));
     }
 
     [Fact]
@@ -135,7 +135,7 @@ public sealed class PipeExtensionsTests : Test
 
         var pipe = new Pipe();
         WriteValueAsync(pipe.Writer);
-        await ThrowsAsync<EndOfStreamException>(pipe.Reader.ReadLittleEndianAsync<Int128>().AsTask);
+        await ThrowsAsync<EndOfStreamException>(pipe.Reader.ReadLittleEndianAsync<Int128>(TestToken).AsTask);
     }
 
     private static async Task EncodeDecodeStringAsync(Encoding encoding, string value, LengthFormat lengthEnc)
@@ -165,10 +165,10 @@ public sealed class PipeExtensionsTests : Test
     public static async Task CopyToBuffer()
     {
         var pipe = new Pipe();
-        await pipe.Writer.WriteAsync(new byte[] { 10, 20, 30 });
+        await pipe.Writer.WriteAsync(new byte[] { 10, 20, 30 }, TestToken);
         await pipe.Writer.CompleteAsync();
         var buffer = new ArrayBufferWriter<byte>();
-        await pipe.Reader.CopyToAsync<BufferConsumer<byte>>(new(buffer));
+        await pipe.Reader.CopyToAsync<BufferConsumer<byte>>(new(buffer), TestToken);
         Equal([10, 20, 30], buffer.WrittenMemory.ToArray());
     }
 
@@ -190,9 +190,9 @@ public sealed class PipeExtensionsTests : Test
         var pipe = new Pipe();
         WriteValuesAsync(pipe.Writer);
         var buffer = new ArrayBufferWriter<byte>();
-        await pipe.Reader.CopyToAsync<BufferConsumer<byte>>(new(buffer));
+        await pipe.Reader.CopyToAsync<BufferConsumer<byte>>(new(buffer), TestToken);
 
-        var reader = IAsyncBinaryReader.Create(buffer.WrittenMemory);
+        var reader = new SequenceReader(buffer.WrittenMemory);
         Equal(42L, reader.ReadLittleEndian<long>());
         Equal(43UL, reader.ReadLittleEndian<ulong>());
         Equal(44, reader.ReadLittleEndian<int>());
@@ -219,9 +219,9 @@ public sealed class PipeExtensionsTests : Test
         var pipe = new Pipe();
         WriteValuesAsync(pipe.Writer);
         var buffer = new ArrayBufferWriter<byte>();
-        await pipe.Reader.CopyToAsync<BufferConsumer<byte>>(new(buffer));
+        await pipe.Reader.CopyToAsync<BufferConsumer<byte>>(new(buffer), TestToken);
         Equal(28, buffer.WrittenCount);
-        var reader = IAsyncBinaryReader.Create(buffer.WrittenMemory);
+        var reader = new SequenceReader(buffer.WrittenMemory);
         Equal(42L, reader.ReadLittleEndian<long>());
         Equal(43UL, reader.ReadLittleEndian<ulong>());
         Equal(44, reader.ReadLittleEndian<int>());
@@ -248,9 +248,9 @@ public sealed class PipeExtensionsTests : Test
         var pipe = new Pipe();
         WriteValuesAsync(pipe.Writer);
         var buffer = new ArrayBufferWriter<byte>();
-        await pipe.Reader.CopyToAsync<BufferConsumer<byte>>(new(buffer));
+        await pipe.Reader.CopyToAsync<BufferConsumer<byte>>(new(buffer), TestToken);
         Equal(28, buffer.WrittenCount);
-        var reader = IAsyncBinaryReader.Create(buffer.WrittenMemory);
+        var reader = new SequenceReader(buffer.WrittenMemory);
         Equal(42L, reader.ReadLittleEndian<long>());
         Equal(43UL, reader.ReadLittleEndian<ulong>());
         Equal(44, reader.ReadLittleEndian<int>());
@@ -285,16 +285,16 @@ public sealed class PipeExtensionsTests : Test
         var portion1 = RandomBytes(64);
         var portion2 = RandomBytes(64);
 
-        var reader = PipeReader.Create(Memory.Concat(new ReadOnlyMemory<byte>(portion1), portion2));
+        var reader = PipeReader.Create(ReadOnlyMemory<byte>.Concat(new ReadOnlyMemory<byte>(portion1), portion2));
 
-        await using (var enumerator = reader.ReadAllAsync().GetAsyncEnumerator())
+        await using (var enumerator = reader.ReadAllAsync(TestToken).GetAsyncEnumerator(TestToken))
         {
             True(await enumerator.MoveNextAsync());
             Equal(portion1, enumerator.Current.ToArray());
             True(await enumerator.MoveNextAsync());
         }
 
-        await using (var enumerator = reader.ReadAllAsync().GetAsyncEnumerator())
+        await using (var enumerator = reader.ReadAllAsync(TestToken).GetAsyncEnumerator(TestToken))
         {
             True(await enumerator.MoveNextAsync());
             Equal(portion2, enumerator.Current.ToArray());
@@ -310,9 +310,9 @@ public sealed class PipeExtensionsTests : Test
         var reader = PipeReader.Create(new(bytes));
 
         using var destination = new MemoryStream();
-        await foreach (var chunk in reader.ReadExactlyAsync(64L))
+        await foreach (var chunk in reader.ReadExactlyAsync(64L, TestToken))
         {
-            await destination.WriteAsync(chunk);
+            await destination.WriteAsync(chunk, TestToken);
         }
 
         Equal(new ReadOnlySpan<byte>(bytes, 0, 64), destination.ToArray());
@@ -323,7 +323,7 @@ public sealed class PipeExtensionsTests : Test
     {
         var reader = PipeReader.Create(ReadOnlySequence<byte>.Empty);
 
-        Empty(reader.ReadExactlyAsync(0L));
+        Empty(reader.ReadExactlyAsync(0L, TestToken));
     }
 
     [Fact]
@@ -331,7 +331,7 @@ public sealed class PipeExtensionsTests : Test
     {
         var reader = PipeReader.Create(ReadOnlySequence<byte>.Empty);
 
-        await using var enumerator = reader.ReadExactlyAsync(-1L).GetAsyncEnumerator();
+        await using var enumerator = reader.ReadExactlyAsync(-1L, TestToken).GetAsyncEnumerator(TestToken);
         await ThrowsAsync<ArgumentOutOfRangeException>(enumerator.MoveNextAsync().AsTask);
     }
 
@@ -341,10 +341,10 @@ public sealed class PipeExtensionsTests : Test
         var pipe = new Pipe();
         pipe.Writer.Write("Привет, мир!"u8);
         pipe.Writer.Write(stackalloc byte[] { 0, 0 });
-        pipe.Writer.Complete();
+        await pipe.Writer.CompleteAsync();
 
         var writer = new ArrayBufferWriter<char>();
-        await pipe.Reader.ReadUtf8Async(writer);
+        await pipe.Reader.ReadUtf8Async(writer, TestToken);
         Equal("Привет, мир!", writer.WrittenSpan.ToString());
     }
 

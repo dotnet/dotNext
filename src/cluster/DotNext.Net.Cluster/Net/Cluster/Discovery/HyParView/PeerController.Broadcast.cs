@@ -46,7 +46,7 @@ public partial class PeerController
                         OnError(peer, e);
 
                         // remember failed peer and try to select another one later
-                        failedPeers.Add(peer);
+                        failedPeers += peer;
                     }
                 }
 

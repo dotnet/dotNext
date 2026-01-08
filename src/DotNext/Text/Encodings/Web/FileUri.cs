@@ -18,8 +18,8 @@ public static class FileUri
     // \\.\folder => file://./folder
     private const string FileScheme = "file://";
     private const char UriPathSeparator = '/';
-    private static readonly SearchValues<char> UnixDirectorySeparators = SearchValues.Create([UriPathSeparator]);
-    private static readonly SearchValues<char> WindowsDirectorySeparators = SearchValues.Create([UriPathSeparator, '\\']);
+    private static readonly SearchValues<char> UnixDirectorySeparators = SearchValues.Create(UriPathSeparator);
+    private static readonly SearchValues<char> WindowsDirectorySeparators = SearchValues.Create(UriPathSeparator, '\\');
 
     /// <summary>
     /// Encodes file name as URI.
@@ -82,7 +82,7 @@ public static class FileUri
     private static bool TryCreateFromFileNameCore(ReadOnlySpan<char> fileName, UrlEncoder encoder, Span<char> output, out int charsWritten)
     {
         var writer = new SpanWriter<char>(output);
-        writer.Write(FileScheme);
+        writer += FileScheme;
 
         bool endsWithTrailingSeparator;
         SearchValues<char> directoryPathSeparators;
@@ -102,13 +102,13 @@ public static class FileUri
                     is not [.. var drive, driveSeparator])
                     throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
 
-                writer.Add(UriPathSeparator);
-                writer.Write(drive);
-                writer.Write(endsWithTrailingSeparator ? [escapedDriveSeparatorChar, UriPathSeparator] : [escapedDriveSeparatorChar]);
+                writer += UriPathSeparator;
+                writer += drive;
+                writer += endsWithTrailingSeparator ? [escapedDriveSeparatorChar, UriPathSeparator] : [escapedDriveSeparatorChar];
                 break;
         }
 
-        for (;; writer.Add(UriPathSeparator))
+        for (;; writer += UriPathSeparator)
         {
             var component = GetPathComponent(ref fileName, directoryPathSeparators, out endsWithTrailingSeparator);
             if (encoder.Encode(component, writer.RemainingSpan, out _, out charsWritten) is not OperationStatus.Done)
@@ -142,15 +142,29 @@ public static class FileUri
     }
 
     /// <summary>
-    /// Gets URI that points to the file system object.
+    /// Extends <see cref="FileSystemInfo"/> type.
     /// </summary>
-    /// <param name="fileInfo">The information about file system object.</param>
-    /// <param name="settings">The encoding settings.</param>
-    /// <returns><see cref="Uri"/> that points to the file system object.</returns>
-    public static Uri GetUri(this FileSystemInfo fileInfo, TextEncoderSettings? settings = null)
+    /// <param name="file">The information about file system object.</param>
+    extension(FileSystemInfo file)
     {
-        ArgumentNullException.ThrowIfNull(fileInfo);
+        /// <summary>
+        /// Gets URI that points to the file system object.
+        /// </summary>
+        /// <param name="settings">The encoding settings.</param>
+        /// <returns><see cref="Uri"/> that points to the file system object.</returns>
+        public Uri GetUri(TextEncoderSettings? settings)
+        {
+            ArgumentNullException.ThrowIfNull(file);
 
-        return new(CreateFromFileNameCore(fileInfo.FullName, settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings)), UriKind.Absolute);
+            return new(CreateFromFileNameCore(file.FullName, settings is null
+                    ? UrlEncoder.Default
+                    : UrlEncoder.Create(settings)),
+                UriKind.Absolute);
+        }
+
+        /// <summary>
+        /// Gets URI that points to the file system object.
+        /// </summary>
+        public Uri Uri => GetUri(file, settings: null);
     }
 }

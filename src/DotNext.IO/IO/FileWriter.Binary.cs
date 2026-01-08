@@ -94,7 +94,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     public ValueTask WriteLittleEndianAsync<T>(T value, CancellationToken token = default)
         where T : IBinaryInteger<T>
     {
-        return WriteAsync(value, Write, Number.GetMaxByteCount<T>(), token);
+        return WriteAsync(value, Write, Number.get_MaxByteCount<T>(), token);
 
         static void Write(Span<byte> destination, T value)
         {
@@ -114,7 +114,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     public ValueTask WriteBigEndianAsync<T>(T value, CancellationToken token = default)
         where T : IBinaryInteger<T>
     {
-        return WriteAsync(value, Write, Number.GetMaxByteCount<T>(), token);
+        return WriteAsync(value, Write, Number.get_MaxByteCount<T>(), token);
 
         static void Write(Span<byte> destination, T value)
         {
@@ -142,7 +142,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public async ValueTask WriteAsync(ReadOnlyMemory<byte> input, LengthFormat lengthFormat, CancellationToken token = default)
     {
-        if (FreeCapacity < Leb128<uint>.MaxSizeInBytes)
+        if (FreeCapacity < lengthFormat.MaxByteCount)
             await FlushAsync(token).ConfigureAwait(false);
 
         WriteLength(input.Length, lengthFormat);
@@ -165,7 +165,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         
         if (lengthFormat.HasValue)
         {
-            if (FreeCapacity < Leb128<uint>.MaxSizeInBytes)
+            if (FreeCapacity < lengthFormat.GetValueOrDefault().MaxByteCount)
                 await FlushAsync(token).ConfigureAwait(false);
             
             result = WriteLength(context.Encoding.GetByteCount(chars.Span), lengthFormat.GetValueOrDefault());
@@ -220,6 +220,7 @@ public partial class FileWriter : IAsyncBinaryWriter
         const int initialCharBufferSize = 128;
         const int maxBufferSize = int.MaxValue / 2;
 
+        allocator ??= MemoryAllocator<char>.Default;
         for (var charBufferSize = initialCharBufferSize; ; charBufferSize = charBufferSize <= maxBufferSize ? charBufferSize * 2 : throw new InsufficientMemoryException())
         {
             using var charBuffer = allocator.AllocateAtLeast(charBufferSize);
@@ -253,13 +254,7 @@ public partial class FileWriter : IAsyncBinaryWriter
     private bool TryFormat<T>(T value, LengthFormat? lengthFormat, ReadOnlySpan<char> format, IFormatProvider? provider, out int bytesWritten)
         where T : IUtf8SpanFormattable
     {
-        var expectedLengthSize = lengthFormat switch
-        {
-            null => 0,
-            LengthFormat.BigEndian or LengthFormat.LittleEndian => sizeof(int),
-            LengthFormat.Compressed => Leb128<uint>.MaxSizeInBytes,
-            _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat)),
-        };
+        var expectedLengthSize = lengthFormat?.MaxByteCount ?? 0;
 
         var buffer = BufferSpan;
         bool result;
@@ -384,7 +379,4 @@ public partial class FileWriter : IAsyncBinaryWriter
     /// <inheritdoc />
     ValueTask ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<byte> input, CancellationToken token)
         => WriteAsync(input, token);
-
-    /// <inheritdoc />
-    IBufferWriter<byte> IAsyncBinaryWriter.TryGetBufferWriter() => this;
 }

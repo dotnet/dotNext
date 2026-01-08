@@ -21,7 +21,6 @@ public static partial class Collection
         public struct Enumerator : IEnumerator<Enumerator, T>
         {
             private readonly IProducerConsumerCollection<T>? collection;
-
             private T? current;
 
             internal Enumerator(IProducerConsumerCollection<T>? collection)
@@ -53,13 +52,11 @@ public static partial class Collection
         /// <returns>The enumerator wrapping method <see cref="IProducerConsumerCollection{T}.TryTake(out T)"/>.</returns>
         public Enumerator GetEnumerator() => new(collection);
 
-        /// <inheritdoc />
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
-            => GetEnumerator().ToClassicEnumerator<Enumerator, T>();
+        /// <inheritdoc/>
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => IEnumerator<T>.Create(GetEnumerator());
 
-        /// <inheritdoc />
-        IEnumerator IEnumerable.GetEnumerator()
-            => GetEnumerator().ToClassicEnumerator<Enumerator, T>();
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator() => IEnumerator<T>.Create(GetEnumerator());
     }
 
     /// <summary>
@@ -68,6 +65,6 @@ public static partial class Collection
     /// <param name="collection">The concurrent collection.</param>
     /// <typeparam name="T">The type of elements in the collection.</typeparam>
     /// <returns>The consumer in the form of enumerable collection.</returns>
-    public static ConsumingEnumerable<T> GetConsumer<T>(this IProducerConsumerCollection<T> collection)
+    public static ConsumingEnumerable<T> Consume<T>(this IProducerConsumerCollection<T> collection)
         => new(collection ?? throw new ArgumentNullException(nameof(collection)));
 }

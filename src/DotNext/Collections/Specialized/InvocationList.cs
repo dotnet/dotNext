@@ -140,7 +140,7 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
             var index = Array.IndexOf(array, d);
 
             if (index >= 0)
-                array = DotNext.Span.ConcatToArray<TDelegate>(array.AsSpan(0, index), array.AsSpan(index + 1));
+                array = [..array.AsSpan(0, index), ..array.AsSpan(index + 1)];
 
             result = new(array);
         }
@@ -173,7 +173,7 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
     };
 
     /// <summary>
-    /// Addes the delegate to the list and returns modified list.
+    /// Adds the delegate to the list and returns modified list.
     /// </summary>
     /// <param name="list">The list of delegates.</param>
     /// <param name="d">The delegate to add.</param>
@@ -196,13 +196,12 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
     /// <returns>The enumerator over delegates.</returns>
     public Enumerator GetEnumerator() => new(list);
 
-    /// <inheritdoc />
+    /// <inheritdoc/>
     IEnumerator<TDelegate> IEnumerable<TDelegate>.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, TDelegate>();
+        => IEnumerator<TDelegate>.Create(GetEnumerator());
 
-    /// <inheritdoc />
-    IEnumerator IEnumerable.GetEnumerator()
-        => GetEnumerator().ToClassicEnumerator<Enumerator, TDelegate>();
+    /// <inheritdoc/>
+    IEnumerator IEnumerable.GetEnumerator() => IEnumerator<TDelegate>.Create(GetEnumerator());
 
     /// <summary>
     /// Gets a span over list of delegates.

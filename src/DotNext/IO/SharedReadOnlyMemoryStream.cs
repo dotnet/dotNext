@@ -105,7 +105,7 @@ file sealed class AsyncLocalStream(ReadOnlySequence<byte> sequence) : SharedRead
 
 file sealed class ThreadLocalStream(ReadOnlySequence<byte> sequence) : SharedReadOnlyMemoryStream(sequence)
 {
-    private readonly ThreadLocal<SequencePosition> position = new(Func.Constant(sequence.Start), trackAllValues: false);
+    private readonly ThreadLocal<SequencePosition> position = new(Func<SequencePosition>.Constant(sequence.Start), trackAllValues: false);
 
     private protected override SequencePosition LocalPosition
     {

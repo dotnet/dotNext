@@ -21,7 +21,7 @@ public partial struct Base64Encoder
             case OperationStatus.NeedMoreData:
                 reservedBufferSize = bytes.Length - bytesRead;
                 Debug.Assert(reservedBufferSize <= MaxBufferedDataSize);
-                bytes.Slice(bytesRead).CopyTo(Span.AsBytes(ref reservedBuffer));
+                bytes.Slice(bytesRead).CopyTo(ushort.AsBytes(ref reservedBuffer));
                 break;
         }
 
@@ -39,7 +39,7 @@ public partial struct Base64Encoder
             EncodeToUtf8Core(tempBuffer.WrittenSpan, ref chars, bytes.IsEmpty && flush);
         }
 
-        if (bytes.IsEmpty is false)
+        if (bytes.Length > 0)
         {
             EncodeToUtf8Core(bytes, ref chars, flush);
         }
@@ -124,7 +124,7 @@ public partial struct Base64Encoder
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public static IAsyncEnumerable<ReadOnlyMemory<byte>> EncodeToUtf8Async(IAsyncEnumerable<ReadOnlyMemory<byte>> bytes,
         MemoryAllocator<byte>? allocator = null, CancellationToken token = default)
-        => IBufferedEncoder<byte>.EncodeAsync<Base64Encoder>(bytes, allocator, token);
+        => IBufferedEncoder<byte>.EncodeAsync<Base64Encoder>(bytes, allocator.DefaultIfNull, token);
 
     /// <summary>
     /// Flushes the buffered data as base64-encoded UTF-8 characters to the output buffer.

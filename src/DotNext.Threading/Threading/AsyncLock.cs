@@ -17,7 +17,7 @@ namespace DotNext.Threading;
 /// <seealso cref="Lock"/>
 [StructLayout(LayoutKind.Auto)]
 [DebuggerDisplay($"LockType = {{{nameof(LockTypeName)}}}, IsOwner = {{{nameof(owner)}}}")]
-public struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
+public partial struct AsyncLock : IDisposable, IEquatable<AsyncLock>, IAsyncDisposable
 {
     internal enum Type : byte
     {

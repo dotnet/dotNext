@@ -56,8 +56,7 @@ public static partial class StreamSource
     {
         if (flush is null)
         {
-            if (flushAsync is not null)
-                flushAsync(arg, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+            flushAsync?.Invoke(arg, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
         }
         else
         {

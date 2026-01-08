@@ -32,8 +32,7 @@ internal abstract class TextBufferWriter<T, TWriter> : TextWriter, IFlushable
     {
         if (flush is null)
         {
-            if (flushAsync is not null)
-                flushAsync(writer, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
+            flushAsync?.Invoke(writer, CancellationToken.None).ConfigureAwait(false).GetAwaiter().GetResult();
         }
         else
         {

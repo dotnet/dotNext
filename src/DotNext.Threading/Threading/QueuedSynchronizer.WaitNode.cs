@@ -32,12 +32,6 @@ partial class QueuedSynchronizer
             CallerInfo = callerInfo;
         }
 
-        internal bool DrainOnReturn
-        {
-            get => (flags & WaitNodeFlags.DrainOnReturn) is not 0;
-            set => flags |= value ? WaitNodeFlags.DrainOnReturn : WaitNodeFlags.None;
-        }
-
         protected sealed override void AfterConsumed()
             => owner?.ReturnNode(this);
 
@@ -49,8 +43,7 @@ partial class QueuedSynchronizer
     private protected enum WaitNodeFlags
     {
         None = 0,
-        ThrowOnTimeout = 1,
-        DrainOnReturn = ThrowOnTimeout << 1,
+        ThrowOnTimeout = 1
     }
     
     private protected interface INodeMapper<in TNode, out TValue>

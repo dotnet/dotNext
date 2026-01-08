@@ -13,8 +13,8 @@ public sealed class MatchTests : Test
         var lambda = Lambda<Func<object, int>>(static fun =>
         {
             Match(fun[0])
-                .Case<string>(static t => t.Count())
-                .Default((-1).Const())
+                .Case<string>(static t => t.CollectionLength)
+                .Default((-1).Quoted)
                 .OfType<int>()
             .End();
         }).Compile();
@@ -28,8 +28,8 @@ public sealed class MatchTests : Test
         var lambda = Lambda<Func<object, int>>((fun, result) =>
         {
             Match(fun[0])
-                .Case<string>(t => result.Assign(t.Count()))
-                .Default(result.Assign((-1).Const()))
+                .Case<string>(t => result.Assign(t.CollectionLength))
+                .Default(result.Assign((-1).Quoted))
             .End();
         }).Compile();
         Equal(5, lambda("abcde"));
@@ -47,9 +47,9 @@ public sealed class MatchTests : Test
         var lambda = Lambda<Func<Point, string>>(static fun =>
         {
             Match(fun[0])
-                .Case("X", 0L.Const(), static value => "X is zero".Const())
-                .Case(new { X = long.MaxValue, Y = long.MaxValue }, new MatchBuilder.CaseStatement(static value => "MaxValue".Const()))
-                .Default("Unknown".Const())
+                .Case("X", 0L.Quoted, static _ => "X is zero".Quoted)
+                .Case(new { X = long.MaxValue, Y = long.MaxValue }, new MatchBuilder.CaseStatement(static _ => "MaxValue".Quoted))
+                .Default("Unknown".Quoted)
                 .OfType<string>()
             .End();
         }).Compile();
@@ -65,15 +65,15 @@ public sealed class MatchTests : Test
         var lambda = Lambda<Func<Point, string>>((fun, result) =>
         {
             Match(fun[0])
-                .Case("X", 0L.Const(), x =>
+                .Case("X", 0L.Quoted, x =>
                 {
-                    Assign(result, "X is zero".Const());
+                    Assign(result, "X is zero".Quoted);
                 })
-                .Case("X", long.MaxValue.Const(), "Y", long.MaxValue.Const(), (x, y) =>
+                .Case("X", long.MaxValue.Quoted, "Y", long.MaxValue.Quoted, (x, y) =>
                 {
-                    Assign(result, "MaxValue".Const());
+                    Assign(result, "MaxValue".Quoted);
                 })
-                .Default(new Action<ParameterExpression>(_ => Assign(result, "Unknown".Const())))
+                .Default(new Action<ParameterExpression>(_ => Assign(result, "Unknown".Quoted)))
             .End();
         }).Compile();
         Equal("X is zero", lambda(new Point { X = 0, Y = 10 }));
@@ -87,9 +87,9 @@ public sealed class MatchTests : Test
         var lambda = Lambda<Func<(long X, long Y), string>>(static fun =>
         {
             Match(fun[0])
-                .Case("Item1", 0L.Const(), static value => "X is zero".Const())
-                .Case((long.MaxValue, long.MaxValue), new MatchBuilder.CaseStatement(static value => "MaxValue".Const()))
-                .Default("Unknown".Const())
+                .Case("Item1", 0L.Quoted, static value => "X is zero".Quoted)
+                .Case((long.MaxValue, long.MaxValue), new MatchBuilder.CaseStatement(static value => "MaxValue".Quoted))
+                .Default("Unknown".Quoted)
                 .OfType<string>()
             .End();
         }).Compile();

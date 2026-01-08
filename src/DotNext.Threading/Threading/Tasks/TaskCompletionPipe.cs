@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks;
 
@@ -10,6 +11,8 @@ namespace DotNext.Threading.Tasks;
 public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     where T : Task
 {
+    private readonly System.Threading.Lock syncRoot;
+    
     // Represents a number of scheduled tasks which can be greater than the number of enqueued tasks
     // because only completed task can be enqueued
     private uint scheduledTasksCount;
@@ -24,7 +27,11 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <summary>
     /// Initializes a new pipe.
     /// </summary>
-    public TaskCompletionPipe() => pool = new();
+    public TaskCompletionPipe()
+    {
+        pool = new();
+        syncRoot = new();
+    }
 
     /// <summary>
     /// Gets or sets a value indicating that this pipe supports <see cref="Completion"/> property.
@@ -42,13 +49,11 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <exception cref="PendingTaskInterruptedException"><see cref="Reset()"/> was called before completion.</exception>
     public Task Completion => Volatile.Read(in completedAll)?.Task ?? Task.FromException(new NotSupportedException());
 
-    private object SyncRoot => this;
-
     private void OnCompleted(Signal signal)
     {
         if (signal.NeedsRemoval)
         {
-            lock (SyncRoot)
+            lock (syncRoot)
             {
                 waitQueue.Remove(signal);
             }
@@ -56,7 +61,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
 
         if (signal.TryReset(out _))
         {
-            lock (SyncRoot)
+            lock (syncRoot)
             {
                 pool.Return(signal);
             }
@@ -70,7 +75,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     public void Complete()
     {
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             if (completionRequested)
                 throw new InvalidOperationException();
@@ -95,7 +100,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     {
         get
         {
-            Debug.Assert(Monitor.IsEntered(SyncRoot));
+            Debug.Assert(syncRoot.IsHeldByCurrentThread);
 
             return scheduledTasksCount is 0U && completionRequested;
         }
@@ -106,7 +111,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
         bool result;
         ManualResetCompletionSource? suspendedCaller;
 
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             if (completionRequested)
                 throw new InvalidOperationException();
@@ -126,15 +131,6 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <summary>
     /// Adds the task to this pipe.
     /// </summary>
-    /// <param name="task">The task to add.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="task"/> is <see langword="null"/>.</exception>
-    /// <exception cref="InvalidOperationException">The pipe is closed.</exception>
-    public void Add(T task) // TODO: Remove in future with optional param
-        => Add(task, userData: null);
-
-    /// <summary>
-    /// Adds the task to this pipe.
-    /// </summary>
     /// <remarks>
     /// <paramref name="userData"/> can be requested later using <see cref="TryRead(out T?, out object?)"/> method.
     /// </remarks>
@@ -142,7 +138,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <param name="userData">Arbitrary object associated with the task.</param>
     /// <exception cref="ArgumentNullException"><paramref name="task"/> is <see langword="null"/>.</exception>
     /// <exception cref="InvalidOperationException">The pipe is closed.</exception>
-    public void Add(T task, object? userData)
+    public void Add(T task, object? userData = null)
     {
         ArgumentNullException.ThrowIfNull(task);
 
@@ -168,7 +164,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     public void Add(ReadOnlySpan<T> tasks, bool complete = false, object? userData = null)
     {
         LinkedValueTaskCompletionSource<bool>? suspendedCaller;
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             if (completionRequested)
                 throw new InvalidOperationException();
@@ -219,7 +215,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     public void Reset()
     {
         LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             version += 1U;
             scheduledTasksCount = 0U;
@@ -241,7 +237,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
         ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
         ValueTask<bool> result;
 
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             if (expectedVersion != version)
             {
@@ -287,7 +283,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
     /// <returns><see langword="true"/> if a task was read; otherwise, <see langword="false"/>.</returns>
     public bool TryRead([NotNullWhen(true)] out T? task, out object? userData)
     {
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             return TryDequeueCompletedTask(out task, out userData);
         }
@@ -322,7 +318,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
                 }
 
                 ISupplier<TimeSpan, CancellationToken, ValueTask<bool>> factory;
-                lock (SyncRoot)
+                lock (syncRoot)
                 {
                     if (firstTask is not null)
                     {
@@ -376,4 +372,10 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
         => GetAsyncEnumerator(Version, token);
 
     internal uint Version => Volatile.Read(in version);
+}
+
+file static class SupplierExtensions
+{
+    public static TResult Invoke<TResult>(this ISupplier<TimeSpan, CancellationToken, TResult> supplier, CancellationToken token)
+        => supplier.Invoke(InfiniteTimeSpan, token);
 }

@@ -35,7 +35,7 @@ public abstract class ExpressionBuilder<TExpression> : ISupplier<TExpression>
     /// Changes type of the expression.
     /// </summary>
     /// <remarks>
-    /// By default, type of expression is <see cref="void"/>.
+    /// By default, type of expression is <see cref="Void"/>.
     /// </remarks>
     /// <param name="expressionType">The expression type.</param>
     /// <returns>This builder.</returns>

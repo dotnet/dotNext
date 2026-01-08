@@ -80,7 +80,7 @@ public sealed class StreamExtensionsTests : Test
         ms.Position = 0;
         var reader = IAsyncBinaryReader.Create(ms, new byte[128]);
         var memory = new byte[4];
-        await reader.ReadAsync(memory);
+        await reader.ReadAsync(memory, TestToken);
         Equal(1, memory[0]);
         Equal(5, memory[1]);
         Equal(7, memory[2]);
@@ -92,9 +92,9 @@ public sealed class StreamExtensionsTests : Test
     {
         Memory<byte> buffer = new byte[16];
         using var ms = new MemoryStream();
-        await ms.WriteAsync<Blittable<decimal>>(new() { Value = 10M }, buffer);
+        await ms.WriteAsync<Blittable<decimal>>(new() { Value = 10M }, buffer, TestToken);
         ms.Position = 0;
-        Equal(10M, (await ms.ReadAsync<Blittable<decimal>>(buffer)).Value);
+        Equal(10M, (await ms.ReadAsync<Blittable<decimal>>(buffer, TestToken)).Value);
     }
 
     [Theory]
@@ -104,9 +104,9 @@ public sealed class StreamExtensionsTests : Test
     [InlineData(0x80)]
     public static async Task BinaryReaderInterop(int length)
     {
-        var expected = Random.Shared.NextString(Alphabet + AlphabetUpperCase + Numbers, length);
+        var expected = Random.Shared.GetString(Alphabet + AlphabetUpperCase + Numbers, length);
         using var ms = new MemoryStream();
-        await ms.EncodeAsync(expected.AsMemory(), Encoding.UTF8, LengthFormat.Compressed, new byte[16]);
+        await ms.EncodeAsync(expected.AsMemory(), Encoding.UTF8, LengthFormat.Compressed, new byte[16], TestToken);
         ms.Position = 0;
         using var reader = new BinaryReader(ms, Encoding.UTF8, true);
         Equal(expected, reader.ReadString());
@@ -119,7 +119,7 @@ public sealed class StreamExtensionsTests : Test
     [InlineData(0x80)]
     public static async Task BinaryWriterInterop(int length)
     {
-        var expected = Random.Shared.NextString(Alphabet + AlphabetUpperCase + Numbers, length);
+        var expected = Random.Shared.GetString(Alphabet + AlphabetUpperCase + Numbers, length);
         using var ms = new MemoryStream();
         await using (var writer = new BinaryWriter(ms, Encoding.UTF8, true))
         {
@@ -127,7 +127,7 @@ public sealed class StreamExtensionsTests : Test
         }
         ms.Position = 0;
 
-        using var result = await ms.DecodeAsync(Encoding.UTF8, LengthFormat.Compressed, new byte[16]);
+        using var result = await ms.DecodeAsync(Encoding.UTF8, LengthFormat.Compressed, new byte[16], token: TestToken);
         Equal(expected, result.Span);
     }
 
@@ -136,7 +136,7 @@ public sealed class StreamExtensionsTests : Test
     {
         using var ms1 = new MemoryStream([1, 2, 3]);
         using var ms2 = new MemoryStream([4, 5, 6]);
-        using var combined = ms1.Combine([ms2]);
+        using var combined = Stream.Combine([ms1, ms2]);
         True(combined.CanRead);
         False(combined.CanWrite);
         False(combined.CanSeek);
@@ -155,7 +155,7 @@ public sealed class StreamExtensionsTests : Test
         await using var combined = StreamExtensions.Combine([ms1, ms2]);
 
         var buffer = new byte[6];
-        await combined.ReadExactlyAsync(buffer);
+        await combined.ReadExactlyAsync(buffer, TestToken);
 
         Equal([1, 2, 3, 4, 5, 6], buffer);
     }
@@ -165,7 +165,7 @@ public sealed class StreamExtensionsTests : Test
     {
         using var ms1 = new MemoryStream([1, 2, 3]);
         using var ms2 = new MemoryStream([4, 5, 6]);
-        using var combined = List.Singleton(ms1).Append(ms2).Combine();
+        using var combined = Stream.Combine(IReadOnlyList<Stream>.Singleton(ms1).Append(ms2));
         using var result = new MemoryStream();
 
         combined.CopyTo(result, 128);
@@ -177,10 +177,10 @@ public sealed class StreamExtensionsTests : Test
     {
         await using var ms1 = new MemoryStream([1, 2, 3]);
         await using var ms2 = new MemoryStream([4, 5, 6]);
-        await using var combined = ms1.Combine([ms2]);
+        await using var combined = Stream.Combine([ms1, ms2]);
         await using var result = new MemoryStream();
 
-        await combined.CopyToAsync(result, 128);
+        await combined.CopyToAsync(result, 128, TestToken);
         Equal([1, 2, 3, 4, 5, 6], result.ToArray());
     }
 
@@ -189,7 +189,7 @@ public sealed class StreamExtensionsTests : Test
     {
         using var ms1 = new MemoryStream([1, 2, 3]);
         using var ms2 = new MemoryStream([4, 5, 6]);
-        using var combined = ms1.Combine([ms2]);
+        using var combined = Stream.Combine([ms1, ms2]);
 
         Equal(1, combined.ReadByte());
         Equal(2, combined.ReadByte());
@@ -212,7 +212,7 @@ public sealed class StreamExtensionsTests : Test
     [InlineData(10)]
     public static void CombineManyStreams(byte streamCount)
     {
-        using var stream = GetStreams(streamCount).Combine(leaveOpen: false);
+        using var stream = Stream.Combine(GetStreams(streamCount), leaveOpen: false);
         Equal(streamCount, stream.Length);
         var actual = new byte[streamCount];
         stream.ReadExactly(actual);
@@ -236,7 +236,7 @@ public sealed class StreamExtensionsTests : Test
     {
         await using var ms1 = new MemoryStream([1, 2, 3]);
         await using var ms2 = new MemoryStream([4, 5, 6]);
-        await using var combined = ms1.Combine([ms2]);
+        await using var combined = Stream.Combine([ms1, ms2]);
 
         Throws<NotSupportedException>(() => combined.SetLength(0L));
         Throws<NotSupportedException>(() => combined.Seek(0L, default));
@@ -244,18 +244,13 @@ public sealed class StreamExtensionsTests : Test
         Throws<NotSupportedException>(() => combined.Position = 42L);
         Throws<NotSupportedException>(() => combined.WriteByte(1));
         Throws<NotSupportedException>(() => combined.Write(ReadOnlySpan<byte>.Empty));
-        await ThrowsAsync<NotSupportedException>(async () => await combined.WriteAsync(ReadOnlyMemory<byte>.Empty));
+        await ThrowsAsync<NotSupportedException>(async () => await combined.WriteAsync(ReadOnlyMemory<byte>.Empty, TestToken));
     }
 
     [Fact]
     public static async Task ReadEmptyStream()
     {
-        var count = 0;
-
-        await foreach (var chunk in Stream.Null.ReadAllAsync(64))
-            count++;
-
-        Equal(0, count);
+        Equal(0, await Stream.Null.ReadAllAsync(64, token: TestToken).CountAsync(TestToken));
     }
 
     [Fact]
@@ -265,9 +260,9 @@ public sealed class StreamExtensionsTests : Test
         using var source = new MemoryStream(bytes, false);
         using var destination = new MemoryStream(1024);
 
-        await foreach (var chunk in source.ReadAllAsync(64))
+        await foreach (var chunk in source.ReadAllAsync(64, token: TestToken))
         {
-            await destination.WriteAsync(chunk);
+            await destination.WriteAsync(chunk, TestToken);
         }
 
         Equal(bytes, destination.ToArray());
@@ -286,7 +281,7 @@ public sealed class StreamExtensionsTests : Test
         ms.Position = 0L;
 
         var writer = new ArrayBufferWriter<char>();
-        await ms.ReadUtf8Async(new byte[bufferSize], writer);
+        await ms.ReadUtf8Async(new byte[bufferSize], writer, TestToken);
         Equal("Привет, \u263A!", writer.WrittenSpan.ToString());
     }
 
@@ -303,7 +298,7 @@ public sealed class StreamExtensionsTests : Test
         ms.Position = 0L;
 
         var writer = new StringBuilder();
-        await ms.ReadUtf8Async(new byte[bufferSize], new char[Encoding.UTF8.GetMaxCharCount(bufferSize)], Write, writer);
+        await ms.ReadUtf8Async(new byte[bufferSize], new char[Encoding.UTF8.GetMaxCharCount(bufferSize)], Write, writer, TestToken);
         Equal("Привет, \u263A!", writer.ToString());
 
         static ValueTask Write(ReadOnlyMemory<char> input, StringBuilder output, CancellationToken token)
@@ -386,9 +381,9 @@ public sealed class StreamExtensionsTests : Test
         using var source = new MemoryStream(bytes, false);
         using var destination = new MemoryStream(1024);
 
-        await foreach (var chunk in source.ReadExactlyAsync(512L, 64))
+        await foreach (var chunk in source.ReadExactlyAsync(512L, 64, token: TestToken))
         {
-            await destination.WriteAsync(chunk);
+            await destination.WriteAsync(chunk, TestToken);
         }
 
         Equal(new ReadOnlySpan<byte>(bytes, 0, 512), destination.ToArray());

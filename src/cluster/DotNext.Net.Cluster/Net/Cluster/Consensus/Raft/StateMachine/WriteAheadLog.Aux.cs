@@ -9,6 +9,72 @@ using IO.Log;
 
 partial class WriteAheadLog
 {
+    /// <summary>
+    /// Imports log entries from another WAL.
+    /// </summary>
+    /// <remarks>
+    /// This method is intended for migration purposes only, it should not be used
+    /// during the normal operation.
+    /// </remarks>
+    /// <param name="other">The source of log entries.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public async Task ImportAsync(WriteAheadLog other, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(other);
+
+        var reader = await other.ReadAsync(LastCommittedEntryIndex + 1L, other.LastEntryIndex, token).ConfigureAwait(false);
+        try
+        {
+            foreach (var entry in reader)
+            {
+                await AppendAsync(entry, entry.Index, token).ConfigureAwait(false);
+            }
+        }
+        finally
+        {
+            reader.Dispose();
+        }
+
+        await CommitAsync(other.LastCommittedEntryIndex, token).ConfigureAwait(false);
+        await WaitForApplyAsync(other.LastAppliedIndex, token).ConfigureAwait(false);
+        await FlushAsync(token).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Represents catastrophic WAL failure.
+    /// </summary>
+    public abstract class IntegrityException : Exception
+    {
+        private protected IntegrityException(string message)
+            : base(message)
+        {
+        }
+    }
+    
+    /// <summary>
+    /// Indicates that the hash of the log entry doesn't match.
+    /// </summary>
+    public sealed class HashMismatchException : IntegrityException
+    {
+        internal HashMismatchException()
+            : base(ExceptionMessages.LogEntryHashMismatch)
+        {
+            
+        }
+    }
+    
+    /// <summary>
+    /// Indicates that the log doesn't have a page on the disk.
+    /// </summary>
+    public sealed class MissingPageException : IntegrityException
+    {
+        internal MissingPageException(uint pageIndex)
+            : base(ExceptionMessages.MissingWalPage(pageIndex))
+        {
+        }
+    }
+    
     private interface IConstant<out T>
     {
         static abstract T Value { get; }
@@ -29,10 +95,9 @@ partial class WriteAheadLog
     {
         private MemoryOwner<byte> buffer = buffer;
         
-        public readonly required DateTimeOffset Timestamp { get; init; }
-        public readonly required long Term { get; init; }
-        public readonly required object? Context { get; init; }
-        public readonly required int? CommandId { get; init; }
+        public required long Term { get; init; }
+        public required object? Context { get; init; }
+        public required int? CommandId { get; init; }
 
         readonly long? IDataTransferObject.Length => buffer.Length;
 
@@ -105,8 +170,9 @@ partial class WriteAheadLog
 
         private LogEntry Read(int index)
         {
-            var metadata = metadataPages[StartIndex + index];
-            return new(metadata, index, dataPages);
+            var absoluteIndex = StartIndex + index;
+            var metadata = metadataPages.GetView<MetadataReader>(absoluteIndex).Metadata;
+            return new(metadata, absoluteIndex, dataPages);
         }
 
         public IEnumerator<LogEntry> GetEnumerator()

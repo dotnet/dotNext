@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 namespace DotNext.Threading;
 
 using Collections.Generic;
-using Tasks;
 
 /// <summary>
 /// Represents a collection of asynchronous events.
@@ -35,12 +34,12 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     
     private static UInt128 GetBitMask(int index) => UInt128.One << index;
 
-    private protected sealed override void DrainWaitQueue(ref WaitQueueVisitor waitQueueVisitor)
+    private static void DrainWaitQueue(UInt128 state, ref WaitQueueScope queue)
     {
-        for (; !waitQueueVisitor.IsEndOfQueue<WaitNode, WaitNode>(out var node); waitQueueVisitor.Advance())
+        for (; !queue.IsEndOfQueue<WaitNode, WaitNode>(out var node); queue.Advance())
         {
             if (node.Matches(state))
-                waitQueueVisitor.SignalCurrent();
+                queue.SignalCurrent();
         }
     }
 
@@ -65,7 +64,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         if ((uint)eventIndex > (uint)Count)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
 
-        var builder = CreateTaskBuilder(timeout, token);
+        var builder = BeginAcquisition(timeout, token);
         return WaitAllAsync<ValueTask, TimeoutAndCancellationToken>(ref builder, GetBitMask(eventIndex));
     }
 
@@ -83,7 +82,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         if ((uint)eventIndex > (uint)Count)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(eventIndex)));
 
-        var builder = CreateTaskBuilder(token);
+        var builder = BeginAcquisition(token);
         return WaitAllAsync<ValueTask, CancellationTokenOnly>(ref builder, GetBitMask(eventIndex));
     }
 
@@ -94,11 +93,8 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     public void Reset()
     {
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        
-        lock (SyncRoot)
-        {
-            state = default;
-        }
+
+        TryAcquire(new ResetTransition(ref state), out _).Dispose();
     }
 
     /// <summary>
@@ -115,15 +111,18 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 
         var newState = GetBitMask(eventIndex);
         bool result;
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        var queue = CaptureWaitQueue();
+        try
         {
             result = (state & newState) == UInt128.Zero;
             state = newState;
-            suspendedCallers = DrainWaitQueue();
+            DrainWaitQueue(state = newState, ref queue);
+        }
+        finally
+        {
+            queue.Dispose();
         }
 
-        suspendedCallers?.Unwind();
         return result;
     }
 
@@ -141,15 +140,18 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 
         var mask = GetBitMask(eventIndex);
         bool result;
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+
+        var queue = CaptureWaitQueue();
+        try
         {
             result = (state & mask) == UInt128.Zero;
-            state |= mask;
-            suspendedCallers = DrainWaitQueue();
+            DrainWaitQueue(state |= mask, ref queue);
+        }
+        finally
+        {
+            queue.Dispose();
         }
 
-        suspendedCallers?.Unwind();
         return result;
     }
 
@@ -166,18 +168,21 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
     {
         ArgumentOutOfRangeException.ThrowIfGreaterThan(events.Mask, all.Mask, nameof(events));
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
-        
-        EventGroup result;
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+
+        UInt128 result;
+        var queue = CaptureWaitQueue();
+        try
         {
-            result = new(events.Mask & ~state);
+            result = events.Mask & ~state;
             state = events.Mask;
-            suspendedCallers = DrainWaitQueue();
+            DrainWaitQueue(state = events.Mask, ref queue);
+        }
+        finally
+        {
+            queue.Dispose();
         }
 
-        suspendedCallers?.Unwind();
-        return result;
+        return new(result);
     }
 
     /// <summary>
@@ -194,17 +199,19 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         ArgumentOutOfRangeException.ThrowIfGreaterThan(events.Mask, all.Mask, nameof(events));
         ObjectDisposedException.ThrowIf(IsDisposingOrDisposed, this);
 
-        EventGroup result;
-        LinkedValueTaskCompletionSource<bool>? suspendedCallers;
-        lock (SyncRoot)
+        UInt128 result;
+        var queue = CaptureWaitQueue();
+        try
         {
-            result = new(events.Mask & ~state);
-            state |= events.Mask;
-            suspendedCallers = DrainWaitQueue();
+            result = events.Mask & ~state;
+            DrainWaitQueue(state |= events.Mask, ref queue);
+        }
+        finally
+        {
+            queue.Dispose();
         }
 
-        suspendedCallers?.Unwind();
-        return result;
+        return new(result);
     }
 
     /// <summary>
@@ -232,7 +239,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         if (events.Mask > all.Mask)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
 
-        var builder = CreateTaskBuilder(timeout, token);
+        var builder = BeginAcquisition(timeout, token);
         return WaitAnyAsync<ValueTask, TimeoutAndCancellationToken>(ref builder, events.Mask);
     }
 
@@ -252,7 +259,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         if (events.Mask > all.Mask)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
 
-        var builder = CreateTaskBuilder(token);
+        var builder = BeginAcquisition(token);
         return WaitAnyAsync<ValueTask, CancellationTokenOnly>(ref builder, events.Mask);
     }
 
@@ -275,7 +282,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         if (events.Mask > all.Mask)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
 
-        var builder = CreateTaskBuilder(timeout, token);
+        var builder = BeginAcquisition(timeout, token);
         return WaitAnyAsync<ValueTask, TimeoutAndCancellationToken>(ref builder, events.Mask, output);
     }
 
@@ -296,13 +303,13 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         if (events.Mask > all.Mask)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
 
-        var builder = CreateTaskBuilder(token);
+        var builder = BeginAcquisition(token);
         return WaitAnyAsync<ValueTask, CancellationTokenOnly>(ref builder, events.Mask, output);
     }
     
     private T WaitAnyAsync<T, TBuilder>(ref TBuilder builder, UInt128 mask, ICollection<int>? output = null)
         where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
         var events = state & mask;
         switch (builder.IsCompleted)
@@ -316,11 +323,8 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
                 FillIndices(events, output);
                 goto default;
             default:
-                builder.Dispose();
-                break;
+                return builder.Build();
         }
-
-        return builder.Invoke();
     }
 
     /// <summary>
@@ -387,7 +391,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         if (events.Mask > all.Mask)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
 
-        var builder = CreateTaskBuilder(timeout, token);
+        var builder = BeginAcquisition(timeout, token);
         return WaitAllAsync<ValueTask, TimeoutAndCancellationToken>(ref builder, events.Mask);
     }
 
@@ -407,7 +411,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         if (events.Mask > all.Mask)
             return ValueTask.FromException(new ArgumentOutOfRangeException(nameof(events)));
 
-        var builder = CreateTaskBuilder(token);
+        var builder = BeginAcquisition(token);
         return WaitAllAsync<ValueTask, CancellationTokenOnly>(ref builder, events.Mask);
     }
 
@@ -435,7 +439,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 
     private T WaitAllAsync<T, TBuilder>(ref TBuilder builder, UInt128 mask)
         where T : struct, IEquatable<T>
-        where TBuilder : struct, ITaskBuilder<T>
+        where TBuilder : struct, ITaskBuilder<T>, allows ref struct
     {
         var events = state & mask;
         switch (builder.IsCompleted)
@@ -446,11 +450,8 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
                 node.WaitAll(mask);
                 goto default;
             default:
-                builder.Dispose();
-                break;
+                return builder.Build();
         }
-
-        return builder.Invoke();
     }
 
     private static void FillIndices(UInt128 events, ICollection<int> indices)
@@ -513,14 +514,12 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         /// </summary>
         /// <returns>An enumerator over indices.</returns>
         public Enumerator GetEnumerator() => new(Mask);
-
-        /// <inheritdoc cref="GetEnumerator()"/>
-        IEnumerator<int> IEnumerable<int>.GetEnumerator()
-            => GetEnumerator().ToClassicEnumerator<Enumerator, int>();
         
-        /// <inheritdoc cref="GetEnumerator()"/>
-        IEnumerator IEnumerable.GetEnumerator()
-            => GetEnumerator().ToClassicEnumerator<Enumerator, int>();
+        /// <inheritdoc />
+        IEnumerator<int> IEnumerable<int>.GetEnumerator() => IEnumerator<int>.Create(GetEnumerator());
+
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator() => IEnumerator<int>.Create(GetEnumerator());
 
         /// <summary>
         /// Represents an enumerator over indices.
@@ -601,5 +600,17 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
 
         static WaitNode INodeMapper<WaitNode, WaitNode>.GetValue(WaitNode node)
             => node;
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct ResetTransition(ref UInt128 state) : ILockManager
+    {
+        private readonly ref UInt128 state = ref state;
+
+        bool ILockManager.IsLockAllowed => true;
+
+        void ILockManager.AcquireLock() => state = default;
+
+        static bool ILockManager.RequiresEmptyQueue => false;
     }
 }

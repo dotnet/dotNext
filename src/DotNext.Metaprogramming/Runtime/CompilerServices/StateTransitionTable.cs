@@ -1,5 +1,3 @@
 ﻿namespace DotNext.Runtime.CompilerServices;
 
-internal sealed class StateTransitionTable : SortedDictionary<uint, StateTransition>
-{
-}
+internal sealed class StateTransitionTable : SortedDictionary<uint, StateTransition>;

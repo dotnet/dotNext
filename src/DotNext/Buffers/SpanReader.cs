@@ -186,7 +186,7 @@ public ref struct SpanReader<T>
     /// <returns>The number of obtained elements.</returns>
     public int Read(scoped Span<T> output)
     {
-        RemainingSpan.CopyTo(output, out var writtenCount);
+        var writtenCount = RemainingSpan >> output;
         position += writtenCount;
         return writtenCount;
     }

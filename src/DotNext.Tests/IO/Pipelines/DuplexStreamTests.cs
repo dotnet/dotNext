@@ -13,12 +13,12 @@ public sealed class DuplexStreamTests : Test
         source.Position = 0L;
 
         var pipe = new DuplexPipe();
-        await using var destination = new DuplexStream(pipe, leaveOutputOpen: true);
-        await source.CopyToAsync(destination);
+        await using var destination = pipe.AsStream(leaveOutputOpen: true);
+        await source.CopyToAsync(destination, TestToken);
         await pipe.Output.Writer.CompleteAsync();
 
         source.Position = 0L;
-        await pipe.Output.Reader.CopyToAsync(source);
+        await pipe.Output.Reader.CopyToAsync(source, TestToken);
         Equal(expected.Length, source.Length);
         Equal(expected, source.ToArray());
     }

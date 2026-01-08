@@ -14,5 +14,5 @@ internal sealed class HasNoExceptionExpression : StateMachineExpression
     public override Expression Reduce() => Default(typeof(bool));
 
     internal override Expression Reduce(ParameterExpression stateMachine)
-        => stateMachine.Property(nameof(AsyncStateMachine<ValueTuple>.HasNoException));
+        => stateMachine.Property(nameof(AsyncStateMachine<>.HasNoException));
 }

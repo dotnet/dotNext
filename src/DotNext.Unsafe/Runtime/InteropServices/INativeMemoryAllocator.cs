@@ -1,21 +1,22 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.InteropServices;
 
-using Runtime;
+using CompilerServices;
 
 internal interface INativeMemoryAllocator<T>
     where T : unmanaged
 {
     public static abstract bool IsZeroed { get; }
     
-    public static bool IsNaturallyAligned => Intrinsics.AlignOf<T>() <= nuint.Size;
+    public static bool IsNaturallyAligned => Unsafe.AlignOf<T>() <= nuint.Size;
     
     private static unsafe nuint GetByteCount(nuint length)
         => checked(length * (uint)sizeof(T));
 
     public static unsafe T* Allocate<TAllocator>(nuint length)
-        where TAllocator : struct, INativeMemoryAllocator<T>
+        where TAllocator : struct, INativeMemoryAllocator<T>, allows ref struct
     {
         nuint elementSize = (uint)sizeof(T);
         void* result;
@@ -30,7 +31,7 @@ internal interface INativeMemoryAllocator<T>
             var byteCount = GetByteCount(length);
             result = NativeMemory.AlignedAlloc(
                 byteCount,
-                (uint)Intrinsics.AlignOf<T>());
+                (uint)Unsafe.AlignOf<T>());
 
             if (TAllocator.IsZeroed)
                 NativeMemory.Clear(result, byteCount);
@@ -56,21 +57,21 @@ internal interface INativeMemoryAllocator<T>
         var byteCount = GetByteCount(length);
         var result = IsNaturallyAligned
             ? NativeMemory.Realloc(address, byteCount)
-            : NativeMemory.AlignedRealloc(address, byteCount, (uint)Intrinsics.AlignOf<T>());
+            : NativeMemory.AlignedRealloc(address, byteCount, (uint)Unsafe.AlignOf<T>());
 
         return (T*)result;
     }
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct ZeroedAllocator<T> : INativeMemoryAllocator<T>
+internal readonly ref struct ZeroedAllocator<T> : INativeMemoryAllocator<T>
     where T : unmanaged
 {
     static bool INativeMemoryAllocator<T>.IsZeroed => true;
 }
 
 [StructLayout(LayoutKind.Auto)]
-internal readonly struct DraftAllocator<T> : INativeMemoryAllocator<T>
+internal readonly ref struct DraftAllocator<T> : INativeMemoryAllocator<T>
     where T : unmanaged
 {
     static bool INativeMemoryAllocator<T>.IsZeroed => false;

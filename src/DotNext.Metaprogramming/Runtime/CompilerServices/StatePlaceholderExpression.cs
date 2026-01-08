@@ -7,12 +7,6 @@ internal sealed class StatePlaceholderExpression : Expression
 {
     private uint? stateId;
 
-    internal StatePlaceholderExpression(uint stateId)
-        => this.stateId = stateId;
-
-    public StatePlaceholderExpression()
-        => stateId = null;
-
     internal uint StateId
     {
         set => stateId = value;
