@@ -8,9 +8,9 @@ using System.Linq.Expressions;
 record class MyRecord(int X);
 
 Expression x = new MyRecord(42).Const();
-Expression mutation = x.With(new MemberBindings()
+Expression mutation = x.With(new()
 {
-    {"X", 52.Const()}
+    { "X", 52.Quoted }
 });
 ```
 `With` extension method generates the expression equivalent to the following C# expression:

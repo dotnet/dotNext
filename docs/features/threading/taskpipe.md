@@ -16,15 +16,3 @@ Task Completion Pipe
 > Performance tip: `TryRead` and `WaitToReadAsync` methods are preferred way if consumer processes completed tasks slower than producer submits new tasks. Otherwise, **await foreach** is preferred.
 
 The pipe is thread-safe for both consumer and producer. Moreover, multiple consumers and multiple producers are allowed, no need to specify configuration properties like [SingleReader](https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channeloptions.singlereader) as for [Channel&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels.channel-1) class.
-
-[TaskCompletionPipe](xref:DotNext.Threading.Tasks.TaskCompletionPipe) static class exposes one-shot helper methods to obtain async stream over the tasks:
-```csharp
-Task<int> task1 = DoAsync();
-Task<int> task2 = DoAsync();
-
-int sum = 0;
-await foreach (int result in TaskCompletionPipe.GetConsumer([task1, task2]))
-{
-    sum += result;
-}
-```

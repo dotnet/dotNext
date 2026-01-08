@@ -6,7 +6,7 @@ Compound Expressions Construction
 ```csharp
 using DotNext.Metaprogramming;
 
-var expr = 42.Const().Convert<long>().Negate().Add(1L.Const()); // equivalent to -((long)42) + 1L
+var expr = (-(42.Quoted).Convert<long>()) + 1L.Quoted; // equivalent to -((long)42) + 1L
 ```
 
 The following example demonstrates how to construct `throw` statement:
@@ -15,7 +15,7 @@ The following example demonstrates how to construct `throw` statement:
 using System;
 using DotNext.Metaprogramming;
 
-typeof(Exception).New("Exception message".Const()).Throw()    //equivalent to new Exception("Exception message")
+typeof(Exception).New("Exception message".Quoted).Throw()    //equivalent to new Exception("Exception message")
 ```
 
 Compound expression can be constructed with **dynamic** type:
@@ -24,7 +24,18 @@ Compound expression can be constructed with **dynamic** type:
 using System;
 using DotNext.Metaprogramming;
 
-dynamic expr = 42.Const().AsDynamic();
+dynamic expr = 42.Quoted.AsDynamic();
 expr = -expr + 1;
 Expression tree = expr; //tree is -42 + 1
 ```
+
+or with overloaded operators:
+```csharp
+using System;
+using DotNext.Metaprogramming;
+
+Expression expr = 42.Quoted;
+expr = -expr + 1.Quoted; //expr is -42 + 1
+```
+
+Checked and unchecked versions of the arithmetic operators are supported.

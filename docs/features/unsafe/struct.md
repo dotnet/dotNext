@@ -13,17 +13,19 @@ The following example demonstrates how to allocate a block of unmanaged memory a
 using DotNext.Buffers;
 using System.Buffers;
 
-using IUnmanagedMemoryOwner<long> owner = UnmanagedMemoryPool<long>.Allocate(12);
+using IUnmanagedMemory<long> owner = IUnmanagedMemory<long>.Allocate(12);
 Memory<long> memory = owner.Memory;
 memory.Span[0] = 42L;
 ```
+
+`MemoryAllocator<T>.Unmanaged` property exposes the allocator of the unmanaged memory.
 
 The memory can be resized on-the-fly. Resizing causes re-allocation of the memory with the copying of the elements from the original location. The new size of the array can be defined using `Reallocate` method.
 
 ```csharp
 using DotNext.Buffers;
 
-using var block = UnmanagedMemoryPool<double>.Allocate(10); //block.Length == 10L
+using var block = IUnmanagedMemory<double>.Allocate(10); //block.Length == 10L
 Span<double> array = block.Memory.Span;
 array[0] = 10;
 array[1] = 30;
@@ -63,7 +65,7 @@ struct Complex
     public double Image, Real;
 }
 
-using var memory = UnmanagedMemoryPool<Complex>.Allocate(1);
+using var memory = new UnmanagedMemory<Complex>();
 ref Complex ptr = ref memory.Pointer.Value;
 ptr.Image = 20;
 ptr.Real = 30;
@@ -79,8 +81,7 @@ struct Complex
     public double Image, Real;
 }
 
-using var c = UnmanagedMemoryPool<Complex>.Allocate(1);
-c.Pointer.Value = new Complex { Image = 20, Real = 30 };
+using var c = new UnmanagedMemory<Complex>(new { Image = 20, Real = 30 });
 Pointer<double> pImage = c.Pointer.As<double>();
 Pointer<double> pReal = pImage + 1;
 pImage.Value = 1;
@@ -98,8 +99,7 @@ using System;
 
 var id = Guid.NewGuid();
 
-using var memory = UnmanagedMemory<Guid>.Allocate(1);
-memory.Pointer.Value = id;
+using var memory = new UnmanagedMemory<Guid>(id);
 Span<byte> bytes = memory.Bytes;
-Pointer<byte> ptr = memory.Pointer.As<byte>();
+Pointer<byte> ptr = memory.Pointer;
 ```

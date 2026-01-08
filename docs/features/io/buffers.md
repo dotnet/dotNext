@@ -57,14 +57,14 @@ Suppose that sparse buffer has rented memory block of size _1024_ bytes, and _10
 
 The implementation of `GetMemory(int)` and `GetSpan(int)` methods are optimized to reduce the number of such memory holes. However, due to nature of sparse buffer data structure, it is not possible in 100% cases. Nevertheless, such overhead can be acceptable because sparse buffer never reallocates the existing memory and may work faster than [PoolingBufferWriter&lt;T&gt;](xref:DotNext.Buffers.PoolingBufferWriter`1) which requires reallocation when rented memory block is not enough to place a new data.
 
-Additionally, you can use [Stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream)-based API to read from or write to the sparse buffer. [StreamSource](xref:DotNext.IO.StreamSource) provides `AsStream` extension method that can be used to create readable or writable stream over the buffer:
+Additionally, you can use [Stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream)-based API to read from or write to the sparse buffer. [StreamSource](xref:DotNext.IO.StreamSource) provides `Create` extension method that can be used to create readable or writable stream over the buffer:
 ```csharp
 using DotNext.Buffers;
 using DotNext.IO;
 
 using var buffer = new SparseBufferWriter<byte>();
-using Stream writable = buffer.AsStream(false); // create writable stream
-using Stream readable = buffer.AsStream(true);  // create readable stream
+using Stream writable = Stream.Create(buffer, true); // create writable stream
+using Stream readable = Stream.Create(buffer, true);  // create readable stream
 ```
 
 Sparse buffer supports various strategies for allocation of the memory chunks:
@@ -123,7 +123,7 @@ using System.IO;
 using static DotNext.IO.TextWriterExtensions;
 
 using var buffer = new PoolingArrayBufferWriter<char>(ArrayPool<char>.Shared);
-using TextWriter writer = buffer.AsTextWriter();
+using TextWriter writer = TextWriter.Create(buffer);
 writer.Write("Hello,");
 writer.Write(' ');
 writer.Write("world!");
@@ -148,7 +148,7 @@ buffer.Interpolate($"{x} + {y} = {x + y}");
 string result = buffer.ToString();
 ```
 
-Alignment and custom formats are fully supported. For more information about these interpolated string handlers, see [BufferWriterSlimInterpolatedStringHandler](xref:DotNext.Buffers.BufferWriterSlimInterpolatedStringHandler), [BufferWriterInterpolatedStringHandler](xref:DotNext.Buffers.BufferWriterInterpolatedStringHandler), and [PoolingInterpolatedStringHandler](xref:DotNext.Buffers.PoolingInterpolatedStringHandler) data types.
+Alignment and custom formats are fully supported. For more information about these interpolated string handlers, see [BufferWriterSlimInterpolatedStringHandler](xref:DotNext.Text.BufferWriterSlimInterpolatedStringHandler), [BufferWriterInterpolatedStringHandler](xref:DotNext.Text.BufferWriterInterpolatedStringHandler), and [PoolingInterpolatedStringHandler](xref:DotNext.Text.PoolingInterpolatedStringHandler) data types.
 
 [CharBuffer](xref:DotNext.Buffers.CharBuffer) class offers extension methods for efficient concatenation of strings:
 ```csharp
@@ -156,7 +156,7 @@ using DotNext.Buffers;
 
 int x = 10, y = 20;
 using var buffer = new BufferWriterSlim<char>(stackalloc char[128]);
-buffer.Concat(["Hello,", " ", "world!"]);
+buffer.Concat("Hello,", " ", "world!");
 ```
 
 # How to choose?

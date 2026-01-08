@@ -59,7 +59,7 @@ These methods allow to turn any thread-unsafe object into thread-safe object wit
 
 ```csharp
 using System.Text;
-using static DotNext.Threading.AsyncLockAcquisition;
+using static DotNext.Threading.AsyncLock;
 
 var builder = new StringBuilder();
 
@@ -76,7 +76,7 @@ using (AcquireWriteLockAsync(builder, CancellationToken.None))
 }
 ```
 
-For more information check extension methods inside the [AsyncLockAcquisition](xref:DotNext.Threading.AsyncLockAcquisition) class.
+For more information check extension methods inside the [AsyncLock](xref:DotNext.Threading.AsyncLock) class.
 
 # Custom synchronization primitive
 [QueuedSynchronizer&lt;TContext&gt;](xref:DotNext.Threading.QueuedSynchronizer`1) provides low-level infrastructure for writing custom synchronization primitives for asynchronous code. It uses the same [synchronization engine](xref:DotNext.Threading.QueuedSynchronizer) as other primitives shipped with the library: [AsyncExclusiveLock](xref:DotNext.Threading.AsyncExclusiveLock), [AsyncReaderWriterLock](xref:DotNext.Threading.AsyncReaderWriterLock), etc. The following example demonstrates how to write custom async-aware reader-writer lock:

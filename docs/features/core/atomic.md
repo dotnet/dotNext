@@ -23,10 +23,7 @@ Numeric types have the following atomic operations:
 Reference types have similar set of atomic operations except arithmetic operations such as increment, decrement and addition.
 
 # Atomic operations for scalar types
-Atomic operations are extension methods exposed by [AtomicInt32](xref:DotNext.Threading.Atomic) class.
-
-Atomic operations for some data types represented by atomic containers instread of extension methods:
-* [Atomic.Boolean](xref:DotNext.Threading.Atomic.Boolean) for [bool](https://docs.microsoft.com/en-us/dotnet/api/system.boolean) data type
+Atomic operations are extension methods exposed by [Atomic](xref:DotNext.Threading.Atomic) class.
 
 The following example demonstrates how to use advanced atomic operations
 ```csharp
@@ -36,9 +33,9 @@ public class TestClass
 {
     private long field;
 
-    public void IncByTwo() => field.UpdateAndGet(x => x + 2);   //update field with a sum of its value and constant 2 atomically
+    public void IncByTwo() => Interlocked.UpdateAndGet(ref field, x => x + 2);   //update field with a sum of its value and constant 2 atomically
 
-    public long Sub(long value) => field.AccumulateAndGet(value, (current, v) => current - value); //the same as field -= value but performed atomically
+    public long Sub(long value) => Interlocked.AccumulateAndGet(ref field, value, (current, v) => current - value); //the same as field -= value but performed atomically
 }
 ```
 

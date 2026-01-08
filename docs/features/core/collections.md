@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 var list = new List<string>() { "1", "2", "3" };
 var mappedList = list.Convert(int.Parse);
-var first = mappedList[0];	//first == 1
+var first = mappedList[0];	// first == 1
 ```
 
 # ToArray
@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using DotNext.Collections.Generic;
 
 ICollection<string> collection = new string[] { "a", "b", "c" };
-var array = collection.ToArray();   //array = new [] {"a", "b", "c" }
+var array = collection.ToArray();   // array = new [] {"a", "b", "c" }
 ```
 
 # Singleton list and set
@@ -37,8 +37,8 @@ The library provides optimized version of the list with the single element in it
 ```csharp
 using DotNext.Collections.Generic;
 
-IReadOnlyList<string> list = List.Singleton("a");
-IReadOnlySet<string> set = Set.Singleton("a");
+IReadOnlyList<string> list = IReadOnlyList<string>.Singleton("a");
+IReadOnlySet<string> set = IReadOnlySet<string>.Singleton("a");
 ```
 
 # Collection items concatenation
@@ -47,8 +47,8 @@ Extension method _ToString_ from class [Collection](xref:DotNext.Collections.Gen
 ```csharp
 using DotNext.Collections.Generic;
 
-var array = new int[] {1, 2, 3};
-var str = array.ToString(",");  //str is 1,2,3
+int[] array = [1, 2, 3];
+var str = array.ToString(",");  // str is 1,2,3
 ```
 
 # Iteration
@@ -98,6 +98,13 @@ Now the elements can be accessed using the indexer of [MemoryOwner&lt;T&gt;](xre
 ```csharp
 using DotNext.Collections.Generic;
 
-IReadOnlySet<long> set = Set.Range<long, DisclosedEndpoint<long>, DisclosedEndpoint<long>>(0L, 3L); // [1, 2]
-set = Set.Range<long, EnclosedEndpoint<long>, DisclosedEndpoint<long>>(0L, 3L); // [0, 1, 2]
+IReadOnlySet<long> set = IReadOnlySet<long>.Range(0L.Disclosed, 3L.Disclosed); // [1, 2]
+set = IReadOnlySet<long>.Range(0L.Enclosed, 3L.Disclosed); // [0, 1, 2]
+```
+
+# Repeating list
+If the collection needs to contain the same element multiple times, the array is not efficient because it duplicates the item multiple times in the memory. Instead, it's possible to store just one item regardless the number of elements in the collection:
+```csharp
+IReadOnlyList<string> list = IReadOnlyList<string>.Repeat("Item", 5);
+string item = list[2];
 ```

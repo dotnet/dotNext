@@ -16,10 +16,10 @@ using static DotNext.Metaprogramming.CodeGenerator;
 var newState = Lambda<Func<(DoorState, Action, bool), DoorState>>(fun => 
 {
     Match(fun[0])
-        .Case((DoorState.Closed, Action.Open), DoorState.Opened.Const())
-        .Case((DoorState.Opened, Action.Close), DoorState.Closed.Const())
-        .Case((DoorState.Closed, Action.Lock, true), DoorState.Locked.Const())
-        .Case((DoorState.Locked, Action.Unlock, true), DoorState.Closed.Const())
+        .Case((DoorState.Closed, Action.Open), DoorState.Opened.Quoted)
+        .Case((DoorState.Opened, Action.Close), DoorState.Closed.Quoted)
+        .Case((DoorState.Closed, Action.Lock, true), DoorState.Locked.Quoted)
+        .Case((DoorState.Locked, Action.Unlock, true), DoorState.Closed.Quoted)
         .Default(state => state)
         .OfType<DoorState>()
     .End();
@@ -52,10 +52,10 @@ struct Point
 var lambda = Lambda<Func<Point, string>>(fun =>
 {
     Match(fun[0])
-        .Case("X", 0L.Const(), value => "X is zero".Const())
-        .Case(new { X = long.MaxValue, Y = long.MaxValue }, "MaxValue".Const())
-        .Case("X", long.MinValue.Const(), "Y", long.MinValue.Const(), (x, y) => "MinValue".Const())
-        .Default("Unknown".Const())
+        .Case("X", 0L.Quoted, value => "X is zero".Quoted)
+        .Case(new { X = long.MaxValue, Y = long.MaxValue }, "MaxValue".Quoted)
+        .Case("X", long.MinValue.Quoted, "Y", long.MinValue.Quoted, (x, y) => "MinValue".Quoted)
+        .Default("Unknown".Quoted)
         .OfType<string>()
     .End();
 }).Compile();

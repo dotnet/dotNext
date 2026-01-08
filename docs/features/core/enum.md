@@ -1,9 +1,9 @@
 Enum Enhancements
 ====
-[EnumConverter](xref:DotNext.EnumConverter) allows to convert primitive types into arbitrary enum type and vice versa. It is helpful if enum type is defined as generic parameter and not known at compile time.
+[Enum&lt;T&gt;](xref:DotNext.Numerics.Enum`1) represents the enum as its underlying numeric type.
 
 ```csharp
-using DotNext;
+using DotNext.Numerics;
 using System;
 
 enum Color: int
@@ -15,16 +15,10 @@ enum Color: int
     White = 0xFFFFFF
 }
 
-public static E Plus<E>(E first, E second, E third) 
-    where E: unmanaged, Enum
-{
-    var result = first.ToInt64() + second.ToInt64() + third.ToInt64();
-    return result.ToEnum<E>();
-}
-
-var white = Plus(Color.Red, Color.Green, Color.Blue);
-white == Color.White;   //true
+Color e = new Enum<Color>(Color.Red) | new Enum<Color>(Color.Green) | new Enum<Color>(Color.Blue);
 ```
+
+The type implements [IBinaryInteger&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.numerics.ibinaryinteger-1) interface to expose the full power of the Generic Math.
 
 # Attributes
 [EnumType](xref:DotNext.Reflection.EnumType) static classes exposes access to custom attributes attached to the enum member.

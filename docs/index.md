@@ -1,4 +1,4 @@
-.NEXT 5.x
+.NEXT 6.x
 ====
 
 .NEXT (dotNext) is the family of powerful libraries aimed to improve development productivity and extend the .NET API with unique features. The project is supported by the [.NET Foundation](https://dotnetfoundation.org).
@@ -9,7 +9,7 @@
 This chapter gives a quick overview of these libraries. Read [articles](./features/core/index.md) for a closer look at all available features.
 
 Prerequisites:
-* Runtime: .NET 8
+* Runtime: .NET 10
 * OS: Linux, Windows, MacOS, WASM, WASI
 * Architecture: any if supported by the underlying .NET Runtime
 
@@ -18,14 +18,15 @@ Prerequisites:
 This library is the core of .NEXT which extends .NET standard library with
   * Generic ranges
   * Unified representation of various synchronization primitives in the form of the lock
-  * Generation of random strings
   * Ad-hoc user data associated with arbitrary object
   * A rich set of dynamic buffer types
-  * Fast HEX conversion
   * Fast Base64 [encoding](xref:DotNext.Buffers.Text.Base64Encoder)/[decoding](xref:DotNext.Buffers.Text.Base64Decoder) for streaming scenarios
   * [Optional](features/core/optional.md) and [Result](features/core/result.md) monads
   * [Soft Reference](features/core/softref.md) and [async GC notifications](features/core/gcnotif.md)
   * [LEB128](xref:DotNext.Buffers.Binary.Leb128`1) encoding support
+  * Producing ad-hoc streams from various sources: arrays, buffers
+  * Rich interpolation handlers for various char encodings and buffer types
+  * Advanced buffer types
 
 # DotNext.Metaprogramming
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/absoluteLatest"><img src="https://img.shields.io/nuget/vpre/dotnext.metaprogramming.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.metaprogramming.svg)<br/>
@@ -38,7 +39,8 @@ This library provides a special types to work with unmanaged memory in safe mann
 * Unmanaged [memory pool](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1)
 * Interop with unmanaged memory via [Memory](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1) value type
 * CLS-compliant generic pointer type for .NET languages without direct support of such type. Use this feature to work with pointers from VB.NET or F#.
-* Atomic thread-safe operations applicable to data placed into unmanaged memory: increment, decrement, compare-and-set etc, volatile access
+* Atomic thread-safe operations applicable to data placed into unmanaged memory: increment, decrement, compare-and-set etc.
+* Allocation of memory pages
 
 # DotNext.Threading
 <a href="https://www.nuget.org/packages/dotnext.threading/absoluteLatest"><img src="https://img.shields.io/nuget/vpre/dotnext.threading.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.threading.svg)<br/>

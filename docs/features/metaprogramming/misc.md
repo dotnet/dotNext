@@ -89,7 +89,7 @@ using static DotNext.Metaprogramming.CodeGenerator;
 
 var greeting = Lambda<Func<int, int, int>>(fun =>
 {
-	Statement(Expression.Add(fun[0], fun[1]));
+    Statement(fun[0] + fun[1]);
 });
 
 // the generated code is

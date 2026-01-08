@@ -68,7 +68,7 @@ Func<long, long> fact = Lambda<Func<long, long>>(fun =>
     //try-catch
     Try(() => 
     {
-        Return(10.Const());    //return from lambda function
+        Return(10.Quoted);    //return from lambda function
     })
     .Finally(() => //finally block
     {  

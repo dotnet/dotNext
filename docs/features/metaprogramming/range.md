@@ -15,7 +15,7 @@ The following example demonstrates how to obtain individual character from strin
 using DotNext.Linq.Expressions;
 using System.Linq.Expressions;
 
-Expression stringValue = "Hello, world".Const();
+Expression stringValue = "Hello, world".Quoted;
 var character = stringValue.ElementAt(2.Index(false));
 var slice = stringValue.Slice(start: 0.Index(false), end: 1.Index(true));
 

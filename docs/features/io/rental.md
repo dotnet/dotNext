@@ -20,7 +20,7 @@ The following example demonstrates how to reverse a string and choose temporary 
 ```csharp
 using DotNext.Buffers;
 
-public static unsafe string Reverse(this string str)
+public static string Reverse(this string str)
 {
   if (str.Length == 0) return str;
   const int stackallocThreshold = 128;
@@ -30,8 +30,7 @@ public static unsafe string Reverse(this string str)
 
   str.AsSpan().CopyTo(result.Span);
   result.Span.Reverse();
-  fixed (char* ptr = result.Span)
-    return new string(ptr, 0, result.Length);
+  return new string(result.Span);
 } 
 ```
 

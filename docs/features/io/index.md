@@ -50,10 +50,9 @@ using DotNext.IO;
 using System.IO;
 
 var fs = new FileStream("content.bin", FileMode.Open, FileAccess.Read, FileShare.Read);
-using var segment = new StreamSegment(fs);
 foreach(Action<Stream> consumer in consumers)
 {
-    segment.Adjust(10L, 1024L); //fs is limited to the segment limited by the offset of 10 from the beginning of the stream and length of 1024 bytes
+    using Stream segment = fs.Slice(10L, 1024L); //fs is limited to the segment limited by the offset of 10 from the beginning of the stream and length of 1024 bytes
     consumer(segment);
 }
 ```
@@ -67,7 +66,7 @@ using DotNext.IO;
 using var ms1 = new MemoryStream();
 using var ms2 = new MemoryStream();
 
-using var stream = ms1.Combine([ms2]);
+using var stream = Stream.Combine([ms1, ms2]);
 ```
 
 Note that the result stream is read-only and not seekable.
@@ -99,9 +98,9 @@ await foreach (ReadOnlyMemory<byte> chunk in pipe.Reader.ReadAllAsync())
 ```
 
 # Decoding Data from ReadOnlySequence
-[ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) is a convenient way to read from non-contiguous blocks of memory. However, this API is too low-level and doesn't provide high-level methods for parsing strings and primitives. [SequenceReader](xref:DotNext.IO.SequenceReader) value type is a wrapper for the sequence of memory blocks that provides high-level decoding methods:
+[ReadOnlySequence&lt;byte&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) is a convenient way to read from non-contiguous blocks of memory. However, this API is too low-level and doesn't provide high-level methods for parsing strings and primitives. [SequenceReader](xref:DotNext.Buffers.SequenceReader) value type is a wrapper for the sequence of memory blocks that provides high-level decoding methods:
 ```csharp
-using DotNext.IO;
+using DotNext.Buffers;
 using System;
 using System.Buffers;
 using System.Text;
@@ -236,12 +235,12 @@ writer.Advance(writtenCount);
 ```
 
 # Text Reader for ReadOnlySequence
-[ReadOnlySequence&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) can be wrapped as an instance of [TextReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader) class to read strings and characters in more convenient way. To do that, you need to call `AsTextReader` extension method:
+[ReadOnlySequence&lt;char&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1) can be wrapped as an instance of [TextReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader) class to read strings and characters in more convenient way. To do that, you need to call `TextReader.Create` extension method:
 ```csharp
 using DotNext.IO;
 using System.Buffers;
 using System.IO;
 
 ReadOnlySequence<char> sequence = ...;
-using TextReader reader = sequence.AsTextReader();
+using TextReader reader = TextReader.Create(sequence);
 ```

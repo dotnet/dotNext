@@ -71,9 +71,9 @@ Lambda<Fun<long, long>>((fun, result) =>
 {
     var arg = fun[0];
     Assign(result, 1L);  //result = 1L;
-    While((Expression)(arg.AsDynamic() > 1L), () => 
+    While((arg > 1L.Quoted), () => 
 	{
-        Assign(result, arg.AsDynamic()-- * fun.Result);  //result *= arg--;
+        Assign(result, arg-- * result);  //result *= arg--;
     });
 });
 
@@ -100,10 +100,10 @@ using static DotNext.Linq.Expressions.ExpressionBuilder;
 
 Lambda<Fun<long, long>>((fun, result) => 
 {
-    Assign(result, 1L);  //result = 1L;
-    For(fun[0], i => i.AsDynamic() > 1L, i => PostDecrementAssign(i), i => 
+    Assign(result, 1L.Quoted);  //result = 1L;
+    For(fun[0], i => i > 1L.Quoted, i => PostDecrementAssign(i), i => 
     {
-        Assign(result, i.AsDynamic() * result);    //result *= i;
+        Assign(result, i * result);    //result *= i;
     });
 });
 
@@ -132,8 +132,8 @@ Lambda<Fun<long, long>>((fun, result) =>
     Assign(result, 1L);  //result = 1L;
     Loop(() => 
     {
-        If((Expression)(arg.AsDynamic() > 1L))
-            .Then(() => Assign(result, arg.AsDynamic()-- * result))
+        If(arg > 1L.Quoted)
+            .Then(() => Assign(result, arg-- * result))
             .Else(Break)  //break;
         .End();
     });

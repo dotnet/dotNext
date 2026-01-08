@@ -44,7 +44,7 @@ These methods allow to turn any thread-unsafe object into thread-safe object wit
 
 ```csharp
 using System.Text;
-using static DotNext.Threading.LockAcquisition;
+using static DotNext.Threading.Lock;
 
 var builder = new StringBuilder();
 
@@ -61,4 +61,4 @@ using (AcquireWriteLock(builder))
 }
 ```
 
-For more information check extension methods inside of [LockAcquisition](xref:DotNext.Threading.LockAcquisition) class.
+For more information check static methods inside the [Lock](xref:DotNext.Threading.Lock) class.

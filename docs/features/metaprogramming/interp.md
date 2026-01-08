@@ -11,7 +11,7 @@ using static DotNext.Metaprogramming.CodeGenerator;
 Lambda<Action<int, int>>(fun =>
 {
 	var (x, y) = fun;
-	WriteLine(InterpolationExpression.PlainString($"Sum of {x} and {y} is {x.Add(y)}"));
+	WriteLine(InterpolationExpression.PlainString($"Sum of {x} and {y} is {x + y}"));
 });
 
 //generated code is

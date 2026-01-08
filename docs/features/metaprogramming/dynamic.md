@@ -8,10 +8,10 @@ This feature converts any dynamic expression into expression tree. The starting 
 using DotNext.Linq.Expressions;
 using System.Linq.Expressions;
 
-dynamic expr = "Hello, world".Const().AsDynamic();
+dynamic expr = "Hello, world".Quoted.AsDynamic();
 expr = expr.Length;
 Expression e = expr;    //equivalent is "Hello, world".Length
-expr = 10L.Const().AsDynamic();
+expr = 10L.Quoted.AsDynamic();
 expr = expr + 42L;      //equivalent is 10L + 42L
 ```
 

@@ -33,7 +33,7 @@ using static DotNext.Linq.Expressions.ExpressionBuilder;
 Lambda<Func<int, int, int>>(fun => 
 {
   var (x, y) = fun;
-  Return(x.AsDynamic() + y);
+  Return(x + y);
 });
 ```
 
@@ -48,9 +48,9 @@ using static DotNext.Linq.Expressions.ExpressionBuilder;
 Func<long, bool> isZero = Lambda<Func<long, bool>>(fun => 
 {
     var arg = fun[0];
-    If((Expression)(arg.AsDynamic() != 0L))
-        .Then(() => Return(true))
-        .Else(() => Return(false))
+    If(arg != 0L.Quoted)
+        .Then(() => Return(true.Quoted))
+        .Else(() => Return(false.Quoted))
     .End();
 }).Compile();
 ```

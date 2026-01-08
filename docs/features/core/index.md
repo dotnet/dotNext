@@ -6,19 +6,17 @@ Related class: [RandomExtensions](xref:DotNext.RandomExtensions)
 
 Extension methods for random data generation extends both classes [Random](https://docs.microsoft.com/en-us/dotnet/api/system.random) and [RandomNumberGenerator](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator).
 
-## Random string generation
-Provides a way to generate random string of the given length and set of allowed characters.
+## Random blittable values
+Provides a way to generate random values of arbitrary types:
 ```csharp
 using DotNext;
 using System;
+using System.Security.Cryptography;
 
 var rand = new Random();
-var password = rand.NextString("abc123", 10);   
-//now password has 10 characters
-//each character is equal to 'a', 'b', 'c', '1', '2' or '3'
+Int128 password = rand.Next<Int128>();
+password = RandomNumberGenerator.Next<Int128>();
 ```
-
-The same extension method is provided for class [RandomNumberGenerator](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator).
 
 ## Random boolean generation
 Provides a way to generate boolean value with the given probability
@@ -32,7 +30,7 @@ var b = rand.NextBoolean(0.3D); //0.3 is a probability of TRUE value
 The same extension method is provided for class [RandomNumberGenerator](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator).
 
 # String extensions
-Related class: [StringExtensions](xref:DotNext.StringExtensions).
+Related class: [StringExtensions](xref:DotNext.StringExtensions), [Span](xref:DotNext.Span)
 
 ## Reverse string
 Extension method _Reverse_ allows to reverse string characters and returns a new string:
@@ -55,7 +53,7 @@ array = array.TrimLength(2);    //array is { 10, 20 }
 ```
 
 # Delegates
-Related classes: [DelegateHelpers](xref:DotNext.DelegateHelpers), [Func](xref:DotNext.Func), [Converter](xref:DotNext.Converter), [Predicate](xref:DotNext.Predicate).
+Related classes: [DelegateHelpers](xref:DotNext.DelegateHelpers).
 
 ## Change type of delegate
 Different types of delegates can refer to the same method. For instance, `Func<string, string>` represents the same signature as `Converter<string, string>`. It means that the delegate instance can be converted into another delegate type if signature matches.
@@ -66,28 +64,17 @@ Func<string, int> lengthOf = str => str.Length;
 Converter<string, int> lengthOf2 = lengthOf.ChangeType<Converter<string, int>>();
 ```
 
-## Specialized delegate converters
-Conversion between mostly used delegate types: [Predicate&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1), [Func&lt;T, TResult&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.func-2) and [Converter&lt;TInput, TOutput&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.converter-2).
-
-```csharp
-using DotNext;
-
-Predicate<string> isEmpty = str => str is { Length: 0 };
-Func<string, bool> isEmptyFunc = isEmpty.AsFunc();
-Converter<string, bool> isEmptyConv = isEmpty.AsConverter();
-```
-
 ## Predefined delegates
-Cached delegate instances for mostly used delegate types: [Predicate&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1), [Func&lt;T, TResult&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.func-2) and [Converter&lt;TInput, TOutput&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.converter-2).
+Cached delegate instances for mostly used delegate types: [Predicate&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1), [Func&lt;T, TResult&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.func-2) and [Action](https://docs.microsoft.com/en-us/dotnet/api/system.action).
 
 ```csharp
 using DotNext;
 
-Func<int, int> identity = Func.Identity<int>(); //identity delegate which returns input argument without any changes
-Predicate<bool> truePredicate = Predicate.Constant<bool>(true); // predicate which always returns true
-Predicate<bool> falsePredicate = Predicate.Constant<bool>(false); //predicate which always returns false
-Predicate<string> nullCheck = Predicate.IsNull<string>(); //predicate checking whether the input argument is null
-Predicate<string> notNullCheck = Predicate.IsNotNull<string>(); //predicate checking whether the input argument is not null
+Func<int, int> identity = Func<int>.Identity; //identity delegate which returns input argument without any changes
+Predicate<bool> truePredicate = Predicate<bool>.Constant(true); // predicate which always returns true
+Predicate<bool> falsePredicate = Predicate<bool>.Constant(false); //predicate which always returns false
+Predicate<string> nullCheck = Predicate<string>.IsNull; //predicate checking whether the input argument is null
+Predicate<string> notNullCheck = Predicate<string>.IsNotNull; //predicate checking whether the input argument is not null
 ```
 
 ## Logical operators for Predicate
@@ -97,10 +84,10 @@ Extension methods implementation logical operators for Predicate delegate instan
 using DotNext;
 
 Predicate<string> predicate = str => str.Length == 0;
-predicate = predicate.Negate();
-predicate = predicate.And(str => str.Length > 2);
-predicate = predicate.Or(str => str.Length % 2 == 0);
-predicate = predicate.Xor(Predicate.IsNull<string>());
+predicate = !predicate;
+predicate = predicate & new Predicate<string>(str => str.Length > 2);
+predicate = predicate | new Predicate<string>(str => str.Length % 2 == 0);
+predicate = predicate ^ new Predicate<string>(Predicate<string>.IsNull);
 ```
 
 ## Delegate Factories
@@ -113,17 +100,30 @@ static int GetHashCode(string s)
 }
 
 delegate*<string, int> hashCode = &GetHashCode;
-Func<string, int> openDelegate = DelegateHelpers.CreateDelegate<string, int>(hashCode);
-Func<int> closedDelegate = DelegateHelpers.CreateDelegate<string, int>(hashCode, "Hello, world!");
+Func<string, int> openDelegate = Func<string, int>.FromPointer(hashCode);
+Func<int> closedDelegate = Func<int>.FromPointer<string, int>(hashCode, "Hello, world!");
 ```
 
-## Range check
+## Binding
+The delegate instance is a combination of the implicit first argument and the target method. Binding is a way to associate the implicit first argument with the delegate. This concept is used widely in [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind). .NEXT exposes this functionality through `Bind` extension method or `<<` operator. The binding can be chained.
+```csharp
+Func<int, int, int> sum = (x, y) => x + y;
+Func<int, int> f = sum << 42; // bind 42 to x
+f.Invoke(12); // returns 42 + 12
+
+Func<int> f2 = sum << 42 << 12; // bind 42 to x and 12 to y, and produce Func<int>
+f.Invoke(); // returns 42 + 12
+```
+
+`sum << 42` can be replaced with `sum.Bind(42)` call that has the same effect.
+
+# Range check
 Checks whether the given value is in specific range.
 ```csharp
 using DotNext;
 
-var b = 10.IsBetween(5.Enclosed(), 11.Enclosed()); //b == true
-b = 10.IsBetween(0.Disclosed(), 4.Disclosed()); //b == false
+var b = 10.IsBetween(5.Enclosed, 11.Enclosed); //b == true
+b = 10.IsBetween(0.Disclosed, 4.Disclosed); //b == false
 ```
 
 # Equality check
@@ -134,9 +134,9 @@ Extension method _IsOneOf_ allows to check whether the value is equal to one of 
 ```csharp
 using DotNext;
 
-var b = 42.IsOneOf([0, 5, 42, 3]); //b == true
+var b = 42.IsOneOf(0, 5, 42, 3); //b == true
 
-b = "a".IsOneOf(["b", "c", "d"]); //b == false
+b = "a".IsOneOf("b", "c", "d"); //b == false
 ```
 
 ## Equality check
@@ -144,7 +144,7 @@ _BitwiseEquals_ extension method performs bitwise equality between two regions o
 
 ```csharp
 var array2 = new int[] { 1, 2, 3 };
-Span.BitwiseEquals(new [] {1, 2, 4}, array2);    //false
+array2.BitwiseEquals(new [] {1, 2, 4});    //false
 ```
 
 # Timestamp
@@ -187,32 +187,11 @@ Result<dynamic> result = t.GetResult(CancellationToken.None);
 dynamic result = await t.AsDynamic();
 ```
 
-# Hex Converter
-[Convert.ToHexString](https://docs.microsoft.com/en-us/dotnet/api/system.convert.tohexstring) method from .NET standard library allow to convert array of bytes to its hexadecimal representation. However, it doesn't support `Span<char>` as a destination buffer. Moreover, the method produces UTF-16 encoded hex characters only.
-
-[Hex](xref:DotNext.Buffers.Text.Hex) static class exposes static methods for fast hexadecimal conversion:
-* `EncodeToUtf16` allows to convert `ReadOnlySpan<byte>` to hexadecimal representation and places result to `Span<char>`
-* `EncodeToUtf8` allows to convert `ReadOnlySpan<byte>` to hexadecimal representation and places result to `Span<byte>`
-* `DecodeFromUtf16` allows to convert hexadecimal UTF-16 encoded string in the from of `ReadOnlySpan<char>` to bytes and places result to `Span<byte>`
-* `DecodeFromUtf8` allows to convert hexadecimal UTF-8 encoded string in the from of `ReadOnlySpan<byte>` to bytes and places result to `Span<byte>`
-
+# Ref-like structs in generic context
+[LocalReference&lt;T&gt;](xref:DotNext.LocalReference`1) is a simple wrapper by-ref struct that allows to encapsulate the managed pointer to any arbitrary type, including other by-ref structs. This type allows to pass typed managed pointers as generic arguments, as well as holding the managed pointer to by-ref struct within another by-ref struct, which is currently restricted by C# compiler.
 ```csharp
-using DotNext.Buffers.Text;
-
-ReadOnlySpan<byte> bytes = stackalloc byte[] {8, 16, 24};
-Span<char> hex = stackalloc char[bytes.Length * 2];
-Hex.EncodeToUtf16(bytes, hex); //now hex == 081018
+int i = 42;
+LocalReference<int> reference = new(ref i);
 ```
 
-# Polling of Concurrent Collections
-[IProducerConsumerCollection&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1) is a common interface for concurrent collections in .NET library. Consumer of such collection uses `TryTake` or more specialized method provided by subclasses to obtain elements from the collection. For convenience, [Collection](xref:DotNext.Collections.Generic.Collection) static class offers `GetConsumer` extension method to obtain consuming enumerable collection over the elements in the concurrent collection so you can use classic **foreach** loop:
-```csharp
-using DotNext.Collections.Concurrent;
-using System.Collections.Concurrent;
-
-var queue = new ConcurrentQueue<int>();
-foreach (int item in queue.GetConsumer())
-{
-    // collection enumerator will call .TryDequeue(out int result) for each iteration of this loop
-}
-```
+Under the hood, [LocalReference&lt;T&gt;](xref:DotNext.LocalReference`1) type is the same as `ref T` type. [ReadOnlyLocalReference&lt;T&gt;](xref:DotNext.ReadOnlyLocalReference`1) type is the same as `ref readonly T` type.

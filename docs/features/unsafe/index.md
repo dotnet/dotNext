@@ -73,7 +73,7 @@ using System.Threading;
 using DotNext.Runtime.InteropServices;
 using DotNext.Threading;
 
-Pointer<long> ptr;
+Pointer<long> ptr = stackalloc long[1];
 Volatile.Write(ref ptr.Value, 42L);
 var i = Volatile.Read(in ptr.Value);
 i = Interlocked.Increment(ref ptr.Value); //i == 43
@@ -83,6 +83,6 @@ i = Interlocked.Increment(ref ptr.Value); //i == 43
 [UnmanagedMemory](xref:DotNext.Buffers.UnmanagedMemory) class exposes static methods to allocate system pages or page-aligned memory blocks in safe and portable manner. The returned memory is represented by the object that implements [IMemoryOwner&lt;T&gt;](https://learn.microsoft.com/en-us/dotnet/api/system.buffers.imemoryowner-1) interface. Thus, the allocated memory can be easily used across .NET ecosystem:
 ```csharp
 // allocates 3 pages. Typically, the page size is 4k bytes
-using IMemoryOwner<byte> pages = UnmanagedMemory.AllocateSystemPages(3);
+using IMemoryOwner<byte> pages = NativeMemory.AllocateSystemPages(3);
 Span<byte> span = pages.Memory.Span;
 ```
