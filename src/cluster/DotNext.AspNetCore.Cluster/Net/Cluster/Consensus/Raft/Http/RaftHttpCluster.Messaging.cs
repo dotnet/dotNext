@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Net;
-using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Http;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http;
@@ -10,17 +9,26 @@ using Runtime.Serialization;
 
 internal partial class RaftHttpCluster : IOutputChannel
 {
+    private readonly Lock syncRoot;
     private readonly DuplicateRequestDetector duplicationDetector;
     private volatile ImmutableList<IInputChannel> messageHandlers;
     private volatile MemberMetadata metadata;
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
     void IMessageBus.AddListener(IInputChannel handler)
-        => messageHandlers = messageHandlers.Add(handler);
+    {
+        lock (syncRoot)
+        {
+            messageHandlers = messageHandlers.Add(handler);
+        }
+    }
 
-    [MethodImpl(MethodImplOptions.Synchronized)]
     void IMessageBus.RemoveListener(IInputChannel handler)
-        => messageHandlers = messageHandlers.Remove(handler);
+    {
+        lock (syncRoot)
+        {
+            messageHandlers = messageHandlers.Remove(handler);
+        }
+    }
 
     async Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
     {

@@ -60,6 +60,7 @@ internal sealed partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, 
         ClusterMemberAnnouncer<UriEndPoint>? announcer = null)
         : base(config.CurrentValue, GetMeasurementTags(config.CurrentValue, out var localNode))
     {
+        syncRoot = new();
         openConnectionForEachRequest = config.CurrentValue.OpenConnectionForEachRequest;
         metadata = new(config.CurrentValue.Metadata);
         requestTimeout = config.CurrentValue.RequestTimeout;
