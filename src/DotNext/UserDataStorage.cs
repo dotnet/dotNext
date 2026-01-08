@@ -329,14 +329,11 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
         if (!slot.IsAllocated)
             throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
 
-        var storage = GetStorage();
-        if (storage is null)
-        {
-            userData = default!;
-            return false;
-        }
+        if (GetStorage() is { } storage)
+            return storage.Get(slot).TryGet(out userData);
 
-        return storage.Get(slot).TryGet(out userData);
+        userData = default!;
+        return false;
     }
 
     /// <summary>
@@ -382,14 +379,11 @@ public readonly ref partial struct UserDataStorage : IEquatable<UserDataStorage>
         if (!slot.IsAllocated)
             throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot, nameof(slot));
 
-        var storage = GetStorage();
-        if (storage is null)
-        {
-            userData = default;
-            return false;
-        }
+        if (GetStorage() is { } storage)
+            return storage.Remove(slot).TryGet(out userData);
 
-        return storage.Remove(slot).TryGet(out userData);
+        userData = default;
+        return false; 
     }
 
     /// <summary>
