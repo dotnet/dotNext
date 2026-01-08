@@ -272,7 +272,13 @@ public partial class FileWriter : Disposable, IFlushable
         }
     }
 
-    /// <inheritdoc cref="IBufferedWriter.WriteAsync(ReadOnlyMemory{byte}, CancellationToken)"/>
+    /// <summary>
+    /// Writes the memory block to the file.
+    /// </summary>
+    /// <param name="input">The memory block to write.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns>The task representing asynchronous state of the operation.</returns>
+    /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
     public ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token = default)
     {
         ValueTask task;

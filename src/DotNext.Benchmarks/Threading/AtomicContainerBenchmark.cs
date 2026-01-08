@@ -62,8 +62,8 @@ public class AtomicContainerBenchmark
     }
 
     private static Atomic<LargeStruct> VContainer;
-    private static readonly SynchronizedContainer SContainer = new();
-    private static readonly SpinLockContainer SLContainer = new();
+    private static SynchronizedContainer SContainer = new();
+    private static SpinLockContainer SLContainer = new();
 
     private static readonly LargeStruct Value = new() { Field2 = Guid.NewGuid(), Field1 = Guid.NewGuid(), Field3 = Guid.NewGuid() };
 
