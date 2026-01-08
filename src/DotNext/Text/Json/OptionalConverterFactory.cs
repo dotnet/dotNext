@@ -20,10 +20,7 @@ public sealed class OptionalConverterFactory : JsonConverterFactory
 
     /// <inheritdoc />
     public override JsonConverter? CreateConverter(Type typeToConvert, JsonSerializerOptions options)
-    {
-        var underlyingType = Optional.GetUnderlyingType(typeToConvert);
-        return underlyingType is null
-            ? null
-            : Activator.CreateInstance(typeof(OptionalConverter<>).MakeGenericType(underlyingType)) as JsonConverter;
-    }
+        => Optional.GetUnderlyingType(typeToConvert) is { } underlyingType
+            ? Activator.CreateInstance(typeof(OptionalConverter<>).MakeGenericType(underlyingType)) as JsonConverter
+            : null;
 }
