@@ -441,7 +441,7 @@ public static partial class Atomic
         /// <seelaso href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf">Section I.12.6.6.</seelaso>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsAtomic()
-            => AdvancedHelpers.AlignOf<T>() == Unsafe.SizeOf<T>() && Unsafe.SizeOf<T>() <= nuint.Size;
+            => Unsafe.AlignOf<T>() == Unsafe.SizeOf<T>() && Unsafe.SizeOf<T>() <= nuint.Size;
         
         /// <summary>
         /// Atomically updates the current value with the results of applying the given function
