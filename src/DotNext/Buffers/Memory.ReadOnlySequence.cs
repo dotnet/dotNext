@@ -349,16 +349,19 @@ file sealed class ReadOnlySequencePartitioner<T> : OrderablePartitioner<T>
 {
     private sealed class SegmentProvider(in ReadOnlySequence<T> sequence) : IEnumerable<KeyValuePair<long, T>>
     {
+        private readonly Lock syncRoot = new();
         private long runningIndex;
         private ReadOnlySequence<T>.Enumerator enumerator = sequence.GetEnumerator();
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
+        
         private ReadOnlyMemory<T> NextSegment(out long startIndex)
         {
-            startIndex = runningIndex;
-            var result = enumerator.MoveNext() ? enumerator.Current : ReadOnlyMemory<T>.Empty;
-            runningIndex += result.Length;
-            return result;
+            lock (syncRoot)
+            {
+                startIndex = runningIndex;
+                var result = enumerator.MoveNext() ? enumerator.Current : ReadOnlyMemory<T>.Empty;
+                runningIndex += result.Length;
+                return result;
+            }
         }
 
         public IEnumerator<KeyValuePair<long, T>> GetEnumerator()
