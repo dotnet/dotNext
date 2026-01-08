@@ -2,7 +2,6 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Order;
 using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
 
 namespace DotNext.Threading;
@@ -16,23 +15,32 @@ public class AtomicContainerBenchmark
         internal Guid Field1, Field2, Field3;
     }
 
-    private sealed class SynchronizedContainer
+    private struct SynchronizedContainer()
     {
+        private readonly System.Threading.Lock syncRoot = new();
         private LargeStruct value;
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        internal void Read(out LargeStruct result) => result = value;
+        internal readonly void Read(out LargeStruct result)
+        {
+            lock (syncRoot)
+            {
+                result = value;
+            }
+        }
 
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        internal void Write(in LargeStruct value) => this.value = value;
+        internal void Write(in LargeStruct value)
+        {
+            lock (syncRoot)
+            {
+                this.value = value;
+            }
+        }
     }
 
-    private sealed class SpinLockContainer
+    private struct SpinLockContainer()
     {
         private LargeStruct value;
-        private SpinLock spinLock;
-
-        internal SpinLockContainer() => spinLock = new SpinLock(false);
+        private SpinLock spinLock = new(false);
 
         internal void Read(out LargeStruct result)
         {
@@ -53,7 +61,7 @@ public class AtomicContainerBenchmark
         }
     }
 
-    private static Atomic<LargeStruct> VContainer = new();
+    private static Atomic<LargeStruct> VContainer;
     private static readonly SynchronizedContainer SContainer = new();
     private static readonly SpinLockContainer SLContainer = new();
 
