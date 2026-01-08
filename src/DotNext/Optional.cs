@@ -575,7 +575,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private Optional<TResult> Convert<TResult, TConverter>(TConverter converter)
         where TConverter : struct, ISupplier<T, TResult>
-        => HasValue ? converter.Invoke(value) : IsNull && AdvancedHelpers.IsNullable<TResult>() ? new(default) : Optional<TResult>.None;
+        => HasValue ? converter.Invoke(value) : IsNull && RuntimeHelpers.IsNullable<TResult>() ? new(default) : Optional<TResult>.None;
 
     /// <summary>
     /// If a value is present, apply the provided mapping function to it, and if the result is
