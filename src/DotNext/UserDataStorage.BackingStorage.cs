@@ -199,8 +199,8 @@ public partial struct UserDataStorage
             }
         }
 
-        private Optional<TValue> Get<TValue>(int typeIndex, int valueIndex)
-            => this.tables is { } tables && (uint)typeIndex < (uint)tables.Length
+        private static Optional<TValue> Get<TValue>(ReadOnlySpan<BackingStorageEntry> tables, int typeIndex, int valueIndex)
+            => (uint)typeIndex < (uint)tables.Length
                 ? tables[typeIndex].Get<TValue>(valueIndex)
                 : Optional.None<TValue>();
 
@@ -209,9 +209,9 @@ public partial struct UserDataStorage
         {
             Debug.Assert(slot.IsAllocated);
 
-            return Get<TValue>(UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
+            return Get<TValue>(tables, UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
         }
-        
+
         private BackingStorageEntry[] Resize(int typeIndex)
         {
             lock (syncRoot)
@@ -231,14 +231,9 @@ public partial struct UserDataStorage
         }
 
         private TValue? GetOrSet<TValue, TSupplier>(int typeIndex, int valueIndex, TSupplier valueFactory)
-           where TSupplier : struct, ISupplier<TValue>, allows ref struct
+            where TSupplier : struct, ISupplier<TValue>, allows ref struct
         {
-            var tables = this.tables;
-
-            if ((uint)typeIndex >= (uint)tables.Length)
-                tables = Resize(typeIndex);
-
-            ref var valueHolder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(tables), typeIndex);
+            ref var valueHolder = ref EnsureSlotAllocated(typeIndex);
             var result = valueHolder.Get<TValue>(valueIndex);
 
             return result.HasValue ? result.ValueOrDefault : valueHolder.GetOrAdd(valueIndex, valueFactory.Invoke());
@@ -254,14 +249,7 @@ public partial struct UserDataStorage
         }
 
         private void Set<TValue>(int typeIndex, int valueIndex, TValue value)
-        {
-            var tables = this.tables;
-
-            if ((uint)typeIndex >= (uint)tables.Length)
-                tables = Resize(typeIndex);
-
-            Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(tables), typeIndex).Set(valueIndex, value);
-        }
+            => EnsureSlotAllocated(typeIndex).Set(valueIndex, value);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Set<TValue>(UserDataSlot<TValue> slot, TValue value)
@@ -271,21 +259,29 @@ public partial struct UserDataStorage
             Set(UserDataSlot<TValue>.TypeIndex, slot.ValueIndex, value);
         }
 
-        private Optional<TValue> Remove<TValue>(int typeIndex, int valueIndex)
+        private ref BackingStorageEntry EnsureSlotAllocated(int typeIndex)
+            => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(EnsureCapacity(typeIndex)), typeIndex);
+
+        private BackingStorageEntry[] EnsureCapacity(int typeIndex)
         {
             var tables = this.tables;
+            if ((uint)typeIndex >= (uint)tables.Length)
+                tables = Resize(typeIndex);
 
-            return (uint)typeIndex < (uint)tables.Length
+            return tables;
+        }
+
+        private static Optional<TValue> Remove<TValue>(ReadOnlySpan<BackingStorageEntry> tables, int typeIndex, int valueIndex)
+            => (uint)typeIndex < (uint)tables.Length
                 ? tables[typeIndex].Remove<TValue>(valueIndex)
                 : Optional.None<TValue>();
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Optional<TValue> Remove<TValue>(UserDataSlot<TValue> slot)
         {
             Debug.Assert(slot.IsAllocated);
 
-            return Remove<TValue>(UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
+            return Remove<TValue>(tables, UserDataSlot<TValue>.TypeIndex, slot.ValueIndex);
         }
     }
 
