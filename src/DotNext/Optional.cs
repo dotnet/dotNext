@@ -480,7 +480,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
     public T? ValueOrDefault => value;
 
     /// <summary>
-    /// If a value is present, returns the value, otherwise throw exception.
+    /// If a value is present, returns the value, otherwise throws an exception.
     /// </summary>
     /// <exception cref="InvalidOperationException">No value is present.</exception>
     [DisallowNull]
