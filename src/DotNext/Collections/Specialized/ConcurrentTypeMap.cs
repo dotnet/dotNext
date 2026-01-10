@@ -10,68 +10,14 @@ namespace DotNext.Collections.Specialized;
 /// <typeparam name="TValue">The type of the value.</typeparam>
 public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 {
-    private const int EmptyValueState = 0;
-    private const int LockedState = 1;
-    private const int HasValueState = 2;
-
-    internal sealed class Entry
-    {
-        private volatile int state;
-        internal TValue? Value;
-
-        internal int AcquireLock()
-        {
-            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
-            {
-                var currentState = state;
-
-                if (currentState is not LockedState && Interlocked.CompareExchange(ref state, LockedState, currentState) == currentState)
-                    return currentState;
-            }
-        }
-
-        internal void ReleaseLock(int newState) => state = newState;
-
-        internal bool HasValue
-        {
-            get
-            {
-                for (var spinner = new SpinWait(); ; spinner.SpinOnce())
-                {
-                    var currentState = state;
-
-                    if (currentState is LockedState)
-                        continue;
-
-                    return currentState is HasValueState;
-                }
-            }
-        }
-
-        internal bool TryAcquireLock(int expectedState)
-        {
-            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
-            {
-                var currentState = state;
-
-                if (currentState is LockedState)
-                    continue;
-
-                if (currentState != expectedState)
-                    return false;
-
-                if (Interlocked.CompareExchange(ref state, LockedState, currentState) == currentState)
-                    return true;
-            }
-        }
-    }
-
     private readonly Lock syncRoot;
 
     // Assuming that the map will not contain hundreds or thousands for entries.
     // If so, we can keep the lock for each entry instead of buckets as in ConcurrentDictionaryMap.
     // As a result, we don't need the concurrency level. Also, we can modify different entries concurrently
-    // and perform resizing in parallel with read/write of individual entry
+    // and perform resizing in parallel with read/write of individual entry.
+    // For the entry of reference type, we don't even need the lock per entry, because Sentinel and CAS operations
+    // can protect the atomic read/write.
     private Entry[] entries;
 
     /// <summary>
@@ -83,8 +29,18 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         ArgumentOutOfRangeException.ThrowIfNegative(capacity);
 
-        Span.Initialize(entries = capacity is 0 ? [] : new Entry[capacity]);
+        entries = UseReferenceEntry
+            ? CreateEntries<ReferenceEntry>(capacity)
+            : CreateEntries<GenericEntry>(capacity);
         syncRoot = new();
+
+        static TEntry[] CreateEntries<TEntry>(int capacity)
+            where TEntry : Entry, new()
+        {
+            var array = capacity is 0 ? [] : new TEntry[capacity];
+            Span.Initialize(array);
+            return array;
+        }
     }
 
     /// <summary>
@@ -95,23 +51,24 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
     }
 
-    private void Resize(Entry[] entries)
+    private void Resize<TEntry>(TEntry[] entriesCopy)
+        where TEntry : Entry, new()
     {
         lock (syncRoot)
         {
             // make sure nobody resized the table while we were waiting for the lock
-            if (!ReferenceEquals(entries, this.entries)) // read barrier is provided by monitor lock
+            if (!ReferenceEquals(entriesCopy, entries)) // read barrier is provided by monitor lock
                 return;
 
             // do resize
-            var firstUninitialized = entries.Length;
-            Array.Resize(ref entries, ITypeMap.RecommendedCapacity);
+            var firstUninitialized = entriesCopy.Length;
+            Array.Resize(ref entriesCopy, ITypeMap.RecommendedCapacity);
 
             // initializes the rest of the array
-            entries.AsSpan(firstUninitialized).Initialize();
+            entriesCopy.AsSpan(firstUninitialized).Initialize();
 
             // commit resized storage
-            this.entries = entries; // write barrier is provided by monitor lock
+            entries = entriesCopy; // write barrier is provided by monitor lock
         }
     }
 
@@ -124,26 +81,28 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
     private bool TryAdd(int index, TValue value)
     {
-        for (Entry[] entries; ;)
+        for (Entry[] entries;;)
         {
             entries = Volatile.Read(ref this.entries);
 
             if (index >= entries.Length)
             {
-                Resize(entries);
+                if (UseReferenceEntry)
+                {
+                    Resize(Unsafe.As<ReferenceEntry[]>(entries));
+                }
+                else
+                {
+                    Resize(Unsafe.As<GenericEntry[]>(entries));
+                }
+
                 continue;
             }
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
-
-            bool added;
-            if (added = entry.TryAcquireLock(EmptyValueState))
-            {
-                entry.Value = value;
-                entry.ReleaseLock(HasValueState);
-            }
-
-            return added;
+            return UseReferenceEntry
+                ? Unsafe.As<ReferenceEntry>(entry).TryAdd(value)
+                : Unsafe.As<GenericEntry>(entry).TryAdd(value);
         }
     }
 
@@ -165,14 +124,28 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             if (index >= entries.Length)
             {
-                Resize(entries);
+                if (UseReferenceEntry)
+                {
+                    Resize(Unsafe.As<ReferenceEntry[]>(entries));
+                }
+                else
+                {
+                    Resize(Unsafe.As<GenericEntry[]>(entries));
+                }
+
                 continue;
             }
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
-            entry.AcquireLock();
-            entry.Value = value;
-            entry.ReleaseLock(HasValueState);
+            if (UseReferenceEntry)
+            {
+                Unsafe.As<ReferenceEntry>(entry).TryAdd(value);
+            }
+            else
+            {
+                Unsafe.As<GenericEntry>(entry).TryAdd(value);
+            }
+            
             break;
         }
     }
@@ -197,34 +170,37 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         return ContainsKey(Volatile.Read(ref entries), TypeSlot<TKey>.Index);
 
         static bool ContainsKey(Entry[] entries, int index)
-            => (uint)index < (uint)entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).HasValue;
+            => (uint)index < (uint)entries.Length && HasValue(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool HasValue(Entry entry)
+            => UseReferenceEntry ? Unsafe.As<ReferenceEntry>(entry).HasValue : Unsafe.As<GenericEntry>(entry).HasValue;
     }
 
     private TValue GetOrAdd(int index, TValue value, out bool added)
     {
-        for (Entry[] entries; ;)
+        for (Entry[] entries;;)
         {
             entries = Volatile.Read(ref this.entries);
 
             if (index >= entries.Length)
             {
-                Resize(entries);
+                if (UseReferenceEntry)
+                {
+                    Resize(Unsafe.As<ReferenceEntry[]>(entries));
+                }
+                else
+                {
+                    Resize(Unsafe.As<GenericEntry[]>(entries));
+                }
+
                 continue;
             }
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
-
-            if (added = entry.AcquireLock() is EmptyValueState)
-            {
-                entry.Value = value;
-            }
-            else
-            {
-                value = entry.Value!;
-            }
-
-            entry.ReleaseLock(HasValueState);
-            return value;
+            return UseReferenceEntry
+                ? Unsafe.As<ReferenceEntry>(entry).GetOrAdd(value, out added)
+                : Unsafe.As<GenericEntry>(entry).GetOrAdd(value, out added);
         }
     }
 
@@ -241,23 +217,28 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
     private bool AddOrUpdate(int index, TValue value)
     {
-        for (Entry[] entries; ;)
+        for (Entry[] entries;;)
         {
             entries = Volatile.Read(ref this.entries);
 
             if (index >= entries.Length)
             {
-                Resize(entries);
+                if (UseReferenceEntry)
+                {
+                    Resize(Unsafe.As<ReferenceEntry[]>(entries));
+                }
+                else
+                {
+                    Resize(Unsafe.As<GenericEntry[]>(entries));
+                }
+
                 continue;
             }
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
-
-            var added = entry.AcquireLock() is EmptyValueState;
-            entry.Value = value;
-            entry.ReleaseLock(HasValueState);
-
-            return added;
+            return UseReferenceEntry
+                ? Unsafe.As<ReferenceEntry>(entry).AddOrUpdate(value)
+                : Unsafe.As<GenericEntry>(entry).AddOrUpdate(value);
         }
     }
 
@@ -274,26 +255,28 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
     private bool Set(int index, TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
     {
-        for (bool result; ;)
+        for (Entry[] entries;;)
         {
-            var entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(ref this.entries);
 
             if (index >= entries.Length)
             {
-                Resize(entries);
+                if (UseReferenceEntry)
+                {
+                    Resize(Unsafe.As<ReferenceEntry[]>(entries));
+                }
+                else
+                {
+                    Resize(Unsafe.As<GenericEntry[]>(entries));
+                }
+
                 continue;
             }
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
-
-            oldValue = (result = entry.AcquireLock() is HasValueState)
-                ? entry.Value
-                : default;
-
-            entry.Value = newValue;
-            entry.ReleaseLock(HasValueState);
-
-            return result;
+            return UseReferenceEntry
+                ? Unsafe.As<ReferenceEntry>(entry).Set(newValue, out oldValue)
+                : Unsafe.As<GenericEntry>(entry).Set(newValue, out oldValue);
         }
     }
 
@@ -310,7 +293,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
     private bool Remove(int index, [MaybeNullWhen(false)] out TValue value)
     {
-        for (Entry[] entries; ;)
+        for (Entry[] entries;;)
         {
             entries = Volatile.Read(ref this.entries);
 
@@ -318,15 +301,9 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 break;
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
-            if (entry.TryAcquireLock(HasValueState))
-            {
-                value = entry.Value!;
-                entry.Value = default;
-                entry.ReleaseLock(EmptyValueState);
-                return true;
-            }
-
-            break;
+            return UseReferenceEntry
+                ? Unsafe.As<ReferenceEntry>(entry).Remove(out value)
+                : Unsafe.As<GenericEntry>(entry).Remove(out value);
         }
 
         value = default;
@@ -354,7 +331,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
     private bool TryGetValue(int index, [MaybeNullWhen(false)] out TValue value)
     {
-        for (Entry[] entries; ;)
+        for (Entry[] entries;;)
         {
             entries = Volatile.Read(ref this.entries);
 
@@ -362,14 +339,9 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 break;
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
-            if (entry.TryAcquireLock(HasValueState))
-            {
-                value = entry.Value!;
-                entry.ReleaseLock(HasValueState);
-                return true;
-            }
-
-            break;
+            return UseReferenceEntry
+                ? Unsafe.As<ReferenceEntry>(entry).TryGetValue(out value)
+                : Unsafe.As<GenericEntry>(entry).TryGetValue(out value);
         }
 
         value = default;
@@ -391,11 +363,250 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// </summary>
     public void Clear()
     {
-        foreach (var entry in Volatile.Read(ref entries))
+        var entries = Volatile.Read(ref this.entries);
+        if (UseReferenceEntry)
         {
-            entry.AcquireLock();
-            entry.Value = default;
-            entry.ReleaseLock(EmptyValueState);
+            Array.ForEach(Unsafe.As<ReferenceEntry[]>(entries), static entry => entry.Clear());
+        }
+        else
+        {
+            Array.ForEach(Unsafe.As<GenericEntry[]>(entries), static entry => entry.Clear());
+        }
+    }
+
+    private static bool UseReferenceEntry
+        => RuntimeHelpers.IsReferenceOrContainsReferences<TValue>() && Unsafe.SizeOf<TValue>() == nint.Size;
+
+    internal abstract class Entry
+    {
+        public abstract bool HasValue { get; }
+
+        public abstract bool TryAdd(TValue newValue);
+
+        public abstract void Set(TValue newValue);
+
+        public abstract bool Set(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue);
+
+        public abstract TValue GetOrAdd(TValue newValue, out bool added);
+
+        public abstract bool AddOrUpdate(TValue newValue);
+
+        public abstract bool Remove([MaybeNullWhen(false)] out TValue oldValue);
+
+        public abstract bool TryGetValue([MaybeNullWhen(false)] out TValue existingValue);
+
+        public abstract void Clear();
+    }
+
+    private sealed class ReferenceEntry : Entry
+    {
+        private volatile object value = Sentinel.Instance;
+
+        public override bool HasValue => !ReferenceEquals(value, Sentinel.Instance);
+
+        public override bool TryAdd(TValue newValue)
+            => Interlocked.CompareExchange(
+                ref this.value,
+                Sentinel.Instance,
+                Unsafe.As<TValue, object>(ref newValue)) == Sentinel.Instance;
+
+        public override void Set(TValue newValue)
+            => this.value = Unsafe.As<TValue, object>(ref newValue);
+
+        public override TValue GetOrAdd(TValue newValue, out bool added)
+        {
+            var result = Interlocked.CompareExchange(ref this.value, Sentinel.Instance, Unsafe.As<TValue, object>(ref newValue));
+            return (added = ReferenceEquals(result, Sentinel.Instance))
+                ? newValue
+                : Unsafe.As<object, TValue>(ref result);
+        }
+
+        public override bool AddOrUpdate(TValue newValue)
+        {
+            var result = Interlocked.Exchange(ref this.value, Unsafe.As<TValue, object>(ref newValue));
+            return ReferenceEquals(result, Sentinel.Instance);
+        }
+
+        public override bool Set(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
+        {
+            var result = Interlocked.Exchange(ref this.value, Unsafe.As<TValue, object>(ref newValue));
+            bool modified;
+            oldValue = (modified = !ReferenceEquals(result, Sentinel.Instance))
+                ? Unsafe.As<object, TValue>(ref result)
+                : default;
+
+            return modified;
+        }
+
+        public override bool Remove([MaybeNullWhen(false)] out TValue oldValue)
+        {
+            var result = Interlocked.Exchange(ref this.value, Sentinel.Instance);
+            bool removed;
+            oldValue = (removed = !ReferenceEquals(result, Sentinel.Instance))
+                ? Unsafe.As<object, TValue>(ref result)
+                : default;
+
+            return removed;
+        }
+
+        public override bool TryGetValue([MaybeNullWhen(false)] out TValue existingValue)
+        {
+            var valueCopy = this.value;
+            bool hasValue;
+            existingValue = (hasValue = !ReferenceEquals(valueCopy, Sentinel.Instance))
+                ? Unsafe.As<object, TValue>(ref valueCopy)
+                : default;
+
+            return hasValue;
+        }
+
+        public override void Clear() => Interlocked.Exchange(ref value, Sentinel.Instance);
+    }
+
+    private sealed class GenericEntry : Entry
+    {
+        private const int EmptyValueState = 0;
+        private const int LockedState = 1;
+        private const int HasValueState = 2;
+        
+        private volatile int state;
+        private TValue? value;
+
+        public override bool TryAdd(TValue newValue)
+        {
+            if (TryAcquireLock(EmptyValueState))
+            {
+                value = newValue;
+                ReleaseLock(HasValueState);
+                return true;
+            }
+
+            return false;
+        }
+
+        public override void Set(TValue newValue)
+        {
+            AcquireLock();
+            value = newValue;
+            ReleaseLock(HasValueState);
+        }
+
+        public override TValue GetOrAdd(TValue newValue, out bool added)
+        {
+            if (added = AcquireLock() is EmptyValueState)
+            {
+                value = newValue;
+            }
+            else
+            {
+                newValue = value!;
+            }
+
+            ReleaseLock(HasValueState);
+            return newValue;
+        }
+
+        public override bool AddOrUpdate(TValue newValue)
+        {
+            var added = AcquireLock() is EmptyValueState;
+            value = newValue;
+            ReleaseLock(HasValueState);
+            return added;
+        }
+
+        public override bool Set(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
+        {
+            bool modified;
+            oldValue = (modified = AcquireLock() is HasValueState)
+                ? value
+                : default;
+
+            value = newValue;
+            ReleaseLock(HasValueState);
+            return modified;
+        }
+
+        public override bool Remove([MaybeNullWhen(false)] out TValue oldValue)
+        {
+            if (TryAcquireLock(HasValueState))
+            {
+                oldValue = value!;
+                value = default;
+                ReleaseLock(EmptyValueState);
+                return true;
+            }
+
+            oldValue = default;
+            return false;
+        }
+
+        public override bool TryGetValue([MaybeNullWhen(false)] out TValue existingValue)
+        {
+            bool valueTaken;
+            if (valueTaken = TryAcquireLock(HasValueState))
+            {
+                existingValue = value!;
+                ReleaseLock(HasValueState);
+            }
+            else
+            {
+                existingValue = default;
+            }
+
+            return valueTaken;
+        }
+
+        public override void Clear()
+        {
+            AcquireLock();
+            value = default;
+            ReleaseLock(EmptyValueState);
+        }
+
+        private int AcquireLock()
+        {
+            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
+            {
+                var currentState = state;
+
+                if (currentState is not LockedState && Interlocked.CompareExchange(ref state, LockedState, currentState) == currentState)
+                    return currentState;
+            }
+        }
+
+        private void ReleaseLock(int newState) => state = newState;
+
+        public override bool HasValue
+        {
+            get
+            {
+                for (var spinner = new SpinWait(); ; spinner.SpinOnce())
+                {
+                    var currentState = state;
+
+                    if (currentState is LockedState)
+                        continue;
+
+                    return currentState is HasValueState;
+                }
+            }
+        }
+
+        private bool TryAcquireLock(int expectedState)
+        {
+            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
+            {
+                var currentState = state;
+
+                if (currentState is LockedState)
+                    continue;
+
+                if (currentState != expectedState)
+                    return false;
+
+                if (Interlocked.CompareExchange(ref state, LockedState, currentState) == currentState)
+                    return true;
+            }
         }
     }
 }
