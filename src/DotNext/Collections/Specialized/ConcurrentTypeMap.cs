@@ -405,17 +405,17 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         public override bool HasValue => !ReferenceEquals(value, Sentinel.Instance);
 
         public override bool TryAdd(TValue newValue)
-            => Interlocked.CompareExchange(
-                ref this.value,
-                Sentinel.Instance,
-                Unsafe.As<TValue, object>(ref newValue)) == Sentinel.Instance;
+            => ReferenceEquals(Interlocked.CompareExchange(
+                ref value,
+                Unsafe.As<TValue, object>(ref newValue),
+                Sentinel.Instance), Sentinel.Instance);
 
         public override void Set(TValue newValue)
-            => this.value = Unsafe.As<TValue, object>(ref newValue);
+            => value = Unsafe.As<TValue, object>(ref newValue);
 
         public override TValue GetOrAdd(TValue newValue, out bool added)
         {
-            var result = Interlocked.CompareExchange(ref this.value, Sentinel.Instance, Unsafe.As<TValue, object>(ref newValue));
+            var result = Interlocked.CompareExchange(ref value, Unsafe.As<TValue, object>(ref newValue), Sentinel.Instance);
             return (added = ReferenceEquals(result, Sentinel.Instance))
                 ? newValue
                 : Unsafe.As<object, TValue>(ref result);
@@ -423,13 +423,13 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
         public override bool AddOrUpdate(TValue newValue)
         {
-            var result = Interlocked.Exchange(ref this.value, Unsafe.As<TValue, object>(ref newValue));
+            var result = Interlocked.Exchange(ref value, Unsafe.As<TValue, object>(ref newValue));
             return ReferenceEquals(result, Sentinel.Instance);
         }
 
         public override bool Set(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
         {
-            var result = Interlocked.Exchange(ref this.value, Unsafe.As<TValue, object>(ref newValue));
+            var result = Interlocked.Exchange(ref value, Unsafe.As<TValue, object>(ref newValue));
             bool modified;
             oldValue = (modified = !ReferenceEquals(result, Sentinel.Instance))
                 ? Unsafe.As<object, TValue>(ref result)
@@ -440,7 +440,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
         public override bool Remove([MaybeNullWhen(false)] out TValue oldValue)
         {
-            var result = Interlocked.Exchange(ref this.value, Sentinel.Instance);
+            var result = Interlocked.Exchange(ref value, Sentinel.Instance);
             bool removed;
             oldValue = (removed = !ReferenceEquals(result, Sentinel.Instance))
                 ? Unsafe.As<object, TValue>(ref result)
@@ -451,7 +451,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
         public override bool TryGetValue([MaybeNullWhen(false)] out TValue existingValue)
         {
-            var valueCopy = this.value;
+            var valueCopy = value;
             bool hasValue;
             existingValue = (hasValue = !ReferenceEquals(valueCopy, Sentinel.Instance))
                 ? Unsafe.As<object, TValue>(ref valueCopy)
@@ -565,13 +565,20 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
         private int AcquireLock()
         {
-            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
-            {
-                var currentState = state;
+            var oldState = Interlocked.Exchange(ref state, LockedState);
+            return oldState is LockedState ? AcquireLockContention() : oldState;
+        }
 
-                if (currentState is not LockedState && Interlocked.CompareExchange(ref state, LockedState, currentState) == currentState)
-                    return currentState;
-            }
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private int AcquireLockContention()
+        {
+            int currentState;
+            do
+            {
+                currentState = Interlocked.Exchange(ref state, LockedState);
+            } while (currentState is LockedState);
+
+            return currentState;
         }
 
         private void ReleaseLock(int newState) => state = newState;
@@ -580,33 +587,32 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         {
             get
             {
-                for (var spinner = new SpinWait(); ; spinner.SpinOnce())
+                int currentState;
+                do
                 {
-                    var currentState = state;
+                    currentState = state;
+                } while (currentState is LockedState);
 
-                    if (currentState is LockedState)
-                        continue;
-
-                    return currentState is HasValueState;
-                }
+                return currentState is HasValueState;
             }
         }
 
         private bool TryAcquireLock(int expectedState)
         {
-            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
+            var currentState = Interlocked.CompareExchange(ref state, LockedState, expectedState);
+            return currentState == expectedState || TryAcquireLockContention(expectedState);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private bool TryAcquireLockContention(int expectedState)
+        {
+            int currentState;
+            do
             {
-                var currentState = state;
+                currentState = Interlocked.CompareExchange(ref state, LockedState, expectedState);
+            } while (currentState is LockedState);
 
-                if (currentState is LockedState)
-                    continue;
-
-                if (currentState != expectedState)
-                    return false;
-
-                if (Interlocked.CompareExchange(ref state, LockedState, currentState) == currentState)
-                    return true;
-            }
+            return currentState == expectedState;
         }
     }
 }
@@ -627,15 +633,14 @@ public partial class ConcurrentTypeMap : ITypeMap
 
         internal object TryUpdate(object value, out bool updated)
         {
-            var result = Interlocked.CompareExchange(ref Value, value, null);
-            if (result is null)
+            if (Interlocked.CompareExchange(ref Value, value, null) is { } result)
             {
-                result = value;
-                updated = true;
+                updated = false;
             }
             else
             {
-                updated = false;
+                result = value;
+                updated = true;
             }
 
             return result;
