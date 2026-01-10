@@ -415,10 +415,26 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
         public override TValue GetOrAdd(TValue newValue, out bool added)
         {
-            var result = Interlocked.CompareExchange(ref value, Unsafe.As<TValue, object>(ref newValue), Sentinel.Instance);
-            return (added = ReferenceEquals(result, Sentinel.Instance))
-                ? newValue
-                : Unsafe.As<object, TValue>(ref result);
+            // Perf: GetOrAdd can be implemented by simple CompareExchange. In this case, the cost of GET is the same as of ADD.
+            // However, ADD is more unlikely than GET, since the element once added it becomes available for read.
+            // Therefore, change the symmetry between GET and ADD overhead as follows:
+            // 1. Make GET cheaper
+            // 2. Make ADD more expensive
+            // So, GET can be done with simple Read Fence. If it's successful, CompareExchange is not needed.
+            var result = value;
+            if (ReferenceEquals(result, Sentinel.Instance))
+            {
+                result = Interlocked.CompareExchange(ref value, Unsafe.As<TValue, object>(ref newValue), Sentinel.Instance);
+
+                if (ReferenceEquals(result, Sentinel.Instance))
+                {
+                    added = true;
+                    return newValue;
+                }
+            }
+
+            added = false;
+            return Unsafe.As<object, TValue>(ref result);
         }
 
         public override bool AddOrUpdate(TValue newValue)
