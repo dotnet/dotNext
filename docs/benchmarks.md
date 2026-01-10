@@ -104,12 +104,12 @@ Both classes switching from in-memory buffer to file-based buffer during benchma
 
 | Method                                    | Mean       | Error     | StdDev    |
 |------------------------------------------ |-----------:|----------:|----------:|
-| 'TypeMap, Set + TryGetValue'              |  0.2535 ns | 0.0282 ns | 0.0263 ns |
-| 'Dictionary, Set + TryGetValue'           |  5.0218 ns | 0.1310 ns | 0.1609 ns |
-| 'ConcurrentTypeMap, Set + TryGetValue'    |  7.6148 ns | 0.0779 ns | 0.0691 ns |
-| 'ConcurrentDictionary, Set + TryGetValue' | 14.1827 ns | 0.0751 ns | 0.0666 ns |
-| 'ConcurrentTypeMap, GetOrAdd'             |  4.0655 ns | 0.0435 ns | 0.0386 ns |
-| 'ConcurrentDictionary, GetOrAdd'          |  2.1764 ns | 0.0365 ns | 0.0342 ns |
+| 'TypeMap, Set + TryGetValue'              |  0.2717 ns | 0.0284 ns | 0.0266 ns |
+| 'Dictionary, Set + TryGetValue'           |  4.8851 ns | 0.1273 ns | 0.1563 ns |
+| 'ConcurrentTypeMap, Set + TryGetValue'    |  7.4009 ns | 0.0071 ns | 0.0063 ns |
+| 'ConcurrentDictionary, Set + TryGetValue' | 14.0597 ns | 0.0644 ns | 0.0602 ns |
+| 'ConcurrentTypeMap, GetOrAdd'             |  0.2125 ns | 0.0180 ns | 0.0169 ns |
+| 'ConcurrentDictionary, GetOrAdd'          |  2.3314 ns | 0.0209 ns | 0.0196 ns |
 
 # TaskCompletionPipe
 [This benchmark](https://github.com/dotnet/dotNext/blob/master/src/DotNext.Benchmarks/Threading/Tasks/ChannelVersusPipeBenchmark.cs) demonstrates efficiency of [Task Completion Pipe](./features/threading/taskpipe.md) versus [async channels](https://learn.microsoft.com/en-us/dotnet/api/system.threading.channels.channel-1) from .NET. Pipe sorts the submitted tasks in order of their completion in time. The fastest result is available immediately for the consumer, while the channel needs to wait for completion of the task and only then add it to the queue.
