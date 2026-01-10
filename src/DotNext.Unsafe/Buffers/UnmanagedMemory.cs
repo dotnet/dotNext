@@ -240,7 +240,7 @@ internal class UnmanagedMemoryOwner<T, TAllocator> : UnmanagedMemory<T>, IUnmana
     {
     }
 
-    public unsafe Pointer<T> Pointer => new((T*)address);
+    public unsafe Pointer<T> Pointer => new(address);
 
     Span<T> IUnmanagedMemory<T>.Span => GetSpan();
 
@@ -248,7 +248,7 @@ internal class UnmanagedMemoryOwner<T, TAllocator> : UnmanagedMemory<T>, IUnmana
     {
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
 
-        address = INativeMemoryAllocator<T>.Realloc((T*)address, (uint)length);
+        address = INativeMemoryAllocator<T>.Realloc(address, (uint)length);
         Length = length;
     }
 
