@@ -32,8 +32,8 @@ public partial class ConcurrentTypeMap<TValue>
 
         private bool TryGetValue(Entry entry)
             => UseReferenceEntry
-                ? Unsafe.As<ReferenceEntry>(entry).TryGetValue(out current)
-                : Unsafe.As<GenericEntry>(entry).TryGetValue(out current);
+                ? Unsafe.As<ReferenceEntry>(entry).TryGet(out current)
+                : Unsafe.As<GenericEntry>(entry).TryGet(out current);
 
         /// <summary>
         /// Advances this enumerator to the next element.
