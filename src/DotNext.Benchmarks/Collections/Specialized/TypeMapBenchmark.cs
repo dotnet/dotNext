@@ -27,46 +27,46 @@ public class TypeMapBenchmark
         public TValue GetOrAdd<TKey>(TValue value) => GetOrAdd(typeof(TKey), value);
     }
 
-    private readonly TypeMap<int> threadUnsafeMap = new();
-    private readonly ConcurrentTypeMap<int> threadSafeMap = new();
-    private readonly DictionaryBasedLookup<int> dictionaryLookup = new();
-    private readonly ConcurrentDictionaryBasedLookup<int> concurrentLookup = new();
+    private readonly TypeMap<string> threadUnsafeMap = new();
+    private readonly ConcurrentTypeMap<string> threadSafeMap = new();
+    private readonly DictionaryBasedLookup<string> dictionaryLookup = new();
+    private readonly ConcurrentDictionaryBasedLookup<string> concurrentLookup = new();
 
     [Benchmark(Description = "TypeMap, Set + TryGetValue")]
-    public int TypeMapLookup()
+    public string TypeMapLookup()
     {
-        threadUnsafeMap.Set<string>(42);
+        threadUnsafeMap.Set<string>("42");
         threadUnsafeMap.TryGetValue<string>(out var result);
         return result;
     }
 
     [Benchmark(Description = "Dictionary, Set + TryGetValue")]
-    public int DictionaryLookup()
+    public string DictionaryLookup()
     {
-        dictionaryLookup.Set<string>(42);
+        dictionaryLookup.Set<string>("42");
         dictionaryLookup.TryGetValue<string>(out var result);
         return result;
     }
 
     [Benchmark(Description = "ConcurrentTypeMap, Set + TryGetValue")]
-    public int ConcurrentTypeMapLookup()
+    public string ConcurrentTypeMapLookup()
     {
-        threadSafeMap.Set<string>(42);
+        threadSafeMap.Set<string>("42");
         threadSafeMap.TryGetValue<string>(out var result);
         return result;
     }
 
     [Benchmark(Description = "ConcurrentDictionary, Set + TryGetValue")]
-    public int ConcurrentDictionaryLookup()
+    public string ConcurrentDictionaryLookup()
     {
-        concurrentLookup.Set<string>(42);
+        concurrentLookup.Set<string>("42");
         concurrentLookup.TryGetValue<string>(out var result);
         return result;
     }
 
     [Benchmark(Description = "ConcurrentTypeMap, GetOrAdd")]
-    public int ConcurrentTypeMapAtomicLookup() => threadSafeMap.GetOrAdd<object>(42, out _);
+    public string ConcurrentTypeMapAtomicLookup() => threadSafeMap.GetOrAdd<object>("42", out _);
 
     [Benchmark(Description = "ConcurrentDictionary, GetOrAdd")]
-    public int ConcurrentDictionaryAtomicLookup() => concurrentLookup.GetOrAdd<object>(42);
+    public string ConcurrentDictionaryAtomicLookup() => concurrentLookup.GetOrAdd<object>("42");
 }
