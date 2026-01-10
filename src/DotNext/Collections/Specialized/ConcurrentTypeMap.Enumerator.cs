@@ -30,6 +30,11 @@ public partial class ConcurrentTypeMap<TValue>
         /// </summary>
         public readonly TValue Current => current!;
 
+        private bool TryGetValue(Entry entry)
+            => UseReferenceEntry
+                ? Unsafe.As<ReferenceEntry>(entry).TryGetValue(out current)
+                : Unsafe.As<GenericEntry>(entry).TryGetValue(out current);
+
         /// <summary>
         /// Advances this enumerator to the next element.
         /// </summary>
@@ -46,12 +51,8 @@ public partial class ConcurrentTypeMap<TValue>
 
                     index = nextIndex;
                     var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), nextIndex);
-                    if (entry.TryAcquireLock(HasValueState))
-                    {
-                        current = entry.Value;
-                        entry.ReleaseLock(HasValueState);
+                    if (TryGetValue(entry))
                         return true;
-                    }
                 }
             }
 
