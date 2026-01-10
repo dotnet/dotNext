@@ -21,10 +21,9 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
         internal int AcquireLock()
         {
-            int currentState;
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
-                currentState = state;
+                var currentState = state;
 
                 if (currentState is not LockedState && Interlocked.CompareExchange(ref state, LockedState, currentState) == currentState)
                     return currentState;
@@ -37,11 +36,9 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         {
             get
             {
-                int currentState;
-
                 for (var spinner = new SpinWait(); ; spinner.SpinOnce())
                 {
-                    currentState = state;
+                    var currentState = state;
 
                     if (currentState is LockedState)
                         continue;
@@ -53,11 +50,9 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
         internal bool TryAcquireLock(int expectedState)
         {
-            int currentState;
-
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
-                currentState = state;
+                var currentState = state;
 
                 if (currentState is LockedState)
                     continue;
