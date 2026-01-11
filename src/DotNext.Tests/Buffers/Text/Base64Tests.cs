@@ -23,13 +23,61 @@ public sealed class Base64Tests : Test
     }
 
     [Fact]
-    public static void DecodeInvalidBlock()
+    public static void DecodePartiallyUtf8()
     {
         var decoder = new Base64Decoder();
-        using var writer = new PoolingArrayBufferWriter<byte>();
+        var writer = new ArrayBufferWriter<byte>();
         decoder.DecodeFromUtf8("AB"u8, writer);
         True(decoder.NeedMoreData);
         Equal(0, writer.WrittenCount);
+
+        decoder.DecodeFromUtf8("CDEFGH"u8, writer);
+        False(decoder.NeedMoreData);
+        Equal("ABCDEFGH", Convert.ToBase64String(writer.WrittenSpan));
+    }
+    
+    [Fact]
+    public static void DecodePartiallyUtf16()
+    {
+        var decoder = new Base64Decoder();
+        var writer = new ArrayBufferWriter<byte>();
+        decoder.DecodeFromUtf16("AB", writer);
+        True(decoder.NeedMoreData);
+        Equal(0, writer.WrittenCount);
+
+        decoder.DecodeFromUtf16("CDEFGH", writer);
+        False(decoder.NeedMoreData);
+        Equal("ABCDEFGH", Convert.ToBase64String(writer.WrittenSpan));
+    }
+
+    [Fact]
+    public static void EncodePartiallyUtf8()
+    {
+        var encoder = new Base64Encoder();
+        var writer = new ArrayBufferWriter<byte>();
+
+        encoder.EncodeToUtf8([0, 16], writer);
+        True(encoder.HasBufferedData);
+        Equal(0, writer.WrittenCount);
+
+        encoder.EncodeToUtf8([131, 16, 81, 135], writer);
+        False(encoder.HasBufferedData);
+        Equal([0, 16, 131, 16, 81, 135], Convert.FromBase64String(Encoding.UTF8.GetString(writer.WrittenSpan)));
+    }
+    
+    [Fact]
+    public static void EncodePartiallyUtf16()
+    {
+        var encoder = new Base64Encoder();
+        var writer = new ArrayBufferWriter<char>();
+
+        encoder.EncodeToUtf16([0, 16], writer);
+        True(encoder.HasBufferedData);
+        Equal(0, writer.WrittenCount);
+
+        encoder.EncodeToUtf16([131, 16, 81, 135], writer);
+        False(encoder.HasBufferedData);
+        Equal([0, 16, 131, 16, 81, 135], Convert.FromBase64String(writer.WrittenSpan.ToString()));
     }
 
     [Theory]

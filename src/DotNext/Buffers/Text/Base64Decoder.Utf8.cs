@@ -49,7 +49,7 @@ public partial struct Base64Decoder
             tempBuffer.Write(BufferedBytes);
             chars = chars.Slice(tempBuffer.Write(chars));
 
-            if (!DecodeFromUtf8Core(chars, bytes))
+            if (!DecodeFromUtf8Core(tempBuffer.Span, bytes))
                 return false;
         }
 

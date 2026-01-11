@@ -51,7 +51,7 @@ public partial struct Base64Decoder
             tempBuffer.Write(BufferedChars);
             chars = chars.Slice(tempBuffer.Write(chars));
 
-            if (!DecodeFromUtf16Core(chars, writer))
+            if (!DecodeFromUtf16Core(tempBuffer.Span, writer))
                 return false;
         }
 
