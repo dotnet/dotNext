@@ -23,13 +23,13 @@ public static class MethodExtensions
     /// <param name="method">The method to check.</param>
     /// <param name="parameters">The expected parameter types.</param>
     /// <returns><see langword="true"/>, if the method parameters have the same set of types as types passed as array; otherwise, <see langword="false"/>.</returns>
-    public static bool SignatureEquals(this MethodBase method, Type[] parameters)
+    public static bool SignatureEquals(this MethodBase method, params ReadOnlySpan<Type> parameters)
     {
         var firstParams = method.GetParameterTypes();
-        if (firstParams.LongLength != parameters.LongLength)
+        if (firstParams.Length != parameters.Length)
             return false;
 
-        for (long i = 0; i < firstParams.LongLength; i++)
+        for (var i = 0; i < firstParams.Length; i++)
         {
             if (firstParams[i] != parameters[i])
                 return false;
