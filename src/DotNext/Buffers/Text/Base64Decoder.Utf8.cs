@@ -10,12 +10,13 @@ public partial struct Base64Decoder
 {
     private const byte PaddingByte = (byte)PaddingChar;
 
-    private bool DecodeFromUtf8Core(scoped ReadOnlySpan<byte> chars, ref BufferWriterSlim<byte> bytes)
+    private bool DecodeFromUtf8Core<TWriter>(scoped ReadOnlySpan<byte> chars, scoped TWriter bytes)
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         Debug.Assert(reservedBufferSize >= 0);
 
         var produced = Base64.GetMaxDecodedFromUtf8Length(chars.Length);
-        var buffer = bytes.InternalGetSpan(produced);
+        scoped var buffer = bytes.GetSpan(produced);
 
         // x & 3 is the same as x % 4
         switch (Base64.DecodeFromUtf8(chars, buffer, out var consumed, out produced, (chars.Length & 3) is 0))
@@ -39,7 +40,8 @@ public partial struct Base64Decoder
         return true;
     }
 
-    private bool DecodeFromUtf8Buffered(scoped ReadOnlySpan<byte> chars, ref BufferWriterSlim<byte> bytes)
+    private bool DecodeFromUtf8Buffered<TWriter>(scoped ReadOnlySpan<byte> chars, scoped TWriter bytes)
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
         if (NeedMoreData)
         {
@@ -47,11 +49,11 @@ public partial struct Base64Decoder
             tempBuffer.Write(BufferedBytes);
             chars = chars.Slice(tempBuffer.Write(chars));
 
-            if (!DecodeFromUtf8Core(chars, ref bytes))
+            if (!DecodeFromUtf8Core(chars, bytes))
                 return false;
         }
 
-        return chars.IsEmpty || DecodeFromUtf8Core(chars, ref bytes);
+        return chars.IsEmpty || DecodeFromUtf8Core(chars, bytes);
     }
 
     /// <summary>
@@ -61,24 +63,11 @@ public partial struct Base64Decoder
     /// <param name="bytes">The output growable buffer used to write decoded bytes.</param>
     /// <exception cref="ArgumentNullException"><paramref name="bytes"/> is <see langword="null"/>.</exception>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void DecodeFromUtf8(ReadOnlySpan<byte> chars, IBufferWriter<byte> bytes)
+    public void DecodeFromUtf8(scoped ReadOnlySpan<byte> chars, IBufferWriter<byte> bytes)
     {
         ArgumentNullException.ThrowIfNull(bytes);
 
-        if (reservedBufferSize is GotPaddingFlag)
-            goto bad_data;
-
-        var maxBytes = GetMaxDecodedLength(chars.Length);
-        var writer = new BufferWriterSlim<byte>(bytes.GetSpan(maxBytes));
-        if (!DecodeFromUtf8Buffered(chars, ref writer))
-            goto bad_data;
-
-        Debug.Assert(writer.WrittenCount <= maxBytes);
-        bytes.Advance(writer.WrittenCount);
-        return;
-
-        bad_data:
-        throw CreateFormatException();
+        DecodeFromUtf8<BufferWriterReference<byte>>(chars, new(bytes));
     }
 
     /// <summary>
@@ -87,13 +76,13 @@ public partial struct Base64Decoder
     /// <param name="chars">UTF-8 encoded portion of base64 string.</param>
     /// <param name="allocator">The allocator of the result buffer.</param>
     /// <returns>A buffer containing decoded bytes.</returns>
-    public MemoryOwner<byte> DecodeFromUtf8(ReadOnlySpan<byte> chars, MemoryAllocator<byte>? allocator = null)
+    public MemoryOwner<byte> DecodeFromUtf8(scoped ReadOnlySpan<byte> chars, MemoryAllocator<byte>? allocator = null)
     {
         if (reservedBufferSize is GotPaddingFlag)
             goto bad_data;
 
         var bytes = new BufferWriterSlim<byte>(GetMaxDecodedLength(chars.Length), allocator);
-        if (DecodeFromUtf8Buffered(chars, ref bytes))
+        if (DecodeFromUtf8Buffered<BufferWriterSlim<byte>.Ref>(chars, new(ref bytes)))
             return bytes.DetachOrCopyBuffer();
 
         bytes.Dispose();
@@ -112,9 +101,13 @@ public partial struct Base64Decoder
     /// <param name="bytes">The output growable buffer used to write decoded bytes.</param>
     /// <exception cref="ArgumentNullException"><paramref name="bytes"/> is <see langword="null"/>.</exception>
     /// <exception cref="FormatException">The input base64 string is malformed.</exception>
-    public void DecodeFromUtf8(ReadOnlySpan<byte> chars, ref BufferWriterSlim<byte> bytes)
+    public void DecodeFromUtf8(scoped ReadOnlySpan<byte> chars, scoped ref BufferWriterSlim<byte> bytes)
+        => DecodeFromUtf8<BufferWriterSlim<byte>.Ref>(chars, new(ref bytes));
+
+    private void DecodeFromUtf8<TWriter>(scoped ReadOnlySpan<byte> chars, scoped TWriter writer)
+        where TWriter : IBufferWriter<byte>, allows ref struct
     {
-        if (reservedBufferSize is GotPaddingFlag || !DecodeFromUtf8Buffered(chars, ref bytes))
+        if (reservedBufferSize is GotPaddingFlag || !DecodeFromUtf8Buffered(chars, writer))
             throw CreateFormatException();
     }
 
