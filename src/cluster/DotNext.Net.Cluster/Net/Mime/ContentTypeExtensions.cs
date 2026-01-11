@@ -11,10 +11,17 @@ using Text;
 public static class ContentTypeExtensions
 {
     /// <summary>
-    /// Gets text encoding specified by media type.
+    /// Extends <see cref="ContentType"/> type.
     /// </summary>
-    /// <param name="contentType">The content type.</param>
-    /// <returns>The encoding specified by <paramref name="contentType"/>.</returns>
-    public static Encoding GetEncoding(this ContentType contentType)
-        => (contentType.CharSet is { Length: > 0 } charSet ? Encoding.GetEncoding(charSet) : Encoding.UTF8).WithoutPreamble;
+    /// <param name="contentType">The value to extend.</param>
+    extension(ContentType contentType)
+    {
+        /// <summary>
+        /// Gets text encoding specified by media type.
+        /// </summary>
+        /// <returns>The encoding specified by <paramref name="contentType"/>.</returns>
+        public Encoding Encoding => (contentType.CharSet is { Length: > 0 } charSet
+            ? Encoding.GetEncoding(charSet)
+            : Encoding.UTF8).WithoutPreamble;
+    }
 }
