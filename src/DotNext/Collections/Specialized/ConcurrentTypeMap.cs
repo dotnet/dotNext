@@ -139,11 +139,11 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
             if (UseReferenceEntry)
             {
-                Unsafe.As<ReferenceEntry>(entry).TrySet(value);
+                Unsafe.As<ReferenceEntry>(entry).Set(value);
             }
             else
             {
-                Unsafe.As<GenericEntry>(entry).TrySet(value);
+                Unsafe.As<GenericEntry>(entry).Set(value);
             }
             
             break;
