@@ -379,13 +379,13 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
 
 file static class SparseBufferWriter
 {
-    internal static int LinearGrowth(int chunkSize, ref int chunkIndex) => Math.Max(chunkSize * ++chunkIndex, chunkSize);
+    internal static int LinearGrowth(int chunkSize, ref int chunkIndex) => int.Max(chunkSize * ++chunkIndex, chunkSize);
 
-    internal static int ExponentialGrowth(int chunkSize, ref int chunkIndex) => Math.Max(chunkSize << ++chunkIndex, chunkSize);
+    internal static int ExponentialGrowth(int chunkSize, ref int chunkIndex) => int.Max(chunkSize << ++chunkIndex, chunkSize);
 
     internal static int NoGrowth(int chunkSize, ref int chunkIndex)
     {
-        Debug.Assert(chunkIndex == 0);
+        Debug.Assert(chunkIndex is 0);
         return chunkSize;
     }
 }
