@@ -32,14 +32,11 @@ internal struct InlineBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowable
     readonly int IGrowableBuffer<T>.CopyTo(Span<T> output)
         => WrittenMemory.Span >> output;
 
-    public void Clear()
+    public void Reset()
     {
         buffer.Dispose();
         buffer = default;
     }
-
-    /// <inheritdoc/>
-    void IResettable.Reset() => Clear();
 
     readonly bool IGrowableBuffer<T>.TryGetWrittenContent(out ReadOnlyMemory<T> block)
     {
