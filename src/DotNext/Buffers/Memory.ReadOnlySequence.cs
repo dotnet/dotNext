@@ -423,7 +423,7 @@ file sealed class ReadOnlySequencePartitioner<T> : OrderablePartitioner<T>
     {
         unsafe
         {
-            partitions.AsSpan().ForEach(&CreatePartition, GetOrderableDynamicPartitions());
+            partitions.ForEach(&CreatePartition, GetOrderableDynamicPartitions());
         }
 
         static void CreatePartition(ref IEnumerator<KeyValuePair<long, T>> partition, IEnumerable<KeyValuePair<long, T>> partitions)
