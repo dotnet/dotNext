@@ -101,8 +101,8 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
             return UseReferenceEntry
-                ? Unsafe.As<ReferenceEntry>(entry).TryAdd(value)
-                : Unsafe.As<GenericEntry>(entry).TryAdd(value);
+                ? Unsafe.As<ReferenceEntry>(entry).TrySet(value)
+                : Unsafe.As<GenericEntry>(entry).TrySet(value);
         }
     }
 
@@ -139,11 +139,11 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
             if (UseReferenceEntry)
             {
-                Unsafe.As<ReferenceEntry>(entry).TryAdd(value);
+                Unsafe.As<ReferenceEntry>(entry).Set(value);
             }
             else
             {
-                Unsafe.As<GenericEntry>(entry).TryAdd(value);
+                Unsafe.As<GenericEntry>(entry).Set(value);
             }
             
             break;
@@ -199,8 +199,8 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
             return UseReferenceEntry
-                ? Unsafe.As<ReferenceEntry>(entry).GetOrAdd(value, out added)
-                : Unsafe.As<GenericEntry>(entry).GetOrAdd(value, out added);
+                ? Unsafe.As<ReferenceEntry>(entry).GetOrSet(value, out added)
+                : Unsafe.As<GenericEntry>(entry).GetOrSet(value, out added);
         }
     }
 
@@ -237,8 +237,8 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
             return UseReferenceEntry
-                ? Unsafe.As<ReferenceEntry>(entry).AddOrUpdate(value)
-                : Unsafe.As<GenericEntry>(entry).AddOrUpdate(value);
+                ? Unsafe.As<ReferenceEntry>(entry).SetOrUpdate(value)
+                : Unsafe.As<GenericEntry>(entry).SetOrUpdate(value);
         }
     }
 
@@ -302,8 +302,8 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
             return UseReferenceEntry
-                ? Unsafe.As<ReferenceEntry>(entry).Remove(out value)
-                : Unsafe.As<GenericEntry>(entry).Remove(out value);
+                ? Unsafe.As<ReferenceEntry>(entry).Unset(out value)
+                : Unsafe.As<GenericEntry>(entry).Unset(out value);
         }
 
         value = default;
@@ -340,8 +340,8 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
             var entry = Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
             return UseReferenceEntry
-                ? Unsafe.As<ReferenceEntry>(entry).TryGetValue(out value)
-                : Unsafe.As<GenericEntry>(entry).TryGetValue(out value);
+                ? Unsafe.As<ReferenceEntry>(entry).TryGet(out value)
+                : Unsafe.As<GenericEntry>(entry).TryGet(out value);
         }
 
         value = default;
@@ -366,11 +366,11 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         var entries = Volatile.Read(ref this.entries);
         if (UseReferenceEntry)
         {
-            Array.ForEach(Unsafe.As<ReferenceEntry[]>(entries), static entry => entry.Clear());
+            Array.ForEach(Unsafe.As<ReferenceEntry[]>(entries), static entry => entry.Unset());
         }
         else
         {
-            Array.ForEach(Unsafe.As<GenericEntry[]>(entries), static entry => entry.Clear());
+            Array.ForEach(Unsafe.As<GenericEntry[]>(entries), static entry => entry.Unset());
         }
     }
 
@@ -381,21 +381,21 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         public abstract bool HasValue { get; }
 
-        public abstract bool TryAdd(TValue newValue);
+        public abstract bool TrySet(TValue newValue);
 
         public abstract void Set(TValue newValue);
 
         public abstract bool Set(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue);
 
-        public abstract TValue GetOrAdd(TValue newValue, out bool added);
+        public abstract TValue GetOrSet(TValue newValue, out bool isSet);
 
-        public abstract bool AddOrUpdate(TValue newValue);
+        public abstract bool SetOrUpdate(TValue newValue);
 
-        public abstract bool Remove([MaybeNullWhen(false)] out TValue oldValue);
+        public abstract bool Unset([MaybeNullWhen(false)] out TValue oldValue);
 
-        public abstract bool TryGetValue([MaybeNullWhen(false)] out TValue existingValue);
+        public abstract bool TryGet([MaybeNullWhen(false)] out TValue existingValue);
 
-        public abstract void Clear();
+        public abstract void Unset();
     }
 
     private sealed class ReferenceEntry : Entry
@@ -404,7 +404,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
         public override bool HasValue => !ReferenceEquals(value, Sentinel.Instance);
 
-        public override bool TryAdd(TValue newValue)
+        public override bool TrySet(TValue newValue)
             => ReferenceEquals(Interlocked.CompareExchange(
                 ref value,
                 Unsafe.As<TValue, object>(ref newValue),
@@ -413,15 +413,31 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         public override void Set(TValue newValue)
             => value = Unsafe.As<TValue, object>(ref newValue);
 
-        public override TValue GetOrAdd(TValue newValue, out bool added)
+        public override TValue GetOrSet(TValue newValue, out bool isSet)
         {
-            var result = Interlocked.CompareExchange(ref value, Unsafe.As<TValue, object>(ref newValue), Sentinel.Instance);
-            return (added = ReferenceEquals(result, Sentinel.Instance))
-                ? newValue
-                : Unsafe.As<object, TValue>(ref result);
+            // Perf: GetOrAdd can be implemented by simple CompareExchange. In this case, the cost of GET is the same as of ADD.
+            // However, ADD is more unlikely than GET, since the element once added it becomes available for read.
+            // Therefore, change the symmetry between GET and ADD overhead as follows:
+            // 1. Make GET cheaper
+            // 2. Make ADD more expensive
+            // So, GET can be done with simple Read Fence. If it's successful, CompareExchange is not needed.
+            var result = value;
+            if (ReferenceEquals(result, Sentinel.Instance))
+            {
+                result = Interlocked.CompareExchange(ref value, Unsafe.As<TValue, object>(ref newValue), Sentinel.Instance);
+
+                if (ReferenceEquals(result, Sentinel.Instance))
+                {
+                    isSet = true;
+                    return newValue;
+                }
+            }
+
+            isSet = false;
+            return Unsafe.As<object, TValue>(ref result);
         }
 
-        public override bool AddOrUpdate(TValue newValue)
+        public override bool SetOrUpdate(TValue newValue)
         {
             var result = Interlocked.Exchange(ref value, Unsafe.As<TValue, object>(ref newValue));
             return ReferenceEquals(result, Sentinel.Instance);
@@ -438,7 +454,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             return modified;
         }
 
-        public override bool Remove([MaybeNullWhen(false)] out TValue oldValue)
+        public override bool Unset([MaybeNullWhen(false)] out TValue oldValue)
         {
             var result = Interlocked.Exchange(ref value, Sentinel.Instance);
             bool removed;
@@ -449,7 +465,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             return removed;
         }
 
-        public override bool TryGetValue([MaybeNullWhen(false)] out TValue existingValue)
+        public override bool TryGet([MaybeNullWhen(false)] out TValue existingValue)
         {
             var valueCopy = value;
             bool hasValue;
@@ -460,7 +476,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             return hasValue;
         }
 
-        public override void Clear() => Interlocked.Exchange(ref value, Sentinel.Instance);
+        public override void Unset() => Interlocked.Exchange(ref value, Sentinel.Instance);
     }
 
     private sealed class GenericEntry : Entry
@@ -472,7 +488,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         private volatile int state;
         private TValue? value;
 
-        public override bool TryAdd(TValue newValue)
+        public override bool TrySet(TValue newValue)
         {
             if (TryAcquireLock(EmptyValueState))
             {
@@ -491,9 +507,9 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             ReleaseLock(HasValueState);
         }
 
-        public override TValue GetOrAdd(TValue newValue, out bool added)
+        public override TValue GetOrSet(TValue newValue, out bool isSet)
         {
-            if (added = AcquireLock() is EmptyValueState)
+            if (isSet = AcquireLock() is EmptyValueState)
             {
                 value = newValue;
             }
@@ -506,7 +522,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             return newValue;
         }
 
-        public override bool AddOrUpdate(TValue newValue)
+        public override bool SetOrUpdate(TValue newValue)
         {
             var added = AcquireLock() is EmptyValueState;
             value = newValue;
@@ -526,7 +542,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             return modified;
         }
 
-        public override bool Remove([MaybeNullWhen(false)] out TValue oldValue)
+        public override bool Unset([MaybeNullWhen(false)] out TValue oldValue)
         {
             if (TryAcquireLock(HasValueState))
             {
@@ -540,7 +556,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             return false;
         }
 
-        public override bool TryGetValue([MaybeNullWhen(false)] out TValue existingValue)
+        public override bool TryGet([MaybeNullWhen(false)] out TValue existingValue)
         {
             bool valueTaken;
             if (valueTaken = TryAcquireLock(HasValueState))
@@ -556,7 +572,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
             return valueTaken;
         }
 
-        public override void Clear()
+        public override void Unset()
         {
             AcquireLock();
             value = default;
@@ -631,19 +647,22 @@ public partial class ConcurrentTypeMap : ITypeMap
 
         internal object? Unset() => Interlocked.Exchange(ref Value, null);
 
-        internal object TryUpdate(object value, out bool updated)
+        internal object TrySet(object value, out bool isSet)
         {
-            if (Interlocked.CompareExchange(ref Value, value, null) is { } result)
+            var valueCopy = Value;
+            if (valueCopy is null)
             {
-                updated = false;
-            }
-            else
-            {
-                result = value;
-                updated = true;
+                valueCopy = Interlocked.CompareExchange(ref Value, value, null);
+
+                if (valueCopy is null)
+                {
+                    isSet = true;
+                    return value;
+                }
             }
 
-            return result;
+            isSet = false;
+            return valueCopy;
         }
 
         internal object? Set(object newValue) => Interlocked.Exchange(ref Value, newValue);
@@ -767,7 +786,7 @@ public partial class ConcurrentTypeMap : ITypeMap
                 continue;
             }
 
-            return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).TryUpdate(value, out added);
+            return Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).TrySet(value, out added);
         }
     }
 

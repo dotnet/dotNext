@@ -39,17 +39,20 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     public TypeMap()
         => entries = new Entry[ITypeMap.RecommendedCapacity];
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private void EnsureCapacity(int index)
+    private ref Entry this[int index]
+        => ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+
+    private ref Entry EnsureSlotAllocated(int index)
     {
         if ((uint)index >= (uint)entries.Length)
             Array.Resize(ref entries, ITypeMap.RecommendedCapacity);
+
+        return ref this[index];
     }
 
     private ref TValue? GetValueRefOrAddDefault(int index, out bool exists)
     {
-        EnsureCapacity(index);
-        ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+        ref var holder = ref EnsureSlotAllocated(index);
         exists = holder.HasValue;
         holder.HasValue = true;
         return ref holder.Value;
@@ -66,8 +69,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
 
     private bool TryAdd(int index, TValue value)
     {
-        EnsureCapacity(index);
-        ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+        ref var holder = ref EnsureSlotAllocated(index);
         if (holder.HasValue)
             return false;
 
@@ -91,8 +93,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
 
     private void Set(int index, TValue value)
     {
-        EnsureCapacity(index);
-        ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+        ref var holder = ref EnsureSlotAllocated(index);
         holder.Value = value;
         holder.HasValue = true;
     }
@@ -108,8 +109,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
 
     private bool Set(int index, TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
     {
-        EnsureCapacity(index);
-        ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+        ref var holder = ref EnsureSlotAllocated(index);
 
         bool result;
         if (result = holder.HasValue)
@@ -144,19 +144,17 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     /// <returns><see langword="true"/> if there is a value associated with <typeparamref name="TKey"/>; otherwise, <see langword="false"/>.</returns>
     public bool ContainsKey<TKey>()
         where TKey : allows ref struct
-    {
-        return ContainsKey(entries, TypeSlot<TKey>.Index);
+        => Contains(TypeSlot<TKey>.Index);
 
-        static bool ContainsKey(Entry[] entries, int index)
-            => (uint)index < (uint)entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).HasValue;
-    }
+    private bool Contains(int index)
+        => (uint)index < (uint)entries.Length && this[index].HasValue;
 
     private bool Remove(int index)
     {
         if ((uint)index >= (uint)entries.Length)
             goto fail;
 
-        ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+        ref var holder = ref this[index];
         if (holder.HasValue)
         {
             holder.HasValue = false;
@@ -183,7 +181,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
 
         if ((uint)index < (uint)entries.Length)
         {
-            ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+            ref var holder = ref this[index];
 
             value = holder.Value;
             holder.Value = default;
@@ -214,7 +212,7 @@ public partial class TypeMap<TValue> : ITypeMap<TValue>
     {
         if ((uint)index < (uint)entries.Length)
         {
-            ref var holder = ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index);
+            ref var holder = ref this[index];
             value = holder.Value;
             return holder.HasValue;
         }
