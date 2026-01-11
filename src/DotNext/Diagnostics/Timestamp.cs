@@ -71,13 +71,13 @@ public readonly record struct Timestamp :
     private static double GetTickFrequency(TimeProvider provider) => (double)TimeSpan.TicksPerSecond / provider.TimestampFrequency;
 
     private static long ToTicks(double duration)
-        => unchecked((long)(TickFrequency * duration));
+        => long.CreateTruncating(TickFrequency * duration);
 
     private static long ToTicks(double duration, TimeProvider provider)
-        => unchecked((long)(GetTickFrequency(provider) * duration));
+        => long.CreateTruncating(GetTickFrequency(provider) * duration);
 
     private static long FromTimeSpan(TimeSpan value)
-        => unchecked((long)(value.Ticks / TickFrequency));
+        => long.CreateTruncating(value.Ticks / TickFrequency);
 
     /// <summary>
     /// Gets <see cref="TimeSpan"/> representing this timestamp.
