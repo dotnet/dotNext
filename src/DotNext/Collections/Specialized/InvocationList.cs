@@ -86,16 +86,16 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
     /// <param name="d">The delegate to add.</param>
     public InvocationList(TDelegate d) => list = d;
 
-    private InvocationList(TDelegate[] array, TDelegate d)
+    private InvocationList(ReadOnlySpan<TDelegate> array, TDelegate d)
     {
         var list = new TDelegate[array.Length + 1];
-        array.CopyTo(list.AsSpan());
+        array.CopyTo(list);
         list[^1] = d;
         this.list = list;
     }
 
     private InvocationList(TDelegate d1, TDelegate d2)
-        => list = new TDelegate[] { d1, d2 };
+        => list = new[] { d1, d2 };
 
     private InvocationList(TDelegate[] array)
         => list = array;
