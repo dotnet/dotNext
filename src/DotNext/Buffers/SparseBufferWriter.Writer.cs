@@ -2,7 +2,7 @@ using System.Buffers;
 
 namespace DotNext.Buffers;
 
-public partial class SparseBufferWriter<T> : IBufferWriter<T>
+public partial class SparseBufferWriter<T>
 {
     private unsafe Memory<T> GetMemory()
     {
