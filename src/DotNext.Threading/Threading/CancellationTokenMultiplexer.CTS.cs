@@ -14,7 +14,6 @@ partial class CancellationTokenMultiplexer
         private InlinedTokenList inlinedList;
         private int count;
         private CancellationTokenRegistration[]? extraTokens;
-        internal PooledCancellationTokenSource? Next;
 
         public void AddRange(ReadOnlySpan<CancellationToken> tokens)
         {

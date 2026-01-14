@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 
 namespace DotNext.Threading;
@@ -11,9 +12,10 @@ namespace DotNext.Threading;
 /// </remarks>
 public sealed partial class CancellationTokenMultiplexer
 {
+    private readonly ConcurrentQueue<PooledCancellationTokenSource> sources = new();
     private readonly int maximumRetained = int.MaxValue;
     private volatile int count;
-    private volatile PooledCancellationTokenSource? firstInPool;
+    private PooledCancellationTokenSource? fastSource;
 
     /// <summary>
     /// Gets or sets the maximum retained <see cref="CancellationTokenSource"/> instances.
@@ -89,54 +91,38 @@ public sealed partial class CancellationTokenMultiplexer
     public ScopeWithTimeout CombineAndSetTimeoutLater(params ReadOnlySpan<CancellationToken> tokens)
         => new(this, tokens);
 
-    private void Return(PooledCancellationTokenSource source)
+    private void Return(PooledCancellationTokenSource src)
     {
-        // try to increment the counter
-        for (int current = count, tmp; current < maximumRetained; current = tmp)
+        if (fastSource is null && Interlocked.CompareExchange(ref fastSource, src, null) is null)
         {
-            tmp = Interlocked.CompareExchange(ref count, current + 1, current);
-            if (tmp == current)
-            {
-                ReturnCore(source);
-                break;
-            }
+            // nothing to do
         }
-    }
-
-    private void ReturnCore(PooledCancellationTokenSource source)
-    {
-        for (PooledCancellationTokenSource? current = firstInPool, tmp;; current = tmp)
+        else if (Interlocked.Increment(ref count) <= maximumRetained)
         {
-            source.Next = current;
-            tmp = Interlocked.CompareExchange(ref firstInPool, source, current);
-
-            if (ReferenceEquals(tmp, current))
-                break;
+            sources.Enqueue(src);
+        }
+        else
+        {
+            Interlocked.Decrement(ref count); // rollback the increment
         }
     }
 
     private PooledCancellationTokenSource Rent()
     {
-        var current = firstInPool;
-        for (PooledCancellationTokenSource? tmp;; current = tmp)
+        if (fastSource is { } src && Interlocked.CompareExchange(ref fastSource, null, src) == src)
         {
-            if (current is null)
-            {
-                current = new();
-                break;
-            }
-
-            tmp = Interlocked.CompareExchange(ref firstInPool, current.Next, current);
-            if (!ReferenceEquals(tmp, current))
-                continue;
-
-            current.Next = null;
-            var actualCount = Interlocked.Decrement(ref count);
-            Debug.Assert(actualCount >= 0L);
-            break;
+            // nothing to do
+        }
+        else if (sources.TryDequeue(out src))
+        {
+            Interlocked.Decrement(ref count);
+        }
+        else
+        {
+            src = new();
         }
 
-        return current;
+        return src;
     }
 
     private PooledCancellationTokenSource Rent(ReadOnlySpan<CancellationToken> tokens)
