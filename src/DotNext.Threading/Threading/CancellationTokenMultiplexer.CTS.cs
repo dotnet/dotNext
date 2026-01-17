@@ -5,7 +5,7 @@ namespace DotNext.Threading;
 
 using InlinedTokenList = ValueTuple<CancellationTokenRegistration, CancellationTokenRegistration, CancellationTokenRegistration>;
 
-partial class CancellationTokenMultiplexer
+partial struct CancellationTokenMultiplexer
 {
     private sealed class PooledCancellationTokenSource : LinkedCancellationTokenSource, IResettable
     {

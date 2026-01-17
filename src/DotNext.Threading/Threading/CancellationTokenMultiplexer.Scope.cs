@@ -5,10 +5,11 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
 
+using Collections.Concurrent;
 using static Timeout;
 using MultiplexerOrToken = ValueTuple<object>;
 
-partial class CancellationTokenMultiplexer
+partial struct CancellationTokenMultiplexer
 {
     private interface IMultiplexedTokenScope : IMultiplexedCancellationTokenSourceWithTimeout, IDisposable, IAsyncDisposable;
     
@@ -26,7 +27,7 @@ partial class CancellationTokenMultiplexer
 
         internal Scope(CancellationTokenMultiplexer multiplexer, ReadOnlySpan<CancellationToken> tokens, bool timeoutSupport = false)
         {
-            multiplexerOrToken = new(multiplexer);
+            multiplexerOrToken = new(multiplexer.sources);
             source = multiplexer.Rent(tokens);
 
             if (timeoutSupport)
@@ -35,7 +36,7 @@ partial class CancellationTokenMultiplexer
 
         internal Scope(CancellationTokenMultiplexer multiplexer, TimeSpan timeout, ReadOnlySpan<CancellationToken> tokens)
         {
-            multiplexerOrToken = new(multiplexer);
+            multiplexerOrToken = new(multiplexer.sources);
             source = multiplexer.Rent(tokens);
             source.RegisterTimeoutHandler();
             source.CancelAfter(timeout);
@@ -61,7 +62,7 @@ partial class CancellationTokenMultiplexer
         public CancellationToken CancellationOrigin => source?.CancellationOrigin ?? GetToken(multiplexerOrToken);
 
         /// <summary>
-        /// Gets a value indicating that the multiplexed token is cancelled by the timeout.
+        /// Gets a value indicating that the multiplexed token is canceled by the timeout.
         /// </summary>
         public bool IsTimedOut => source?.IsRootCause ?? GetToken(multiplexerOrToken) == TimedOutToken;
 
@@ -72,7 +73,7 @@ partial class CancellationTokenMultiplexer
         {
             if (source is not null)
             {
-                Debug.Assert(multiplexerOrToken.Item1 is CancellationTokenMultiplexer);
+                Debug.Assert(multiplexerOrToken.Item1 is IObjectPool<PooledCancellationTokenSource>);
 
                 for (var i = 0; i < source.Count; i++)
                 {
@@ -80,17 +81,17 @@ partial class CancellationTokenMultiplexer
                 }
 
                 // now we sure that no one can cancel the source concurrently
-                Return(Unsafe.As<CancellationTokenMultiplexer>(multiplexerOrToken.Item1), source);
+                Return(Unsafe.As<IObjectPool<PooledCancellationTokenSource>>(multiplexerOrToken.Item1), source);
             }
         }
 
         /// <inheritdoc/>
         public ValueTask DisposeAsync()
             => source is not null
-                ? ReturnAsync(Unsafe.As<CancellationTokenMultiplexer>(multiplexerOrToken.Item1), source)
+                ? ReturnAsync(Unsafe.As<IObjectPool<PooledCancellationTokenSource>>(multiplexerOrToken.Item1), source)
                 : ValueTask.CompletedTask;
 
-        private static async ValueTask ReturnAsync(CancellationTokenMultiplexer multiplexer, PooledCancellationTokenSource source)
+        private static async ValueTask ReturnAsync(IObjectPool<PooledCancellationTokenSource> multiplexer, PooledCancellationTokenSource source)
         {
             for (var i = 0; i < source.Count; i++)
             {
@@ -100,12 +101,12 @@ partial class CancellationTokenMultiplexer
             Return(multiplexer, source);
         }
 
-        private static void Return(CancellationTokenMultiplexer multiplexer, PooledCancellationTokenSource source)
+        private static void Return(IObjectPool<PooledCancellationTokenSource> pool, PooledCancellationTokenSource source)
         {
             source.Reset();
             if (source.TryReset())
             {
-                multiplexer.Return(source);
+                pool.Return(source);
             }
             else
             {
