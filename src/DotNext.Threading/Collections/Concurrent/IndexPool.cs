@@ -23,7 +23,7 @@ public sealed class IndexPool
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="desiredCapacity"/> is negative or greater than <see cref="Array.MaxLength"/>.</exception>
     public IndexPool(int desiredCapacity)
     {
-        ArgumentOutOfRangeException.ThrowIfEqual((uint)desiredCapacity, (uint)Array.MaxLength, nameof(desiredCapacity));
+        ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)desiredCapacity, (uint)Array.MaxLength, nameof(desiredCapacity));
 
         buffer = new(desiredCapacity);
         for (var index = 0; index < buffer.Length; index++)
