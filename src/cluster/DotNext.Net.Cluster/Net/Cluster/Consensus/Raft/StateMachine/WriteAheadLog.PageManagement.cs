@@ -219,17 +219,19 @@ partial class WriteAheadLog
 
     private class AnonymousPageManager : PageManager<AnonymousPage>
     {
-        private const int PageCacheSize = sizeof(ulong) * 8;
+        private const int PageCacheSize = sizeof(ulong) * 8 + 1;
 
         private readonly nuint alignment;
         private readonly nint madvise;
-        private IndexPool indices;
+        private readonly IndexPool indices;
         private PageCache cache;
 
         public AnonymousPageManager(DirectoryInfo location, int pageSize)
             : base(location, pageSize, GetPages(location, out var pages))
         {
-            indices = new(PageCacheSize - 1);
+            indices = new(PageCacheSize);
+            Debug.Assert(indices.Capacity is PageCacheSize);
+            
             cache = new();
 
             alignment = GetPageAlignment(pageSize, out madvise);
@@ -253,7 +255,7 @@ partial class WriteAheadLog
             }
 
             // place at least one page to the cache
-            if (indices.TryPeek(out var poolIndex))
+            if (indices.TryGet(out var poolIndex))
             {
                 MarkAsHugePageIfSupported(page = new(PageSize, alignment));
                 cache[poolIndex] = page;
@@ -303,7 +305,7 @@ partial class WriteAheadLog
         private AnonymousPage RentPage()
         {
             AnonymousPage page;
-            if (indices.TryTake(out var poolIndex))
+            if (indices.TryGet(out var poolIndex))
             {
                 ref var slot = ref cache[poolIndex];
                 if (slot is null)

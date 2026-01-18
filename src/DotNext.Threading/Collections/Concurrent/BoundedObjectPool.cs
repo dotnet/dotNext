@@ -1,111 +1,72 @@
-using System.Diagnostics;
-using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Concurrent;
 
-internal sealed class BoundedObjectPool<T> : IObjectPool<T>
+/// <summary>
+/// Represents object pool of the fixed size.
+/// </summary>
+/// <typeparam name="T">The type of the objects in the pool.</typeparam>
+public sealed class BoundedObjectPool<T> : IObjectPool<T>
     where T : class
 {
-    private readonly Slot[] slots;
-    private readonly nuint indexMask;
-    private readonly int indexBits;
-    private State state;
+    private RingBuffer<T> buffer;
 
-    public BoundedObjectPool(int maximumRetained)
+    /// <summary>
+    /// Initializes a new object pool.
+    /// </summary>
+    /// <param name="desiredCapacity">The desired number of the objects that can be retained by the pool. The value is rounded to the power of 2 by the pool.</param>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="desiredCapacity"/> is negative or greater than <see cref="Array.MaxLength"/>.</exception>
+    public BoundedObjectPool(int desiredCapacity)
     {
-        Debug.Assert(maximumRetained > 0);
+        ArgumentOutOfRangeException.ThrowIfEqual((uint)desiredCapacity, (uint)Array.MaxLength, nameof(desiredCapacity));
 
-        var length = nuint.CreateChecked(BitOperations.RoundUpToPowerOf2((ulong)(uint)maximumRetained));
-        slots = new Slot[length];
-        indexMask = length - 1U;
-        indexBits = (int)nuint.Log2(length);
+        buffer = new(desiredCapacity);
     }
 
-    private static nuint StateBit => (nuint)nint.MinValue;
+    /// <summary>
+    /// Gets the capacity of the pool.
+    /// </summary>
+    public int Capacity => buffer.Length;
 
-    public int Capacity => slots.Length;
-
-    private ref Slot this[nuint index]
+    /// <summary>
+    /// Tries to rent the object.
+    /// </summary>
+    /// <returns>The object instance; or <see langword="null"/> if there are no available objects in the pool.</returns>
+    public T? TryGet()
     {
-        get
+        ref var slot = ref buffer.TryDequeue(out var sequence);
+        T? result;
+        if (Unsafe.IsNullRef(ref slot))
         {
-            Debug.Assert(index < (uint)slots.Length);
-
-            return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(slots), index);
+            result = null;
         }
-    }
-
-    T? IObjectPool<T>.TryRent()
-    {
-        var result = default(T);
-        for (var spinner = new SpinWait();; spinner.SpinOnce(sleep1Threshold: -1))
+        else
         {
-            var position = state.Consumer;
-            var newPosition = position + 1U;
-            var index = position & indexMask;
-            ref var slot = ref this[index];
-
-            if (slot.Sequence != ((position >>> indexBits) | StateBit))
-                break;
-
-            if (Interlocked.CompareExchange(ref state.Consumer, position + 1U, position) == position)
-            {
-                result = slot.Item;
-                slot.Sequence = newPosition >>> indexBits;
-                break;
-            }
+            result = slot.Item;
+            slot.Item = null;
+            slot.Sequence = sequence;
         }
 
         return result;
     }
 
-    void IObjectPool<T>.Return(T item)
+    /// <summary>
+    /// Returns the object to this pool.
+    /// </summary>
+    /// <param name="item">The object that becomes available for the rent.</param>
+    /// <returns>
+    /// <see langword="true"/> if the object is returned to the pool;
+    /// otherwise, <see langword="false"/> if there is no free space in the pool.</returns>
+    public bool TryReturn(T item)
     {
-        for (var spinner = new SpinWait();; spinner.SpinOnce(sleep1Threshold: -1))
-        {
-            var position = state.Producer;
-            var newPosition = position + 1U;
-            var index = position & indexMask;
-            ref var slot = ref this[index];
+        ref var slot = ref buffer.TryEnqueue(out var sequence);
+        if (Unsafe.IsNullRef(ref slot))
+            return false;
 
-            if (slot.Sequence != position >>> indexBits)
-                break;
-
-            if (Interlocked.CompareExchange(ref state.Producer, newPosition, position) == position)
-            {
-                slot.Item = item;
-                slot.Sequence = (newPosition >>> indexBits) | StateBit;
-                break;
-            }
-        }
+        slot.Item = item;
+        slot.Sequence = sequence;
+        return true;
     }
 
-    [StructLayout(LayoutKind.Auto)]
-    private struct Slot
-    {
-        public T? Item;
-        public volatile nuint Sequence; // higher bit is reserved for the value presence
-    }
-
-    // producer/consumer positions are used by different threads, so it's better to avoid memory cache sharing
-    // between the threads, because both of them are updated with CompareExchange which forces cache invalidation
-    [StructLayout(LayoutKind.Sequential)]
-    private struct State
-    {
-        private Padding128 Prologue;
-        public volatile nuint Producer;
-        
-        private Padding128 Middle;
-        
-        public volatile nuint Consumer;
-        private Padding128 Epilogue;
-    }
-
-    [InlineArray(128 / sizeof(ulong))]
-    private struct Padding128
-    {
-        private ulong element0;
-    }
+    void IObjectPool<T>.Return(T item) => TryReturn(item);
 }

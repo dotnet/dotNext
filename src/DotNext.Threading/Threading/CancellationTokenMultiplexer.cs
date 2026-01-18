@@ -98,7 +98,7 @@ public readonly partial struct CancellationTokenMultiplexer()
 
     private PooledCancellationTokenSource Rent(ReadOnlySpan<CancellationToken> tokens)
     {
-        var source = sources.TryRent() ?? new();
+        var source = sources.TryGet() ?? new();
         Debug.Assert(source.Count is 0);
 
         source.AddRange(tokens);
