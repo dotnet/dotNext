@@ -6,7 +6,23 @@ public sealed class IndexPoolTests : Test
     public static void CheckCapacity()
     {
         var pool = new IndexPool(4);
+        True(pool.IsFull);
         Equal(4, pool.Capacity);
+    }
+
+    [Fact]
+    public static void TakeAll()
+    {
+        var set = new HashSet<int>();
+        var pool = new IndexPool(4);
+
+        while (pool.TryGet(out var value))
+        {
+            set.Add(value);
+        }
+        
+        True(pool.IsEmpty);
+        Equal(set.Count, pool.Capacity);
     }
     
     [Fact]

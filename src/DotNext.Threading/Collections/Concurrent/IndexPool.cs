@@ -37,6 +37,16 @@ public sealed class IndexPool
     }
 
     /// <summary>
+    /// Gets a value indicating whether the pool is empty.
+    /// </summary>
+    public bool IsEmpty => buffer.IsEmpty;
+
+    /// <summary>
+    /// Gets a value indicating whether the pool is full.
+    /// </summary>
+    public bool IsFull => buffer.IsFull;
+
+    /// <summary>
     /// Gets the capacity of the pool.
     /// </summary>
     public int Capacity => buffer.Length;

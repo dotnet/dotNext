@@ -38,6 +38,17 @@ internal struct RingBuffer<T>
         }
     }
 
+    public readonly bool IsEmpty
+    {
+        get
+        {
+            var position = state.Consumer;
+            var index = position & indexMask;
+
+            return this[index].Sequence != ((position >>> indexBits) | StateBit);
+        }
+    }
+
     public ref Slot TryDequeue(out nuint sequence)
     {
         for (var spinner = new SpinWait();; spinner.SpinOnce(sleep1Threshold: -1))
@@ -62,6 +73,17 @@ internal struct RingBuffer<T>
         return ref Unsafe.NullRef<Slot>();
     }
 
+    public readonly bool IsFull
+    {
+        get
+        {
+            var position = state.Producer;
+            var index = position & indexMask;
+
+            return this[index].Sequence != position >>> indexBits;
+        }
+    }
+
     public ref Slot TryEnqueue(out nuint sequence)
     {
         for (var spinner = new SpinWait();; spinner.SpinOnce(sleep1Threshold: -1))
@@ -74,7 +96,7 @@ internal struct RingBuffer<T>
             if (slot.Sequence != generation)
                 break;
 
-            if (Interlocked.CompareExchange(ref state.Producer, position + 1, position) == position)
+            if (Interlocked.CompareExchange(ref state.Producer, position + 1U, position) == position)
             {
                 // the slot becomes available for consumption in the current generation
                 sequence = generation | StateBit;
@@ -92,24 +114,15 @@ internal struct RingBuffer<T>
         public T? Item;
         public volatile nuint Sequence; // higher bit is reserved for the value presence
     }
+}
 
-    // producer/consumer positions are used by different threads, so it's better to avoid memory cache sharing
-    // between threads, because both of them are updated with CompareExchange which forces the cache invalidation
-    [StructLayout(LayoutKind.Sequential)]
-    private struct State
-    {
-        private Padding128 Prologue;
-        public volatile nuint Producer;
-        
-        private Padding128 Middle;
-        
-        public volatile nuint Consumer;
-        private Padding128 Epilogue;
-    }
+// producer/consumer positions are used by different threads, so it's better to avoid memory cache sharing
+// between threads, because both of them are updated with CompareExchange which forces the cache invalidation
+[StructLayout(LayoutKind.Explicit, Size = CacheLineSize * 3, Pack = sizeof(ulong))]
+internal struct State
+{
+    private const int CacheLineSize = 128;
 
-    [InlineArray(128 / sizeof(ulong))]
-    private struct Padding128
-    {
-        private ulong element0;
-    }
+    [FieldOffset(1 * CacheLineSize)] public volatile nuint Producer;
+    [FieldOffset(2 * CacheLineSize)] public volatile nuint Consumer;
 }
