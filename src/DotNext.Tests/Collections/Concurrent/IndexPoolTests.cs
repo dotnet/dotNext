@@ -14,6 +14,7 @@ public sealed class IndexPoolTests : Test
     {
         var set = new HashSet<int>();
         var pool = new IndexPool(4);
+        False(pool.IsEmpty);
 
         while (pool.TryGet(out var value))
         {
@@ -21,6 +22,7 @@ public sealed class IndexPoolTests : Test
         }
         
         Equal(set.Count, pool.Capacity);
+        True(pool.IsEmpty);
     }
     
     [Fact]

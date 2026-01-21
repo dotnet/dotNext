@@ -26,6 +26,16 @@ public sealed class IndexPool
         ArgumentOutOfRangeException.ThrowIfGreaterThan((uint)desiredCapacity, (uint)Array.MaxLength, nameof(desiredCapacity));
 
         buffer = new(desiredCapacity);
+        Populate();
+    }
+
+    /// <summary>
+    /// Gets a value indicating that the pool is empty.
+    /// </summary>
+    public bool IsEmpty => buffer.IsEmpty;
+
+    private void Populate()
+    {
         for (var index = 0; index < buffer.Length; index++)
         {
             ref var slot = ref buffer.TryEnqueue(out var sequence);

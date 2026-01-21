@@ -14,8 +14,8 @@ internal struct RingBuffer<T>
     private readonly Slot[] slots;
     private readonly nuint indexMask;
     private readonly int indexBits;
-    private State state;
     private bool frozenForEnqueues;
+    private State state;
     
     public RingBuffer(int maximumRetained)
     {
@@ -84,8 +84,7 @@ internal struct RingBuffer<T>
         for (var spinner = new SpinWait();; spinner.SpinOnce(sleep1Threshold: -1))
         {
             var position = state.Consumer;
-            var index = position & indexMask;
-            ref var slot = ref this[index];
+            ref var slot = ref this[position & indexMask];
             var generation = position >>> indexBits;
 
             if (slot.Sequence != (generation | StateBit))
@@ -103,13 +102,23 @@ internal struct RingBuffer<T>
         return ref Unsafe.NullRef<Slot>();
     }
 
+    public readonly bool IsEmpty
+    {
+        get
+        {
+            var position = state.Consumer;
+            var generation = position >> indexBits;
+
+            return this[position & indexMask].Sequence != (generation | StateBit);
+        }
+    }
+
     public ref Slot TryEnqueue(out nuint sequence)
     {
         for (var spinner = new SpinWait(); !frozenForEnqueues; spinner.SpinOnce(sleep1Threshold: -1))
         {
             var position = state.Producer;
-            var index = position & indexMask;
-            ref var slot = ref this[index];
+            ref var slot = ref this[position & indexMask];
             var generation = position >>> indexBits;
 
             if (slot.Sequence != generation)
