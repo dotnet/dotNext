@@ -69,4 +69,17 @@ public sealed class BoundedObjectPool<T> : IObjectPool<T>
     }
 
     void IObjectPool<T>.Return(T item) => TryReturn(item);
+
+    /// <summary>
+    /// Freezes the pool in a way when the object cannot be returned back to the pool.
+    /// </summary>
+    /// <remarks>
+    /// Any subsequent call to the <see cref="TryReturn"/> method returns <see langword="false"/>.
+    /// </remarks>
+    public void Freeze() => buffer.Freeze();
+
+    /// <summary>
+    /// Gets a value indicating that the pool is frozen and the object cannot be returned back to the pool.
+    /// </summary>
+    public bool IsFrozen => buffer.IsFrozen;
 }

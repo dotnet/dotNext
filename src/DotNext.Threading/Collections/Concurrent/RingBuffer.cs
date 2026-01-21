@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Concurrent;
 
+using Threading;
+
 // Inspired by Dmitry Vyukov’s MPMC queue
 [StructLayout(LayoutKind.Auto)]
 internal struct RingBuffer<T>
@@ -13,6 +15,7 @@ internal struct RingBuffer<T>
     private readonly nuint indexMask;
     private readonly int indexBits;
     private State state;
+    private bool frozenForEnqueues;
     
     public RingBuffer(int maximumRetained)
     {
@@ -22,6 +25,44 @@ internal struct RingBuffer<T>
         slots = new Slot[length];
         indexMask = length - 1U;
         indexBits = (int)nuint.Log2(length);
+        frozenForEnqueues = false;
+    }
+
+    public readonly bool IsFrozen => Volatile.Read(in frozenForEnqueues);
+
+    public void Freeze()
+    {
+        if (Interlocked.FalseToTrue(ref frozenForEnqueues))
+            FreezeAndWait();
+    }
+    
+    private void FreezeAndWait()
+    {
+        Debug.Assert(frozenForEnqueues);
+
+        // the slots prior the frozen position can be still in progress by the enqueuer, so wait for it
+        for (var position = FreezeProducer() - 1U;
+             this[position & indexMask].WaitForEnqueuedState(position >> indexBits);
+             position--) ;
+    }
+
+    private nuint FreezeProducer()
+    {
+        Debug.Assert(frozenForEnqueues);
+        
+        const nuint shift = 2U;
+        var current = state.Producer;
+        for (nuint tmp, offset = (uint)slots.Length * shift;; current = tmp)
+        {
+            // Advances the producer too far forward, so this position cannot be reached naturally even
+            // if the buffer is full. 2 generations forward is enough, because the items in the buffer
+            // can be in the current and the next generation.
+            tmp = Interlocked.CompareExchange(ref state.Producer, current + offset, current);
+            if (tmp == current)
+                break;
+        }
+
+        return current;
     }
 
     public readonly int Length => slots.Length;
@@ -35,17 +76,6 @@ internal struct RingBuffer<T>
             Debug.Assert(index < (uint)slots.Length);
 
             return ref Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(slots), index);
-        }
-    }
-
-    public readonly bool IsEmpty
-    {
-        get
-        {
-            var position = state.Consumer;
-            var index = position & indexMask;
-
-            return this[index].Sequence != ((position >>> indexBits) | StateBit);
         }
     }
 
@@ -73,20 +103,9 @@ internal struct RingBuffer<T>
         return ref Unsafe.NullRef<Slot>();
     }
 
-    public readonly bool IsFull
-    {
-        get
-        {
-            var position = state.Producer;
-            var index = position & indexMask;
-
-            return this[index].Sequence != position >>> indexBits;
-        }
-    }
-
     public ref Slot TryEnqueue(out nuint sequence)
     {
-        for (var spinner = new SpinWait();; spinner.SpinOnce(sleep1Threshold: -1))
+        for (var spinner = new SpinWait(); !frozenForEnqueues; spinner.SpinOnce(sleep1Threshold: -1))
         {
             var position = state.Producer;
             var index = position & indexMask;
@@ -113,6 +132,20 @@ internal struct RingBuffer<T>
     {
         public T? Item;
         public volatile nuint Sequence; // higher bit is reserved for the value presence
+
+        public readonly bool WaitForEnqueuedState(nuint frozenGen)
+        {
+            // The slot can be in three states:
+            // 1. Enqueued, so Sequence == (frozenGen | StateBit) => skip it and check the previous slot
+            // 2. Dequeued, so Sequence == (frozenGen + 1) & ~StateBit => leave the method
+            // 3. In-flight, so Sequence == frozenGen => wait for Enqueued or Dequeued
+            nuint sequence;
+            for (var spinner = new SpinWait();
+                 (sequence = Sequence) == frozenGen;
+                 spinner.SpinOnce()) ;
+
+            return sequence == (frozenGen | StateBit);
+        }
     }
 }
 

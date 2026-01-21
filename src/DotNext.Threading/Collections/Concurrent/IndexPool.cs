@@ -37,16 +37,6 @@ public sealed class IndexPool
     }
 
     /// <summary>
-    /// Gets a value indicating whether the pool is empty.
-    /// </summary>
-    public bool IsEmpty => buffer.IsEmpty;
-
-    /// <summary>
-    /// Gets a value indicating whether the pool is full.
-    /// </summary>
-    public bool IsFull => buffer.IsFull;
-
-    /// <summary>
     /// Gets the capacity of the pool.
     /// </summary>
     public int Capacity => buffer.Length;
@@ -91,4 +81,30 @@ public sealed class IndexPool
         [StackTraceHidden]
         static void ThrowOverflowException() => throw new OverflowException();
     }
+
+    /// <summary>
+    /// Returns the value to this pool.
+    /// </summary>
+    /// <param name="value">The value to be returned.</param>
+    /// <returns>
+    /// <see langword="true"/> if the value is returned to the pool;
+    /// otherwise, <see langword="false"/> if this pool is frozen.</returns>
+    public bool TryReturn(int value)
+    {
+        ref var slot = ref buffer.TryEnqueue(out var sequence);
+        if (Unsafe.IsNullRef(in slot))
+            return false;
+
+        slot.Item = value;
+        slot.Sequence = sequence;
+        return true;
+    }
+
+    /// <summary>
+    /// Freezes the pool in a way when the object cannot be returned back to the pool.
+    /// </summary>
+    /// <remarks>
+    /// Any subsequent call to the <see cref="TryReturn"/> method returns <see langword="false"/>.
+    /// </remarks>
+    public void Freeze() => buffer.Freeze();
 }

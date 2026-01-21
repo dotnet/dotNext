@@ -6,7 +6,6 @@ public sealed class IndexPoolTests : Test
     public static void CheckCapacity()
     {
         var pool = new IndexPool(4);
-        True(pool.IsFull);
         Equal(4, pool.Capacity);
     }
 
@@ -21,7 +20,6 @@ public sealed class IndexPoolTests : Test
             set.Add(value);
         }
         
-        True(pool.IsEmpty);
         Equal(set.Count, pool.Capacity);
     }
     
