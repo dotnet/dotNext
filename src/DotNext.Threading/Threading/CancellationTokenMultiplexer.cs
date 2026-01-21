@@ -20,6 +20,8 @@ public readonly partial struct CancellationTokenMultiplexer()
     /// <summary>
     /// Gets or sets the maximum retained <see cref="CancellationTokenSource"/> instances.
     /// </summary>
+    /// <value>The maximum <see cref="CancellationTokenSource"/> instances in the internal pool; or <see cref="int.MaxValue"/>
+    /// to use unbounded pool.</value>
     public int MaximumRetained
     {
         get => (sources as BoundedObjectPool<PooledCancellationTokenSource>)?.Capacity ?? int.MaxValue;
