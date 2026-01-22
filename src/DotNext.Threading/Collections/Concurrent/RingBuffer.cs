@@ -24,7 +24,7 @@ internal struct RingBuffer<T>
         var length = nuint.CreateChecked(BitOperations.RoundUpToPowerOf2((ulong)(uint)maximumRetained));
         slots = new Slot[length];
         indexMask = length - 1U;
-        indexBits = (int)nuint.Log2(length);
+        indexBits = int.CreateChecked(nuint.Log2(length));
         frozenForEnqueues = false;
     }
 
