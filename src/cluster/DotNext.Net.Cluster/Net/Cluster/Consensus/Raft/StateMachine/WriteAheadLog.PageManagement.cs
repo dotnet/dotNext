@@ -219,7 +219,7 @@ partial class WriteAheadLog
 
     private class AnonymousPageManager : PageManager<AnonymousPage>
     {
-        private const int PageCacheSize = sizeof(ulong) * 8 + 1;
+        private const int PageCacheSize = sizeof(ulong) * 8;
 
         private readonly nuint alignment;
         private readonly nint madvise;
