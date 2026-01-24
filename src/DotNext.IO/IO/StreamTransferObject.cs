@@ -40,7 +40,7 @@ public class StreamTransferObject(Stream content, bool leaveOpen) : Disposable, 
     public virtual bool IsReusable => content.CanSeek;
 
     /// <inheritdoc/>
-    long? IDataTransferObject.Length => content.CanSeek ? content.Length : default(long?);
+    long? IDataTransferObject.Length => content.CanSeek ? content.Length : null;
 
     /// <inheritdoc/>
     async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
