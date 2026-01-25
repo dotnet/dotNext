@@ -50,24 +50,21 @@ public readonly struct InvocationList<TDelegate> : IReadOnlyList<TDelegate> // T
             switch (list)
             {
                 case null:
-                    goto fail;
+                    break;
                 case TDelegate:
                     Current = Unsafe.As<TDelegate>(list);
                     list = null;
-                    goto success;
+                    return true;
                 default:
                     var array = Unsafe.As<TDelegate[]>(list);
                     index += 1;
                     if ((uint)index >= (uint)array.Length)
-                        goto fail;
+                        break;
 
                     Current = array[index];
-                    break;
+                    return true;
             }
 
-            success:
-            return true;
-            fail:
             return false;
         }
     }

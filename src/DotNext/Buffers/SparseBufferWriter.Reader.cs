@@ -142,10 +142,9 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
             Chunk<T>.AddChunk(in block, ref head, ref tail);
         }
 
-        if (count > 0L)
-            throw new InvalidOperationException(ExceptionMessages.EndOfBuffer(count));
-
-        return Chunk<T>.CreateSequence(head, tail);
+        return count is 0L
+            ? Chunk<T>.CreateSequence(head, tail)
+            : throw new InvalidOperationException(ExceptionMessages.EndOfBuffer(count));
     }
 
     /// <summary>
