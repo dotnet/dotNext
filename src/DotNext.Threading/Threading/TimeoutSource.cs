@@ -12,16 +12,10 @@ namespace DotNext.Threading;
 /// </remarks>
 public sealed class TimeoutSource : IDisposable, IAsyncDisposable
 {
-    private const uint InitialState = 0U;
-    private const uint StartedState = 1U;
-    private const uint CanceledState = 2U; // final state
-    private const uint TimedOutState = 3U; // final state
-    private const uint DisposedState = 4U; // final state
-
     private readonly ITimer timer;
     private readonly CancellationTokenSource source;
     private readonly CancellationTokenRegistration rootRegistration;
-    private volatile uint state;
+    private volatile ObjectState state;
 
     /// <summary>
     /// Initializes a new timeout provider.
@@ -54,11 +48,11 @@ public sealed class TimeoutSource : IDisposable, IAsyncDisposable
 
     private void OnCanceled()
     {
-        for (uint current = state, tmp;; current = tmp)
+        for (ObjectState current = state, tmp;; current = tmp)
         {
-            if (current <= StartedState)
+            if (current <= ObjectState.Started)
             {
-                tmp = Interlocked.CompareExchange(ref state, CanceledState, current);
+                tmp = Interlocked.CompareExchange(ref state, ObjectState.Canceled, current);
                 
                 if (tmp != current)
                     continue;
@@ -72,7 +66,7 @@ public sealed class TimeoutSource : IDisposable, IAsyncDisposable
 
     private void OnTimeout()
     {
-        if (Interlocked.CompareExchange(ref state, TimedOutState, StartedState) is StartedState)
+        if (Interlocked.CompareExchange(ref state, ObjectState.TimedOut, ObjectState.Started) is ObjectState.Started)
         {
             source.Cancel(throwOnFirstException: false);
         }
@@ -93,12 +87,12 @@ public sealed class TimeoutSource : IDisposable, IAsyncDisposable
     {
         Timeout.Validate(value);
 
-        switch (Interlocked.CompareExchange(ref state, StartedState, InitialState))
+        switch (Interlocked.CompareExchange(ref state, ObjectState.Started, ObjectState.Initial))
         {
-            case InitialState:
+            case ObjectState.Initial:
                 timer.Change(value, InfiniteTimeSpan);
                 return true;
-            case DisposedState:
+            case ObjectState.Disposed:
                 throw new ObjectDisposedException(GetType().Name);
             default:
                 return false;
@@ -109,10 +103,10 @@ public sealed class TimeoutSource : IDisposable, IAsyncDisposable
     /// Tries to reset the timer.
     /// </summary>
     /// <returns><see langword="true"/> if this object can be reused by calling <see cref="TryStart"/> again; otherwise, <see langword="false"/>.</returns>
-    public bool TryReset() => Interlocked.CompareExchange(ref state, InitialState, StartedState) switch
+    public bool TryReset() => Interlocked.CompareExchange(ref state, ObjectState.Initial, ObjectState.Started) switch
     {
-        InitialState => true,
-        StartedState => timer.Change(InfiniteTimeSpan, InfiniteTimeSpan),
+        ObjectState.Initial => true,
+        ObjectState.Started => timer.Change(InfiniteTimeSpan, InfiniteTimeSpan),
         _ => false,
     };
     
@@ -129,16 +123,16 @@ public sealed class TimeoutSource : IDisposable, IAsyncDisposable
     /// <summary>
     /// Gets a value indicating that this source is canceled by the root token.
     /// </summary>
-    public bool IsCanceled => state is CanceledState;
+    public bool IsCanceled => state is ObjectState.Canceled;
 
     /// <summary>
     /// Gets a value indicating that this source is timed out.
     /// </summary>
-    public bool IsTimedOut => state is TimedOutState;
+    public bool IsTimedOut => state is ObjectState.TimedOut;
 
     private void Dispose(bool disposing)
     {
-        if (Interlocked.Exchange(ref state, DisposedState) is not DisposedState)
+        if (Interlocked.Exchange(ref state, ObjectState.Disposed) is not ObjectState.Disposed)
         {
             if (disposing)
             {
@@ -170,10 +164,19 @@ public sealed class TimeoutSource : IDisposable, IAsyncDisposable
     /// </summary>
     /// <returns>The task representing asynchronous state of the operation.</returns>
     public ValueTask DisposeAsync()
-        => Interlocked.Exchange(ref state, DisposedState) is not DisposedState
+        => Interlocked.Exchange(ref state, ObjectState.Disposed) is not ObjectState.Disposed
             ? DisposeImplAsync()
             : ValueTask.CompletedTask;
 
     /// <inheritdoc />
     ~TimeoutSource() => Dispose(disposing: false);
+    
+    private enum ObjectState : uint
+    {
+        Initial = 0U,
+        Started = 1U,
+        Canceled = 2U,  // final state
+        TimedOut = 3U,  // final state
+        Disposed = 4U,  // final state
+    }
 }
