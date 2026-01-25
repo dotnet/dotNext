@@ -17,18 +17,21 @@ public abstract class Disposable : IDisposable
     /// <summary>
     /// Indicates that this object is disposed.
     /// </summary>
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     protected bool IsDisposed => state is ObjectState.Disposed;
 
     /// <summary>
     /// Indicates that <see cref="DisposeAsync()"/> is called but not yet completed.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     protected bool IsDisposing => state is ObjectState.Disposing;
 
     /// <summary>
     /// Indicates that <see cref="DisposeAsync()"/> is called.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Advanced)]
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
     protected bool IsDisposingOrDisposed => state is not ObjectState.NotDisposed;
 
     private string ObjectName => GetType().Name;
