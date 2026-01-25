@@ -94,7 +94,7 @@ public static partial class Memory
         /// Gets the array allocator.
         /// </summary>
         /// <value>The array allocator.</value>
-        public static MemoryAllocator<T> ArrayAllocator
+        public static MemoryAllocator<T> Array
         {
             get
             {
@@ -135,7 +135,7 @@ public static partial class Memory
         /// Returns an allocator of pinned arrays.
         /// </summary>
         /// <value>The array allocator.</value>
-        public static MemoryAllocator<T> PinnedArrayAllocator
+        public static MemoryAllocator<T> Pinned
         {
             get
             {

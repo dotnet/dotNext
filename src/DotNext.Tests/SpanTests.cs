@@ -89,8 +89,8 @@ public sealed class SpanTests : Test
     public static TheoryData<MemoryAllocator<char>> TestAllocators() => new()
     {
         null,
-        MemoryAllocator<char>.ArrayAllocator,
-        MemoryAllocator<char>.PinnedArrayAllocator,
+        MemoryAllocator<char>.Array,
+        MemoryAllocator<char>.Pinned,
         ArrayPool<char>.Shared.ToAllocator(),
     };
 

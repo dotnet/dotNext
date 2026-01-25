@@ -314,7 +314,7 @@ public sealed class PoolingBufferedStreamTests : Test
         using var bufferedStream = new PoolingBufferedStream(stream, leaveOpen: false)
         {
             MaxBufferSize = bufferSize,
-            Allocator = MemoryAllocator<byte>.ArrayAllocator,
+            Allocator = MemoryAllocator<byte>.Array,
         };
 
         var expected = RandomBytes(bufferSize);
@@ -331,7 +331,7 @@ public sealed class PoolingBufferedStreamTests : Test
         using var bufferedStream = new PoolingBufferedStream(new MemoryStream(bufferSize), leaveOpen: false)
         {
             MaxBufferSize = bufferSize,
-            Allocator = MemoryAllocator<byte>.ArrayAllocator,
+            Allocator = MemoryAllocator<byte>.Array,
         };
 
         var expected = RandomBytes(bufferSize);
