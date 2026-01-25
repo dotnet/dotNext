@@ -6,10 +6,10 @@ using Lock = System.Threading.Lock;
 
 public partial class ManualResetCompletionSource
 {
-    private readonly Lock SyncRoot = new();
+    private readonly Lock syncRoot = new();
 
-    private protected Lock.Scope AcquireLock() => SyncRoot.EnterScope();
+    private protected Lock.Scope AcquireLock() => syncRoot.EnterScope();
 
     [Conditional("DEBUG")]
-    private protected void AssertLocked() => Debug.Assert(SyncRoot.IsHeldByCurrentThread);
+    private protected void AssertLocked() => Debug.Assert(syncRoot.IsHeldByCurrentThread);
 }

@@ -47,7 +47,7 @@ public abstract partial class ManualResetCompletionSource
         if (versionAndStatus.Status is not ManualResetCompletionSourceStatus.Activated)
             goto exit;
 
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             if (versionAndStatus.Status is not ManualResetCompletionSourceStatus.Activated
                 || versionAndStatus.Version != (short)expectedVersion
@@ -95,9 +95,9 @@ public abstract partial class ManualResetCompletionSource
     /// <returns>The version of the uncompleted task.</returns>
     public short Reset()
     {
-        SyncRoot.Enter();
+        syncRoot.Enter();
         var stateCopy = ResetCore(out var token);
-        SyncRoot.Exit();
+        syncRoot.Exit();
 
         stateCopy.Dispose();
         CleanUp();
@@ -114,10 +114,10 @@ public abstract partial class ManualResetCompletionSource
     {
         bool result;
 
-        if (result = SyncRoot.TryEnter())
+        if (result = syncRoot.TryEnter())
         {
             var stateCopy = ResetCore(out token);
-            SyncRoot.Exit();
+            syncRoot.Exit();
 
             stateCopy.Dispose();
             CleanUp();
@@ -185,11 +185,11 @@ public abstract partial class ManualResetCompletionSource
 
         // code block doesn't have any calls leading to exceptions
         // so replace try-finally with manually cloned code
-        SyncRoot.Enter();
+        syncRoot.Enter();
         if (token != versionAndStatus.Version)
         {
             errorMessage = ExceptionMessages.InvalidSourceToken;
-            SyncRoot.Exit();
+            syncRoot.Exit();
             goto invalid_state;
         }
 
@@ -197,14 +197,14 @@ public abstract partial class ManualResetCompletionSource
         {
             default:
                 errorMessage = ExceptionMessages.InvalidSourceState;
-                SyncRoot.Exit();
+                syncRoot.Exit();
                 goto invalid_state;
             case ManualResetCompletionSourceStatus.WaitForConsumption:
-                SyncRoot.Exit();
+                syncRoot.Exit();
                 break;
             case ManualResetCompletionSourceStatus.Activated:
                 this.continuation = continuation;
-                SyncRoot.Exit();
+                syncRoot.Exit();
                 goto exit;
         }
 
@@ -292,7 +292,7 @@ public abstract partial class ManualResetCompletionSource
         Timeout.Validate(timeout);
 
         short? result;
-        lock (SyncRoot)
+        lock (syncRoot)
         {
             switch (versionAndStatus.Status)
             {

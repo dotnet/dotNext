@@ -81,7 +81,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <see langword="true"/> if this source is completed successfully;
     /// <see langword="false"/> if this source was completed previously.
     /// </returns>
-    protected internal bool TrySetResult(object? completionData, short? completionToken, Exception? e, out bool resumable)
+    protected bool TrySetResult(object? completionData, short? completionToken, Exception? e, out bool resumable)
         => TrySetResult(completionData, completionToken, e is null ? null : ExceptionDispatchInfo.Capture(e), out resumable);
     
     private bool TrySetResult(object? completionData, short? completionToken, ExceptionDispatchInfo? dispatchInfo, out bool resumable)
