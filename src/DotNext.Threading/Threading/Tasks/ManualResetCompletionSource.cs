@@ -491,7 +491,7 @@ public abstract partial class ManualResetCompletionSource
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public VersionAndStatus VolatileRead() => new() { value = Volatile.Read(ref value) };
+        public readonly VersionAndStatus VolatileRead() => new() { value = Volatile.Read(in value) };
 
         public bool IsCompleted => Status >= ManualResetCompletionSourceStatus.WaitForConsumption;
 
