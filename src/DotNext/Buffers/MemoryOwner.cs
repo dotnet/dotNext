@@ -166,20 +166,13 @@ public struct MemoryOwner<T> : IMemoryOwner<T>, ISupplier<Memory<T>>, ISupplier<
     /// </summary>
     public readonly int Length => length;
 
-    internal void Expand()
-    {
-        length = RawLength;
-
-        AssertValid();
-    }
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal void Truncate(int newLength)
     {
         Debug.Assert(newLength > 0);
         Debug.Assert(newLength <= RawLength);
 
-        length = Math.Min(length, newLength);
+        length = int.Min(length, newLength);
 
         AssertValid();
     }
