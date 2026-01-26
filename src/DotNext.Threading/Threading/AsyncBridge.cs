@@ -63,7 +63,7 @@ public static partial class AsyncBridge
     /// <param name="tokens">The tokens to wait on for cancellation.</param>
     /// <returns>The canceled token.</returns>
     /// <exception cref="InvalidOperationException"><paramref name="tokens"/> is empty.</exception>
-    public static Task<CancellationToken> WaitAnyAsync(this ReadOnlySpan<CancellationToken> tokens)
+    public static Task<CancellationToken> WaitAnyAsync(params ReadOnlySpan<CancellationToken> tokens)
     {
         Task<CancellationToken> result;
         try
@@ -86,7 +86,7 @@ public static partial class AsyncBridge
     /// <returns>The canceled token.</returns>
     /// <exception cref="InvalidOperationException"><paramref name="tokens"/> is empty.</exception>
     /// <exception cref="PendingTaskInterruptedException">The returned task is interrupted by <paramref name="interruption"/> procedure.</exception>
-    public static Task<CancellationToken> WaitAnyAsync(this ReadOnlySpan<CancellationToken> tokens, out Func<object?, bool> interruption)
+    public static Task<CancellationToken> WaitAnyAsync(ReadOnlySpan<CancellationToken> tokens, out Func<object?, bool> interruption)
     {
         Task<CancellationToken> result;
         try
