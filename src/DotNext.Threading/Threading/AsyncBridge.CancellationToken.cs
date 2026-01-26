@@ -11,12 +11,12 @@ using Tasks;
 
 public static partial class AsyncBridge
 {
-    private sealed class PoolingCancellationTokenValueTask : ValueTaskCompletionSource
+    private sealed class CancellationTokenValueTask : ValueTaskCompletionSource
     {
-        private readonly Action<PoolingCancellationTokenValueTask> backToPool;
+        private readonly Action<CancellationTokenValueTask> backToPool;
         internal new bool CompleteAsCanceled;
 
-        internal PoolingCancellationTokenValueTask(Action<PoolingCancellationTokenValueTask> backToPool)
+        internal CancellationTokenValueTask(Action<CancellationTokenValueTask> backToPool)
             => this.backToPool = backToPool;
 
         protected override void AfterConsumed()
@@ -171,16 +171,16 @@ public static partial class AsyncBridge
         }
     }
 
-    private static readonly Action<PoolingCancellationTokenValueTask> CancellationTokenValueTaskCompletionCallback
-        = new UnboundedObjectPool<PoolingCancellationTokenValueTask>().Return;
+    private static readonly Action<CancellationTokenValueTask> CancellationTokenValueTaskCompletionCallback
+        = new UnboundedObjectPool<CancellationTokenValueTask>().Return;
 
-    private static UnboundedObjectPool<PoolingCancellationTokenValueTask> TokenPool
+    private static UnboundedObjectPool<CancellationTokenValueTask> TokenPool
     {
         get
         {
-            Debug.Assert(CancellationTokenValueTaskCompletionCallback.Target is UnboundedObjectPool<PoolingCancellationTokenValueTask>);
+            Debug.Assert(CancellationTokenValueTaskCompletionCallback.Target is UnboundedObjectPool<CancellationTokenValueTask>);
 
-            return Unsafe.As<UnboundedObjectPool<PoolingCancellationTokenValueTask>>(CancellationTokenValueTaskCompletionCallback.Target);
+            return Unsafe.As<UnboundedObjectPool<CancellationTokenValueTask>>(CancellationTokenValueTaskCompletionCallback.Target);
         }
     }
 

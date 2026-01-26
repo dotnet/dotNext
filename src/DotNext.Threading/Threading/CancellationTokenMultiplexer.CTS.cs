@@ -19,7 +19,7 @@ partial struct CancellationTokenMultiplexer
         {
             // register inlined tokens
             var inlinedRegistrations = inlinedList.AsSpan();
-            var inlinedCount = Math.Min(inlinedRegistrations.Length, tokens.Length);
+            var inlinedCount = int.Min(inlinedRegistrations.Length, tokens.Length);
 
             for (var i = 0; i < inlinedCount; i++)
             {
