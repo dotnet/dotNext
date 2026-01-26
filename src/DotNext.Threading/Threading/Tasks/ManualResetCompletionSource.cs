@@ -286,6 +286,9 @@ public abstract partial class ManualResetCompletionSource
     /// or <see cref="ManualResetCompletionSourceStatus.Consumed"/>.
     /// </remarks>
     public bool IsCompleted => versionAndStatus.VolatileRead().IsCompleted;
+    
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    internal short CurrentVersion => versionAndStatus.VolatileRead().Version;
 
     private protected short? Activate(TimeSpan timeout, CancellationToken token)
     {

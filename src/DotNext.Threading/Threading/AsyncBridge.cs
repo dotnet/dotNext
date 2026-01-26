@@ -37,7 +37,6 @@ public static partial class AsyncBridge
         }
 
         result.CompleteAsCanceled = completeAsCanceled;
-        result.Reset();
         return result.CreateTask(InfiniteTimeSpan, token);
     }
 
@@ -79,7 +78,7 @@ public static partial class AsyncBridge
             result = new();
         }
 
-        var token = result.Reset();
+        var token = result.CurrentVersion;
         var registration = ThreadPool.UnsafeRegisterWaitForSingleObject(
             handle,
             Complete,
