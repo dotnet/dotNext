@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using Debug = System.Diagnostics.Debug;
@@ -7,39 +6,37 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading;
 
+using Collections.Concurrent;
 using Tasks;
 
 public static partial class AsyncBridge
 {
-    private sealed class CancellationTokenValueTask : ValueTaskCompletionSource
+    private sealed class PoolingCancellationTokenValueTask : ValueTaskCompletionSource
     {
-        private readonly Action<CancellationTokenValueTask> backToPool;
-
+        private readonly Action<PoolingCancellationTokenValueTask> backToPool;
         internal new bool CompleteAsCanceled;
 
-        internal CancellationTokenValueTask(Action<CancellationTokenValueTask> backToPool)
-        {
-            this.backToPool = backToPool;
-            Interlocked.Increment(ref instantiatedTasks);
-        }
+        internal PoolingCancellationTokenValueTask(Action<PoolingCancellationTokenValueTask> backToPool)
+            => this.backToPool = backToPool;
 
         protected override void AfterConsumed()
         {
-            Interlocked.Decrement(ref instantiatedTasks);
-            backToPool(this);
+            if (!TryReset(out _))
+            {
+                // cannot be returned to the pool
+            }
+            else if (Interlocked.Increment(ref instantiatedTasks) > maxPoolSize)
+            {
+                Interlocked.Decrement(ref instantiatedTasks);
+            }
+            else
+            {
+                backToPool(this);
+            }
         }
 
         protected override Exception? OnCanceled(CancellationToken token)
             => CompleteAsCanceled ? new OperationCanceledException(token) : null;
-    }
-
-    private sealed class CancellationTokenValueTaskPool : ConcurrentBag<CancellationTokenValueTask>
-    {
-        internal void Return(CancellationTokenValueTask vt)
-        {
-            if (vt.TryReset(out _))
-                Add(vt);
-        }
     }
     
     private abstract class CancellationTokenCompletionSource : TaskCompletionSource<CancellationToken>
@@ -174,15 +171,16 @@ public static partial class AsyncBridge
         }
     }
 
-    private static readonly Action<CancellationTokenValueTask> CancellationTokenValueTaskCompletionCallback = new CancellationTokenValueTaskPool().Return;
+    private static readonly Action<PoolingCancellationTokenValueTask> CancellationTokenValueTaskCompletionCallback
+        = new UnboundedObjectPool<PoolingCancellationTokenValueTask>().Return;
 
-    private static CancellationTokenValueTaskPool TokenPool
+    private static UnboundedObjectPool<PoolingCancellationTokenValueTask> TokenPool
     {
         get
         {
-            Debug.Assert(CancellationTokenValueTaskCompletionCallback.Target is CancellationTokenValueTaskPool);
+            Debug.Assert(CancellationTokenValueTaskCompletionCallback.Target is UnboundedObjectPool<PoolingCancellationTokenValueTask>);
 
-            return Unsafe.As<CancellationTokenValueTaskPool>(CancellationTokenValueTaskCompletionCallback.Target);
+            return Unsafe.As<UnboundedObjectPool<PoolingCancellationTokenValueTask>>(CancellationTokenValueTaskCompletionCallback.Target);
         }
     }
 

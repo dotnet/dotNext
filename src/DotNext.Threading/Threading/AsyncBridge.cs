@@ -4,15 +4,18 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
-using ManualResetCompletionSource = Tasks.ManualResetCompletionSource;
-
 /// <summary>
 /// Allows to turn <see cref="WaitHandle"/> and <see cref="CancellationToken"/> into task.
 /// </summary>
 public static partial class AsyncBridge
 {
     private static volatile int instantiatedTasks;
-    private static int maxPoolSize = Environment.ProcessorCount * 2;
+    private static int maxPoolSize;
+
+    static AsyncBridge()
+    {
+        maxPoolSize = instantiatedTasks = Environment.ProcessorCount * 2;
+    }
 
     /// <summary>
     /// Obtains a task that can be used to await token cancellation.
@@ -29,17 +32,11 @@ public static partial class AsyncBridge
         if (token.IsCancellationRequested)
             return completeAsCanceled ? ValueTask.FromCanceled(token) : ValueTask.CompletedTask;
 
-        CancellationTokenValueTask? result;
-
-        // do not keep long references when limit is reached
-        if (instantiatedTasks > maxPoolSize)
+        if (TokenPool.TryGet() is { } result)
         {
-            if (completeAsCanceled)
-                return new(Task.Delay(InfiniteTimeSpan, token));
-
-            result = new(Reset);
+            Interlocked.Decrement(ref instantiatedTasks);
         }
-        else if (!TokenPool.TryTake(out result))
+        else
         {
             result = new(CancellationTokenValueTaskCompletionCallback);
         }
@@ -104,15 +101,43 @@ public static partial class AsyncBridge
         return result;
     }
 
+    /// <summary>
+    /// Obtains a task that can be used to await handle completion.
+    /// </summary>
+    /// <param name="handle">The handle to await.</param>
+    /// <param name="timeout">The timeout used to await completion.</param>
+    /// <param name="token">The token that can be used to cancel the operation.</param>
+    /// <returns><see langword="true"/> if handle is signaled; otherwise, <see langword="false"/> if timeout occurred.</returns>
+    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+    public static ValueTask<bool> WaitAsync(this WaitHandle handle, TimeSpan timeout, CancellationToken token = default)
+    {
+        ValueTask<bool> result;
+        if (handle.WaitOne(0))
+        {
+            result = new(true);
+        }
+        else if (timeout == TimeSpan.Zero)
+        {
+            result = new(false);
+        }
+        else
+        {
+            result = GetCompletionSource(handle, timeout).CreateTask(InfiniteTimeSpan, token);
+        }
+
+        return result;
+    }
+    
     private static WaitHandleValueTask GetCompletionSource(WaitHandle handle, TimeSpan timeout)
     {
-        WaitHandleValueTask? result;
-
-        // do not keep long references when limit is reached
-        if (instantiatedTasks > maxPoolSize)
-            result = new(Reset);
-        else if (!HandlePool.TryTake(out result))
+        if (HandlePool.TryGet() is { } result)
+        {
+            Interlocked.Decrement(ref instantiatedTasks);
+        }
+        else
+        {
             result = new(WaitHandleTaskCompletionCallback);
+        }
 
         var token = result.Reset();
         var registration = ThreadPool.UnsafeRegisterWaitForSingleObject(
@@ -141,35 +166,6 @@ public static partial class AsyncBridge
             source.TrySetResult(token, timedOut is false);
         }
     }
-
-    /// <summary>
-    /// Obtains a task that can be used to await handle completion.
-    /// </summary>
-    /// <param name="handle">The handle to await.</param>
-    /// <param name="timeout">The timeout used to await completion.</param>
-    /// <param name="token">The token that can be used to cancel the operation.</param>
-    /// <returns><see langword="true"/> if handle is signaled; otherwise, <see langword="false"/> if timeout occurred.</returns>
-    /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static ValueTask<bool> WaitAsync(this WaitHandle handle, TimeSpan timeout, CancellationToken token = default)
-    {
-        ValueTask<bool> result;
-        if (handle.WaitOne(0))
-        {
-            result = new(true);
-        }
-        else if (timeout == TimeSpan.Zero)
-        {
-            result = new(false);
-        }
-        else
-        {
-            result = GetCompletionSource(handle, timeout).CreateTask(InfiniteTimeSpan, token);
-        }
-
-        return result;
-    }
-
-    private static void Reset(ManualResetCompletionSource source) => source.Reset();
 
     /// <summary>
     /// Obtains a task that can be used to await handle completion.

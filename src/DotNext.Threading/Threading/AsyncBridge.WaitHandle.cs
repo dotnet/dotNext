@@ -1,9 +1,9 @@
-using System.Collections.Concurrent;
 using Debug = System.Diagnostics.Debug;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading;
 
+using Collections.Concurrent;
 using Tasks;
 
 public static partial class AsyncBridge
@@ -27,29 +27,32 @@ public static partial class AsyncBridge
         protected override void AfterConsumed()
         {
             Interlocked.Exchange(ref handle, null)?.Unregister(null);
-            Interlocked.Decrement(ref instantiatedTasks);
-            backToPool(this);
+
+            if (!TryReset(out _))
+            {
+                // cannot be returned to the pool
+            }
+            else if (Interlocked.Increment(ref instantiatedTasks) > maxPoolSize)
+            {
+                Interlocked.Decrement(ref instantiatedTasks);
+            }
+            else
+            {
+                backToPool(this);
+            }
         }
     }
 
-    private sealed class WaitHandleValueTaskPool : ConcurrentBag<WaitHandleValueTask>
-    {
-        internal void Return(WaitHandleValueTask vt)
-        {
-            if (vt.TryReset(out _))
-                Add(vt);
-        }
-    }
+    private static readonly Action<WaitHandleValueTask> WaitHandleTaskCompletionCallback
+        = new UnboundedObjectPool<WaitHandleValueTask>().Return;
 
-    private static readonly Action<WaitHandleValueTask> WaitHandleTaskCompletionCallback = new WaitHandleValueTaskPool().Return;
-
-    private static WaitHandleValueTaskPool HandlePool
+    private static UnboundedObjectPool<WaitHandleValueTask> HandlePool
     {
         get
         {
-            Debug.Assert(WaitHandleTaskCompletionCallback.Target is WaitHandleValueTaskPool);
+            Debug.Assert(WaitHandleTaskCompletionCallback.Target is UnboundedObjectPool<WaitHandleValueTask>);
 
-            return Unsafe.As<WaitHandleValueTaskPool>(WaitHandleTaskCompletionCallback.Target);
+            return Unsafe.As<UnboundedObjectPool<WaitHandleValueTask>>(WaitHandleTaskCompletionCallback.Target);
         }
     }
 }
