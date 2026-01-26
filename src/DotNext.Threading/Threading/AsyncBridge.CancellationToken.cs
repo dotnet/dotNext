@@ -1,8 +1,4 @@
-using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
-using Debug = System.Diagnostics.Debug;
-using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading;
 
@@ -11,13 +7,11 @@ using Tasks;
 
 public static partial class AsyncBridge
 {
+    private static readonly IObjectPool<CancellationTokenValueTask> TokenPool = new UnboundedObjectPool<CancellationTokenValueTask>();
+    
     private sealed class CancellationTokenValueTask : ValueTaskCompletionSource
     {
-        private readonly Action<CancellationTokenValueTask> backToPool;
         internal new bool CompleteAsCanceled;
-
-        internal CancellationTokenValueTask(Action<CancellationTokenValueTask> backToPool)
-            => this.backToPool = backToPool;
 
         protected override void AfterConsumed()
         {
@@ -25,31 +19,18 @@ public static partial class AsyncBridge
             {
                 // cannot be returned to the pool
             }
-            else if (Interlocked.Increment(ref instantiatedTasks) > maxPoolSize)
+            else if (Interlocked.Increment(ref poolSize) > maxPoolSize)
             {
-                Interlocked.Decrement(ref instantiatedTasks);
+                Interlocked.Decrement(ref poolSize);
             }
             else
             {
-                backToPool(this);
+                TokenPool.Return(this);
             }
         }
 
         protected override Exception? OnCanceled(CancellationToken token)
             => CompleteAsCanceled ? new OperationCanceledException(token) : null;
-    }
-
-    private static readonly Action<CancellationTokenValueTask> CancellationTokenValueTaskCompletionCallback
-        = new UnboundedObjectPool<CancellationTokenValueTask>().Return;
-
-    private static UnboundedObjectPool<CancellationTokenValueTask> TokenPool
-    {
-        get
-        {
-            Debug.Assert(CancellationTokenValueTaskCompletionCallback.Target is UnboundedObjectPool<CancellationTokenValueTask>);
-
-            return Unsafe.As<UnboundedObjectPool<CancellationTokenValueTask>>(CancellationTokenValueTaskCompletionCallback.Target);
-        }
     }
 
     private sealed class TaskToCancellationTokenCallback

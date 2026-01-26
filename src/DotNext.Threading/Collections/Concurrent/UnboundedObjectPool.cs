@@ -7,7 +7,7 @@ internal sealed class UnboundedObjectPool<T> : ConcurrentQueue<T>, IObjectPool<T
 {
     private T? fastItem;
 
-    public T? TryGet()
+    T? IObjectPool<T>.TryGet()
     {
         if (fastItem is not { } result
             || Interlocked.CompareExchange(ref fastItem, null, result) != result)
@@ -18,7 +18,7 @@ internal sealed class UnboundedObjectPool<T> : ConcurrentQueue<T>, IObjectPool<T
         return result;
     }
 
-    public void Return(T item)
+    void IObjectPool<T>.Return(T item)
     {
         if (fastItem is not null || Interlocked.CompareExchange(ref fastItem, item, null) is not null)
         {

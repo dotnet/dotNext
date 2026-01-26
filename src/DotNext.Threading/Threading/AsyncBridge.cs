@@ -9,13 +9,8 @@ namespace DotNext.Threading;
 /// </summary>
 public static partial class AsyncBridge
 {
-    private static volatile int instantiatedTasks;
-    private static int maxPoolSize;
-
-    static AsyncBridge()
-    {
-        maxPoolSize = instantiatedTasks = Environment.ProcessorCount * 2;
-    }
+    private static volatile int poolSize;
+    private static int maxPoolSize = Environment.ProcessorCount * 2;
 
     /// <summary>
     /// Obtains a task that can be used to await token cancellation.
@@ -34,11 +29,11 @@ public static partial class AsyncBridge
 
         if (TokenPool.TryGet() is { } result)
         {
-            Interlocked.Decrement(ref instantiatedTasks);
+            Interlocked.Decrement(ref poolSize);
         }
         else
         {
-            result = new(CancellationTokenValueTaskCompletionCallback);
+            result = new();
         }
 
         result.CompleteAsCanceled = completeAsCanceled;
@@ -77,11 +72,11 @@ public static partial class AsyncBridge
     {
         if (HandlePool.TryGet() is { } result)
         {
-            Interlocked.Decrement(ref instantiatedTasks);
+            Interlocked.Decrement(ref poolSize);
         }
         else
         {
-            result = new(WaitHandleTaskCompletionCallback);
+            result = new();
         }
 
         var token = result.Reset();
