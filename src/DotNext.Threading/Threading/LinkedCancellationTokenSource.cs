@@ -149,7 +149,7 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
 
     // This property checks whether the reinterpret cast CancellationToken => CancellationTokenSource
     // is safe. If not, just box the token.
-    internal static bool CanInlineToken => AdvancedHelpers.AreCompatible<CancellationToken, InlinedToken>()
+    internal static bool CanInlineToken => Unsafe.AreCompatible<CancellationToken, InlinedToken>()
                                            && RuntimeHelpers.IsReferenceOrContainsReferences<CancellationToken>();
 
     internal static LinkedCancellationTokenSource? Combine(ref CancellationToken first, CancellationToken second)
