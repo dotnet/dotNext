@@ -33,7 +33,7 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
         {
             Debug.Assert(source is LinkedCancellationTokenSource);
 
-            Unsafe.As<LinkedCancellationTokenSource>(source).Cancel(token);
+            Unsafe.As<LinkedCancellationTokenSource>(source).NotifyCancellation(token);
         }
     }
 
@@ -53,18 +53,23 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
         }
     }
 
-    private void Cancel(CancellationToken token)
+    private void NotifyCancellation(CancellationToken token)
     {
         if (TrySetCancellationOrigin(token))
         {
-            try
-            {
-                Cancel(throwOnFirstException: false);
-            }
-            catch (ObjectDisposedException)
-            {
-                // suppress exception
-            }
+            OnCanceled();
+        }
+    }
+
+    private protected virtual void OnCanceled()
+    {
+        try
+        {
+            Cancel(throwOnFirstException: false);
+        }
+        catch (ObjectDisposedException)
+        {
+            // suppress exception
         }
     }
     

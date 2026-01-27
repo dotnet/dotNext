@@ -75,10 +75,7 @@ partial struct CancellationTokenMultiplexer
             {
                 Debug.Assert(multiplexerOrToken.Item1 is IObjectPool<PooledCancellationTokenSource>);
 
-                for (var i = 0; i < source.Count; i++)
-                {
-                    source[i].Dispose();
-                }
+                source.DetachLinkedTokens();
 
                 // now we sure that no one can cancel the source concurrently
                 Return(Unsafe.As<IObjectPool<PooledCancellationTokenSource>>(multiplexerOrToken.Item1), source);

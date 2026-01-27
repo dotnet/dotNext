@@ -7,13 +7,21 @@ using InlinedTokenList = ValueTuple<CancellationTokenRegistration, CancellationT
 
 partial struct CancellationTokenMultiplexer
 {
-    private sealed class PooledCancellationTokenSource : LinkedCancellationTokenSource, IResettable
+    private sealed partial class PooledCancellationTokenSource : LinkedCancellationTokenSource, IResettable
     {
         private static readonly int InlinedListCapacity = GetCapacity<InlinedTokenList>();
         
         private InlinedTokenList inlinedList;
         private int count;
         private CancellationTokenRegistration[]? extraTokens;
+
+        public void DetachLinkedTokens()
+        {
+            for (var i = 0; i < Count; i++)
+            {
+                this[i].Dispose();
+            }
+        }
 
         public void AddRange(ReadOnlySpan<CancellationToken> tokens)
         {
@@ -77,6 +85,9 @@ partial struct CancellationTokenMultiplexer
 
             count = 0;
             CancellationOrigin = CancellationToken.None;
+            callback = callbackState = schedulingContext = null;
+            context = null;
+            pool = null;
         }
 
         private static int GetCapacity<T>()

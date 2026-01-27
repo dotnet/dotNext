@@ -340,25 +340,12 @@ public abstract partial class ManualResetCompletionSource
             this.state = state;
 
             schedulingContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is not 0
-                ? CaptureSchedulingContext()
+                ? ContinuationHelpers.CaptureSchedulingContext()
                 : null;
 
             context = (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) is not 0
                 ? ExecutionContext.Capture()
                 : null;
-
-            static object? CaptureSchedulingContext()
-            {
-                object? schedulingContext = SynchronizationContext.Current;
-                if (schedulingContext is null || schedulingContext.GetType() == typeof(SynchronizationContext))
-                {
-                    schedulingContext = TaskScheduler.Current;
-                    if (ReferenceEquals(schedulingContext, TaskScheduler.Default))
-                        schedulingContext = null;
-                }
-
-                return schedulingContext;
-            }
         }
 
         public bool IsValid => action is not null;
@@ -367,7 +354,7 @@ public abstract partial class ManualResetCompletionSource
         {
             if (schedulingContext is not null)
             {
-                Invoke();
+                action.InvokeInCurrentExecutionContext(state, schedulingContext);
             }
             else if (!runAsynchronously)
             {
@@ -389,7 +376,7 @@ public abstract partial class ManualResetCompletionSource
 
             if (schedulingContext is not null)
             {
-                InvokeOnSchedulingContext();
+                action.InvokeInExecutionContext(state, schedulingContext, context);
             }
             else
             {
@@ -415,52 +402,11 @@ public abstract partial class ManualResetCompletionSource
             }
         }
 
-        private void InvokeOnSchedulingContext()
-        {
-            if (context is { } ctx)
-            {
-                var currentContext = ExecutionContext.Capture();
-                ExecutionContext.Restore(ctx);
-
-                try
-                {
-                    Invoke();
-                }
-                finally
-                {
-                    if (currentContext is not null)
-                        ExecutionContext.Restore(currentContext);
-                }
-            }
-            else
-            {
-                Invoke();
-            }
-        }
-
-        private void Invoke()
-        {
-            Debug.Assert(schedulingContext is not null);
-
-            switch (schedulingContext)
-            {
-                case SynchronizationContext context:
-                    context.Post(action.Invoke, state);
-                    break;
-                case TaskScheduler scheduler:
-                    Task.Factory.StartNew(action, state, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
-                    break;
-                default:
-                    Debug.Fail($"Unexpected scheduling context {schedulingContext}");
-                    break;
-            }
-        }
-
         void IThreadPoolWorkItem.Execute()
         {
             Debug.Assert(context is not null);
 
-            // ThreadPool restores original execution context automatically
+            // ThreadPool restores the original execution context automatically
             // See https://github.com/dotnet/runtime/blob/cb30e97f8397e5f87adee13f5b4ba914cc2c0064/src/libraries/System.Private.CoreLib/src/System/Threading/ThreadPoolWorkQueue.cs#L928
             ExecutionContext.Restore(context);
 

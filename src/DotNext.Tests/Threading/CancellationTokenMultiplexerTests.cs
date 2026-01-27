@@ -168,4 +168,46 @@ public class CancellationTokenMultiplexerTests : Test
             scope.Dispose();
         }
     }
+    
+    [Fact]
+    public static async Task WaitForCancellationSingleToken()
+    {
+        var multiplexer = new CancellationTokenMultiplexer();
+        var cts = new CancellationTokenSource();
+        var task = multiplexer.WaitAnyAsync(cts.Token).AsTask();
+        False(task.IsCompletedSuccessfully);
+        
+        await cts.CancelAsync();
+        Equal(cts.Token, await task);
+    }
+    
+    [Fact]
+    public static async Task WaitForCancellationTwoTokens()
+    {
+        var multiplexer = new CancellationTokenMultiplexer();
+        using var cts1 = new CancellationTokenSource();
+        using var cts2 = new CancellationTokenSource();
+        var task = multiplexer.WaitAnyAsync(cts1.Token, cts2.Token).AsTask();
+        False(task.IsCompletedSuccessfully);
+        
+        await cts2.CancelAsync();
+        await cts1.CancelAsync();
+        Equal(cts2.Token, await task);
+    }
+
+    [Fact]
+    public static async Task WaitForCancellationMultipleTokens()
+    {
+        var multiplexer = new CancellationTokenMultiplexer();
+        using var cts1 = new CancellationTokenSource();
+        using var cts2 = new CancellationTokenSource();
+        using var cts3 = new CancellationTokenSource();
+        var task = multiplexer.WaitAnyAsync(cts1.Token, cts2.Token, cts3.Token).AsTask();
+        False(task.IsCompletedSuccessfully);
+
+        await cts3.CancelAsync();
+        await cts2.CancelAsync();
+        await cts1.CancelAsync();
+        Equal(cts3.Token, await task);
+    }
 }

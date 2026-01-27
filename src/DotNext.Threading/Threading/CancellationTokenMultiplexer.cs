@@ -98,6 +98,32 @@ public readonly partial struct CancellationTokenMultiplexer()
     public ScopeWithTimeout CombineAndSetTimeoutLater(params ReadOnlySpan<CancellationToken> tokens)
         => new(this, tokens);
 
+    /// <summary>
+    /// Waits for the cancellation of at least one provided token.
+    /// </summary>
+    /// <param name="tokens">A set of tokens.</param>
+    /// <returns>The first canceled token.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="tokens"/> is empty.</exception>
+    public ValueTask<CancellationToken> WaitAnyAsync(params ReadOnlySpan<CancellationToken> tokens)
+    {
+        ValueTask<CancellationToken> task;
+
+        if (tokens.IsEmpty)
+        {
+            task = ValueTask.FromException<CancellationToken>(new ArgumentOutOfRangeException(nameof(tokens)));
+        }
+        else
+        {
+            var source = sources.TryGet() ?? new();
+            task = source.CreateTask(sources);
+            
+            // Synchronization: CreateTask should happen before AddRange
+            source.AddRange(tokens);
+        }
+
+        return task;
+    }
+
     private PooledCancellationTokenSource Rent(ReadOnlySpan<CancellationToken> tokens)
     {
         var source = sources.TryGet() ?? new();
