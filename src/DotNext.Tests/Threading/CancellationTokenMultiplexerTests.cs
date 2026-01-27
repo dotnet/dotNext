@@ -28,6 +28,7 @@ public class CancellationTokenMultiplexerTests : Test
         using var cts = new CancellationTokenSource();
         CancellationToken token;
         var multiplexer = new CancellationTokenMultiplexer { MaximumRetained = int.MaxValue };
+        Equal(int.MaxValue, multiplexer.MaximumRetained);
         using (var scope = multiplexer.Combine(cts.Token, cts.Token, cts.Token))
         {
             token = scope.Token;
@@ -47,7 +48,7 @@ public class CancellationTokenMultiplexerTests : Test
 
         using var cts = new CancellationTokenSource();
 
-        await multiplexer.Combine([cts.Token, cts.Token, cts.Token]).DisposeAsync();
+        await multiplexer.Combine(cts.Token, cts.Token, cts.Token).DisposeAsync();
 
         // same source is reused from pool, but should now not be associated with cts.
         await using var combined = multiplexer.Combine(CancellationToken.None, CancellationToken.None, CancellationToken.None);
@@ -162,6 +163,7 @@ public class CancellationTokenMultiplexerTests : Test
     public static void BoundedPool(int maximumRetained)
     {
         var multiplexer = new CancellationTokenMultiplexer { MaximumRetained = maximumRetained };
+        Equal(maximumRetained, multiplexer.MaximumRetained);
         for (var i = 0; i < maximumRetained << 1; i++)
         {
             var scope = multiplexer.Combine(CancellationToken.None, CancellationToken.None, CancellationToken.None);
