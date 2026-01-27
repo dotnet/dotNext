@@ -1,23 +1,22 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks.Sources;
 
 namespace DotNext.Threading;
 
 using Collections.Concurrent;
-using static Tasks.ContinuationHelpers;
+using Tasks;
 
 partial struct CancellationTokenMultiplexer
 {
     partial class PooledCancellationTokenSource: IValueTaskSource<CancellationToken>, IThreadPoolWorkItem
     {
         private IObjectPool<PooledCancellationTokenSource>? pool;
-        private object? callback, callbackState, schedulingContext;
+        private object? callbackOrSentinel, callbackState, schedulingContext;
         private ExecutionContext? context;
         private short version;
         
         ValueTaskSourceStatus IValueTaskSource<CancellationToken>.GetStatus(short token)
-            => ReferenceEquals(callback, Sentinel.Instance) ? ValueTaskSourceStatus.Succeeded : ValueTaskSourceStatus.Pending;
+            => ReferenceEquals(callbackOrSentinel, Sentinel.Instance) ? ValueTaskSourceStatus.Succeeded : ValueTaskSourceStatus.Pending;
 
         CancellationToken IValueTaskSource<CancellationToken>.GetResult(short token)
         {
@@ -47,14 +46,15 @@ partial struct CancellationTokenMultiplexer
         {
             callbackState = state;
             schedulingContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is not 0
-                ? CaptureSchedulingContext()
+                ? ContinuationHelpers.CaptureSchedulingContext()
                 : null;
 
             context = (flags & ValueTaskSourceOnCompletedFlags.FlowExecutionContext) is not 0
                 ? ExecutionContext.Capture()
                 : null;
 
-            if (Interlocked.CompareExchange(ref callback, continuation, null) is null)
+            // invoke the continuation in-place, if possible
+            if (Interlocked.CompareExchange(ref callbackOrSentinel, continuation, null) is null)
             {
                 // nothing to do
             }
@@ -62,13 +62,9 @@ partial struct CancellationTokenMultiplexer
             {
                 continuation.InvokeInCurrentExecutionContext(state, schedulingContext);
             }
-            else if (context is not null)
-            {
-                ThreadPool.QueueUserWorkItem(continuation, state, preferLocal: true);
-            }
             else
             {
-                ThreadPool.UnsafeQueueUserWorkItem(continuation, state, preferLocal: true);
+                continuation(state);
             }
         }
 
@@ -86,7 +82,7 @@ partial struct CancellationTokenMultiplexer
                 // to cancel the root CTS because it cannot be reused (and returned to the pool).
                 base.OnCanceled();
             }
-            else if (Interlocked.CompareExchange(ref callback, Sentinel.Instance, null) is not Action<object?> continuation)
+            else if (Interlocked.CompareExchange(ref callbackOrSentinel, Sentinel.Instance, null) is not Action<object?> continuation)
             {
                 // nothing to do
             }
@@ -102,14 +98,10 @@ partial struct CancellationTokenMultiplexer
 
         void IThreadPoolWorkItem.Execute()
         {
-            Debug.Assert(callback is Action<object?>);
-
-            // ThreadPool restores the original execution context automatically
-            // See https://github.com/dotnet/runtime/blob/cb30e97f8397e5f87adee13f5b4ba914cc2c0064/src/libraries/System.Private.CoreLib/src/System/Threading/ThreadPoolWorkQueue.cs#L928
             if (context is not null)
-                ExecutionContext.Restore(context);
+                ExecutionContext.Restore(context); // will be automatically reverted by the ThreadPool internals
 
-            Unsafe.As<Action<object?>>(callback).Invoke(callbackState);
+            (callbackOrSentinel as Action<object?>)?.Invoke(callbackState);
         }
     }
 }

@@ -22,10 +22,10 @@ internal static class ContinuationHelpers
         public void InvokeInExecutionContext(object? state, object schedulingContext,
             ExecutionContext? context)
         {
-            if (context is { } ctx)
+            if (context is not null)
             {
                 var currentContext = ExecutionContext.Capture();
-                ExecutionContext.Restore(ctx);
+                ExecutionContext.Restore(context);
 
                 try
                 {

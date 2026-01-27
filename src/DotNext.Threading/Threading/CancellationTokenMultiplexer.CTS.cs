@@ -85,7 +85,7 @@ partial struct CancellationTokenMultiplexer
 
             count = 0;
             CancellationOrigin = CancellationToken.None;
-            callback = callbackState = schedulingContext = null;
+            callbackOrSentinel = callbackState = schedulingContext = null;
             context = null;
             pool = null;
         }
