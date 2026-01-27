@@ -19,7 +19,7 @@ partial struct CancellationTokenMultiplexer
         ValueTaskSourceStatus IValueTaskSource<CancellationToken>.GetStatus(short token)
         {
             CheckToken(token);
-            return ReferenceEquals(callbackOrSentinel, Sentinel.Instance)
+            return IsCancellationOriginSet
                 ? ValueTaskSourceStatus.Succeeded
                 : ValueTaskSourceStatus.Pending;
         }
