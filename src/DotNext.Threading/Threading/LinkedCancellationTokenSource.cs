@@ -138,7 +138,7 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
     }
 
     /// <summary>
-    /// Gets a value indicating that this token source is cancelled by the timeout associated with this source,
+    /// Gets a value indicating that this token source is canceled by the timeout associated with this source,
     /// or by calling <see cref="CancellationTokenSource.Cancel()"/> manually.
     /// </summary>
     internal bool IsRootCause
