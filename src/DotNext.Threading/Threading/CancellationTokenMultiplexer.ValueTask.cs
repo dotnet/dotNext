@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks.Sources;
 
 namespace DotNext.Threading;
@@ -14,12 +15,19 @@ partial struct CancellationTokenMultiplexer
         private object? callbackOrSentinel, callbackState, schedulingContext;
         private ExecutionContext? context;
         private short version;
-        
+
         ValueTaskSourceStatus IValueTaskSource<CancellationToken>.GetStatus(short token)
-            => ReferenceEquals(callbackOrSentinel, Sentinel.Instance) ? ValueTaskSourceStatus.Succeeded : ValueTaskSourceStatus.Pending;
+        {
+            CheckToken(token);
+            return ReferenceEquals(callbackOrSentinel, Sentinel.Instance)
+                ? ValueTaskSourceStatus.Succeeded
+                : ValueTaskSourceStatus.Pending;
+        }
 
         CancellationToken IValueTaskSource<CancellationToken>.GetResult(short token)
         {
+            CheckToken(token);
+            
             var result = CancellationOrigin;
             Debug.Assert(result.IsCancellationRequested);
             Debug.Assert(!IsCancellationRequested);
@@ -44,6 +52,8 @@ partial struct CancellationTokenMultiplexer
             short token,
             ValueTaskSourceOnCompletedFlags flags)
         {
+            CheckToken(token);
+            
             callbackState = state;
             schedulingContext = (flags & ValueTaskSourceOnCompletedFlags.UseSchedulingContext) is not 0
                 ? ContinuationHelpers.CaptureSchedulingContext()
@@ -102,6 +112,17 @@ partial struct CancellationTokenMultiplexer
                 ExecutionContext.Restore(context); // will be automatically reverted by the ThreadPool internals
 
             (callbackOrSentinel as Action<object?>)?.Invoke(callbackState);
+        }
+        
+        [StackTraceHidden]
+        private void CheckToken(short expectedToken)
+        {
+            if (version != expectedToken)
+                Throw();
+
+            [StackTraceHidden]
+            [DoesNotReturn]
+            static void Throw() => throw new InvalidOperationException(ExceptionMessages.InvalidSourceToken);
         }
     }
 }
