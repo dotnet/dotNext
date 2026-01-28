@@ -21,7 +21,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
     /// <inheritdoc/>
     bool IAsyncEvent.Reset() => false;
 
-    private bool Signal(bool resumeAll, ref WaitQueueScope queue)
+    private static bool Signal(ref WaitQueueScope queue, bool resumeAll)
     {
         bool signaled;
         if (resumeAll)
@@ -52,7 +52,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         var queue = CaptureWaitQueue();
         try
         {
-            return Signal(resumeAll, ref queue);
+            return Signal(ref queue, resumeAll);
         }
         finally
         {
@@ -194,7 +194,7 @@ public class AsyncTrigger : QueuedSynchronizer, IAsyncEvent
         else
         {
             queue = builder.CaptureWaitQueue();
-            if (Signal(resumeAll, ref queue))
+            if (Signal(ref queue, resumeAll))
             {
                 Acquire<T, TBuilder, WaitNode>(ref builder, acquired: false);
             }
