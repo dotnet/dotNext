@@ -11,18 +11,12 @@ public partial class TaskCompletionPipe<T>
         private TaskCompletionPipe<T>? owner;
 
         internal void Initialize(TaskCompletionPipe<T> owner)
-        {
-            this.owner = owner;
-        }
+            => this.owner = owner;
 
         protected override void CleanUp()
             => owner = null;
 
-        protected override void AfterConsumed()
-        {
-            if (owner is { } ownerCopy && TryReset(out _))
-                ownerCopy.OnCompleted(this);
-        }
+        protected override void AfterConsumed() => owner?.OnCompleted(this);
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal bool NeedsRemoval => CompletionData is null;

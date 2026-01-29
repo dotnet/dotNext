@@ -1,9 +1,13 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks.Sources;
 using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Threading.Tasks;
+
+using Runtime;
+using Runtime.CompilerServices;
 
 /// <summary>
 /// Represents the producer side of <see cref="ValueTask"/>.
@@ -27,23 +31,13 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     {
     }
 
-    private protected sealed override bool CompleteAsTimedOut()
-    {
-        var dispatchInfo = OnTimeout() is { } e
-            ? ExceptionDispatchInfo.Capture(e)
-            : null;
+    private protected sealed override void CompleteAsTimedOut() => result = GetTimeoutException() is { } e
+        ? ExceptionDispatchInfo.Capture(e)
+        : null;
 
-        return SetResult(dispatchInfo);
-    }
-
-    private protected sealed override bool CompleteAsCanceled(CancellationToken token)
-    {
-        var dispatchInfo = OnCanceled(token) is { } e
-            ? ExceptionDispatchInfo.Capture(e)
-            : null;
-
-        return SetResult(dispatchInfo);
-    }
+    private protected sealed override void CompleteAsCanceled(CancellationToken token) => result = GetCancellationException(token) is { } e
+        ? ExceptionDispatchInfo.Capture(e)
+        : null;
 
     /// <inheritdoc />
     protected override void CleanUp() => result = null;
@@ -55,7 +49,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// By default, this method returns <see cref="TimeoutException"/> as the task result.
     /// </remarks>
     /// <returns>The exception representing task result; or <see langword="null"/> to complete successfully.</returns>
-    protected virtual Exception? OnTimeout() => new TimeoutException();
+    protected virtual Exception? GetTimeoutException() => new TimeoutException();
 
     /// <summary>
     /// Called automatically when cancellation detected.
@@ -65,7 +59,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// </remarks>
     /// <param name="token">The token representing cancellation reason.</param>
     /// <returns>The exception representing task result; or <see langword="null"/> to complete successfully.</returns>
-    protected virtual Exception? OnCanceled(CancellationToken token) => new OperationCanceledException(token);
+    protected virtual Exception? GetCancellationException(CancellationToken token) => new OperationCanceledException(token);
 
     /// <summary>
     /// Tries to set the result of this source without resuming the <see cref="ValueTask"/> consumer.
@@ -83,13 +77,18 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// </returns>
     protected bool TrySetResult(object? completionData, short? completionToken, Exception? e, out bool resumable)
         => TrySetResult(completionData, completionToken, e is null ? null : ExceptionDispatchInfo.Capture(e), out resumable);
-    
+
     private bool TrySetResult(object? completionData, short? completionToken, ExceptionDispatchInfo? dispatchInfo, out bool resumable)
     {
-        bool completed;
-        using (AcquireLock())
+        var completed = BeginCompletion(completionToken);
+        if (completed)
         {
-            resumable = (completed = versionAndStatus.CanBeCompleted(completionToken)) && SetResult(dispatchInfo, completionData);
+            result = dispatchInfo;
+            resumable = EndCompletion(completionData);
+        }
+        else
+        {
+            resumable = false;
         }
 
         return completed;
@@ -104,14 +103,6 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         }
 
         return completed;
-    }
-
-    private bool SetResult(ExceptionDispatchInfo? dispatchInfo, object? completionData = null)
-    {
-        AssertLocked();
-
-        result = dispatchInfo;
-        return SetResult(completionData);
     }
 
     /// <summary>
@@ -174,7 +165,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is less than zero but not equals to <see cref="System.Threading.Timeout.InfiniteTimeSpan"/>.</exception>
     /// <exception cref="InvalidOperationException">The source is in invalid state.</exception>
     public ValueTask CreateTask(TimeSpan timeout, CancellationToken token)
-        => Activate(timeout, token) is { } version ? new(this, version) : throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
+        => new(this, Activate(timeout, token));
 
     /// <inheritdoc />
     ValueTask ISupplier<TimeSpan, CancellationToken, ValueTask>.Invoke(TimeSpan timeout, CancellationToken token)
@@ -186,15 +177,14 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         // ensure that instance field access before returning to the pool to avoid
         // concurrency with Reset()
         var resultCopy = result;
-        versionAndStatus.Consume(token); // barrier to avoid reordering of result read
+        Consume(token); // barrier to avoid reordering of result read
 
-        AfterConsumed();
         resultCopy?.Throw();
     }
 
     /// <inheritdoc />
     ValueTaskSourceStatus IValueTaskSource.GetStatus(short token)
-        => GetStatus(token, result?.SourceException);
+        => GetStatus<ExceptionProvider>(token, new(in result));
 
     /// <summary>
     /// Creates a linked <see cref="TaskCompletionSource"/> that can be used cooperatively to
@@ -207,9 +197,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <exception cref="InvalidOperationException">The source is in invalid state.</exception>
     public TaskCompletionSource CreateLinkedTaskCompletionSource(object? userData, TimeSpan timeout, CancellationToken token)
     {
-        if (Activate(timeout, token) is not { } version)
-            throw new InvalidOperationException(ExceptionMessages.InvalidSourceState);
-
+        var version = Activate(timeout, token);
         var source = new LinkedTaskCompletionSource(userData);
         source.LinkTo(this, version);
         return source;
@@ -262,5 +250,16 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
 
             source = null;
         }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct ExceptionProvider(ref readonly ExceptionDispatchInfo? dispatchInfo) : ISupplier<Exception?>
+    {
+        private readonly ref readonly ExceptionDispatchInfo? dispatchInfo = ref dispatchInfo;
+
+        Exception? ISupplier<Exception?>.Invoke() => dispatchInfo?.SourceException;
+
+        void IFunctional.DynamicInvoke(scoped ref readonly Variant args, int count, scoped Variant result)
+            => throw new NotSupportedException();
     }
 }

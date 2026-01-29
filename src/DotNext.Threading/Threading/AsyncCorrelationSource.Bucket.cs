@@ -99,9 +99,9 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             if (node.NeedsRemoval)
                 Remove(node);
 
-            if (pooled is null && node.TryReset(out var freshToken))
+            if (pooled is null)
             {
-                node.CompletionToken = freshToken;
+                node.CompletionToken = node.Reset();
                 pooled = node;
             }
         }

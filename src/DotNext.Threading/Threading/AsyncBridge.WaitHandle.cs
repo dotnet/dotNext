@@ -19,12 +19,9 @@ public static partial class AsyncBridge
         protected override void AfterConsumed()
         {
             Interlocked.Exchange(ref handle, null)?.Unregister(null);
+            Reset();
 
-            if (!TryReset(out _))
-            {
-                // cannot be returned to the pool
-            }
-            else if (Interlocked.Increment(ref poolSize) > maxPoolSize)
+            if (Interlocked.Increment(ref poolSize) > maxPoolSize)
             {
                 Interlocked.Decrement(ref poolSize);
             }

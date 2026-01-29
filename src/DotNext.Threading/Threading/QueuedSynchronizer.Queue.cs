@@ -27,8 +27,10 @@ partial class QueuedSynchronizer
             RemoveAndDrainIfNeeded(node);
         }
 
+        node.Reset();
+
         // the node is removed for sure, it can be returned back to the pool
-        if (node.TryReset(out _) && !IsDisposingOrDisposed)
+        if (!IsDisposingOrDisposed)
         {
             BackToPool(node);
         }

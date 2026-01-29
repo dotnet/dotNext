@@ -15,11 +15,8 @@ public static partial class AsyncBridge
 
         protected override void AfterConsumed()
         {
-            if (!TryReset(out _))
-            {
-                // cannot be returned to the pool
-            }
-            else if (Interlocked.Increment(ref poolSize) > maxPoolSize)
+            Reset();
+            if (Interlocked.Increment(ref poolSize) > maxPoolSize)
             {
                 Interlocked.Decrement(ref poolSize);
             }
@@ -29,7 +26,7 @@ public static partial class AsyncBridge
             }
         }
 
-        protected override Exception? OnCanceled(CancellationToken token)
+        protected override Exception? GetCancellationException(CancellationToken token)
             => CompleteAsCanceled ? new OperationCanceledException(token) : null;
     }
 

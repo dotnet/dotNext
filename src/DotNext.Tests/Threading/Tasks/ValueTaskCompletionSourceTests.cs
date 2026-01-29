@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks;
@@ -171,25 +172,50 @@ public sealed class ValueTaskCompletionSourceTests : Test
     [Fact]
     public static async Task LazyCompletion()
     {
-        var source = new TestCompletionSource();
+        var source = new ValueTaskCompletionSource();
         var task = source.CreateTask(InfiniteTimeSpan, CancellationToken.None).AsTask();
         
-        True(source.TrySetResult(string.Empty, completionToken: null, e: null, out var resumable));
+        True(TrySetResult(source, string.Empty, completionToken: null, e: null, out var resumable));
         True(resumable);
         Same(string.Empty, source.CompletionData);
         False(task.IsCompleted);
-        
-        source.NotifyConsumer();
+
+        NotifyConsumer(source);
         await task;
+        source.Reset();
+
+        [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "NotifyConsumer")]
+        static extern void NotifyConsumer(ManualResetCompletionSource source);
+
+        [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "TrySetResult")]
+        static extern bool TrySetResult(ValueTaskCompletionSource source,
+            object completionData,
+            short? completionToken,
+            Exception e,
+            out bool resumable);
     }
-    
-    private sealed class TestCompletionSource : ValueTaskCompletionSource
+
+    [Fact]
+    public static async Task AttachContinuationToCompletedSource()
     {
-        public new bool TrySetResult(object completionData, short? completionToken, Exception e, out bool resumable)
-            => base.TrySetResult(completionData, completionToken, e, out resumable);
+        var source = new ValueTaskCompletionSource();
+        True(source.TrySetResult());
 
-        public new object CompletionData => base.CompletionData;
+        var task = new TaskCompletionSource();
+        var awaiter = source.CreateTask(InfiniteTimeSpan, CancellationToken.None).GetAwaiter();
+        awaiter.UnsafeOnCompleted(() =>
+        {
+            try
+            {
+                awaiter.GetResult();
+                task.SetResult();
+            }
+            catch (Exception e)
+            {
+                task.SetException(e);
+            }
+        });
 
-        public new void NotifyConsumer() => base.NotifyConsumer();
+        await task.Task;
     }
 }

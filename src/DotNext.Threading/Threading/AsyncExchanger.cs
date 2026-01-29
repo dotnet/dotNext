@@ -58,12 +58,10 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             }
         }
 
-        if (point.TryReset(out _))
+        point.Reset();
+        lock (syncRoot)
         {
-            lock (syncRoot)
-            {
-                pool.Return(point);
-            }
+            pool.Return(point);
         }
     }
 

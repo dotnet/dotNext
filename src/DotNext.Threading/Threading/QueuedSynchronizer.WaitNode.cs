@@ -35,8 +35,8 @@ partial class QueuedSynchronizer
         protected sealed override void AfterConsumed()
             => owner?.ReturnNode(this);
 
-        protected sealed override Result<bool> OnTimeout()
-            => (flags & WaitNodeFlags.ThrowOnTimeout) is not 0 ? base.OnTimeout() : false;
+        protected sealed override Result<bool> GetTimeoutResult()
+            => (flags & WaitNodeFlags.ThrowOnTimeout) is not 0 ? base.GetTimeoutResult() : false;
     }
     
     [Flags]

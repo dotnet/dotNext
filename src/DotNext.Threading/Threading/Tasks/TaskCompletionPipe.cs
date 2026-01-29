@@ -59,12 +59,10 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             }
         }
 
-        if (signal.TryReset(out _))
+        signal.Reset();
+        lock (syncRoot)
         {
-            lock (syncRoot)
-            {
-                pool.Return(signal);
-            }
+            pool.Return(signal);
         }
     }
 
