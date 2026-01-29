@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks;
@@ -175,7 +176,7 @@ public sealed class ValueTaskCompletionSourceTests : Test
         var source = new ValueTaskCompletionSource();
         var task = source.CreateTask(InfiniteTimeSpan, CancellationToken.None).AsTask();
         
-        True(TrySetResult(source, string.Empty, completionToken: null, e: null, out var resumable));
+        True(TrySetResult(source, string.Empty, completionToken: null, dispatchInfo: null, out var resumable));
         True(resumable);
         Same(string.Empty, source.CompletionData);
         False(task.IsCompleted);
@@ -191,7 +192,7 @@ public sealed class ValueTaskCompletionSourceTests : Test
         static extern bool TrySetResult(ValueTaskCompletionSource source,
             object completionData,
             short? completionToken,
-            Exception e,
+            ExceptionDispatchInfo dispatchInfo,
             out bool resumable);
     }
 

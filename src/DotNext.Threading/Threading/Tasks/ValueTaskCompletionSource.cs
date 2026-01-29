@@ -105,16 +105,6 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         return completed;
     }
 
-    /// <summary>
-    /// Attempts to complete the task unsuccessfully.
-    /// </summary>
-    /// <param name="completionData">The data to be saved in <see cref="ManualResetCompletionSource.CompletionData"/> property that can be accessed from within <see cref="ManualResetCompletionSource.AfterConsumed"/> method.</param>
-    /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
-    /// <param name="token">The canceled token.</param>
-    /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public bool TrySetCanceled(object? completionData, short completionToken, CancellationToken token)
-        => TrySetException(completionData, completionToken, new OperationCanceledException(token));
-
     /// <inheritdoc />
     public sealed override bool TrySetException(object? completionData, Exception e)
         => TrySetResult(completionData, completionToken: null, ExceptionDispatchInfo.Capture(e));

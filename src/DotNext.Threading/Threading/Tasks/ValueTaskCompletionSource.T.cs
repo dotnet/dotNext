@@ -105,22 +105,8 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
 
         return completed;
     }
-
-    /// <summary>
-    /// Tries to set the result of this source without resuming the <see cref="ValueTask{TResult}"/> consumer.
-    /// </summary>
-    /// <param name="completionData">The completion data to be assigned to <see cref="ManualResetCompletionSource.CompletionData"/> property.</param>
-    /// <param name="completionToken">The optional completion token.</param>
-    /// <param name="result">The result to be stored as the result of <see cref="ValueTask{TResult}"/>.</param>
-    /// <param name="resumable">
-    /// <see langword="true"/> if <see cref="ManualResetCompletionSource.NotifyConsumer"/> needs to be called to resume
-    /// the consumer of <see cref="ValueTask{TResult}"/>.
-    /// </param>
-    /// <returns>
-    /// <see langword="true"/> if this source is completed successfully;
-    /// <see langword="false"/> if this source was completed previously.
-    /// </returns>
-    protected internal bool TrySetResult(object? completionData, short? completionToken, in Result<T> result, out bool resumable)
+    
+    internal bool TrySetResult(object? completionData, short? completionToken, in Result<T> result, out bool resumable)
     {
         var completed = BeginCompletion(completionToken);
         if (completed)
