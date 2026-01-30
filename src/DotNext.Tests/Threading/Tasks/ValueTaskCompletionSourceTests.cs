@@ -44,6 +44,24 @@ public sealed class ValueTaskCompletionSourceTests : Test
         False(source.TrySetResult());
     }
 
+    [Fact]
+    public static async Task CancelImmediately()
+    {
+        var source = new ValueTaskCompletionSource();
+        True(source.TrySetCanceled(new CancellationToken(canceled: true)));
+
+        await ThrowsAsync<OperationCanceledException>(source.CreateTask(InfiniteTimeSpan, new(canceled: false)).AsTask);
+    }
+
+    [Fact]
+    public static void UseTokenAndCompletionData()
+    {
+        var source = new ValueTaskCompletionSource();
+        var expectedToken = source.Reset();
+        True(source.TrySetResult(new ManualResetCompletionSource.ExpectedTokenAndCustomData(expectedToken, string.Empty)));
+        Same(string.Empty, source.CompletionData);
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -63,9 +81,9 @@ public sealed class ValueTaskCompletionSourceTests : Test
         var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
         var completionToken = source.Reset();
         var task = source.CreateTask(InfiniteTimeSpan, TestToken);
-        False(source.TrySetResult(completionData: null, short.MaxValue));
+        False(source.TrySetResult(new ManualResetCompletionSource.ExpectedToken(short.MaxValue)));
         False(task.IsCompleted);
-        True(source.TrySetResult(completionData: null, completionToken));
+        True(source.TrySetResult(new ManualResetCompletionSource.ExpectedToken(completionToken)));
         await task;
     }
 
@@ -176,7 +194,7 @@ public sealed class ValueTaskCompletionSourceTests : Test
         var source = new ValueTaskCompletionSource();
         var task = source.CreateTask(InfiniteTimeSpan, CancellationToken.None).AsTask();
         
-        True(TrySetResult(source, string.Empty, completionToken: null, dispatchInfo: null, out var resumable));
+        True(TrySetResult(source, new ManualResetCompletionSource.CustomCompletionData(string.Empty), dispatchInfo: null, out var resumable));
         True(resumable);
         Same(string.Empty, source.CompletionData);
         False(task.IsCompleted);
@@ -189,11 +207,11 @@ public sealed class ValueTaskCompletionSourceTests : Test
         static extern void NotifyConsumer(ManualResetCompletionSource source);
 
         [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "TrySetResult")]
-        static extern bool TrySetResult(ValueTaskCompletionSource source,
-            object completionData,
-            short? completionToken,
+        static extern bool TrySetResult<TOptions>(ValueTaskCompletionSource source,
+            TOptions options,
             ExceptionDispatchInfo dispatchInfo,
-            out bool resumable);
+            out bool resumable)
+            where TOptions : ManualResetCompletionSource.ICompletionOptions, allows ref struct;
     }
 
     [Fact]

@@ -61,30 +61,14 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// <returns>The exception representing task result; or <see langword="null"/> to complete successfully.</returns>
     protected virtual Exception? GetCancellationException(CancellationToken token) => new OperationCanceledException(token);
 
-    /// <summary>
-    /// Tries to set the result of this source without resuming the <see cref="ValueTask"/> consumer.
-    /// </summary>
-    /// <param name="completionData">The completion data to be assigned to <see cref="ManualResetCompletionSource.CompletionData"/> property.</param>
-    /// <param name="completionToken">The optional completion token.</param>
-    /// <param name="e">The exception to be stored as the result of <see cref="ValueTask"/>.</param>
-    /// <param name="resumable">
-    /// <see langword="true"/> if <see cref="ManualResetCompletionSource.NotifyConsumer"/> needs to be called to resume
-    /// the consumer of <see cref="ValueTask"/>.
-    /// </param>
-    /// <returns>
-    /// <see langword="true"/> if this source is completed successfully;
-    /// <see langword="false"/> if this source was completed previously.
-    /// </returns>
-    protected bool TrySetResult(object? completionData, short? completionToken, Exception? e, out bool resumable)
-        => TrySetResult(completionData, completionToken, e is null ? null : ExceptionDispatchInfo.Capture(e), out resumable);
-
-    private bool TrySetResult(object? completionData, short? completionToken, ExceptionDispatchInfo? dispatchInfo, out bool resumable)
+    private bool TrySetResult<TOptions>(TOptions options, ExceptionDispatchInfo? dispatchInfo, out bool resumable)
+        where TOptions : ICompletionOptions, allows ref struct
     {
-        var completed = BeginCompletion(completionToken);
+        var completed = options.BeginCompletion(this);
         if (completed)
         {
             result = dispatchInfo;
-            resumable = EndCompletion(completionData);
+            resumable = options.EndCompletion(this);
         }
         else
         {
@@ -94,9 +78,10 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
         return completed;
     }
 
-    private bool TrySetResult(object? completionData, short? completionToken, ExceptionDispatchInfo? dispatchInfo)
+    private bool TrySetResult<TOptions>(TOptions options, ExceptionDispatchInfo? dispatchInfo)
+        where TOptions : ICompletionOptions, allows ref struct
     {
-        var completed = TrySetResult(completionData, completionToken, dispatchInfo, out var resumable);
+        var completed = TrySetResult(options, dispatchInfo, out var resumable);
         if (resumable)
         {
             NotifyConsumer();
@@ -106,42 +91,24 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     }
 
     /// <inheritdoc />
-    public sealed override bool TrySetException(object? completionData, Exception e)
-        => TrySetResult(completionData, completionToken: null, ExceptionDispatchInfo.Capture(e));
-
-    /// <summary>
-    /// Attempts to complete the task unsuccessfully.
-    /// </summary>
-    /// <param name="completionData">The data to be saved in <see cref="ManualResetCompletionSource.CompletionData"/> property that can be accessed from within <see cref="ManualResetCompletionSource.AfterConsumed"/> method.</param>
-    /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
-    /// <param name="e">The exception to be returned to the consumer.</param>
-    /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public bool TrySetException(object? completionData, short completionToken, Exception e)
-        => TrySetResult(completionData, completionToken, ExceptionDispatchInfo.Capture(e));
+    public sealed override bool TrySetException<TOptions>(TOptions options, Exception e)
+        => TrySetResult(options, ExceptionDispatchInfo.Capture(e));
 
     /// <summary>
     /// Attempts to complete the task successfully.
     /// </summary>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetResult()
-        => TrySetResult(null);
+        => TrySetResult(new DefaultOptions());
 
     /// <summary>
     /// Attempts to complete the task successfully.
     /// </summary>
-    /// <param name="completionData">The data to be saved in <see cref="ManualResetCompletionSource.CompletionData"/> property that can be accessed from within <see cref="ManualResetCompletionSource.AfterConsumed"/> method.</param>
+    /// <param name="options">The completion options.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public bool TrySetResult(object? completionData)
-        => TrySetResult(completionData, completionToken: null, dispatchInfo: null);
-
-    /// <summary>
-    /// Attempts to complete the task successfully.
-    /// </summary>
-    /// <param name="completionData">The data to be saved in <see cref="ManualResetCompletionSource.CompletionData"/> property that can be accessed from within <see cref="ManualResetCompletionSource.AfterConsumed"/> method.</param>
-    /// <param name="completionToken">The completion token previously obtained from <see cref="CreateTask(TimeSpan, CancellationToken)"/> method.</param>
-    /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public bool TrySetResult(object? completionData, short completionToken)
-        => TrySetResult(completionData, completionToken, dispatchInfo: null);
+    public bool TrySetResult<TOptions>(TOptions options)
+        where TOptions : ICompletionOptions, allows ref struct
+        => TrySetResult(options, dispatchInfo: null);
 
     /// <summary>
     /// Creates a fresh task linked with this source.

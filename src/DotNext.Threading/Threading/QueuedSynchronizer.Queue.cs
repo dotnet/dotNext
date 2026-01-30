@@ -162,7 +162,9 @@ partial class QueuedSynchronizer
             {
                 signaled = false;
             }
-            else if (signaled = current.TrySetResult(Sentinel.Instance, completionToken: null, result, out var resumable))
+            else if (signaled = current.TrySetResult(new ManualResetCompletionSource.CustomCompletionData(Sentinel.Instance),
+                         result,
+                         out var resumable))
             {
                 // Remove here only if the node is signaled by the visitor.
                 // Otherwise, the node is signaled by the timeout or cancellation token

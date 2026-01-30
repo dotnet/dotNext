@@ -312,7 +312,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
         internal bool TryExchange(ref T value, out bool resumable)
         {
-            if (TrySetResult(completionData: null, completionToken: null, value, out resumable))
+            if (TrySetResult(new DefaultOptions(), value, out resumable))
             {
                 value = this.value!;
                 return true;

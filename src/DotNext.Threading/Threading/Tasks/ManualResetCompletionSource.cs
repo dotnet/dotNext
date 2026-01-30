@@ -114,12 +114,6 @@ public abstract partial class ManualResetCompletionSource
         continuationCopy.InvokeOnCapturedContext(runContinuationsAsynchronously);
     }
 
-    private protected bool EndCompletion(object? completionData)
-    {
-        CompletionData = completionData;
-        return EndCompletion();
-    }
-
     private void OnCompleted(in Continuation continuation, short expectedToken)
     {
         if (BeginSubscription(expectedToken))
@@ -167,15 +161,16 @@ public abstract partial class ManualResetCompletionSource
     /// <param name="e">The exception to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TrySetException(Exception e) => TrySetException(null, e);
+    public bool TrySetException(Exception e) => TrySetException(new DefaultOptions(), e);
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
     /// </summary>
-    /// <param name="completionData">The data to be saved in <see cref="CompletionData"/> property that can be accessed from within <see cref="AfterConsumed"/> method.</param>
     /// <param name="e">The exception to be returned to the consumer.</param>
+    /// <param name="options">The completion options.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public abstract bool TrySetException(object? completionData, Exception e);
+    public abstract bool TrySetException<TOptions>(TOptions options, Exception e)
+        where TOptions : ICompletionOptions, allows ref struct;
 
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
@@ -189,11 +184,12 @@ public abstract partial class ManualResetCompletionSource
     /// <summary>
     /// Attempts to complete the task unsuccessfully.
     /// </summary>
-    /// <param name="completionData">The data to be saved in <see cref="CompletionData"/> property that can be accessed from within <see cref="AfterConsumed"/> method.</param>
+    /// <param name="options">The completion options.</param>
     /// <param name="token">The canceled token.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
-    public bool TrySetCanceled(object? completionData, CancellationToken token)
-        => TrySetException(completionData, new OperationCanceledException(token));
+    public bool TrySetCanceled<TOptions>(TOptions options, CancellationToken token)
+        where TOptions : ICompletionOptions, allows ref struct
+        => TrySetException(options, new OperationCanceledException(token));
 
     /// <summary>
     /// Gets the status of this source.

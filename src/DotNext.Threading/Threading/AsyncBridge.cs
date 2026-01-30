@@ -4,6 +4,8 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
+using Tasks;
+
 /// <summary>
 /// Allows to turn <see cref="WaitHandle"/> and <see cref="CancellationToken"/> into task.
 /// </summary>
@@ -102,7 +104,7 @@ public static partial class AsyncBridge
             Debug.Assert(state is Tuple<WaitHandleValueTask, short>);
 
             var (source, token) = Unsafe.As<Tuple<WaitHandleValueTask, short>>(state);
-            source.TrySetResult(token, timedOut is false);
+            source.TrySetResult(new ManualResetCompletionSource.ExpectedToken(token), !timedOut);
         }
     }
 

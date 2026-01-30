@@ -114,9 +114,6 @@ partial class ManualResetCompletionSource
         return true;
     }
 
-    private protected bool BeginCompletion(short? expectedToken)
-        => expectedToken.HasValue ? BeginCompletion(expectedToken.GetValueOrDefault()) : BeginCompletion();
-
     private bool EndCompletion()
         => TryAcquireNotificationLock(Interlocked.Or(ref syncState, CompletedState) | CompletedState);
 

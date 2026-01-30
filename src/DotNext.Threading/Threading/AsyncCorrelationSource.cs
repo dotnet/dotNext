@@ -76,7 +76,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         if (bucket?.Remove(eventId, comparer, out var completionToken) is { } node)
         {
             userData = node.UserData;
-            result = node.TrySetResult(Sentinel.Instance, completionToken, in value, out var resumable);
+            result = node.TrySetResult(new ManualResetCompletionSource.ExpectedSourceTokenAndSentinel(completionToken), in value, out var resumable);
             if (resumable)
                 node.NotifyConsumer();
         }
@@ -106,7 +106,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         PulseAll(&SetResult, value);
 
         static void SetResult(LinkedValueTaskCompletionSource<TValue> slot, TValue value)
-            => slot.TrySetResult(Sentinel.Instance, value);
+            => slot.TrySetResult(new ManualResetCompletionSource.CustomCompletionData(Sentinel.Instance), value);
     }
 
     /// <summary>
@@ -118,7 +118,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         PulseAll(&SetException, e);
 
         static void SetException(LinkedValueTaskCompletionSource<TValue> slot, Exception e)
-            => slot.TrySetException(Sentinel.Instance, e);
+            => slot.TrySetException(new ManualResetCompletionSource.CustomCompletionData(Sentinel.Instance), e);
     }
 
     /// <summary>
@@ -130,7 +130,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         PulseAll(&SetCanceled, token);
 
         static void SetCanceled(LinkedValueTaskCompletionSource<TValue> slot, CancellationToken token)
-            => slot.TrySetCanceled(Sentinel.Instance, token);
+            => slot.TrySetCanceled(new ManualResetCompletionSource.CustomCompletionData(Sentinel.Instance), token);
     }
 
     /// <summary>
