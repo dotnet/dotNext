@@ -11,7 +11,7 @@ partial struct Result<T>
     /// </summary>
     /// <param name="value">The value of the monad.</param>
     /// <typeparam name="TMonad">The type of the monad.</typeparam>
-    /// <returns></returns>
+    /// <returns>The result constructed from the monad.</returns>
     public static Result<T> Create<TMonad>(TMonad value)
         where TMonad : struct, IResultMonad<T, Exception>
         => value switch
