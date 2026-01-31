@@ -311,11 +311,11 @@ public readonly partial struct Result<T> : IResultMonad<T, Exception, Result<T>>
     /// <summary>
     /// Attempts to extract value from the container if it is present.
     /// </summary>
-    /// <param name="value">Extracted value.</param>
+    /// <param name="result">Extracted value.</param>
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-    public bool TryGet([MaybeNullWhen(false)] out T value)
+    public bool TryGet([MaybeNullWhen(false)] out T result)
     {
-        value = this.value;
+        result = value;
         return IsSuccessful;
     }
 
@@ -514,7 +514,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     public Result(TError error)
     {
         Unsafe.SkipInit(out value);
-        errorCode = AdvancedHelpers.IsDefault(in error) ? throw new ArgumentOutOfRangeException(nameof(error)) : error;
+        errorCode = RuntimeHelpers.IsDefault(in error) ? throw new ArgumentOutOfRangeException(nameof(error)) : error;
     }
 
     /// <summary>
@@ -590,7 +590,7 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// Indicates that the result is successful.
     /// </summary>
     /// <value><see langword="true"/> if this result is successful; <see langword="false"/> if this result represents exception.</value>
-    public bool IsSuccessful => AdvancedHelpers.IsDefault(in errorCode);
+    public bool IsSuccessful => RuntimeHelpers.IsDefault(in errorCode);
 
     /// <inheritdoc />
     bool IOptionMonad<T>.HasValue => IsSuccessful;
@@ -598,11 +598,11 @@ public readonly struct Result<T, TError> : IResultMonad<T, TError, Result<T, TEr
     /// <summary>
     /// Attempts to extract value from the container if it is present.
     /// </summary>
-    /// <param name="value">Extracted value.</param>
+    /// <param name="result">Extracted value.</param>
     /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-    public bool TryGet([MaybeNullWhen(false)] out T value)
+    public bool TryGet([MaybeNullWhen(false)] out T result)
     {
-        value = this.value;
+        result = value;
         return IsSuccessful;
     }
 
