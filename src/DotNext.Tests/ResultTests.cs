@@ -165,6 +165,12 @@ public sealed class ResultTests : Test
         type = Result.GetUnderlyingType(typeof(Result<string>));
         Equal(typeof(string), type);
 
+        type = Result.GetUnderlyingType(typeof(Result<string>.Ok));
+        Equal(typeof(string), type);
+
+        type = Result.GetUnderlyingType(typeof(Result<string>.Failure));
+        Equal(typeof(string), type);
+
         type = Result.GetUnderlyingType(typeof(Result<float, EnvironmentVariableTarget>));
         Equal(typeof(float), type);
     }
@@ -229,7 +235,7 @@ public sealed class ResultTests : Test
     }
 
     [Fact]
-    public unsafe static void ConvertToResultWithErrorCode()
+    public static unsafe void ConvertToResultWithErrorCode()
     {
         // Standard conversion
         Result<string, EnvironmentVariableTarget> validStringResult = "20";
@@ -367,5 +373,39 @@ public sealed class ResultTests : Test
         result = Result<int>.Create<Result<int>.Failure>(new Exception());
         False(result.IsSuccessful);
         NotNull(result.Error);
+    }
+
+    public static TheoryData<IResultMonad<int>> SuccessfulResults =>
+    [
+        new Result<int>(42),
+        new Result<int>.Ok(42)
+    ];
+
+    [Theory]
+    [MemberData(nameof(SuccessfulResults))]
+    public static void SuccessfulResultInterfaceMembers(IResultMonad<int> result)
+    {
+        True(result.HasValue);
+        Equal(42, result.Value);
+        Equal(42, result.ValueOrDefault);
+        Equal(42, result.OrInvoke(static _ => 56));
+        Null(result.Error);
+    }
+
+    public static TheoryData<IResultMonad<int>> UnsuccessfulResults =>
+    [
+        new Result<int>(new ArithmeticException()),
+        new Result<int>.Failure(new ArithmeticException())
+    ];
+
+    [Theory]
+    [MemberData(nameof(UnsuccessfulResults))]
+    public static void UnsuccessfulResultInterfaceMembers(IResultMonad<int> result)
+    {
+        False(result.HasValue);
+        Throws<ArithmeticException>(() => result.Value);
+        Equal(0, result.ValueOrDefault);
+        Equal(56, result.OrInvoke(static _ => 56));
+        IsType<ArithmeticException>(result.Error);
     }
 }

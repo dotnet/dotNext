@@ -55,10 +55,13 @@ public static class Result
         /// <summary>
         /// Indicates that the specified type is the result type.
         /// </summary>
-        /// 
         /// <value><see langword="true"/>, if specified type is result type; otherwise, <see langword="false"/>.</value>
         public bool IsResult => resultType.IsConstructedGenericType &&
-                                resultType.GetGenericTypeDefinition().IsOneOf(typeof(Result<>), typeof(Result<,>));
+                                resultType.GetGenericTypeDefinition().IsOneOf(
+                                    typeof(Result<>),
+                                    typeof(Result<,>),
+                                    typeof(Result<>.Ok),
+                                    typeof(Result<>.Failure));
     }
 
     /// <summary>
