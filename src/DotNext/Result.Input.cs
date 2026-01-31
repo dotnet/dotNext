@@ -14,15 +14,13 @@ partial struct Result<T>
     /// <returns></returns>
     public static Result<T> Create<TMonad>(TMonad value)
         where TMonad : struct, IResultMonad<T, Exception>
-    {
-        return value switch
+        => value switch
         {
             Result<T> => Unsafe.BitCast<TMonad, Result<T>>(value),
             Ok => Unsafe.BitCast<TMonad, Ok>(value),
             Failure => Unsafe.BitCast<TMonad, Failure>(value),
             _ => value.HasValue ? new(value.ValueOrDefault!) : new(value.Error!)
         };
-    }
     
     /// <summary>
     /// Represents successful result.

@@ -66,9 +66,9 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     private protected sealed override void CompleteAsCanceled(CancellationToken token)
         => result = GetCancellationResult(token);
 
-    internal bool TrySetResult<TOptions, TValue>(TOptions options, TValue value)
+    internal bool TrySetResult<TOptions, TResult>(TOptions options, TResult value)
         where TOptions : ICompletionOptions, allows ref struct
-        where TValue : struct, IResultMonad<T>
+        where TResult : struct, IResultMonad<T>
     {
         var completed = TrySetResult(options, value, out var resumable);
         if (resumable)
@@ -79,9 +79,9 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         return completed;
     }
 
-    internal bool TrySetResult<TOptions, TValue>(TOptions options, TValue value, out bool resumable)
+    internal bool TrySetResult<TOptions, TResult>(TOptions options, TResult value, out bool resumable)
         where TOptions : ICompletionOptions, allows ref struct
-        where TValue : struct, IResultMonad<T>
+        where TResult : struct, IResultMonad<T>
     {
         var completed = options.BeginCompletion(this);
         if (completed)
