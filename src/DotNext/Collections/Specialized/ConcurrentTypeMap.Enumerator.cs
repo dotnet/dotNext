@@ -67,7 +67,7 @@ public partial class ConcurrentTypeMap<TValue>
     /// Gets enumerator over the values.
     /// </summary>
     /// <returns>The enumerator over the values.</returns>
-    public Enumerator GetEnumerator() => new(Volatile.Read(ref entries));
+    public Enumerator GetEnumerator() => new(Volatile.Read(in entries));
 
     /// <inheritdoc/>
     IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator() => IEnumerator<TValue>.Create(GetEnumerator());

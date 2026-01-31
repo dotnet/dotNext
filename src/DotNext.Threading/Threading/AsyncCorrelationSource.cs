@@ -99,7 +99,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         where TResult : struct, IResultMonad<TValue>
     {
         bool result;
-        var bucket = Volatile.Read(ref GetBucket(eventId));
+        var bucket = Volatile.Read(in GetBucket(eventId));
 
         if (bucket?.Remove(eventId, comparer, out var completionToken) is { } node)
         {
@@ -118,8 +118,8 @@ public partial class AsyncCorrelationSource<TKey, TValue>
     private void PulseAll<TResult>(TResult arg)
         where TResult : struct, IResultMonad<TValue>
     {
-        foreach (ref var bucket in buckets.AsSpan())
-            Volatile.Read(ref bucket)?.Drain(arg);
+        foreach (ref readonly var bucket in buckets.AsSpan())
+            Volatile.Read(in bucket)?.Drain(arg);
     }
 
     /// <summary>
@@ -165,7 +165,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         static Bucket EnsureInitialized(ref Bucket? bucket)
         {
             Bucket newBucket;
-            return Volatile.Read(ref bucket) ?? Interlocked.CompareExchange(ref bucket, newBucket = new(), null) ?? newBucket;
+            return Volatile.Read(in bucket) ?? Interlocked.CompareExchange(ref bucket, newBucket = new(), null) ?? newBucket;
         }
     }
     

@@ -115,7 +115,7 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
     }
 
     [DebuggerBrowsable(DebuggerBrowsableState.Never)]
-    private protected bool IsCancellationOriginSet => Volatile.Read(ref cancellationOrigin.Item1) is not null;
+    private protected bool IsCancellationOriginSet => Volatile.Read(in cancellationOrigin.Item1) is not null;
 
     /// <summary>
     /// Gets the token caused cancellation.

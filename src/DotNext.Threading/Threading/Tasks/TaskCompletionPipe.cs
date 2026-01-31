@@ -306,7 +306,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
                 task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
                 break;
             case 0L:
-                task = new(Volatile.Read(ref firstTask) is not null);
+                task = new(Volatile.Read(in firstTask) is not null);
                 break;
             default:
                 if (token.IsCancellationRequested)

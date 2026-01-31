@@ -83,7 +83,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         for (Entry[] entries;;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -120,7 +120,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -167,7 +167,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool ContainsKey<TKey>()
         where TKey : allows ref struct
     {
-        return ContainsKey(Volatile.Read(ref entries), TypeSlot<TKey>.Index);
+        return ContainsKey(Volatile.Read(in entries), TypeSlot<TKey>.Index);
 
         static bool ContainsKey(Entry[] entries, int index)
             => (uint)index < (uint)entries.Length && HasValue(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index));
@@ -181,7 +181,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         for (Entry[] entries;;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -219,7 +219,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         for (Entry[] entries;;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -257,7 +257,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         for (Entry[] entries;;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -295,7 +295,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         for (Entry[] entries;;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
                 break;
@@ -333,7 +333,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         for (Entry[] entries;;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
                 break;
@@ -363,7 +363,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// </summary>
     public void Clear()
     {
-        var entries = Volatile.Read(ref this.entries);
+        var entries = Volatile.Read(in this.entries);
         if (UseReferenceEntry)
         {
             Array.ForEach(Unsafe.As<ReferenceEntry[]>(entries), static entry => entry.Unset());
@@ -719,7 +719,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -751,7 +751,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -771,7 +771,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <inheritdoc cref="IReadOnlyTypeMap.Contains{T}"/>
     public bool Contains<T>()
     {
-        return ContainsKey(Volatile.Read(ref entries), TypeSlot<T>.Index);
+        return ContainsKey(Volatile.Read(in entries), TypeSlot<T>.Index);
 
         static bool ContainsKey(Entry[] entries, int index)
             => (uint)index < (uint)entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).Value is T;
@@ -781,7 +781,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -807,7 +807,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -834,7 +834,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -862,7 +862,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -881,7 +881,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -908,7 +908,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <inheritdoc cref="ITypeMap.Clear()"/>
     public void Clear()
     {
-        foreach (var entry in Volatile.Read(ref entries))
+        foreach (var entry in Volatile.Read(in entries))
         {
             entry.Value = null;
         }
@@ -918,7 +918,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {

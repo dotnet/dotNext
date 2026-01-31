@@ -47,7 +47,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
 
         void EraseFactory()
         {
-            if (expectedTask is { IsCanceled: false } && ReferenceEquals(Volatile.Read(ref task), expectedTask))
+            if (expectedTask is { IsCanceled: false } && ReferenceEquals(Volatile.Read(in task), expectedTask))
             {
                 lock (syncRoot)
                 {
@@ -61,12 +61,12 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
     /// <summary>
     /// Gets a value that indicates whether a value has been computed.
     /// </summary>
-    public bool IsValueCreated => Volatile.Read(ref task) is { Status: TaskStatus.RanToCompletion or TaskStatus.Faulted };
+    public bool IsValueCreated => Volatile.Read(in task) is { Status: TaskStatus.RanToCompletion or TaskStatus.Faulted };
 
     /// <summary>
     /// Gets value if it is already computed.
     /// </summary>
-    public Result<T>? Value => Volatile.Read(ref task).TryGetResult();
+    public Result<T>? Value => Volatile.Read(in task).TryGetResult();
 
     /// <inheritdoc />
     Task<T> ISupplier<CancellationToken, Task<T>>.Invoke(CancellationToken token)
@@ -116,7 +116,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <returns>Lazy representation of the value.</returns>
     public Task<T> WithCancellation(CancellationToken token)
-        => Volatile.Read(ref task) is { IsCanceled: false } t ? t.WaitAsync(token) : GetOrStartAsync(token);
+        => Volatile.Read(in task) is { IsCanceled: false } t ? t.WaitAsync(token) : GetOrStartAsync(token);
 
     /// <summary>
     /// Removes already computed value from the current object.
@@ -125,7 +125,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
     public bool Reset()
     {
         bool result;
-        if (result = resettable && Volatile.Read(ref task) is null or { IsCompleted: true })
+        if (result = resettable && Volatile.Read(in task) is null or { IsCompleted: true })
         {
             lock (syncRoot)
             {
@@ -146,7 +146,7 @@ public class AsyncLazy<T> : ISupplier<CancellationToken, Task<T>>, IResettable
     /// <returns>The string representing this object.</returns>
     public override string? ToString()
     {
-        return Volatile.Read(ref task) is not { } t
+        return Volatile.Read(in task) is not { } t
             ? NotAvailable
             : t.Status is TaskStatus.RanToCompletion
             ? t.Result?.ToString()
