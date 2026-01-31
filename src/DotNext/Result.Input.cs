@@ -38,7 +38,7 @@ partial struct Result<T>
         bool IOptionMonad<T>.HasValue => true;
 
         /// <inheritdoc/>
-        T? IOptionMonad<T>.ValueOrDefault => value;
+        T IOptionMonad<T>.ValueOrDefault => value;
 
         /// <inheritdoc/>
         Exception? IResultMonad<T, Exception>.Error => null;
