@@ -104,9 +104,7 @@ public partial class AsyncCorrelationSource<TKey, TValue>
         if (bucket?.Remove(eventId, comparer, out var completionToken) is { } node)
         {
             userData = node.UserData;
-            result = node.TrySetResult(new ManualResetCompletionSource.ExpectedSourceTokenAndSentinel(completionToken), value, out var resumable);
-            if (resumable)
-                node.NotifyConsumer();
+            result = node.TrySetResult(new ManualResetCompletionSource.ExpectedSourceTokenAndSentinel(completionToken), value);
         }
         else
         {
