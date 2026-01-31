@@ -52,12 +52,4 @@ public interface IResultMonad<T, TError, TSelf> : IResultMonad<T, TError>, IOpti
     /// <param name="error">The error representing unsuccessful result.</param>
     /// <returns>The unsuccessful result.</returns>
     public static abstract TSelf FromError(TError error);
-
-    /// <summary>
-    /// Converts the result to <see cref="Optional{T}"/> monad.
-    /// </summary>
-    /// <param name="result">The result to be converted.</param>
-    /// <returns>The converted result.</returns>
-    public static virtual implicit operator Optional<T>(in TSelf result)
-        => result.HasValue ? result.ValueOrDefault : Optional<T>.None;
 }

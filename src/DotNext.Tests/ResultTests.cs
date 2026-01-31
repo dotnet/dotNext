@@ -378,7 +378,7 @@ public sealed class ResultTests : Test
     public static TheoryData<IResultMonad<int>> SuccessfulResults =>
     [
         new Result<int>(42),
-        new Result<int>.Ok(42)
+        new Result<int>.Ok(42),
     ];
 
     [Theory]
@@ -390,6 +390,8 @@ public sealed class ResultTests : Test
         Equal(42, result.ValueOrDefault);
         Equal(42, result.OrInvoke(static _ => 56));
         Null(result.Error);
+        True(result.TryGet(out var value));
+        Equal(42, value);
     }
 
     public static TheoryData<IResultMonad<int>> UnsuccessfulResults =>
@@ -407,5 +409,6 @@ public sealed class ResultTests : Test
         Equal(0, result.ValueOrDefault);
         Equal(56, result.OrInvoke(static _ => 56));
         IsType<ArithmeticException>(result.Error);
+        False(result.TryGet(out _));
     }
 }

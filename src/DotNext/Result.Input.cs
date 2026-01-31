@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
@@ -46,6 +47,13 @@ partial struct Result<T>
         /// <inheritdoc/>
         T IResultMonad<T, Exception>.OrInvoke(Func<Exception, T> defaultFunc) => value;
 
+        /// <inheritdoc/>
+        bool IOptionMonad<T>.TryGet(out T result)
+        {
+            result = value;
+            return true;
+        }
+
         /// <summary>
         /// Converts successful result to <seealso cref="Result{T}"/> type.
         /// </summary>
@@ -93,6 +101,13 @@ partial struct Result<T>
 
         /// <inheritdoc/>
         T IResultMonad<T, Exception>.OrInvoke(Func<Exception, T> defaultFunc) => defaultFunc(Error);
+
+        /// <inheritdoc/>
+        bool IOptionMonad<T>.TryGet([MaybeNullWhen(false)] out T result)
+        {
+            result = default;
+            return false;
+        }
 
         /// <summary>
         /// Converts successful result to <seealso cref="Result{T}"/> type.
