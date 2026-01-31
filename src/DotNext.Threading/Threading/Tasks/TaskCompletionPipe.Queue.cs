@@ -105,7 +105,9 @@ public partial class TaskCompletionPipe<T>
         {
             next = current.Next;
             waitQueue.Remove(current);
-            if (current.TrySetResult(new ManualResetCompletionSource.CustomCompletionData(Sentinel.Instance), true, out var resumable) && resumable)
+            if (current.TrySetResult(new ManualResetCompletionSource.CustomCompletionData(Sentinel.Instance),
+                    Result.True,
+                    out var resumable) && resumable)
                 return current;
         }
 

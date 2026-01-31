@@ -1,3 +1,5 @@
+using static System.Threading.Timeout;
+
 namespace DotNext.Threading;
 
 [Collection(TestCollections.AsyncPrimitives)]
@@ -13,7 +15,8 @@ public sealed class AsyncCorrelationSourceTests : Test
         var listener1 = source.WaitAsync(key1, TestToken);
         var listener2 = source.WaitAsync(key2, TestToken);
 
-        True(source.Pulse(key1, 10));
+        True(source.Pulse(key1, 10, out var userData));
+        Null(userData);
         Equal(10, await listener1);
 
         False(listener2.IsCompleted);
@@ -68,5 +71,30 @@ public sealed class AsyncCorrelationSourceTests : Test
 
         Equal(42, await listener1);
         Equal(42, await listener2);
+    }
+
+    [Fact]
+    public static async Task PulseWithException()
+    {
+        var key1 = Guid.NewGuid();
+
+        var source = new AsyncCorrelationSource<Guid, int>(10);
+        var listener1 = source.WaitAsync(key1, TestToken);
+
+        True(source.Pulse(key1, new ArithmeticException()));
+        await ThrowsAsync<ArithmeticException>(listener1.AsTask);
+    }
+    
+    [Fact]
+    public static async Task UserDataPropagation()
+    {
+        var key1 = Guid.NewGuid();
+
+        var source = new AsyncCorrelationSource<Guid, int>(10);
+        var listener1 = source.WaitAsync(key1, string.Empty, InfiniteTimeSpan, TestToken);
+
+        True(source.Pulse(key1, new ArithmeticException(), out var userData));
+        Same(string.Empty, userData);
+        await ThrowsAsync<ArithmeticException>(listener1.AsTask);
     }
 }

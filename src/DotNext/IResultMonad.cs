@@ -1,3 +1,5 @@
+using System.Runtime.ExceptionServices;
+
 namespace DotNext;
 
 /// <summary>
@@ -19,6 +21,19 @@ public interface IResultMonad<T, out TError> : IOptionMonad<T>
     /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
     /// <returns>The value, if present, otherwise returned from delegate.</returns>
     T OrInvoke(Func<TError, T> defaultFunc) => HasValue ? ValueOrDefault! : defaultFunc(Error!);
+}
+
+/// <summary>
+/// Represents Result monad where error is represented by the exception.
+/// </summary>
+/// <typeparam name="T">The type of the result.</typeparam>
+public interface IResultMonad<T> : IResultMonad<T, Exception>
+{
+    /// <summary>
+    /// Gets the value of the monad.
+    /// </summary>
+    /// <exception cref="Exception">The underlying exception is thrown.</exception>
+    T Value { get; }
 }
 
 /// <summary>

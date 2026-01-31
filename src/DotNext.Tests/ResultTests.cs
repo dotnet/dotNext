@@ -271,20 +271,20 @@ public sealed class ResultTests : Test
     public static void HandleException()
     {
         Result<int> result = 20;
-        Equal(20, result.OrInvoke(static e => 10));
+        Equal(20, result.OrInvoke(static _ => 10));
 
         result = new(new ArithmeticException());
-        Equal(10, result.OrInvoke(static e => 10));
+        Equal(10, result.OrInvoke(static _ => 10));
     }
 
     [Fact]
     public static void HandleException2()
     {
         Result<int, EnvironmentVariableTarget> result = 20;
-        Equal(20, result.OrInvoke(static e => 10));
+        Equal(20, result.OrInvoke(static _ => 10));
 
         result = new(EnvironmentVariableTarget.Machine);
-        Equal(10, result.OrInvoke(static e => 10));
+        Equal(10, result.OrInvoke(static _ => 10));
     }
 
     [Fact]
@@ -353,5 +353,19 @@ public sealed class ResultTests : Test
 
         result = Result.FromValue("").EnsureNotNull();
         True(result.IsSuccessful);
+    }
+
+    [Fact]
+    public static void FromInputMonads()
+    {
+        var result = Result<int>.Create<Result<int>.Ok>(42);
+        Equal(42, result.Value);
+
+        result = Result<int>.Create<Result<int>>(42);
+        Equal(42, result.Value);
+
+        result = Result<int>.Create<Result<int>.Failure>(new Exception());
+        False(result.IsSuccessful);
+        NotNull(result.Error);
     }
 }

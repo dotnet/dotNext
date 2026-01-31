@@ -54,11 +54,11 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetResult<TOptions>(TOptions options, T value)
         where TOptions : ICompletionOptions, allows ref struct
-        => TrySetResult(options, new Result<T>(value));
+        => TrySetResult(options, new Result<T>.Ok(value));
 
     /// <inheritdoc />
     public sealed override bool TrySetException<TOptions>(TOptions options, Exception e)
-        => TrySetResult(options, new Result<T>(e));
+        => TrySetResult(options, new Result<T>.Failure(e));
 
     private protected sealed override void CompleteAsTimedOut()
         => result = GetTimeoutResult();
@@ -66,10 +66,11 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     private protected sealed override void CompleteAsCanceled(CancellationToken token)
         => result = GetCancellationResult(token);
 
-    private bool TrySetResult<TOptions>(TOptions options, in Result<T> result)
+    internal bool TrySetResult<TOptions, TValue>(TOptions options, TValue value)
         where TOptions : ICompletionOptions, allows ref struct
+        where TValue : struct, IResultMonad<T>
     {
-        var completed = TrySetResult(options, in result, out var resumable);
+        var completed = TrySetResult(options, value, out var resumable);
         if (resumable)
         {
             NotifyConsumer();
@@ -78,13 +79,14 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
         return completed;
     }
 
-    internal bool TrySetResult<TOptions>(TOptions options, in Result<T> result, out bool resumable)
+    internal bool TrySetResult<TOptions, TValue>(TOptions options, TValue value, out bool resumable)
         where TOptions : ICompletionOptions, allows ref struct
+        where TValue : struct, IResultMonad<T>
     {
         var completed = options.BeginCompletion(this);
         if (completed)
         {
-            this.result = result;
+            result = Result<T>.Create(value);
             resumable = options.EndCompletion(this);
         }
         else

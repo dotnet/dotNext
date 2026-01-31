@@ -155,7 +155,8 @@ partial class QueuedSynchronizer
 
         public void Advance() => next = (current = next)?.Next;
 
-        private bool SignalCurrent(in Result<bool> result)
+        private bool SignalCurrentCore<TValue>(TValue result)
+            where TValue : struct, IResultMonad<bool>
         {
             bool signaled;
             if (current is null)
@@ -179,9 +180,9 @@ partial class QueuedSynchronizer
             return signaled;
         }
 
-        public bool SignalCurrent() => SignalCurrent(result: true);
+        public bool SignalCurrent() => SignalCurrentCore(Result.True);
 
-        public void SignalCurrent(Exception e) => SignalCurrent(result: new(e));
+        public void SignalCurrent(Exception e) => SignalCurrentCore(new Result<bool>.Failure(e));
 
         public bool SignalCurrent<TLockManager>(TLockManager manager)
             where TLockManager : struct, ILockManager, allows ref struct
@@ -204,38 +205,41 @@ partial class QueuedSynchronizer
             }
         }
 
-        private void SignalAll(in Result<bool> result)
+        private void SignalAllCore<TValue>(TValue result)
+            where TValue : struct, IResultMonad<bool>
         {
             while (!EndOfQueue)
             {
-                SignalCurrent(in result);
+                SignalCurrentCore(result);
                 Advance();
             }
         }
 
-        public void SignalAll(Exception e) => SignalAll(new Result<bool>(e));
+        public void SignalAll(Exception e) => SignalAllCore(new Result<bool>.Failure(e));
 
-        public void SignalAll() => SignalAll(new Result<bool>(true));
+        public void SignalAll() => SignalAllCore(Result.True);
 
-        private void SignalAll(in Result<bool> result, out bool signaled)
+        private void SignalAllCore<TValue>(TValue result, out bool signaled)
+            where TValue : struct, IResultMonad<bool>
         {
             for (signaled = false; !EndOfQueue; Advance())
             {
-                signaled |= SignalCurrent(in result);
+                signaled |= SignalCurrentCore(result);
             }
         }
 
         public void SignalAll(out bool signaled)
-            => SignalAll(new Result<bool>(true), out signaled);
+            => SignalAllCore(Result.True, out signaled);
 
         public void SignalAll(Exception e, out bool signaled)
-            => SignalAll(new Result<bool>(e), out signaled);
+            => SignalAllCore(new Result<bool>.Failure(e), out signaled);
 
-        private void SignalFirst(in Result<bool> result, out bool signaled)
+        private void SignalFirst<TValue>(TValue result, out bool signaled)
+            where TValue : struct, IResultMonad<bool>
         {
             for (signaled = false; !EndOfQueue; Advance())
             {
-                if (SignalCurrent(in result))
+                if (SignalCurrentCore(result))
                 {
                     signaled = true;
                     break;
@@ -244,7 +248,7 @@ partial class QueuedSynchronizer
         }
         
         public void SignalFirst(out bool signaled)
-            => SignalFirst(new Result<bool>(true), out signaled);
+            => SignalFirst(Result.True, out signaled);
 
         /// <summary>
         /// Releases the internal lock and resumes the suspended callers.

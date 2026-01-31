@@ -82,7 +82,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             if (scheduledTasksCount is 0U)
             {
                 completedAll?.TrySetResult();
-                suspendedCallers = DetachWaitQueue()?.SetResult(false);
+                suspendedCallers = DetachWaitQueue()?.SetResult(Result.False);
             }
             else
             {
@@ -188,7 +188,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             if (scheduledTasksCount is 0U && complete)
             {
                 completedAll?.TrySetResult();
-                suspendedCaller = DetachWaitQueue()?.SetResult(false);
+                suspendedCaller = DetachWaitQueue()?.SetResult(Result.False);
             }
             else if (completionDetected)
             {
@@ -219,7 +219,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             scheduledTasksCount = 0U;
             completionRequested = false;
             ClearTaskQueue();
-            suspendedCallers = DetachWaitQueue()?.SetResult(false);
+            suspendedCallers = DetachWaitQueue()?.SetResult(Result.False);
             if (completedAll is not null)
             {
                 completedAll.TrySetException(new PendingTaskInterruptedException());

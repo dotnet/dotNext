@@ -114,7 +114,7 @@ public static class Result
 /// </summary>
 /// <typeparam name="T">The type of the value stored in the Result monad.</typeparam>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct Result<T> : IResultMonad<T, Exception, Result<T>>
+public readonly partial struct Result<T> : IResultMonad<T, Exception, Result<T>>, IResultMonad<T>
 {
     private readonly T value;
     private readonly ExceptionDispatchInfo? exception;
