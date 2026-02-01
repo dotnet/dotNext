@@ -281,10 +281,12 @@ public sealed class PointerTests : Test
         using var mem1 = new UnmanagedMemory<UInt128>(UInt128.MaxValue);
         using var mem2 = new UnmanagedMemory<UInt128>(UInt128.MaxValue);
         True(mem1.Pointer.BitwiseCompare(mem2.Pointer, 1U) is 0);
+        True(mem1.Bytes.SequenceEqual(mem2.Bytes));
 
         mem2.Pointer.Value--;
 
         True(mem1.Pointer.BitwiseCompare(mem2.Pointer, 1U) > 0);
+        True(mem1.Bytes.SequenceCompareTo(mem2.Bytes) > 0);
     }
 
     [Fact]
