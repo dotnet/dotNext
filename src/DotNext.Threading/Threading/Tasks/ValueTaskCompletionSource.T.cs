@@ -44,7 +44,7 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <param name="value">The value to be returned to the consumer.</param>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetResult(T value)
-        => TrySetResult(new DefaultOptions(), value);
+        => TrySetResult<DefaultOptions, Result<T>.Ok>(new DefaultOptions(), value);
 
     /// <summary>
     /// Attempts to complete the task successfully.
@@ -54,11 +54,11 @@ public class ValueTaskCompletionSource<T> : ManualResetCompletionSource, IValueT
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetResult<TOptions>(TOptions options, T value)
         where TOptions : ICompletionOptions, allows ref struct
-        => TrySetResult(options, new Result<T>.Ok(value));
+        => TrySetResult<TOptions, Result<T>.Ok>(options, value);
 
     /// <inheritdoc />
     public sealed override bool TrySetException<TOptions>(TOptions options, Exception e)
-        => TrySetResult(options, new Result<T>.Failure(e));
+        => TrySetResult<TOptions, Result<T>.Failure>(options, e);
 
     private protected sealed override void CompleteAsTimedOut()
         => result = GetTimeoutResult();

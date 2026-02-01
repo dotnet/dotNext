@@ -99,7 +99,7 @@ public class ValueTaskCompletionSource : ManualResetCompletionSource, IValueTask
     /// </summary>
     /// <returns><see langword="true"/> if the result is completed successfully; <see langword="false"/> if the task has been canceled or timed out.</returns>
     public bool TrySetResult()
-        => TrySetResult(new DefaultOptions());
+        => TrySetResult(new DefaultOptions(), dispatchInfo: null);
 
     /// <summary>
     /// Attempts to complete the task successfully.
