@@ -140,12 +140,12 @@ partial class QueuedSynchronizer
 
         private readonly bool EndOfQueue => current is null;
 
-        public readonly bool IsEndOfQueue<TNode, TResult>([MaybeNullWhen(true)] out TResult result)
-            where TNode : WaitNode, INodeMapper<TNode, TResult>
+        public readonly bool IsEndOfQueue<TNode, TFeature>([MaybeNullWhen(true)] out TFeature result)
+            where TNode : WaitNode, IWaitNodeFeature<TFeature>
         {
             if (current is TNode currentNode)
             {
-                result = TNode.GetValue(currentNode);
+                result = currentNode.Feature;
                 return false;
             }
 

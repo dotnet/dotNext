@@ -39,9 +39,8 @@ partial class QueuedSynchronizer
             => throwOnTimeout ? base.GetTimeoutResult() : false;
     }
 
-    private protected interface INodeMapper<in TNode, out TValue>
-        where TNode : WaitNode
+    private protected interface IWaitNodeFeature<out TValue> : IValueTaskFactory<bool>
     {
-        public static abstract TValue GetValue(TNode node);
+        TValue Feature { get; }
     }
 }

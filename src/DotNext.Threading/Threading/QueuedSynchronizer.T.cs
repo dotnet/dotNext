@@ -14,7 +14,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
 {
     private new sealed class WaitNode :
         QueuedSynchronizer.WaitNode,
-        INodeMapper<WaitNode, TContext>
+        IWaitNodeFeature<TContext>
     {
         internal TContext? Context;
 
@@ -26,8 +26,7 @@ public abstract class QueuedSynchronizer<TContext> : QueuedSynchronizer
             base.CleanUp();
         }
 
-        static TContext INodeMapper<WaitNode, TContext>.GetValue(WaitNode node)
-            => node.Context!;
+        TContext IWaitNodeFeature<TContext>.Feature => Context!;
     }
 
     /// <summary>

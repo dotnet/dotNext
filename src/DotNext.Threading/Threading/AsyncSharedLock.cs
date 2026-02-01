@@ -189,12 +189,11 @@ public class AsyncSharedLock : QueuedSynchronizer, IAsyncDisposable
 
     private protected sealed override bool IsReadyToDispose => state.IsStrongLockAllowed && IsEmptyQueue;
     
-    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, INodeMapper<WaitNode, bool>
+    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IWaitNodeFeature<bool>
     {
         internal bool IsStrongLock;
 
-        static bool INodeMapper<WaitNode, bool>.GetValue(WaitNode node)
-            => node.IsStrongLock;
+        bool IWaitNodeFeature<bool>.Feature => IsStrongLock;
     }
 
     [StructLayout(LayoutKind.Auto)]

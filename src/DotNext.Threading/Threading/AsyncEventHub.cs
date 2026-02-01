@@ -553,7 +553,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
         }
     }
 
-    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, INodeMapper<WaitNode, WaitNode>
+    private new sealed class WaitNode : QueuedSynchronizer.WaitNode, IWaitNodeFeature<WaitNode>
     {
         private UInt128 mask;
         private bool waitAll;
@@ -598,8 +598,7 @@ public partial class AsyncEventHub : QueuedSynchronizer, IResettable
             return false;
         }
 
-        static WaitNode INodeMapper<WaitNode, WaitNode>.GetValue(WaitNode node)
-            => node;
+        WaitNode IWaitNodeFeature<WaitNode>.Feature => this;
     }
 
     [StructLayout(LayoutKind.Auto)]

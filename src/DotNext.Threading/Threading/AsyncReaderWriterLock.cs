@@ -611,12 +611,11 @@ public partial class AsyncReaderWriterLock : QueuedSynchronizer, IAsyncDisposabl
     
     private new sealed class WaitNode :
         QueuedSynchronizer.WaitNode,
-        INodeMapper<WaitNode, bool>
+        IWaitNodeFeature<bool>
     {
         internal bool IsWriteLock;
 
-        static bool INodeMapper<WaitNode, bool>.GetValue(WaitNode node)
-            => node.IsWriteLock;
+        bool IWaitNodeFeature<bool>.Feature => IsWriteLock;
     }
 
     // describes internal state of reader/writer lock
