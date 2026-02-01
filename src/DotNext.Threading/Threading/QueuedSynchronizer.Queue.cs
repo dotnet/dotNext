@@ -91,7 +91,7 @@ partial class QueuedSynchronizer
         else
         {
             node = pool.Rent<TNode>();
-            node.Initialize(this, CaptureCallerInformation(), TBuilder.ThrowOnTimeout);
+            node.Initialize(this, TBuilder.ThrowOnTimeout);
             waitQueue.Add(node);
             builder.Complete(node);
         }
