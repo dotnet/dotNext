@@ -40,7 +40,7 @@ partial class ManualResetCompletionSource
                 || (stateCopy & ActivatedState) is ActivatingState
                 || (stateCopy & SubscribedState) is SubscribingState)
             {
-                tmp = syncState;
+                tmp = Volatile.Read(in syncState);
                 continue;
             }
 
