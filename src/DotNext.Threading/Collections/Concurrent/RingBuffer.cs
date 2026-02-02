@@ -33,16 +33,16 @@ internal struct RingBuffer<T>
     public void Freeze()
     {
         if (Interlocked.FalseToTrue(ref frozenForEnqueues))
-            FreezeAndWait();
+            WaitForPendingEnqueues();
     }
     
-    private void FreezeAndWait()
+    private void WaitForPendingEnqueues()
     {
         Debug.Assert(frozenForEnqueues);
 
         // the slots prior the frozen position can be still in progress by the enqueuer, so wait for it
         for (var position = FreezeProducer() - 1U;
-             this[position & indexMask].WaitForEnqueuedState(position >> indexBits);
+             this[position & indexMask].WaitForPendingEnqueue(position >> indexBits);
              position--) ;
     }
 
@@ -142,7 +142,7 @@ internal struct RingBuffer<T>
         public T? Item;
         public volatile nuint Sequence; // higher bit is reserved for the value presence
 
-        public readonly bool WaitForEnqueuedState(nuint frozenGen)
+        public readonly bool WaitForPendingEnqueue(nuint frozenGen)
         {
             // The slot can be in three states:
             // 1. Enqueued, so Sequence == (frozenGen | StateBit) => skip it and check the previous slot
