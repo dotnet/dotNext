@@ -22,6 +22,7 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
     private readonly int flushThreshold;
     private readonly TaskCompletionSource readiness;
     private readonly MultiplexedStreamFactory streamFactory;
+    private readonly CancellationTokenMultiplexer tokenMultiplexer;
     private Task listener;
 
     [SuppressMessage("Usage", "CA2213", Justification = "False positive")]
@@ -41,6 +42,8 @@ public abstract partial class MultiplexedListener : Disposable, IAsyncDisposable
             SingleReader = false,
         });
 
+        // X2 tokens because we need to rent a token for the pair of input/output multiplexer
+        tokenMultiplexer = new() { MaximumRetained = checked(configuration.Backlog * 2) };
         allocator = configuration.ToAllocator();
         streamFactory = new MultiplexedStreamFactoryImpl(configuration.BufferOptions, backlog.Writer);
         measurementTags = configuration.MeasurementTags;

@@ -39,6 +39,7 @@ partial class MultiplexedListener
             Timeout = timeout,
             HeartbeatTimeout = heartbeatTimeout,
             RootToken = lifetimeToken,
+            TokenMultiplexer = tokenMultiplexer,
         };
         var receiveTokenSource = CancellationTokenSource.CreateLinkedTokenSource(lifetimeToken);
         var output = input.CreateOutput(
@@ -81,8 +82,6 @@ partial class MultiplexedListener
         finally
         {
             receiveTokenSource.Dispose();
-            await input.DisposeAsync().ConfigureAwait(false);
-            await output.DisposeAsync().ConfigureAwait(false);
             writeSignal.Dispose();
             receiveBuffer.Dispose();
             framingBuffer.Dispose();

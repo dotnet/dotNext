@@ -43,6 +43,7 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
             Timeout = configuration.Timeout,
             HeartbeatTimeout = configuration.HeartbeatTimeout,
             RootToken = lifetimeToken,
+            TokenMultiplexer = new(),
         };
         
         output = input.CreateOutput(GC.AllocateArray<byte>(configuration.BufferCapacity, pinned: true), configuration.Timeout);
@@ -121,8 +122,6 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
         {
             Cancel();
             dispatcher.ConfigureAwait(false).GetAwaiter().UnsafeOnCompleted(new Action(writeSignal.Dispose)
-                                                                            + input.Dispose
-                                                                            + output.Dispose
                                                                             + framingBuffer.Dispose);
         }
 
@@ -147,8 +146,6 @@ public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
         await dispatcher.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
         ReportDisposed();
         
-        await input.DisposeAsync().ConfigureAwait(false);
-        await output.DisposeAsync().ConfigureAwait(false);
         writeSignal.Dispose();
         framingBuffer.Dispose();
     }
