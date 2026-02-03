@@ -277,20 +277,60 @@ public sealed class ResultTests : Test
     public static void HandleException()
     {
         Result<int> result = 20;
-        Equal(20, result.OrInvoke(static _ => 10));
+        Equal(20, result.OrInvoke(GetValue));
+        unsafe
+        {
+            Equal(20, result.OrInvoke(&GetValue));
+        }
 
         result = new(new ArithmeticException());
-        Equal(10, result.OrInvoke(static _ => 10));
+        Equal(10, result.OrInvoke(GetValue));
+        unsafe
+        {
+            Equal(10, result.OrInvoke(&GetValue));
+        }
+        
+        static int GetValue(Exception error)
+        {
+            NotNull(error);
+            return 10;
+        }
     }
 
     [Fact]
     public static void HandleException2()
     {
         Result<int, EnvironmentVariableTarget> result = 20;
-        Equal(20, result.OrInvoke(static _ => 10));
+        Equal(20, result.OrInvoke(GetValue));
+        unsafe
+        {
+            Equal(20, result.OrInvoke(&GetValue));
+        }
 
         result = new(EnvironmentVariableTarget.Machine);
-        Equal(10, result.OrInvoke(static _ => 10));
+        Equal(10, result.OrInvoke(GetValue));
+        unsafe
+        {
+            Equal(10, result.OrInvoke(&GetValue));
+        }
+
+        Throws<ArithmeticException>(() => result.OrThrow(Throw));
+        unsafe
+        {
+            Throws<ArithmeticException>(() => result.OrThrow(&Throw));
+        }
+
+        static ArithmeticException Throw(EnvironmentVariableTarget error)
+        {
+            NotEqual(EnvironmentVariableTarget.Process, error);
+            return new();
+        }
+
+        static int GetValue(EnvironmentVariableTarget error)
+        {
+            NotEqual(EnvironmentVariableTarget.Process, error);
+            return 10;
+        }
     }
 
     [Fact]
