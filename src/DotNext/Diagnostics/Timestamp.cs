@@ -45,7 +45,7 @@ public readonly record struct Timestamp :
     /// </summary>
     /// <param name="provider">The time provider.</param>
     public Timestamp(TimeProvider provider)
-        : this(Math.Max(provider.GetTimestamp(), 1L)) // ensure that timestamp is not empty
+        : this(long.Max(provider.GetTimestamp(), 1L)) // ensure that timestamp is not empty
     {
     }
 
