@@ -27,21 +27,19 @@ partial struct CancellationTokenMultiplexer
         CancellationToken IValueTaskSource<CancellationToken>.GetResult(short token)
         {
             CheckToken(token);
-            
+
             var result = CancellationOrigin;
             Debug.Assert(result.IsCancellationRequested);
             Debug.Assert(!IsCancellationRequested);
-            
+
             DetachLinkedTokens();
             var poolCopy = pool;
             Reset();
 
             // We don't need to call base.TryReset() because the current CTS remains untouched (see OnCanceled override)
-            if (poolCopy is not null)
-            {
-                version++;
-                poolCopy.Return(this);
-            }
+            Debug.Assert(poolCopy is not null);
+            version++;
+            poolCopy.Return(this);
 
             return result;
         }
