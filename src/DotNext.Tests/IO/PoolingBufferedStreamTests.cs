@@ -479,12 +479,12 @@ public sealed class PoolingBufferedStreamTests : Test
     public static async Task FlushNonEmptyReadBufferAsync()
     {
         using var stream = new MemoryStream();
-        await stream.WriteAsync(RandomBytes(1024));
+        await stream.WriteAsync(RandomBytes(1024), TestToken);
         stream.Position = 0L;
         await using var reader = new PoolingBufferedStream(stream) { MaxBufferSize = 64 };
         reader.ReadExactly(stackalloc byte[32]); // 32 extra bytes are in the internal buffer
         var position = reader.Position;
-        await reader.FlushAsync();
+        await reader.FlushAsync(TestToken);
         Equal(position, reader.Position);
     }
 }
