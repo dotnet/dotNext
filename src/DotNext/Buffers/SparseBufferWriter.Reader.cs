@@ -178,7 +178,7 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     /// <param name="start">The start position within this buffer.</param>
     /// <exception cref="ObjectDisposedException">The buffer has been disposed.</exception>
     public void CopyTo<TConsumer>(TConsumer consumer, SequencePosition start)
-        where TConsumer : IReadOnlySpanConsumer<T>
+        where TConsumer : IConsumer<ReadOnlySpan<T>>, allows ref struct
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
 
@@ -200,8 +200,8 @@ public partial class SparseBufferWriter<T> : IEnumerable<ReadOnlyMemory<T>>
     /// <returns>The actual number of copied elements.</returns>
     /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
     /// <exception cref="ObjectDisposedException">The buffer has been disposed.</exception>
-    public long CopyTo<TConsumer>(TConsumer consumer, scoped ref SequencePosition position, long count)
-        where TConsumer : IReadOnlySpanConsumer<T>
+    public long CopyTo<TConsumer>(TConsumer consumer, ref SequencePosition position, long count)
+        where TConsumer : IConsumer<ReadOnlySpan<T>>, allows ref struct
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         ArgumentOutOfRangeException.ThrowIfNegative(count);

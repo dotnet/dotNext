@@ -1,7 +1,5 @@
 namespace DotNext.IO;
 
-using Buffers;
-
 public sealed class StreamConsumerTests : Test
 {
     [Fact]
@@ -29,9 +27,9 @@ public sealed class StreamConsumerTests : Test
     public static void WriteMethods()
     {
         using var ms = new MemoryStream();
-        IReadOnlySpanConsumer<byte> consumer = new StreamConsumer(ms);
-        consumer.Invoke(new ReadOnlySpan<byte>([1, 2]));
-        consumer.Invoke(new ReadOnlyMemory<byte>([3, 4]), TestToken);
+        var consumer = new StreamConsumer(ms);
+        consumer.As<IConsumer<ReadOnlySpan<byte>>>().Invoke(new ReadOnlySpan<byte>([1, 2]));
+        consumer.As<ISupplier<ReadOnlyMemory<byte>, CancellationToken, ValueTask>>().Invoke(new ReadOnlyMemory<byte>([3, 4]), TestToken);
         Equal(new byte[] { 1, 2, 3, 4 }, ms.ToArray());
     }
 }

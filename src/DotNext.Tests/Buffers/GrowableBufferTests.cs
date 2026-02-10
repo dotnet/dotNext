@@ -43,7 +43,7 @@ public sealed class GrowableBufferTests : Test
             var expected = RandomBytes(5000);
             writer.Write(expected);
             actual = new byte[expected.Length];
-            writer.CopyTo<ReadOnlySpanConsumer<byte, ArrayCopyOperation>>(new(&ArrayCopyOperation.Append, new ArrayCopyOperation(actual)));
+            writer.CopyTo<ReadOnlySpanConsumer<byte, ArrayCopyOperation>>(new(ArrayCopyOperation.Append, new ArrayCopyOperation(actual)));
             Equal(expected, actual);
             
             writer.Reset();

@@ -1,7 +1,5 @@
 namespace DotNext.IO;
 
-using Buffers;
-
 public sealed class TextConsumerTests : Test
 {
     [Fact]
@@ -29,9 +27,9 @@ public sealed class TextConsumerTests : Test
     public static void WriteMethods()
     {
         using var ms = new StringWriter();
-        IReadOnlySpanConsumer<char> consumer = new TextConsumer(ms);
-        consumer.Invoke(['1', '2']);
-        consumer.Invoke(new[] { '3', '4' }, TestToken);
+        var consumer = new TextConsumer(ms);
+        consumer.As<IConsumer<ReadOnlySpan<char>>>().Invoke(['1', '2']);
+        consumer.As<ISupplier<ReadOnlyMemory<char>, CancellationToken, ValueTask>>().Invoke(new[] { '3', '4' }, TestToken);
         Equal("1234", ms.ToString());
     }
 }

@@ -98,7 +98,7 @@ public static partial class StreamSource
         /// <typeparam name="TOutput">The type of the consumer.</typeparam>
         /// <returns>The stream wrapping <typeparamref name="TOutput"/>.</returns>
         public static Stream CreateWritable<TOutput>(TOutput output)
-            where TOutput : IFlushable, IReadOnlySpanConsumer<byte>
+            where TOutput : IFlushable, IConsumer<ReadOnlySpan<byte>>
             => new SyncWriterStream<TOutput>(output);
 
         /// <summary>
@@ -127,7 +127,7 @@ public static partial class StreamSource
             where TWriter : class, IBufferWriter<byte>
         {
             IFlushable.DiscoverFlushMethods(writer, ref flush, ref flushAsync);
-            return writer is IReadOnlySpanConsumer<byte>
+            return writer is IConsumer<ReadOnlySpan<byte>>
                 ? CreateWritable<DelegatingWriter<TWriter>>(new(writer, flush, flushAsync))
                 : CreateWritable<BufferWriter<TWriter>>(new(writer, flush, flushAsync));
         }

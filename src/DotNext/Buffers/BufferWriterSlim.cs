@@ -231,9 +231,9 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
 
     /// <inheritdoc cref="Write"/>
     public void operator += (scoped ReadOnlySpan<T> input) => Write(input);
-    
+
     /// <inheritdoc />
-    void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> input)
+    void IConsumer<ReadOnlySpan<T>>.Invoke(ReadOnlySpan<T> input)
         => Write(input);
 
     /// <summary>

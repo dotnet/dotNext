@@ -631,6 +631,6 @@ public sealed class AsyncBinaryReaderWriterTests : Test
     {
         int IBufferReader.RemainingBytes => hasLength ? 1 : 0;
 
-        void IReadOnlySpanConsumer<byte>.Invoke(ReadOnlySpan<byte> span) => Fail("Should never be called");
+        void IConsumer<ReadOnlySpan<byte>>.Invoke(ReadOnlySpan<byte> span) => Fail("Should never be called");
     }
 }
