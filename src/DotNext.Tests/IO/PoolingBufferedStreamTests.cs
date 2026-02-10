@@ -461,4 +461,30 @@ public sealed class PoolingBufferedStreamTests : Test
         False(reader.Read());
         False(reader.HasBufferedDataToRead);
     }
+
+    [Fact]
+    public static void FlushNonEmptyReadBuffer()
+    {
+        using var stream = new MemoryStream();
+        stream.Write(RandomBytes(1024));
+        stream.Position = 0L;
+        using var reader = new PoolingBufferedStream(stream) { MaxBufferSize = 64 };
+        reader.ReadExactly(stackalloc byte[32]); // 32 extra bytes are in the internal buffer
+        var position = reader.Position;
+        reader.Flush();
+        Equal(position, reader.Position);
+    }
+    
+    [Fact]
+    public static async Task FlushNonEmptyReadBufferAsync()
+    {
+        using var stream = new MemoryStream();
+        await stream.WriteAsync(RandomBytes(1024));
+        stream.Position = 0L;
+        await using var reader = new PoolingBufferedStream(stream) { MaxBufferSize = 64 };
+        reader.ReadExactly(stackalloc byte[32]); // 32 extra bytes are in the internal buffer
+        var position = reader.Position;
+        await reader.FlushAsync();
+        Equal(position, reader.Position);
+    }
 }
