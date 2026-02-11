@@ -27,26 +27,6 @@ public ref struct SpanReader<T>
     }
 
     /// <summary>
-    /// Initializes a new memory reader.
-    /// </summary>
-    /// <param name="reference">Managed pointer to the memory block.</param>
-    /// <param name="length">The length of the elements referenced by the pointer.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is negative.</exception>
-    public SpanReader(ref T reference, int length)
-    {
-        switch (length)
-        {
-            case < 0:
-                throw new ArgumentOutOfRangeException(nameof(length));
-            case > 0 when Unsafe.IsNullRef(ref reference):
-                throw new ArgumentNullException(nameof(reference));
-        }
-
-        this.reference = ref reference;
-        this.length = length;
-    }
-
-    /// <summary>
     /// Gets the element at the current position in the
     /// underlying memory block.
     /// </summary>
