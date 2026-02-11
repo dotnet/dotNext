@@ -109,7 +109,7 @@ public readonly ref struct Variant : IEquatable<Variant>
 
         return ref Unsafe.As<byte, T>(ref location);
 
-        static bool CheckType(Type? expected, Type actual) => expected is not null && expected.IsByRef
+        static bool CheckType(Type? expected, Type actual) => expected is { IsByRef: true }
             ? expected.GetElementType() == actual
             : expected == actual;
     }
@@ -130,7 +130,7 @@ public readonly ref struct Variant : IEquatable<Variant>
         return ref Unsafe.As<byte, T>(ref location);
 
         static bool CheckMutableType(Type? expected, Type actual)
-            => expected is not null && expected.IsByRef && expected.GetElementType() == actual;
+            => expected is { IsByRef: true } && expected.GetElementType() == actual;
     }
 
     /// <summary>
