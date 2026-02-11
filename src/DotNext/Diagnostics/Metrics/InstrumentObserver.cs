@@ -40,18 +40,15 @@ public abstract class InstrumentObserver<TMeasurement> : InstrumentObserver
     private protected InstrumentObserver()
     {
     }
-    
+
     private protected abstract void Record(Instrument instrument, TMeasurement measurement, ReadOnlySpan<KeyValuePair<string, object?>> tags);
 
-    private protected static void SetMeasurementEventCallback(MeterListener listener)
-        => listener.SetMeasurementEventCallback<TMeasurement>(Record);
-
-    private static void Record(
-        Instrument instrument,
-        TMeasurement measurement,
-        ReadOnlySpan<KeyValuePair<string, object?>> tags,
-        object? state)
-        => (state as InstrumentObserver<TMeasurement>)?.Record(instrument, measurement, tags);
+    private protected void Observe(Instrument instrument, MeterListener listener)
+    {
+        listener.SetMeasurementEventCallback<TMeasurement>(static (instrument, measurement, tags, state) =>
+            (state as InstrumentObserver<TMeasurement>)?.Record(instrument, measurement, tags));
+        listener.EnableMeasurementEvents(instrument, this);
+    }
 }
 
 /// <summary>
@@ -71,9 +68,7 @@ public abstract class InstrumentObserver<TMeasurement, TInstrument> : Instrument
     /// <param name="filter">The filter to skip the irrelevant measurements.</param>
     protected InstrumentObserver(MeasurementFilter<TInstrument>? filter)
     {
-        this.filter = filter ?? True;
-
-        static bool True(TInstrument instrument, ReadOnlySpan<KeyValuePair<string, object?>> tags) => true;
+        this.filter = filter ?? MeasurementFilter<TInstrument>.True;
     }
 
     private protected sealed override void Record(Instrument instrument, TMeasurement measurement, ReadOnlySpan<KeyValuePair<string, object?>> tags)
@@ -100,8 +95,7 @@ public abstract class InstrumentObserver<TMeasurement, TInstrument> : Instrument
         ArgumentNullException.ThrowIfNull(instrument);
         ArgumentNullException.ThrowIfNull(listener);
 
-        SetMeasurementEventCallback(listener);
-        listener.EnableMeasurementEvents(instrument, this);
+        base.Observe(instrument, listener);
     }
 
     /// <summary>
