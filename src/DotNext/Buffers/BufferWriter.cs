@@ -226,14 +226,9 @@ public abstract class BufferWriter<T> : Disposable, ISupplier<ReadOnlyMemory<T>>
 
         var newPosition = position + count;
         if ((uint)newPosition > (uint)Capacity)
-            ThrowInvalidOperationException();
+            InvalidOperationException.Throw();
 
         position = newPosition;
-
-        [DoesNotReturn]
-        [StackTraceHidden]
-        static void ThrowInvalidOperationException()
-            => throw new InvalidOperationException();
     }
 
     /// <summary>

@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -106,7 +105,7 @@ public readonly ref struct Variant : IEquatable<Variant>
         where T : allows ref struct
     {
         if (!CheckType(TargetType, typeof(T)))
-            ThrowInvalidCastException();
+            InvalidCastException.Throw();
 
         return ref Unsafe.As<byte, T>(ref location);
 
@@ -126,17 +125,13 @@ public readonly ref struct Variant : IEquatable<Variant>
         where T : allows ref struct
     {
         if (!CheckMutableType(targetType, typeof(T)))
-            ThrowInvalidCastException();
+            InvalidCastException.Throw();
 
         return ref Unsafe.As<byte, T>(ref location);
 
         static bool CheckMutableType(Type? expected, Type actual)
             => expected is not null && expected.IsByRef && expected.GetElementType() == actual;
     }
-
-    [DoesNotReturn]
-    [StackTraceHidden]
-    private static void ThrowInvalidCastException() => throw new InvalidCastException();
 
     /// <summary>
     /// Tries to extract the underlying value.

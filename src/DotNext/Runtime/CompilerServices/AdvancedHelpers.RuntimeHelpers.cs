@@ -135,13 +135,9 @@ partial class AdvancedHelpers
         public static T Cast(object? obj)
         {
             if (obj is null)
-                ThrowInvalidCastException();
+                InvalidCastException.Throw();
 
             return (T)obj;
-
-            [DoesNotReturn]
-            [StackTraceHidden]
-            static void ThrowInvalidCastException() => throw new InvalidCastException();
         }
     }
 }
