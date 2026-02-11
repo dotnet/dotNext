@@ -2,8 +2,6 @@ using System.Text;
 
 namespace DotNext.Text;
 
-using Buffers;
-
 public sealed class StringBuilderConsumerTests : Test
 {
     [Fact]
@@ -31,9 +29,9 @@ public sealed class StringBuilderConsumerTests : Test
     public static void WriteMethods()
     {
         var sb = new StringBuilder();
-        IReadOnlySpanConsumer<char> consumer = new StringBuilderConsumer(sb);
-        consumer.Invoke("Hello, ".AsSpan());
-        consumer.Invoke("world!".AsMemory(), TestToken);
+        var consumer = new StringBuilderConsumer(sb);
+        consumer.As<IConsumer<ReadOnlySpan<char>>>().Invoke("Hello, ".AsSpan());
+        consumer.As<ISupplier<ReadOnlyMemory<char>, CancellationToken, ValueTask>>().Invoke("world!".AsMemory(), TestToken);
         Equal("Hello, world!", consumer.ToString());
     }
 }

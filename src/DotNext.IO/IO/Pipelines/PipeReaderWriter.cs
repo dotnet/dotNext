@@ -66,7 +66,7 @@ internal readonly struct PipeBinaryReader(PipeReader reader) : IAsyncBinaryReade
 
     ValueTask IAsyncBinaryReader.CopyToAsync(IBufferWriter<byte> writer, long? count, CancellationToken token)
     {
-        var consumer = new BufferConsumer<byte>(writer);
+        var consumer = new BufferWriterReference<byte>(writer);
         return count.HasValue
             ? reader.CopyToAsync(consumer, count.GetValueOrDefault(), token)
             : reader.CopyToAsync(consumer, token);

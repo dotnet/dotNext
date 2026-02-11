@@ -27,7 +27,7 @@ internal sealed class InputMultiplexer<T>() : Multiplexer<T>(new(), new Concurre
         return result;
     }
 
-    public bool TryRemoveStream(uint streamId, MultiplexedStream stream)
+    private bool TryRemoveStream(uint streamId, MultiplexedStream stream)
     {
         var removed = Streams.TryRemove(new(streamId, stream));
         ChangeStreamCount(-Unsafe.BitCast<bool, byte>(removed));
@@ -38,6 +38,7 @@ internal sealed class InputMultiplexer<T>() : Multiplexer<T>(new(), new Concurre
     {
         MeasurementTags = MeasurementTags,
         RootToken = RootToken,
+        TokenMultiplexer = TokenMultiplexer,
         FramingBuffer = framingBuffer,
         Timeout = receiveTimeout,
         TransportSignal = TransportSignal,
@@ -48,6 +49,7 @@ internal sealed class InputMultiplexer<T>() : Multiplexer<T>(new(), new Concurre
     {
         MeasurementTags = MeasurementTags,
         RootToken = token,
+        TokenMultiplexer = TokenMultiplexer,
         FramingBuffer = framingBuffer,
         Timeout = receiveTimeout,
         TransportSignal = TransportSignal,
@@ -109,22 +111,22 @@ internal sealed class InputMultiplexer<T>() : Multiplexer<T>(new(), new Concurre
     {
         for (int bytesWritten; !buffer.IsEmpty; buffer = buffer.Slice(bytesWritten))
         {
-            StartOperation(Timeout);
+            var timeoutScope = TokenMultiplexer.Combine(Timeout, RootToken);
             try
             {
-                bytesWritten = await socket.SendAsync(buffer, TimeBoundedToken).ConfigureAwait(false);
+                bytesWritten = await socket.SendAsync(buffer, timeoutScope.Token).ConfigureAwait(false);
             }
-            catch (OperationCanceledException e) when (IsOperationTimedOut(e))
+            catch (OperationCanceledException e) when (e.CausedByTimeout(timeoutScope))
             {
                 throw new TimeoutException(ExceptionMessages.ConnectionTimedOut, e);
             }
-            catch (OperationCanceledException e) when (IsOperationCanceled(e))
+            catch (OperationCanceledException e) when (e.CausedBy(timeoutScope, RootToken))
             {
                 throw new OperationCanceledException(ExceptionMessages.ConnectionClosed, e, RootToken);
             }
             finally
             {
-                await ResetOperationTimeoutAsync().ConfigureAwait(false);
+                await timeoutScope.DisposeAsync().ConfigureAwait(false);
             }
         }
     }

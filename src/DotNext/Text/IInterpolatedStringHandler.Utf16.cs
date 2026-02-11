@@ -17,7 +17,7 @@ partial interface IInterpolatedStringHandler
         switch (value)
         {
             case ISpanFormattable:
-                Span<char> span = writer.GetSpan();
+                var span = writer.GetSpan();
 
                 // constrained call avoiding boxing for value types
                 for (int sizeHint; !((ISpanFormattable)value).TryFormat(span, out charsWritten, format, provider); span = writer.GetSpan(sizeHint))

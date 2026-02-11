@@ -223,7 +223,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <typeparam name="TConsumer">The type of the consumer.</typeparam>
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public void CopyTo<TConsumer>(TConsumer consumer)
-        where TConsumer : IReadOnlySpanConsumer<T>, allows ref struct
+        where TConsumer : IConsumer<ReadOnlySpan<T>>, allows ref struct
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         for (var current = first; current is not null; current = current.Next)
@@ -250,7 +250,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <typeparam name="TArg">The type of the argument to tbe passed to the callback.</typeparam>
     /// <exception cref="ObjectDisposedException">The builder has been disposed.</exception>
     public void CopyTo<TArg>(ReadOnlySpanAction<T, TArg> writer, TArg arg)
-        => CopyTo(new DelegatingReadOnlySpanConsumer<T, TArg>(writer, arg));
+        => CopyTo(new ReadOnlySpanConsumer<T, TArg>(writer, arg));
 
     /// <summary>
     /// Copies the contents of this builder to the specified memory block.
@@ -379,13 +379,13 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
 
 file static class SparseBufferWriter
 {
-    internal static int LinearGrowth(int chunkSize, ref int chunkIndex) => Math.Max(chunkSize * ++chunkIndex, chunkSize);
+    internal static int LinearGrowth(int chunkSize, ref int chunkIndex) => int.Max(chunkSize * ++chunkIndex, chunkSize);
 
-    internal static int ExponentialGrowth(int chunkSize, ref int chunkIndex) => Math.Max(chunkSize << ++chunkIndex, chunkSize);
+    internal static int ExponentialGrowth(int chunkSize, ref int chunkIndex) => int.Max(chunkSize << ++chunkIndex, chunkSize);
 
     internal static int NoGrowth(int chunkSize, ref int chunkIndex)
     {
-        Debug.Assert(chunkIndex == 0);
+        Debug.Assert(chunkIndex is 0);
         return chunkSize;
     }
 }

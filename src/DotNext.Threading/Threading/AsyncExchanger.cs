@@ -58,12 +58,10 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
             }
         }
 
-        if (point.TryReset(out _))
+        point.Reset();
+        lock (syncRoot)
         {
-            lock (syncRoot)
-            {
-                pool.Return(point);
-            }
+            pool.Return(point);
         }
     }
 
@@ -314,7 +312,7 @@ public class AsyncExchanger<T> : Disposable, IAsyncDisposable
 
         internal bool TryExchange(ref T value, out bool resumable)
         {
-            if (TrySetResult(completionData: null, completionToken: null, value, out resumable))
+            if (TrySetResult(new DefaultOptions(), new Result<T>.Ok(value), out resumable))
             {
                 value = this.value!;
                 return true;

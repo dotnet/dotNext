@@ -314,6 +314,6 @@ public partial struct UserDataStorage
     {
         ref var partition = ref GetPartition(source);
         ConditionalWeakTable<object, BackingStorage> newStorage;
-        return Volatile.Read(ref partition) ?? Interlocked.CompareExchange(ref partition, newStorage = [], null) ?? newStorage;
+        return Volatile.Read(in partition) ?? Interlocked.CompareExchange(ref partition, newStorage = [], null) ?? newStorage;
     }
 }

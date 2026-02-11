@@ -77,9 +77,6 @@ public static class StringExtensions
         /// <summary>
         /// Concatenates multiple strings.
         /// </summary>
-        /// <remarks>
-        /// You can use methods from <see cref="TupleExtensions"/> to emulate variadic arguments.
-        /// </remarks>
         /// <param name="values">An array of strings.</param>
         /// <param name="allocator">The allocator of the concatenated string.</param>
         /// <returns>A buffer containing characters from the concatenated strings.</returns>

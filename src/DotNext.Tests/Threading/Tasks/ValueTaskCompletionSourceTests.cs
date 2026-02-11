@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading.Tasks;
@@ -42,6 +44,24 @@ public sealed class ValueTaskCompletionSourceTests : Test
         False(source.TrySetResult());
     }
 
+    [Fact]
+    public static async Task CancelImmediately()
+    {
+        var source = new ValueTaskCompletionSource();
+        True(source.TrySetCanceled(new CancellationToken(canceled: true)));
+
+        await ThrowsAsync<OperationCanceledException>(source.CreateTask(InfiniteTimeSpan, new(canceled: false)).AsTask);
+    }
+
+    [Fact]
+    public static void UseTokenAndCompletionData()
+    {
+        var source = new ValueTaskCompletionSource();
+        var expectedToken = source.Reset();
+        True(source.TrySetResult(new ManualResetCompletionSource.ExpectedTokenAndCustomData(expectedToken, string.Empty)));
+        Same(string.Empty, source.CompletionData);
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -61,9 +81,9 @@ public sealed class ValueTaskCompletionSourceTests : Test
         var source = new ValueTaskCompletionSource(runContinuationsAsynchronously);
         var completionToken = source.Reset();
         var task = source.CreateTask(InfiniteTimeSpan, TestToken);
-        False(source.TrySetResult(completionData: null, short.MaxValue));
+        False(source.TrySetResult(new ManualResetCompletionSource.ExpectedToken(short.MaxValue)));
         False(task.IsCompleted);
-        True(source.TrySetResult(completionData: null, completionToken));
+        True(source.TrySetResult(new ManualResetCompletionSource.ExpectedToken(completionToken)));
         await task;
     }
 
@@ -171,25 +191,50 @@ public sealed class ValueTaskCompletionSourceTests : Test
     [Fact]
     public static async Task LazyCompletion()
     {
-        var source = new TestCompletionSource();
+        var source = new ValueTaskCompletionSource();
         var task = source.CreateTask(InfiniteTimeSpan, CancellationToken.None).AsTask();
         
-        True(source.TrySetResult(string.Empty, completionToken: null, e: null, out var resumable));
+        True(TrySetResult(source, new ManualResetCompletionSource.CustomCompletionData(string.Empty), dispatchInfo: null, out var resumable));
         True(resumable);
         Same(string.Empty, source.CompletionData);
         False(task.IsCompleted);
-        
-        source.NotifyConsumer();
+
+        NotifyConsumer(source);
         await task;
+        source.Reset();
+
+        [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "NotifyConsumer")]
+        static extern void NotifyConsumer(ManualResetCompletionSource source);
+
+        [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "TrySetResult")]
+        static extern bool TrySetResult<TOptions>(ValueTaskCompletionSource source,
+            TOptions options,
+            ExceptionDispatchInfo dispatchInfo,
+            out bool resumable)
+            where TOptions : ManualResetCompletionSource.ICompletionOptions, allows ref struct;
     }
-    
-    private sealed class TestCompletionSource : ValueTaskCompletionSource
+
+    [Fact]
+    public static async Task AttachContinuationToCompletedSource()
     {
-        public new bool TrySetResult(object completionData, short? completionToken, Exception e, out bool resumable)
-            => base.TrySetResult(completionData, completionToken, e, out resumable);
+        var source = new ValueTaskCompletionSource();
+        True(source.TrySetResult());
 
-        public new object CompletionData => base.CompletionData;
+        var task = new TaskCompletionSource();
+        var awaiter = source.CreateTask(InfiniteTimeSpan, CancellationToken.None).GetAwaiter();
+        awaiter.UnsafeOnCompleted(() =>
+        {
+            try
+            {
+                awaiter.GetResult();
+                task.SetResult();
+            }
+            catch (Exception e)
+            {
+                task.SetException(e);
+            }
+        });
 
-        public new void NotifyConsumer() => base.NotifyConsumer();
+        await task.Task;
     }
 }

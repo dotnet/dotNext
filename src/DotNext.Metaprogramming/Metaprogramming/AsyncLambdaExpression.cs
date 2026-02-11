@@ -1,11 +1,11 @@
 ﻿using System.Linq.Expressions;
+using DotNext.Reflection;
 
 namespace DotNext.Metaprogramming;
 
 using Collections.Generic;
 using Linq.Expressions;
 using Runtime.CompilerServices;
-using static Reflection.DelegateType;
 
 internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexicalScope<Expression<TDelegate>, Action<LambdaContext>>, ILexicalScope<Expression<TDelegate>, Action<LambdaContext, ParameterExpression>>
     where TDelegate : Delegate
@@ -20,7 +20,7 @@ internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexi
     {
         if (typeof(TDelegate).IsAbstract)
             throw new GenericArgumentException<TDelegate>(ExceptionMessages.AbstractDelegate, nameof(TDelegate));
-        var invokeMethod = get_InvokeMethod<TDelegate>();
+        var invokeMethod = DelegateType.get_InvokeMethod<TDelegate>();
         taskType = new TaskType(invokeMethod.ReturnType);
         Parameters = GetParameters(invokeMethod.GetParameters());
         this.usePooling = usePooling;
@@ -35,7 +35,7 @@ internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexi
     {
         get
         {
-            if (taskType.ResultType == typeof(void))
+            if (taskType.ResultType.IsVoid)
                 return null;
             
             if (lambdaResult is null)

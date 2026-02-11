@@ -223,13 +223,15 @@ partial class WriteAheadLog
 
         private readonly nuint alignment;
         private readonly nint madvise;
-        private IndexPool indices;
+        private readonly IndexPool indices;
         private PageCache cache;
 
         public AnonymousPageManager(DirectoryInfo location, int pageSize)
             : base(location, pageSize, GetPages(location, out var pages))
         {
-            indices = new(PageCacheSize - 1);
+            indices = new(PageCacheSize);
+            Debug.Assert(indices.Capacity is PageCacheSize);
+            
             cache = new();
 
             alignment = GetPageAlignment(pageSize, out madvise);
@@ -253,7 +255,7 @@ partial class WriteAheadLog
             }
 
             // place at least one page to the cache
-            if (indices.TryPeek(out var poolIndex))
+            if (indices.TryGet(out var poolIndex))
             {
                 MarkAsHugePageIfSupported(page = new(PageSize, alignment));
                 cache[poolIndex] = page;
@@ -303,7 +305,7 @@ partial class WriteAheadLog
         private AnonymousPage RentPage()
         {
             AnonymousPage page;
-            if (indices.TryTake(out var poolIndex))
+            if (indices.TryGet(out var poolIndex))
             {
                 ref var slot = ref cache[poolIndex];
                 if (slot is null)
@@ -333,18 +335,17 @@ partial class WriteAheadLog
         protected override void ReleasePage(AnonymousPage page)
         {
             var poolIndex = page.PoolIndex;
-            if (poolIndex < 0)
-            {
-                page.As<IDisposable>().Dispose();
-            }
-            else
+            if (poolIndex >= 0)
             {
                 // THP splits the page on discard, skip this behavior for HugePages
                 if (madvise is 0)
                     page.Discard();
-                
-                indices.Return(poolIndex);
+
+                if (indices.TryReturn(poolIndex))
+                    return;
             }
+
+            page.As<IDisposable>().Dispose();
         }
 
         protected override void DeletePage(uint pageIndex, AnonymousPage page)
@@ -378,7 +379,8 @@ partial class WriteAheadLog
         {
             if (disposing)
             {
-                cache.Clear();
+                indices.Freeze();
+                cache.Clear(indices);
             }
 
             base.Dispose(disposing);
@@ -389,15 +391,11 @@ partial class WriteAheadLog
         {
             private AnonymousPage? page0;
 
-            public void Clear()
+            public void Clear(IndexPool indices)
             {
-                foreach (ref var pageRef in this)
+                while (indices.TryGet(out var index))
                 {
-                    if (pageRef is { } page)
-                    {
-                        page.As<IDisposable>().Dispose();
-                        pageRef = null;
-                    }
+                    this[index]?.As<IDisposable>().Dispose();
                 }
             }
         }

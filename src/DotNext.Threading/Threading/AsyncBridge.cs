@@ -4,14 +4,14 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading;
 
-using ManualResetCompletionSource = Tasks.ManualResetCompletionSource;
+using Tasks;
 
 /// <summary>
 /// Allows to turn <see cref="WaitHandle"/> and <see cref="CancellationToken"/> into task.
 /// </summary>
 public static partial class AsyncBridge
 {
-    private static volatile int instantiatedTasks;
+    private static volatile int poolSize;
     private static int maxPoolSize = Environment.ProcessorCount * 2;
 
     /// <summary>
@@ -29,117 +29,17 @@ public static partial class AsyncBridge
         if (token.IsCancellationRequested)
             return completeAsCanceled ? ValueTask.FromCanceled(token) : ValueTask.CompletedTask;
 
-        CancellationTokenValueTask? result;
-
-        // do not keep long references when limit is reached
-        if (instantiatedTasks > maxPoolSize)
+        if (TokenPool.TryGet() is { } result)
         {
-            if (completeAsCanceled)
-                return new(Task.Delay(InfiniteTimeSpan, token));
-
-            result = new(Reset);
-        }
-        else if (!TokenPool.TryTake(out result))
-        {
-            result = new(CancellationTokenValueTaskCompletionCallback);
-        }
-
-        result.CompleteAsCanceled = completeAsCanceled;
-        result.Reset();
-        return result.CreateTask(InfiniteTimeSpan, token);
-    }
-
-    private static CancellationTokenCompletionSource GetCompletionSource(ReadOnlySpan<CancellationToken> tokens) => tokens switch
-    {
-        [] => throw new InvalidOperationException(),
-        [var token] => new CancellationTokenCompletionSource1(token),
-        [var token1, var token2] => new CancellationTokenCompletionSource2(token1, token2),
-        _ => new CancellationTokenCompletionSourceN(tokens),
-    };
-
-    /// <summary>
-    /// Creates a task that will complete when any of the supplied tokens have canceled.
-    /// </summary>
-    /// <param name="tokens">The tokens to wait on for cancellation.</param>
-    /// <returns>The canceled token.</returns>
-    /// <exception cref="InvalidOperationException"><paramref name="tokens"/> is empty.</exception>
-    public static Task<CancellationToken> WaitAnyAsync(this ReadOnlySpan<CancellationToken> tokens)
-    {
-        Task<CancellationToken> result;
-        try
-        {
-            result = GetCompletionSource(tokens).Task;
-        }
-        catch (Exception e)
-        {
-            result = Task.FromException<CancellationToken>(e);
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Creates a task that will complete when any of the supplied tokens have canceled.
-    /// </summary>
-    /// <param name="tokens">The tokens to wait on for cancellation.</param>
-    /// <param name="interruption">An interruption procedure than can be used to turn the returned task into the failed state.</param>
-    /// <returns>The canceled token.</returns>
-    /// <exception cref="InvalidOperationException"><paramref name="tokens"/> is empty.</exception>
-    /// <exception cref="PendingTaskInterruptedException">The returned task is interrupted by <paramref name="interruption"/> procedure.</exception>
-    public static Task<CancellationToken> WaitAnyAsync(this ReadOnlySpan<CancellationToken> tokens, out Func<object?, bool> interruption)
-    {
-        Task<CancellationToken> result;
-        try
-        {
-            var source = GetCompletionSource(tokens);
-            result = source.Task;
-            interruption = source.TryInterrupt;
-        }
-        catch (Exception e)
-        {
-            result = Task.FromException<CancellationToken>(e);
-            interruption = static _ => false;
-        }
-
-        return result;
-    }
-
-    private static WaitHandleValueTask GetCompletionSource(WaitHandle handle, TimeSpan timeout)
-    {
-        WaitHandleValueTask? result;
-
-        // do not keep long references when limit is reached
-        if (instantiatedTasks > maxPoolSize)
-            result = new(Reset);
-        else if (!HandlePool.TryTake(out result))
-            result = new(WaitHandleTaskCompletionCallback);
-
-        var token = result.Reset();
-        var registration = ThreadPool.UnsafeRegisterWaitForSingleObject(
-            handle,
-            Complete,
-            new Tuple<WaitHandleValueTask, short>(result, token),
-            timeout,
-            executeOnlyOnce: true);
-
-        if (result.IsCompleted)
-        {
-            registration.Unregister(null);
+            Interlocked.Decrement(ref poolSize);
         }
         else
         {
-            result.Registration = registration;
+            result = new();
         }
 
-        return result;
-
-        static void Complete(object? state, bool timedOut)
-        {
-            Debug.Assert(state is Tuple<WaitHandleValueTask, short>);
-
-            var (source, token) = Unsafe.As<Tuple<WaitHandleValueTask, short>>(state);
-            source.TrySetResult(token, timedOut is false);
-        }
+        result.CompleteAsCanceled = completeAsCanceled;
+        return result.CreateTask(InfiniteTimeSpan, token);
     }
 
     /// <summary>
@@ -168,8 +68,45 @@ public static partial class AsyncBridge
 
         return result;
     }
+    
+    private static WaitHandleValueTask GetCompletionSource(WaitHandle handle, TimeSpan timeout)
+    {
+        if (HandlePool.TryGet() is { } result)
+        {
+            Interlocked.Decrement(ref poolSize);
+        }
+        else
+        {
+            result = new();
+        }
 
-    private static void Reset(ManualResetCompletionSource source) => source.Reset();
+        var token = result.CurrentVersion;
+        var registration = ThreadPool.UnsafeRegisterWaitForSingleObject(
+            handle,
+            Complete,
+            new Tuple<WaitHandleValueTask, short>(result, token),
+            timeout,
+            executeOnlyOnce: true);
+
+        if (result.IsCompleted)
+        {
+            registration.Unregister(null);
+        }
+        else
+        {
+            result.Registration = registration;
+        }
+
+        return result;
+
+        static void Complete(object? state, bool timedOut)
+        {
+            Debug.Assert(state is Tuple<WaitHandleValueTask, short>);
+
+            var (source, token) = Unsafe.As<Tuple<WaitHandleValueTask, short>>(state);
+            source.TrySetResult(new ManualResetCompletionSource.ExpectedToken(token), !timedOut);
+        }
+    }
 
     /// <summary>
     /// Obtains a task that can be used to await handle completion.

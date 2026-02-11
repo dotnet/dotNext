@@ -34,6 +34,7 @@ public sealed class SetTests : Test
     {
         var set = IReadOnlySet<long>.Range(0L.Disclosed, 1L.Disclosed);
         Empty(set);
+        Same(IReadOnlySet<long>.Empty, set);
     }
 
     [Fact]

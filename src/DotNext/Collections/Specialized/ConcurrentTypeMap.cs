@@ -83,7 +83,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         for (Entry[] entries;;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -120,7 +120,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -167,7 +167,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     public bool ContainsKey<TKey>()
         where TKey : allows ref struct
     {
-        return ContainsKey(Volatile.Read(ref entries), TypeSlot<TKey>.Index);
+        return ContainsKey(Volatile.Read(in entries), TypeSlot<TKey>.Index);
 
         static bool ContainsKey(Entry[] entries, int index)
             => (uint)index < (uint)entries.Length && HasValue(Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index));
@@ -181,7 +181,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         for (Entry[] entries;;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -219,7 +219,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         for (Entry[] entries;;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -257,7 +257,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         for (Entry[] entries;;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -295,7 +295,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         for (Entry[] entries;;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
                 break;
@@ -333,7 +333,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     {
         for (Entry[] entries;;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
                 break;
@@ -363,7 +363,7 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
     /// </summary>
     public void Clear()
     {
-        var entries = Volatile.Read(ref this.entries);
+        var entries = Volatile.Read(in this.entries);
         if (UseReferenceEntry)
         {
             Array.ForEach(Unsafe.As<ReferenceEntry[]>(entries), static entry => entry.Unset());
@@ -481,19 +481,15 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
 
     private sealed class GenericEntry : Entry
     {
-        private const int EmptyValueState = 0;
-        private const int LockedState = 1;
-        private const int HasValueState = 2;
-        
-        private volatile int state;
+        private volatile EntryState state;
         private TValue? value;
 
         public override bool TrySet(TValue newValue)
         {
-            if (TryAcquireLock(EmptyValueState))
+            if (TryAcquireLock(EntryState.Empty))
             {
                 value = newValue;
-                ReleaseLock(HasValueState);
+                ReleaseLock(EntryState.HasValue);
                 return true;
             }
 
@@ -504,12 +500,12 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         {
             AcquireLock();
             value = newValue;
-            ReleaseLock(HasValueState);
+            ReleaseLock(EntryState.HasValue);
         }
 
         public override TValue GetOrSet(TValue newValue, out bool isSet)
         {
-            if (isSet = AcquireLock() is EmptyValueState)
+            if (isSet = AcquireLock() is EntryState.Empty)
             {
                 value = newValue;
             }
@@ -518,37 +514,37 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
                 newValue = value!;
             }
 
-            ReleaseLock(HasValueState);
+            ReleaseLock(EntryState.HasValue);
             return newValue;
         }
 
         public override bool SetOrUpdate(TValue newValue)
         {
-            var added = AcquireLock() is EmptyValueState;
+            var added = AcquireLock() is EntryState.Empty;
             value = newValue;
-            ReleaseLock(HasValueState);
+            ReleaseLock(EntryState.HasValue);
             return added;
         }
 
         public override bool Set(TValue newValue, [MaybeNullWhen(false)] out TValue oldValue)
         {
             bool modified;
-            oldValue = (modified = AcquireLock() is HasValueState)
+            oldValue = (modified = AcquireLock() is EntryState.HasValue)
                 ? value
                 : default;
 
             value = newValue;
-            ReleaseLock(HasValueState);
+            ReleaseLock(EntryState.HasValue);
             return modified;
         }
 
         public override bool Unset([MaybeNullWhen(false)] out TValue oldValue)
         {
-            if (TryAcquireLock(HasValueState))
+            if (TryAcquireLock(EntryState.HasValue))
             {
                 oldValue = value!;
                 value = default;
-                ReleaseLock(EmptyValueState);
+                ReleaseLock(EntryState.Empty);
                 return true;
             }
 
@@ -559,10 +555,10 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         public override bool TryGet([MaybeNullWhen(false)] out TValue existingValue)
         {
             bool valueTaken;
-            if (valueTaken = TryAcquireLock(HasValueState))
+            if (valueTaken = TryAcquireLock(EntryState.HasValue))
             {
                 existingValue = value!;
-                ReleaseLock(HasValueState);
+                ReleaseLock(EntryState.HasValue);
             }
             else
             {
@@ -576,60 +572,67 @@ public partial class ConcurrentTypeMap<TValue> : ITypeMap<TValue>
         {
             AcquireLock();
             value = default;
-            ReleaseLock(EmptyValueState);
+            ReleaseLock(EntryState.Empty);
         }
 
-        private int AcquireLock()
+        private EntryState AcquireLock()
         {
-            var oldState = Interlocked.Exchange(ref state, LockedState);
-            return oldState is LockedState ? AcquireLockContention() : oldState;
+            var oldState = Interlocked.Exchange(ref state, EntryState.Locked);
+            return oldState is EntryState.Locked ? AcquireLockContention() : oldState;
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private int AcquireLockContention()
+        private EntryState AcquireLockContention()
         {
-            int currentState;
+            EntryState currentState;
             do
             {
-                currentState = Interlocked.Exchange(ref state, LockedState);
-            } while (currentState is LockedState);
+                currentState = Interlocked.Exchange(ref state, EntryState.Locked);
+            } while (currentState is EntryState.Locked);
 
             return currentState;
         }
 
-        private void ReleaseLock(int newState) => state = newState;
+        private void ReleaseLock([ConstantExpected] EntryState newState) => state = newState;
 
         public override bool HasValue
         {
             get
             {
-                int currentState;
+                EntryState currentState;
                 do
                 {
                     currentState = state;
-                } while (currentState is LockedState);
+                } while (currentState is EntryState.Locked);
 
-                return currentState is HasValueState;
+                return currentState is EntryState.HasValue;
             }
         }
 
-        private bool TryAcquireLock(int expectedState)
+        private bool TryAcquireLock([ConstantExpected] EntryState expectedState)
         {
-            var currentState = Interlocked.CompareExchange(ref state, LockedState, expectedState);
+            var currentState = Interlocked.CompareExchange(ref state, EntryState.Locked, expectedState);
             return currentState == expectedState || TryAcquireLockContention(expectedState);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private bool TryAcquireLockContention(int expectedState)
+        private bool TryAcquireLockContention(EntryState expectedState)
         {
-            int currentState;
+            EntryState currentState;
             do
             {
-                currentState = Interlocked.CompareExchange(ref state, LockedState, expectedState);
-            } while (currentState is LockedState);
+                currentState = Interlocked.CompareExchange(ref state, EntryState.Locked, expectedState);
+            } while (currentState is EntryState.Locked);
 
             return currentState == expectedState;
         }
+    }
+    
+    private enum EntryState
+    {
+        Empty = 0,
+        Locked = 1,
+        HasValue = 2,
     }
 }
 
@@ -716,7 +719,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -748,7 +751,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -768,7 +771,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <inheritdoc cref="IReadOnlyTypeMap.Contains{T}"/>
     public bool Contains<T>()
     {
-        return ContainsKey(Volatile.Read(ref entries), TypeSlot<T>.Index);
+        return ContainsKey(Volatile.Read(in entries), TypeSlot<T>.Index);
 
         static bool ContainsKey(Entry[] entries, int index)
             => (uint)index < (uint)entries.Length && Unsafe.Add(ref MemoryMarshal.GetArrayDataReference(entries), index).Value is T;
@@ -778,7 +781,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -804,7 +807,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -831,7 +834,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -859,7 +862,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -878,7 +881,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {
@@ -905,7 +908,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     /// <inheritdoc cref="ITypeMap.Clear()"/>
     public void Clear()
     {
-        foreach (var entry in Volatile.Read(ref entries))
+        foreach (var entry in Volatile.Read(in entries))
         {
             entry.Value = null;
         }
@@ -915,7 +918,7 @@ public partial class ConcurrentTypeMap : ITypeMap
     {
         for (Entry[] entries; ;)
         {
-            entries = Volatile.Read(ref this.entries);
+            entries = Volatile.Read(in this.entries);
 
             if (index >= entries.Length)
             {

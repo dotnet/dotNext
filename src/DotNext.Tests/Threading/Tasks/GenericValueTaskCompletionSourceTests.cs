@@ -44,9 +44,27 @@ public sealed class GenericValueTaskCompletionSourceTests : Test
         using var cancellation = new CancellationTokenSource();
         var task = source.CreateTask(InfiniteTimeSpan, cancellation.Token);
         False(task.IsCompleted);
-        cancellation.Cancel();
+        await cancellation.CancelAsync();
         await ThrowsAsync<OperationCanceledException>(task.AsTask);
         False(source.TrySetResult(42));
+    }
+    
+    [Fact]
+    public static async Task CancelImmediately()
+    {
+        var source = new ValueTaskCompletionSource<int>();
+        True(source.TrySetCanceled(new CancellationToken(canceled: true)));
+
+        await ThrowsAsync<OperationCanceledException>(source.CreateTask(InfiniteTimeSpan, new(canceled: false)).AsTask);
+    }
+    
+    [Fact]
+    public static void UseTokenAndCompletionData()
+    {
+        var source = new ValueTaskCompletionSource();
+        var expectedToken = source.Reset();
+        True(source.TrySetResult(new ManualResetCompletionSource.ExpectedTokenAndCustomData(expectedToken, string.Empty)));
+        Same(string.Empty, source.CompletionData);
     }
 
     [Theory]
@@ -68,9 +86,9 @@ public sealed class GenericValueTaskCompletionSourceTests : Test
         var source = new ValueTaskCompletionSource<int>(runContinuationsAsynchronously);
         var completionToken = source.Reset();
         var task = source.CreateTask(InfiniteTimeSpan, TestToken);
-        False(source.TrySetResult(completionData: null, short.MaxValue, 42));
+        False(source.TrySetResult(new ManualResetCompletionSource.ExpectedToken(short.MaxValue), 42));
         False(task.IsCompleted);
-        True(source.TrySetResult(completionToken, 42));
+        True(source.TrySetResult(new ManualResetCompletionSource.ExpectedToken(completionToken), 42));
         Equal(42, await task);
     }
 

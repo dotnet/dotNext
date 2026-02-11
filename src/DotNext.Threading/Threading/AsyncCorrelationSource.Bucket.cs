@@ -99,9 +99,9 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             if (node.NeedsRemoval)
                 Remove(node);
 
-            if (pooled is null && node.TryReset(out var freshToken))
+            if (pooled is null)
             {
-                node.CompletionToken = freshToken;
+                node.CompletionToken = node.Reset();
                 pooled = node;
             }
         }
@@ -131,22 +131,22 @@ public partial class AsyncCorrelationSource<TKey, TValue>
             return null;
         }
 
-        internal unsafe void Drain<T>(delegate*<LinkedValueTaskCompletionSource<TValue>, T, void> action, T arg)
+        internal void Drain<TResult>(TResult arg)
+            where TResult : struct, IResultMonad<TValue>
         {
-            Debug.Assert(action != null);
-
             lock (syncRoot)
             {
-                DrainCore(action, arg);
+                DrainCore(arg);
             }
         }
 
-        private unsafe void DrainCore<T>(delegate*<LinkedValueTaskCompletionSource<TValue>, T, void> action, T arg)
+        private void DrainCore<TResult>(TResult arg)
+            where TResult : struct, IResultMonad<TValue>
         {
             for (LinkedValueTaskCompletionSource<TValue>? current = first, next; current is not null; current = next)
             {
                 next = current.CleanupAndGotoNext();
-                action(current, arg);
+                current.TrySetResult(new ManualResetCompletionSource.CustomCompletionData(Sentinel.Instance), arg);
             }
 
             first = last = null;

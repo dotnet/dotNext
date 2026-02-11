@@ -365,7 +365,7 @@ public interface IAsyncBinaryReader
         }
         else
         {
-            result = CopyToAsync(new BufferConsumer<byte>(destination), count, token);
+            result = CopyToAsync(new BufferWriterReference<byte>(destination), count, token);
         }
 
         return result;

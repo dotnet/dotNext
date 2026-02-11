@@ -33,7 +33,7 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
         {
             Debug.Assert(source is LinkedCancellationTokenSource);
 
-            Unsafe.As<LinkedCancellationTokenSource>(source).Cancel(token);
+            Unsafe.As<LinkedCancellationTokenSource>(source).NotifyCancellation(token);
         }
     }
 
@@ -53,18 +53,23 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
         }
     }
 
-    private void Cancel(CancellationToken token)
+    private void NotifyCancellation(CancellationToken token)
     {
         if (TrySetCancellationOrigin(token))
         {
-            try
-            {
-                Cancel(throwOnFirstException: false);
-            }
-            catch (ObjectDisposedException)
-            {
-                // suppress exception
-            }
+            OnCanceled();
+        }
+    }
+
+    private protected virtual void OnCanceled()
+    {
+        try
+        {
+            Cancel(throwOnFirstException: false);
+        }
+        catch (ObjectDisposedException)
+        {
+            // suppress exception
         }
     }
     
@@ -109,6 +114,9 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
         }
     }
 
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    private protected bool IsCancellationOriginSet => Volatile.Read(in cancellationOrigin.Item1) is not null;
+
     /// <summary>
     /// Gets the token caused cancellation.
     /// </summary>
@@ -133,7 +141,7 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
     }
 
     /// <summary>
-    /// Gets a value indicating that this token source is cancelled by the timeout associated with this source,
+    /// Gets a value indicating that this token source is canceled by the timeout associated with this source,
     /// or by calling <see cref="CancellationTokenSource.Cancel()"/> manually.
     /// </summary>
     internal bool IsRootCause
@@ -149,7 +157,7 @@ internal abstract class LinkedCancellationTokenSource : CancellationTokenSource,
 
     // This property checks whether the reinterpret cast CancellationToken => CancellationTokenSource
     // is safe. If not, just box the token.
-    internal static bool CanInlineToken => AdvancedHelpers.AreCompatible<CancellationToken, InlinedToken>()
+    internal static bool CanInlineToken => Unsafe.AreCompatible<CancellationToken, InlinedToken>()
                                            && RuntimeHelpers.IsReferenceOrContainsReferences<CancellationToken>();
 
     internal static LinkedCancellationTokenSource? Combine(ref CancellationToken first, CancellationToken second)

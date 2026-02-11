@@ -18,7 +18,12 @@ using Runtime.CompilerServices;
 /// </remarks>
 /// <typeparam name="T">The type of the elements in the buffer.</typeparam>
 [EditorBrowsable(EditorBrowsableState.Advanced)]
-public interface IGrowableBuffer<T> : IBufferWriter<T>, IReadOnlySpanConsumer<T>, IDisposable, IResettable
+public interface IGrowableBuffer<T> :
+    IBufferWriter<T>,
+    IConsumer<ReadOnlySpan<T>>,
+    ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>,
+    IDisposable,
+    IResettable
 {
     /// <summary>
     /// Represents default initial buffer size.
@@ -39,7 +44,7 @@ public interface IGrowableBuffer<T> : IBufferWriter<T>, IReadOnlySpanConsumer<T>
     void Write(ReadOnlySpan<T> input);
 
     /// <inheritdoc />
-    void IReadOnlySpanConsumer<T>.Invoke(ReadOnlySpan<T> input)
+    void IConsumer<ReadOnlySpan<T>>.Invoke(ReadOnlySpan<T> input)
         => Write(input);
 
     /// <inheritdoc cref="IFunctional.DynamicInvoke"/>
@@ -48,7 +53,7 @@ public interface IGrowableBuffer<T> : IBufferWriter<T>, IReadOnlySpanConsumer<T>
         switch (count)
         {
             case 1:
-                Write(args.Immutable<ReadOnlySpan<T>>());
+                Invoke(args.Immutable<ReadOnlySpan<T>>());
                 break;
             case 2:
                 result.Mutable<ValueTask>() = Invoke(
@@ -59,6 +64,30 @@ public interface IGrowableBuffer<T> : IBufferWriter<T>, IReadOnlySpanConsumer<T>
             default:
                 throw new ArgumentOutOfRangeException(nameof(count));
         }
+    }
+    
+    /// <inheritdoc />
+    ValueTask ISupplier<ReadOnlyMemory<T>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<T> input, CancellationToken token)
+    {
+        ValueTask result;
+        if (token.IsCancellationRequested)
+        {
+            result = ValueTask.FromCanceled(token);
+        }
+        else
+        {
+            result = new();
+            try
+            {
+                Invoke(input.Span);
+            }
+            catch (Exception e)
+            {
+                result = ValueTask.FromException(e);
+            }
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -78,7 +107,7 @@ public interface IGrowableBuffer<T> : IBufferWriter<T>, IReadOnlySpanConsumer<T>
     /// <typeparam name="TConsumer">The type of the object that represents the consumer.</typeparam>
     /// <exception cref="ObjectDisposedException">The writer has been disposed.</exception>
     void CopyTo<TConsumer>(TConsumer consumer)
-        where TConsumer : IReadOnlySpanConsumer<T>, allows ref struct;
+        where TConsumer : IConsumer<ReadOnlySpan<T>>, allows ref struct;
 
     /// <summary>
     /// Passes the contents of this writer to the callback asynchronously.

@@ -8,7 +8,7 @@ partial class QueuedSynchronizer
 {
     private protected class WaitNode : LinkedValueTaskCompletionSource<bool>, IValueTaskFactory
     {
-        private WaitNodeFlags flags;
+        private bool throwOnTimeout;
         private QueuedSynchronizer? owner;
 
         // stores information about suspended caller for debugging purposes
@@ -18,37 +18,29 @@ partial class QueuedSynchronizer
         {
             CallerInfo = null;
             owner = null;
-            flags = WaitNodeFlags.None;
+            throwOnTimeout = false;
             base.CleanUp();
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         internal bool NeedsRemoval => CompletionData is null;
 
-        internal void Initialize(QueuedSynchronizer owner, object? callerInfo, bool throwOnTimeout)
+        internal void Initialize(QueuedSynchronizer owner, bool throwOnTimeout)
         {
-            flags |= throwOnTimeout ? WaitNodeFlags.ThrowOnTimeout : WaitNodeFlags.None;
+            this.throwOnTimeout = throwOnTimeout;
             this.owner = owner;
-            CallerInfo = callerInfo;
+            CallerInfo = owner.CaptureCallerInformation();
         }
 
         protected sealed override void AfterConsumed()
             => owner?.ReturnNode(this);
 
-        protected sealed override Result<bool> OnTimeout()
-            => (flags & WaitNodeFlags.ThrowOnTimeout) is not 0 ? base.OnTimeout() : false;
+        protected sealed override Result<bool> GetTimeoutResult()
+            => throwOnTimeout ? base.GetTimeoutResult() : false;
     }
-    
-    [Flags]
-    private protected enum WaitNodeFlags
+
+    private protected interface IWaitNodeFeature<out TValue> : IValueTaskFactory<bool>
     {
-        None = 0,
-        ThrowOnTimeout = 1
-    }
-    
-    private protected interface INodeMapper<in TNode, out TValue>
-        where TNode : WaitNode
-    {
-        public static abstract TValue GetValue(TNode node);
+        TValue Feature { get; }
     }
 }

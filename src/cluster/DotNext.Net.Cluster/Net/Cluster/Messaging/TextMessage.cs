@@ -4,7 +4,7 @@ namespace DotNext.Net.Cluster.Messaging;
 
 using Buffers;
 using IO;
-using static Mime.ContentTypeExtensions;
+using Mime;
 
 /// <summary>
 /// Represents text message.
@@ -40,7 +40,7 @@ public class TextMessage : IMessage
     /// <summary>
     /// Gets content length, in bytes.
     /// </summary>
-    public int Length => Type.GetEncoding().GetByteCount(Content);
+    public int Length => Type.Encoding.GetByteCount(Content);
 
     /// <inheritdoc/>
     bool IDataTransferObject.IsReusable => true;
@@ -60,7 +60,7 @@ public class TextMessage : IMessage
         var bufferWriter = writer.TryGetBufferWriter();
         if (bufferWriter is null)
         {
-            result = new(writer.EncodeAsync(Content.AsMemory(), Type.GetEncoding(), lengthFormat: null, token).AsTask());
+            result = new(writer.EncodeAsync(Content.AsMemory(), Type.Encoding, lengthFormat: null, token).AsTask());
         }
         else
         {
@@ -68,7 +68,7 @@ public class TextMessage : IMessage
             result = ValueTask.CompletedTask;
             try
             {
-                bufferWriter.Encode(Content.AsSpan(), Type.GetEncoding());
+                bufferWriter.Encode(Content.AsSpan(), Type.Encoding);
             }
             catch (Exception e)
             {

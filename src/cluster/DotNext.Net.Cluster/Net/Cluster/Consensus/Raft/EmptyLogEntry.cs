@@ -2,7 +2,6 @@
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
 
-using Buffers;
 using IO;
 using IO.Log;
 
@@ -10,7 +9,7 @@ using IO.Log;
 /// Represents No-OP entry.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly struct EmptyLogEntry : ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>, IBufferedLogEntry
+public readonly struct EmptyLogEntry : IBufferedLogEntry
 {
     /// <inheritdoc/>
     int? IRaftLogEntry.CommandId => null;
@@ -43,10 +42,6 @@ public readonly struct EmptyLogEntry : ISupplier<MemoryAllocator<byte>, MemoryOw
     /// <inheritdoc/>
     ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TTransformation>(TTransformation transformation, CancellationToken token)
         => IDataTransferObject.Empty.TransformAsync<TResult, TTransformation>(transformation, token);
-
-    /// <inheritdoc/>
-    MemoryOwner<byte> ISupplier<MemoryAllocator<byte>, MemoryOwner<byte>>.Invoke(MemoryAllocator<byte> allocator)
-        => default;
 
     /// <inheritdoc/>
     ReadOnlySpan<byte> IBufferedLogEntry.Content => ReadOnlySpan<byte>.Empty;

@@ -178,7 +178,7 @@ public sealed class DelegateHelpersTests : Test
             types[argCount] = typeof(int);
             var funcType = Expression.GetFuncType(types);
             var parameters = new ParameterExpression[argCount];
-            parameters.AsSpan().ForEach(static (p, _) => p.Value = Expression.Parameter(typeof(string)));
+            parameters.ForEach(static (p, _) => p.Value = Expression.Parameter(typeof(string)));
             //prepare args
             var args = new object[parameters.LongLength + 1];
             Array.Fill(args, string.Empty);
@@ -670,7 +670,7 @@ public sealed class DelegateHelpersTests : Test
             Array.Fill(types, typeof(string));
             var actionType = Expression.GetActionType(types);
             var parameters = new ParameterExpression[argCount];
-            parameters.AsSpan().ForEach(static (p, _) => p.Value = Expression.Parameter(typeof(string)));
+            parameters.ForEach(static (p, _) => p.Value = Expression.Parameter(typeof(string)));
             //prepare args
             var args = new object[parameters.LongLength + 1];
             Array.Fill(args, string.Empty);

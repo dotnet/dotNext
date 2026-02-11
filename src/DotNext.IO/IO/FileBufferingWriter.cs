@@ -583,7 +583,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     /// <param name="token">The token that can be used to cancel the operation.</param>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public void CopyTo<TConsumer>(TConsumer consumer, int bufferSize, CancellationToken token)
-        where TConsumer : IReadOnlySpanConsumer<byte>, allows ref struct
+        where TConsumer : IConsumer<ReadOnlySpan<byte>>, allows ref struct
     {
         if (fileBackend is not null)
         {
@@ -628,7 +628,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task CopyToAsync(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
-        => CopyToAsync(new BufferConsumer<byte>(destination), bufferSize, token);
+        => CopyToAsync(new BufferWriterReference<byte>(destination), bufferSize, token);
 
     /// <summary>
     /// Drains buffered content to the buffer synchronously.
@@ -638,7 +638,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     /// <param name="token">The token to monitor for cancellation requests.</param>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public void CopyTo(IBufferWriter<byte> destination, int bufferSize = 1024, CancellationToken token = default)
-        => CopyTo(new BufferConsumer<byte>(destination), bufferSize, token);
+        => CopyTo(new BufferWriterReference<byte>(destination), bufferSize, token);
 
     /// <summary>
     /// Drains buffered content synchronously.
@@ -650,7 +650,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     /// <typeparam name="TArg">The type of the argument to be passed to the callback.</typeparam>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public void CopyTo<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
-        => CopyTo(new DelegatingReadOnlySpanConsumer<byte, TArg>(reader, arg), bufferSize, token);
+        => CopyTo(new ReadOnlySpanConsumer<byte, TArg>(reader, arg), bufferSize, token);
 
     /// <summary>
     /// Drains buffered content asynchronously.
@@ -663,7 +663,7 @@ public sealed partial class FileBufferingWriter : ModernStream, IGrowableBuffer<
     /// <returns>The task representing asynchronous execution of the operation.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     public Task CopyToAsync<TArg>(ReadOnlySpanAction<byte, TArg> reader, TArg arg, int bufferSize = 1024, CancellationToken token = default)
-        => CopyToAsync(new DelegatingReadOnlySpanConsumer<byte, TArg>(reader, arg), bufferSize, token);
+        => CopyToAsync(new ReadOnlySpanConsumer<byte, TArg>(reader, arg), bufferSize, token);
 
     /// <summary>
     /// Drains buffered content to the memory block synchronously.

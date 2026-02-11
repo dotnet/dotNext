@@ -6,7 +6,7 @@ internal partial class LeaderState<TMember>
 {
     private sealed class Lease : CancellationTokenSource
     {
-        internal readonly new CancellationToken Token; // cached to avoid ObjectDisposedException
+        internal new readonly CancellationToken Token; // cached to avoid ObjectDisposedException
 
         internal Lease() => Token = base.Token;
 

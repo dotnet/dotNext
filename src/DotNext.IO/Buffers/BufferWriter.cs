@@ -85,9 +85,8 @@ public static class BufferWriter
             result = WriteLength(writer, byteCount, lengthFormat.GetValueOrDefault());
 
             buffer = writer.GetSpan(byteCount);
-            byteCount = context.TryGetEncoder() is { } encoder
-                ? encoder.GetBytes(chars, buffer, flush: true)
-                : context.Encoding.GetBytes(chars, buffer);
+            byteCount = context.TryGetEncoder()?.GetBytes(chars, buffer, flush: true)
+                        ?? context.Encoding.GetBytes(chars, buffer);
 
             result += byteCount;
             writer.Advance(byteCount);
@@ -136,9 +135,8 @@ public static class BufferWriter
             ? writer.WriteLength(context.Encoding.GetByteCount(chars), lengthFormat.GetValueOrDefault())
             : 0;
 
-        var bytesWritten = context.TryGetEncoder() is { } encoder
-            ? encoder.GetBytes(chars, writer.RemainingSpan, flush: true)
-            : context.Encoding.GetBytes(chars, writer.RemainingSpan);
+        var bytesWritten = context.TryGetEncoder()?.GetBytes(chars, writer.RemainingSpan, flush: true)
+                           ?? context.Encoding.GetBytes(chars, writer.RemainingSpan);
         result += bytesWritten;
         writer.Advance(bytesWritten);
 

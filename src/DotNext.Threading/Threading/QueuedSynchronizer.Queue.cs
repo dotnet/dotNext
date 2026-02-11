@@ -27,8 +27,10 @@ partial class QueuedSynchronizer
             RemoveAndDrainIfNeeded(node);
         }
 
+        node.Reset();
+
         // the node is removed for sure, it can be returned back to the pool
-        if (node.TryReset(out _) && !IsDisposingOrDisposed)
+        if (!IsDisposingOrDisposed)
         {
             BackToPool(node);
         }
@@ -89,7 +91,7 @@ partial class QueuedSynchronizer
         else
         {
             node = pool.Rent<TNode>();
-            node.Initialize(this, CaptureCallerInformation(), TBuilder.ThrowOnTimeout);
+            node.Initialize(this, TBuilder.ThrowOnTimeout);
             waitQueue.Add(node);
             builder.Complete(node);
         }
@@ -138,12 +140,12 @@ partial class QueuedSynchronizer
 
         private readonly bool EndOfQueue => current is null;
 
-        public readonly bool IsEndOfQueue<TNode, TResult>([MaybeNullWhen(true)] out TResult result)
-            where TNode : WaitNode, INodeMapper<TNode, TResult>
+        public readonly bool IsEndOfQueue<TNode, TFeature>([MaybeNullWhen(true)] out TFeature result)
+            where TNode : WaitNode, IWaitNodeFeature<TFeature>
         {
             if (current is TNode currentNode)
             {
-                result = TNode.GetValue(currentNode);
+                result = currentNode.Feature;
                 return false;
             }
 
@@ -153,14 +155,17 @@ partial class QueuedSynchronizer
 
         public void Advance() => next = (current = next)?.Next;
 
-        private bool SignalCurrent(in Result<bool> result)
+        private bool SignalCurrentCore<TValue>(TValue result)
+            where TValue : struct, IResultMonad<bool>
         {
             bool signaled;
             if (current is null)
             {
                 signaled = false;
             }
-            else if (signaled = current.TrySetResult(Sentinel.Instance, completionToken: null, result, out var resumable))
+            else if (signaled = current.TrySetResult(new ManualResetCompletionSource.CustomCompletionData(Sentinel.Instance),
+                         result,
+                         out var resumable))
             {
                 // Remove here only if the node is signaled by the visitor.
                 // Otherwise, the node is signaled by the timeout or cancellation token
@@ -175,9 +180,9 @@ partial class QueuedSynchronizer
             return signaled;
         }
 
-        public bool SignalCurrent() => SignalCurrent(result: true);
+        public bool SignalCurrent() => SignalCurrentCore(Result.True);
 
-        public void SignalCurrent(Exception e) => SignalCurrent(result: new(e));
+        public void SignalCurrent(Exception e) => SignalCurrentCore(new Result<bool>.Failure(e));
 
         public bool SignalCurrent<TLockManager>(TLockManager manager)
             where TLockManager : struct, ILockManager, allows ref struct
@@ -200,38 +205,41 @@ partial class QueuedSynchronizer
             }
         }
 
-        private void SignalAll(in Result<bool> result)
+        private void SignalAllCore<TValue>(TValue result)
+            where TValue : struct, IResultMonad<bool>
         {
             while (!EndOfQueue)
             {
-                SignalCurrent(in result);
+                SignalCurrentCore(result);
                 Advance();
             }
         }
 
-        public void SignalAll(Exception e) => SignalAll(new Result<bool>(e));
+        public void SignalAll(Exception e) => SignalAllCore(new Result<bool>.Failure(e));
 
-        public void SignalAll() => SignalAll(new Result<bool>(true));
+        public void SignalAll() => SignalAllCore(Result.True);
 
-        private void SignalAll(in Result<bool> result, out bool signaled)
+        private void SignalAllCore<TValue>(TValue result, out bool signaled)
+            where TValue : struct, IResultMonad<bool>
         {
             for (signaled = false; !EndOfQueue; Advance())
             {
-                signaled |= SignalCurrent(in result);
+                signaled |= SignalCurrentCore(result);
             }
         }
 
         public void SignalAll(out bool signaled)
-            => SignalAll(new Result<bool>(true), out signaled);
+            => SignalAllCore(Result.True, out signaled);
 
         public void SignalAll(Exception e, out bool signaled)
-            => SignalAll(new Result<bool>(e), out signaled);
+            => SignalAllCore(new Result<bool>.Failure(e), out signaled);
 
-        private void SignalFirst(in Result<bool> result, out bool signaled)
+        private void SignalFirst<TValue>(TValue result, out bool signaled)
+            where TValue : struct, IResultMonad<bool>
         {
             for (signaled = false; !EndOfQueue; Advance())
             {
-                if (SignalCurrent(in result))
+                if (SignalCurrentCore(result))
                 {
                     signaled = true;
                     break;
@@ -240,7 +248,7 @@ partial class QueuedSynchronizer
         }
         
         public void SignalFirst(out bool signaled)
-            => SignalFirst(new Result<bool>(true), out signaled);
+            => SignalFirst(Result.True, out signaled);
 
         /// <summary>
         /// Releases the internal lock and resumes the suspended callers.

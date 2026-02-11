@@ -87,7 +87,7 @@ public abstract class CharComparer : IEqualityComparer<char>, IComparer<char>
         static DefaultCharComparer EnsureInitialized(ref DefaultCharComparer? comparer, StringComparison comparison)
         {
             DefaultCharComparer newComparer;
-            return Volatile.Read(ref comparer) ?? Interlocked.CompareExchange(ref comparer, newComparer = new(comparison), null) ?? newComparer;
+            return Volatile.Read(in comparer) ?? Interlocked.CompareExchange(ref comparer, newComparer = new(comparison), null) ?? newComparer;
         }
     }
 

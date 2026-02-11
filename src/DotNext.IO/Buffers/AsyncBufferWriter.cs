@@ -32,7 +32,7 @@ internal readonly struct AsyncBufferWriter(IBufferWriter<byte> writer) : IAsyncB
 
     ValueTask IAsyncBinaryWriter.CopyFromAsync(PipeReader source, long? count, CancellationToken token)
     {
-        var consumer = new BufferConsumer<byte>(writer);
+        var consumer = new BufferWriterReference<byte>(writer);
         return count.HasValue
             ? source.CopyToAsync(consumer, count.GetValueOrDefault(), token)
             : source.CopyToAsync(consumer, token);

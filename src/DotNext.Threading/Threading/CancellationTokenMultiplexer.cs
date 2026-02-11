@@ -1,6 +1,9 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Threading;
+
+using Collections.Concurrent;
 
 /// <summary>
 /// Represents cancellation token multiplexer.
@@ -9,19 +12,25 @@ namespace DotNext.Threading;
 /// The multiplexer provides a pool of <see cref="CancellationTokenSource"/> to combine
 /// the cancellation tokens.
 /// </remarks>
-public sealed partial class CancellationTokenMultiplexer
+[StructLayout(LayoutKind.Auto)]
+public readonly partial struct CancellationTokenMultiplexer()
 {
-    private readonly int maximumRetained = int.MaxValue;
-    private volatile int count;
-    private volatile PooledCancellationTokenSource? firstInPool;
+    private readonly IObjectPool<PooledCancellationTokenSource> sources = new UnboundedObjectPool<PooledCancellationTokenSource>();
 
     /// <summary>
     /// Gets or sets the maximum retained <see cref="CancellationTokenSource"/> instances.
     /// </summary>
+    /// <value>The maximum <see cref="CancellationTokenSource"/> instances in the internal pool; or <see cref="int.MaxValue"/>
+    /// to use unbounded pool.</value>
     public int MaximumRetained
     {
-        get => maximumRetained;
-        init => maximumRetained = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        get => (sources as BoundedObjectPool<PooledCancellationTokenSource>)?.Capacity ?? int.MaxValue;
+        init => sources = value switch
+        {
+            <= 0 => throw new ArgumentOutOfRangeException(nameof(value)),
+            int.MaxValue => new UnboundedObjectPool<PooledCancellationTokenSource>(),
+            _ => new BoundedObjectPool<PooledCancellationTokenSource>(value),
+        };
     }
 
     /// <summary>
@@ -89,59 +98,35 @@ public sealed partial class CancellationTokenMultiplexer
     public ScopeWithTimeout CombineAndSetTimeoutLater(params ReadOnlySpan<CancellationToken> tokens)
         => new(this, tokens);
 
-    private void Return(PooledCancellationTokenSource source)
+    /// <summary>
+    /// Waits for the cancellation of at least one provided token.
+    /// </summary>
+    /// <param name="tokens">A set of tokens.</param>
+    /// <returns>The first canceled token.</returns>
+    /// <exception cref="ArgumentOutOfRangeException"><paramref name="tokens"/> is empty.</exception>
+    public ValueTask<CancellationToken> WaitAnyAsync(params ReadOnlySpan<CancellationToken> tokens)
     {
-        // try to increment the counter
-        for (int current = count, tmp; current < maximumRetained; current = tmp)
+        ValueTask<CancellationToken> task;
+
+        if (tokens.IsEmpty)
         {
-            tmp = Interlocked.CompareExchange(ref count, current + 1, current);
-            if (tmp == current)
-            {
-                ReturnCore(source);
-                break;
-            }
+            task = ValueTask.FromException<CancellationToken>(new ArgumentOutOfRangeException(nameof(tokens)));
         }
-    }
-
-    private void ReturnCore(PooledCancellationTokenSource source)
-    {
-        for (PooledCancellationTokenSource? current = firstInPool, tmp;; current = tmp)
+        else
         {
-            source.Next = current;
-            tmp = Interlocked.CompareExchange(ref firstInPool, source, current);
-
-            if (ReferenceEquals(tmp, current))
-                break;
-        }
-    }
-
-    private PooledCancellationTokenSource Rent()
-    {
-        var current = firstInPool;
-        for (PooledCancellationTokenSource? tmp;; current = tmp)
-        {
-            if (current is null)
-            {
-                current = new();
-                break;
-            }
-
-            tmp = Interlocked.CompareExchange(ref firstInPool, current.Next, current);
-            if (!ReferenceEquals(tmp, current))
-                continue;
-
-            current.Next = null;
-            var actualCount = Interlocked.Decrement(ref count);
-            Debug.Assert(actualCount >= 0L);
-            break;
+            var source = sources.TryGet() ?? new();
+            task = source.CreateTask(sources);
+            
+            // Synchronization: CreateTask should happen before AddRange
+            source.AddRange(tokens);
         }
 
-        return current;
+        return task;
     }
 
     private PooledCancellationTokenSource Rent(ReadOnlySpan<CancellationToken> tokens)
     {
-        var source = Rent();
+        var source = sources.TryGet() ?? new();
         Debug.Assert(source.Count is 0);
 
         source.AddRange(tokens);

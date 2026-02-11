@@ -168,7 +168,7 @@ public sealed class PipeExtensionsTests : Test
         await pipe.Writer.WriteAsync(new byte[] { 10, 20, 30 }, TestToken);
         await pipe.Writer.CompleteAsync();
         var buffer = new ArrayBufferWriter<byte>();
-        await pipe.Reader.CopyToAsync<BufferConsumer<byte>>(new(buffer), TestToken);
+        await pipe.Reader.CopyToAsync<BufferWriterReference<byte>>(new(buffer), TestToken);
         Equal([10, 20, 30], buffer.WrittenMemory.ToArray());
     }
 
@@ -190,7 +190,7 @@ public sealed class PipeExtensionsTests : Test
         var pipe = new Pipe();
         WriteValuesAsync(pipe.Writer);
         var buffer = new ArrayBufferWriter<byte>();
-        await pipe.Reader.CopyToAsync<BufferConsumer<byte>>(new(buffer), TestToken);
+        await pipe.Reader.CopyToAsync<BufferWriterReference<byte>>(new(buffer), TestToken);
 
         var reader = new SequenceReader(buffer.WrittenMemory);
         Equal(42L, reader.ReadLittleEndian<long>());
@@ -219,7 +219,7 @@ public sealed class PipeExtensionsTests : Test
         var pipe = new Pipe();
         WriteValuesAsync(pipe.Writer);
         var buffer = new ArrayBufferWriter<byte>();
-        await pipe.Reader.CopyToAsync<BufferConsumer<byte>>(new(buffer), TestToken);
+        await pipe.Reader.CopyToAsync<BufferWriterReference<byte>>(new(buffer), TestToken);
         Equal(28, buffer.WrittenCount);
         var reader = new SequenceReader(buffer.WrittenMemory);
         Equal(42L, reader.ReadLittleEndian<long>());
@@ -248,7 +248,7 @@ public sealed class PipeExtensionsTests : Test
         var pipe = new Pipe();
         WriteValuesAsync(pipe.Writer);
         var buffer = new ArrayBufferWriter<byte>();
-        await pipe.Reader.CopyToAsync<BufferConsumer<byte>>(new(buffer), TestToken);
+        await pipe.Reader.CopyToAsync<BufferWriterReference<byte>>(new(buffer), TestToken);
         Equal(28, buffer.WrittenCount);
         var reader = new SequenceReader(buffer.WrittenMemory);
         Equal(42L, reader.ReadLittleEndian<long>());

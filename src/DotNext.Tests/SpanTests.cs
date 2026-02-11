@@ -55,7 +55,7 @@ public sealed class SpanTests : Test
     public static void ForEach()
     {
         Span<long> span = [3, 2, 6, 4];
-        span.ForEach((reference, index) => reference.Value += index);
+        span.ForEach(static (reference, index) => reference.Value += index);
         Equal(3, span[0]);
         Equal(3, span[1]);
         Equal(8, span[2]);
@@ -89,8 +89,8 @@ public sealed class SpanTests : Test
     public static TheoryData<MemoryAllocator<char>> TestAllocators() => new()
     {
         null,
-        MemoryAllocator<char>.ArrayAllocator,
-        MemoryAllocator<char>.PinnedArrayAllocator,
+        MemoryAllocator<char>.Array,
+        MemoryAllocator<char>.Pinned,
         ArrayPool<char>.Shared.ToAllocator(),
     };
 
@@ -408,7 +408,7 @@ public sealed class SpanTests : Test
     public static unsafe void ForEachUsingPointer()
     {
         int[] array = { 1, 2, 3 };
-        array.AsSpan().ForEach(&Exists, array);
+        array.ForEach(&Exists, array);
 
         static void Exists(ref int item, int[] array) => Contains(item, array);
     }

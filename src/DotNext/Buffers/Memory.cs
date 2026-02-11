@@ -88,20 +88,15 @@ public static partial class Memory
             WriteMultiSegment(writer, value, destination);
         }
 
-        static void WriteMultiSegment(TWriter writer, in ReadOnlySpan<T> source, Span<T> destination)
+        static void WriteMultiSegment(TWriter writer, ReadOnlySpan<T> source, Span<T> destination)
         {
-            for (var input = source;;)
+            for (;; destination = writer.GetSpan())
             {
-                var writtenCount = input >> destination;
+                var writtenCount = source >> destination;
                 writer.Advance(writtenCount);
-                input = input.Slice(writtenCount);
-                if (input.Length > 0)
-                {
-                    destination = writer.GetSpan();
-                    continue;
-                }
-
-                break;
+                source = source.Slice(writtenCount);
+                if (source.IsEmpty)
+                    break;
             }
         }
     }

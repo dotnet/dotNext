@@ -59,7 +59,7 @@ public static class NativeMemoryExtensions
         [CLSCompliant(false)]
         public static unsafe void Copy<T>([In] T* input, [Out] T* output)
             where T : unmanaged
-            => AdvancedHelpers.Copy(in *input, out *output);
+            => RuntimeHelpers.Copy(in *input, out *output);
         
         /// <summary>
         /// Swaps two values.
@@ -71,7 +71,7 @@ public static class NativeMemoryExtensions
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void Swap<T>(T* first, T* second)
             where T : unmanaged
-            => AdvancedHelpers.Swap(ref *first, ref *second);
+            => RuntimeHelpers.Swap(ref *first, ref *second);
         
         /// <summary>
         /// Computes transient hash code of the specified pointer.

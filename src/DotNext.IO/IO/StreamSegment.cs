@@ -24,7 +24,8 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
     /// </summary>
     /// <exception cref="ArgumentOutOfRangeException">
     /// The length is larger than the remaining length of the underlying stream;
-    /// or the offset is greater than the length of the underlying stream.</exception>
+    /// or the offset is greater than the length of the underlying stream.
+    /// </exception>
     public (long Offset, long Length) Range
     {
         get => (offset, length);

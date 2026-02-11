@@ -5,12 +5,12 @@ namespace DotNext.IO;
 using IReadOnlySpanConsumer = Buffers.IReadOnlySpanConsumer<char>;
 
 /// <summary>
-/// Represents implementation of <see cref="IReadOnlySpanConsumer"/>
+/// Represents implementation of <see cref="IConsumer{T}"/>
 /// in the form of the writer to <see cref="TextWriter"/>.
 /// </summary>
 /// <param name="output">The text writer.</param>
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct TextConsumer(TextWriter output) : IReadOnlySpanConsumer, IFlushable, IEquatable<TextConsumer>
+public readonly record struct TextConsumer(TextWriter output) : IReadOnlySpanConsumer, IFlushable
 {
     private readonly TextWriter output = output ?? throw new ArgumentNullException(nameof(output));
 
@@ -20,7 +20,7 @@ public readonly record struct TextConsumer(TextWriter output) : IReadOnlySpanCon
     public bool IsEmpty => output is null;
 
     /// <inheritdoc />
-    void IReadOnlySpanConsumer.Invoke(ReadOnlySpan<char> input) => output.Write(input);
+    void IConsumer<ReadOnlySpan<char>>.Invoke(ReadOnlySpan<char> input) => output.Write(input);
 
     /// <inheritdoc />
     ValueTask ISupplier<ReadOnlyMemory<char>, CancellationToken, ValueTask>.Invoke(ReadOnlyMemory<char> input, CancellationToken token)

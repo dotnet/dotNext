@@ -12,8 +12,8 @@ public sealed class ReaderWriterSpinLockTests : Test
         False(rwLock.IsReadLockHeld);
         False(rwLock.IsWriteLockHeld);
         Equal(0, rwLock.CurrentReadCount);
-        rwLock.EnterReadLock();
-        rwLock.EnterReadLock();
+        True(rwLock.TryEnterReadLock());
+        True(rwLock.TryEnterReadLock());
         Equal(2, rwLock.CurrentReadCount);
         False(rwLock.TryEnterWriteLock(TimeSpan.Zero, TestToken));
         True(rwLock.IsReadLockHeld);

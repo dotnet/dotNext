@@ -59,12 +59,10 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             }
         }
 
-        if (signal.TryReset(out _))
+        signal.Reset();
+        lock (syncRoot)
         {
-            lock (syncRoot)
-            {
-                pool.Return(signal);
-            }
+            pool.Return(signal);
         }
     }
 
@@ -84,7 +82,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             if (scheduledTasksCount is 0U)
             {
                 completedAll?.TrySetResult();
-                suspendedCallers = DetachWaitQueue()?.SetResult(false);
+                suspendedCallers = DetachWaitQueue()?.SetResult(Result.False);
             }
             else
             {
@@ -190,7 +188,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             if (scheduledTasksCount is 0U && complete)
             {
                 completedAll?.TrySetResult();
-                suspendedCaller = DetachWaitQueue()?.SetResult(false);
+                suspendedCaller = DetachWaitQueue()?.SetResult(Result.False);
             }
             else if (completionDetected)
             {
@@ -221,7 +219,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
             scheduledTasksCount = 0U;
             completionRequested = false;
             ClearTaskQueue();
-            suspendedCallers = DetachWaitQueue()?.SetResult(false);
+            suspendedCallers = DetachWaitQueue()?.SetResult(Result.False);
             if (completedAll is not null)
             {
                 completedAll.TrySetException(new PendingTaskInterruptedException());
@@ -308,7 +306,7 @@ public partial class TaskCompletionPipe<T> : IAsyncEnumerable<T>, IResettable
                 task = ValueTask.FromException<bool>(new ArgumentOutOfRangeException(nameof(timeout)));
                 break;
             case 0L:
-                task = new(Volatile.Read(ref firstTask) is not null);
+                task = new(Volatile.Read(in firstTask) is not null);
                 break;
             default:
                 if (token.IsCancellationRequested)

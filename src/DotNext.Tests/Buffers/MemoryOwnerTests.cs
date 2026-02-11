@@ -68,8 +68,8 @@ public sealed class MemoryOwnerTests : Test
 
     public static TheoryData<MemoryAllocator<int>> GetArrayAllocators() =>
     [
-        MemoryAllocator<int>.ArrayAllocator,
-        MemoryAllocator<int>.PinnedArrayAllocator,
+        MemoryAllocator<int>.Array,
+        MemoryAllocator<int>.Pinned,
         MemoryAllocator<int>.Unmanaged,
         MemoryAllocator<int>.UnmanagedZeroMem
     ];
@@ -85,8 +85,8 @@ public sealed class MemoryOwnerTests : Test
     [Fact]
     public static void ArrayAllocatorCache()
     {
-        Same(MemoryAllocator<byte>.ArrayAllocator, MemoryAllocator<byte>.ArrayAllocator);
-        Same(MemoryAllocator<byte>.PinnedArrayAllocator, MemoryAllocator<byte>.PinnedArrayAllocator);
+        Same(MemoryAllocator<byte>.Array, MemoryAllocator<byte>.Array);
+        Same(MemoryAllocator<byte>.Pinned, MemoryAllocator<byte>.Pinned);
         Same(MemoryAllocator<byte>.Default, MemoryAllocator<byte>.Default);
     }
 
@@ -120,7 +120,7 @@ public sealed class MemoryOwnerTests : Test
     [Fact]
     public static void ResizeBuffer()
     {
-        var allocator = MemoryAllocator<byte>.ArrayAllocator;
+        var allocator = MemoryAllocator<byte>.Array;
         var buffer = default(MemoryOwner<byte>);
 
         buffer.Resize(10, allocator);
