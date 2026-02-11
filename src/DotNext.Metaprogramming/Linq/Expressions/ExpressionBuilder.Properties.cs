@@ -110,7 +110,7 @@ partial class ExpressionBuilder
                 if (expression.Type.IsArray)
                     return Expression.ArrayLength(expression);
 
-                if (expression.Type == typeof(string) || expression.Type == typeof(StringBuilder))
+                if (expression.Type.IsOneOf(typeof(string), typeof(StringBuilder)))
                     return Expression.Property(expression, nameof(string.Length));
 
                 var interfaceType = expression.Type.ImplementedCollection ??
