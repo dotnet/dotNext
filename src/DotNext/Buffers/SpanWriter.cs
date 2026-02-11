@@ -56,13 +56,9 @@ public ref struct SpanWriter<T>
         get
         {
             if ((uint)position >= (uint)length)
-                ThrowInvalidOperationException();
+                InvalidOperationException.Throw();
 
             return ref Unsafe.Add(ref reference, position);
-
-            [DoesNotReturn]
-            [StackTraceHidden]
-            static void ThrowInvalidOperationException() => throw new InvalidOperationException();
         }
     }
 
@@ -166,7 +162,7 @@ public ref struct SpanWriter<T>
     public void operator checked += (scoped ReadOnlySpan<T> input)
     {
         if (!TryWrite(input))
-            throw new InternalBufferOverflowException();
+            InternalBufferOverflowException.Throw();
     }
 
     /// <summary>
@@ -203,13 +199,9 @@ public ref struct SpanWriter<T>
     public ref T Add()
     {
         if ((uint)position >= (uint)length)
-            ThrowInternalBufferOverflowException();
+            InternalBufferOverflowException.Throw();
 
         return ref Unsafe.Add(ref reference, position++);
-
-        [DoesNotReturn]
-        [StackTraceHidden]
-        static void ThrowInternalBufferOverflowException() => throw new InternalBufferOverflowException(ExceptionMessages.NotEnoughMemory);
     }
 
     /// <inheritdoc cref="Add(T)"/>
@@ -321,4 +313,15 @@ public ref struct SpanWriter<T>
     /// </summary>
     /// <returns>The textual representation of the written content.</returns>
     public readonly override string ToString() => WrittenSpan.ToString();
+}
+
+file static class InternalBufferOverflowExceptionExtensions
+{
+    extension(InternalBufferOverflowException)
+    {
+        [DoesNotReturn]
+        [StackTraceHidden]
+        public static void Throw()
+            => throw new InternalBufferOverflowException(ExceptionMessages.NotEnoughMemory);
+    }
 }

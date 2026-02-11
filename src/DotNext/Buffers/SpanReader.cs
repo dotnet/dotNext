@@ -56,13 +56,11 @@ public ref struct SpanReader<T>
         get
         {
             if ((uint)position >= (uint)length)
-                ThrowInvalidOperationException();
+                InvalidOperationException.Throw();
 
             return ref Unsafe.Add(ref reference, position);
 
-            [DoesNotReturn]
-            [StackTraceHidden]
-            static void ThrowInvalidOperationException() => throw new InvalidOperationException();
+            
         }
     }
 
@@ -199,7 +197,7 @@ public ref struct SpanReader<T>
     public ref readonly T Read()
     {
         if ((uint)position >= (uint)length)
-            ThrowInternalBufferOverflowException();
+            InternalBufferOverflowException.Throw();
 
         return ref Unsafe.Add(ref reference, position++);
     }
@@ -213,14 +211,10 @@ public ref struct SpanReader<T>
     public ReadOnlySpan<T> Read(int count)
     {
         if (!TryRead(count, out var result))
-            ThrowInternalBufferOverflowException();
+            InternalBufferOverflowException.Throw();
 
         return result;
     }
-
-    [DoesNotReturn]
-    [StackTraceHidden]
-    private static void ThrowInternalBufferOverflowException() => throw new InternalBufferOverflowException();
 
     /// <summary>
     /// Decodes the value from the block of memory.
@@ -237,7 +231,7 @@ public ref struct SpanReader<T>
         ArgumentNullException.ThrowIfNull(reader);
 
         if (!TryRead(count, out var buffer))
-            ThrowInternalBufferOverflowException();
+            InternalBufferOverflowException.Throw();
 
         return reader(buffer);
     }
@@ -282,4 +276,15 @@ public ref struct SpanReader<T>
     /// </summary>
     /// <returns>The textual representation of the written content.</returns>
     public readonly override string ToString() => ConsumedSpan.ToString();
+}
+
+file static class InternalBufferOverflowExceptionExtensions
+{
+    extension(InternalBufferOverflowException)
+    {
+        [DoesNotReturn]
+        [StackTraceHidden]
+        public static void Throw()
+            => throw new InternalBufferOverflowException();
+    }
 }
