@@ -27,21 +27,24 @@ public static partial class DelegateHelpers
         where TDelegate : Delegate
         where TRewriter : struct, ISupplier<Delegate, object?>, allows ref struct
     {
-        if (d.HasSingleTarget)
-            return d.Method.CreateDelegate<TDelegate>(rewriter.Invoke(d));
-
-        // We use untyped CreateDelegate to avoid typecast inside the loop.
-        // Also, it's reasonable to reuse already allocated invocation list to store
-        // newly created delegates
         var delegateType = typeof(TDelegate);
-        Span<Delegate> list = d.GetInvocationList();
-        foreach (ref var sub in list)
+        var enumerator = Delegate.EnumerateInvocationList(d);
+        if (enumerator.MoveNext())
         {
-            sub = sub.Method.CreateDelegate(delegateType, rewriter.Invoke(sub));
+            d = ChangeTypeCore(enumerator.Current, rewriter, delegateType);
+            
+            while (enumerator.MoveNext())
+            {
+                d = Delegate.Combine(d, ChangeTypeCore(enumerator.Current, rewriter, delegateType));
+            }
         }
 
-        return (TDelegate)Delegate.Combine(list)!;
+        return (TDelegate)d;
     }
+
+    private static Delegate ChangeTypeCore<TRewriter>(Delegate d, TRewriter rewriter, Type delegateType)
+        where TRewriter : struct, ISupplier<Delegate, object?>, allows ref struct
+        => d.Method.CreateDelegate(delegateType, rewriter.Invoke(d));
 
     private static Func<bool> FromBoolConstant(bool value)
         => value ? True : False;
