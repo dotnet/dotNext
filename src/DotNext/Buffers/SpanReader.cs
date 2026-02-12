@@ -39,8 +39,6 @@ public ref struct SpanReader<T>
                 InvalidOperationException.Throw();
 
             return ref Unsafe.Add(ref reference, position);
-
-            
         }
     }
 
