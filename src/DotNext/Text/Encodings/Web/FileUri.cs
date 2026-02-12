@@ -1,6 +1,7 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text.Encodings.Web;
 
 namespace DotNext.Text.Encodings.Web;
@@ -34,10 +35,13 @@ public static class FileUri
         if (fileName.IsEmpty)
             throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
 
-        return CreateFromFileNameCore(fileName, settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings));
+        var result = new StringConverter();
+        TryCreateFromFileNameCore(fileName, settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings), ref result);
+        return result.Result;
     }
 
-    private static string CreateFromFileNameCore(ReadOnlySpan<char> fileName, UrlEncoder encoder)
+    private static bool TryCreateFromFileNameCore<TConverter>(ReadOnlySpan<char> fileName, UrlEncoder encoder, ref TConverter converter)
+        where TConverter : struct, IConverter, allows ref struct
     {
         var maxLength = GetMaxEncodedLengthCore(fileName, encoder);
         using var buffer = (uint)maxLength <= (uint)SpanOwner<char>.StackallocThreshold
@@ -45,8 +49,7 @@ public static class FileUri
             : new SpanOwner<char>(maxLength);
 
         return TryCreateFromFileNameCore(fileName, encoder, buffer.Span, out var writtenCount)
-            ? new(buffer.Span.Slice(0, writtenCount))
-            : string.Empty;
+               && converter.Invoke(buffer.Span.Slice(0, writtenCount));
     }
 
     /// <summary>
@@ -151,9 +154,17 @@ public static class FileUri
         /// <summary>
         /// Gets URI that points to the file system object.
         /// </summary>
-        public Uri Uri => new(CreateFromFileNameCore(file.FullName, UrlEncoder.Default), UriKind.Absolute);
+        public Uri Uri
+        {
+            get
+            {
+                var converter = new StringConverter();
+                TryCreateFromFileNameCore(file.FullName, UrlEncoder.Default, ref converter);
+                return new(converter.Result, UriKind.Absolute);
+            }
+        }
     }
-    
+
     /// <summary>
     /// Extends <see cref="Uri"/> data type.
     /// </summary>
@@ -171,16 +182,37 @@ public static class FileUri
         {
             if (fileName.IsEmpty)
                 throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
-            
-            var encoder = settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings);
-            var maxLength = GetMaxEncodedLengthCore(fileName, encoder);
-            using var buffer = (uint)maxLength <= (uint)SpanOwner<char>.StackallocThreshold
-                ? stackalloc char[maxLength]
-                : new SpanOwner<char>(maxLength);
 
             Unsafe.SkipInit(out fileUri);
-            return TryCreateFromFileNameCore(fileName, encoder, buffer.Span, out var writtenCount)
-                   && Uri.TryCreate(new string(buffer.Span.Slice(0, writtenCount)), UriKind.Absolute, out fileUri);
+            var converter = new UriConverter(ref fileUri);
+            return TryCreateFromFileNameCore(fileName, settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings), ref converter);
         }
+    }
+
+    private interface IConverter
+    {
+        bool Invoke(scoped ReadOnlySpan<char> value);
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private struct StringConverter() : IConverter
+    {
+        private string result = string.Empty;
+
+        public readonly string Result => result;
+        
+        bool IConverter.Invoke(scoped ReadOnlySpan<char> value)
+        {
+            result = new(value);
+            return true;
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct UriConverter(ref Uri? result) : IConverter
+    {
+        private readonly ref Uri? result = ref result;
+
+        bool IConverter.Invoke(scoped ReadOnlySpan<char> value) => Uri.TryCreate(new string(value), UriKind.Absolute, out result);
     }
 }
