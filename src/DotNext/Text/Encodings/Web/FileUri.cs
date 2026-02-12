@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Encodings.Web;
 
@@ -49,7 +50,7 @@ public static class FileUri
     }
 
     /// <summary>
-    /// Gets the maximum number of characters that can be produced by <see cref="TryCreateFromFileName"/> method.
+    /// Gets the maximum number of characters that can be produced by <see cref="TryCreateFromFileName(ReadOnlySpan{char},UrlEncoder?,Span{char},out int)"/> method.
     /// </summary>
     /// <param name="fileName">The file name to be encoded.</param>
     /// <param name="encoder">The encoder.</param>
@@ -166,5 +167,35 @@ public static class FileUri
         /// Gets URI that points to the file system object.
         /// </summary>
         public Uri Uri => GetUri(file, settings: null);
+    }
+    
+    /// <summary>
+    /// Extends <see cref="Uri"/> data type.
+    /// </summary>
+    extension(Uri)
+    {
+        /// <summary>
+        /// Tries to convert the file name to <see cref="Uri"/>.
+        /// </summary>
+        /// <param name="fileName">The fully-qualified file name.</param>
+        /// <param name="settings">The encoding settings.</param>
+        /// <param name="fileUri">Absolute file URI.</param>
+        /// <returns><see langword="true"/> if <paramref name="fileName"/> is encoded successfully; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ArgumentException"><paramref name="fileName"/> is not fully-qualified.</exception>
+        public static bool TryCreateFromFileName(ReadOnlySpan<char> fileName, TextEncoderSettings? settings, [NotNullWhen(true)] out Uri? fileUri)
+        {
+            if (fileName.IsEmpty)
+                throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
+            
+            var encoder = settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings);
+            var maxLength = GetMaxEncodedLengthCore(fileName, encoder);
+            using var buffer = (uint)maxLength <= (uint)SpanOwner<char>.StackallocThreshold
+                ? stackalloc char[maxLength]
+                : new SpanOwner<char>(maxLength);
+
+            Unsafe.SkipInit(out fileUri);
+            return TryCreateFromFileNameCore(fileName, encoder, buffer.Span, out var writtenCount)
+                   && Uri.TryCreate(new string(buffer.Span.Slice(0, writtenCount)), UriKind.Absolute, out fileUri);
+        }
     }
 }
