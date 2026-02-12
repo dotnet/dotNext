@@ -151,22 +151,7 @@ public static class FileUri
         /// <summary>
         /// Gets URI that points to the file system object.
         /// </summary>
-        /// <param name="settings">The encoding settings.</param>
-        /// <returns><see cref="Uri"/> that points to the file system object.</returns>
-        public Uri GetUri(TextEncoderSettings? settings)
-        {
-            ArgumentNullException.ThrowIfNull(file);
-
-            return new(CreateFromFileNameCore(file.FullName, settings is null
-                    ? UrlEncoder.Default
-                    : UrlEncoder.Create(settings)),
-                UriKind.Absolute);
-        }
-
-        /// <summary>
-        /// Gets URI that points to the file system object.
-        /// </summary>
-        public Uri Uri => GetUri(file, settings: null);
+        public Uri Uri => new(CreateFromFileNameCore(file.FullName, UrlEncoder.Default), UriKind.Absolute);
     }
     
     /// <summary>
