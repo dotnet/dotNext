@@ -5,24 +5,22 @@ public sealed class OpaqueValueTests : Test
     [Fact]
     public static void PrimitiveTypes()
     {
-        var opaque = new OpaqueValue<int>(42);
+        using var opaque = new OpaqueValue<int>(42);
         Equal(42, opaque.Value);
         
         opaque.Value = 56;
         Equal(56, opaque.Value);
-        opaque.Dispose();
     }
 
     [Fact]
     public static void BlittableTypes()
     {
         var g = Guid.NewGuid();
-        var opaque = new OpaqueValue<Guid>(g);
+        using var opaque = new OpaqueValue<Guid>(g);
         Equal(g, opaque.Value);
         
         opaque.Value = Guid.Empty;
         Equal(Guid.Empty, opaque.Value);
-        opaque.Dispose();
     }
 
     [Fact]

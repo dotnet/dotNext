@@ -96,7 +96,7 @@ public static class OpaqueValueType
     /// </summary>
     /// <param name="value">The opaque reference.</param>
     /// <typeparam name="T">The value type.</typeparam>
-    extension<T>(in OpaqueValue<T> value) where T : struct
+    extension<T>(OpaqueValue<T> value) where T : struct
     {
         /// <summary>
         /// Gets mutable reference to the value.
