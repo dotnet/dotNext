@@ -5,24 +5,36 @@ public sealed class OpaqueValueTests : Test
     [Fact]
     public static void PrimitiveTypes()
     {
-        using var opaque = new OpaqueValue<int>(42);
-        Equal(42, opaque.Unbox());
+        var opaque = new OpaqueValue<int>(42);
+        Equal(42, opaque.Value);
+        
+        opaque.Value = 56;
+        Equal(56, opaque.Value);
+        opaque.Dispose();
     }
 
     [Fact]
     public static void BlittableTypes()
     {
         var g = Guid.NewGuid();
-        using var opaque = new OpaqueValue<Guid>(g);
-        Equal(g, opaque.Unbox());
+        var opaque = new OpaqueValue<Guid>(g);
+        Equal(g, opaque.Value);
+        
+        opaque.Value = Guid.Empty;
+        Equal(Guid.Empty, opaque.Value);
+        opaque.Dispose();
     }
 
     [Fact]
     public static void ReferenceTypes()
     {
         const string expected = "Hello, world!";
-        using var opaque = new OpaqueValue<string>(expected);
+        var opaque = new OpaqueValue<string>(expected);
         Equal(expected, opaque.Value);
+
+        opaque.Value = string.Empty;
+        Same(string.Empty, opaque.Value);
+        opaque.Dispose();
     }
 
     [Fact]
@@ -50,6 +62,6 @@ public sealed class OpaqueValueTests : Test
         using var expected = new OpaqueValue<int>(42);
         var handle = OpaqueValueMarshaller<int>.ConvertToUnmanaged(expected);
         var actual = OpaqueValueMarshaller<int>.ConvertToManaged(handle);
-        Equal(expected.Unbox(), actual.Unbox());
+        Equal(expected.Value, actual.Value);
     }
 }
