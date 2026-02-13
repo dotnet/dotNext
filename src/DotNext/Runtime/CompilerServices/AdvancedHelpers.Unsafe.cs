@@ -71,7 +71,7 @@ partial class AdvancedHelpers
         /// </summary>
         /// <typeparam name="T">The type to check.</typeparam>
         /// <returns><see langword="true"/> if <typeparamref name="T"/> can be aligned to <see cref="UIntPtr"/> size; otherwise, <see langword="false"/>.</returns>
-        public static bool CanBeNativelyAligned<T>() where T : allows ref struct => AlignOf<T>() <= nuint.Size;
+        public static bool IsNaturallyAligned<T>() where T : allows ref struct => AlignOf<T>() <= nuint.Size;
         
         internal static ref byte GetRawData(object obj)
             => ref Unsafe.As<RawData>(obj).Data;

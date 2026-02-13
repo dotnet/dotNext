@@ -44,7 +44,7 @@ public readonly record struct OpaqueValue<T> : IDisposable
         {
             unsafe
             {
-                var pointer = Unsafe.CanBeNativelyAligned<T>()
+                var pointer = Unsafe.IsNaturallyAligned<T>()
                     ? NativeMemory.Alloc((uint)Unsafe.SizeOf<T>())
                     : NativeMemory.AlignedAlloc((uint)Unsafe.SizeOf<T>(), (uint)Unsafe.AlignOf<T>());
                 
@@ -72,7 +72,7 @@ public readonly record struct OpaqueValue<T> : IDisposable
         {
             GCHandle<object>.FromIntPtr(handle).Dispose();
         }
-        else if (Unsafe.CanBeNativelyAligned<T>())
+        else if (Unsafe.IsNaturallyAligned<T>())
         {
             NativeMemory.Free(handle.ToPointer());
         }

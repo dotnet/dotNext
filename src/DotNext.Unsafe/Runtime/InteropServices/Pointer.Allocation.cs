@@ -9,7 +9,7 @@ partial struct Pointer<T>
 {
     internal static unsafe Pointer<T> Allocate()
     {
-        var address = Unsafe.CanBeNativelyAligned<T>()
+        var address = Unsafe.IsNaturallyAligned<T>()
             ? NativeMemory.Alloc((uint)sizeof(T))
             : NativeMemory.AlignedAlloc((uint)sizeof(T), (uint)Unsafe.AlignOf<T>());
 
@@ -22,7 +22,7 @@ partial struct Pointer<T>
         {
             // nothing to do
         }
-        else if (Unsafe.CanBeNativelyAligned<T>())
+        else if (Unsafe.IsNaturallyAligned<T>())
         {
             NativeMemory.Free(pointer);
         }

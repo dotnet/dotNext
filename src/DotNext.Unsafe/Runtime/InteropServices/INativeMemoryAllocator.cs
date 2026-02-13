@@ -18,7 +18,7 @@ internal interface INativeMemoryAllocator<T>
     {
         nuint elementSize = (uint)sizeof(T);
         void* result;
-        if (Unsafe.CanBeNativelyAligned<T>())
+        if (Unsafe.IsNaturallyAligned<T>())
         {
             result = TAllocator.IsZeroed
                 ? NativeMemory.AllocZeroed(length, elementSize)
@@ -40,7 +40,7 @@ internal interface INativeMemoryAllocator<T>
 
     public static unsafe void Free(T* address)
     {
-        if (Unsafe.CanBeNativelyAligned<T>())
+        if (Unsafe.IsNaturallyAligned<T>())
         {
             NativeMemory.Free(address);
         }
@@ -53,7 +53,7 @@ internal interface INativeMemoryAllocator<T>
     public static unsafe T* Realloc(T* address, nuint length)
     {
         var byteCount = GetByteCount(length);
-        var result = Unsafe.CanBeNativelyAligned<T>()
+        var result = Unsafe.IsNaturallyAligned<T>()
             ? NativeMemory.Realloc(address, byteCount)
             : NativeMemory.AlignedRealloc(address, byteCount, (uint)Unsafe.AlignOf<T>());
 
