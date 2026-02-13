@@ -291,4 +291,23 @@ public sealed class TypeMapTests : Test
         True(map.TryGetValue(out double d));
         Equal(45, d);
     }
+
+    [Fact]
+    public static void MutateValues()
+    {
+        var map = new TypeMap<int>();
+        map.Add<string>(42);
+        map.Add<object>(43);
+
+        foreach (ref var i in map)
+        {
+            i += 10;
+        }
+        
+        True(map.TryGetValue<string>(out var result));
+        Equal(52, result);
+        
+        True(map.TryGetValue<object>(out result));
+        Equal(53, result);
+    }
 }
