@@ -121,7 +121,7 @@ public ref struct SpanOwner<T> : IDisposable
         {
             void* ptr;
 
-            if (IsNaturalAlignment)
+            if (Intrinsics.CanBeNativelyAligned<T>())
             {
                 ptr = NativeMemory.Alloc((uint)length, (uint)Unsafe.SizeOf<T>());
             }
@@ -136,8 +136,6 @@ public ref struct SpanOwner<T> : IDisposable
             return new(ptr, length);
         }
     }
-
-    private static bool IsNaturalAlignment => Intrinsics.AlignOf<T>() <= nuint.Size;
 
     private static bool UseNativeAllocation
         => Features.UseNativeAllocation && !RuntimeHelpers.IsReferenceOrContainsReferences<T>();
@@ -199,7 +197,7 @@ public ref struct SpanOwner<T> : IDisposable
             unsafe
             {
                 var ptr = Unsafe.AsPointer(ref MemoryMarshal.GetReference(memory));
-                if (IsNaturalAlignment)
+                if (Intrinsics.CanBeNativelyAligned<T>())
                 {
                     NativeMemory.Free(ptr);
                 }
