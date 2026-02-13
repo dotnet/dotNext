@@ -61,7 +61,7 @@ partial struct AsyncLock
     /// <param name="token">The token that can be used to abort acquisition operation.</param>
     /// <returns>The acquired lock holder.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static ValueTask<Holder> AcquireLockAsync(object obj, CancellationToken token = default)
+    public static ValueTask<Scope> AcquireLockAsync(object obj, CancellationToken token = default)
         => GetExclusiveLock(obj).AcquireAsync(token);
 
     /// <summary>
@@ -73,7 +73,7 @@ partial struct AsyncLock
     /// <returns>The acquired lock holder.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-    public static ValueTask<Holder> AcquireLockAsync(object obj, TimeSpan timeout, CancellationToken token = default)
+    public static ValueTask<Scope> AcquireLockAsync(object obj, TimeSpan timeout, CancellationToken token = default)
         => GetExclusiveLock(obj).AcquireAsync(timeout, token);
 
     /// <summary>
@@ -83,7 +83,7 @@ partial struct AsyncLock
     /// <param name="token">The token that can be used to abort acquisition operation.</param>
     /// <returns>The acquired lock holder.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static ValueTask<Holder> AcquireReadLockAsync(object obj, CancellationToken token = default)
+    public static ValueTask<Scope> AcquireReadLockAsync(object obj, CancellationToken token = default)
         => AsyncLock.ReadLock(GetReaderWriterLock(obj)).AcquireAsync(token);
 
     /// <summary>
@@ -95,7 +95,7 @@ partial struct AsyncLock
     /// <returns>The acquired lock holder.</returns>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static ValueTask<Holder> AcquireReadLockAsync(object obj, TimeSpan timeout, CancellationToken token = default)
+    public static ValueTask<Scope> AcquireReadLockAsync(object obj, TimeSpan timeout, CancellationToken token = default)
         => AsyncLock.ReadLock(GetReaderWriterLock(obj)).AcquireAsync(timeout, token);
 
     /// <summary>
@@ -105,7 +105,7 @@ partial struct AsyncLock
     /// <param name="token">The token that can be used to abort acquisition operation.</param>
     /// <returns>The acquired lock holder.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static ValueTask<Holder> AcquireWriteLockAsync(object obj, CancellationToken token = default)
+    public static ValueTask<Scope> AcquireWriteLockAsync(object obj, CancellationToken token = default)
         => AcquireWriteLockAsync(obj, upgrade: false, token);
 
     /// <summary>
@@ -117,7 +117,7 @@ partial struct AsyncLock
     /// <returns>The acquired lock holder.</returns>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static ValueTask<Holder> AcquireWriteLockAsync(object obj, TimeSpan timeout, CancellationToken token = default)
+    public static ValueTask<Scope> AcquireWriteLockAsync(object obj, TimeSpan timeout, CancellationToken token = default)
         => AcquireWriteLockAsync(obj, upgrade: false, timeout, token);
 
     /// <summary>
@@ -131,7 +131,7 @@ partial struct AsyncLock
     /// <param name="token">The token that can be used to abort acquisition operation.</param>
     /// <returns>The acquired lock holder.</returns>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static ValueTask<Holder> AcquireWriteLockAsync(object obj, bool upgrade, CancellationToken token = default)
+    public static ValueTask<Scope> AcquireWriteLockAsync(object obj, bool upgrade, CancellationToken token = default)
         => WriteLock(GetReaderWriterLock(obj), upgrade).AcquireAsync(token);
 
     /// <summary>
@@ -147,6 +147,6 @@ partial struct AsyncLock
     /// <returns>The acquired lock holder.</returns>
     /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
     /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-    public static ValueTask<Holder> AcquireWriteLockAsync(object obj, bool upgrade, TimeSpan timeout, CancellationToken token = default)
+    public static ValueTask<Scope> AcquireWriteLockAsync(object obj, bool upgrade, TimeSpan timeout, CancellationToken token = default)
         => WriteLock(GetReaderWriterLock(obj), upgrade).AcquireAsync(timeout, token);
 }
