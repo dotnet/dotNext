@@ -12,10 +12,10 @@ public sealed class BitVectorTests : Test
     [Fact]
     public static void BitsToByte()
     {
-        Equal(0, Number.FromBits<byte>([]));
-        Equal(3, Number.FromBits<byte>([true, true]));
-        Equal(8, Number.FromBits<byte>([false, false, false, true]));
-        Equal(byte.MaxValue, Number.FromBits<byte>(CreateVector(8, true)));
+        Equal(0, byte.FromBits([]));
+        Equal(3, byte.FromBits([true, true]));
+        Equal(8, byte.FromBits([false, false, false, true]));
+        Equal(byte.MaxValue, byte.FromBits(CreateVector(8, true)));
     }
 
     [Fact]
@@ -46,11 +46,11 @@ public sealed class BitVectorTests : Test
     [Fact]
     public static void BitsToInt16()
     {
-        Equal(0, Number.FromBits<short>([]));
-        Equal(3, Number.FromBits<short>([true, true]));
-        Equal(8, Number.FromBits<short>([false, false, false, true]));
-        Equal(short.MaxValue, Number.FromBits<short>(CreateVector(15, true)));
-        Equal(-1, Number.FromBits<short>(CreateVector(16, true)));
+        Equal(0, short.FromBits([]));
+        Equal(3, short.FromBits([true, true]));
+        Equal(8, short.FromBits([false, false, false, true]));
+        Equal(short.MaxValue, short.FromBits(CreateVector(15, true)));
+        Equal(-1, short.FromBits(CreateVector(16, true)));
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public sealed class BitVectorTests : Test
     {
         Span<bool> bits = stackalloc bool[32];
         Random.Shared.GetItems([true, false], bits);
-        Equal(FromBitsSlow(bits), bits.FromBits<int>());
+        Equal(FromBitsSlow(bits), int.FromBits(bits));
 
         static int FromBitsSlow(ReadOnlySpan<bool> bits)
         {
@@ -101,11 +101,11 @@ public sealed class BitVectorTests : Test
     [Fact]
     public static void BitsToInt32()
     {
-        Equal(0, Number.FromBits<int>([]));
-        Equal(3, Number.FromBits<int>([true, true]));
-        Equal(8, Number.FromBits<int>([false, false, false, true]));
-        Equal(int.MaxValue, Number.FromBits<int>(CreateVector(31, true)));
-        Equal(-1, Number.FromBits<int>(CreateVector(32, true)));
+        Equal(0, int.FromBits([]));
+        Equal(3, int.FromBits([true, true]));
+        Equal(8, int.FromBits([false, false, false, true]));
+        Equal(int.MaxValue, int.FromBits(CreateVector(31, true)));
+        Equal(-1, int.FromBits(CreateVector(32, true)));
     }
 
     [Fact]
@@ -136,11 +136,11 @@ public sealed class BitVectorTests : Test
     [Fact]
     public static void BitsToInt64()
     {
-        Equal(0L, Number.FromBits<long>([]));
-        Equal(3L, Number.FromBits<long>([true, true]));
-        Equal(8L, Number.FromBits<long>([false, false, false, true]));
-        Equal(long.MaxValue, Number.FromBits<long>(CreateVector(63, true)));
-        Equal(-1L, Number.FromBits<long>(CreateVector(64, true)));
+        Equal(0L, long.FromBits([]));
+        Equal(3L, long.FromBits([true, true]));
+        Equal(8L, long.FromBits([false, false, false, true]));
+        Equal(long.MaxValue, long.FromBits(CreateVector(63, true)));
+        Equal(-1L, long.FromBits(CreateVector(64, true)));
     }
 
     [Fact]
@@ -154,7 +154,7 @@ public sealed class BitVectorTests : Test
 
         value = 3;
         Array.Clear(buffer);
-        Number.GetBits(value, buffer);
+        value.GetBits(buffer);
         True(buffer[0]);
         True(buffer[1]);
         False(buffer[2]);
@@ -169,7 +169,7 @@ public sealed class BitVectorTests : Test
 
         value = 1L << 62;
         Array.Clear(buffer);
-        Number.GetBits(value, buffer);
+        value.GetBits(buffer);
         True(buffer[62]);
     }
 

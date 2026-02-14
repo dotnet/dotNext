@@ -18,14 +18,14 @@ public class FromBitsBenchmark
     }
 
     [Benchmark(Description = "8 bits")]
-    public byte ToUInt8() => bits.FromBits<byte>();
+    public byte ToUInt8() => byte.FromBits(bits);
     
     [Benchmark(Description = "16 bits")]
-    public short ToInt16() => bits.FromBits<short>();
+    public short ToInt16() => short.FromBits(bits);
     
     [Benchmark(Description = "32 bits")]
-    public int ToInt32() => bits.FromBits<int>();
+    public int ToInt32() => int.FromBits(bits);
     
     [Benchmark(Description = "64 bits")]
-    public long ToInt64() => bits.FromBits<long>();
+    public long ToInt64() => long.FromBits(bits);
 }

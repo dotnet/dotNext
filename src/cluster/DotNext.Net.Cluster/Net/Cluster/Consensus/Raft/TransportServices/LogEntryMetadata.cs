@@ -4,7 +4,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices;
 
 using Buffers;
 using Buffers.Binary;
-using Number = Numerics.Number;
+using Numerics;
 
 [StructLayout(LayoutKind.Auto)]
 internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
@@ -21,7 +21,7 @@ internal readonly struct LogEntryMetadata : IBinaryFormattable<LogEntryMetadata>
     private LogEntryMetadata(long term, bool isSnapshot, int? commandId, long? length)
     {
         Term = term;
-        flags = Number.FromBits<byte>([commandId.HasValue, isSnapshot]);
+        flags = byte.FromBits([commandId.HasValue, isSnapshot]);
         identifier = commandId.GetValueOrDefault();
         this.length = length.GetValueOrDefault(-1L);
     }
