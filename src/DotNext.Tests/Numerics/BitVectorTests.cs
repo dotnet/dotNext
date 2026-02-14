@@ -24,19 +24,19 @@ public sealed class BitVectorTests : Test
         var value = byte.MaxValue;
         var buffer = new bool[8];
 
-        Number.GetBits(value, buffer);
-        Array.TrueForAll(buffer, static bit => bit);
+        value.GetBits(buffer);
+        True(Array.TrueForAll(buffer, static bit => bit));
 
         value = 3;
         Array.Clear(buffer);
-        Number.GetBits(value, buffer);
+        value.GetBits(buffer);
         True(buffer[0]);
         True(buffer[1]);
         False(buffer[2]);
 
         value = 8;
         Array.Clear(buffer);
-        Number.GetBits(value, buffer);
+        value.GetBits(buffer);
         False(buffer[0]);
         False(buffer[1]);
         False(buffer[2]);
@@ -59,19 +59,19 @@ public sealed class BitVectorTests : Test
         short value = -1;
         var buffer = new bool[16];
 
-        Number.GetBits(value, buffer);
-        Array.TrueForAll(buffer, static bit => bit);
+        value.GetBits(buffer);
+        True(Array.TrueForAll(buffer, static bit => bit));
 
         value = 3;
         Array.Clear(buffer);
-        Number.GetBits(value, buffer);
+        value.GetBits(buffer);
         True(buffer[0]);
         True(buffer[1]);
         False(buffer[2]);
 
         value = 8;
         Array.Clear(buffer);
-        Number.GetBits(value, buffer);
+        value.GetBits(buffer);
         False(buffer[0]);
         False(buffer[1]);
         False(buffer[2]);
@@ -94,19 +94,19 @@ public sealed class BitVectorTests : Test
         int value = -1;
         var buffer = new bool[32];
 
-        Number.GetBits(value, buffer);
-        Array.TrueForAll(buffer, static bit => bit);
+        value.GetBits(buffer);
+        True(Array.TrueForAll(buffer, static bit => bit));
 
         value = 3;
         Array.Clear(buffer);
-        Number.GetBits(value, buffer);
+        value.GetBits(buffer);
         True(buffer[0]);
         True(buffer[1]);
         False(buffer[2]);
 
         value = 8;
         Array.Clear(buffer);
-        Number.GetBits(value, buffer);
+        value.GetBits(buffer);
         False(buffer[0]);
         False(buffer[1]);
         False(buffer[2]);
@@ -129,8 +129,8 @@ public sealed class BitVectorTests : Test
         long value = -1;
         var buffer = new bool[64];
 
-        Number.GetBits(value, buffer);
-        Array.TrueForAll(buffer, static bit => bit);
+        value.GetBits(buffer);
+        True(Array.TrueForAll(buffer, static bit => bit));
 
         value = 3;
         Array.Clear(buffer);
@@ -141,7 +141,7 @@ public sealed class BitVectorTests : Test
 
         value = 8;
         Array.Clear(buffer);
-        Number.GetBits(value, buffer);
+        value.GetBits(buffer);
         False(buffer[0]);
         False(buffer[1]);
         False(buffer[2]);
