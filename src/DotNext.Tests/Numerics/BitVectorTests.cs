@@ -54,6 +54,26 @@ public sealed class BitVectorTests : Test
     }
 
     [Fact]
+    public static void StressTest()
+    {
+        Span<bool> bits = stackalloc bool[32];
+        Random.Shared.GetItems([true, false], bits);
+        Equal(FromBitsSlow(bits), bits.FromBits<int>());
+
+        static int FromBitsSlow(ReadOnlySpan<bool> bits)
+        {
+            var result = 0;
+            for (var position = 0; position < bits.Length; position++)
+            {
+                if (bits[position])
+                    result |= 1 << position;
+            }
+
+            return result;
+        }
+    }
+
+    [Fact]
     public static void Int16ToBits()
     {
         short value = -1;

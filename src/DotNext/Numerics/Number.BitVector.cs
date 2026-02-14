@@ -1,11 +1,22 @@
+using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics.X86;
 
 namespace DotNext.Numerics;
 
 public static partial class Number
 {
+    private const ulong BitMask = 0B_0000_0001UL << 0
+                               | 0B_0000_0010UL << 8
+                               | 0B_0000_0100UL << 16
+                               | 0B_0000_1000UL << 24
+                               | 0B_0001_0000UL << 32
+                               | 0B_0010_0000UL << 40
+                               | 0B_0100_0000UL << 48
+                               | 0B_1000_0000UL << 56;
+    
     /// <summary>
     /// Gets a value indicating that the specified bit is set.
     /// </summary>
@@ -48,15 +59,73 @@ public static partial class Number
     /// <typeparam name="TResult">The type of the result.</typeparam>
     /// <param name="bits">A vector of bits.</param>
     /// <returns>A value of type <typeparamref name="TResult"/> restored from the vector of bits.</returns>
-    public static TResult FromBits<TResult>(this ReadOnlySpan<bool> bits)
-        where TResult : struct, IBinaryInteger<TResult>
+    public static unsafe TResult FromBits<TResult>(this ReadOnlySpan<bool> bits)
+        where TResult : unmanaged, IBinaryInteger<TResult>
     {
+        var sizeInBits = sizeof(TResult) * 8;
         var result = TResult.Zero;
-        
-        for (var position = 0; position < bits.Length; position++)
+
+        if (Bmi2.X64.IsSupported && sizeInBits <= bits.Length)
         {
-            if (bits[position])
-                result |= TResult.One << position;
+            result = FromBitsBmi2<TResult>(ref Unsafe.As<bool, byte>(ref MemoryMarshal.GetReference(bits)));
+        }
+        else if (Vector.IsHardwareAccelerated && Vector<byte>.Count >= 8 && sizeInBits <= bits.Length)
+        {
+            result = FromBitsVectorized<TResult>(ref Unsafe.As<bool, byte>(ref MemoryMarshal.GetReference(bits)));
+        }
+        else
+        {
+            // software fallback
+            for (var position = 0; position < bits.Length; position++)
+            {
+                if (bits[position])
+                    result |= TResult.One << position;
+            }
+        }
+
+        return result;
+    }
+
+    private static unsafe TResult FromBitsBmi2<TResult>(ref byte bits)
+        where TResult : unmanaged, IBinaryInteger<TResult>
+    {
+        Debug.Assert(Bmi2.X64.IsSupported);
+        
+        const ulong extractionMask = 0B_0000_0001UL << 0
+                                     | 0B_0000_0001UL << 8
+                                     | 0B_0000_0001UL << 16
+                                     | 0B_0000_0001UL << 24
+                                     | 0B_0000_0001UL << 32
+                                     | 0B_0000_0001UL << 40
+                                     | 0B_0000_0001UL << 48
+                                     | 0B_0000_0001UL << 56;
+        
+        var result = default(TResult);
+
+        for (var i = 0; i < sizeof(TResult); i++)
+        {
+            var data = Unsafe.ReadUnaligned<ulong>(in Unsafe.Add(ref bits, i * sizeof(ulong)));
+            var octet = Bmi2.X64.ParallelBitExtract(data, extractionMask);
+            result |= TResult.CreateTruncating(octet) << (i * sizeof(ulong));
+        }
+
+        return result;
+    }
+
+    private static unsafe TResult FromBitsVectorized<TResult>(ref byte bits)
+        where TResult : unmanaged, IBinaryInteger<TResult>
+    {
+        Debug.Assert(Vector.IsHardwareAccelerated);
+        
+        var result = default(TResult);
+        var bitMask = Vector.CreateScalar(BitMask);
+
+        for (var i = 0; i < sizeof(TResult); i++)
+        {
+            var data = Vector.CreateScalar(Unsafe.ReadUnaligned<ulong>(in Unsafe.Add(ref bits, i * sizeof(ulong))));
+            var vec = Vector.AsVectorByte(bitMask) * Vector.AsVectorByte(data);
+            var octet = Vector.Sum(vec);
+            result |= TResult.CreateTruncating(octet) << (i * sizeof(ulong));
         }
 
         return result;
@@ -93,16 +162,9 @@ public static partial class Number
 
     private static void GetBitsVectorized(ref byte bytes, nuint length, ref byte bits)
     {
-        const ulong mask = 0B_0000_0001UL << 0
-                           | 0B_0000_0010UL << 8
-                           | 0B_0000_0100UL << 16
-                           | 0B_0000_1000UL << 24
-                           | 0B_0001_0000UL << 32
-                           | 0B_0010_0000UL << 40
-                           | 0B_0100_0000UL << 48
-                           | 0B_1000_0000UL << 56;
+        Debug.Assert(Vector.IsHardwareAccelerated);
         
-        var bitMask = Vector.AsVectorByte(Vector.CreateScalarUnsafe(mask));
+        var bitMask = Vector.AsVectorByte(Vector.CreateScalarUnsafe(BitMask));
         
         for (nuint i = 0; i < length; i++)
         {
