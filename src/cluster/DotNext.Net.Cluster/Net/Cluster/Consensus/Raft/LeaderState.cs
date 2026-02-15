@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Runtime;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
@@ -10,7 +11,7 @@ using IO.Log;
 using Membership;
 using Runtime.CompilerServices;
 using Threading.Tasks;
-using GCLatencyModeScope = Runtime.GCLatencyModeScope;
+using static Runtime.GCLatencyModeExtensions;
 
 internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
     where TMember : class, IRaftClusterMember
@@ -140,7 +141,7 @@ internal sealed partial class LeaderState<TMember> : ConsensusState<TMember>
                 // do not change GC latency. Otherwise, in case of high load GC is not able to collect garbage
                 var latencyScope = forced
                     ? default
-                    : GCLatencyModeScope.SustainedLowLatency;
+                    : GCLatencyMode.SustainedLowLatency.Enable();
                 try
                 {
                     // Perf: the code in this block is inlined instead of moved to separated method because
