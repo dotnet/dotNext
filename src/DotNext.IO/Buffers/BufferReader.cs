@@ -9,7 +9,10 @@ internal static class BufferReader
         internal SequencePosition Append(in ReadOnlySequence<byte> input)
         {
             var position = input.Start;
-            for (int consumedBytes, remainingBytes; (remainingBytes = parser.RemainingBytes) > 0 && input.TryGet(ref position, out var block, advance: false) && !block.IsEmpty; position = input.GetPosition(consumedBytes, position))
+            for (int consumedBytes, remainingBytes;
+                 (remainingBytes = parser.RemainingBytes) > 0
+                 && input.TryGet(ref position, out var block, advance: false) && !block.IsEmpty;
+                 position = input.GetPosition(consumedBytes, position))
             {
                 block = block.TrimLength(remainingBytes);
                 parser.Invoke(block.Span);
