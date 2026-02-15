@@ -10,7 +10,6 @@ using Buffers;
 /// <summary>
 /// Represents multiplexed client.
 /// </summary>
-[Experimental("DOTNEXT001")]
 public abstract partial class MultiplexedClient : Disposable, IAsyncDisposable
 {
     private volatile TaskCompletionSource? readiness;

@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Metrics;
 using System.IO.Pipelines;
 using System.Net;
@@ -8,7 +7,6 @@ namespace DotNext.Net.Multiplexing;
 using Diagnostics.Metrics;
 using IO.Pipelines;
 
-[Experimental("DOTNEXT001")]
 public sealed class TcpMultiplexerTests : Test
 {
     private static readonly IPEndPoint LocalEndPoint = new(IPAddress.Loopback, 3280);
