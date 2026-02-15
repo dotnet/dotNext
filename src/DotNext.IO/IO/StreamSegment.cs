@@ -31,8 +31,8 @@ public sealed class StreamSegment(Stream stream, bool leaveOpen = true) : Stream
         get => (offset, length);
         set
         {
-            ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)offset, (ulong)stream.Length, nameof(offset));
-            ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)length, (ulong)(stream.Length - offset), nameof(length));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value.Offset, (ulong)stream.Length, nameof(value));
+            ArgumentOutOfRangeException.ThrowIfGreaterThan((ulong)value.Length, (ulong)(stream.Length - value.Offset), nameof(value));
 
             (offset, length) = value;
             stream.Position = offset;
