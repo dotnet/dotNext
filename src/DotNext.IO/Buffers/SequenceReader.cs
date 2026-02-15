@@ -982,7 +982,7 @@ public struct SequenceReader(ReadOnlySequence<byte> sequence) : IAsyncBinaryRead
         int charsWritten;
         if (bytes.TryGet(ref position, out var source, advance: false) && !source.IsEmpty)
         {
-            var length = Math.Min(source.Length, buffer.Length);
+            var length = int.Min(source.Length, buffer.Length);
             position = bytes.GetPosition(length, position);
 
             charsWritten = decoder.GetChars(source.Span.Slice(0, length), buffer, position.Equals(bytes.End));
