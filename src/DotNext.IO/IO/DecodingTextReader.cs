@@ -56,7 +56,7 @@ internal sealed class DecodingTextReader : TextBufferReader
     }
 
     public override int Peek()
-        => charPos == charLen && ReadBuffer() == 0 ? InvalidChar : buffer[charPos];
+        => charPos == charLen && ReadBuffer() is 0 ? InvalidChar : buffer[charPos];
 
     public override int Read(Span<char> buffer)
     {
@@ -73,7 +73,7 @@ internal sealed class DecodingTextReader : TextBufferReader
         {
             writtenCount = ReadBuffer(buffer);
 
-            if (writtenCount == 0)
+            if (writtenCount is 0)
                 break;
 
             buffer = buffer.Slice(writtenCount);
@@ -85,7 +85,7 @@ internal sealed class DecodingTextReader : TextBufferReader
 
     public override string? ReadLine()
     {
-        if (charPos == charLen && ReadBuffer() == 0)
+        if (charPos == charLen && ReadBuffer() is 0)
             return null;
 
         // this variable is needed to save temporary the length of characters that are candidates for line termination string
@@ -132,7 +132,7 @@ internal sealed class DecodingTextReader : TextBufferReader
                 result += newLine.Slice(0, newLineBufferPosition);
 
             exit:
-            return (uint)result.WrittenCount > 0U ? new string(result.WrittenSpan) : string.Empty;
+            return (uint)result.WrittenCount > 0U ? new(result.WrittenSpan) : string.Empty;
         }
         finally
         {
@@ -159,7 +159,7 @@ internal sealed class DecodingTextReader : TextBufferReader
                 break;
         }
 
-        return new string(writer.WrittenSpan);
+        return new(writer.WrittenSpan);
     }
 
     public override string ReadToEnd()
@@ -168,14 +168,12 @@ internal sealed class DecodingTextReader : TextBufferReader
         var length = sequence.Length;
 
         // the rest of the sequence is already decoded
-        if (length == 0L)
-            return bufferNotEmpty ? new string(ReadyToReadChars) : string.Empty;
-
-        if (length > int.MaxValue)
-            throw new InsufficientMemoryException();
-
-        // slow path - decoding required
-        return ReadToEnd((int)length, bufferNotEmpty);
+        return length switch
+        {
+            0L => bufferNotEmpty ? new(ReadyToReadChars) : string.Empty,
+            > int.MaxValue => throw new InsufficientMemoryException(),
+            _ => ReadToEnd((int)length, bufferNotEmpty)
+        };
     }
 
     protected override void Dispose(bool disposing)
