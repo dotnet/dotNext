@@ -71,33 +71,36 @@ public static partial class Number
         public static unsafe T FromBits(ReadOnlySpan<bool> bits)
         {
             var sizeInBits = sizeof(T) * 8;
-            var result = T.Zero;
 
             if (Bmi2.X64.IsSupported && sizeInBits <= bits.Length)
-            {
-                result = UsingBmi2(ref Unsafe.As<bool, byte>(ref MemoryMarshal.GetReference(bits)));
-            }
-            else if (Vector.IsHardwareAccelerated && Vector<byte>.Count >= 8 && sizeInBits <= bits.Length)
-            {
-                result = Vectorized(ref Unsafe.As<bool, byte>(ref MemoryMarshal.GetReference(bits)));
-            }
-            else
-            {
-                // software fallback
-                for (var position = 0; position < bits.Length; position++)
-                {
-                    if (bits[position])
-                        result |= T.One << position;
-                }
-            }
+                return UsingBmi2(ref Unsafe.As<bool, byte>(ref MemoryMarshal.GetReference(bits)));
+            
+            if (Vector.IsHardwareAccelerated && Vector<byte>.Count >= 8 && sizeInBits <= bits.Length)
+                return Vectorized(ref Unsafe.As<bool, byte>(ref MemoryMarshal.GetReference(bits)));
 
-            return result;
+            return SoftwareFallback(bits);
+            
+            static T UsingBmi2(ref byte bits)
+            {
+                Debug.Assert(Bmi2.X64.IsSupported);
+
+                var result = T.Zero;
+
+                for (var i = 0; i < sizeof(T); i++)
+                {
+                    var data = Unsafe.ReadUnaligned<ulong>(in Unsafe.Add(ref bits, i * sizeof(ulong)));
+                    var octet = Bmi2.X64.ParallelBitExtract(data, ExtractDepositBitMask);
+                    result |= T.CreateTruncating(octet) << (i * sizeof(ulong));
+                }
+
+                return result;
+            }
 
             static T Vectorized(ref byte bits)
             {
                 Debug.Assert(Vector.IsHardwareAccelerated);
 
-                var result = default(T);
+                var result = T.Zero;
                 var bitMask = Vector.CreateScalar(VectorBitMask);
 
                 for (var i = 0; i < sizeof(T); i++)
@@ -111,17 +114,14 @@ public static partial class Number
                 return result;
             }
 
-            static T UsingBmi2(ref byte bits)
+            static T SoftwareFallback(ReadOnlySpan<bool> bits)
             {
-                Debug.Assert(Bmi2.X64.IsSupported);
-
-                var result = default(T);
-
-                for (var i = 0; i < sizeof(T); i++)
+                var result = T.Zero;
+                
+                for (var position = 0; position < bits.Length; position++)
                 {
-                    var data = Unsafe.ReadUnaligned<ulong>(in Unsafe.Add(ref bits, i * sizeof(ulong)));
-                    var octet = Bmi2.X64.ParallelBitExtract(data, ExtractDepositBitMask);
-                    result |= T.CreateTruncating(octet) << (i * sizeof(ulong));
+                    if (bits[position])
+                        result |= T.One << position;
                 }
 
                 return result;
