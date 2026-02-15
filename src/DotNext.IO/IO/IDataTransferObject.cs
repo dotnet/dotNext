@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO.Pipelines;
+﻿using System.IO.Pipelines;
 
 namespace DotNext.IO;
 
@@ -155,12 +154,10 @@ public interface IDataTransferObject
         => transformation.TransformAsync(new Pipelines.PipeBinaryReader(input), token);
 
     // use rented buffer of the small size
-    private async ValueTask<TResult> GetSmallObjectDataAsync<TResult, TTransformation>(TTransformation parser, long length, CancellationToken token)
+    private async ValueTask<TResult> GetSmallObjectDataAsync<TResult, TTransformation>(TTransformation parser, int length, CancellationToken token)
         where TTransformation : ITransformation<TResult>
     {
-        Debug.Assert(length <= Array.MaxLength);
-
-        using var writer = new PoolingArrayBufferWriter<byte> { Capacity = (int)length };
+        using var writer = new PoolingArrayBufferWriter<byte> { Capacity = length };
         await WriteToAsync(new AsyncBufferWriter(writer), token).ConfigureAwait(false);
         return await parser.TransformAsync(new SequenceReader(writer.WrittenMemory), token).ConfigureAwait(false);
     }
@@ -254,7 +251,7 @@ public interface IDataTransferObject
         return Length switch
         {
             { } length and < FileBufferingWriter.Options.DefaultMemoryThreshold => GetSmallObjectDataAsync<TResult, TTransformation>(transformation,
-                length, token),
+                int.CreateTruncating(length), token),
             { } length => GetLargeObjectDataAsync<TResult, TTransformation>(transformation, length, token),
             _ => GetUnknownObjectDataAsync<TResult, TTransformation>(transformation, token)
         };
