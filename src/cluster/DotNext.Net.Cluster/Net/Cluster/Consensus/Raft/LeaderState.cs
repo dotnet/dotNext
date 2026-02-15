@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
-using DotNext.Net.Cluster.Replication;
 using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft;
