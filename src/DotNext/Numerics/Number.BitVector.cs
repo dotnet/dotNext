@@ -136,15 +136,14 @@ public static partial class Number
         public unsafe void GetBits(Span<bool> bits)
         {
             var sizeInBits = sizeof(T) * 8;
-            ArgumentOutOfRangeException.ThrowIfLessThan((uint)bits.Length, (uint)sizeInBits, nameof(bits));
 
-            if (Bmi2.X64.IsSupported)
+            if (Bmi2.X64.IsSupported && sizeInBits <= bits.Length)
             {
                 UsingBmi2(ref Unsafe.As<T, byte>(ref number),
                     (uint)sizeof(T),
                     ref Unsafe.As<bool, byte>(ref MemoryMarshal.GetReference(bits)));
             }
-            else if (Vector.IsHardwareAccelerated && Vector<byte>.Count >= 8)
+            else if (Vector.IsHardwareAccelerated && Vector<byte>.Count >= 8 && sizeInBits <= bits.Length)
             {
                 Vectorized(ref Unsafe.As<T, byte>(ref number),
                     (uint)sizeof(T),
@@ -152,11 +151,7 @@ public static partial class Number
             }
             else
             {
-                // software fallback
-                for (var position = 0; position < sizeInBits; position++)
-                {
-                    bits[position] = (number & (T.One << position)) != T.Zero;
-                }
+                SoftwareFallback(number, bits.TrimLength(sizeInBits));
             }
 
             static void UsingBmi2(ref byte bytes, nuint length, ref byte bits)
@@ -182,6 +177,14 @@ public static partial class Number
                     var inputByte = Vector.Create(Unsafe.Add(ref bytes, i));
                     var bitVector = Vector.AsVectorUInt64(Vector.Min(inputByte & bitMask, Vector<byte>.One));
                     Unsafe.WriteUnaligned(ref Unsafe.Add(ref bits, i * 8), bitVector.ToScalar());
+                }
+            }
+
+            static void SoftwareFallback(T number, Span<bool> bits)
+            {
+                for (var position = 0; position < bits.Length; position++)
+                {
+                    bits[position] = (number & (T.One << position)) != T.Zero;
                 }
             }
         }
