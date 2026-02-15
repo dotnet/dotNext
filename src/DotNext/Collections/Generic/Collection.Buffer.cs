@@ -26,13 +26,13 @@ public static partial class Collection
 
         return enumerable switch
         {
-            List<T> typedList => Span.Copy(CollectionsMarshal.AsSpan(typedList), allocator),
-            T[] array => Span.Copy(array, allocator),
+            List<T> typedList => CollectionsMarshal.AsSpan(typedList).Copy(allocator),
+            T[] array => array.Copy(allocator),
             string str => Unsafe.BitCast<MemoryOwner<char>, MemoryOwner<T>>(str.AsSpan().Copy(Unsafe.As<MemoryAllocator<char>>(allocator))),
-            ArraySegment<T> segment => Span.Copy(segment.AsSpan(), allocator),
+            ArraySegment<T> segment => segment.AsSpan().Copy(allocator),
             ICollection<T> collection => collection.Count is 0 ? default : allocator is null ? CopyCollection(collection) : CopySlow(collection, collection.Count, allocator),
             IReadOnlyCollection<T> collection => collection.Count is 0 ? default : CopySlow(enumerable, collection.Count, allocator),
-            _ => CopySlow(enumerable, GetSize(enumerable, sizeHint), allocator),
+            _ => CopySlow(enumerable, sizeHint, allocator),
         };
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -48,14 +48,14 @@ public static partial class Collection
         [MethodImpl(MethodImplOptions.NoInlining)]
         static MemoryOwner<T> CopySlow(IEnumerable<T> enumerable, int sizeHint, MemoryAllocator<T>? allocator)
         {
-            using var writer = new BufferWriterSlim<T>(sizeHint, allocator);
+            using var writer = new BufferWriterSlim<T>(
+                enumerable.TryGetNonEnumeratedCount(out var count) ? count : sizeHint,
+                allocator);
+            
             foreach (var item in enumerable)
                 writer.Add(item);
 
             return writer.DetachOrCopyBuffer();
         }
-
-        static int GetSize(IEnumerable<T> enumerable, int sizeHint)
-            => enumerable.TryGetNonEnumeratedCount(out var result) ? result : sizeHint;
     }
 }
