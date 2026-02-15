@@ -8,7 +8,7 @@ namespace DotNext.Numerics;
 
 public static partial class Number
 {
-    private const ulong BitMask = 0B_0000_0001UL << 0
+    private const ulong VectorBitMask = 0B_0000_0001UL << 0
                                | 0B_0000_0010UL << 8
                                | 0B_0000_0100UL << 16
                                | 0B_0000_1000UL << 24
@@ -16,6 +16,15 @@ public static partial class Number
                                | 0B_0010_0000UL << 40
                                | 0B_0100_0000UL << 48
                                | 0B_1000_0000UL << 56;
+    
+    private const ulong ExtractDepositBitMask = 0B_0000_0001UL << 0
+                                 | 0B_0000_0001UL << 8
+                                 | 0B_0000_0001UL << 16
+                                 | 0B_0000_0001UL << 24
+                                 | 0B_0000_0001UL << 32
+                                 | 0B_0000_0001UL << 40
+                                 | 0B_0000_0001UL << 48
+                                 | 0B_0000_0001UL << 56;
 
     /// <summary>
     /// Extends <see cref="IBinaryInteger{TSelf}"/> interface.
@@ -27,7 +36,7 @@ public static partial class Number
         /// <summary>
         /// Gets a value indicating that the specified bit is set.
         /// </summary>
-        /// <param name="position">The position of the bit within <paramref name="number"/>.</param>
+        /// <param name="position">The position of the bit within the receiver.</param>
         /// <returns><see langword="true"/> if the bit at <paramref name="position"/> is set; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="position"/> is negative.</exception>
         public bool IsBitSet(int position)
@@ -89,7 +98,7 @@ public static partial class Number
                 Debug.Assert(Vector.IsHardwareAccelerated);
 
                 var result = default(T);
-                var bitMask = Vector.CreateScalar(BitMask);
+                var bitMask = Vector.CreateScalar(VectorBitMask);
 
                 for (var i = 0; i < sizeof(T); i++)
                 {
@@ -106,21 +115,12 @@ public static partial class Number
             {
                 Debug.Assert(Bmi2.X64.IsSupported);
 
-                const ulong extractionMask = 0B_0000_0001UL << 0
-                                             | 0B_0000_0001UL << 8
-                                             | 0B_0000_0001UL << 16
-                                             | 0B_0000_0001UL << 24
-                                             | 0B_0000_0001UL << 32
-                                             | 0B_0000_0001UL << 40
-                                             | 0B_0000_0001UL << 48
-                                             | 0B_0000_0001UL << 56;
-
                 var result = default(T);
 
                 for (var i = 0; i < sizeof(T); i++)
                 {
                     var data = Unsafe.ReadUnaligned<ulong>(in Unsafe.Add(ref bits, i * sizeof(ulong)));
-                    var octet = Bmi2.X64.ParallelBitExtract(data, extractionMask);
+                    var octet = Bmi2.X64.ParallelBitExtract(data, ExtractDepositBitMask);
                     result |= T.CreateTruncating(octet) << (i * sizeof(ulong));
                 }
 
@@ -138,7 +138,13 @@ public static partial class Number
             var sizeInBits = sizeof(T) * 8;
             ArgumentOutOfRangeException.ThrowIfLessThan((uint)bits.Length, (uint)sizeInBits, nameof(bits));
 
-            if (Vector.IsHardwareAccelerated && Vector<byte>.Count >= 8)
+            if (Bmi2.X64.IsSupported)
+            {
+                UsingBmi2(ref Unsafe.As<T, byte>(ref number),
+                    (uint)sizeof(T),
+                    ref Unsafe.As<bool, byte>(ref MemoryMarshal.GetReference(bits)));
+            }
+            else if (Vector.IsHardwareAccelerated && Vector<byte>.Count >= 8)
             {
                 Vectorized(ref Unsafe.As<T, byte>(ref number),
                     (uint)sizeof(T),
@@ -152,18 +158,30 @@ public static partial class Number
                     bits[position] = (number & (T.One << position)) != T.Zero;
                 }
             }
+
+            static void UsingBmi2(ref byte bytes, nuint length, ref byte bits)
+            {
+                Debug.Assert(Bmi2.X64.IsSupported);
+
+                for (nuint i = 0; i < length; i++)
+                {
+                    ulong inputByte = Unsafe.Add(ref bytes, i);
+                    var bitVector = Bmi2.X64.ParallelBitDeposit(inputByte, ExtractDepositBitMask);
+                    Unsafe.WriteUnaligned(ref Unsafe.Add(ref bits, i * sizeof(ulong)), bitVector);
+                }
+            }
         
             static void Vectorized(ref byte bytes, nuint length, ref byte bits)
             {
                 Debug.Assert(Vector.IsHardwareAccelerated);
         
-                var bitMask = Vector.AsVectorByte(Vector.CreateScalarUnsafe(BitMask));
+                var bitMask = Vector.AsVectorByte(Vector.CreateScalarUnsafe(VectorBitMask));
         
                 for (nuint i = 0; i < length; i++)
                 {
                     var inputByte = Vector.Create(Unsafe.Add(ref bytes, i));
-                    var v = Vector.AsVectorUInt64(Vector.Min(inputByte & bitMask, Vector<byte>.One));
-                    Unsafe.WriteUnaligned(ref Unsafe.Add(ref bits, i * 8), v.ToScalar());
+                    var bitVector = Vector.AsVectorUInt64(Vector.Min(inputByte & bitMask, Vector<byte>.One));
+                    Unsafe.WriteUnaligned(ref Unsafe.Add(ref bits, i * 8), bitVector.ToScalar());
                 }
             }
         }
