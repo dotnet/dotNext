@@ -62,4 +62,27 @@ public sealed class OpaqueValueTests : Test
         var actual = OpaqueValueMarshaller<int>.ConvertToManaged(handle);
         Equal(expected.Value, actual.Value);
     }
+
+    [Fact]
+    public static unsafe void PointerType()
+    {
+        var i = 42;
+        Pointer<int> ptr = &i;
+        using var value = new OpaqueValue<Pointer<int>>(ptr);
+        Equal(i, value.Value);
+
+        value.Value = 56;
+        Equal(i, value.Value);
+    }
+
+    [Fact]
+    public static void OnStackReference()
+    {
+        var i = 42;
+        using var value = new OpaqueValue<OnStackReference<int>>(new(ref i));
+        Equal(i, value.Value);
+
+        value.Value = 56;
+        Equal(i, value.Value);
+    }
 }

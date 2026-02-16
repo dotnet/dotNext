@@ -24,6 +24,7 @@ public readonly record struct OpaqueValue<T> : IDisposable
 {
     // For reference types and structs with reference fields, it's a GC handle
     // For blittable structs, it's a pointer to the aligned memory containing the value
+    // For IPointer, the handle just keeps the address without ownership
     internal readonly nint handle;
 
     /// <summary>
@@ -35,6 +36,10 @@ public readonly record struct OpaqueValue<T> : IDisposable
         if (value is null)
         {
             handle = 0;
+        }
+        else if (default(T) is IPointer)
+        {
+            handle = ((IPointer)value).Address;
         }
         else if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
         {
@@ -64,7 +69,7 @@ public readonly record struct OpaqueValue<T> : IDisposable
     /// </remarks>
     public unsafe void Dispose()
     {
-        if (handle is 0)
+        if (default(T) is IPointer || handle is 0)
         {
             // nothing to do
         }
@@ -114,6 +119,37 @@ public static class OpaqueValueType
             }
         }
     }
+
+    /// <summary>
+    /// Extends <see cref="OpaqueValue{T}"/> type when it's instantiated with <see cref="Pointer{T}"/> data type.
+    /// </summary>
+    /// <param name="value">The opaque value that represents the pointer.</param>
+    /// <typeparam name="T">Blittable type.</typeparam>
+    extension<T>(OpaqueValue<Pointer<T>> value) where T : unmanaged
+    {
+        /// <summary>
+        /// Gets a reference to the underlying value.
+        /// </summary>
+        public ref T Value => ref AsRef<T, Pointer<T>>(value);
+    }
+
+    /// <summary>
+    /// Extends <see cref="OpaqueValue{T}"/> type when it's instantiated with <see cref="OnStackReference{T}"/> data type.
+    /// </summary>
+    /// <param name="value">The opaque value that represents the pointer.</param>
+    /// <typeparam name="T">The type which value is allocated on the stack.</typeparam>
+    extension<T>(OpaqueValue<OnStackReference<T>> value) where T : struct, allows ref struct
+    {
+        /// <summary>
+        /// Gets a reference to the underlying value.
+        /// </summary>
+        public ref T Value => ref AsRef<T, OnStackReference<T>>(value);
+    }
+
+    private static unsafe ref T AsRef<T, TPointer>(OpaqueValue<TPointer> value)
+        where T : struct, allows ref struct
+        where TPointer : struct, IPointer, ITypedReference<T>
+        => ref Unsafe.AsRef<T>(value.handle.ToPointer());
 }
 
 /// <summary>
