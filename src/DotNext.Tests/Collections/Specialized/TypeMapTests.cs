@@ -310,4 +310,14 @@ public sealed class TypeMapTests : Test
         True(map.TryGetValue<object>(out result));
         Equal(53, result);
     }
+
+    [Fact]
+    public static void TypeMapInit()
+    {
+        var map = new TypeMap { 10, "a", 40D };
+        True(map.Contains<int>());
+        True(map.Contains<string>());
+        True(map.Contains<double>());
+        False(map.Contains<byte>());
+    }
 }
