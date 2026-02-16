@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace DotNext.Runtime.InteropServices;
 
 public sealed class OpaqueValueTests : Test
@@ -45,13 +47,13 @@ public sealed class OpaqueValueTests : Test
     [Fact]
     public static void Equality()
     {
-        using var expected = new OpaqueValue<int>(42);
-        var actual = expected;
+        using var opaque = new OpaqueValue<int>(42);
+        var actual = opaque;
 
-        Equal(expected, actual);
+        Equal(opaque, actual);
 
         actual = default;
-        NotEqual(expected, actual);
+        NotEqual(opaque, actual);
     }
 
     [Fact]
@@ -68,21 +70,39 @@ public sealed class OpaqueValueTests : Test
     {
         var i = 42;
         Pointer<int> ptr = &i;
-        using var value = new OpaqueValue<Pointer<int>>(ptr);
-        Equal(i, value.Value);
+        using var opaque = new OpaqueValue<Pointer<int>>(ptr);
+        Equal(i, opaque.Value);
 
-        value.Value = 56;
-        Equal(i, value.Value);
+        opaque.Value = 56;
+        Equal(i, opaque.Value);
     }
 
     [Fact]
     public static void OnStackReference()
     {
         var i = 42;
-        using var value = new OpaqueValue<OnStackReference<int>>(new(ref i));
-        Equal(i, value.Value);
+        using var opaque = new OpaqueValue<OnStackReference<int>>(new(ref i));
+        Equal(i, opaque.Value);
 
-        value.Value = 56;
-        Equal(i, value.Value);
+        opaque.Value = 56;
+        Equal(i, opaque.Value);
+    }
+
+    [Fact]
+    public static void UntypedValue()
+    {
+        var obj = new object();
+        var handle = GCHandle.Alloc(obj);
+        var opaque = new OpaqueValue<GCHandle>(handle);
+        Same(obj, opaque.Value);
+
+        opaque.Value = string.Empty;
+        NotSame(obj, opaque.Value);
+        Same(string.Empty, opaque.Value);
+        
+        opaque.Dispose();
+        handle.Free();
+
+        GCHandle<string> s;
     }
 }

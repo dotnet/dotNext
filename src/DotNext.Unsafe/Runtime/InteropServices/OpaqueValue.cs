@@ -37,6 +37,10 @@ public readonly record struct OpaqueValue<T> : IDisposable
         {
             handle = 0;
         }
+        else if (typeof(T) == typeof(GCHandle))
+        {
+            handle = GCHandle.ToIntPtr(Unsafe.BitCast<T, GCHandle>(value));
+        }
         else if (default(T) is IPointer)
         {
             handle = ((IPointer)value).Address;
@@ -69,7 +73,7 @@ public readonly record struct OpaqueValue<T> : IDisposable
     /// </remarks>
     public unsafe void Dispose()
     {
-        if (default(T) is IPointer || handle is 0)
+        if (default(T) is IPointer || typeof(T) == typeof(GCHandle) || handle is 0)
         {
             // nothing to do
         }
@@ -99,9 +103,9 @@ public static class OpaqueValueType
     /// <summary>
     /// Extends <see cref="OpaqueValue{T}"/> type.
     /// </summary>
-    /// <param name="value">The opaque reference.</param>
+    /// <param name="opaque">The opaque reference.</param>
     /// <typeparam name="T">The value type.</typeparam>
-    extension<T>(OpaqueValue<T> value) where T : struct
+    extension<T>(OpaqueValue<T> opaque) where T : struct
     {
         /// <summary>
         /// Gets mutable reference to the value.
@@ -111,9 +115,9 @@ public static class OpaqueValueType
             get
             {
                 if (!RuntimeHelpers.IsReferenceOrContainsReferences<T>())
-                    return ref Unsafe.AsRef<T>(value.handle.ToPointer());
+                    return ref Unsafe.AsRef<T>(opaque.handle.ToPointer());
 
-                return ref GCHandle<object>.FromIntPtr(value.handle) is { IsAllocated: true, Target: { } target and T }
+                return ref GCHandle<object>.FromIntPtr(opaque.handle) is { IsAllocated: true, Target: { } target and T }
                     ? ref Unsafe.Unbox<T>(target)
                     : ref Unsafe.NullRef<T>();
             }
@@ -123,27 +127,27 @@ public static class OpaqueValueType
     /// <summary>
     /// Extends <see cref="OpaqueValue{T}"/> type when it's instantiated with <see cref="Pointer{T}"/> data type.
     /// </summary>
-    /// <param name="value">The opaque value that represents the pointer.</param>
+    /// <param name="opaque">The opaque value that represents the pointer.</param>
     /// <typeparam name="T">Blittable type.</typeparam>
-    extension<T>(OpaqueValue<Pointer<T>> value) where T : unmanaged
+    extension<T>(OpaqueValue<Pointer<T>> opaque) where T : unmanaged
     {
         /// <summary>
         /// Gets a reference to the underlying value.
         /// </summary>
-        public ref T Value => ref AsRef<T, Pointer<T>>(value);
+        public ref T Value => ref AsRef<T, Pointer<T>>(opaque);
     }
 
     /// <summary>
     /// Extends <see cref="OpaqueValue{T}"/> type when it's instantiated with <see cref="OnStackReference{T}"/> data type.
     /// </summary>
-    /// <param name="value">The opaque value that represents the pointer.</param>
+    /// <param name="opaque">The opaque value that represents the pointer.</param>
     /// <typeparam name="T">The type which value is allocated on the stack.</typeparam>
-    extension<T>(OpaqueValue<OnStackReference<T>> value) where T : allows ref struct
+    extension<T>(OpaqueValue<OnStackReference<T>> opaque) where T : allows ref struct
     {
         /// <summary>
         /// Gets a reference to the underlying value.
         /// </summary>
-        public ref T Value => ref AsRef<T, OnStackReference<T>>(value);
+        public ref T Value => ref AsRef<T, OnStackReference<T>>(opaque);
     }
 
     private static unsafe ref T AsRef<T, TPointer>(OpaqueValue<TPointer> value)
@@ -176,5 +180,27 @@ public static class OpaqueReferenceType
                 : null;
             set => GCHandle<object>.FromIntPtr(opaque.handle).Target = value ?? throw new ArgumentNullException(nameof(value));
         }
+    }
+
+    /// <summary>
+    /// Extends <see cref="OpaqueValue{T}"/> type.
+    /// </summary>
+    /// <param name="opaque">The opaque value that represents a reference to the managed object represented by the handle.</param>
+    extension(OpaqueValue<GCHandle> opaque)
+    {
+        /// <summary>
+        /// Gets the referenced value.
+        /// </summary>
+        public object? Value
+        {
+            get => opaque.AsHandle().Target;
+            set
+            {
+                var handle = opaque.AsHandle();
+                handle.Target = value;
+            }
+        }
+
+        private GCHandle AsHandle() => GCHandle.FromIntPtr(opaque.handle);
     }
 }
