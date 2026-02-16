@@ -138,7 +138,7 @@ public static class OpaqueValueType
     /// </summary>
     /// <param name="value">The opaque value that represents the pointer.</param>
     /// <typeparam name="T">The type which value is allocated on the stack.</typeparam>
-    extension<T>(OpaqueValue<OnStackReference<T>> value) where T : struct, allows ref struct
+    extension<T>(OpaqueValue<OnStackReference<T>> value) where T : allows ref struct
     {
         /// <summary>
         /// Gets a reference to the underlying value.
@@ -147,7 +147,7 @@ public static class OpaqueValueType
     }
 
     private static unsafe ref T AsRef<T, TPointer>(OpaqueValue<TPointer> value)
-        where T : struct, allows ref struct
+        where T : allows ref struct
         where TPointer : struct, IPointer, ITypedReference<T>
         => ref Unsafe.AsRef<T>(value.handle.ToPointer());
 }

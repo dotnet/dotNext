@@ -14,7 +14,7 @@ using CompilerServices;
 /// <typeparam name="T">The type of the value allocated on the stack.</typeparam>
 [StructLayout(LayoutKind.Sequential)]
 public readonly record struct OnStackReference<T>: IPointer, ITypedReference<T>
-    where T : struct, allows ref struct
+    where T : allows ref struct
 {
     private readonly nint address;
 
