@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DotNext;
@@ -81,6 +83,8 @@ public static class ArgumentExceptionExtensions
         public static ArgumentException BufferTooSmall(string? paramName)
             => new(ExceptionMessages.BufferTooSmall, paramName);
 
+        [DoesNotReturn]
+        [StackTraceHidden]
         private static void ThrowBufferTooSmall(string? paramName)
             => throw BufferTooSmall(paramName);
     }

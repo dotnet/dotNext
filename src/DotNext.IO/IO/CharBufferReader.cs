@@ -87,7 +87,7 @@ internal sealed class CharBufferReader : TextBufferReader
             length += newLineBufferPosition;
 
         exit:
-        return length == 0L ? defaultResult : sequence.Slice(start, length).ToString();
+        return length is 0L ? defaultResult : sequence.Slice(start, length).ToString();
     }
 
     /// <inheritdoc />

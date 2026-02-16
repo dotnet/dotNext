@@ -136,6 +136,23 @@ public sealed class UnmanagedMemoryPoolTests : Test
         Equal(20L, manager.Memory.Span[1]);
     }
 
+    [Theory]
+    [InlineData(64)]
+    [InlineData(128)]
+    [InlineData(256)]
+    public static void CheckDefaultBufferSize(int defaultBufferSize)
+    {
+        using var pool = new UnmanagedMemoryPool<byte>(1024)
+        {
+            DefaultBufferSize = defaultBufferSize,
+        };
+
+        Equal(defaultBufferSize, pool.DefaultBufferSize);
+
+        using var memory = pool.Rent();
+        Equal(defaultBufferSize, memory.Memory.Length);
+    }
+
     [Fact]
     public static void EnumeratorTest()
     {

@@ -8,7 +8,7 @@ public sealed class SequenceBuilderTests : Test
     public static void UseAutoChunkSize()
     {
         using var builder = new SequenceBuilder<byte>();
-        builder.Write(new byte[] { 10, 20, 30 });
+        builder.Write([10, 20, 30]);
         Equal(3L, builder.WrittenCount);
     }
 

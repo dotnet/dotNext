@@ -103,6 +103,9 @@ public sealed class StreamSegmentTests : Test
         True(segment.CanSeek);
         False(segment.CanWrite);
         Equal(ms.CanTimeout, segment.CanTimeout);
+        Throws<ArgumentOutOfRangeException>(() => segment.Range = (ms.Length + 1L, 0L));
+        Throws<ArgumentOutOfRangeException>(() => segment.Range = (ms.Length, 1L));
+        Throws<ArgumentOutOfRangeException>(() => segment.Range = (ms.Length - 1, 2L));
         Throws<NotSupportedException>(() => segment.WriteByte(2));
         Throws<NotSupportedException>(() => segment.Write(new byte[3], 0, 3));
         Throws<NotSupportedException>(() => segment.Write(new byte[2]));

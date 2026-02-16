@@ -1,5 +1,7 @@
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text.Encodings.Web;
 
 namespace DotNext.Text.Encodings.Web;
@@ -33,10 +35,13 @@ public static class FileUri
         if (fileName.IsEmpty)
             throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
 
-        return CreateFromFileNameCore(fileName, settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings));
+        var result = new StringConverter();
+        TryCreateFromFileNameCore(fileName, settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings), ref result);
+        return result.Result;
     }
 
-    private static string CreateFromFileNameCore(ReadOnlySpan<char> fileName, UrlEncoder encoder)
+    private static bool TryCreateFromFileNameCore<TConverter>(ReadOnlySpan<char> fileName, UrlEncoder encoder, ref TConverter converter)
+        where TConverter : struct, IConverter, allows ref struct
     {
         var maxLength = GetMaxEncodedLengthCore(fileName, encoder);
         using var buffer = (uint)maxLength <= (uint)SpanOwner<char>.StackallocThreshold
@@ -44,12 +49,11 @@ public static class FileUri
             : new SpanOwner<char>(maxLength);
 
         return TryCreateFromFileNameCore(fileName, encoder, buffer.Span, out var writtenCount)
-            ? new(buffer.Span.Slice(0, writtenCount))
-            : string.Empty;
+               && converter.Invoke(buffer.Span.Slice(0, writtenCount));
     }
 
     /// <summary>
-    /// Gets the maximum number of characters that can be produced by <see cref="TryCreateFromFileName"/> method.
+    /// Gets the maximum number of characters that can be produced by <see cref="TryCreateFromFileName(ReadOnlySpan{char},UrlEncoder?,Span{char},out int)"/> method.
     /// </summary>
     /// <param name="fileName">The file name to be encoded.</param>
     /// <param name="encoder">The encoder.</param>
@@ -150,21 +154,65 @@ public static class FileUri
         /// <summary>
         /// Gets URI that points to the file system object.
         /// </summary>
-        /// <param name="settings">The encoding settings.</param>
-        /// <returns><see cref="Uri"/> that points to the file system object.</returns>
-        public Uri GetUri(TextEncoderSettings? settings)
+        public Uri Uri
         {
-            ArgumentNullException.ThrowIfNull(file);
-
-            return new(CreateFromFileNameCore(file.FullName, settings is null
-                    ? UrlEncoder.Default
-                    : UrlEncoder.Create(settings)),
-                UriKind.Absolute);
+            get
+            {
+                var converter = new StringConverter();
+                TryCreateFromFileNameCore(file.FullName, UrlEncoder.Default, ref converter);
+                return new(converter.Result, UriKind.Absolute);
+            }
         }
+    }
 
+    /// <summary>
+    /// Extends <see cref="Uri"/> data type.
+    /// </summary>
+    extension(Uri)
+    {
         /// <summary>
-        /// Gets URI that points to the file system object.
+        /// Tries to convert the file name to <see cref="Uri"/>.
         /// </summary>
-        public Uri Uri => GetUri(file, settings: null);
+        /// <param name="fileName">The fully-qualified file name.</param>
+        /// <param name="settings">The encoding settings.</param>
+        /// <param name="fileUri">Absolute file URI.</param>
+        /// <returns><see langword="true"/> if <paramref name="fileName"/> is encoded successfully; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ArgumentException"><paramref name="fileName"/> is not fully-qualified.</exception>
+        public static bool TryCreateFromFileName(ReadOnlySpan<char> fileName, TextEncoderSettings? settings, [NotNullWhen(true)] out Uri? fileUri)
+        {
+            if (fileName.IsEmpty)
+                throw new ArgumentException(ExceptionMessages.FullyQualifiedPathExpected, nameof(fileName));
+
+            Unsafe.SkipInit(out fileUri);
+            var converter = new UriConverter(ref fileUri);
+            return TryCreateFromFileNameCore(fileName, settings is null ? UrlEncoder.Default : UrlEncoder.Create(settings), ref converter);
+        }
+    }
+
+    private interface IConverter
+    {
+        bool Invoke(scoped ReadOnlySpan<char> value);
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private struct StringConverter() : IConverter
+    {
+        private string result = string.Empty;
+
+        public readonly string Result => result;
+        
+        bool IConverter.Invoke(scoped ReadOnlySpan<char> value)
+        {
+            result = new(value);
+            return true;
+        }
+    }
+
+    [StructLayout(LayoutKind.Auto)]
+    private readonly ref struct UriConverter(ref Uri? result) : IConverter
+    {
+        private readonly ref Uri? result = ref result;
+
+        bool IConverter.Invoke(scoped ReadOnlySpan<char> value) => Uri.TryCreate(new string(value), UriKind.Absolute, out result);
     }
 }

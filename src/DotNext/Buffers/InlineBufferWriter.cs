@@ -52,14 +52,9 @@ internal struct InlineBufferWriter<T>(MemoryAllocator<T>? allocator) : IGrowable
     {
         var newPosition = position + count;
         if ((uint)newPosition > (uint)buffer.Length)
-            ThrowInvalidOperationException();
+            InvalidOperationException.Throw();
 
         position = newPosition;
-
-        [DoesNotReturn]
-        [StackTraceHidden]
-        static void ThrowInvalidOperationException()
-            => throw new InvalidOperationException();
     }
 
     public Memory<T> GetMemory(int sizeHint) => GetBuffer(sizeHint).Memory.Slice(position);

@@ -67,6 +67,57 @@ partial struct Enum<T>
     }
 
     /// <inheritdoc/>
+    public static Enum<T> Parse(ReadOnlySpan<byte> utf8Text, IFormatProvider? provider)
+    {
+        return UnderlyingType switch
+        {
+            TypeCode.Byte => ConstrainedCall<byte>(utf8Text, provider),
+            TypeCode.SByte => ConstrainedCall<sbyte>(utf8Text, provider),
+            TypeCode.UInt16 => ConstrainedCall<ushort>(utf8Text, provider),
+            TypeCode.Int16 => ConstrainedCall<short>(utf8Text, provider),
+            TypeCode.UInt32 => ConstrainedCall<uint>(utf8Text, provider),
+            TypeCode.Int32 => ConstrainedCall<int>(utf8Text, provider),
+            TypeCode.UInt64 => ConstrainedCall<ulong>(utf8Text, provider),
+            TypeCode.Int64 => ConstrainedCall<long>(utf8Text, provider),
+            _ => default,
+        };
+
+        static Enum<T> ConstrainedCall<TValue>(ReadOnlySpan<byte> utf8Text, IFormatProvider? provider)
+            where TValue : unmanaged, IUtf8SpanParsable<TValue>
+        {
+            AssertUnderlyingType<TValue>();
+
+            return Unsafe.BitCast<TValue, Enum<T>>(TValue.Parse(utf8Text, provider));
+        }
+    }
+    
+    /// <inheritdoc/>
+    public static bool TryParse(ReadOnlySpan<byte> utf8Text, IFormatProvider? provider, out Enum<T> result)
+    {
+        return UnderlyingType switch
+        {
+            TypeCode.Byte => ConstrainedCall<byte>(utf8Text, provider, out result),
+            TypeCode.SByte => ConstrainedCall<sbyte>(utf8Text, provider, out result),
+            TypeCode.UInt16 => ConstrainedCall<ushort>(utf8Text, provider, out result),
+            TypeCode.Int16 => ConstrainedCall<short>(utf8Text, provider, out result),
+            TypeCode.UInt32 => ConstrainedCall<uint>(utf8Text, provider, out result),
+            TypeCode.Int32 => ConstrainedCall<int>(utf8Text, provider, out result),
+            TypeCode.UInt64 => ConstrainedCall<ulong>(utf8Text, provider, out result),
+            TypeCode.Int64 => ConstrainedCall<long>(utf8Text, provider, out result),
+            _ => EnumHelpers.Fail(out result),
+        };
+        
+        static bool ConstrainedCall<TValue>(ReadOnlySpan<byte> utf8Text, IFormatProvider? provider, out Enum<T> result)
+            where TValue : unmanaged, IUtf8SpanParsable<TValue>
+        {
+            AssertUnderlyingType<TValue>();
+            
+            Unsafe.SkipInit(out result);
+            return TValue.TryParse(utf8Text, provider, out Unsafe.As<Enum<T>, TValue>(ref result));
+        }
+    }
+
+    /// <inheritdoc/>
     public static bool TryParse(ReadOnlySpan<char> s, NumberStyles style, IFormatProvider? provider, out Enum<T> result)
     {
         return UnderlyingType switch

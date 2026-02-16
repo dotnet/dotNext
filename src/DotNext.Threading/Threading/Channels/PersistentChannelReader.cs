@@ -218,7 +218,7 @@ internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInf
         private readonly LinkedCancellationTokenSource? tokenSource;
         private readonly PersistentChannelReader<T> reader;
         private readonly CancellationToken token;
-        private AsyncLock.Holder readLock;
+        private AsyncLock.Scope readLock;
         private long offset;
         private Optional<T> current;
         private bool rollbackRead;

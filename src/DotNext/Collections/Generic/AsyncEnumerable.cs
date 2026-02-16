@@ -5,9 +5,8 @@ namespace DotNext.Collections.Generic;
 /// </summary>
 public static partial class AsyncEnumerable
 {
-    /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
-    /// <typeparam name="T">Type of elements in the collection.</typeparam>
     extension<T>(IAsyncEnumerable<T> collection)
+        where T : allows ref struct
     {
         /// <summary>
         /// Applies specified action to each element of the collection asynchronously.
@@ -21,7 +20,7 @@ public static partial class AsyncEnumerable
             await foreach (var item in collection.WithCancellation(token).ConfigureAwait(false))
                 action(item);
         }
-
+        
         /// <summary>
         /// Applies the specified action to each element of the collection asynchronously.
         /// </summary>
@@ -35,6 +34,23 @@ public static partial class AsyncEnumerable
                 await action(item, token).ConfigureAwait(false);
         }
         
+        /// <summary>
+        /// Gets an asynchronous collection that throws the specified exception.
+        /// </summary>
+        /// <param name="e">The exception to be thrown by the enumerator.</param>
+        /// <returns>Empty asynchronous collection which enumerator throws <paramref name="e"/>.</returns>
+        public static IAsyncEnumerable<T> Throw(Exception e)
+        {
+            ArgumentNullException.ThrowIfNull(e);
+
+            return new ThrowingEnumerator<T>(e);
+        }
+    }
+    
+    /// <param name="collection">A collection to enumerate. Cannot be <see langword="null"/>.</param>
+    /// <typeparam name="T">Type of elements in the collection.</typeparam>
+    extension<T>(IAsyncEnumerable<T> collection)
+    {
         /// <summary>
         /// Obtains the first element of a sequence; or <see cref="Optional{T}.None"/>
         /// if the sequence is empty.
@@ -101,7 +117,7 @@ public static partial class AsyncEnumerable
         {
             var enumerator = seq.GetAsyncEnumerator(token);
             await using (enumerator.ConfigureAwait(false))
-                return await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : new T?();
+                return await enumerator.MoveNextAsync().ConfigureAwait(false) ? enumerator.Current : null;
         }
 
         /// <summary>
@@ -144,17 +160,5 @@ public static partial class AsyncEnumerable
         /// <returns>Read-only list containing single item.</returns>
         public static IAsyncEnumerable<T> Singleton(T item)
             => new Specialized.SingletonList<T> { Item = item };
-        
-        /// <summary>
-        /// Gets an asynchronous collection that throws the specified exception.
-        /// </summary>
-        /// <param name="e">The exception to be thrown by the enumerator.</param>
-        /// <returns>Empty asynchronous collection which enumerator throws <paramref name="e"/>.</returns>
-        public static IAsyncEnumerable<T> Throw(Exception e)
-        {
-            ArgumentNullException.ThrowIfNull(e);
-
-            return new ThrowingEnumerator<T>(e);
-        }
     }
 }

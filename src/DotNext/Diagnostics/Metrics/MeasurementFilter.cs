@@ -9,3 +9,14 @@ namespace DotNext.Diagnostics.Metrics;
 /// <typeparam name="TInstrument">The type of the measurement source.</typeparam>
 public delegate bool MeasurementFilter<in TInstrument>(TInstrument instrument, ReadOnlySpan<KeyValuePair<string, object?>> tags)
 where TInstrument: Instrument;
+
+internal static class MeasurementFilter
+{
+    private static bool AlwaysTrue(Instrument instrument, ReadOnlySpan<KeyValuePair<string, object?>> tags) => true;
+
+    extension<TInstrument>(MeasurementFilter<TInstrument>)
+        where TInstrument : Instrument
+    {
+        public static MeasurementFilter<TInstrument> True => AlwaysTrue;
+    }
+}

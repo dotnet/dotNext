@@ -1,214 +1,192 @@
+using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics;
-using Debug = System.Diagnostics.Debug;
+using System.Runtime.Intrinsics.X86;
 
 namespace DotNext.Numerics;
 
 public static partial class Number
 {
+    private const ulong VectorBitMask = 0B_0000_0001UL << 0
+                               | 0B_0000_0010UL << 8
+                               | 0B_0000_0100UL << 16
+                               | 0B_0000_1000UL << 24
+                               | 0B_0001_0000UL << 32
+                               | 0B_0010_0000UL << 40
+                               | 0B_0100_0000UL << 48
+                               | 0B_1000_0000UL << 56;
+    
+    private const ulong ExtractDepositBitMask = 0B_0000_0001UL << 0
+                                 | 0B_0000_0001UL << 8
+                                 | 0B_0000_0001UL << 16
+                                 | 0B_0000_0001UL << 24
+                                 | 0B_0000_0001UL << 32
+                                 | 0B_0000_0001UL << 40
+                                 | 0B_0000_0001UL << 48
+                                 | 0B_0000_0001UL << 56;
+
     /// <summary>
-    /// Gets a value indicating that the specified bit is set.
+    /// Extends <see cref="IBinaryInteger{TSelf}"/> interface.
     /// </summary>
     /// <param name="number">The number to inspect.</param>
-    /// <param name="position">The position of the bit within <paramref name="number"/>.</param>
     /// <typeparam name="T">The type of the number.</typeparam>
-    /// <returns><see langword="true"/> if the bit at <paramref name="position"/> is set; otherwise, <see langword="false"/>.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="position"/> is negative.</exception>
-    public static bool IsBitSet<T>(this T number, int position)
-        where T : struct, INumber<T>, IBitwiseOperators<T, T, T>, IShiftOperators<T, int, T>
+    extension<T>(T number) where T : unmanaged, IBinaryInteger<T>
     {
-        ArgumentOutOfRangeException.ThrowIfNegative(position);
-
-        return (number & (T.One << position)) != T.Zero;
-    }
-
-    /// <summary>
-    /// Sets the bit at the specified position.
-    /// </summary>
-    /// <param name="number">The number to modify.</param>
-    /// <param name="position">The position of the bit to set.</param>
-    /// <param name="value">The bit value.</param>
-    /// <typeparam name="T">The type of the number.</typeparam>
-    /// <returns>A modified number.</returns>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="position"/> is negative.</exception>
-    public static T SetBit<T>(this T number, int position, bool value)
-        where T : struct, INumber<T>, IBitwiseOperators<T, T, T>, IShiftOperators<T, int, T>
-    {
-        ArgumentOutOfRangeException.ThrowIfNegative(position);
-
-        var bit = T.One << position;
-        return value
-            ? number | bit
-            : number & ~bit;
-    }
-
-    /// <summary>
-    /// Converts bit vector to a value of type <typeparamref name="TResult"/>.
-    /// </summary>
-    /// <typeparam name="TResult">The type of the result.</typeparam>
-    /// <param name="bits">A vector of bits.</param>
-    /// <returns>A value of type <typeparamref name="TResult"/> restored from the vector of bits.</returns>
-    public static TResult FromBits<TResult>(this ReadOnlySpan<bool> bits)
-        where TResult : struct, INumber<TResult>, IBitwiseOperators<TResult, TResult, TResult>, IShiftOperators<TResult, int, TResult>
-    {
-        var result = TResult.Zero;
-
-        for (var position = 0; position < bits.Length; position++)
+        /// <summary>
+        /// Gets a value indicating that the specified bit is set.
+        /// </summary>
+        /// <param name="position">The position of the bit within the receiver.</param>
+        /// <returns><see langword="true"/> if the bit at <paramref name="position"/> is set; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="position"/> is negative.</exception>
+        public bool IsBitSet(int position)
         {
-            if (bits[position])
-                result |= TResult.One << position;
+            ArgumentOutOfRangeException.ThrowIfNegative(position);
+
+            return (number & (T.One << position)) != T.Zero;
         }
 
-        return result;
-    }
+        /// <summary>
+        /// Sets the bit at the specified position.
+        /// </summary>
+        /// <param name="position">The position of the bit to set.</param>
+        /// <param name="value">The bit value.</param>
+        /// <returns>A modified number.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="position"/> is negative.</exception>
+        public T SetBit(int position, bool value)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(position);
 
-    /// <summary>
-    /// Converts a value to a set of bits.
-    /// </summary>
-    /// <typeparam name="T">The type of the value to convert.</typeparam>
-    /// <param name="value">The value to convert.</param>
-    /// <param name="bits">A buffer to be modified.</param>
-    /// <exception cref="ArgumentOutOfRangeException"><paramref name="bits"/> has not enough length.</exception>
-    public static unsafe void GetBits<T>(this T value, Span<bool> bits)
-        where T : unmanaged, INumber<T>, IBitwiseOperators<T, T, T>, IShiftOperators<T, int, T>
-    {
-        var sizeInBits = sizeof(T) * 8;
-        ArgumentOutOfRangeException.ThrowIfLessThan((uint)bits.Length, (uint)sizeInBits, nameof(bits));
+            var bit = T.One << position;
+            return value
+                ? number | bit
+                : number & ~bit;
+        }
 
-        if (Vector256.IsHardwareAccelerated && int.IsEvenInteger(sizeof(T)))
+        /// <summary>
+        /// Converts bit vector to a value of type <typeparamref name="T"/>.
+        /// </summary>
+        /// <param name="bits">A vector of bits.</param>
+        /// <returns>A value of type <typeparamref name="T"/> restored from the vector of bits.</returns>
+        public static unsafe T FromBits(ReadOnlySpan<bool> bits)
         {
-            Get16Bits(ref Unsafe.As<T, byte>(ref value), sizeof(T), ref MemoryMarshal.GetReference(bits));
-        }
-        else if (Vector128.IsHardwareAccelerated)
-        {
-            Get8Bits(ref Unsafe.As<T, byte>(ref value), sizeof(T), ref MemoryMarshal.GetReference(bits));
-        }
-        else
-        {
-            // software fallback
-            for (var position = 0; position < sizeInBits; position++)
+            var sizeInBits = sizeof(T) * 8;
+
+            if (Bmi2.X64.IsSupported && sizeInBits <= bits.Length)
+                return UsingBmi2(ref Unsafe.As<bool, byte>(ref MemoryMarshal.GetReference(bits)));
+            
+            if (Vector.IsHardwareAccelerated && Vector<byte>.Count >= 8 && sizeInBits <= bits.Length)
+                return Vectorized(ref Unsafe.As<bool, byte>(ref MemoryMarshal.GetReference(bits)));
+
+            return SoftwareFallback(bits);
+            
+            static T UsingBmi2(ref byte bits)
             {
-                bits[position] = (value & (T.One << position)) != T.Zero;
+                Debug.Assert(Bmi2.X64.IsSupported);
+
+                var result = T.Zero;
+
+                for (var i = 0; i < sizeof(T); i++)
+                {
+                    var data = Unsafe.ReadUnaligned<ulong>(in Unsafe.Add(ref bits, i * sizeof(ulong)));
+                    var octet = Bmi2.X64.ParallelBitExtract(data, ExtractDepositBitMask);
+                    result |= T.CreateTruncating(octet) << (i * sizeof(ulong));
+                }
+
+                return result;
+            }
+
+            static T Vectorized(ref byte bits)
+            {
+                Debug.Assert(Vector.IsHardwareAccelerated);
+
+                var result = T.Zero;
+                var bitMask = Vector.CreateScalar(VectorBitMask);
+
+                for (var i = 0; i < sizeof(T); i++)
+                {
+                    var data = Vector.CreateScalar(Unsafe.ReadUnaligned<ulong>(in Unsafe.Add(ref bits, i * sizeof(ulong))));
+                    var vec = Vector.AsVectorByte(bitMask) * Vector.AsVectorByte(data);
+                    var octet = Vector.Sum(vec);
+                    result |= T.CreateTruncating(octet) << (i * sizeof(ulong));
+                }
+
+                return result;
+            }
+
+            static T SoftwareFallback(ReadOnlySpan<bool> bits)
+            {
+                var result = T.Zero;
+                
+                for (var position = 0; position < bits.Length; position++)
+                {
+                    if (bits[position])
+                        result |= T.One << position;
+                }
+
+                return result;
             }
         }
-    }
 
-    private static void Get8Bits(ref byte input, nint length, ref bool output)
-    {
-        Debug.Assert(Vector128.IsHardwareAccelerated);
-
-        for (nint i = 0; i < length; i += sizeof(byte))
+        /// <summary>
+        /// Converts a value to a set of bits.
+        /// </summary>
+        /// <param name="bits">A buffer to be modified.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="bits"/> has not enough length.</exception>
+        public unsafe void GetBits(Span<bool> bits)
         {
-            Get8Bits(
-                Vector128.Create(Unsafe.Add(ref input, i)),
-                ref Unsafe.Add(ref output, i * 8));
+            var sizeInBits = sizeof(T) * 8;
+
+            if (Bmi2.X64.IsSupported && sizeInBits <= bits.Length)
+            {
+                UsingBmi2(ref Unsafe.As<T, byte>(ref number),
+                    (uint)sizeof(T),
+                    ref Unsafe.As<bool, byte>(ref MemoryMarshal.GetReference(bits)));
+            }
+            else if (Vector.IsHardwareAccelerated && Vector<byte>.Count >= 8 && sizeInBits <= bits.Length)
+            {
+                Vectorized(ref Unsafe.As<T, byte>(ref number),
+                    (uint)sizeof(T),
+                    ref Unsafe.As<bool, byte>(ref MemoryMarshal.GetReference(bits)));
+            }
+            else
+            {
+                SoftwareFallback(number, bits.TrimLength(sizeInBits));
+            }
+
+            static void UsingBmi2(ref byte bytes, nuint length, ref byte bits)
+            {
+                Debug.Assert(Bmi2.X64.IsSupported);
+
+                for (nuint i = 0; i < length; i++)
+                {
+                    ulong inputByte = Unsafe.Add(ref bytes, i);
+                    var bitVector = Bmi2.X64.ParallelBitDeposit(inputByte, ExtractDepositBitMask);
+                    Unsafe.WriteUnaligned(ref Unsafe.Add(ref bits, i * sizeof(ulong)), bitVector);
+                }
+            }
+        
+            static void Vectorized(ref byte bytes, nuint length, ref byte bits)
+            {
+                Debug.Assert(Vector.IsHardwareAccelerated);
+        
+                var bitMask = Vector.AsVectorByte(Vector.CreateScalarUnsafe(VectorBitMask));
+        
+                for (nuint i = 0; i < length; i++)
+                {
+                    var inputByte = Vector.Create(Unsafe.Add(ref bytes, i));
+                    var bitVector = Vector.AsVectorUInt64(Vector.Min(inputByte & bitMask, Vector<byte>.One));
+                    Unsafe.WriteUnaligned(ref Unsafe.Add(ref bits, i * 8), bitVector.ToScalar());
+                }
+            }
+
+            static void SoftwareFallback(T number, Span<bool> bits)
+            {
+                for (var position = 0; position < bits.Length; position++)
+                {
+                    bits[position] = (number & (T.One << position)) != T.Zero;
+                }
+            }
         }
-    }
-
-    private static void Get8Bits(Vector128<byte> input, ref bool output)
-    {
-        Debug.Assert(Vector128.IsHardwareAccelerated);
-
-        var onevec = Vector128.Create((byte)1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-        var bitmask = Vector128.Create(
-            0B_0000_0001,
-            0B_0000_0010,
-            0B_0000_0100,
-            0B_0000_1000,
-            0B_0001_0000,
-            0B_0010_0000,
-            0B_0100_0000,
-            0B_1000_0000,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0);
-
-        Vector128.Min(input & bitmask, onevec)
-            .GetLower().StoreUnsafe(ref Unsafe.As<bool, byte>(ref output));
-    }
-
-    private static void Get16Bits(ref byte input, nint length, ref bool output)
-    {
-        Debug.Assert(Vector128.IsHardwareAccelerated);
-
-        for (nint i = 0; i < length; i += sizeof(ushort))
-        {
-            Get16Bits(
-                Vector256.Create(Unsafe.ReadUnaligned<ushort>(ref Unsafe.Add(ref input, i))),
-                ref Unsafe.Add(ref output, i * 8));
-        }
-    }
-
-    private static void Get16Bits(Vector256<ushort> input, ref bool output)
-    {
-        Debug.Assert(Vector256.IsHardwareAccelerated);
-
-        var onevec = Vector256.Create((ushort)1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-        var bitmask = Vector256.Create(
-            0B_0000_0000_0000_0001,
-            0B_0000_0000_0000_0010,
-            0B_0000_0000_0000_0100,
-            0B_0000_0000_0000_1000,
-            0B_0000_0000_0001_0000,
-            0B_0000_0000_0010_0000,
-            0B_0000_0000_0100_0000,
-            0B_0000_0000_1000_0000,
-            0B_0000_0001_0000_0000,
-            0B_0000_0010_0000_0000,
-            0B_0000_0100_0000_0000,
-            0B_0000_1000_0000_0000,
-            0B_0001_0000_0000_0000,
-            0B_0010_0000_0000_0000,
-            0B_0100_0000_0000_0000,
-            0B_1000_0000_0000_0000);
-
-        // normalize first 8 bits for each 128-bit subvector
-        var shuffleMask = Vector256.Create(
-            0,
-            2,
-            4,
-            6,
-            8,
-            10,
-            12,
-            14,
-            byte.MaxValue,
-            byte.MaxValue,
-            byte.MaxValue,
-            byte.MaxValue,
-            byte.MaxValue,
-            byte.MaxValue,
-            byte.MaxValue,
-            byte.MaxValue,
-            16,
-            18,
-            20,
-            22,
-            24,
-            26,
-            28,
-            30,
-            byte.MaxValue,
-            byte.MaxValue,
-            byte.MaxValue,
-            byte.MaxValue,
-            byte.MaxValue,
-            byte.MaxValue,
-            byte.MaxValue,
-            byte.MaxValue);
-
-        var result = Vector256.Shuffle(
-            Vector256.Min(input & bitmask, onevec).AsByte(),
-            shuffleMask);
-
-        result.GetLower().GetLower().StoreUnsafe(ref Unsafe.As<bool, byte>(ref output));
-        result.GetUpper().GetLower().StoreUnsafe(ref Unsafe.Add(ref Unsafe.As<bool, byte>(ref output), 8));
     }
 }

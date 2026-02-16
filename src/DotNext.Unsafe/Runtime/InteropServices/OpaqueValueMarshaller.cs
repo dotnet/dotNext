@@ -18,7 +18,7 @@ public static class OpaqueValueMarshaller<T>
     /// </summary>
     /// <param name="value">The pointer value.</param>
     /// <returns>The address of the pointer.</returns>
-    public static nint ConvertToUnmanaged(OpaqueValue<T> value) => value.valueOrHandle;
+    public static nint ConvertToUnmanaged(OpaqueValue<T> value) => value.handle;
 
     /// <summary>
     /// Converts an address to the pointer.

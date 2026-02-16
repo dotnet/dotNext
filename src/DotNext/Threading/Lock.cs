@@ -12,9 +12,10 @@ namespace DotNext.Threading;
 /// The lock acquisition may block the caller thread.
 /// </remarks>
 [StructLayout(LayoutKind.Auto)]
+[DebuggerDisplay($"LockType = {{{nameof(LockTypeName)}}}, IsOwner = {{{nameof(owner)}}}")]
 public partial struct Lock : IDisposable, IEquatable<Lock>
 {
-    internal enum Type : byte
+    private enum Type : byte
     {
         None = 0,
         Monitor,
@@ -32,15 +33,15 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     /// The lock can be released by calling <see cref="Dispose()"/>.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    public ref struct Holder
+    public ref struct Scope : IDisposable
     {
         private readonly object lockedObject;
         private readonly Type type;
 
-        internal Holder(object lockedObject, Type type)
+        internal Scope(scoped ref readonly Lock @lock)
         {
-            this.lockedObject = lockedObject;
-            this.type = type;
+            type = @lock.type;
+            lockedObject = @lock.lockedObject;
         }
 
         /// <summary>
@@ -84,9 +85,9 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
         /// <summary>
         /// Indicates that the object holds successfully acquired lock.
         /// </summary>
-        /// <param name="holder">The lock holder.</param>
+        /// <param name="scope">The lock holder.</param>
         /// <returns><see langword="true"/>, if the object holds successfully acquired lock; otherwise, <see langword="false"/>.</returns>
-        public static implicit operator bool(in Holder holder) => holder.lockedObject is not null;
+        public static implicit operator bool(in Scope scope) => scope.lockedObject is not null;
     }
 
     private readonly object lockedObject;
@@ -99,6 +100,10 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
         this.type = type;
         this.owner = owner;
     }
+    
+    [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
+    private readonly string? LockTypeName => Enum.GetName(type);
 
     /// <summary>
     /// Wraps semaphore instance into the unified representation of the lock.
@@ -200,7 +205,7 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     /// Acquires lock.
     /// </summary>
     /// <returns>The holder of the acquired lock.</returns>
-    public readonly Holder Acquire()
+    public readonly Scope Acquire()
     {
         AssertLockType();
 
@@ -226,7 +231,7 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
                 break;
         }
 
-        return new Holder(lockedObject, type);
+        return new Scope(in this);
     }
 
     private readonly bool TryAcquire()
@@ -248,17 +253,17 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     /// <summary>
     /// Attempts to acquire lock.
     /// </summary>
-    /// <param name="holder">The lock holder that can be used to release acquired lock.</param>
+    /// <param name="scope">The lock holder that can be used to release acquired lock.</param>
     /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
-    public readonly bool TryAcquire(out Holder holder)
+    public readonly bool TryAcquire(out Scope scope)
     {
         if (TryAcquire())
         {
-            holder = new Holder(lockedObject, type);
+            scope = new Scope(in this);
             return true;
         }
 
-        holder = default;
+        scope = default;
         return false;
     }
 
@@ -282,17 +287,17 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     /// Attempts to acquire lock.
     /// </summary>
     /// <param name="timeout">The amount of time to wait for the lock.</param>
-    /// <param name="holder">The lock holder that can be used to release acquired lock.</param>
+    /// <param name="scope">The lock holder that can be used to release acquired lock.</param>
     /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
-    public readonly bool TryAcquire(TimeSpan timeout, out Holder holder)
+    public readonly bool TryAcquire(TimeSpan timeout, out Scope scope)
     {
         if (TryAcquire(timeout))
         {
-            holder = new Holder(lockedObject, type);
+            scope = new Scope(in this);
             return true;
         }
 
-        holder = default;
+        scope = default;
         return false;
     }
 
@@ -302,8 +307,8 @@ public partial struct Lock : IDisposable, IEquatable<Lock>
     /// <param name="timeout">The amount of time to wait for the lock.</param>
     /// <returns>The holder of the acquired lock.</returns>
     /// <exception cref="TimeoutException">The lock has not been acquired during the specified timeout.</exception>
-    public readonly Holder Acquire(TimeSpan timeout)
-        => TryAcquire(timeout) ? new Holder(lockedObject, type) : throw new TimeoutException();
+    public readonly Scope Acquire(TimeSpan timeout)
+        => TryAcquire(timeout) ? new Scope(in this) : throw new TimeoutException();
 
     /// <summary>
     /// Destroy this lock and dispose underlying lock object if it is owned by the given lock.

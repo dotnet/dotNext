@@ -23,7 +23,9 @@ public readonly partial struct Pointer<T> :
     IComparable<Pointer<T>>,
     IStrongBox,
     ISupplier<nint>,
-    ISpanFormattable
+    ISpanFormattable,
+    IPointer,
+    ITypedReference<T>
     where T : unmanaged
 {
     /// <summary>
@@ -317,6 +319,9 @@ public readonly partial struct Pointer<T> :
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => ref *value;
     }
+
+    /// <inheritdoc/>
+    ref readonly T ITypedReference<T>.Value => ref Value;
 
     /// <summary>
     /// Dereferences this pointer, assuming that this pointer is unaligned.

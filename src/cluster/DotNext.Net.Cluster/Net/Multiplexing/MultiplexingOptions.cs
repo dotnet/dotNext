@@ -9,7 +9,6 @@ using Buffers;
 /// <summary>
 /// Represents multiplexing protocol options.
 /// </summary>
-[Experimental("DOTNEXT001")]
 public abstract class MultiplexingOptions
 {
     private readonly int backlog = 10;

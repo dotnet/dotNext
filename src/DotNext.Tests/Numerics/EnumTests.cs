@@ -1,4 +1,6 @@
-﻿namespace DotNext.Numerics;
+﻿using System.Globalization;
+
+namespace DotNext.Numerics;
 
 public sealed class EnumTests : Test
 {
@@ -211,5 +213,68 @@ public sealed class EnumTests : Test
         var y = (Enum<Int64Enum>)Int64Enum.One;
         Equal(Int64Enum.Two, x + y);
         Equal(Int64Enum.Zero, x - y);
+    }
+
+    [Fact]
+    public static void ParseUtf16()
+    {
+        const string one = "1";
+        Parse(one, ByteEnum.One);
+        Parse(one, SByteEnum.One);
+        Parse(one, Int16Enum.One);
+        Parse(one, UInt16Enum.One);
+        Parse(one, Int32Enum.One);
+        Parse(one, UInt32Enum.One);
+        Parse(one, Int64Enum.One);
+        Parse(one, UInt64Enum.One);
+        
+        static void Parse<T>(ReadOnlySpan<char> str, T expected)
+            where T : struct, Enum
+        {
+            var e = Enum<T>.Parse(str, provider: null);
+            Equal(expected, e);
+        }
+    }
+    
+    [Fact]
+    public static void ParseUtf16UsingNumberStyles()
+    {
+        const string one = "1";
+        Parse(one, ByteEnum.One);
+        Parse(one, SByteEnum.One);
+        Parse(one, Int16Enum.One);
+        Parse(one, UInt16Enum.One);
+        Parse(one, Int32Enum.One);
+        Parse(one, UInt32Enum.One);
+        Parse(one, Int64Enum.One);
+        Parse(one, UInt64Enum.One);
+        
+        static void Parse<T>(ReadOnlySpan<char> str, T expected)
+            where T : struct, Enum
+        {
+            var e = Enum<T>.Parse(str, NumberStyles.Integer, provider: null);
+            Equal(expected, e);
+        }
+    }
+    
+    [Fact]
+    public static void ParseUtf8()
+    {
+        var one = "1"u8;
+        Parse(one, ByteEnum.One);
+        Parse(one, SByteEnum.One);
+        Parse(one, Int16Enum.One);
+        Parse(one, UInt16Enum.One);
+        Parse(one, Int32Enum.One);
+        Parse(one, UInt32Enum.One);
+        Parse(one, Int64Enum.One);
+        Parse(one, UInt64Enum.One);
+        
+        static void Parse<T>(ReadOnlySpan<byte> str, T expected)
+            where T : struct, Enum
+        {
+            var e = Enum<T>.Parse(str, provider: null);
+            Equal(expected, e);
+        }
     }
 }

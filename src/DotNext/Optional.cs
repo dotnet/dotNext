@@ -425,11 +425,7 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         where TFactory : struct, ISupplier<Exception>
     {
         if (!HasValue)
-            Throw(exceptionFactory);
-
-        [DoesNotReturn]
-        [StackTraceHidden]
-        static void Throw(TFactory exceptionFactory) => throw exceptionFactory.Invoke();
+            ExceptionHelpers.Throw(exceptionFactory);
     }
 
     /// <summary>
@@ -560,13 +556,8 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
         }
         else
         {
-            Throw(kind is UndefinedValue);
+            InvalidOperationException.Throw(kind is UndefinedValue);
         }
-
-        [StackTraceHidden]
-        [DoesNotReturn]
-        static void Throw(bool isUndefined)
-            => throw new InvalidOperationException(isUndefined ? ExceptionMessages.OptionalNoValue : ExceptionMessages.OptionalNullValue);
     }
 
     /// <inheritdoc />
@@ -800,4 +791,21 @@ public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, ISt
 
     /// <inheritdoc cref="IOptionMonad{T,TSelf}.op_LogicalNot"/>
     public static bool operator !(in Optional<T> optional) => optional.kind < NotEmptyValue;
+}
+
+file static class ExceptionHelpers
+{
+    extension(InvalidOperationException)
+    {
+        [StackTraceHidden]
+        [DoesNotReturn]
+        public static void Throw(bool isUndefined)
+            => throw new InvalidOperationException(isUndefined ? ExceptionMessages.OptionalNoValue : ExceptionMessages.OptionalNullValue);
+    }
+
+    [DoesNotReturn]
+    [StackTraceHidden]
+    public static void Throw<TFactory>(TFactory exceptionFactory)
+        where TFactory : struct, ISupplier<Exception>
+        => throw exceptionFactory.Invoke();
 }

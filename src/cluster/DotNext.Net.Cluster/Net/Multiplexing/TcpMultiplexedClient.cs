@@ -14,7 +14,6 @@ namespace DotNext.Net.Multiplexing;
 /// </remarks>
 /// <param name="address">The address of the server.</param>
 /// <param name="configuration">The configuration of the client.</param>
-[Experimental("DOTNEXT001")]
 public class TcpMultiplexedClient(EndPoint address, TcpMultiplexedClient.Options configuration) : MultiplexedClient(configuration), IPeer
 {
     private readonly TimeSpan connectTimeout = configuration.ConnectTimeout;

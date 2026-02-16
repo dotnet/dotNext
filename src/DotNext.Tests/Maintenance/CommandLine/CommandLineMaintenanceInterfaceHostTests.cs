@@ -170,10 +170,10 @@ public sealed class CommandLineMaintenanceInterfaceHostTests : Test
         protected override ValueTask<IPrincipal> ChallengeAsync(string login, string secret, CancellationToken token)
         {
             if (string.Equals(login, "test", StringComparison.Ordinal) && string.Equals(secret, "pwd", StringComparison.Ordinal))
-                return new(new GenericPrincipal(new GenericIdentity(login), roles: new[] { "role1" }));
+                return new(new GenericPrincipal(new GenericIdentity(login), roles: ["role1"]));
 
             if (string.Equals(login, "test2", StringComparison.Ordinal) && string.Equals(secret, "pwd", StringComparison.Ordinal))
-                return new(new GenericPrincipal(new GenericIdentity(login), roles: new[] { "role1", "role2" }));
+                return new(new GenericPrincipal(new GenericIdentity(login), roles: ["role1", "role2"]));
 
             return new(default(IPrincipal));
         }

@@ -8,6 +8,7 @@ public sealed class LockAcquisitionTests : Test
     {
         var obj = new object();
         var holder1 = await AsyncLock.AcquireReadLockAsync(obj, TestToken);
+        False(holder1.IsEmpty);
         if (holder1) { }
         else Fail("Lock is not acquired");
 

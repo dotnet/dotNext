@@ -6,7 +6,7 @@ namespace DotNext.Numerics;
 
 [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
-public class BitVectorBenchmark
+public class GetBitsBenchmark
 {
     [Benchmark(Description = "8 bits")]
     public void Get8Bits()
@@ -23,12 +23,12 @@ public class BitVectorBenchmark
     [Benchmark(Description = "32 bits")]
     public void Get32Bits()
     {
-        Number.GetBits(52U, stackalloc bool[32]);
+        52U.GetBits(stackalloc bool[32]);
     }
 
     [Benchmark(Description = "64 bits")]
     public void Get64Bits()
     {
-        Number.GetBits(52UL, stackalloc bool[64]);
+        52UL.GetBits(stackalloc bool[64]);
     }
 }

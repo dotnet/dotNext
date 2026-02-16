@@ -5,6 +5,7 @@ namespace DotNext.Collections.Generic;
 public static partial class AsyncEnumerable
 {
     private sealed class ThrowingEnumerator<T>(Exception exception) : IAsyncEnumerator<T>, IAsyncEnumerable<T>
+        where T : allows ref struct
     {
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public T Current => throw new InvalidOperationException();

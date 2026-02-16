@@ -113,7 +113,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
 
         if (IsSingleSegment)
         {
-            segment = first is null ? ReadOnlyMemory<T>.Empty : first.WrittenMemory;
+            segment = first?.WrittenMemory ?? ReadOnlyMemory<T>.Empty;
             return true;
         }
 
@@ -236,7 +236,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     async ValueTask IGrowableBuffer<T>.CopyToAsync<TConsumer>(TConsumer consumer, CancellationToken token)
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
-        for (MemoryChunk? current = first; current is not null; current = current.Next)
+        for (var current = first; current is not null; current = current.Next)
         {
             await consumer.Invoke(current.WrittenMemory, token).ConfigureAwait(false);
         }
@@ -262,7 +262,7 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     {
         ObjectDisposedException.ThrowIf(IsDisposed, this);
         var total = 0;
-        for (MemoryChunk? current = first; current is not null && !output.IsEmpty; current = current.Next)
+        for (var current = first; current is not null && !output.IsEmpty; current = current.Next)
         {
             var writtenCount = current.WrittenMemory.Span >> output;
             output = output.Slice(writtenCount);
@@ -344,7 +344,12 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
     /// <returns>The textual representation of this buffer.</returns>
     public override string ToString()
     {
-        return typeof(T) == typeof(char) && length <= int.MaxValue ? BuildString(first, (int)length) : GetType().ToString();
+        return typeof(T) == typeof(char) && length <= Array.MaxLength
+            ? BuildString(first, (int)length)
+            : GetType().ToString();
+        
+        static string BuildString(MemoryChunk? first, int length)
+            => length is 0 ? string.Empty : string.Create(length, first, FillChars);
 
         static void FillChars(Span<char> output, MemoryChunk? chunk)
         {
@@ -356,23 +361,6 @@ public partial class SparseBufferWriter<T> : Disposable, IGrowableBuffer<T>, ISu
                 ref var firstChar = ref Unsafe.As<T, char>(ref GetReference(input));
                 CreateReadOnlySpan(ref firstChar, input.Length).CopyTo(output);
             }
-        }
-
-        static string BuildString(MemoryChunk? first, int length)
-        {
-            string result;
-
-            if (length is 0)
-            {
-                result = string.Empty;
-            }
-            else
-            {
-                result = new('\0', length);
-                FillChars(CreateSpan(ref Unsafe.AsRef(in result.GetPinnableReference()), length), first);
-            }
-
-            return result;
         }
     }
 }

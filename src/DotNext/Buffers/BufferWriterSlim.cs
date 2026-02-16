@@ -190,13 +190,9 @@ public ref partial struct BufferWriterSlim<T> : IGrowableBuffer<T>
 
         var newPosition = position + count;
         if (newPosition > Capacity)
-            ThrowInvalidOperationException();
+            InvalidOperationException.Throw();
 
         position = newPosition;
-
-        [DoesNotReturn]
-        [StackTraceHidden]
-        static void ThrowInvalidOperationException() => throw new InvalidOperationException();
     }
 
     /// <summary>

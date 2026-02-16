@@ -182,21 +182,21 @@ public static class BasicExtensions
         /// <typeparam name="T">The value type.</typeparam>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void KeepAlive<T>(ref readonly T location)
-            where T : struct
+            where T : struct, allows ref struct
         {
             if (RuntimeHelpers.IsReferenceOrContainsReferences<T>())
-                KeepAlive(in Unsafe.InToRef<T, byte>(in location));
-        }
+                KeepAliveImpl(in location);
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        [StackTraceHidden]
-        private static void KeepAlive(ref readonly byte location)
-        {
-            // We cannot inline this check to avoid compiler optimization to eliminate null check.
-            // This check can be eliminated because typically the location points to the field in the class
-            // and that field is already statically checked for null
-            if (Unsafe.IsNullRef(in location))
-                throw new ArgumentNullException(nameof(location));
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            [StackTraceHidden]
+            static void KeepAliveImpl(ref readonly T location)
+            {
+                // We cannot inline this check to avoid compiler optimization to eliminate null check.
+                // This check can be eliminated because typically the location points to the field in the class
+                // and that field is already statically checked for null
+                if (Unsafe.IsNullRef(in location))
+                    throw new ArgumentNullException(nameof(location));
+            }
         }
     }
 }
