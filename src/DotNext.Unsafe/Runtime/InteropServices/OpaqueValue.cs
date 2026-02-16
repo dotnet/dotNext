@@ -114,6 +114,9 @@ public static class OpaqueValueType
         {
             get
             {
+                if (default(T) is IPointer || typeof(T) == typeof(GCHandle))
+                    throw new NotSupportedException();
+                
                 if (!RuntimeHelpers.IsReferenceOrContainsReferences<T>())
                     return ref Unsafe.AsRef<T>(opaque.handle.ToPointer());
 
@@ -134,23 +137,10 @@ public static class OpaqueValueType
         /// <summary>
         /// Gets a reference to the underlying value.
         /// </summary>
-        public ref T Value => ref AsRef<T, Pointer<T>>(opaque);
+        public ref T Value => ref FromPointer<T, Pointer<T>>(opaque);
     }
 
-    /// <summary>
-    /// Extends <see cref="OpaqueValue{T}"/> type when it's instantiated with <see cref="OnStackReference{T}"/> data type.
-    /// </summary>
-    /// <param name="opaque">The opaque value that represents the pointer.</param>
-    /// <typeparam name="T">The type which value is allocated on the stack.</typeparam>
-    extension<T>(OpaqueValue<OnStackReference<T>> opaque) where T : allows ref struct
-    {
-        /// <summary>
-        /// Gets a reference to the underlying value.
-        /// </summary>
-        public ref T Value => ref AsRef<T, OnStackReference<T>>(opaque);
-    }
-
-    private static unsafe ref T AsRef<T, TPointer>(OpaqueValue<TPointer> value)
+    private static unsafe ref T FromPointer<T, TPointer>(OpaqueValue<TPointer> value)
         where T : allows ref struct
         where TPointer : struct, IPointer, ITypedReference<T>
         => ref Unsafe.AsRef<T>(value.handle.ToPointer());

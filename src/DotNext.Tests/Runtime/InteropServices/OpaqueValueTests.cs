@@ -78,17 +78,6 @@ public sealed class OpaqueValueTests : Test
     }
 
     [Fact]
-    public static void OnStackReference()
-    {
-        var i = 42;
-        using var opaque = new OpaqueValue<OnStackReference<int>>(new(ref i));
-        Equal(i, opaque.Value);
-
-        opaque.Value = 56;
-        Equal(i, opaque.Value);
-    }
-
-    [Fact]
     public static void UntypedValue()
     {
         var obj = new object();
@@ -102,7 +91,12 @@ public sealed class OpaqueValueTests : Test
         
         opaque.Dispose();
         handle.Free();
+    }
 
-        GCHandle<string> s;
+    [Fact]
+    public static void InvalidValue()
+    {
+        Throws<NotSupportedException>(static () => OpaqueValueType.get_Value(default(OpaqueValue<GCHandle>)));
+        Throws<NotSupportedException>(static () => OpaqueValueType.get_Value<Pointer<int>>(default(OpaqueValue<Pointer<int>>)));
     }
 }
