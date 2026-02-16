@@ -21,9 +21,9 @@ public readonly record struct OnStackReference<T>: IPointer, ITypedReference<T>
     /// <summary>
     /// Initializes a new pointer to the stack memory.
     /// </summary>
-    /// <param name="value">A location within the stack.</param>
-    public OnStackReference(ref T value)
-        => address = Unsafe.AddressOf(in value);
+    /// <param name="location">A location within the stack.</param>
+    public OnStackReference(ref T location)
+        => address = Unsafe.AddressOf(in location);
 
     nint IPointer.Address => address;
 
