@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Collections;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Generic;
@@ -138,5 +139,57 @@ public sealed class EnumeratorTests : Test
         True(enumerator.MoveNext());
         Equal(9, enumerator.Current);
         False(enumerator.MoveNext());
+    }
+
+    [Fact]
+    public static void CustomEnumerators()
+    {
+        IEnumerator enumerator = IEnumerator<int>.Create(new ValueTypeCustomEnumerator());
+        True(enumerator.MoveNext());
+        Equal(ValueTypeCustomEnumerator.Value, enumerator.Current);
+
+        enumerator = IEnumerator<string>.Create(new ReferenceTypeCustomEnumerator());
+        True(enumerator.MoveNext());
+        Equal(ReferenceTypeCustomEnumerator.Value, enumerator.Current);
+
+        enumerator = IEnumerator<ReadOnlySpan<byte>>.Create(new ByRefLikeCustomEnumerator());
+        True(enumerator.MoveNext());
+        Throws<NotSupportedException>(() => enumerator.Current);
+    }
+    
+    private struct ValueTypeCustomEnumerator : IEnumerator<ValueTypeCustomEnumerator, int>
+    {
+        public const int Value = 42;
+        
+        private bool requested;
+
+        public bool MoveNext()
+            => !requested && (requested = true);
+
+        public int Current => Value;
+    }
+    
+    private struct ReferenceTypeCustomEnumerator : IEnumerator<ReferenceTypeCustomEnumerator, string>
+    {
+        public const string Value = "Hello, world!";
+        
+        private bool requested;
+
+        public bool MoveNext()
+            => !requested && (requested = true);
+
+        public string Current => Value;
+    }
+
+    private struct ByRefLikeCustomEnumerator : IEnumerator<ByRefLikeCustomEnumerator, ReadOnlySpan<byte>>
+    {
+        public static ReadOnlySpan<byte> Value => [42, 43];
+        
+        private bool requested;
+        
+        public bool MoveNext()
+            => !requested && (requested = true);
+
+        public ReadOnlySpan<byte> Current => Value;
     }
 }

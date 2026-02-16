@@ -1,5 +1,6 @@
 using System.Collections;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Collections.Generic;
 
@@ -16,6 +17,7 @@ namespace DotNext.Collections.Generic;
 [EditorBrowsable(EditorBrowsableState.Advanced)]
 public interface IEnumerator<TSelf, out T> : IResettable
     where TSelf : struct, IEnumerator<TSelf, T>
+    where T : allows ref struct
 {
     /// <inheritdoc cref="IEnumerator.MoveNext()"/>
     bool MoveNext();
@@ -46,12 +48,26 @@ public interface IEnumerator<TSelf, out T> : IResettable
 
 file sealed class BoxedEnumerator<TEnumerator, T>(in TEnumerator enumerator, CancellationToken token = default) : IEnumerator<T>, IAsyncEnumerator<T>
     where TEnumerator : struct, IEnumerator<TEnumerator, T>
+    where T : allows ref struct
 {
     private TEnumerator enumerator = enumerator;
     
     public T Current => enumerator.Current;
 
-    object? IEnumerator.Current => enumerator.Current;
+    object? IEnumerator.Current
+    {
+        get
+        {
+            var elementType = typeof(T);
+            if (elementType.IsByRefLike)
+                throw new NotSupportedException();
+
+            var value = enumerator.Current;
+            return elementType.IsValueType
+                ? RuntimeHelpers.Box(ref Unsafe.As<T, byte>(ref value), typeof(T).TypeHandle)
+                : Unsafe.As<T, object>(ref value);
+        }
+    }
 
     bool IEnumerator.MoveNext() => enumerator.MoveNext();
 

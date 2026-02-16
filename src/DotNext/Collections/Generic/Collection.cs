@@ -169,7 +169,9 @@ public static partial class Collection
     /// <param name="token">The token that can be used to cancel the enumeration.</param>
     /// <returns>The task representing asynchronous execution of this method.</returns>
     /// <exception cref="OperationCanceledException">The enumeration has been canceled.</exception>
-    public static async ValueTask ForEachAsync<T>(this IEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action, CancellationToken token = default)
+    public static async ValueTask ForEachAsync<T>(this IEnumerable<T> collection, Func<T, CancellationToken, ValueTask> action,
+        CancellationToken token = default)
+        where T : allows ref struct
     {
         foreach (var item in collection)
             await action.Invoke(item, token).ConfigureAwait(false);
@@ -187,8 +189,8 @@ public static partial class Collection
         return collection switch
         {
             null => throw new ArgumentNullException(nameof(collection)),
-            List<T> list => Span.FirstOrNone<T>(CollectionsMarshal.AsSpan(list)),
-            T[] array => Span.FirstOrNone<T>(array),
+            List<T> list => CollectionsMarshal.AsSpan(list).FirstOrNone(),
+            T[] array => Span.FirstOrNone(array),
             string str => Unsafe.BitCast<Optional<char>, Optional<T>>(Span.FirstOrNone<char>(str)),
             LinkedList<T> list => list.First is { } first ? first.Value : Optional<T>.None,
             IList<T> list => list.Count > 0 ? list[0] : Optional<T>.None,
@@ -215,8 +217,8 @@ public static partial class Collection
         return collection switch
         {
             null => throw new ArgumentNullException(nameof(collection)),
-            List<T> list => Span.LastOrNone<T>(CollectionsMarshal.AsSpan(list)),
-            T[] array => Span.LastOrNone<T>(array),
+            List<T> list => CollectionsMarshal.AsSpan(list).LastOrNone(),
+            T[] array => Span.LastOrNone(array),
             string str => Unsafe.BitCast<Optional<char>, Optional<T>>(Span.LastOrNone<char>(str)),
             LinkedList<T> list => list.Last is { } last ? last.Value : Optional<T>.None,
             IList<T> list => list.Count > 0 ? list[^1] : Optional<T>.None,
@@ -296,6 +298,7 @@ public static partial class Collection
 }
 
 file sealed class YieldingEnumerable<T>(IEnumerable<T> enumerable) : IAsyncEnumerable<T>
+    where T : allows ref struct
 {
     IAsyncEnumerator<T> IAsyncEnumerable<T>.GetAsyncEnumerator(CancellationToken token)
         => new YieldingEnumerator(enumerable, token);

@@ -11,6 +11,7 @@ public static partial class Enumerator
     /// <typeparam name="T">The type of elements returned by enumerator.</typeparam>
     [StructLayout(LayoutKind.Auto)]
     public struct LimitedEnumerator<T> : IEnumerator<T>
+        where T : allows ref struct
     {
         private readonly IEnumerator<T> enumerator;
         private readonly bool disposeEnumerator;
@@ -36,7 +37,7 @@ public static partial class Enumerator
         public readonly T Current => enumerator.Current;
 
         /// <inheritdoc/>
-        readonly object? IEnumerator.Current => Current;
+        readonly object? IEnumerator.Current => enumerator.As<IEnumerator>().Current;
 
         /// <summary>
         /// Sets the enumerator to its initial position.

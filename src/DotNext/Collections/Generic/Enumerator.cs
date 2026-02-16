@@ -10,6 +10,7 @@ public static partial class Enumerator
     /// </summary>
     /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
     extension<T>(IEnumerator<T>)
+        where T : allows ref struct
     {
         /// <summary>
         /// Bypasses a specified number of elements in a sequence.
@@ -49,6 +50,7 @@ public static partial class Enumerator
     /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
     public static bool Skip<TEnumerator, T>(this ref TEnumerator enumerator, int count)
         where TEnumerator : struct, IEnumerator<T>, allows ref struct
+        where T : allows ref struct
     {
         for (; count > 0; count--)
         {
@@ -68,6 +70,7 @@ public static partial class Enumerator
     /// <param name="leaveOpen"><see langword="false"/> to dispose <paramref name="enumerator"/>; otherwise, <see langword="true"/>.</param>
     /// <returns>The enumerator which is limited by count.</returns>
     public static LimitedEnumerator<T> Limit<T>(this IEnumerator<T> enumerator, int count, bool leaveOpen = false)
+        where T : allows ref struct
         => new(enumerator, count, leaveOpen);
     
     /// <summary>
@@ -75,6 +78,7 @@ public static partial class Enumerator
     /// </summary>
     /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
     extension<T>(IAsyncEnumerator<T> e)
+        where T : allows ref struct
     {
         /// <summary>
         /// Bypasses a specified number of elements in a sequence.
