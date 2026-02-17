@@ -79,27 +79,27 @@
       <a class="xref" href="DotNext.ISupplier-3.html#DotNext_ISupplier_3_Invoke__0__1_">ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;.Invoke(ReadOnlyMemory&lt;byte&gt;, CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html#DotNext_Runtime_CompilerServices_IFunctional_1_ToDelegate">IFunctional&lt;Func&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;&gt;.ToDelegate()</a>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html#DotNext_Runtime_CompilerServices_IFunctional_DynamicInvoke_DotNext_Runtime_Variant__System_Int32_DotNext_Runtime_Variant_">IFunctional.DynamicInvoke(scoped ref readonly Variant, int, scoped Variant)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html#DotNext_Runtime_CompilerServices_IFunctional_GetArgument__1_DotNext_Runtime_Variant__System_Int32_">IFunctional.GetArgument&lt;T&gt;(ref readonly Variant, int)</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.IO.html">IO</a></h6>
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_IO_IAsyncBinaryWriter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IAsyncBinaryWriter : ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IAsyncBinaryWriter : ISupplier&lt;ReadOnlyMemory&lt;byte&gt;, CancellationToken, ValueTask&gt;, IFunctional</code></pre>
   </div>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter_Buffer.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter.Buffer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L80">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/IAsyncBinaryWriter.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryWriter_Buffer_" data-uid="DotNext.IO.IAsyncBinaryWriter.Buffer*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryWriter_Buffer" data-uid="DotNext.IO.IAsyncBinaryWriter.Buffer">Buffer</h4>
-  <div class="markdown level1 summary"><p>Gets buffer to modify.</p>
+  <div class="markdown level1 summary"><p>Gets the buffer to modify.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -127,12 +127,9 @@
   </div>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter_AdvanceAsync_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter.AdvanceAsync(System.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L90">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/IAsyncBinaryWriter.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryWriter_AdvanceAsync_" data-uid="DotNext.IO.IAsyncBinaryWriter.AdvanceAsync*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryWriter_AdvanceAsync_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryWriter.AdvanceAsync(System.Int32,System.Threading.CancellationToken)">AdvanceAsync(int, CancellationToken)</h4>
@@ -199,12 +196,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter_CopyFromAsync_System_IO_Pipelines_PipeReader_System_Nullable_System_Int64__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter.CopyFromAsync(System.IO.Pipelines.PipeReader%2CSystem.Nullable%7BSystem.Int64%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L278">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/IAsyncBinaryWriter.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryWriter_CopyFromAsync_" data-uid="DotNext.IO.IAsyncBinaryWriter.CopyFromAsync*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryWriter_CopyFromAsync_System_IO_Pipelines_PipeReader_System_Nullable_System_Int64__System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryWriter.CopyFromAsync(System.IO.Pipelines.PipeReader,System.Nullable{System.Int64},System.Threading.CancellationToken)">CopyFromAsync(PipeReader, long?, CancellationToken)</h4>
@@ -287,12 +281,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter_CopyFromAsync_System_IO_Stream_System_Nullable_System_Int64__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter.CopyFromAsync(System.IO.Stream%2CSystem.Nullable%7BSystem.Int64%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L236">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/IAsyncBinaryWriter.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryWriter_CopyFromAsync_" data-uid="DotNext.IO.IAsyncBinaryWriter.CopyFromAsync*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryWriter_CopyFromAsync_System_IO_Stream_System_Nullable_System_Int64__System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryWriter.CopyFromAsync(System.IO.Stream,System.Nullable{System.Int64},System.Threading.CancellationToken)">CopyFromAsync(Stream, long?, CancellationToken)</h4>
@@ -375,155 +366,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter_Create_System_Buffers_IBufferWriter_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter.Create(System.Buffers.IBufferWriter%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L326">View Source</a>
-  </span>
-  <a id="DotNext_IO_IAsyncBinaryWriter_Create_" data-uid="DotNext.IO.IAsyncBinaryWriter.Create*"></a>
-  <h4 id="DotNext_IO_IAsyncBinaryWriter_Create_System_Buffers_IBufferWriter_System_Byte__" data-uid="DotNext.IO.IAsyncBinaryWriter.Create(System.Buffers.IBufferWriter{System.Byte})">Create(IBufferWriter&lt;byte&gt;)</h4>
-  <div class="markdown level1 summary"><p>Creates default implementation of binary writer for the buffer writer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IAsyncBinaryWriter Create(IBufferWriter&lt;byte&gt; writer)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
-        <td><span class="parametername">writer</span></td>
-        <td><p>The buffer writer.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.IO.IAsyncBinaryWriter.html">IAsyncBinaryWriter</a></td>
-        <td><p>The binary writer.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">writer</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter_Create_System_IO_Pipelines_PipeWriter_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter.Create(System.IO.Pipelines.PipeWriter%2CSystem.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L312">View Source</a>
-  </span>
-  <a id="DotNext_IO_IAsyncBinaryWriter_Create_" data-uid="DotNext.IO.IAsyncBinaryWriter.Create*"></a>
-  <h4 id="DotNext_IO_IAsyncBinaryWriter_Create_System_IO_Pipelines_PipeWriter_System_Int64_" data-uid="DotNext.IO.IAsyncBinaryWriter.Create(System.IO.Pipelines.PipeWriter,System.Int64)">Create(PipeWriter, long)</h4>
-  <div class="markdown level1 summary"><p>Creates default implementation of binary writer for the pipe.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IAsyncBinaryWriter Create(PipeWriter output, long bufferSize = 0)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a></td>
-        <td><span class="parametername">output</span></td>
-        <td><p>The stream instance.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
-        <td><span class="parametername">bufferSize</span></td>
-        <td><p>The maximum numbers of bytes that can be buffered in the memory without flushing.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.IO.IAsyncBinaryWriter.html">IAsyncBinaryWriter</a></td>
-        <td><p>The binary writer.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">output</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">bufferSize</code> or is less than or equal to zero.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter_Create_System_IO_Stream_System_Memory_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter.Create(System.IO.Stream%2CSystem.Memory%7BSystem.Byte%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L296">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/IAsyncBinaryWriter.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryWriter_Create_" data-uid="DotNext.IO.IAsyncBinaryWriter.Create*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryWriter_Create_System_IO_Stream_System_Memory_System_Byte__" data-uid="DotNext.IO.IAsyncBinaryWriter.Create(System.IO.Stream,System.Memory{System.Byte})">Create(Stream, Memory&lt;byte&gt;)</h4>
@@ -600,12 +445,9 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter_EncodeAsync_System_ReadOnlyMemory_System_Char__DotNext_Text_EncodingContext_System_Nullable_DotNext_IO_LengthFormat__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter.EncodeAsync(System.ReadOnlyMemory%7BSystem.Char%7D%2CDotNext.Text.EncodingContext%2CSystem.Nullable%7BDotNext.IO.LengthFormat%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L145">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/IAsyncBinaryWriter.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryWriter_EncodeAsync_" data-uid="DotNext.IO.IAsyncBinaryWriter.EncodeAsync*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryWriter_EncodeAsync_System_ReadOnlyMemory_System_Char__DotNext_Text_EncodingContext_System_Nullable_DotNext_IO_LengthFormat__System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryWriter.EncodeAsync(System.ReadOnlyMemory{System.Char},DotNext.Text.EncodingContext,System.Nullable{DotNext.IO.LengthFormat},System.Threading.CancellationToken)">EncodeAsync(ReadOnlyMemory&lt;char&gt;, EncodingContext, LengthFormat?, CancellationToken)</h4>
@@ -689,12 +531,112 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter_FormatAsync__1___0_DotNext_Text_EncodingContext_System_Nullable_DotNext_IO_LengthFormat__System_String_System_IFormatProvider_DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter.FormatAsync%60%601(%60%600%2CDotNext.Text.EncodingContext%2CSystem.Nullable%7BDotNext.IO.LengthFormat%7D%2CSystem.String%2CSystem.IFormatProvider%2CDotNext.Buffers.MemoryAllocator%7BSystem.Char%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/IAsyncBinaryWriter.cs">View Source</a>
   </span>
+  <a id="DotNext_IO_IAsyncBinaryWriter_FormatAsync_" data-uid="DotNext.IO.IAsyncBinaryWriter.FormatAsync*"></a>
+  <h4 id="DotNext_IO_IAsyncBinaryWriter_FormatAsync__1___0_DotNext_IO_LengthFormat_System_String_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryWriter.FormatAsync``1(``0,DotNext.IO.LengthFormat,System.String,System.IFormatProvider,System.Threading.CancellationToken)">FormatAsync&lt;T&gt;(T, LengthFormat, string?, IFormatProvider?, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Converts the value to UTF-8 encoded characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask&lt;int&gt; FormatAsync&lt;T&gt;(T value, LengthFormat lengthFormat, string? format = null, IFormatProvider? provider = null, CancellationToken token = default) where T : IUtf8SpanFormattable</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to convert.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>String length encoding format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
+        <td><span class="parametername">format</span></td>
+        <td><p>The format of the value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>The format provider.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</td>
+        <td><p>The number of written bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the value to convert.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.internalbufferoverflowexception">InternalBufferOverflowException</a></td>
+        <td><p>The internal buffer cannot place all UTF-8 bytes exposed by <code class="paramref">value</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L191">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/IAsyncBinaryWriter.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryWriter_FormatAsync_" data-uid="DotNext.IO.IAsyncBinaryWriter.FormatAsync*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryWriter_FormatAsync__1___0_DotNext_Text_EncodingContext_System_Nullable_DotNext_IO_LengthFormat__System_String_System_IFormatProvider_DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryWriter.FormatAsync``1(``0,DotNext.Text.EncodingContext,System.Nullable{DotNext.IO.LengthFormat},System.String,System.IFormatProvider,DotNext.Buffers.MemoryAllocator{System.Char},System.Threading.CancellationToken)">FormatAsync&lt;T&gt;(T, EncodingContext, LengthFormat?, string?, IFormatProvider?, MemoryAllocator&lt;char&gt;?, CancellationToken)</h4>
@@ -812,118 +754,9 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter_FormatAsync__1___0_System_Nullable_DotNext_IO_LengthFormat__System_String_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter.FormatAsync%60%601(%60%600%2CSystem.Nullable%7BDotNext.IO.LengthFormat%7D%2CSystem.String%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L206">View Source</a>
-  </span>
-  <a id="DotNext_IO_IAsyncBinaryWriter_FormatAsync_" data-uid="DotNext.IO.IAsyncBinaryWriter.FormatAsync*"></a>
-  <h4 id="DotNext_IO_IAsyncBinaryWriter_FormatAsync__1___0_System_Nullable_DotNext_IO_LengthFormat__System_String_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryWriter.FormatAsync``1(``0,System.Nullable{DotNext.IO.LengthFormat},System.String,System.IFormatProvider,System.Threading.CancellationToken)">FormatAsync&lt;T&gt;(T, LengthFormat?, string?, IFormatProvider?, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Converts the value to UTF-8 encoded characters.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask&lt;int&gt; FormatAsync&lt;T&gt;(T value, LengthFormat? lengthFormat, string? format = null, IFormatProvider? provider = null, CancellationToken token = default) where T : IUtf8SpanFormattable</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The value to convert.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.IO.LengthFormat.html">LengthFormat</a>?</td>
-        <td><span class="parametername">lengthFormat</span></td>
-        <td><p>String length encoding format.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><span class="parametername">format</span></td>
-        <td><p>The format of the value.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
-        <td><span class="parametername">provider</span></td>
-        <td><p>The format provider.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>&gt;</td>
-        <td><p>The number of written bytes.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the value to convert.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.internalbufferoverflowexception">InternalBufferOverflowException</a></td>
-        <td><p>The internal buffer cannot place all UTF-8 bytes exposed by <code class="paramref">value</code>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter_TryGetBufferWriter.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter.TryGetBufferWriter%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L133">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/IAsyncBinaryWriter.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryWriter_TryGetBufferWriter_" data-uid="DotNext.IO.IAsyncBinaryWriter.TryGetBufferWriter*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryWriter_TryGetBufferWriter" data-uid="DotNext.IO.IAsyncBinaryWriter.TryGetBufferWriter">TryGetBufferWriter()</h4>
@@ -950,17 +783,14 @@ when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBina
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Nullable_DotNext_IO_LengthFormat__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter.WriteAsync(System.ReadOnlyMemory%7BSystem.Byte%7D%2CSystem.Nullable%7BDotNext.IO.LengthFormat%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L103">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/IAsyncBinaryWriter.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryWriter_WriteAsync_" data-uid="DotNext.IO.IAsyncBinaryWriter.WriteAsync*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryWriter_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Nullable_DotNext_IO_LengthFormat__System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryWriter.WriteAsync(System.ReadOnlyMemory{System.Byte},System.Nullable{DotNext.IO.LengthFormat},System.Threading.CancellationToken)">WriteAsync(ReadOnlyMemory&lt;byte&gt;, LengthFormat?, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Encodes a block of memory, optionally prefixed with the length encoded as a sequence of bytes
-according with the specified format.</p>
+according to the specified format.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
@@ -1034,12 +864,9 @@ according with the specified format.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter_WriteAsync__1___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter.WriteAsync%60%601(%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L29">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/IAsyncBinaryWriter.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryWriter_WriteAsync_" data-uid="DotNext.IO.IAsyncBinaryWriter.WriteAsync*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryWriter_WriteAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryWriter.WriteAsync``1(``0,System.Threading.CancellationToken)">WriteAsync&lt;T&gt;(T, CancellationToken)</h4>
@@ -1122,12 +949,9 @@ according with the specified format.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter_WriteBigEndianAsync__1___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter.WriteBigEndianAsync%60%601(%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L68">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/IAsyncBinaryWriter.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryWriter_WriteBigEndianAsync_" data-uid="DotNext.IO.IAsyncBinaryWriter.WriteBigEndianAsync*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryWriter_WriteBigEndianAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryWriter.WriteBigEndianAsync``1(``0,System.Threading.CancellationToken)">WriteBigEndianAsync&lt;T&gt;(T, CancellationToken)</h4>
@@ -1210,12 +1034,9 @@ according with the specified format.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter_WriteLittleEndianAsync__1___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter.WriteLittleEndianAsync%60%601(%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L52">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/IAsyncBinaryWriter.cs">View Source</a>
   </span>
   <a id="DotNext_IO_IAsyncBinaryWriter_WriteLittleEndianAsync_" data-uid="DotNext.IO.IAsyncBinaryWriter.WriteLittleEndianAsync*"></a>
   <h4 id="DotNext_IO_IAsyncBinaryWriter_WriteLittleEndianAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.IO.IAsyncBinaryWriter.WriteLittleEndianAsync``1(``0,System.Threading.CancellationToken)">WriteLittleEndianAsync&lt;T&gt;(T, CancellationToken)</h4>
@@ -1303,16 +1124,10 @@ according with the specified format.</p>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <h3 id="seealso">See Also</h3>
   <div class="seealso">
@@ -1327,10 +1142,7 @@ according with the specified format.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_IAsyncBinaryWriter.md&amp;value=---%0Auid%3A%20DotNext.IO.IAsyncBinaryWriter%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/IAsyncBinaryWriter.cs/#L19" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/IAsyncBinaryWriter.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

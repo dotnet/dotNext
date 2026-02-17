@@ -79,6 +79,15 @@
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LocalAddressMeterAttributeName">IRaftCluster.LocalAddressMeterAttributeName</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_TryGetLeaseToken_System_Threading_CancellationToken__">IRaftCluster.TryGetLeaseToken(out CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ApplyReadBarrierAsync_System_Threading_CancellationToken_">IRaftCluster.ApplyReadBarrierAsync(CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_WaitForLeadershipAsync_System_TimeSpan_System_Threading_CancellationToken_">IRaftCluster.WaitForLeadershipAsync(TimeSpan, CancellationToken)</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Term">IRaftCluster.Term</a>
     </div>
     <div>
@@ -91,9 +100,6 @@
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_AuditTrail">IRaftCluster.AuditTrail</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_TryGetLeaseToken_System_Threading_CancellationToken__">IRaftCluster.TryGetLeaseToken(out CancellationToken)</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_LeadershipToken">IRaftCluster.LeadershipToken</a>
     </div>
     <div>
@@ -101,12 +107,6 @@
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Readiness">IRaftCluster.Readiness</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_ApplyReadBarrierAsync_System_Threading_CancellationToken_">IRaftCluster.ApplyReadBarrierAsync(CancellationToken)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_WaitForLeadershipAsync_System_TimeSpan_System_Threading_CancellationToken_">IRaftCluster.WaitForLeadershipAsync(TimeSpan, CancellationToken)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster-1.html#DotNext_Net_Cluster_Replication_IReplicationCluster_1_ReplicateAsync__1___0_System_Threading_CancellationToken_">IReplicationCluster&lt;IRaftLogEntry&gt;.ReplicateAsync&lt;TEntryImpl&gt;(TEntryImpl, CancellationToken)</a>
@@ -118,16 +118,16 @@
       <a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster.html#DotNext_Net_Cluster_Replication_IReplicationCluster_ReplicationCompleted">IReplicationCluster.ReplicationCompleted</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.ICluster.html#DotNext_Net_Cluster_ICluster_Leader">ICluster.Leader</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.Net.Cluster.ICluster.html#DotNext_Net_Cluster_ICluster_WaitForLeaderAsync_System_TimeSpan_System_Threading_CancellationToken_">ICluster.WaitForLeaderAsync(TimeSpan, CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.ICluster.html#DotNext_Net_Cluster_ICluster_LeaderChanged">ICluster.LeaderChanged</a>
+      <a class="xref" href="DotNext.Net.Cluster.ICluster.html#DotNext_Net_Cluster_ICluster_ResignAsync_System_Threading_CancellationToken_">ICluster.ResignAsync(CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.ICluster.html#DotNext_Net_Cluster_ICluster_ResignAsync_System_Threading_CancellationToken_">ICluster.ResignAsync(CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.ICluster.html#DotNext_Net_Cluster_ICluster_Leader">ICluster.Leader</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Net.Cluster.ICluster.html#DotNext_Net_Cluster_ICluster_LeaderChanged">ICluster.LeaderChanged</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.IPeerMesh-1.html#DotNext_Net_IPeerMesh_1_TryGetPeer_System_Net_EndPoint_">IPeerMesh&lt;IClusterMember&gt;.TryGetPeer(EndPoint)</a>
@@ -150,12 +150,9 @@
   </div>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Extensions_IStandbyModeSupport_Standby.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Extensions.IStandbyModeSupport.Standby%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Extensions/IStandbyModeSupport.cs/#L35">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Extensions/IStandbyModeSupport.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Extensions_IStandbyModeSupport_Standby_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Extensions.IStandbyModeSupport.Standby*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Extensions_IStandbyModeSupport_Standby" data-uid="DotNext.Net.Cluster.Consensus.Raft.Extensions.IStandbyModeSupport.Standby">Standby</h4>
@@ -183,12 +180,9 @@
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Extensions_IStandbyModeSupport_EnableStandbyModeAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Extensions.IStandbyModeSupport.EnableStandbyModeAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Extensions/IStandbyModeSupport.cs/#L30">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Extensions/IStandbyModeSupport.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Extensions_IStandbyModeSupport_EnableStandbyModeAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Extensions.IStandbyModeSupport.EnableStandbyModeAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Extensions_IStandbyModeSupport_EnableStandbyModeAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Extensions.IStandbyModeSupport.EnableStandbyModeAsync(System.Threading.CancellationToken)">EnableStandbyModeAsync(CancellationToken)</h4>
@@ -253,12 +247,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Extensions_IStandbyModeSupport_RevertToNormalModeAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Extensions.IStandbyModeSupport.RevertToNormalModeAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Extensions/IStandbyModeSupport.cs/#L16">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Extensions/IStandbyModeSupport.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Extensions_IStandbyModeSupport_RevertToNormalModeAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Extensions.IStandbyModeSupport.RevertToNormalModeAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Extensions_IStandbyModeSupport_RevertToNormalModeAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Extensions.IStandbyModeSupport.RevertToNormalModeAsync(System.Threading.CancellationToken)">RevertToNormalModeAsync(CancellationToken)</h4>
@@ -325,16 +316,10 @@
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.RaftClusterExtensions.html#DotNext_Net_Cluster_Consensus_Raft_RaftClusterExtensions_ReplicateAsync_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_System_ReadOnlyMemory_System_Byte__System_Object_System_Threading_CancellationToken_">RaftClusterExtensions.ReplicateAsync(IRaftCluster, ReadOnlyMemory&lt;byte&gt;, object?, CancellationToken)</a>
@@ -354,10 +339,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Extensions_IStandbyModeSupport.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Extensions.IStandbyModeSupport%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Extensions/IStandbyModeSupport.cs/#L6" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/Extensions/IStandbyModeSupport.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

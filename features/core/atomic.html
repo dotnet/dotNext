@@ -93,11 +93,7 @@
 </ul>
 <p>Reference types have similar set of atomic operations except arithmetic operations such as increment, decrement and addition.</p>
 <h1 id="atomic-operations-for-scalar-types">Atomic operations for scalar types</h1>
-<p>Atomic operations are extension methods exposed by <a class="xref" href="../../api/DotNext.Threading.Atomic.html">AtomicInt32</a> class.</p>
-<p>Atomic operations for some data types represented by atomic containers instread of extension methods:</p>
-<ul>
-<li><a class="xref" href="../../api/DotNext.Threading.Atomic.Boolean.html">Atomic.Boolean</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.boolean">bool</a> data type</li>
-</ul>
+<p>Atomic operations are extension methods exposed by <a class="xref" href="../../api/DotNext.Threading.Atomic.html">Atomic</a> class.</p>
 <p>The following example demonstrates how to use advanced atomic operations</p>
 <pre><code class="lang-csharp">using DotNext.Threading;
 
@@ -105,9 +101,9 @@ public class TestClass
 {
     private long field;
 
-    public void IncByTwo() =&gt; field.UpdateAndGet(x =&gt; x + 2);   //update field with a sum of its value and constant 2 atomically
+    public void IncByTwo() =&gt; Interlocked.UpdateAndGet(ref field, x =&gt; x + 2);   //update field with a sum of its value and constant 2 atomically
 
-    public long Sub(long value) =&gt; field.AccumulateAndGet(value, (current, v) =&gt; current - value); //the same as field -= value but performed atomically
+    public long Sub(long value) =&gt; Interlocked.AccumulateAndGet(ref field, value, (current, v) =&gt; current - value); //the same as field -= value but performed atomically
 }
 </code></pre>
 <h1 id="atomic-access-for-arbitrary-value-types">Atomic access for arbitrary value types</h1>

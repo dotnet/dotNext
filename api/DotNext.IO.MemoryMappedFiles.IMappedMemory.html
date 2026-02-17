@@ -76,6 +76,9 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory-1.html#DotNext_Runtime_InteropServices_IUnmanagedMemory_1_Reallocate_System_Int32_">IUnmanagedMemory&lt;byte&gt;.Reallocate(int)</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory-1.html#DotNext_Runtime_InteropServices_IUnmanagedMemory_1_Length">IUnmanagedMemory&lt;byte&gt;.Length</a>
     </div>
     <div>
@@ -88,37 +91,34 @@
       <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory-1.html#DotNext_Runtime_InteropServices_IUnmanagedMemory_1_Item_System_Int32_">IUnmanagedMemory&lt;byte&gt;.this[int]</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory-1.html#DotNext_Runtime_InteropServices_IUnmanagedMemory_1_Reallocate_System_Int32_">IUnmanagedMemory&lt;byte&gt;.Reallocate(int)</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory-1.html#DotNext_Runtime_InteropServices_IUnmanagedMemory_1_SupportsReallocation">IUnmanagedMemory&lt;byte&gt;.SupportsReallocation</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html#DotNext_Runtime_InteropServices_IUnmanagedMemory_Size">IUnmanagedMemory.Size</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html#DotNext_Runtime_InteropServices_IUnmanagedMemory_Clear">IUnmanagedMemory.Clear()</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html#DotNext_Runtime_InteropServices_IUnmanagedMemory_Bytes">IUnmanagedMemory.Bytes</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html#DotNext_Runtime_InteropServices_IUnmanagedMemory_AsStream">IUnmanagedMemory.AsStream()</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.ISupplier-1.html#DotNext_ISupplier_1_Invoke">ISupplier&lt;Stream&gt;.Invoke()</a>
+      <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html#DotNext_Runtime_InteropServices_IUnmanagedMemory_Size">IUnmanagedMemory.Size</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.ISupplier-1.html#DotNext_ISupplier_1_NullOrDefault">ISupplier&lt;Stream&gt;.NullOrDefault</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html#DotNext_Runtime_CompilerServices_IFunctional_1_ToDelegate">IFunctional&lt;Func&lt;Stream&gt;&gt;.ToDelegate()</a>
+      <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html#DotNext_Runtime_InteropServices_IUnmanagedMemory_Bytes">IUnmanagedMemory.Bytes</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.imemoryowner-1.memory">IMemoryOwner&lt;byte&gt;.Memory</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable.dispose">IDisposable.Dispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.ISupplier-1.html#DotNext_ISupplier_1_Invoke">ISupplier&lt;Memory&lt;byte&gt;&gt;.Invoke()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html#DotNext_Runtime_CompilerServices_IFunctional_DynamicInvoke_DotNext_Runtime_Variant__System_Int32_DotNext_Runtime_Variant_">IFunctional.DynamicInvoke(scoped ref readonly Variant, int, scoped Variant)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html#DotNext_Runtime_CompilerServices_IFunctional_GetArgument__1_DotNext_Runtime_Variant__System_Int32_">IFunctional.GetArgument&lt;T&gt;(ref readonly Variant, int)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.IO.IFlushable.html#DotNext_IO_IFlushable_Flush">IFlushable.Flush()</a>
@@ -132,16 +132,13 @@
   <h5 id="DotNext_IO_MemoryMappedFiles_IMappedMemory_syntax">Syntax</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public interface IMappedMemory : IUnmanagedMemory&lt;byte&gt;, IUnmanagedMemory, ISupplier&lt;Stream&gt;, IFunctional&lt;Func&lt;Stream&gt;&gt;, IMemoryOwner&lt;byte&gt;, IDisposable, ISupplier&lt;Memory&lt;byte&gt;&gt;, IFunctional&lt;Func&lt;Memory&lt;byte&gt;&gt;&gt;, IFlushable</code></pre>
+public interface IMappedMemory : IUnmanagedMemory&lt;byte&gt;, IUnmanagedMemory, IMemoryOwner&lt;byte&gt;, IDisposable, ISupplier&lt;Memory&lt;byte&gt;&gt;, IFunctional, IFlushable</code></pre>
   </div>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_IMappedMemory_Buffer.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.IMappedMemory.Buffer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/IO/MemoryMappedFiles/IMappedMemory.cs/#L16">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/IO/MemoryMappedFiles/IMappedMemory.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryMappedFiles_IMappedMemory_Buffer_" data-uid="DotNext.IO.MemoryMappedFiles.IMappedMemory.Buffer*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_IMappedMemory_Buffer" data-uid="DotNext.IO.MemoryMappedFiles.IMappedMemory.Buffer">Buffer</h4>
@@ -172,16 +169,10 @@ public interface IMappedMemory : IUnmanagedMemory&lt;byte&gt;, IUnmanagedMemory,
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
 
 </article>
@@ -192,10 +183,7 @@ public interface IMappedMemory : IUnmanagedMemory&lt;byte&gt;, IUnmanagedMemory,
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_IMappedMemory.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.IMappedMemory%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/IO/MemoryMappedFiles/IMappedMemory.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/IO/MemoryMappedFiles/IMappedMemory.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

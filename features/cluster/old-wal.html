@@ -68,7 +68,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="persistent-write-ahead-log">Persistent Write Ahead Log</h1>
 
-<p>.NEXT Cluster Programming Suite ships general-purpose high-performance <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html">persistent Write-Ahead Log</a> with the following features:</p>
+<p>.NEXT Cluster Programming Suite ships general-purpose high-performance <a href="xref:DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine">persistent Write-Ahead Log</a> with the following features:</p>
 <ul>
 <li>Log compaction based on snapshotting</li>
 <li>File-based persistent storage for the log entries</li>
@@ -205,9 +205,9 @@ sealed class SimpleAuditTrail : MemoryBasedStateMachine
 </ul>
 <p><em>Foreground</em> and <em>Background</em> compaction modes demonstrate the best I/O performance on SSD (because of parallel writes to the disk) while <em>Sequential</em> is suitable for classic HDD. <em>Incremental</em> demonstrates the low overhead caused by log compaction but requires enough memory to keep the snapshot.</p>
 <h2 id="snapshot-building">Snapshot Building</h2>
-<p><code>CreateSnapshotBuilder(in SnapshotBuilderContext)</code> method of <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html">MemoryBasedStateMachine</a> class allows to provide a snapshot builder which is responsible for snapshot construction. There are two types of builders:</p>
+<p><code>CreateSnapshotBuilder(in SnapshotBuilderContext)</code> method of <a href="xref:DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine">MemoryBasedStateMachine</a> class allows to provide a snapshot builder which is responsible for snapshot construction. There are two types of builders:</p>
 <ul>
-<li><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.IncrementalSnapshotBuilder.html">Incremental builder</a> constructs the snapshot incrementally. The final snapshot is represented by the builder itself. The first applied log entry is always represented by the current snapshot. After the final log entry, the current snapshot will be rewritten completely by the constructed snapshot. In other words, the incremental builder has the following lifecycle:
+<li><a href="xref:DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.IncrementalSnapshotBuilder">Incremental builder</a> constructs the snapshot incrementally. The final snapshot is represented by the builder itself. The first applied log entry is always represented by the current snapshot. After the final log entry, the current snapshot will be rewritten completely by the constructed snapshot. In other words, the incremental builder has the following lifecycle:
 <ul>
 <li>Instantiate the builder</li>
 <li>Apply the current snapshot</li>
@@ -215,7 +215,7 @@ sealed class SimpleAuditTrail : MemoryBasedStateMachine
 <li>Build a new snapshot and rewrite the current snapshot with a new one</li>
 </ul>
 </li>
-<li><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.InlineSnapshotBuilder.html">Inline builder</a> allows to apply the change to the existing snapshot on-the-fly. In means that there is no temporary representation of the snapshot during build process.</li>
+<li><a href="xref:DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.InlineSnapshotBuilder">Inline builder</a> allows to apply the change to the existing snapshot on-the-fly. In means that there is no temporary representation of the snapshot during build process.</li>
 </ul>
 <div class="NOTE">
 <h5>Note</h5>
@@ -224,7 +224,7 @@ sealed class SimpleAuditTrail : MemoryBasedStateMachine
 <p><em>Incremental</em> approach is much simplier for programming. However, it is suitable for relatively simple WALs where the data in the log is of kilobytes or megabytes in size, because a whole snapshot must be interpreted at the start of build process.</p>
 <p><em>Inline</em> approach doesn't require interpretation of a whole snapshot. Instead, you can modify the current snapshot according to the data associated with the log entry included in the scope of log compaction.</p>
 <h1 id="interpreter-framework">Interpreter Framework</h1>
-<p><code>ApplyAsync</code> method and snapshot builder responsible for interpretation of custom log entries usually containing the commands and applying these commands to the underlying database engine. <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.html">LogEntry</a> is a generic representation of the log entry written to persistent WAL and it has no knowledge about semantics of the command. Therefore, you need to decode and interpret it manually.</p>
+<p><code>ApplyAsync</code> method and snapshot builder responsible for interpretation of custom log entries usually containing the commands and applying these commands to the underlying database engine. <a href="xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry">LogEntry</a> is a generic representation of the log entry written to persistent WAL and it has no knowledge about semantics of the command. Therefore, you need to decode and interpret it manually.</p>
 <p>There are two ways to do that:</p>
 <ol>
 <li>JSON serialization</li>
@@ -364,7 +364,7 @@ public class MyInterpreter : CommandInterpreter
 </code></pre>
 <div class="NOTE">
 <h5>Note</h5>
-<p>Snapshot command is applicable only if you're using <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.IncrementalSnapshotBuilder.html">incremental snapshot builder</a>.</p>
+<p>Snapshot command is applicable only if you're using <a href="xref:DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.IncrementalSnapshotBuilder">incremental snapshot builder</a>.</p>
 </div>
 <p><code>CommandInterpreter</code> automatically discovers all declared command handlers and associated command types.</p>
 <p>The last step is to combine the class derived from <code>MemoryBasedStateMachine</code> and the custom interpreter.</p>
@@ -395,14 +395,14 @@ var interpreter = new CommandInterpreter.Builder()
 </code></pre>
 <p>Builder style can be used when you don't want to derive state machine engine from <code>CommandInterpreter</code> class for some reason.</p>
 <h1 id="custom-write-ahead-log">Custom Write-Ahead Log</h1>
-<p><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html">Memory-based State Machine</a> provided out-of-the-box is not a <em>one size fits all</em> solution. Its major drawback is log compaction performance: no new entries can be committed until snapshotting is done. For small state machines, incremental snapshot is an option. For better performance, it is recommended to use inline snapshotting that allows to modify the snapshot in-place without reinterpreting it. However, if state machine represents a huge volume of data even inline snapshotting will take significant amount of time. Background compaction provides granular control over how many committed log entry your want to compact. But write-heavy workload can produce log entries faster than background compaction can collect them.</p>
+<p><a href="xref:DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine">Memory-based State Machine</a> provided out-of-the-box is not a <em>one size fits all</em> solution. Its major drawback is log compaction performance: no new entries can be committed until snapshotting is done. For small state machines, incremental snapshot is an option. For better performance, it is recommended to use inline snapshotting that allows to modify the snapshot in-place without reinterpreting it. However, if state machine represents a huge volume of data even inline snapshotting will take significant amount of time. Background compaction provides granular control over how many committed log entry your want to compact. But write-heavy workload can produce log entries faster than background compaction can collect them.</p>
 <p>Therefore, the existing implementation suitable for a limited set of scenarios. The best performance can be achieved with carefully selected underlying data structure according to the nature of the data, workload and the chosed database model: relational, K/V storage, document storage etc. Typically, memory-based state machine is suitable for implementing small K/V database, configuration storage or distributed lock.</p>
 <p><a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a> is an entry point to start an implementation of custom Write-Ahead Log from scratch. For performance reasons, you can combine implementation of WAL and the state machine in the same class.</p>
-<p>In the same time, <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.DiskBasedStateMachine.html">Disk-based State Machine</a> offers basic infrastructure for writing custom WAL. It keeps only recent changes in the memory. Snapshotting must be implemented by derived class.</p>
+<p>In the same time, <a href="xref:DotNext.Net.Cluster.Consensus.Raft.DiskBasedStateMachine">Disk-based State Machine</a> offers basic infrastructure for writing custom WAL. It keeps only recent changes in the memory. Snapshotting must be implemented by derived class.</p>
 <h2 id="lsm-trees">LSM Trees</h2>
 <p><a href="https://en.wikipedia.org/wiki/Log-structured_merge-tree">Log-structured merge tree</a> is a perfect data structure to implement write-heavy K/V database. Here you can find some tips about the architecture of custom WAL and state machine on top of LSM Trees. Most LSM trees used in practice employ multiple levels:</p>
 <ul>
-<li><strong>Level 0</strong>. With help of <a class="xref" href="../../api/DotNext.Net.Cluster.Consensus.Raft.DiskBasedStateMachine.html">DiskBasedStateMachine</a>, you can organize the segments of log entries at this level. Each segment stores the log entries. When the log entry is committed, you can update in-memory state machine at this level with the committed entry. When all log entries in the segment are committed, you can persist in-memory state to the segment at Level 1. This approach allows to keep recent changes in the memory and easily recover in case of failure. When the state is persisted and moved to the Level 1, all committed entries can be discarded from the log.</li>
+<li><strong>Level 0</strong>. With help of <a href="xref:DotNext.Net.Cluster.Consensus.Raft.DiskBasedStateMachine">DiskBasedStateMachine</a>, you can organize the segments of log entries at this level. Each segment stores the log entries. When the log entry is committed, you can update in-memory state machine at this level with the committed entry. When all log entries in the segment are committed, you can persist in-memory state to the segment at Level 1. This approach allows to keep recent changes in the memory and easily recover in case of failure. When the state is persisted and moved to the Level 1, all committed entries can be discarded from the log.</li>
 <li><strong>Level 1</strong>. At this level the implementation maintains the segments (or <em>runs</em>) persisted on the disk. New segments arrive from Level 0. The segment can be persisted using <a href="https://yetanotherdevblog.com/lsm/">SSTable</a> format.</li>
 <li><strong>Level 2</strong>. Growing number of segments at Level 1 may consume a lot of space on the disk. Most of segments may contain outdated data so they can be discarded. The actual implementation must merge multiple segments from Level 1 into a single segment. This process is called <em>compaction</em>. Compaction can be implemented as a background process. Here you need a global lock only for two things: delete merged segments and replace the existing snapshot with a new one.</li>
 </ul>

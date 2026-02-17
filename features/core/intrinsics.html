@@ -68,42 +68,38 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="intrinsics">Intrinsics</h1>
 
-<p>Intrinsic methods are special kind of methods whose implementation is handled specially by JIT compiler or written in pure IL code to achieve low (or zero, in some situations) overhead. .NET library has good example in the form of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafe">Unsafe</a> class which is implemented in pure IL. The implementation in pure IL allows to be closer to the bare metal and utilize code patterns recognized by JIT compiler.</p>
-<p>.NEXT library has numerous intrinsics which are exposed by <a class="xref" href="../../api/DotNext.Runtime.Intrinsics.html">Intrinsics</a> class and grouped into the following categories:</p>
-<ul>
-<li>Common intrinsics which have very low or zero runtime overhead</li>
-<li>Low-level memory manipulations</li>
-</ul>
+<p>Intrinsic methods are special kind of methods whose implementation is handled specially by JIT compiler or written in pure IL code to achieve low (or zero, in some situations) overhead. .NET library has good example in the form of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafe">Unsafe</a> class.</p>
+<p>.NEXT library has numerous intrinsics which are exposed by <a class="xref" href="../../api/DotNext.Runtime.CompilerServices.AdvancedHelpers.html">AdvancedHelpers</a> class and extends <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafe">Unsafe</a> and <a href="https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.runtimehelpers">RuntimeHelpers</a> classes with static methods.</p>
 <h1 id="common-intrinsics">Common Intrinsics</h1>
 <p>Common intrinsics are various methods aimed to increase performance in some situations.</p>
 <p><code>AlignOf&lt;T&gt;</code> method is a macros that determines the alignment of the specified type.</p>
-<p><code>AreCompatible</code> methid is a macros that determines binary compatibility of two types passed as generic arguments. The two types are compatible if</p>
+<p><code>AreCompatible</code> method is a macros that determines binary compatibility of two types passed as generic arguments. The two types are compatible if</p>
 <ul>
 <li>They have the same alignment</li>
 <li>They have the same size</li>
 </ul>
 <p>For instance, <strong>byte</strong> and <strong>sbyte</strong> are compatible.</p>
 <p><code>IsDefault</code> method is the most useful method that allows to check whether the value of type <code>T</code> is <code>default(T)</code>. It works for both value type and reference type.</p>
-<pre><code class="lang-csharp">using DotNext.Runtime;
+<pre><code class="lang-csharp">using DotNext.Runtime.CompilerServices;
 
-Intrinsics.IsDefault(&quot;&quot;);   //false
-Intrinsics.IsDefault(default(string));  //true
-Intrinsics.IsDefault(0);    //true
-Intrinsics.IsDefault(1);    //false
+RuntimeHelpers.IsDefault(&quot;&quot;);   //false
+RuntimeHelpers.IsDefault(default(string));  //true
+RuntimeHelpers.IsDefault(0);    //true
+RuntimeHelpers.IsDefault(1);    //false
 </code></pre>
 <h1 id="exact-type-testing">Exact Type-Testing</h1>
 <p>The <strong>is</strong> operator in C# checks if the result of an expression is compatible with a given type. However, in some rare cases you need to check whether the object is of exact type. <code>IsExactTypeOf</code> method provides optimized implementation of this case:</p>
 <pre><code class="lang-csharp">&quot;a&quot; is object;  //true
 &quot;a&quot; is string;  //true
-Intrinsics.IsExactTypeOf&lt;object&gt;(&quot;a&quot;);  //false
-Intrinsics.IsExactTypeOf&lt;string&gt;(&quot;a&quot;);  //true
+object.IsExactTypeOf(&quot;a&quot;);  //false
+string.IsExactTypeOf(&quot;a&quot;);  //true
 </code></pre>
 <h1 id="array-length">Array Length</h1>
 <p>C# 9 introduces primitive type <code>nuint</code> that can be used for accessing array elements without hidden conversion of the index. However, there is no way to obtain array length as native integer. <code>Intrinsics.GetLength</code> provides this ability so the loop over array elements can be rewritten as follows:</p>
-<pre><code class="lang-csharp">using DotNext.Runtime;
+<pre><code class="lang-csharp">using DotNext.;
 
 var array = new int[] { ... };
-for (nuint i = 0; i &lt; Intrinsics.GetLength(array); i++)
+for (nuint i = 0; i &lt; Array.GetLength(array); i++)
 {
     
 }

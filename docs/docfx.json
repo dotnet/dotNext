@@ -3,35 +3,35 @@
     {
       "src": [
         {
-          "files": [ "**.csproj" ],
+          "files": [ "bin/Debug/net10.0/DotNext.dll" ],
           "src": "../src/DotNext/"
         },
         {
-          "files": [ "**.csproj" ],
+          "files": [ "bin/Debug/net10.0/DotNext.IO.dll" ],
           "src": "../src/DotNext.IO/"
         },
         {
-          "files": [ "**.csproj" ],
+          "files": [ "bin/Debug/net10.0/DotNext.Metaprogramming.dll" ],
           "src": "../src/DotNext.Metaprogramming/"
         },
         {
-          "files": [ "**.csproj" ],
+          "files": [ "bin/Debug/net10.0/DotNext.Unsafe.dll" ],
           "src": "../src/DotNext.Unsafe/"
         },
         {
-          "files": [ "**.csproj" ],
+          "files": [ "bin/Debug/net10.0/DotNext.Threading.dll" ],
           "src": "../src/DotNext.Threading/"
         },
         {
-          "files": [ "**.csproj" ],
-          "src": "../src/cluster/DotNext.Net.Cluster"
+          "files": [ "bin/Debug/net10.0/DotNext.Net.Cluster.dll" ],
+          "src": "../src/cluster/DotNext.Net.Cluster/"
         },
         {
-          "files": [ "**.csproj" ],
+          "files": [ "bin/Debug/net10.0/DotNext.AspNetCore.Cluster.dll" ],
           "src": "../src/cluster/DotNext.AspNetCore.Cluster/"
         },
         {
-          "files": [ "**.csproj" ],
+          "files": [ "bin/Debug/net10.0/DotNext.MaintenanceServices.dll" ],
           "src": "../src/DotNext.MaintenanceServices/"
         }
       ],

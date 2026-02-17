@@ -88,19 +88,7 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposing">Disposable.IsDisposing</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_CreateException">Disposable.CreateException()</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposedTask">Disposable.DisposedTask</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_GetDisposedTask__1">Disposable.GetDisposedTask&lt;T&gt;()</a>
@@ -121,22 +109,22 @@
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(IEnumerable&lt;IAsyncDisposable&gt;)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(params IEnumerable&lt;IAsyncDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;T&gt;(ReadOnlySpan&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;TDisposable&gt;(params ReadOnlySpan&lt;TDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_IAsyncDisposable___">Disposable.DisposeAsync(params IAsyncDisposable[])</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposing">Disposable.IsDisposing</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposedTask">Disposable.DisposedTask</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
@@ -145,10 +133,19 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Net.html">Net</a>.<a class="xref" href="DotNext.Net.Cluster.html">Cluster</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.html">Consensus</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.html">Raft</a>.<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Http.html">Http</a></h6>
@@ -163,12 +160,9 @@ For instance, if you want to implement sharding.</p>
 </div>
   <h3 id="constructors">Constructors
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost__ctor_System_IServiceProvider_System_String_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.%23ctor(System.IServiceProvider%2CSystem.String)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L79">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost__ctor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost__ctor_System_IServiceProvider_System_String_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.#ctor(System.IServiceProvider,System.String)">RaftClusterHttpHost(IServiceProvider, string)</h4>
@@ -206,24 +200,21 @@ For instance, if you want to implement sharding.</p>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost__ctor_System_IServiceProvider_System_String__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>A list of required services that must be provided by <code class="paramref">activationContext</code>:</p>
 <table><tbody><tr><td class="term"><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.options.ioptionsmonitor-1">IOptionsMonitor&lt;TOptions&gt;</a> of type <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Http.HttpClusterMemberConfiguration.html">HttpClusterMemberConfiguration</a></td><td class="description">Provides configuration of the local cluster member.</td></tr><tr><td class="term"><a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.iloggerfactory">ILoggerFactory</a></td><td class="description">Provides logging infrastructure.</td></tr></tbody></table>
-A list of optional services that may be provided by <code class="paramref">activationContext</code>:
+<p>A list of optional services that may be provided by <code class="paramref">activationContext</code>:</p>
 <table><tbody><tr><td class="term"><a class="xref" href="DotNext.Net.Cluster.Messaging.IInputChannel.html">IInputChannel</a></td><td class="description">Provides custom message processing.</td></tr><tr><td class="term"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime.html">IClusterMemberLifetime</a></td><td class="description">Provides instance lifetime hooks.</td></tr><tr><td class="term"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.IClusterConfigurationStorage-1.html">IClusterConfigurationStorage&lt;TAddress&gt;</a> of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.connections.uriendpoint">UriEndPoint</a></td><td class="description">Provides cluster configuration storage.</td></tr><tr><td class="term"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.ihttpmessagehandlerfactory">IHttpMessageHandlerFactory</a></td><td class="description">
 Provides <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.net.http.httpmessagehandler">HttpMessageHandler</a> implementation used by the local
 node to communicate with other cluster members.
 This is a key interface that can be used to share the same HTTP connection between
 multiple cluster instances when accessing the same node.
 </td></tr><tr><td class="term"><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Membership.ClusterMemberAnnouncer-1.html">ClusterMemberAnnouncer&lt;TAddress&gt;</a> of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.aspnetcore.connections.uriendpoint">UriEndPoint</a></td><td class="description">Allows to announce a new node the cluster leader.</td></tr><tr><td class="term"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func&lt;T1, T2, TResult&gt;</a> with generic arguments <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a>, <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.html">IRaftClusterMember</a>, and <a class="xref" href="DotNext.Diagnostics.IFailureDetector.html">IFailureDetector</a></td><td class="description">Provides failure detection mechanism that allows the leader to remove unresponsive members from the cluster.</td></tr></tbody></table>
-You can supply these services from the implementation of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iserviceprovider">IServiceProvider</a> interface provided
-by Dependency Injection container or override some of the supplied services using <a class="xref" href="DotNext.ServiceProviderFactory.html">ServiceProviderFactory</a>.
+<p>You can supply these services from the implementation of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iserviceprovider">IServiceProvider</a> interface provided
+by Dependency Injection container or override some of the supplied services using <a class="xref" href="DotNext.ServiceProviderFactory.html">ServiceProviderFactory</a>.</p>
 </div>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Cluster.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Cluster%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L103">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Cluster_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Cluster*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Cluster" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Cluster">Cluster</h4>
@@ -249,12 +240,9 @@ by Dependency Injection container or override some of the supplied services usin
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Path.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Path%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L97">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Path_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Path*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Path" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Path">Path</h4>
@@ -283,12 +271,9 @@ public PathString Path { get; }</code></pre>
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DispatchAsync_Microsoft_AspNetCore_Http_HttpContext_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DispatchAsync(Microsoft.AspNetCore.Http.HttpContext)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L114">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DispatchAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DispatchAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DispatchAsync_Microsoft_AspNetCore_Http_HttpContext_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DispatchAsync(Microsoft.AspNetCore.Http.HttpContext)">DispatchAsync(HttpContext)</h4>
@@ -338,12 +323,9 @@ public Task DispatchAsync(HttpContext context)</code></pre>
   <div class="markdown level1 remarks"><p>This method is useful only when you want to host multiple Raft clusters inside of the same application.
 For instance, if you want to implement sharding.</p>
 </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L132">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Dispose_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Dispose*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_Dispose_System_Boolean_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -374,12 +356,9 @@ For instance, if you want to implement sharding.</p>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a></div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsync%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L149">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsync" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsync">DisposeAsync()</h4>
@@ -406,12 +385,9 @@ For instance, if you want to implement sharding.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsyncCore.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsyncCore%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L143">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsyncCore_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsyncCore*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsyncCore" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.DisposeAsyncCore">DisposeAsyncCore()</h4>
@@ -443,12 +419,9 @@ For instance, if you want to implement sharding.</p>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_DisposeAsyncCore_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method makes sense only if derived class implements <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a> interface.</p>
 </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StartAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StartAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L122">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StartAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StartAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StartAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StartAsync(System.Threading.CancellationToken)">StartAsync(CancellationToken)</h4>
@@ -493,12 +466,9 @@ For instance, if you want to implement sharding.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StopAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StopAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L129">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StopAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StopAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost_StopAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost.StopAsync(System.Threading.CancellationToken)">StopAsync(CancellationToken)</h4>
@@ -558,16 +528,10 @@ For instance, if you want to implement sharding.</p>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
 
 </article>
@@ -578,10 +542,7 @@ For instance, if you want to implement sharding.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_RaftClusterHttpHost.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.RaftClusterHttpHost%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs/#L22" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftClusterHttpHost.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -80,49 +80,11 @@ Classes
       <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.html">ConsensusOnlyState</a></h4>
       <section><p>Represents lightweight Raft node state that is suitable for distributed consensus only.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.DiskBasedStateMachine.html">DiskBasedStateMachine</a></h4>
-      <section><p>Represents disk-based state machine.</p>
-</section>
       <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.LeaderOperationException.html">LeaderOperationException</a></h4>
       <section><p>Indicates that the operation requires a leader in the cluster.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.LogEntriesBufferingOptions.html">LogEntriesBufferingOptions</a></h4>
-      <section><p>Represents buffering options used for batch processing of log entries.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.LogEntryBufferingOptions.html">LogEntryBufferingOptions</a></h4>
-      <section><p>Represents options for creating buffered Raft log entries.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.html">MemoryBasedStateMachine</a></h4>
-      <section><p>Represents memory-based state machine with snapshotting support.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.IncrementalSnapshotBuilder.html">MemoryBasedStateMachine.IncrementalSnapshotBuilder</a></h4>
-      <section><p>Represents incremental snapshot builder.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.InlineSnapshotBuilder.html">MemoryBasedStateMachine.InlineSnapshotBuilder</a></h4>
-      <section><p>Represents a snapshot builder that allows to write directly to the snapshot file
-using <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.randomaccess">RandomAccess</a> class.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.Options.html">MemoryBasedStateMachine.Options</a></h4>
-      <section><p>Represents configuration options of memory-based state machine.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.SnapshotBuilder.html">MemoryBasedStateMachine.SnapshotBuilder</a></h4>
-      <section><p>Represents snapshot builder.</p>
-</section>
       <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.NotLeaderException.html">NotLeaderException</a></h4>
       <section><p>Indicates that the operation cannot be performed on a node which is not a leader.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a></h4>
-      <section><p>Represents general purpose persistent audit trail compatible with Raft algorithm.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.InternalStateBrokenException.html">PersistentState.InternalStateBrokenException</a></h4>
-      <section><p>Indicates that <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_IntegrityCheck">IntegrityCheck</a> enabled and
-the internal state of the WAL didn't pass the integrity check.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.MissingPartitionException.html">PersistentState.MissingPartitionException</a></h4>
-      <section><p>Indicates that the log entry doesn't have a partition.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.html">PersistentState.Options</a></h4>
-      <section><p>Represents configuration options of the persistent audit trail.</p>
 </section>
       <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentStateExtensions.html">PersistentStateExtensions</a></h4>
       <section><p>Provides various extension methods for <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a> interface.</p>
@@ -176,16 +138,6 @@ Structs
       <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.BinaryLogEntry-1.html">BinaryLogEntry&lt;T&gt;</a></h4>
       <section><p>Represents a log entry with binary payload.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.BufferedLogEntry.html">BufferedLogEntry</a></h4>
-      <section><p>Represents buffered log entry.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.BufferedLogEntryList.html">BufferedLogEntryList</a></h4>
-      <section><p>Represents log entry producer that allows to bufferize log entries
-from another producer.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.DiskBasedStateMachine.SnapshotAccessToken.html">DiskBasedStateMachine.SnapshotAccessToken</a></h4>
-      <section><p>Represents a token that uniquely identifies the concurrent read of the snapshot.</p>
-</section>
       <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.ElectionTimeout.html">ElectionTimeout</a></h4>
       <section><p>Represents leader election timeout.</p>
 </section>
@@ -197,12 +149,6 @@ from another producer.</p>
 </section>
       <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.JsonLogEntry-1.html">JsonLogEntry&lt;T&gt;</a></h4>
       <section><p>Represents JSON-serializable log entry.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.SnapshotBuilderContext.html">MemoryBasedStateMachine.SnapshotBuilderContext</a></h4>
-      <section><p>Represents snapshot building context.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.html">PersistentState.LogEntry</a></h4>
-      <section><p>Represents persistent log entry.</p>
 </section>
       <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Result-1.html">Result&lt;T&gt;</a></h4>
       <section><p>Represents RPC response.</p>
@@ -237,15 +183,6 @@ Enums
 </h3>
       <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.HeartbeatResult.html">HeartbeatResult</a></h4>
       <section><p>A result of heartbeat processing returned by the Follower member.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.CompactionMode.html">MemoryBasedStateMachine.CompactionMode</a></h4>
-      <section><p>Represents log compaction mode.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.MemoryBasedStateMachine.LogEntryCacheEvictionPolicy.html">MemoryBasedStateMachine.LogEntryCacheEvictionPolicy</a></h4>
-      <section><p>Represents eviction policy of the entries located in the cache.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.WriteMode.html">PersistentState.WriteMode</a></h4>
-      <section><p>Describes how the log interacts with underlying storage device.</p>
 </section>
       <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PreVoteResult.html">PreVoteResult</a></h4>
       <section><p>Represents a result of pre-voting phase.</p>

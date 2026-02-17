@@ -68,8 +68,8 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="enum-enhancements">Enum Enhancements</h1>
 
-<p><a class="xref" href="../../api/DotNext.EnumConverter.html">EnumConverter</a> allows to convert primitive types into arbitrary enum type and vice versa. It is helpful if enum type is defined as generic parameter and not known at compile time.</p>
-<pre><code class="lang-csharp">using DotNext;
+<p><a class="xref" href="../../api/DotNext.Numerics.Enum-1.html">Enum&lt;T&gt;</a> represents the enum as its underlying numeric type.</p>
+<pre><code class="lang-csharp">using DotNext.Numerics;
 using System;
 
 enum Color: int
@@ -81,16 +81,9 @@ enum Color: int
     White = 0xFFFFFF
 }
 
-public static E Plus&lt;E&gt;(E first, E second, E third) 
-    where E: unmanaged, Enum
-{
-    var result = first.ToInt64() + second.ToInt64() + third.ToInt64();
-    return result.ToEnum&lt;E&gt;();
-}
-
-var white = Plus(Color.Red, Color.Green, Color.Blue);
-white == Color.White;   //true
+Color e = new Enum&lt;Color&gt;(Color.Red) | new Enum&lt;Color&gt;(Color.Green) | new Enum&lt;Color&gt;(Color.Blue);
 </code></pre>
+<p>The type implements <a href="https://learn.microsoft.com/en-us/dotnet/api/system.numerics.ibinaryinteger-1">IBinaryInteger&lt;T&gt;</a> interface to expose the full power of the Generic Math.</p>
 <h1 id="attributes">Attributes</h1>
 <p><a class="xref" href="../../api/DotNext.Reflection.EnumType.html">EnumType</a> static classes exposes access to custom attributes attached to the enum member.</p>
 <pre><code class="lang-csharp">using DotNext.Reflection;

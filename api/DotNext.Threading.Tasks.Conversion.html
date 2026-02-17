@@ -81,25 +81,25 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a>.<a class="xref" href="DotNext.Threading.Tasks.html">Tasks</a></h6>
@@ -110,12 +110,9 @@
   </div>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_AsDynamic_System_Threading_Tasks_Task_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.AsDynamic(System.Threading.Tasks.Task)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L67">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_AsDynamic_" data-uid="DotNext.Threading.Tasks.Conversion.AsDynamic*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_AsDynamic_System_Threading_Tasks_Task_" data-uid="DotNext.Threading.Tasks.Conversion.AsDynamic(System.Threading.Tasks.Task)">AsDynamic(Task)</h4>
@@ -126,7 +123,8 @@ or any other data type using <code>dynamic</code> approach.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static DynamicTaskAwaitable AsDynamic(this Task task)</code></pre>
+    <pre><code class="lang-csharp hljs">[RequiresUnreferencedCode(&quot;Runtime binding may be incompatible with IL trimming&quot;)]
+public static DynamicTaskAwaitable AsDynamic(this Task task)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -166,12 +164,9 @@ or any other data type using <code>dynamic</code> approach.</p>
   <div class="markdown level1 remarks"><p>The type of the returned task is not known at compile time and therefore treated as <code>dynamic</code>. The result value returned
 by <code>await</code> operator is equal to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.reflection.missing.value">Value</a> if <code class="paramref">task</code> is not of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task&lt;TResult&gt;</a>.</p>
 </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_CatchException_System_Threading_Tasks_Task_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.CatchException(System.Threading.Tasks.Task)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L236">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_CatchException_" data-uid="DotNext.Threading.Tasks.Conversion.CatchException*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_CatchException_System_Threading_Tasks_Task_" data-uid="DotNext.Threading.Tasks.Conversion.CatchException(System.Threading.Tasks.Task)">CatchException(Task)</h4>
@@ -216,12 +211,9 @@ by <code>await</code> operator is equal to <a class="xref" href="https://learn.m
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_CatchException_System_Threading_Tasks_ValueTask_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.CatchException(System.Threading.Tasks.ValueTask)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L229">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_CatchException_" data-uid="DotNext.Threading.Tasks.Conversion.CatchException*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_CatchException_System_Threading_Tasks_ValueTask_" data-uid="DotNext.Threading.Tasks.Conversion.CatchException(System.Threading.Tasks.ValueTask)">CatchException(ValueTask)</h4>
@@ -266,12 +258,9 @@ by <code>await</code> operator is equal to <a class="xref" href="https://learn.m
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_CatchException__1_System_Threading_Tasks_Task___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.CatchException%60%601(System.Threading.Tasks.Task%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L86">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_CatchException_" data-uid="DotNext.Threading.Tasks.Conversion.CatchException*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_CatchException__1_System_Threading_Tasks_Task___0__" data-uid="DotNext.Threading.Tasks.Conversion.CatchException``1(System.Threading.Tasks.Task{``0})">CatchException&lt;T&gt;(Task&lt;T&gt;)</h4>
@@ -332,12 +321,9 @@ by <code>await</code> operator is equal to <a class="xref" href="https://learn.m
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_CatchException__1_System_Threading_Tasks_ValueTask___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.CatchException%60%601(System.Threading.Tasks.ValueTask%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L108">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_CatchException_" data-uid="DotNext.Threading.Tasks.Conversion.CatchException*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_CatchException__1_System_Threading_Tasks_ValueTask___0__" data-uid="DotNext.Threading.Tasks.Conversion.CatchException``1(System.Threading.Tasks.ValueTask{``0})">CatchException&lt;T&gt;(ValueTask&lt;T&gt;)</h4>
@@ -398,12 +384,9 @@ by <code>await</code> operator is equal to <a class="xref" href="https://learn.m
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_CatchException__2_System_Threading_Tasks_Task___0__System_Converter_System_Exception___1__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.CatchException%60%602(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Converter%7BSystem.Exception%2C%60%601%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L159">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_CatchException_" data-uid="DotNext.Threading.Tasks.Conversion.CatchException*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_CatchException__2_System_Threading_Tasks_Task___0__System_Converter_System_Exception___1__" data-uid="DotNext.Threading.Tasks.Conversion.CatchException``2(System.Threading.Tasks.Task{``0},System.Converter{System.Exception,``1})">CatchException&lt;T, TError&gt;(Task&lt;T&gt;, Converter&lt;Exception, TError&gt;)</h4>
@@ -475,12 +458,9 @@ by <code>await</code> operator is equal to <a class="xref" href="https://learn.m
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_CatchException__2_System_Threading_Tasks_ValueTask___0__System_Converter_System_Exception___1__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.CatchException%60%602(System.Threading.Tasks.ValueTask%7B%60%600%7D%2CSystem.Converter%7BSystem.Exception%2C%60%601%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L132">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_CatchException_" data-uid="DotNext.Threading.Tasks.Conversion.CatchException*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_CatchException__2_System_Threading_Tasks_ValueTask___0__System_Converter_System_Exception___1__" data-uid="DotNext.Threading.Tasks.Conversion.CatchException``2(System.Threading.Tasks.ValueTask{``0},System.Converter{System.Exception,``1})">CatchException&lt;T, TError&gt;(ValueTask&lt;T&gt;, Converter&lt;Exception, TError&gt;)</h4>
@@ -552,12 +532,9 @@ by <code>await</code> operator is equal to <a class="xref" href="https://learn.m
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.Convert%60%602(System.Threading.Tasks.Task%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L20">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_Convert_" data-uid="DotNext.Threading.Tasks.Conversion.Convert*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__" data-uid="DotNext.Threading.Tasks.Conversion.Convert``2(System.Threading.Tasks.Task{``0})">Convert&lt;TInput, TOutput&gt;(Task&lt;TInput&gt;)</h4>
@@ -623,12 +600,9 @@ by <code>await</code> operator is equal to <a class="xref" href="https://learn.m
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__System_Converter___0_System_Threading_Tasks_Task___1___.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.Convert%60%602(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Converter%7B%60%600%2CSystem.Threading.Tasks.Task%7B%60%601%7D%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L53">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_Convert_" data-uid="DotNext.Threading.Tasks.Conversion.Convert*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__System_Converter___0_System_Threading_Tasks_Task___1___" data-uid="DotNext.Threading.Tasks.Conversion.Convert``2(System.Threading.Tasks.Task{``0},System.Converter{``0,System.Threading.Tasks.Task{``1}})">Convert&lt;TInput, TOutput&gt;(Task&lt;TInput&gt;, Converter&lt;TInput, Task&lt;TOutput&gt;&gt;)</h4>
@@ -700,12 +674,9 @@ by <code>await</code> operator is equal to <a class="xref" href="https://learn.m
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__System_Converter___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.Convert%60%602(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Converter%7B%60%600%2C%60%601%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L31">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_Convert_" data-uid="DotNext.Threading.Tasks.Conversion.Convert*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__System_Converter___0___1__" data-uid="DotNext.Threading.Tasks.Conversion.Convert``2(System.Threading.Tasks.Task{``0},System.Converter{``0,``1})">Convert&lt;TInput, TOutput&gt;(Task&lt;TInput&gt;, Converter&lt;TInput, TOutput&gt;)</h4>
@@ -777,12 +748,9 @@ by <code>await</code> operator is equal to <a class="xref" href="https://learn.m
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_SuspendException_System_Threading_Tasks_Task_System_Predicate_System_Exception__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.Task%2CSystem.Predicate%7BSystem.Exception%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L174">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_SuspendException_" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_SuspendException_System_Threading_Tasks_Task_System_Predicate_System_Exception__" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.Task,System.Predicate{System.Exception})">SuspendException(Task, Predicate&lt;Exception&gt;)</h4>
@@ -833,12 +801,9 @@ by <code>await</code> operator is equal to <a class="xref" href="https://learn.m
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_SuspendException_System_Threading_Tasks_ValueTask_System_Predicate_System_Exception__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.ValueTask%2CSystem.Predicate%7BSystem.Exception%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L188">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_SuspendException_" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_SuspendException_System_Threading_Tasks_ValueTask_System_Predicate_System_Exception__" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException(System.Threading.Tasks.ValueTask,System.Predicate{System.Exception})">SuspendException(ValueTask, Predicate&lt;Exception&gt;)</h4>
@@ -889,12 +854,9 @@ by <code>await</code> operator is equal to <a class="xref" href="https://learn.m
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_SuspendException__1_System_Threading_Tasks_Task___0_System_Func_System_Exception___0_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.SuspendException%60%601(System.Threading.Tasks.Task%2C%60%600%2CSystem.Func%7BSystem.Exception%2C%60%600%2CSystem.Boolean%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L202">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_SuspendException_" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_SuspendException__1_System_Threading_Tasks_Task___0_System_Func_System_Exception___0_System_Boolean__" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException``1(System.Threading.Tasks.Task,``0,System.Func{System.Exception,``0,System.Boolean})">SuspendException&lt;TArg&gt;(Task, TArg, Func&lt;Exception, TArg, bool&gt;)</h4>
@@ -966,79 +928,9 @@ by <code>await</code> operator is equal to <a class="xref" href="https://learn.m
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_SuspendException__1_System_Threading_Tasks_Task___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.SuspendException%60%601(System.Threading.Tasks.Task%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L76">View Source</a>
-  </span>
-  <a id="DotNext_Threading_Tasks_Conversion_SuspendException_" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException*"></a>
-  <h4 id="DotNext_Threading_Tasks_Conversion_SuspendException__1_System_Threading_Tasks_Task___0__" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException``1(System.Threading.Tasks.Task{``0})">SuspendException&lt;T&gt;(Task&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Returns a task that never throws an exception.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use CatchException() instead.&quot;)]
-public static AwaitableResult&lt;T&gt; SuspendException&lt;T&gt;(this Task&lt;T&gt; task)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;T&gt;</td>
-        <td><span class="parametername">task</span></td>
-        <td><p>The task to convert.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.CompilerServices.AwaitableResult-1.html">AwaitableResult</a>&lt;T&gt;</td>
-        <td><p>The task that never throws an exception. Instead, the <a class="xref" href="DotNext.Result-1.html">Result&lt;T&gt;</a> contains an exception.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the task.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_SuspendException__1_System_Threading_Tasks_ValueTask___0_System_Func_System_Exception___0_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.SuspendException%60%601(System.Threading.Tasks.ValueTask%2C%60%600%2CSystem.Func%7BSystem.Exception%2C%60%600%2CSystem.Boolean%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L217">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_SuspendException_" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_SuspendException__1_System_Threading_Tasks_ValueTask___0_System_Func_System_Exception___0_System_Boolean__" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException``1(System.Threading.Tasks.ValueTask,``0,System.Func{System.Exception,``0,System.Boolean})">SuspendException&lt;TArg&gt;(ValueTask, TArg, Func&lt;Exception, TArg, bool&gt;)</h4>
@@ -1110,235 +1002,9 @@ public static AwaitableResult&lt;T&gt; SuspendException&lt;T&gt;(this Task&lt;T&
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_SuspendException__1_System_Threading_Tasks_ValueTask___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.SuspendException%60%601(System.Threading.Tasks.ValueTask%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L99">View Source</a>
-  </span>
-  <a id="DotNext_Threading_Tasks_Conversion_SuspendException_" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException*"></a>
-  <h4 id="DotNext_Threading_Tasks_Conversion_SuspendException__1_System_Threading_Tasks_ValueTask___0__" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException``1(System.Threading.Tasks.ValueTask{``0})">SuspendException&lt;T&gt;(ValueTask&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Returns a task that never throws an exception.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use CatchException() instead.&quot;)]
-public static AwaitableResult&lt;T&gt; SuspendException&lt;T&gt;(this ValueTask&lt;T&gt; task)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;T&gt;</td>
-        <td><span class="parametername">task</span></td>
-        <td><p>The task to convert.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.CompilerServices.AwaitableResult-1.html">AwaitableResult</a>&lt;T&gt;</td>
-        <td><p>The task that never throws an exception. Instead, the <a class="xref" href="DotNext.Result-1.html">Result&lt;T&gt;</a> contains an exception.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the task.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_SuspendException__2_System_Threading_Tasks_Task___0__System_Converter_System_Exception___1__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.SuspendException%60%602(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Converter%7BSystem.Exception%2C%60%601%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L145">View Source</a>
-  </span>
-  <a id="DotNext_Threading_Tasks_Conversion_SuspendException_" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException*"></a>
-  <h4 id="DotNext_Threading_Tasks_Conversion_SuspendException__2_System_Threading_Tasks_Task___0__System_Converter_System_Exception___1__" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException``2(System.Threading.Tasks.Task{``0},System.Converter{System.Exception,``1})">SuspendException&lt;T, TError&gt;(Task&lt;T&gt;, Converter&lt;Exception, TError&gt;)</h4>
-  <div class="markdown level1 summary"><p>Returns a task that never throws an exception.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use CatchException() instead.&quot;)]
-public static AwaitableResult&lt;T, TError&gt; SuspendException&lt;T, TError&gt;(this Task&lt;T&gt; task, Converter&lt;Exception, TError&gt; converter) where TError : struct, Enum</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;T&gt;</td>
-        <td><span class="parametername">task</span></td>
-        <td><p>The task to convert.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a>, TError&gt;</td>
-        <td><span class="parametername">converter</span></td>
-        <td><p>The exception converter.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.CompilerServices.AwaitableResult-2.html">AwaitableResult</a>&lt;T, TError&gt;</td>
-        <td><p>The task that never throws an exception. Instead, the <a class="xref" href="DotNext.Result-1.html">Result&lt;T&gt;</a> contains an exception.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the task.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">TError</span></td>
-        <td><p>The type of the error.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_SuspendException__2_System_Threading_Tasks_ValueTask___0__System_Converter_System_Exception___1__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.SuspendException%60%602(System.Threading.Tasks.ValueTask%7B%60%600%7D%2CSystem.Converter%7BSystem.Exception%2C%60%601%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L118">View Source</a>
-  </span>
-  <a id="DotNext_Threading_Tasks_Conversion_SuspendException_" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException*"></a>
-  <h4 id="DotNext_Threading_Tasks_Conversion_SuspendException__2_System_Threading_Tasks_ValueTask___0__System_Converter_System_Exception___1__" data-uid="DotNext.Threading.Tasks.Conversion.SuspendException``2(System.Threading.Tasks.ValueTask{``0},System.Converter{System.Exception,``1})">SuspendException&lt;T, TError&gt;(ValueTask&lt;T&gt;, Converter&lt;Exception, TError&gt;)</h4>
-  <div class="markdown level1 summary"><p>Returns a task that never throws an exception.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use CatchException() instead.&quot;)]
-public static AwaitableResult&lt;T, TError&gt; SuspendException&lt;T, TError&gt;(this ValueTask&lt;T&gt; task, Converter&lt;Exception, TError&gt; converter) where TError : struct, Enum</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;T&gt;</td>
-        <td><span class="parametername">task</span></td>
-        <td><p>The task to convert.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a>, TError&gt;</td>
-        <td><span class="parametername">converter</span></td>
-        <td><p>The exception converter.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.CompilerServices.AwaitableResult-2.html">AwaitableResult</a>&lt;T, TError&gt;</td>
-        <td><p>The task that never throws an exception. Instead, the <a class="xref" href="DotNext.Result-1.html">Result&lt;T&gt;</a> contains an exception.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the task.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">TError</span></td>
-        <td><p>The type of the error.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion_ToNullable__1_System_Threading_Tasks_Task___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.ToNullable%60%601(System.Threading.Tasks.Task%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L40">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_ToNullable_" data-uid="DotNext.Threading.Tasks.Conversion.ToNullable*"></a>
   <h4 id="DotNext_Threading_Tasks_Conversion_ToNullable__1_System_Threading_Tasks_Task___0__" data-uid="DotNext.Threading.Tasks.Conversion.ToNullable``1(System.Threading.Tasks.Task{``0})">ToNullable&lt;T&gt;(Task&lt;T&gt;)</h4>
@@ -1408,10 +1074,7 @@ public static AwaitableResult&lt;T, TError&gt; SuspendException&lt;T, TError&gt;
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Tasks_Conversion.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L11" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Conversion.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

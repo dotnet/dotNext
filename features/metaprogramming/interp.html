@@ -76,7 +76,7 @@ using static DotNext.Metaprogramming.CodeGenerator;
 Lambda&lt;Action&lt;int, int&gt;&gt;(fun =&gt;
 {
 	var (x, y) = fun;
-	WriteLine(InterpolationExpression.PlainString($&quot;Sum of {x} and {y} is {x.Add(y)}&quot;));
+	WriteLine(InterpolationExpression.PlainString($&quot;Sum of {x} and {y} is {x + y}&quot;));
 });
 
 //generated code is

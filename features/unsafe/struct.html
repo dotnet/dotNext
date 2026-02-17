@@ -76,14 +76,15 @@
 <pre><code class="lang-csharp">using DotNext.Buffers;
 using System.Buffers;
 
-using IUnmanagedMemoryOwner&lt;long&gt; owner = UnmanagedMemoryPool&lt;long&gt;.Allocate(12);
+using IUnmanagedMemory&lt;long&gt; owner = IUnmanagedMemory&lt;long&gt;.Allocate(12);
 Memory&lt;long&gt; memory = owner.Memory;
 memory.Span[0] = 42L;
 </code></pre>
+<p><code>MemoryAllocator&lt;T&gt;.Unmanaged</code> property exposes the allocator of the unmanaged memory.</p>
 <p>The memory can be resized on-the-fly. Resizing causes re-allocation of the memory with the copying of the elements from the original location. The new size of the array can be defined using <code>Reallocate</code> method.</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 
-using var block = UnmanagedMemoryPool&lt;double&gt;.Allocate(10); //block.Length == 10L
+using var block = IUnmanagedMemory&lt;double&gt;.Allocate(10); //block.Length == 10L
 Span&lt;double&gt; array = block.Memory.Span;
 array[0] = 10;
 array[1] = 30;
@@ -116,7 +117,7 @@ struct Complex
     public double Image, Real;
 }
 
-using var memory = UnmanagedMemoryPool&lt;Complex&gt;.Allocate(1);
+using var memory = new UnmanagedMemory&lt;Complex&gt;();
 ref Complex ptr = ref memory.Pointer.Value;
 ptr.Image = 20;
 ptr.Real = 30;
@@ -130,8 +131,7 @@ struct Complex
     public double Image, Real;
 }
 
-using var c = UnmanagedMemoryPool&lt;Complex&gt;.Allocate(1);
-c.Pointer.Value = new Complex { Image = 20, Real = 30 };
+using var c = new UnmanagedMemory&lt;Complex&gt;(new { Image = 20, Real = 30 });
 Pointer&lt;double&gt; pImage = c.Pointer.As&lt;double&gt;();
 Pointer&lt;double&gt; pReal = pImage + 1;
 pImage.Value = 1;
@@ -148,10 +148,9 @@ using System;
 
 var id = Guid.NewGuid();
 
-using var memory = UnmanagedMemory&lt;Guid&gt;.Allocate(1);
-memory.Pointer.Value = id;
+using var memory = new UnmanagedMemory&lt;Guid&gt;(id);
 Span&lt;byte&gt; bytes = memory.Bytes;
-Pointer&lt;byte&gt; ptr = memory.Pointer.As&lt;byte&gt;();
+Pointer&lt;byte&gt; ptr = memory.Pointer;
 </code></pre>
 
 </article>

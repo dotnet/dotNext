@@ -131,7 +131,7 @@ private static void UnsafeMethod()
 using DotNext.Runtime.InteropServices;
 using DotNext.Threading;
 
-Pointer&lt;long&gt; ptr;
+Pointer&lt;long&gt; ptr = stackalloc long[1];
 Volatile.Write(ref ptr.Value, 42L);
 var i = Volatile.Read(in ptr.Value);
 i = Interlocked.Increment(ref ptr.Value); //i == 43
@@ -139,7 +139,7 @@ i = Interlocked.Increment(ref ptr.Value); //i == 43
 <h1 id="system-pages">System Pages</h1>
 <p><a class="xref" href="../../api/DotNext.Buffers.UnmanagedMemory.html">UnmanagedMemory</a> class exposes static methods to allocate system pages or page-aligned memory blocks in safe and portable manner. The returned memory is represented by the object that implements <a href="https://learn.microsoft.com/en-us/dotnet/api/system.buffers.imemoryowner-1">IMemoryOwner&lt;T&gt;</a> interface. Thus, the allocated memory can be easily used across .NET ecosystem:</p>
 <pre><code class="lang-csharp">// allocates 3 pages. Typically, the page size is 4k bytes
-using IMemoryOwner&lt;byte&gt; pages = UnmanagedMemory.AllocateSystemPages(3);
+using IMemoryOwner&lt;byte&gt; pages = NativeMemory.AllocateSystemPages(3);
 Span&lt;byte&gt; span = pages.Memory.Span;
 </code></pre>
 

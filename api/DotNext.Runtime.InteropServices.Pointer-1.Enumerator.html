@@ -75,7 +75,8 @@
   <div class="markdown level0 conceptual"></div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="DotNext.Collections.Generic.IEnumerator-2.html">IEnumerator</a>&lt;<a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;.<a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.Enumerator.html">Enumerator</a>, T&gt;</div>
+    <div><a class="xref" href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Collections/Generic/IEnumerator.cs">IEnumerator</a>&lt;<a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;.<a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.Enumerator.html">Enumerator</a>, T&gt;</div>
+    <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -89,10 +90,10 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
@@ -102,25 +103,22 @@
   <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
   <h5 id="DotNext_Runtime_InteropServices_Pointer_1_Enumerator_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct Pointer&lt;T&gt;.Enumerator : IEnumerator&lt;Pointer&lt;T&gt;.Enumerator, T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public struct Pointer&lt;T&gt;.Enumerator : IEnumerator&lt;Pointer&lt;T&gt;.Enumerator, T&gt;, IResettable</code></pre>
   </div>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Enumerator_Current.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Enumerator.Current%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Enumerator.cs/#L39">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Enumerator.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Enumerator_Current_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Enumerator.Current*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Enumerator_Current" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Enumerator.Current">Current</h4>
-  <div class="markdown level1 summary"><p>Current element.</p>
+  <div class="markdown level1 summary"><p>Gets the current element.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly T Current { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly ref T Current { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-condensed">
@@ -137,45 +135,11 @@
       </tr>
     </tbody>
   </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Enumerator_Pointer.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Enumerator.Pointer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Enumerator.cs/#L30">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_Pointer_1_Enumerator_Pointer_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Enumerator.Pointer*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Enumerator_Pointer" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Enumerator.Pointer">Pointer</h4>
-  <div class="markdown level1 summary"><p>Pointer to the currently enumerating element.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly Pointer&lt;T&gt; Pointer { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Enumerator_MoveNext.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Enumerator.MoveNext%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Enumerator.cs/#L49">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Enumerator.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Enumerator_MoveNext_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Enumerator.MoveNext*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Enumerator_MoveNext" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Enumerator.MoveNext">MoveNext()</h4>
@@ -202,12 +166,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Enumerator_Reset.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Enumerator.Reset%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Enumerator.cs/#L54">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Enumerator.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Enumerator_Reset_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Enumerator.Reset*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Enumerator_Reset" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Enumerator.Reset">Reset()</h4>
@@ -222,24 +183,18 @@
   <div>
       <a class="xref" href="DotNext.Collections.Generic.IEnumerator-2.html">IEnumerator&lt;TSelf, T&gt;</a>
   </div>
+  <div>
+      <a class="xref" href="DotNext.IResettable.html">IResettable</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerator__2___0_System_Threading_CancellationToken_">Collection.ToAsyncEnumerator&lt;TEnumerator, T&gt;(TEnumerator, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToClassicEnumerator__2___0_">Collection.ToClassicEnumerator&lt;TEnumerator, T&gt;(TEnumerator)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
 
 </article>
@@ -250,10 +205,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Enumerator.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Enumerator%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Enumerator.cs/#L13" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.Allocation.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

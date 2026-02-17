@@ -82,12 +82,15 @@ parameter.</p>
     <div>
       <a class="xref" href="DotNext.Collections.Specialized.IReadOnlyTypeMap-1.html#DotNext_Collections_Specialized_IReadOnlyTypeMap_1_TryGetValue__1__0__">IReadOnlyTypeMap&lt;TValue&gt;.TryGetValue&lt;TKey&gt;(out TValue)</a>
     </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1.getenumerator">IEnumerable&lt;TValue&gt;.GetEnumerator()</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Collections.html">Collections</a>.<a class="xref" href="DotNext.Collections.Specialized.html">Specialized</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Collections_Specialized_ITypeMap_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface ITypeMap&lt;TValue&gt; : IReadOnlyTypeMap&lt;TValue&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface ITypeMap&lt;TValue&gt; : IReadOnlyTypeMap&lt;TValue&gt;, IEnumerable&lt;TValue&gt;, IEnumerable</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -107,12 +110,9 @@ parameter.</p>
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_ITypeMap_1_Add__1__0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.ITypeMap%601.Add%60%601(%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L19">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_ITypeMap_1_Add_" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Add*"></a>
   <h4 id="DotNext_Collections_Specialized_ITypeMap_1_Add__1__0_" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Add``1(`0)">Add&lt;TKey&gt;(TValue)</h4>
@@ -121,7 +121,7 @@ parameter.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void Add&lt;TKey&gt;(TValue value)</code></pre>
+    <pre><code class="lang-csharp hljs">void Add&lt;TKey&gt;(TValue value) where TKey : allows ref struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -173,12 +173,9 @@ parameter.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_ITypeMap_1_Clear.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.ITypeMap%601.Clear%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L55">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_ITypeMap_1_Clear_" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Clear*"></a>
   <h4 id="DotNext_Collections_Specialized_ITypeMap_1_Clear" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Clear">Clear()</h4>
@@ -189,12 +186,9 @@ parameter.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">void Clear()</code></pre>
   </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_ITypeMap_1_Remove__1.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.ITypeMap%601.Remove%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L42">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_ITypeMap_1_Remove_" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Remove*"></a>
   <h4 id="DotNext_Collections_Specialized_ITypeMap_1_Remove__1" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Remove``1">Remove&lt;TKey&gt;()</h4>
@@ -203,7 +197,7 @@ parameter.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">bool Remove&lt;TKey&gt;()</code></pre>
+    <pre><code class="lang-csharp hljs">bool Remove&lt;TKey&gt;() where TKey : allows ref struct</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
@@ -237,12 +231,9 @@ parameter.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_ITypeMap_1_Remove__1__0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.ITypeMap%601.Remove%60%601(%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L50">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_ITypeMap_1_Remove_" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Remove*"></a>
   <h4 id="DotNext_Collections_Specialized_ITypeMap_1_Remove__1__0__" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Remove``1(`0@)">Remove&lt;TKey&gt;(out TValue)</h4>
@@ -251,7 +242,7 @@ parameter.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">bool Remove&lt;TKey&gt;(out TValue value)</code></pre>
+    <pre><code class="lang-csharp hljs">bool Remove&lt;TKey&gt;(out TValue value) where TKey : allows ref struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -303,12 +294,9 @@ parameter.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_ITypeMap_1_Set__1__0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.ITypeMap%601.Set%60%601(%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L26">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_ITypeMap_1_Set_" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Set*"></a>
   <h4 id="DotNext_Collections_Specialized_ITypeMap_1_Set__1__0_" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Set``1(`0)">Set&lt;TKey&gt;(TValue)</h4>
@@ -317,7 +305,7 @@ parameter.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void Set&lt;TKey&gt;(TValue value)</code></pre>
+    <pre><code class="lang-csharp hljs">void Set&lt;TKey&gt;(TValue value) where TKey : allows ref struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -353,12 +341,9 @@ parameter.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_ITypeMap_1_Set__1__0__0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.ITypeMap%601.Set%60%601(%600%2C%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L35">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Specialized_ITypeMap_1_Set_" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Set*"></a>
   <h4 id="DotNext_Collections_Specialized_ITypeMap_1_Set__1__0__0__" data-uid="DotNext.Collections.Specialized.ITypeMap`1.Set``1(`0,`0@)">Set&lt;TKey&gt;(TValue, out TValue)</h4>
@@ -367,7 +352,7 @@ parameter.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">bool Set&lt;TKey&gt;(TValue newValue, out TValue oldValue)</code></pre>
+    <pre><code class="lang-csharp hljs">bool Set&lt;TKey&gt;(TValue newValue, out TValue oldValue) where TKey : allows ref struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -430,16 +415,40 @@ parameter.</p>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Append__1_System_Collections_Generic_IEnumerable___0____0___">Collection.Append&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Copy__1_System_Collections_Generic_IEnumerable___0__System_Int32_DotNext_Buffers_MemoryAllocator___0__">Collection.Copy&lt;T&gt;(IEnumerable&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_FirstOrNone__1_System_Collections_Generic_IEnumerable___0__">Collection.FirstOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Collection.ForEachAsync&lt;T&gt;(IEnumerable&lt;T&gt;, Func&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Collection.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_LastOrNone__1_System_Collections_Generic_IEnumerable___0__">Collection.LastOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Prepend__1_System_Collections_Generic_IEnumerable___0____0___">Collection.Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_SequenceHashCode__1_System_Collections_Generic_IEnumerable___0__System_Boolean_">Collection.SequenceHashCode&lt;T&gt;(IEnumerable&lt;T&gt;, bool)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__System_Boolean_">Collection.ToAsyncEnumerable&lt;T&gt;(IEnumerable&lt;T&gt;, bool)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Collection.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, string, string)</a>
   </div>
 
 </article>
@@ -450,10 +459,7 @@ parameter.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Specialized_ITypeMap_1.md&amp;value=---%0Auid%3A%20DotNext.Collections.Specialized.ITypeMap%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Specialized/ITypeMap.cs/#L11" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Tasks/Synchronization.ValueTask.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

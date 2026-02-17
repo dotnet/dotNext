@@ -82,19 +82,17 @@
   </div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;T&gt;</div>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;T&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;T&gt;</div>
     <div><a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer</a>&lt;T&gt;</div>
-    <div><a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer</a>&lt;T&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;T&gt;</div>
+    <div><a class="xref" href="DotNext.IConsumer-1.html">IConsumer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;&gt;</div>
     <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.arraysegment-1">ArraySegment</a>&lt;T&gt;&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.arraysegment-1">ArraySegment</a>&lt;T&gt;&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;T&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.icollection-1">ICollection</a>&lt;T&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;T&gt;</div>
@@ -103,16 +101,7 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_MeasurementTags">BufferWriter&lt;T&gt;.MeasurementTags</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_WrittenCount">BufferWriter&lt;T&gt;.WrittenCount</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_Add__0_">BufferWriter&lt;T&gt;.Add(T)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_FreeCapacity">BufferWriter&lt;T&gt;.FreeCapacity</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_Advance_System_Int32_">BufferWriter&lt;T&gt;.Advance(int)</a>
@@ -127,19 +116,28 @@
       <a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_ToString">BufferWriter&lt;T&gt;.ToString()</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_MeasurementTags">BufferWriter&lt;T&gt;.MeasurementTags</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_WrittenCount">BufferWriter&lt;T&gt;.WrittenCount</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_FreeCapacity">BufferWriter&lt;T&gt;.FreeCapacity</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(IEnumerable&lt;IAsyncDisposable&gt;)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(params IEnumerable&lt;IAsyncDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;T&gt;(ReadOnlySpan&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;TDisposable&gt;(params ReadOnlySpan&lt;TDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_IAsyncDisposable___">Disposable.DisposeAsync(params IAsyncDisposable[])</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
@@ -148,20 +146,17 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Buffers.html">Buffers</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_PoolingArrayBufferWriter_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class PoolingArrayBufferWriter&lt;T&gt; : BufferWriter&lt;T&gt;, IBufferWriter&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;&gt;&gt;, IReadOnlyList&lt;T&gt;, IReadOnlyCollection&lt;T&gt;, IGrowableBuffer&lt;T&gt;, IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;&gt;, IDisposable, IResettable, ISupplier&lt;ArraySegment&lt;T&gt;&gt;, IFunctional&lt;Func&lt;ArraySegment&lt;T&gt;&gt;&gt;, IList&lt;T&gt;, ICollection&lt;T&gt;, IEnumerable&lt;T&gt;, IEnumerable</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class PoolingArrayBufferWriter&lt;T&gt; : BufferWriter&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;&gt;, IReadOnlyList&lt;T&gt;, IReadOnlyCollection&lt;T&gt;, IGrowableBuffer&lt;T&gt;, IBufferWriter&lt;T&gt;, IConsumer&lt;ReadOnlySpan&lt;T&gt;&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IDisposable, IResettable, ISupplier&lt;ArraySegment&lt;T&gt;&gt;, IFunctional, IList&lt;T&gt;, ICollection&lt;T&gt;, IEnumerable&lt;T&gt;, IEnumerable</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -184,12 +179,9 @@
 </div>
   <h3 id="constructors">Constructors
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.%23ctor(System.Buffers.ArrayPool%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L22">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1__ctor_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.#ctor(System.Buffers.ArrayPool{`0})">PoolingArrayBufferWriter(ArrayPool&lt;T&gt;?)</h4>
@@ -223,12 +215,9 @@
 </div>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1_Capacity.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.Capacity%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L197">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1_Capacity_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.Capacity*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1_Capacity" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.Capacity">Capacity</h4>
@@ -272,12 +261,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1_Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.Item(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L46">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1_Item_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.Item*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1_Item_System_Int32_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.Item(System.Int32)">this[int]</h4>
@@ -338,12 +324,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1_WrittenArray.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.WrittenArray%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L231">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1_WrittenArray_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.WrittenArray*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1_WrittenArray" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.WrittenArray">WrittenArray</h4>
@@ -385,12 +368,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1_WrittenMemory.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.WrittenMemory%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L218">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1_WrittenMemory_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.WrittenMemory*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1_WrittenMemory" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.WrittenMemory">WrittenMemory</h4>
@@ -436,12 +416,9 @@
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1_AddAll_System_Collections_Generic_ICollection__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.AddAll(System.Collections.Generic.ICollection%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L337">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1_AddAll_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.AddAll*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1_AddAll_System_Collections_Generic_ICollection__0__" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.AddAll(System.Collections.Generic.ICollection{`0})">AddAll(ICollection&lt;T&gt;)</h4>
@@ -488,12 +465,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1_Clear_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.Clear(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L251">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1_Clear_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.Clear*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1_Clear_System_Boolean_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.Clear(System.Boolean)">Clear(bool)</h4>
@@ -540,12 +514,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1_DetachBuffer.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.DetachBuffer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L273">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1_DetachBuffer_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.DetachBuffer*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1_DetachBuffer" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.DetachBuffer">DetachBuffer()</h4>
@@ -594,12 +565,9 @@ state of this writer will be reset.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L456">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1_Dispose_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.Dispose*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1_Dispose_System_Boolean_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -630,12 +598,9 @@ state of this writer will be reset.</p>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="DotNext.Buffers.BufferWriter-1.html#DotNext_Buffers_BufferWriter_1_Dispose_System_Boolean_">BufferWriter&lt;T&gt;.Dispose(bool)</a></div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1_GetArray_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.GetArray(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L333">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1_GetArray_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.GetArray*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1_GetArray_System_Int32_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.GetArray(System.Int32)">GetArray(int)</h4>
@@ -701,12 +666,9 @@ state of this writer will be reset.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1_GetMemory_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.GetMemory(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L307">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1_GetMemory_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.GetMemory*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1_GetMemory_System_Int32_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.GetMemory(System.Int32)">GetMemory(int)</h4>
@@ -774,12 +736,9 @@ state of this writer will be reset.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1_GetSpan_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.GetSpan(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L317">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1_GetSpan_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.GetSpan*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1_GetSpan_System_Int32_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.GetSpan(System.Int32)">GetSpan(int)</h4>
@@ -847,12 +806,9 @@ state of this writer will be reset.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1_Insert_System_Int32_System_ReadOnlySpan__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.Insert(System.Int32%2CSystem.ReadOnlySpan%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L117">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1_Insert_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.Insert*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1_Insert_System_Int32_System_ReadOnlySpan__0__" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.Insert(System.Int32,System.ReadOnlySpan{`0})">Insert(int, ReadOnlySpan&lt;T&gt;)</h4>
@@ -908,12 +864,9 @@ state of this writer will be reset.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1_Overwrite_System_Int32_System_ReadOnlySpan__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.Overwrite(System.Int32%2CSystem.ReadOnlySpan%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L158">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1_Overwrite_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.Overwrite*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1_Overwrite_System_Int32_System_ReadOnlySpan__0__" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.Overwrite(System.Int32,System.ReadOnlySpan{`0})">Overwrite(int, ReadOnlySpan&lt;T&gt;)</h4>
@@ -969,12 +922,9 @@ state of this writer will be reset.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1_RemoveFirst_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.RemoveFirst(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L389">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1_RemoveFirst_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.RemoveFirst*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1_RemoveFirst_System_Int32_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.RemoveFirst(System.Int32)">RemoveFirst(int)</h4>
@@ -1024,12 +974,9 @@ state of this writer will be reset.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1_RemoveLast_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601.RemoveLast(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L356">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_PoolingArrayBufferWriter_1_RemoveLast_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.RemoveLast*"></a>
   <h4 id="DotNext_Buffers_PoolingArrayBufferWriter_1_RemoveLast_System_Int32_" data-uid="DotNext.Buffers.PoolingArrayBufferWriter`1.RemoveLast(System.Int32)">RemoveLast(int)</h4>
@@ -1081,13 +1028,7 @@ state of this writer will be reset.</p>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList&lt;T&gt;</a>
@@ -1099,13 +1040,13 @@ state of this writer will be reset.</p>
       <a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer&lt;T&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer&lt;T&gt;</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IConsumer-1.html">IConsumer&lt;T&gt;</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
@@ -1117,7 +1058,7 @@ state of this writer will be reset.</p>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a>
   </div>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList&lt;T&gt;</a>
@@ -1136,19 +1077,10 @@ state of this writer will be reset.</p>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter___0__System_Buffers_ReadOnlySequence___0___">BufferWriter.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, in ReadOnlySequence&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_AddAll__1_System_Collections_Generic_ICollection___0__System_Collections_Generic_IEnumerable___0__">Collection.AddAll&lt;T&gt;(ICollection&lt;T&gt;, IEnumerable&lt;T&gt;)</a>
@@ -1158,9 +1090,6 @@ state of this writer will be reset.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Copy__1_System_Collections_Generic_IEnumerable___0__System_Int32_DotNext_Buffers_MemoryAllocator___0__">Collection.Copy&lt;T&gt;(IEnumerable&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Collection.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, int, out T)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_FirstOrNone__1_System_Collections_Generic_IEnumerable___0__">Collection.FirstOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
@@ -1185,15 +1114,6 @@ state of this writer will be reset.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Collection.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, string, string)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_">Enumerator.GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_IndexerGetter__1_System_Collections_Generic_IList___0__">List.IndexerGetter&lt;T&gt;(IList&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_IndexerSetter__1_System_Collections_Generic_IList___0__">List.IndexerSetter&lt;T&gt;(IList&lt;T&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_InsertOrdered__1_System_Collections_Generic_IList___0____0__">List.InsertOrdered&lt;T&gt;(IList&lt;T&gt;, T, delegate*&lt;T?, T?, int&gt;)</a>
@@ -1226,13 +1146,10 @@ state of this writer will be reset.</p>
       <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_ToArray__2_System_Collections_Generic_IList___0__System_Func_System_Int32___0___1__">List.ToArray&lt;TInput, TOutput&gt;(IList&lt;TInput&gt;, Func&lt;int, TInput, TOutput&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Convert__2_System_Collections_Generic_IReadOnlyCollection___0__System_Converter___0___1__">Collection.Convert&lt;TInput, TOutput&gt;(IReadOnlyCollection&lt;TInput&gt;, Converter&lt;TInput, TOutput&gt;)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Convert__2_System_Collections_Generic_IReadOnlyCollection___0__System_Func___0___1__">Collection.Convert&lt;T, TOutput&gt;(IReadOnlyCollection&lt;T&gt;, Func&lt;T, TOutput&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Convert__2_System_Collections_Generic_IReadOnlyList___0__System_Converter___0___1__">List.Convert&lt;TInput, TOutput&gt;(IReadOnlyList&lt;TInput&gt;, Converter&lt;TInput, TOutput&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_IndexerGetter__1_System_Collections_Generic_IReadOnlyList___0__">List.IndexerGetter&lt;T&gt;(IReadOnlyList&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Convert__2_System_Collections_Generic_IReadOnlyList___0__System_Func___0___1__">List.Convert&lt;TInput, TOutput&gt;(IReadOnlyList&lt;TInput&gt;, Func&lt;TInput, TOutput&gt;)</a>
   </div>
 
 </article>
@@ -1243,10 +1160,7 @@ state of this writer will be reset.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_PoolingArrayBufferWriter_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.PoolingArrayBufferWriter%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/PoolingArrayBufferWriter.cs/#L22" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/PoolingArrayBufferWriter.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -89,19 +89,7 @@ protocol for Gossip-based broadcast.</p>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposing">Disposable.IsDisposing</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_CreateException">Disposable.CreateException()</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposedTask">Disposable.DisposedTask</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_GetDisposedTask__1">Disposable.GetDisposedTask&lt;T&gt;()</a>
@@ -122,22 +110,22 @@ protocol for Gossip-based broadcast.</p>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(IEnumerable&lt;IAsyncDisposable&gt;)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(params IEnumerable&lt;IAsyncDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;T&gt;(ReadOnlySpan&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;TDisposable&gt;(params ReadOnlySpan&lt;TDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_IAsyncDisposable___">Disposable.DisposeAsync(params IAsyncDisposable[])</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposing">Disposable.IsDisposing</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposedTask">Disposable.DisposedTask</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
@@ -146,10 +134,19 @@ protocol for Gossip-based broadcast.</p>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Net.html">Net</a>.<a class="xref" href="DotNext.Net.Cluster.html">Cluster</a>.<a class="xref" href="DotNext.Net.Cluster.Discovery.html">Discovery</a>.<a class="xref" href="DotNext.Net.Cluster.Discovery.HyParView.html">HyParView</a></h6>
@@ -163,12 +160,9 @@ protocol for Gossip-based broadcast.</p>
 </div>
   <h3 id="constructors">Constructors
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController__ctor_DotNext_Net_Cluster_Discovery_HyParView_IPeerConfiguration_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.%23ctor(DotNext.Net.Cluster.Discovery.HyParView.IPeerConfiguration)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L48">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController__ctor_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController__ctor_DotNext_Net_Cluster_Discovery_HyParView_IPeerConfiguration_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.#ctor(DotNext.Net.Cluster.Discovery.HyParView.IPeerConfiguration)">PeerController(IPeerConfiguration)</h4>
@@ -219,12 +213,9 @@ or <see name="IPeerConfiguration.PassiveRandomWalkLength"></see> is less than or
   </table>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_LifecycleToken.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.LifecycleToken%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L89">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_LifecycleToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.LifecycleToken*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_LifecycleToken" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.LifecycleToken">LifecycleToken</h4>
@@ -250,12 +241,9 @@ or <see name="IPeerConfiguration.PassiveRandomWalkLength"></see> is less than or
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_Logger.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.Logger%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L83">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_Logger_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.Logger*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_Logger" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.Logger">Logger</h4>
@@ -282,12 +270,9 @@ protected virtual ILogger Logger { get; }</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_Neighbors.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.Neighbors%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L94">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_Neighbors_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.Neighbors*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_Neighbors" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.Neighbors">Neighbors</h4>
@@ -313,12 +298,9 @@ protected virtual ILogger Logger { get; }</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_PeerComparer.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.PeerComparer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L78">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_PeerComparer_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.PeerComparer*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_PeerComparer" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.PeerComparer">PeerComparer</h4>
@@ -346,12 +328,9 @@ protected virtual ILogger Logger { get; }</code></pre>
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_Destroy_System_Net_EndPoint_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.Destroy(System.Net.EndPoint)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L251">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_Destroy_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.Destroy*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_Destroy_System_Net_EndPoint_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.Destroy(System.Net.EndPoint)">Destroy(EndPoint)</h4>
@@ -383,12 +362,9 @@ protected virtual ILogger Logger { get; }</code></pre>
   <h5 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_Destroy_System_Net_EndPoint__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>By default, this method does nothing.</p>
 </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_DestroyAsync_System_Net_EndPoint_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.DestroyAsync(System.Net.EndPoint)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L242">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DestroyAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DestroyAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DestroyAsync_System_Net_EndPoint_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DestroyAsync(System.Net.EndPoint)">DestroyAsync(EndPoint)</h4>
@@ -436,12 +412,9 @@ protected virtual ILogger Logger { get; }</code></pre>
   <h5 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DestroyAsync_System_Net_EndPoint__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>By default, this method does nothing.</p>
 </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisconnectAsync_System_Net_EndPoint_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisconnectAsync(System.Net.EndPoint)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Disconnect.cs/#L100">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Disconnect.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisconnectAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisconnectAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisconnectAsync_System_Net_EndPoint_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisconnectAsync(System.Net.EndPoint)">DisconnectAsync(EndPoint)</h4>
@@ -489,12 +462,9 @@ protected virtual ILogger Logger { get; }</code></pre>
   <h5 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisconnectAsync_System_Net_EndPoint__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Calling of this method indicates that the peer is no longer available.</p>
 </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisconnectAsync_System_Net_EndPoint_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisconnectAsync(System.Net.EndPoint%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Disconnect.cs/#L20">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisconnectAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisconnectAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisconnectAsync_System_Net_EndPoint_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisconnectAsync(System.Net.EndPoint,System.Boolean,System.Threading.CancellationToken)">DisconnectAsync(EndPoint, bool, CancellationToken)</h4>
@@ -568,12 +538,9 @@ protected virtual ILogger Logger { get; }</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L407">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_Dispose_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.Dispose*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_Dispose_System_Boolean_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -604,17 +571,13 @@ protected virtual ILogger Logger { get; }</code></pre>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a></div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisposeAsync.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisposeAsync%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L447">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisposeAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisposeAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisposeAsync" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisposeAsync">DisposeAsync()</h4>
-  <div class="markdown level1 summary"><p>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources asynchronously.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
@@ -631,17 +594,13 @@ protected virtual ILogger Logger { get; }</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td><p>A task that represents the asynchronous dispose operation.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisposeAsyncCore.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisposeAsyncCore%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L429">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisposeAsyncCore_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisposeAsyncCore*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisposeAsyncCore" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.DisposeAsyncCore">DisposeAsyncCore()</h4>
@@ -673,12 +632,9 @@ protected virtual ILogger Logger { get; }</code></pre>
   <h5 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_DisposeAsyncCore_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method makes sense only if derived class implements <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a> interface.</p>
 </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueBroadcastAsync_System_Func_DotNext_Net_Cluster_Discovery_HyParView_PeerController_DotNext_Net_Cluster_Messaging_Gossip_IRumorSender__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueBroadcastAsync(System.Func%7BDotNext.Net.Cluster.Discovery.HyParView.PeerController%2CDotNext.Net.Cluster.Messaging.Gossip.IRumorSender%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs/#L18">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueBroadcastAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueBroadcastAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueBroadcastAsync_System_Func_DotNext_Net_Cluster_Discovery_HyParView_PeerController_DotNext_Net_Cluster_Messaging_Gossip_IRumorSender__System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueBroadcastAsync(System.Func{DotNext.Net.Cluster.Discovery.HyParView.PeerController,DotNext.Net.Cluster.Messaging.Gossip.IRumorSender},System.Threading.CancellationToken)">EnqueueBroadcastAsync(Func&lt;PeerController, IRumorSender&gt;, CancellationToken)</h4>
@@ -750,12 +706,9 @@ protected virtual ILogger Logger { get; }</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueDisconnectAsync_System_Net_EndPoint_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueDisconnectAsync(System.Net.EndPoint%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Disconnect.cs/#L34">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Disconnect.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueDisconnectAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueDisconnectAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueDisconnectAsync_System_Net_EndPoint_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueDisconnectAsync(System.Net.EndPoint,System.Boolean,System.Threading.CancellationToken)">EnqueueDisconnectAsync(EndPoint, bool, CancellationToken)</h4>
@@ -834,12 +787,9 @@ protected virtual ILogger Logger { get; }</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueForwardJoinAsync_System_Net_EndPoint_System_Net_EndPoint_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueForwardJoinAsync(System.Net.EndPoint%2CSystem.Net.EndPoint%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.ForwardJoin.cs/#L30">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.ForwardJoin.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueForwardJoinAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueForwardJoinAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueForwardJoinAsync_System_Net_EndPoint_System_Net_EndPoint_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueForwardJoinAsync(System.Net.EndPoint,System.Net.EndPoint,System.Int32,System.Threading.CancellationToken)">EnqueueForwardJoinAsync(EndPoint, EndPoint, int, CancellationToken)</h4>
@@ -923,12 +873,9 @@ protected virtual ILogger Logger { get; }</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueJoinAsync_System_Net_EndPoint_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueJoinAsync(System.Net.EndPoint%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Join.cs/#L26">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Join.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueJoinAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueJoinAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueJoinAsync_System_Net_EndPoint_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueJoinAsync(System.Net.EndPoint,System.Threading.CancellationToken)">EnqueueJoinAsync(EndPoint, CancellationToken)</h4>
@@ -1000,12 +947,9 @@ protected virtual ILogger Logger { get; }</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueNeighborAsync_System_Net_EndPoint_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueNeighborAsync(System.Net.EndPoint%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Neighbor.cs/#L32">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Neighbor.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueNeighborAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueNeighborAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueNeighborAsync_System_Net_EndPoint_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueNeighborAsync(System.Net.EndPoint,System.Boolean,System.Threading.CancellationToken)">EnqueueNeighborAsync(EndPoint, bool, CancellationToken)</h4>
@@ -1084,12 +1028,9 @@ protected virtual ILogger Logger { get; }</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueShuffleAsync_System_Net_EndPoint_System_Net_EndPoint_System_Collections_Generic_IReadOnlyCollection_System_Net_EndPoint__System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueShuffleAsync(System.Net.EndPoint%2CSystem.Net.EndPoint%2CSystem.Collections.Generic.IReadOnlyCollection%7BSystem.Net.EndPoint%7D%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Shuffle.cs/#L109">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Shuffle.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueShuffleAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueShuffleAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueShuffleAsync_System_Net_EndPoint_System_Net_EndPoint_System_Collections_Generic_IReadOnlyCollection_System_Net_EndPoint__System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueShuffleAsync(System.Net.EndPoint,System.Net.EndPoint,System.Collections.Generic.IReadOnlyCollection{System.Net.EndPoint},System.Int32,System.Threading.CancellationToken)">EnqueueShuffleAsync(EndPoint, EndPoint, IReadOnlyCollection&lt;EndPoint&gt;, int, CancellationToken)</h4>
@@ -1179,12 +1120,9 @@ protected virtual ILogger Logger { get; }</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueShuffleAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueShuffleAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Shuffle.cs/#L72">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Shuffle.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueShuffleAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueShuffleAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueShuffleAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueShuffleAsync(System.Threading.CancellationToken)">EnqueueShuffleAsync(CancellationToken)</h4>
@@ -1258,12 +1196,9 @@ protected virtual ILogger Logger { get; }</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueShuffleReplyAsync_System_Collections_Generic_IReadOnlyCollection_System_Net_EndPoint__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueShuffleReplyAsync(System.Collections.Generic.IReadOnlyCollection%7BSystem.Net.EndPoint%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Shuffle.cs/#L156">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Shuffle.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueShuffleReplyAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueShuffleReplyAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_EnqueueShuffleReplyAsync_System_Collections_Generic_IReadOnlyCollection_System_Net_EndPoint__System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.EnqueueShuffleReplyAsync(System.Collections.Generic.IReadOnlyCollection{System.Net.EndPoint},System.Threading.CancellationToken)">EnqueueShuffleReplyAsync(IReadOnlyCollection&lt;EndPoint&gt;, CancellationToken)</h4>
@@ -1335,12 +1270,9 @@ protected virtual ILogger Logger { get; }</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_ForwardJoinAsync_System_Net_EndPoint_System_Net_EndPoint_System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.ForwardJoinAsync(System.Net.EndPoint%2CSystem.Net.EndPoint%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.ForwardJoin.cs/#L18">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_ForwardJoinAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.ForwardJoinAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_ForwardJoinAsync_System_Net_EndPoint_System_Net_EndPoint_System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.ForwardJoinAsync(System.Net.EndPoint,System.Net.EndPoint,System.Int32,System.Threading.CancellationToken)">ForwardJoinAsync(EndPoint, EndPoint, int, CancellationToken)</h4>
@@ -1419,12 +1351,9 @@ protected virtual ILogger Logger { get; }</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_IsLocalNode_System_Net_EndPoint_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.IsLocalNode(System.Net.EndPoint)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L321">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_IsLocalNode_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.IsLocalNode*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_IsLocalNode_System_Net_EndPoint_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.IsLocalNode(System.Net.EndPoint)">IsLocalNode(EndPoint)</h4>
@@ -1469,12 +1398,9 @@ protected virtual ILogger Logger { get; }</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_JoinAsync_System_Net_EndPoint_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.JoinAsync(System.Net.EndPoint%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Join.cs/#L16">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_JoinAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.JoinAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_JoinAsync_System_Net_EndPoint_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.JoinAsync(System.Net.EndPoint,System.Threading.CancellationToken)">JoinAsync(EndPoint, CancellationToken)</h4>
@@ -1541,12 +1467,9 @@ protected virtual ILogger Logger { get; }</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_NeighborAsync_System_Net_EndPoint_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.NeighborAsync(System.Net.EndPoint%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Neighbor.cs/#L18">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_NeighborAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.NeighborAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_NeighborAsync_System_Net_EndPoint_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.NeighborAsync(System.Net.EndPoint,System.Boolean,System.Threading.CancellationToken)">NeighborAsync(EndPoint, bool, CancellationToken)</h4>
@@ -1620,12 +1543,9 @@ is full; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_OnError_System_Net_EndPoint_System_Exception_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.OnError(System.Net.EndPoint%2CSystem.Exception)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs/#L78">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_OnError_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.OnError*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_OnError_System_Net_EndPoint_System_Exception_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.OnError(System.Net.EndPoint,System.Exception)">OnError(EndPoint, Exception)</h4>
@@ -1660,12 +1580,9 @@ is full; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_ReportFailedPeerAsync_System_Net_EndPoint_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.ReportFailedPeerAsync(System.Net.EndPoint%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Disconnect.cs/#L45">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Disconnect.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_ReportFailedPeerAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.ReportFailedPeerAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_ReportFailedPeerAsync_System_Net_EndPoint_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.ReportFailedPeerAsync(System.Net.EndPoint,System.Threading.CancellationToken)">ReportFailedPeerAsync(EndPoint, CancellationToken)</h4>
@@ -1737,12 +1654,9 @@ is full; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_ShuffleAsync_System_Net_EndPoint_System_Net_EndPoint_System_Collections_Generic_IReadOnlyCollection_System_Net_EndPoint__System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.ShuffleAsync(System.Net.EndPoint%2CSystem.Net.EndPoint%2CSystem.Collections.Generic.IReadOnlyCollection%7BSystem.Net.EndPoint%7D%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Shuffle.cs/#L96">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_ShuffleAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.ShuffleAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_ShuffleAsync_System_Net_EndPoint_System_Net_EndPoint_System_Collections_Generic_IReadOnlyCollection_System_Net_EndPoint__System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.ShuffleAsync(System.Net.EndPoint,System.Net.EndPoint,System.Collections.Generic.IReadOnlyCollection{System.Net.EndPoint},System.Int32,System.Threading.CancellationToken)">ShuffleAsync(EndPoint, EndPoint?, IReadOnlyCollection&lt;EndPoint&gt;, int, CancellationToken)</h4>
@@ -1828,12 +1742,9 @@ or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keyword
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_ShuffleReplyAsync_System_Net_EndPoint_System_Collections_Generic_IReadOnlyCollection_System_Net_EndPoint__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.ShuffleReplyAsync(System.Net.EndPoint%2CSystem.Collections.Generic.IReadOnlyCollection%7BSystem.Net.EndPoint%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Shuffle.cs/#L146">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_ShuffleReplyAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.ShuffleReplyAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_ShuffleReplyAsync_System_Net_EndPoint_System_Collections_Generic_IReadOnlyCollection_System_Net_EndPoint__System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.ShuffleReplyAsync(System.Net.EndPoint,System.Collections.Generic.IReadOnlyCollection{System.Net.EndPoint},System.Threading.CancellationToken)">ShuffleReplyAsync(EndPoint, IReadOnlyCollection&lt;EndPoint&gt;, CancellationToken)</h4>
@@ -1906,12 +1817,9 @@ or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keyword
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_StartAsync_System_Net_EndPoint_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.StartAsync(System.Net.EndPoint%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L105">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_StartAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.StartAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_StartAsync_System_Net_EndPoint_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.StartAsync(System.Net.EndPoint,System.Threading.CancellationToken)">StartAsync(EndPoint?, CancellationToken)</h4>
@@ -1962,12 +1870,9 @@ or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keyword
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_StopAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.StopAsync(System.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L357">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_StopAsync_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.StopAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_StopAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.StopAsync(System.Threading.CancellationToken)">StopAsync(CancellationToken)</h4>
@@ -2014,12 +1919,9 @@ or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keyword
   </table>
   <h3 id="events">Events
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_PeerDiscovered.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.PeerDiscovered%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L296">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_PeerDiscovered" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.PeerDiscovered">PeerDiscovered</h4>
   <div class="markdown level1 summary"><p>An event raised when a new remote peer has been discovered.</p>
@@ -2044,12 +1946,9 @@ or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keyword
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController_PeerGone.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController.PeerGone%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs/#L214">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.cs">View Source</a>
   </span>
   <h4 id="DotNext_Net_Cluster_Discovery_HyParView_PeerController_PeerGone" data-uid="DotNext.Net.Cluster.Discovery.HyParView.PeerController.PeerGone">PeerGone</h4>
   <div class="markdown level1 summary"><p>An event raised when the visible neighbor becomes unavailable.</p>
@@ -2089,16 +1988,10 @@ or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keyword
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <h3 id="seealso">See Also</h3>
   <div class="seealso">
@@ -2113,10 +2006,7 @@ or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keyword
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Net_Cluster_Discovery_HyParView_PeerController.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Discovery.HyParView.PeerController%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Shuffle.cs/#L9" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/cluster/DotNext.Net.Cluster/Net/Cluster/Discovery/HyParView/PeerController.Broadcast.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

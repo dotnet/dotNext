@@ -80,7 +80,7 @@
     <div><a class="xref" href="DotNext.IOptionMonad-2.html">IOptionMonad</a>&lt;T, <a class="xref" href="DotNext.Result-2.html">Result</a>&lt;T, TError&gt;&gt;</div>
     <div><a class="xref" href="DotNext.IOptionMonad-1.html">IOptionMonad</a>&lt;T&gt;</div>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -91,10 +91,10 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
@@ -104,7 +104,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Result_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct Result&lt;T, TError&gt; : IResultMonad&lt;T, TError, Result&lt;T, TError&gt;&gt;, IResultMonad&lt;T, TError&gt;, IOptionMonad&lt;T, Result&lt;T, TError&gt;&gt;, IOptionMonad&lt;T&gt;, ISupplier&lt;object?&gt;, IFunctional&lt;Func&lt;object?&gt;&gt; where TError : struct, Enum</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct Result&lt;T, TError&gt; : IResultMonad&lt;T, TError, Result&lt;T, TError&gt;&gt;, IResultMonad&lt;T, TError&gt;, IOptionMonad&lt;T, Result&lt;T, TError&gt;&gt;, IOptionMonad&lt;T&gt;, ISupplier&lt;object?&gt;, IFunctional where TError : struct, Enum</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -129,12 +129,9 @@
   </table>
   <h3 id="constructors">Constructors
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2__ctor__0_.md&amp;value=---%0Auid%3A%20DotNext.Result%602.%23ctor(%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L488">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2__ctor_" data-uid="DotNext.Result`2.#ctor*"></a>
   <h4 id="DotNext_Result_2__ctor__0_" data-uid="DotNext.Result`2.#ctor(`0)">Result(T)</h4>
@@ -163,12 +160,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2__ctor__1_.md&amp;value=---%0Auid%3A%20DotNext.Result%602.%23ctor(%601)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L498">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2__ctor_" data-uid="DotNext.Result`2.#ctor*"></a>
   <h4 id="DotNext_Result_2__ctor__1_" data-uid="DotNext.Result`2.#ctor(`1)">Result(TError)</h4>
@@ -215,12 +209,9 @@
   </table>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_Error.md&amp;value=---%0Auid%3A%20DotNext.Result%602.Error%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L571">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_Error_" data-uid="DotNext.Result`2.Error*"></a>
   <h4 id="DotNext_Result_2_Error" data-uid="DotNext.Result`2.Error">Error</h4>
@@ -246,12 +237,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_IsSuccessful.md&amp;value=---%0Auid%3A%20DotNext.Result%602.IsSuccessful%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L577">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_IsSuccessful_" data-uid="DotNext.Result`2.IsSuccessful*"></a>
   <h4 id="DotNext_Result_2_IsSuccessful" data-uid="DotNext.Result`2.IsSuccessful">IsSuccessful</h4>
@@ -278,12 +266,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_Value.md&amp;value=---%0Auid%3A%20DotNext.Result%602.Value%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L522">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_Value_" data-uid="DotNext.Result`2.Value*"></a>
   <h4 id="DotNext_Result_2_Value" data-uid="DotNext.Result`2.Value">Value</h4>
@@ -325,12 +310,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_ValueOrDefault.md&amp;value=---%0Auid%3A%20DotNext.Result%602.ValueOrDefault%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L551">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_ValueOrDefault_" data-uid="DotNext.Result`2.ValueOrDefault*"></a>
   <h4 id="DotNext_Result_2_ValueOrDefault" data-uid="DotNext.Result`2.ValueOrDefault">ValueOrDefault</h4>
@@ -357,12 +339,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_ValueRef.md&amp;value=---%0Auid%3A%20DotNext.Result%602.ValueRef%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L536">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_ValueRef_" data-uid="DotNext.Result`2.ValueRef*"></a>
   <h4 id="DotNext_Result_2_ValueRef" data-uid="DotNext.Result`2.ValueRef">ValueRef</h4>
@@ -371,7 +350,8 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[JsonIgnore]
+    <pre><code class="lang-csharp hljs">[UnscopedRef]
+[JsonIgnore]
 public ref readonly T ValueRef { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
@@ -408,12 +388,9 @@ public ref readonly T ValueRef { get; }</code></pre>
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_Box.md&amp;value=---%0Auid%3A%20DotNext.Result%602.Box%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L516">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_Box_" data-uid="DotNext.Result`2.Box*"></a>
   <h4 id="DotNext_Result_2_Box" data-uid="DotNext.Result`2.Box">Box()</h4>
@@ -440,12 +417,9 @@ public ref readonly T ValueRef { get; }</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_Convert__1__.md&amp;value=---%0Auid%3A%20DotNext.Result%602.Convert%60%601()%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L654">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_Convert_" data-uid="DotNext.Result`2.Convert*"></a>
   <h4 id="DotNext_Result_2_Convert__1__" data-uid="DotNext.Result`2.Convert``1()">Convert&lt;TResult&gt;(delegate*&lt;T, Result&lt;TResult, TError&gt;&gt;)</h4>
@@ -508,12 +482,9 @@ public Result&lt;TResult, TError&gt; Convert&lt;TResult&gt;(delegate*&lt;T, Resu
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_Convert__1__.md&amp;value=---%0Auid%3A%20DotNext.Result%602.Convert%60%601()%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L654">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_Convert_" data-uid="DotNext.Result`2.Convert*"></a>
   <h4 id="DotNext_Result_2_Convert__1__" data-uid="DotNext.Result`2.Convert``1()">Convert&lt;TResult&gt;(delegate*&lt;T, Result&lt;TResult, TError&gt;&gt;)</h4>
@@ -576,12 +547,9 @@ public Result&lt;TResult, TError&gt; Convert&lt;TResult&gt;(delegate*&lt;T, Resu
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_Convert__1_System_Converter__0_DotNext_Result___0__1___.md&amp;value=---%0Auid%3A%20DotNext.Result%602.Convert%60%601(System.Converter%7B%600%2CDotNext.Result%7B%60%600%2C%601%7D%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L633">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_Convert_" data-uid="DotNext.Result`2.Convert*"></a>
   <h4 id="DotNext_Result_2_Convert__1_System_Converter__0_DotNext_Result___0__1___" data-uid="DotNext.Result`2.Convert``1(System.Converter{`0,DotNext.Result{``0,`1}})">Convert&lt;TResult&gt;(Converter&lt;T, Result&lt;TResult, TError&gt;&gt;)</h4>
@@ -643,12 +611,9 @@ forward the error.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_Convert__1_System_Converter__0___0__.md&amp;value=---%0Auid%3A%20DotNext.Result%602.Convert%60%601(System.Converter%7B%600%2C%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L623">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_Convert_" data-uid="DotNext.Result`2.Convert*"></a>
   <h4 id="DotNext_Result_2_Convert__1_System_Converter__0___0__" data-uid="DotNext.Result`2.Convert``1(System.Converter{`0,``0})">Convert&lt;TResult&gt;(Converter&lt;T, TResult&gt;)</h4>
@@ -710,12 +675,9 @@ caused by the converter.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_Or__0_.md&amp;value=---%0Auid%3A%20DotNext.Result%602.Or(%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L604">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_Or_" data-uid="DotNext.Result`2.Or*"></a>
   <h4 id="DotNext_Result_2_Or__0_" data-uid="DotNext.Result`2.Or(`0)">Or(T?)</h4>
@@ -760,12 +722,9 @@ caused by the converter.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_OrInvoke__.md&amp;value=---%0Auid%3A%20DotNext.Result%602.OrInvoke()%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L698">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_OrInvoke_" data-uid="DotNext.Result`2.OrInvoke*"></a>
   <h4 id="DotNext_Result_2_OrInvoke__" data-uid="DotNext.Result`2.OrInvoke()">OrInvoke(delegate*&lt;TError, T&gt;)</h4>
@@ -811,12 +770,9 @@ public T OrInvoke(delegate*&lt;TError, T&gt; defaultFunc)</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_OrInvoke__.md&amp;value=---%0Auid%3A%20DotNext.Result%602.OrInvoke()%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L698">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_OrInvoke_" data-uid="DotNext.Result`2.OrInvoke*"></a>
   <h4 id="DotNext_Result_2_OrInvoke__" data-uid="DotNext.Result`2.OrInvoke()">OrInvoke(delegate*&lt;TError, T&gt;)</h4>
@@ -862,12 +818,9 @@ public T OrInvoke(delegate*&lt;TError, T&gt; defaultFunc)</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_OrInvoke_System_Func__0__.md&amp;value=---%0Auid%3A%20DotNext.Result%602.OrInvoke(System.Func%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L668">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_OrInvoke_" data-uid="DotNext.Result`2.OrInvoke*"></a>
   <h4 id="DotNext_Result_2_OrInvoke_System_Func__0__" data-uid="DotNext.Result`2.OrInvoke(System.Func{`0})">OrInvoke(Func&lt;T&gt;)</h4>
@@ -912,12 +865,9 @@ public T OrInvoke(delegate*&lt;TError, T&gt; defaultFunc)</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_OrInvoke_System_Func__1__0__.md&amp;value=---%0Auid%3A%20DotNext.Result%602.OrInvoke(System.Func%7B%601%2C%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L690">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_OrInvoke_" data-uid="DotNext.Result`2.OrInvoke*"></a>
   <h4 id="DotNext_Result_2_OrInvoke_System_Func__1__0__" data-uid="DotNext.Result`2.OrInvoke(System.Func{`1,`0})">OrInvoke(Func&lt;TError, T&gt;)</h4>
@@ -962,12 +912,9 @@ public T OrInvoke(delegate*&lt;TError, T&gt; defaultFunc)</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_OrThrow__.md&amp;value=---%0Auid%3A%20DotNext.Result%602.OrThrow()%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L730">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_OrThrow_" data-uid="DotNext.Result`2.OrThrow*"></a>
   <h4 id="DotNext_Result_2_OrThrow__" data-uid="DotNext.Result`2.OrThrow()">OrThrow(delegate*&lt;TError, Exception&gt;)</h4>
@@ -1029,12 +976,9 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_OrThrow_System_Func__1_System_Exception__.md&amp;value=---%0Auid%3A%20DotNext.Result%602.OrThrow(System.Func%7B%601%2CSystem.Exception%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L721">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_OrThrow_" data-uid="DotNext.Result`2.OrThrow*"></a>
   <h4 id="DotNext_Result_2_OrThrow_System_Func__1_System_Exception__" data-uid="DotNext.Result`2.OrThrow(System.Func{`1,System.Exception})">OrThrow(Func&lt;TError, Exception&gt;)</h4>
@@ -1095,12 +1039,9 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_ToResult.md&amp;value=---%0Auid%3A%20DotNext.Result%602.ToResult%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L738">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_ToResult_" data-uid="DotNext.Result`2.ToResult*"></a>
   <h4 id="DotNext_Result_2_ToResult" data-uid="DotNext.Result`2.ToResult">ToResult()</h4>
@@ -1127,12 +1068,9 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_ToString.md&amp;value=---%0Auid%3A%20DotNext.Result%602.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L744">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_ToString_" data-uid="DotNext.Result`2.ToString*"></a>
   <h4 id="DotNext_Result_2_ToString" data-uid="DotNext.Result`2.ToString">ToString()</h4>
@@ -1161,12 +1099,9 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a></div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_TryGet.md&amp;value=---%0Auid%3A%20DotNext.Result%602.TryGet%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L597">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_TryGet_" data-uid="DotNext.Result`2.TryGet*"></a>
   <h4 id="DotNext_Result_2_TryGet" data-uid="DotNext.Result`2.TryGet">TryGet()</h4>
@@ -1193,12 +1128,9 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_TryGet__0__.md&amp;value=---%0Auid%3A%20DotNext.Result%602.TryGet(%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L587">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_TryGet_" data-uid="DotNext.Result`2.TryGet*"></a>
   <h4 id="DotNext_Result_2_TryGet__0__" data-uid="DotNext.Result`2.TryGet(`0@)">TryGet(out T)</h4>
@@ -1207,7 +1139,7 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool TryGet(out T value)</code></pre>
+    <pre><code class="lang-csharp hljs">public bool TryGet(out T result)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1221,7 +1153,7 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
     <tbody>
       <tr>
         <td><span class="xref">T</span></td>
-        <td><span class="parametername">value</span></td>
+        <td><span class="parametername">result</span></td>
         <td><p>Extracted value.</p>
 </td>
       </tr>
@@ -1245,12 +1177,9 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
   </table>
   <h3 id="operators">Operators
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_op_BitwiseAnd_DotNext_Result__0__1___DotNext_Result__0__1___.md&amp;value=---%0Auid%3A%20DotNext.Result%602.op_BitwiseAnd(DotNext.Result%7B%600%2C%601%7D%40%2CDotNext.Result%7B%600%2C%601%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L797">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_op_BitwiseAnd_" data-uid="DotNext.Result`2.op_BitwiseAnd*"></a>
   <h4 id="DotNext_Result_2_op_BitwiseAnd_DotNext_Result__0__1___DotNext_Result__0__1___" data-uid="DotNext.Result`2.op_BitwiseAnd(DotNext.Result{`0,`1}@,DotNext.Result{`0,`1}@)">operator &amp;(in Result&lt;T, TError&gt;, in Result&lt;T, TError&gt;)</h4>
@@ -1301,12 +1230,9 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_op_BitwiseOr_DotNext_Result__0__1___DotNext_Result__0__1___.md&amp;value=---%0Auid%3A%20DotNext.Result%602.op_BitwiseOr(DotNext.Result%7B%600%2C%601%7D%40%2CDotNext.Result%7B%600%2C%601%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L761">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_op_BitwiseOr_" data-uid="DotNext.Result`2.op_BitwiseOr*"></a>
   <h4 id="DotNext_Result_2_op_BitwiseOr_DotNext_Result__0__1___DotNext_Result__0__1___" data-uid="DotNext.Result`2.op_BitwiseOr(DotNext.Result{`0,`1}@,DotNext.Result{`0,`1}@)">operator |(in Result&lt;T, TError&gt;, in Result&lt;T, TError&gt;)</h4>
@@ -1357,12 +1283,9 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_op_BitwiseOr_DotNext_Result__0__1____0_.md&amp;value=---%0Auid%3A%20DotNext.Result%602.op_BitwiseOr(DotNext.Result%7B%600%2C%601%7D%40%2C%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L752">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_op_BitwiseOr_" data-uid="DotNext.Result`2.op_BitwiseOr*"></a>
   <h4 id="DotNext_Result_2_op_BitwiseOr_DotNext_Result__0__1____0_" data-uid="DotNext.Result`2.op_BitwiseOr(DotNext.Result{`0,`1}@,`0)">operator |(in Result&lt;T, TError&gt;, T?)</h4>
@@ -1413,12 +1336,9 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_op_Explicit_DotNext_Result__0__1_____0.md&amp;value=---%0Auid%3A%20DotNext.Result%602.op_Explicit(DotNext.Result%7B%600%2C%601%7D%40)~%600%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L789">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_op_Explicit_" data-uid="DotNext.Result`2.op_Explicit*"></a>
   <h4 id="DotNext_Result_2_op_Explicit_DotNext_Result__0__1_____0" data-uid="DotNext.Result`2.op_Explicit(DotNext.Result{`0,`1}@)~`0">explicit operator T(in Result&lt;T, TError&gt;)</h4>
@@ -1462,12 +1382,9 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_op_False_DotNext_Result__0__1___.md&amp;value=---%0Auid%3A%20DotNext.Result%602.op_False(DotNext.Result%7B%600%2C%601%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L806">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_op_False_" data-uid="DotNext.Result`2.op_False*"></a>
   <h4 id="DotNext_Result_2_op_False_DotNext_Result__0__1___" data-uid="DotNext.Result`2.op_False(DotNext.Result{`0,`1}@)">operator false(in Result&lt;T, TError&gt;)</h4>
@@ -1511,12 +1428,9 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_op_Implicit_DotNext_Result__0__1____DotNext_Optional__0_.md&amp;value=---%0Auid%3A%20DotNext.Result%602.op_Implicit(DotNext.Result%7B%600%2C%601%7D%40)~DotNext.Optional%7B%600%7D%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L769">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_op_Implicit_" data-uid="DotNext.Result`2.op_Implicit*"></a>
   <h4 id="DotNext_Result_2_op_Implicit_DotNext_Result__0__1____DotNext_Optional__0_" data-uid="DotNext.Result`2.op_Implicit(DotNext.Result{`0,`1}@)~DotNext.Optional{`0}">implicit operator Optional&lt;T&gt;(in Result&lt;T, TError&gt;)</h4>
@@ -1561,12 +1475,9 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_op_Implicit_DotNext_Result__0__1____DotNext_Result__0_.md&amp;value=---%0Auid%3A%20DotNext.Result%602.op_Implicit(DotNext.Result%7B%600%2C%601%7D%40)~DotNext.Result%7B%600%7D%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L776">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_op_Implicit_" data-uid="DotNext.Result`2.op_Implicit*"></a>
   <h4 id="DotNext_Result_2_op_Implicit_DotNext_Result__0__1____DotNext_Result__0_" data-uid="DotNext.Result`2.op_Implicit(DotNext.Result{`0,`1}@)~DotNext.Result{`0}">implicit operator Result&lt;T&gt;(in Result&lt;T, TError&gt;)</h4>
@@ -1611,62 +1522,9 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_op_Implicit__0__DotNext_Result__0__1_.md&amp;value=---%0Auid%3A%20DotNext.Result%602.op_Implicit(%600)~DotNext.Result%7B%600%2C%601%7D%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L783">View Source</a>
-  </span>
-  <a id="DotNext_Result_2_op_Implicit_" data-uid="DotNext.Result`2.op_Implicit*"></a>
-  <h4 id="DotNext_Result_2_op_Implicit__0__DotNext_Result__0__1_" data-uid="DotNext.Result`2.op_Implicit(`0)~DotNext.Result{`0,`1}">implicit operator Result&lt;T, TError&gt;(T)</h4>
-  <div class="markdown level1 summary"><p>Converts value into the result.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static implicit operator Result&lt;T, TError&gt;(T result)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">result</span></td>
-        <td><p>The result to be converted.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Result-2.html">Result</a>&lt;T, TError&gt;</td>
-        <td><p>The result representing <code class="paramref">result</code> value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_op_LogicalNot_DotNext_Result__0__1___.md&amp;value=---%0Auid%3A%20DotNext.Result%602.op_LogicalNot(DotNext.Result%7B%600%2C%601%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L800">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_op_LogicalNot_" data-uid="DotNext.Result`2.op_LogicalNot*"></a>
   <h4 id="DotNext_Result_2_op_LogicalNot_DotNext_Result__0__1___" data-uid="DotNext.Result`2.op_LogicalNot(DotNext.Result{`0,`1}@)">operator !(in Result&lt;T, TError&gt;)</h4>
@@ -1710,12 +1568,9 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2_op_True_DotNext_Result__0__1___.md&amp;value=---%0Auid%3A%20DotNext.Result%602.op_True(DotNext.Result%7B%600%2C%601%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L803">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
   </span>
   <a id="DotNext_Result_2_op_True_" data-uid="DotNext.Result`2.op_True*"></a>
   <h4 id="DotNext_Result_2_op_True_DotNext_Result__0__1___" data-uid="DotNext.Result`2.op_True(DotNext.Result{`0,`1}@)">operator true(in Result&lt;T, TError&gt;)</h4>
@@ -1759,6 +1614,55 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
       </tr>
     </tbody>
   </table>
+  <h3 id="eii">Explicit Interface Implementations
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs">View Source</a>
+  </span>
+  <a id="DotNext_Result_2_op_Implicit_" data-uid="DotNext.Result`2.op_Implicit*"></a>
+  <h4 id="DotNext_Result_2_op_Implicit__0__DotNext_Result__0__1_" data-uid="DotNext.Result`2.op_Implicit(`0)~DotNext.Result{`0,`1}">implicit operator Result&lt;T, TError&gt;(T)</h4>
+  <div class="markdown level1 summary"><p>Converts value into the result.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">static implicit operator Result&lt;T, TError&gt;(T result)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">result</span></td>
+        <td><p>The result to be converted.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Result-2.html">Result</a>&lt;T, TError&gt;</td>
+        <td><p>The result representing <code class="paramref">result</code> value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.IResultMonad-3.html">IResultMonad&lt;T, TError, TSelf&gt;</a>
@@ -1776,26 +1680,17 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerator__2___0_System_Threading_CancellationToken_">Collection.ToAsyncEnumerator&lt;TEnumerator, T&gt;(TEnumerator, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToClassicEnumerator__2___0_">Collection.ToClassicEnumerator&lt;TEnumerator, T&gt;(TEnumerator)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
 
 </article>
@@ -1806,10 +1701,7 @@ public T OrThrow(delegate*&lt;TError, Exception&gt; exceptionFactory)</code></pr
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Result_2.md&amp;value=---%0Auid%3A%20DotNext.Result%602%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Result.cs/#L477" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

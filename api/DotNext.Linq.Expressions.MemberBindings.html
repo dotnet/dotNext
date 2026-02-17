@@ -83,14 +83,14 @@
     <h5>Implements</h5>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.idictionary-2">IDictionary</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a>&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.icollection-1">ICollection</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2">KeyValuePair</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a>&gt;&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.idictionary">IDictionary</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.icollection">ICollection</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a>&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2">KeyValuePair</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a>&gt;&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.keyvaluepair-2">KeyValuePair</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a>&gt;&gt;</div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.idictionary">IDictionary</a></div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.icollection">ICollection</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.serialization.ideserializationcallback">IDeserializationCallback</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.serialization.iserializable">ISerializable</a></div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.serialization.ideserializationcallback">IDeserializationCallback</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -107,10 +107,13 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.containsvalue">Dictionary&lt;string, Expression&gt;.ContainsValue(Expression)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.ensurecapacity">Dictionary&lt;string, Expression&gt;.EnsureCapacity(int)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.getenumerator">Dictionary&lt;string, Expression&gt;.GetEnumerator()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.getenumerator">Dictionary&lt;string, Expression&gt;.GetEnumerator()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.getalternatelookup">Dictionary&lt;string, Expression&gt;.GetAlternateLookup&lt;TAlternateKey&gt;()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.trygetalternatelookup">Dictionary&lt;string, Expression&gt;.TryGetAlternateLookup&lt;TAlternateKey&gt;(out Dictionary&lt;string, Expression&gt;.AlternateLookup&lt;TAlternateKey&gt;)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.ondeserialization">Dictionary&lt;string, Expression&gt;.OnDeserialization(object)</a>
@@ -122,16 +125,19 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.remove#system-collections-generic-dictionary-2-remove(-0-1@)">Dictionary&lt;string, Expression&gt;.Remove(string, out Expression)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.trimexcess#system-collections-generic-dictionary-2-trimexcess">Dictionary&lt;string, Expression&gt;.TrimExcess()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.trimexcess#system-collections-generic-dictionary-2-trimexcess(system-int32)">Dictionary&lt;string, Expression&gt;.TrimExcess(int)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.trygetvalue">Dictionary&lt;string, Expression&gt;.TryGetValue(string, out Expression)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.tryadd">Dictionary&lt;string, Expression&gt;.TryAdd(string, Expression)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.trygetvalue">Dictionary&lt;string, Expression&gt;.TryGetValue(string, out Expression)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.ensurecapacity">Dictionary&lt;string, Expression&gt;.EnsureCapacity(int)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.trimexcess#system-collections-generic-dictionary-2-trimexcess">Dictionary&lt;string, Expression&gt;.TrimExcess()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.trimexcess#system-collections-generic-dictionary-2-trimexcess(system-int32)">Dictionary&lt;string, Expression&gt;.TrimExcess(int)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.comparer">Dictionary&lt;string, Expression&gt;.Comparer</a>
@@ -140,7 +146,7 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.count">Dictionary&lt;string, Expression&gt;.Count</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.item">Dictionary&lt;string, Expression&gt;.this[string]</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.capacity">Dictionary&lt;string, Expression&gt;.Capacity</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.keys">Dictionary&lt;string, Expression&gt;.Keys</a>
@@ -149,38 +155,38 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.values">Dictionary&lt;string, Expression&gt;.Values</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.dictionary-2.item">Dictionary&lt;string, Expression&gt;.this[string]</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Linq.html">Linq</a>.<a class="xref" href="DotNext.Linq.Expressions.html">Expressions</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Metaprogramming.dll</h6>
   <h5 id="DotNext_Linq_Expressions_MemberBindings_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class MemberBindings : Dictionary&lt;string, Expression&gt;, IDictionary&lt;string, Expression&gt;, ICollection&lt;KeyValuePair&lt;string, Expression&gt;&gt;, IReadOnlyDictionary&lt;string, Expression&gt;, IReadOnlyCollection&lt;KeyValuePair&lt;string, Expression&gt;&gt;, IEnumerable&lt;KeyValuePair&lt;string, Expression&gt;&gt;, IDictionary, ICollection, IEnumerable, IDeserializationCallback, ISerializable</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class MemberBindings : Dictionary&lt;string, Expression&gt;, IDictionary&lt;string, Expression&gt;, ICollection&lt;KeyValuePair&lt;string, Expression&gt;&gt;, IDictionary, ICollection, IReadOnlyDictionary&lt;string, Expression&gt;, IReadOnlyCollection&lt;KeyValuePair&lt;string, Expression&gt;&gt;, IEnumerable&lt;KeyValuePair&lt;string, Expression&gt;&gt;, IEnumerable, ISerializable, IDeserializationCallback</code></pre>
   </div>
   <h3 id="constructors">Constructors
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Linq_Expressions_MemberBindings__ctor.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.MemberBindings.%23ctor%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/MemberBindings.cs/#L14">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Linq/Expressions/MemberBindings.cs">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_MemberBindings__ctor_" data-uid="DotNext.Linq.Expressions.MemberBindings.#ctor*"></a>
   <h4 id="DotNext_Linq_Expressions_MemberBindings__ctor" data-uid="DotNext.Linq.Expressions.MemberBindings.#ctor">MemberBindings()</h4>
@@ -193,12 +199,9 @@
   </div>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Linq_Expressions_MemberBindings_Bind_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.MemberBindings.Bind(System.Type)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/MemberBindings.cs/#L24">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Linq/Expressions/MemberBindings.cs">View Source</a>
   </span>
   <a id="DotNext_Linq_Expressions_MemberBindings_Bind_" data-uid="DotNext.Linq.Expressions.MemberBindings.Bind*"></a>
   <h4 id="DotNext_Linq_Expressions_MemberBindings_Bind_System_Type_" data-uid="DotNext.Linq.Expressions.MemberBindings.Bind(System.Type)">Bind(Type)</h4>
@@ -251,6 +254,12 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.icollection-1">ICollection&lt;T&gt;</a>
   </div>
   <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.idictionary">IDictionary</a>
+  </div>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.icollection">ICollection</a>
+  </div>
+  <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary&lt;TKey, TValue&gt;</a>
   </div>
   <div>
@@ -260,125 +269,23 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable&lt;T&gt;</a>
   </div>
   <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.idictionary">IDictionary</a>
-  </div>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.icollection">ICollection</a>
-  </div>
-  <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a>
   </div>
   <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.serialization.ideserializationcallback">IDeserializationCallback</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.serialization.iserializable">ISerializable</a>
   </div>
   <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.serialization.iserializable">ISerializable</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.serialization.ideserializationcallback">IDeserializationCallback</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_GetOrAdd__2_System_Collections_Generic_Dictionary___0___1____0_System_Func___0___1__">Dictionary.GetOrAdd&lt;TKey, TValue&gt;(Dictionary&lt;TKey, TValue&gt;, TKey, Func&lt;TKey, TValue&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_GetOrAdd__2_System_Collections_Generic_Dictionary___0___1____0___1_">Dictionary.GetOrAdd&lt;TKey, TValue&gt;(Dictionary&lt;TKey, TValue&gt;, TKey, TValue)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_GetOrAdd__3_System_Collections_Generic_Dictionary___0___1____0_System_Func___0___1__">Dictionary.GetOrAdd&lt;TKey, TValue, TFactory&gt;(Dictionary&lt;TKey, TValue&gt;, TKey, Func&lt;TKey, TValue&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_AddAll__1_System_Collections_Generic_ICollection___0__System_Collections_Generic_IEnumerable___0__">Collection.AddAll&lt;T&gt;(ICollection&lt;T&gt;, IEnumerable&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_ForEach__2_System_Collections_Generic_IDictionary___0___1__System_Action___0___1__">Dictionary.ForEach&lt;TKey, TValue&gt;(IDictionary&lt;TKey, TValue&gt;, Action&lt;TKey, TValue&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_GetOrInvoke__2_System_Collections_Generic_IDictionary___0___1____0_System_Func___1__">Dictionary.GetOrInvoke&lt;TKey, TValue&gt;(IDictionary&lt;TKey, TValue&gt;, TKey, Func&lt;TValue&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_GetOrInvoke__3_System_Collections_Generic_IDictionary___0___1____0___2_">Dictionary.GetOrInvoke&lt;TKey, TValue, TSupplier&gt;(IDictionary&lt;TKey, TValue&gt;, TKey, TSupplier)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_IndexerGetter__2_System_Collections_Generic_IDictionary___0___1__">Dictionary.IndexerGetter&lt;TKey, TValue&gt;(IDictionary&lt;TKey, TValue&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_IndexerSetter__2_System_Collections_Generic_IDictionary___0___1__">Dictionary.IndexerSetter&lt;TKey, TValue&gt;(IDictionary&lt;TKey, TValue&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_KeysGetter__2_System_Collections_Generic_IDictionary___0___1__">Dictionary.KeysGetter&lt;TKey, TValue&gt;(IDictionary&lt;TKey, TValue&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_TryGetValue__2_System_Collections_Generic_IDictionary___0___1____0_">Dictionary.TryGetValue&lt;TKey, TValue&gt;(IDictionary&lt;TKey, TValue&gt;, TKey)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_TryRemove__2_System_Collections_Generic_IDictionary___0___1____0_">Dictionary.TryRemove&lt;TKey, TValue&gt;(IDictionary&lt;TKey, TValue&gt;, TKey)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_ValuesGetter__2_System_Collections_Generic_IDictionary___0___1__">Dictionary.ValuesGetter&lt;TKey, TValue&gt;(IDictionary&lt;TKey, TValue&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Append__1_System_Collections_Generic_IEnumerable___0____0___">Collection.Append&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Copy__1_System_Collections_Generic_IEnumerable___0__System_Int32_DotNext_Buffers_MemoryAllocator___0__">Collection.Copy&lt;T&gt;(IEnumerable&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Collection.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, int, out T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_FirstOrNone__1_System_Collections_Generic_IEnumerable___0__">Collection.FirstOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Collection.ForEachAsync&lt;T&gt;(IEnumerable&lt;T&gt;, Func&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Collection.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_LastOrNone__1_System_Collections_Generic_IEnumerable___0__">Collection.LastOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Prepend__1_System_Collections_Generic_IEnumerable___0____0___">Collection.Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_SequenceHashCode__1_System_Collections_Generic_IEnumerable___0__System_Boolean_">Collection.SequenceHashCode&lt;T&gt;(IEnumerable&lt;T&gt;, bool)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__System_Boolean_">Collection.ToAsyncEnumerable&lt;T&gt;(IEnumerable&lt;T&gt;, bool)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Collection.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, string, string)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_">Enumerator.GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Convert__2_System_Collections_Generic_IReadOnlyCollection___0__System_Converter___0___1__">Collection.Convert&lt;TInput, TOutput&gt;(IReadOnlyCollection&lt;TInput&gt;, Converter&lt;TInput, TOutput&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_ConvertValues__3_System_Collections_Generic_IReadOnlyDictionary___0___1__System_Converter___1___2__">Dictionary.ConvertValues&lt;TKey, TValue, TResult&gt;(IReadOnlyDictionary&lt;TKey, TValue&gt;, Converter&lt;TValue, TResult&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_IndexerGetter__2_System_Collections_Generic_IReadOnlyDictionary___0___1__">Dictionary.IndexerGetter&lt;TKey, TValue&gt;(IReadOnlyDictionary&lt;TKey, TValue&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_KeysGetter__2_System_Collections_Generic_IReadOnlyDictionary___0___1__">Dictionary.KeysGetter&lt;TKey, TValue&gt;(IReadOnlyDictionary&lt;TKey, TValue&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_ValuesGetter__2_System_Collections_Generic_IReadOnlyDictionary___0___1__">Dictionary.ValuesGetter&lt;TKey, TValue&gt;(IReadOnlyDictionary&lt;TKey, TValue&gt;)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
 
 </article>
@@ -389,10 +296,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Linq_Expressions_MemberBindings.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.MemberBindings%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/MemberBindings.cs/#L9" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Linq/Expressions/MemberBindings.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -73,10 +73,10 @@
 <pre><code class="lang-csharp">using DotNext.Linq.Expressions;
 using System.Linq.Expressions;
 
-dynamic expr = &quot;Hello, world&quot;.Const().AsDynamic();
+dynamic expr = &quot;Hello, world&quot;.Quoted.AsDynamic();
 expr = expr.Length;
 Expression e = expr;    //equivalent is &quot;Hello, world&quot;.Length
-expr = 10L.Const().AsDynamic();
+expr = 10L.Quoted.AsDynamic();
 expr = expr + 42L;      //equivalent is 10L + 42L
 </code></pre>
 <p>Unfortunately, due to limitations of C# programming language, construction of <strong>new</strong> expression or type cast is not available. Delegate invocation expression, method call expression, indexer properties and fields are fully supported.</p>

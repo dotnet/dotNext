@@ -114,13 +114,13 @@ writer.Write(array.AsMemory(), false);  // false means that the memory block mus
 <p>Sparse buffer writer also implements <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a> interface as well as other buffer writers mentioned above. However, this interface is implemented explicitly and its methods should be used with care. Major drawback of this buffer type is that it can produce memory holes, i.e. unused memory segments in the middle of the buffer chunks. The holes can be caused by <code>IBufferWriter&lt;T&gt;.GetMemory(int)</code> or <code>IBufferWriter&lt;T&gt;.GetSpan(int)</code> implementations. Therefore these methods are implemented explicitly. All other public methods of <code>SparseBufferWriter&lt;T&gt;</code> class cannot cause memory holes.</p>
 <p>Suppose that sparse buffer has rented memory block of size <em>1024</em> bytes, and <em>1000</em> bytes of them already occupied. If you want to write a block of size <em>100</em> bytes represented by <a href="https://docs.microsoft.com/en-us/dotnet/api/system.readonlyspan-1">ReadOnlySpan&lt;T&gt;</a> then use <code>SparseBufferWriter&lt;T&gt;.Write(ReadOnlySpan&lt;T&gt;)</code> method. It writes the first <em>24</em> bytes to the existing memory block and then rents a new segment to store the rest of the input buffer, <em>76</em> bytes. Therefore, <code>Write</code> method cannot cause fragmentation of memory blocks. However, if we want to obtain a memory block for writing via <code>GetMemory(int)</code> method then sparse buffer cannot utilize <em>24</em> bytes of free memory from the existing chunk because the returned buffer must be at least <em>100</em> bytes of contiguous memory. In this case, sparse buffer rents a new chunk with the size of at least <em>100</em> bytes and marks <em>24</em> bytes from the previous chunk as unused.</p>
 <p>The implementation of <code>GetMemory(int)</code> and <code>GetSpan(int)</code> methods are optimized to reduce the number of such memory holes. However, due to nature of sparse buffer data structure, it is not possible in 100% cases. Nevertheless, such overhead can be acceptable because sparse buffer never reallocates the existing memory and may work faster than <a class="xref" href="../../api/DotNext.Buffers.PoolingBufferWriter-1.html">PoolingBufferWriter&lt;T&gt;</a> which requires reallocation when rented memory block is not enough to place a new data.</p>
-<p>Additionally, you can use <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">Stream</a>-based API to read from or write to the sparse buffer. <a class="xref" href="../../api/DotNext.IO.StreamSource.html">StreamSource</a> provides <code>AsStream</code> extension method that can be used to create readable or writable stream over the buffer:</p>
+<p>Additionally, you can use <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">Stream</a>-based API to read from or write to the sparse buffer. <a class="xref" href="../../api/DotNext.IO.StreamSource.html">StreamSource</a> provides <code>Create</code> extension method that can be used to create readable or writable stream over the buffer:</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 using DotNext.IO;
 
 using var buffer = new SparseBufferWriter&lt;byte&gt;();
-using Stream writable = buffer.AsStream(false); // create writable stream
-using Stream readable = buffer.AsStream(true);  // create readable stream
+using Stream writable = Stream.Create(buffer, true); // create writable stream
+using Stream readable = Stream.Create(buffer, true);  // create readable stream
 </code></pre>
 <p>Sparse buffer supports various strategies for allocation of the memory chunks:</p>
 <ol>
@@ -171,7 +171,7 @@ using System.IO;
 using static DotNext.IO.TextWriterExtensions;
 
 using var buffer = new PoolingArrayBufferWriter&lt;char&gt;(ArrayPool&lt;char&gt;.Shared);
-using TextWriter writer = buffer.AsTextWriter();
+using TextWriter writer = TextWriter.Create(buffer);
 writer.Write(&quot;Hello,&quot;);
 writer.Write(' ');
 writer.Write(&quot;world!&quot;);
@@ -193,13 +193,13 @@ buffer.Interpolate($&quot;{x} + {y} = {x + y}&quot;);
 
 string result = buffer.ToString();
 </code></pre>
-<p>Alignment and custom formats are fully supported. For more information about these interpolated string handlers, see <a href="xref:DotNext.Buffers.BufferWriterSlimInterpolatedStringHandler">BufferWriterSlimInterpolatedStringHandler</a>, <a href="xref:DotNext.Buffers.BufferWriterInterpolatedStringHandler">BufferWriterInterpolatedStringHandler</a>, and <a href="xref:DotNext.Buffers.PoolingInterpolatedStringHandler">PoolingInterpolatedStringHandler</a> data types.</p>
+<p>Alignment and custom formats are fully supported. For more information about these interpolated string handlers, see <a class="xref" href="../../api/DotNext.Text.BufferWriterSlimInterpolatedStringHandler.html">BufferWriterSlimInterpolatedStringHandler</a>, <a class="xref" href="../../api/DotNext.Text.BufferWriterInterpolatedStringHandler.html">BufferWriterInterpolatedStringHandler</a>, and <a href="xref:DotNext.Text.PoolingInterpolatedStringHandler">PoolingInterpolatedStringHandler</a> data types.</p>
 <p><a class="xref" href="../../api/DotNext.Buffers.CharBuffer.html">CharBuffer</a> class offers extension methods for efficient concatenation of strings:</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 
 int x = 10, y = 20;
 using var buffer = new BufferWriterSlim&lt;char&gt;(stackalloc char[128]);
-buffer.Concat([&quot;Hello,&quot;, &quot; &quot;, &quot;world!&quot;]);
+buffer.Concat(&quot;Hello,&quot;, &quot; &quot;, &quot;world!&quot;);
 </code></pre>
 <h1 id="how-to-choose">How to choose?</h1>
 <p>The following table describes the main differences between various growable buffer types:</p>

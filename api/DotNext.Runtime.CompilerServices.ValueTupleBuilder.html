@@ -95,13 +95,16 @@ items.</p>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(IEnumerable&lt;IAsyncDisposable&gt;)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(params IEnumerable&lt;IAsyncDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;T&gt;(ReadOnlySpan&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;TDisposable&gt;(params ReadOnlySpan&lt;TDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_IAsyncDisposable___">Disposable.DisposeAsync(params IAsyncDisposable[])</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
@@ -110,16 +113,10 @@ items.</p>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Runtime.html">Runtime</a>.<a class="xref" href="DotNext.Runtime.CompilerServices.html">CompilerServices</a></h6>
@@ -128,14 +125,25 @@ items.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public sealed class ValueTupleBuilder : Disposable, IDisposable, IEnumerable&lt;Type&gt;, IEnumerable</code></pre>
   </div>
+  <h3 id="constructors">Constructors
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_CompilerServices_ValueTupleBuilder__ctor_" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.#ctor*"></a>
+  <h4 id="DotNext_Runtime_CompilerServices_ValueTupleBuilder__ctor" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.#ctor">ValueTupleBuilder()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTupleBuilder()</code></pre>
+  </div>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_CompilerServices_ValueTupleBuilder_Count.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.ValueTupleBuilder.Count%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs/#L20">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Count_" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Count*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Count" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Count">Count</h4>
@@ -163,12 +171,9 @@ items.</p>
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_CompilerServices_ValueTupleBuilder_Add_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.ValueTupleBuilder.Add(System.Type)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs/#L70">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Add_" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Add*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Add_System_Type_" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Add(System.Type)">Add(Type)</h4>
@@ -197,12 +202,9 @@ items.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_CompilerServices_ValueTupleBuilder_Add__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.ValueTupleBuilder.Add%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs/#L84">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Add_" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Add*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Add__1" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Add``1">Add&lt;T&gt;()</h4>
@@ -229,12 +231,9 @@ items.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_CompilerServices_ValueTupleBuilder_Build.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.ValueTupleBuilder.Build%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs/#L26">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Build_" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Build*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Build" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Build">Build()</h4>
@@ -261,12 +260,9 @@ items.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_CompilerServices_ValueTupleBuilder_Build__1_System_Func_System_Type___0____0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.ValueTupleBuilder.Build%60%601(System.Func%7BSystem.Type%2C%60%600%7D%2C%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs/#L57">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Build_" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Build*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Build__1_System_Func_System_Type___0____0__" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Build``1(System.Func{System.Type,``0},``0@)">Build&lt;TExpression&gt;(Func&lt;Type, TExpression&gt;, out TExpression)</h4>
@@ -333,12 +329,9 @@ items.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_CompilerServices_ValueTupleBuilder_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.ValueTupleBuilder.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs/#L100">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Dispose_" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Dispose*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_Dispose_System_Boolean_" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -369,12 +362,9 @@ items.</p>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a></div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_CompilerServices_ValueTupleBuilder_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.ValueTupleBuilder.GetEnumerator%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs/#L90">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_GetEnumerator_" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.GetEnumerator*"></a>
   <h4 id="DotNext_Runtime_CompilerServices_ValueTupleBuilder_GetEnumerator" data-uid="DotNext.Runtime.CompilerServices.ValueTupleBuilder.GetEnumerator">GetEnumerator()</h4>
@@ -416,55 +406,10 @@ items.</p>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Append__1_System_Collections_Generic_IEnumerable___0____0___">Collection.Append&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Copy__1_System_Collections_Generic_IEnumerable___0__System_Int32_DotNext_Buffers_MemoryAllocator___0__">Collection.Copy&lt;T&gt;(IEnumerable&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Collection.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, int, out T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_FirstOrNone__1_System_Collections_Generic_IEnumerable___0__">Collection.FirstOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ForEachAsync__1_System_Collections_Generic_IEnumerable___0__System_Func___0_System_Threading_CancellationToken_System_Threading_Tasks_ValueTask__System_Threading_CancellationToken_">Collection.ForEachAsync&lt;T&gt;(IEnumerable&lt;T&gt;, Func&lt;T, CancellationToken, ValueTask&gt;, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Collection.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_LastOrNone__1_System_Collections_Generic_IEnumerable___0__">Collection.LastOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Prepend__1_System_Collections_Generic_IEnumerable___0____0___">Collection.Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_SequenceHashCode__1_System_Collections_Generic_IEnumerable___0__System_Boolean_">Collection.SequenceHashCode&lt;T&gt;(IEnumerable&lt;T&gt;, bool)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_SkipNulls__1_System_Collections_Generic_IEnumerable___0__">Collection.SkipNulls&lt;T&gt;(IEnumerable&lt;T?&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerable__1_System_Collections_Generic_IEnumerable___0__System_Boolean_">Collection.ToAsyncEnumerable&lt;T&gt;(IEnumerable&lt;T&gt;, bool)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Collection.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, string, string)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_">Enumerator.GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <h3 id="seealso">See Also</h3>
   <div class="seealso">
@@ -480,10 +425,7 @@ items.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_CompilerServices_ValueTupleBuilder.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.ValueTupleBuilder%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs/#L12" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Runtime/CompilerServices/ValueTupleBuilder.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

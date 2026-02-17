@@ -139,7 +139,7 @@ Func&lt;long, long&gt; fact = Lambda&lt;Func&lt;long, long&gt;&gt;(fun =&gt;
     //try-catch
     Try(() =&gt; 
     {
-        Return(10.Const());    //return from lambda function
+        Return(10.Quoted);    //return from lambda function
     })
     .Finally(() =&gt; //finally block
     {  

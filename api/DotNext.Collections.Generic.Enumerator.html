@@ -81,25 +81,25 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Collections.html">Collections</a>.<a class="xref" href="DotNext.Collections.Generic.html">Generic</a></h6>
@@ -110,21 +110,18 @@
   </div>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Enumerator_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Enumerator.GetAsyncEnumerator%60%601(System.Collections.Generic.IEnumerable%7B%60%600%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Collections/Generic/Enumerator.cs">View Source</a>
   </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Enumerator.cs/#L118">View Source</a>
-  </span>
-  <a id="DotNext_Collections_Generic_Enumerator_GetAsyncEnumerator_" data-uid="DotNext.Collections.Generic.Enumerator.GetAsyncEnumerator*"></a>
-  <h4 id="DotNext_Collections_Generic_Enumerator_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_" data-uid="DotNext.Collections.Generic.Enumerator.GetAsyncEnumerator``1(System.Collections.Generic.IEnumerable{``0},System.Threading.CancellationToken)">GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Returns the asynchronous enumerator over the sequence of elements.</p>
+  <a id="DotNext_Collections_Generic_Enumerator_Create_" data-uid="DotNext.Collections.Generic.Enumerator.Create*"></a>
+  <h4 id="DotNext_Collections_Generic_Enumerator_Create__2___1__" data-uid="DotNext.Collections.Generic.Enumerator.Create``2(``1@)">Create&lt;T, TEnumerator&gt;(in TEnumerator)</h4>
+  <div class="markdown level1 summary"><p>Creates the classic enumerator.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IAsyncEnumerator&lt;T&gt; GetAsyncEnumerator&lt;T&gt;(this IEnumerable&lt;T&gt; enumerable, CancellationToken token = default)</code></pre>
+    <pre><code class="lang-csharp hljs">public static IEnumerator&lt;T&gt; Create&lt;T, TEnumerator&gt;(in TEnumerator enumerator) where T : allows ref struct where TEnumerator : struct, IEnumerator&lt;TEnumerator, T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -137,15 +134,9 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;T&gt;</td>
-        <td><span class="parametername">enumerable</span></td>
-        <td><p>The collection of elements.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that caller can use to cancel the enumeration.</p>
+        <td><span class="xref">TEnumerator</span></td>
+        <td><span class="parametername">enumerator</span></td>
+        <td><p>The enumerator to convert.</p>
 </td>
       </tr>
     </tbody>
@@ -160,8 +151,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerator-1">IAsyncEnumerator</a>&lt;T&gt;</td>
-        <td><p>The asynchronous wrapper over synchronous enumerator.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerator-1">IEnumerator</a>&lt;T&gt;</td>
+        <td><p>The classic enumerator.</p>
 </td>
       </tr>
     </tbody>
@@ -177,33 +168,91 @@
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the elements in the collection.</p>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TEnumerator</span></td>
+        <td><p>The type of the enumerator.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Collections/Generic/Enumerator.cs">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_Enumerator_Create_" data-uid="DotNext.Collections.Generic.Enumerator.Create*"></a>
+  <h4 id="DotNext_Collections_Generic_Enumerator_Create__2___1__System_Threading_CancellationToken_" data-uid="DotNext.Collections.Generic.Enumerator.Create``2(``1@,System.Threading.CancellationToken)">Create&lt;T, TEnumerator&gt;(in TEnumerator, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Creates the async enumerator.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IAsyncEnumerator&lt;T&gt; Create&lt;T, TEnumerator&gt;(in TEnumerator enumerator, CancellationToken token) where T : allows ref struct where TEnumerator : struct, IEnumerator&lt;TEnumerator, T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Condition</th>
+        <th>Name</th>
+        <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">enumerable</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+        <td><span class="xref">TEnumerator</span></td>
+        <td><span class="parametername">enumerator</span></td>
+        <td><p>The enumerator to convert.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the enumeration.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerator-1">IAsyncEnumerator</a>&lt;T&gt;</td>
+        <td><p>The async enumerator.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TEnumerator</span></td>
+        <td><p>The type of the enumerator.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Enumerator_Limit__1_System_Collections_Generic_IEnumerator___0__System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Enumerator.Limit%60%601(System.Collections.Generic.IEnumerator%7B%60%600%7D%2CSystem.Int32%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Enumerator.cs/#L59">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Collections/Generic/Enumerator.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Enumerator_Limit_" data-uid="DotNext.Collections.Generic.Enumerator.Limit*"></a>
   <h4 id="DotNext_Collections_Generic_Enumerator_Limit__1_System_Collections_Generic_IEnumerator___0__System_Int32_System_Boolean_" data-uid="DotNext.Collections.Generic.Enumerator.Limit``1(System.Collections.Generic.IEnumerator{``0},System.Int32,System.Boolean)">Limit&lt;T&gt;(IEnumerator&lt;T&gt;, int, bool)</h4>
@@ -212,7 +261,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Enumerator.LimitedEnumerator&lt;T&gt; Limit&lt;T&gt;(this IEnumerator&lt;T&gt; enumerator, int count, bool leaveOpen = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Enumerator.LimitedEnumerator&lt;T&gt; Limit&lt;T&gt;(this IEnumerator&lt;T&gt; enumerator, int count, bool leaveOpen = false) where T : allows ref struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -276,84 +325,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Enumerator_Skip__1_System_Collections_Generic_IEnumerator___0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Enumerator.Skip%60%601(System.Collections.Generic.IEnumerator%7B%60%600%7D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Enumerator.cs/#L20">View Source</a>
-  </span>
-  <a id="DotNext_Collections_Generic_Enumerator_Skip_" data-uid="DotNext.Collections.Generic.Enumerator.Skip*"></a>
-  <h4 id="DotNext_Collections_Generic_Enumerator_Skip__1_System_Collections_Generic_IEnumerator___0__System_Int32_" data-uid="DotNext.Collections.Generic.Enumerator.Skip``1(System.Collections.Generic.IEnumerator{``0},System.Int32)">Skip&lt;T&gt;(IEnumerator&lt;T&gt;, int)</h4>
-  <div class="markdown level1 summary"><p>Bypasses a specified number of elements in a sequence.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool Skip&lt;T&gt;(this IEnumerator&lt;T&gt; enumerator, int count)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerator-1">IEnumerator</a>&lt;T&gt;</td>
-        <td><span class="parametername">enumerator</span></td>
-        <td><p>Enumerator to modify. Cannot be <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">count</span></td>
-        <td><p>The number of elements to skip.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if current element is available; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the elements in the sequence.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Enumerator.Skip%60%602(%60%600%40%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Enumerator.cs/#L39">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Collections/Generic/Enumerator.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Enumerator_Skip_" data-uid="DotNext.Collections.Generic.Enumerator.Skip*"></a>
   <h4 id="DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_" data-uid="DotNext.Collections.Generic.Enumerator.Skip``2(``0@,System.Int32)">Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</h4>
@@ -362,7 +336,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool Skip&lt;TEnumerator, T&gt;(this ref TEnumerator enumerator, int count) where TEnumerator : struct, IEnumerator&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool Skip&lt;TEnumerator, T&gt;(this ref TEnumerator enumerator, int count) where TEnumerator : struct, IEnumerator&lt;T&gt;, allows ref struct where T : allows ref struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -425,21 +399,18 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Enumerator_ToEnumerator__1_System_Buffers_ReadOnlySequence___0___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Enumerator.ToEnumerator%60%601(System.Buffers.ReadOnlySequence%7B%60%600%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Collections/Generic/Enumerator.cs">View Source</a>
   </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Enumerator.cs/#L90">View Source</a>
-  </span>
-  <a id="DotNext_Collections_Generic_Enumerator_ToEnumerator_" data-uid="DotNext.Collections.Generic.Enumerator.ToEnumerator*"></a>
-  <h4 id="DotNext_Collections_Generic_Enumerator_ToEnumerator__1_System_Buffers_ReadOnlySequence___0___" data-uid="DotNext.Collections.Generic.Enumerator.ToEnumerator``1(System.Buffers.ReadOnlySequence{``0}@)">ToEnumerator&lt;T&gt;(in ReadOnlySequence&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Gets enumerator over all elements in the sequence.</p>
+  <a id="DotNext_Collections_Generic_Enumerator_op_LeftShift_" data-uid="DotNext.Collections.Generic.Enumerator.op_LeftShift*"></a>
+  <h4 id="DotNext_Collections_Generic_Enumerator_op_LeftShift__1_System_Collections_Generic_IAsyncEnumerator___0__System_Int32_" data-uid="DotNext.Collections.Generic.Enumerator.op_LeftShift``1(System.Collections.Generic.IAsyncEnumerator{``0},System.Int32)">op_LeftShift&lt;T&gt;(IAsyncEnumerator&lt;T&gt;, int)</h4>
+  <div class="markdown level1 summary"><p>Bypasses a specified number of elements in a sequence.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IEnumerator&lt;T&gt; ToEnumerator&lt;T&gt;(in ReadOnlySequence&lt;T&gt; sequence)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;bool&gt; op_LeftShift&lt;T&gt;(IAsyncEnumerator&lt;T&gt; enumerator, int count) where T : allows ref struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -452,9 +423,15 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;</td>
-        <td><span class="parametername">sequence</span></td>
-        <td><p>A sequence of elements.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerator-1">IAsyncEnumerator</a>&lt;T&gt;</td>
+        <td><span class="parametername">enumerator</span></td>
+        <td><p>Enumerator to modify. Cannot be <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">count</span></td>
+        <td><p>The number of elements to skip.</p>
 </td>
       </tr>
     </tbody>
@@ -469,8 +446,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerator-1">IEnumerator</a>&lt;T&gt;</td>
-        <td><p>The enumerator over all elements in the sequence.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if current element is available; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </td>
       </tr>
     </tbody>
@@ -486,26 +463,38 @@
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of elements in the sequence.</p>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
 </td>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Enumerator_ToEnumerator__1_System_ReadOnlyMemory___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Enumerator.ToEnumerator%60%601(System.ReadOnlyMemory%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Collections/Generic/Enumerator.cs">View Source</a>
   </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Enumerator.cs/#L69">View Source</a>
-  </span>
-  <a id="DotNext_Collections_Generic_Enumerator_ToEnumerator_" data-uid="DotNext.Collections.Generic.Enumerator.ToEnumerator*"></a>
-  <h4 id="DotNext_Collections_Generic_Enumerator_ToEnumerator__1_System_ReadOnlyMemory___0__" data-uid="DotNext.Collections.Generic.Enumerator.ToEnumerator``1(System.ReadOnlyMemory{``0})">ToEnumerator&lt;T&gt;(ReadOnlyMemory&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Gets enumerator over all elements in the memory.</p>
+  <a id="DotNext_Collections_Generic_Enumerator_op_LeftShift_" data-uid="DotNext.Collections.Generic.Enumerator.op_LeftShift*"></a>
+  <h4 id="DotNext_Collections_Generic_Enumerator_op_LeftShift__1_System_Collections_Generic_IEnumerator___0__System_Int32_" data-uid="DotNext.Collections.Generic.Enumerator.op_LeftShift``1(System.Collections.Generic.IEnumerator{``0},System.Int32)">op_LeftShift&lt;T&gt;(IEnumerator&lt;T&gt;, int)</h4>
+  <div class="markdown level1 summary"><p>Bypasses a specified number of elements in a sequence.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IEnumerator&lt;T&gt; ToEnumerator&lt;T&gt;(ReadOnlyMemory&lt;T&gt; memory)</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool op_LeftShift&lt;T&gt;(IEnumerator&lt;T&gt; enumerator, int count) where T : allows ref struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -518,9 +507,15 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;</td>
-        <td><span class="parametername">memory</span></td>
-        <td><p>The memory block to be converted.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerator-1">IEnumerator</a>&lt;T&gt;</td>
+        <td><span class="parametername">enumerator</span></td>
+        <td><p>Enumerator to modify. Cannot be <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><span class="parametername">count</span></td>
+        <td><p>The number of elements to skip.</p>
 </td>
       </tr>
     </tbody>
@@ -535,8 +530,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerator-1">IEnumerator</a>&lt;T&gt;</td>
-        <td><p>The enumerator over all elements in the memory.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, if current element is available; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
 </td>
       </tr>
     </tbody>
@@ -552,15 +547,10 @@
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of elements in the memory.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Collections_Generic_Enumerator_ToEnumerator__1_System_ReadOnlyMemory___0___seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.interopservices.memorymarshal.toenumerable">ToEnumerable</a>&lt;T&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;)</div>
-  </div>
 
 </article>
           </div>
@@ -570,10 +560,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_Enumerator.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Enumerator%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Enumerator.LimitedEnumerator.cs/#L6" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Collections/Generic/Enumerator.LimitedEnumerator.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

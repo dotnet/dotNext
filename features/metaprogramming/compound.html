@@ -71,22 +71,30 @@
 <p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.expressions.expression">Expression class</a> provides builder static methods for constructing expression trees. The construction code loss its readability because builder methods oriented for tree-like representation of the final expression. Metaprogramming library offers set of <a class="xref" href="../../api/DotNext.Linq.Expressions.ExpressionBuilder.html">extension methods</a> aimed to simplification of expression tree construction.</p>
 <pre><code class="lang-csharp">using DotNext.Metaprogramming;
 
-var expr = 42.Const().Convert&lt;long&gt;().Negate().Add(1L.Const()); // equivalent to -((long)42) + 1L
+var expr = (-(42.Quoted).Convert&lt;long&gt;()) + 1L.Quoted; // equivalent to -((long)42) + 1L
 </code></pre>
 <p>The following example demonstrates how to construct <code>throw</code> statement:</p>
 <pre><code class="lang-csharp">using System;
 using DotNext.Metaprogramming;
 
-typeof(Exception).New(&quot;Exception message&quot;.Const()).Throw()    //equivalent to new Exception(&quot;Exception message&quot;)
+typeof(Exception).New(&quot;Exception message&quot;.Quoted).Throw()    //equivalent to new Exception(&quot;Exception message&quot;)
 </code></pre>
 <p>Compound expression can be constructed with <strong>dynamic</strong> type:</p>
 <pre><code class="lang-csharp">using System;
 using DotNext.Metaprogramming;
 
-dynamic expr = 42.Const().AsDynamic();
+dynamic expr = 42.Quoted.AsDynamic();
 expr = -expr + 1;
 Expression tree = expr; //tree is -42 + 1
 </code></pre>
+<p>or with overloaded operators:</p>
+<pre><code class="lang-csharp">using System;
+using DotNext.Metaprogramming;
+
+Expression expr = 42.Quoted;
+expr = -expr + 1.Quoted; //expr is -42 + 1
+</code></pre>
+<p>Checked and unchecked versions of the arithmetic operators are supported.</p>
 
 </article>
           </div>

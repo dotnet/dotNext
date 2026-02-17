@@ -83,10 +83,10 @@ using static DotNext.Metaprogramming.CodeGenerator;
 var newState = Lambda&lt;Func&lt;(DoorState, Action, bool), DoorState&gt;&gt;(fun =&gt; 
 {
     Match(fun[0])
-        .Case((DoorState.Closed, Action.Open), DoorState.Opened.Const())
-        .Case((DoorState.Opened, Action.Close), DoorState.Closed.Const())
-        .Case((DoorState.Closed, Action.Lock, true), DoorState.Locked.Const())
-        .Case((DoorState.Locked, Action.Unlock, true), DoorState.Closed.Const())
+        .Case((DoorState.Closed, Action.Open), DoorState.Opened.Quoted)
+        .Case((DoorState.Opened, Action.Close), DoorState.Closed.Quoted)
+        .Case((DoorState.Closed, Action.Lock, true), DoorState.Locked.Quoted)
+        .Case((DoorState.Locked, Action.Unlock, true), DoorState.Closed.Quoted)
         .Default(state =&gt; state)
         .OfType&lt;DoorState&gt;()
     .End();
@@ -117,10 +117,10 @@ struct Point
 var lambda = Lambda&lt;Func&lt;Point, string&gt;&gt;(fun =&gt;
 {
     Match(fun[0])
-        .Case(&quot;X&quot;, 0L.Const(), value =&gt; &quot;X is zero&quot;.Const())
-        .Case(new { X = long.MaxValue, Y = long.MaxValue }, &quot;MaxValue&quot;.Const())
-        .Case(&quot;X&quot;, long.MinValue.Const(), &quot;Y&quot;, long.MinValue.Const(), (x, y) =&gt; &quot;MinValue&quot;.Const())
-        .Default(&quot;Unknown&quot;.Const())
+        .Case(&quot;X&quot;, 0L.Quoted, value =&gt; &quot;X is zero&quot;.Quoted)
+        .Case(new { X = long.MaxValue, Y = long.MaxValue }, &quot;MaxValue&quot;.Quoted)
+        .Case(&quot;X&quot;, long.MinValue.Quoted, &quot;Y&quot;, long.MinValue.Quoted, (x, y) =&gt; &quot;MinValue&quot;.Quoted)
+        .Default(&quot;Unknown&quot;.Quoted)
         .OfType&lt;string&gt;()
     .End();
 }).Compile();

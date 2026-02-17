@@ -74,6 +74,10 @@
 on the stack or heap.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
+  <div class="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
@@ -83,10 +87,10 @@ on the stack or heap.</p>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
@@ -96,7 +100,7 @@ on the stack or heap.</p>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_SpanOwner_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ref struct SpanOwner&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public ref struct SpanOwner&lt;T&gt; : IDisposable</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -128,12 +132,9 @@ var memory = size &lt;=stackallocThreshold ? new SpanOwner&lt;byte&gt;(stackallo
 
   <h3 id="constructors">Constructors
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanOwner_1__ctor_System_Buffers_MemoryPool__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanOwner%601.%23ctor(System.Buffers.MemoryPool%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanOwner.cs/#L89">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanOwner_1__ctor_" data-uid="DotNext.Buffers.SpanOwner`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_SpanOwner_1__ctor_System_Buffers_MemoryPool__0__" data-uid="DotNext.Buffers.SpanOwner`1.#ctor(System.Buffers.MemoryPool{`0})">SpanOwner(MemoryPool&lt;T&gt;)</h4>
@@ -178,12 +179,9 @@ var memory = size &lt;=stackallocThreshold ? new SpanOwner&lt;byte&gt;(stackallo
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanOwner_1__ctor_System_Buffers_MemoryPool__0__System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanOwner%601.%23ctor(System.Buffers.MemoryPool%7B%600%7D%2CSystem.Int32%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanOwner.cs/#L72">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanOwner_1__ctor_" data-uid="DotNext.Buffers.SpanOwner`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_SpanOwner_1__ctor_System_Buffers_MemoryPool__0__System_Int32_System_Boolean_" data-uid="DotNext.Buffers.SpanOwner`1.#ctor(System.Buffers.MemoryPool{`0},System.Int32,System.Boolean)">SpanOwner(MemoryPool&lt;T&gt;, int, bool)</h4>
@@ -245,12 +243,9 @@ var memory = size &lt;=stackallocThreshold ? new SpanOwner&lt;byte&gt;(stackallo
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanOwner_1__ctor_System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanOwner%601.%23ctor(System.Int32%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanOwner.cs/#L104">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanOwner_1__ctor_" data-uid="DotNext.Buffers.SpanOwner`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_SpanOwner_1__ctor_System_Int32_System_Boolean_" data-uid="DotNext.Buffers.SpanOwner`1.#ctor(System.Int32,System.Boolean)">SpanOwner(int, bool)</h4>
@@ -302,12 +297,9 @@ contains at least one field of the reference type; or use <a class="xref" href="
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanOwner_1__ctor_System_Span__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanOwner%601.%23ctor(System.Span%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanOwner.cs/#L50">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanOwner_1__ctor_" data-uid="DotNext.Buffers.SpanOwner`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_SpanOwner_1__ctor_System_Span__0__" data-uid="DotNext.Buffers.SpanOwner`1.#ctor(System.Span{`0})">SpanOwner(Span&lt;T&gt;)</h4>
@@ -336,12 +328,9 @@ contains at least one field of the reference type; or use <a class="xref" href="
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanOwner_1__ctor_System_Span__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanOwner%601.%23ctor(System.Span%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanOwner.cs/#L59">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanOwner_1__ctor_" data-uid="DotNext.Buffers.SpanOwner`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_SpanOwner_1__ctor_System_Span__0__System_Int32_" data-uid="DotNext.Buffers.SpanOwner`1.#ctor(System.Span{`0},System.Int32)">SpanOwner(Span&lt;T&gt;, int)</h4>
@@ -378,12 +367,9 @@ contains at least one field of the reference type; or use <a class="xref" href="
   </table>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanOwner_1_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanOwner%601.IsEmpty%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanOwner.cs/#L153">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanOwner_1_IsEmpty_" data-uid="DotNext.Buffers.SpanOwner`1.IsEmpty*"></a>
   <h4 id="DotNext_Buffers_SpanOwner_1_IsEmpty" data-uid="DotNext.Buffers.SpanOwner`1.IsEmpty">IsEmpty</h4>
@@ -410,12 +396,9 @@ doesn't reference rented memory.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanOwner_1_Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanOwner%601.Item(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanOwner.cs/#L174">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanOwner_1_Item_" data-uid="DotNext.Buffers.SpanOwner`1.Item*"></a>
   <h4 id="DotNext_Buffers_SpanOwner_1_Item_System_Int32_" data-uid="DotNext.Buffers.SpanOwner`1.Item(System.Int32)">this[int]</h4>
@@ -460,12 +443,9 @@ doesn't reference rented memory.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanOwner_1_Length.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanOwner%601.Length%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanOwner.cs/#L167">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanOwner_1_Length_" data-uid="DotNext.Buffers.SpanOwner`1.Length*"></a>
   <h4 id="DotNext_Buffers_SpanOwner_1_Length" data-uid="DotNext.Buffers.SpanOwner`1.Length">Length</h4>
@@ -491,12 +471,9 @@ doesn't reference rented memory.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanOwner_1_Span.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanOwner%601.Span%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanOwner.cs/#L147">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanOwner_1_Span_" data-uid="DotNext.Buffers.SpanOwner`1.Span*"></a>
   <h4 id="DotNext_Buffers_SpanOwner_1_Span" data-uid="DotNext.Buffers.SpanOwner`1.Span">Span</h4>
@@ -524,12 +501,9 @@ doesn't reference rented memory.</p>
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanOwner_1_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanOwner%601.Dispose%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanOwner.cs/#L193">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanOwner_1_Dispose_" data-uid="DotNext.Buffers.SpanOwner`1.Dispose*"></a>
   <h4 id="DotNext_Buffers_SpanOwner_1_Dispose" data-uid="DotNext.Buffers.SpanOwner`1.Dispose">Dispose()</h4>
@@ -540,12 +514,9 @@ doesn't reference rented memory.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
   </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanOwner_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanOwner%601.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanOwner.cs/#L188">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanOwner_1_ToString_" data-uid="DotNext.Buffers.SpanOwner`1.ToString*"></a>
   <h4 id="DotNext_Buffers_SpanOwner_1_ToString" data-uid="DotNext.Buffers.SpanOwner`1.ToString">ToString()</h4>
@@ -576,12 +547,9 @@ doesn't reference rented memory.</p>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a></div>
   <h3 id="operators">Operators
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanOwner_1_op_Implicit_System_Span__0___DotNext_Buffers_SpanOwner__0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanOwner%601.op_Implicit(System.Span%7B%600%7D)~DotNext.Buffers.SpanOwner%7B%600%7D%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanOwner.cs/#L160">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanOwner_1_op_Implicit_" data-uid="DotNext.Buffers.SpanOwner`1.op_Implicit*"></a>
   <h4 id="DotNext_Buffers_SpanOwner_1_op_Implicit_System_Span__0___DotNext_Buffers_SpanOwner__0_" data-uid="DotNext.Buffers.SpanOwner`1.op_Implicit(System.Span{`0})~DotNext.Buffers.SpanOwner{`0}">implicit operator SpanOwner&lt;T&gt;(Span&lt;T&gt;)</h4>
@@ -626,6 +594,17 @@ into the rental object.</p>
       </tr>
     </tbody>
   </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
+  </div>
 
 </article>
           </div>
@@ -635,10 +614,7 @@ into the rental object.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanOwner_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanOwner%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanOwner.cs/#L29" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanOwner.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

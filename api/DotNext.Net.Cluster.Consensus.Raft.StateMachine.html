@@ -81,11 +81,20 @@ creates a persistent snapshot for recovery.</p>
       <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.html">WriteAheadLog</a></h4>
       <section><p>Represents the general-purpose Raft WAL.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.InternalStateBrokenException.html">WriteAheadLog.InternalStateBrokenException</a></h4>
-      <section><p>Indicates that the node state data is broken on the disk.</p>
+      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.HashMismatchException.html">WriteAheadLog.HashMismatchException</a></h4>
+      <section><p>Indicates that the hash of the log entry doesn't match.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.IntegrityException.html">WriteAheadLog.IntegrityException</a></h4>
+      <section><p>Represents catastrophic WAL failure.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MissingPageException.html">WriteAheadLog.MissingPageException</a></h4>
+      <section><p>Indicates that the log doesn't have a page on the disk.</p>
 </section>
       <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.Options.html">WriteAheadLog.Options</a></h4>
       <section><p>Represents configuration options.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.UnsupportedCheckpointVersionException.html">WriteAheadLog.UnsupportedCheckpointVersionException</a></h4>
+      <section><p>Indicates that the checkpoint file has unsupported version.</p>
 </section>
     <h3 id="structs">
 Structs
@@ -111,6 +120,9 @@ Interfaces
     <h3 id="enums">
 Enums
 </h3>
+      <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.IntegrityHashAlgorithm.html">WriteAheadLog.IntegrityHashAlgorithm</a></h4>
+      <section><p>Represents the hash algorithm that control the integrity of the log entries.</p>
+</section>
       <h4><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog.MemoryManagementStrategy.html">WriteAheadLog.MemoryManagementStrategy</a></h4>
       <section><p>Represents the type of the memory used by the WAL internals
 to keep the written log entries.</p>

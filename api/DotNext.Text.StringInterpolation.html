@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class StringInterpolation | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class StringInterpolation | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Text.StringInterpolation">
+
+
+
+  <h1 id="DotNext_Text_StringInterpolation" data-uid="DotNext.Text.StringInterpolation" class="text-break">Class StringInterpolation</h1>
+  <div class="markdown level0 summary"><p>Provides factory methods to create interpolated strings efficiently.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+    <div class="level1"><span class="xref">StringInterpolation</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Text.html">Text</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Text_StringInterpolation_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class StringInterpolation</code></pre>
+  </div>
+  <h3 id="methods">Methods
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Text/InterpolatedString.Utf8.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_StringInterpolation_Interpolate_" data-uid="DotNext.Text.StringInterpolation.Interpolate*"></a>
+  <h4 id="DotNext_Text_StringInterpolation_Interpolate_DotNext_Buffers_BufferWriterSlim_System_Byte___System_Text_Encoder_System_Span_System_Char__DotNext_Text_BufferWriterSlimEncodingInterpolatedStringHandler__" data-uid="DotNext.Text.StringInterpolation.Interpolate(DotNext.Buffers.BufferWriterSlim{System.Byte}@,System.Text.Encoder,System.Span{System.Char},DotNext.Text.BufferWriterSlimEncodingInterpolatedStringHandler@)">Interpolate(ref BufferWriterSlim&lt;byte&gt;, Encoder, scoped Span&lt;char&gt;, scoped in BufferWriterSlimEncodingInterpolatedStringHandler)</h4>
+  <div class="markdown level1 summary"><p>Encodes formattable string as a sequence of bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int Interpolate(this ref BufferWriterSlim&lt;byte&gt; writer, Encoder encoder, scoped Span&lt;char&gt; buffer, scoped in BufferWriterSlimEncodingInterpolatedStringHandler handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.BufferWriterSlim-1.html">BufferWriterSlim</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The output buffer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.encoder">Encoder</a></td>
+        <td><span class="parametername">encoder</span></td>
+        <td><p>The encoding context.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>The preallocated buffer to be used for placing characters during encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.BufferWriterSlimEncodingInterpolatedStringHandler.html">BufferWriterSlimEncodingInterpolatedStringHandler</a></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The interpolated string handler.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>The number of produced bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Text/InterpolatedString.Utf8.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_StringInterpolation_Interpolate_" data-uid="DotNext.Text.StringInterpolation.Interpolate*"></a>
+  <h4 id="DotNext_Text_StringInterpolation_Interpolate_DotNext_Buffers_BufferWriterSlim_System_Byte___System_Text_Encoder_System_Span_System_Char__System_IFormatProvider_DotNext_Text_BufferWriterSlimEncodingInterpolatedStringHandler__" data-uid="DotNext.Text.StringInterpolation.Interpolate(DotNext.Buffers.BufferWriterSlim{System.Byte}@,System.Text.Encoder,System.Span{System.Char},System.IFormatProvider,DotNext.Text.BufferWriterSlimEncodingInterpolatedStringHandler@)">Interpolate(ref BufferWriterSlim&lt;byte&gt;, Encoder, scoped Span&lt;char&gt;, IFormatProvider?, scoped in BufferWriterSlimEncodingInterpolatedStringHandler)</h4>
+  <div class="markdown level1 summary"><p>Encodes formattable string as a sequence of bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int Interpolate(this ref BufferWriterSlim&lt;byte&gt; writer, Encoder encoder, scoped Span&lt;char&gt; buffer, IFormatProvider? provider, scoped in BufferWriterSlimEncodingInterpolatedStringHandler handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.BufferWriterSlim-1.html">BufferWriterSlim</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The output buffer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.encoder">Encoder</a></td>
+        <td><span class="parametername">encoder</span></td>
+        <td><p>The encoding context.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>The preallocated buffer to be used for placing characters during encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>The format provider.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.BufferWriterSlimEncodingInterpolatedStringHandler.html">BufferWriterSlimEncodingInterpolatedStringHandler</a></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The interpolated string handler.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>The number of produced bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Text/InterpolatedString.Utf16.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_StringInterpolation_Interpolate_" data-uid="DotNext.Text.StringInterpolation.Interpolate*"></a>
+  <h4 id="DotNext_Text_StringInterpolation_Interpolate_DotNext_Buffers_BufferWriterSlim_System_Char___DotNext_Text_BufferWriterSlimInterpolatedStringHandler__" data-uid="DotNext.Text.StringInterpolation.Interpolate(DotNext.Buffers.BufferWriterSlim{System.Char}@,DotNext.Text.BufferWriterSlimInterpolatedStringHandler@)">Interpolate(ref BufferWriterSlim&lt;char&gt;, scoped in BufferWriterSlimInterpolatedStringHandler)</h4>
+  <div class="markdown level1 summary"><p>Writes interpolated string to the buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int Interpolate(this ref BufferWriterSlim&lt;char&gt; writer, scoped in BufferWriterSlimInterpolatedStringHandler handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.BufferWriterSlim-1.html">BufferWriterSlim</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The buffer writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.BufferWriterSlimInterpolatedStringHandler.html">BufferWriterSlimInterpolatedStringHandler</a></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The handler of the interpolated string.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>The number of written characters.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Text/InterpolatedString.Utf16.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_StringInterpolation_Interpolate_" data-uid="DotNext.Text.StringInterpolation.Interpolate*"></a>
+  <h4 id="DotNext_Text_StringInterpolation_Interpolate_DotNext_Buffers_BufferWriterSlim_System_Char___System_IFormatProvider_DotNext_Text_BufferWriterSlimInterpolatedStringHandler__" data-uid="DotNext.Text.StringInterpolation.Interpolate(DotNext.Buffers.BufferWriterSlim{System.Char}@,System.IFormatProvider,DotNext.Text.BufferWriterSlimInterpolatedStringHandler@)">Interpolate(ref BufferWriterSlim&lt;char&gt;, IFormatProvider?, scoped in BufferWriterSlimInterpolatedStringHandler)</h4>
+  <div class="markdown level1 summary"><p>Writes interpolated string to the buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int Interpolate(this ref BufferWriterSlim&lt;char&gt; writer, IFormatProvider? provider, scoped in BufferWriterSlimInterpolatedStringHandler handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.BufferWriterSlim-1.html">BufferWriterSlim</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The buffer writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>The formatting provider.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.BufferWriterSlimInterpolatedStringHandler.html">BufferWriterSlimInterpolatedStringHandler</a></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The handler of the interpolated string.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>The number of written characters.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Text/InterpolatedString.Utf8.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_StringInterpolation_Interpolate_" data-uid="DotNext.Text.StringInterpolation.Interpolate*"></a>
+  <h4 id="DotNext_Text_StringInterpolation_Interpolate_DotNext_Buffers_MemoryAllocator_System_Byte__System_Text_Encoder_System_Span_System_Char__DotNext_Text_EncodingInterpolatedStringHandler__" data-uid="DotNext.Text.StringInterpolation.Interpolate(DotNext.Buffers.MemoryAllocator{System.Byte},System.Text.Encoder,System.Span{System.Char},DotNext.Text.EncodingInterpolatedStringHandler@)">Interpolate(MemoryAllocator&lt;byte&gt;?, Encoder, Span&lt;char&gt;, scoped ref EncodingInterpolatedStringHandler)</h4>
+  <div class="markdown level1 summary"><p>Formats interpolated string as a rented buffer of characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;byte&gt; Interpolate(MemoryAllocator&lt;byte&gt;? allocator, Encoder encoder, Span&lt;char&gt; buffer, scoped ref EncodingInterpolatedStringHandler handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The allocator of the interpolated string.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.encoder">Encoder</a></td>
+        <td><span class="parametername">encoder</span></td>
+        <td><p>The encoding context.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>The preallocated buffer to be used for placing characters during encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.EncodingInterpolatedStringHandler.html">EncodingInterpolatedStringHandler</a></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The interpolated string handler.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><p>A buffer containing formatted string.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Text/InterpolatedString.Utf8.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_StringInterpolation_Interpolate_" data-uid="DotNext.Text.StringInterpolation.Interpolate*"></a>
+  <h4 id="DotNext_Text_StringInterpolation_Interpolate_DotNext_Buffers_MemoryAllocator_System_Byte__System_Text_Encoder_System_Span_System_Char__System_IFormatProvider_DotNext_Text_EncodingInterpolatedStringHandler__" data-uid="DotNext.Text.StringInterpolation.Interpolate(DotNext.Buffers.MemoryAllocator{System.Byte},System.Text.Encoder,System.Span{System.Char},System.IFormatProvider,DotNext.Text.EncodingInterpolatedStringHandler@)">Interpolate(MemoryAllocator&lt;byte&gt;?, Encoder, Span&lt;char&gt;, IFormatProvider?, scoped ref EncodingInterpolatedStringHandler)</h4>
+  <div class="markdown level1 summary"><p>Formats interpolated string as a rented buffer of characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;byte&gt; Interpolate(MemoryAllocator&lt;byte&gt;? allocator, Encoder encoder, Span&lt;char&gt; buffer, IFormatProvider? provider, scoped ref EncodingInterpolatedStringHandler handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The allocator of the interpolated string.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.encoder">Encoder</a></td>
+        <td><span class="parametername">encoder</span></td>
+        <td><p>The encoding context.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>The preallocated buffer to be used for placing characters during encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>Optional formatting provider to be applied for each interpolated string argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.EncodingInterpolatedStringHandler.html">EncodingInterpolatedStringHandler</a></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The interpolated string handler.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><p>A buffer containing formatted string.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Text/InterpolatedString.Utf16.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_StringInterpolation_Interpolate_" data-uid="DotNext.Text.StringInterpolation.Interpolate*"></a>
+  <h4 id="DotNext_Text_StringInterpolation_Interpolate_DotNext_Buffers_MemoryAllocator_System_Char__DotNext_Text_PoolingInterpolatedStringHandler__" data-uid="DotNext.Text.StringInterpolation.Interpolate(DotNext.Buffers.MemoryAllocator{System.Char},DotNext.Text.PoolingInterpolatedStringHandler@)">Interpolate(MemoryAllocator&lt;char&gt;?, ref PoolingInterpolatedStringHandler)</h4>
+  <div class="markdown level1 summary"><p>Formats interpolated string as a rented buffer of characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;char&gt; Interpolate(MemoryAllocator&lt;char&gt;? allocator, ref PoolingInterpolatedStringHandler handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The allocator of the interpolated string.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">PoolingInterpolatedStringHandler</span></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The interpolated string handler.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><p>A buffer containing formatted string.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Text/InterpolatedString.Utf16.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_StringInterpolation_Interpolate_" data-uid="DotNext.Text.StringInterpolation.Interpolate*"></a>
+  <h4 id="DotNext_Text_StringInterpolation_Interpolate_DotNext_Buffers_MemoryAllocator_System_Char__System_IFormatProvider_DotNext_Text_PoolingInterpolatedStringHandler__" data-uid="DotNext.Text.StringInterpolation.Interpolate(DotNext.Buffers.MemoryAllocator{System.Char},System.IFormatProvider,DotNext.Text.PoolingInterpolatedStringHandler@)">Interpolate(MemoryAllocator&lt;char&gt;?, IFormatProvider?, ref PoolingInterpolatedStringHandler)</h4>
+  <div class="markdown level1 summary"><p>Formats interpolated string as a rented buffer of characters.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;char&gt; Interpolate(MemoryAllocator&lt;char&gt;? allocator, IFormatProvider? provider, ref PoolingInterpolatedStringHandler handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td><p>The allocator of the interpolated string.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>Optional formatting provider to be applied for each interpolated string argument.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">PoolingInterpolatedStringHandler</span></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The interpolated string handler.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><p>A buffer containing formatted string.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Text/InterpolatedString.Utf8.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_StringInterpolation_Interpolate_" data-uid="DotNext.Text.StringInterpolation.Interpolate*"></a>
+  <h4 id="DotNext_Text_StringInterpolation_Interpolate_System_Buffers_IBufferWriter_System_Byte__System_Text_Encoder_System_Span_System_Char__DotNext_Text_BufferWriterEncodingInterpolatedStringHandler__" data-uid="DotNext.Text.StringInterpolation.Interpolate(System.Buffers.IBufferWriter{System.Byte},System.Text.Encoder,System.Span{System.Char},DotNext.Text.BufferWriterEncodingInterpolatedStringHandler@)">Interpolate(IBufferWriter&lt;byte&gt;, Encoder, Span&lt;char&gt;, in BufferWriterEncodingInterpolatedStringHandler)</h4>
+  <div class="markdown level1 summary"><p>Encodes formattable string as a sequence of bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int Interpolate(this IBufferWriter&lt;byte&gt; writer, Encoder encoder, Span&lt;char&gt; buffer, in BufferWriterEncodingInterpolatedStringHandler handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The output buffer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.encoder">Encoder</a></td>
+        <td><span class="parametername">encoder</span></td>
+        <td><p>The encoding context.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>The preallocated buffer to be used for placing characters during encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.BufferWriterEncodingInterpolatedStringHandler.html">BufferWriterEncodingInterpolatedStringHandler</a></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The interpolated string handler.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>The number of produced bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Text/InterpolatedString.Utf8.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_StringInterpolation_Interpolate_" data-uid="DotNext.Text.StringInterpolation.Interpolate*"></a>
+  <h4 id="DotNext_Text_StringInterpolation_Interpolate_System_Buffers_IBufferWriter_System_Byte__System_Text_Encoder_System_Span_System_Char__System_IFormatProvider_DotNext_Text_BufferWriterEncodingInterpolatedStringHandler__" data-uid="DotNext.Text.StringInterpolation.Interpolate(System.Buffers.IBufferWriter{System.Byte},System.Text.Encoder,System.Span{System.Char},System.IFormatProvider,DotNext.Text.BufferWriterEncodingInterpolatedStringHandler@)">Interpolate(IBufferWriter&lt;byte&gt;, Encoder, Span&lt;char&gt;, IFormatProvider?, in BufferWriterEncodingInterpolatedStringHandler)</h4>
+  <div class="markdown level1 summary"><p>Encodes formattable string as a sequence of bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int Interpolate(this IBufferWriter&lt;byte&gt; writer, Encoder encoder, Span&lt;char&gt; buffer, IFormatProvider? provider, in BufferWriterEncodingInterpolatedStringHandler handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The output buffer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.encoder">Encoder</a></td>
+        <td><span class="parametername">encoder</span></td>
+        <td><p>The encoding context.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>The preallocated buffer to be used for placing characters during encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>The format provider.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.BufferWriterEncodingInterpolatedStringHandler.html">BufferWriterEncodingInterpolatedStringHandler</a></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The interpolated string handler.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>The number of produced bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Text/InterpolatedString.Utf16.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_StringInterpolation_Interpolate_" data-uid="DotNext.Text.StringInterpolation.Interpolate*"></a>
+  <h4 id="DotNext_Text_StringInterpolation_Interpolate_System_Buffers_IBufferWriter_System_Char__DotNext_Text_BufferWriterInterpolatedStringHandler__" data-uid="DotNext.Text.StringInterpolation.Interpolate(System.Buffers.IBufferWriter{System.Char},DotNext.Text.BufferWriterInterpolatedStringHandler@)">Interpolate(IBufferWriter&lt;char&gt;, in BufferWriterInterpolatedStringHandler)</h4>
+  <div class="markdown level1 summary"><p>Writes interpolated string to the buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int Interpolate(this IBufferWriter&lt;char&gt; writer, in BufferWriterInterpolatedStringHandler handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The buffer writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.BufferWriterInterpolatedStringHandler.html">BufferWriterInterpolatedStringHandler</a></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The handler of the interpolated string.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>The number of written characters.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Text/InterpolatedString.Utf16.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_StringInterpolation_Interpolate_" data-uid="DotNext.Text.StringInterpolation.Interpolate*"></a>
+  <h4 id="DotNext_Text_StringInterpolation_Interpolate_System_Buffers_IBufferWriter_System_Char__System_IFormatProvider_DotNext_Text_BufferWriterInterpolatedStringHandler__" data-uid="DotNext.Text.StringInterpolation.Interpolate(System.Buffers.IBufferWriter{System.Char},System.IFormatProvider,DotNext.Text.BufferWriterInterpolatedStringHandler@)">Interpolate(IBufferWriter&lt;char&gt;, IFormatProvider?, in BufferWriterInterpolatedStringHandler)</h4>
+  <div class="markdown level1 summary"><p>Writes interpolated string to the buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int Interpolate(this IBufferWriter&lt;char&gt; writer, IFormatProvider? provider, in BufferWriterInterpolatedStringHandler handler)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><span class="parametername">writer</span></td>
+        <td><p>The buffer writer.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iformatprovider">IFormatProvider</a></td>
+        <td><span class="parametername">provider</span></td>
+        <td><p>The formatting provider.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.BufferWriterInterpolatedStringHandler.html">BufferWriterInterpolatedStringHandler</a></td>
+        <td><span class="parametername">handler</span></td>
+        <td><p>The handler of the interpolated string.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>The number of written characters.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Text/InterpolatedString.Utf16.cs" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

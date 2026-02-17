@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class CancellationTokenMultiplexer | .NEXT </title>
+    <title>Struct CancellationTokenMultiplexer | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class CancellationTokenMultiplexer | .NEXT ">
+    <meta name="title" content="Struct CancellationTokenMultiplexer | .NEXT ">
     <meta name="generator" content="docfx ">
   
     <link rel="shortcut icon" href="../fav.ico">
@@ -69,54 +69,65 @@
 
 
 
-  <h1 id="DotNext_Threading_CancellationTokenMultiplexer" data-uid="DotNext.Threading.CancellationTokenMultiplexer" class="text-break">Class CancellationTokenMultiplexer</h1>
+  <h1 id="DotNext_Threading_CancellationTokenMultiplexer" data-uid="DotNext.Threading.CancellationTokenMultiplexer" class="text-break">Struct CancellationTokenMultiplexer</h1>
   <div class="markdown level0 summary"><p>Represents cancellation token multiplexer.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div class="inheritance">
-    <h5>Inheritance</h5>
-    <div class="level0"><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
-    <div class="level1"><span class="xref">CancellationTokenMultiplexer</span></div>
-  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals">ValueType.Equals(object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Threading.html">Threading</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
   <h5 id="DotNext_Threading_CancellationTokenMultiplexer_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class CancellationTokenMultiplexer</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly struct CancellationTokenMultiplexer</code></pre>
   </div>
   <h5 id="DotNext_Threading_CancellationTokenMultiplexer_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>The multiplexer provides a pool of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtokensource">CancellationTokenSource</a> to combine
 the cancellation tokens.</p>
 </div>
+  <h3 id="constructors">Constructors
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_CancellationTokenMultiplexer__ctor_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.#ctor*"></a>
+  <h4 id="DotNext_Threading_CancellationTokenMultiplexer__ctor" data-uid="DotNext.Threading.CancellationTokenMultiplexer.#ctor">CancellationTokenMultiplexer()</h4>
+  <div class="markdown level1 summary"><p>Represents cancellation token multiplexer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public CancellationTokenMultiplexer()</code></pre>
+  </div>
+  <h5 id="DotNext_Threading_CancellationTokenMultiplexer__ctor_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The multiplexer provides a pool of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtokensource">CancellationTokenSource</a> to combine
+the cancellation tokens.</p>
+</div>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_MaximumRetained.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.MaximumRetained%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.cs/#L21">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_CancellationTokenMultiplexer_MaximumRetained_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.MaximumRetained*"></a>
   <h4 id="DotNext_Threading_CancellationTokenMultiplexer_MaximumRetained" data-uid="DotNext.Threading.CancellationTokenMultiplexer.MaximumRetained">MaximumRetained</h4>
@@ -138,27 +149,26 @@ the cancellation tokens.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td></td>
+        <td><p>The maximum <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtokensource">CancellationTokenSource</a> instances in the internal pool; or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32.maxvalue">MaxValue</a>
+to use unbounded pool.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_Combine_System_ReadOnlySpan_System_Threading_CancellationToken__.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.Combine(System.ReadOnlySpan%7BSystem.Threading.CancellationToken%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.cs/#L32">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_CancellationTokenMultiplexer_Combine_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Combine*"></a>
-  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_Combine_System_ReadOnlySpan_System_Threading_CancellationToken__" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Combine(System.ReadOnlySpan{System.Threading.CancellationToken})">Combine(ReadOnlySpan&lt;CancellationToken&gt;)</h4>
+  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_Combine_System_ReadOnlySpan_System_Threading_CancellationToken__" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Combine(System.ReadOnlySpan{System.Threading.CancellationToken})">Combine(params ReadOnlySpan&lt;CancellationToken&gt;)</h4>
   <div class="markdown level1 summary"><p>Combines the multiple tokens.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public CancellationTokenMultiplexer.Scope Combine(ReadOnlySpan&lt;CancellationToken&gt; tokens)</code></pre>
+    <pre><code class="lang-csharp hljs">public CancellationTokenMultiplexer.Scope Combine(params ReadOnlySpan&lt;CancellationToken&gt; tokens)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -194,21 +204,18 @@ the cancellation tokens.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_Combine_System_TimeSpan_System_ReadOnlySpan_System_Threading_CancellationToken__.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.Combine(System.TimeSpan%2CSystem.ReadOnlySpan%7BSystem.Threading.CancellationToken%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.cs/#L76">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_CancellationTokenMultiplexer_Combine_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Combine*"></a>
-  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_Combine_System_TimeSpan_System_ReadOnlySpan_System_Threading_CancellationToken__" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Combine(System.TimeSpan,System.ReadOnlySpan{System.Threading.CancellationToken})">Combine(TimeSpan, ReadOnlySpan&lt;CancellationToken&gt;)</h4>
+  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_Combine_System_TimeSpan_System_ReadOnlySpan_System_Threading_CancellationToken__" data-uid="DotNext.Threading.CancellationTokenMultiplexer.Combine(System.TimeSpan,System.ReadOnlySpan{System.Threading.CancellationToken})">Combine(TimeSpan, params ReadOnlySpan&lt;CancellationToken&gt;)</h4>
   <div class="markdown level1 summary"><p>Combines the multiple tokens and the timeout.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public CancellationTokenMultiplexer.Scope Combine(TimeSpan timeout, ReadOnlySpan&lt;CancellationToken&gt; tokens)</code></pre>
+    <pre><code class="lang-csharp hljs">public CancellationTokenMultiplexer.Scope Combine(TimeSpan timeout, params ReadOnlySpan&lt;CancellationToken&gt; tokens)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -269,21 +276,18 @@ the cancellation tokens.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer_CombineAndSetTimeoutLater_System_ReadOnlySpan_System_Threading_CancellationToken__.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer.CombineAndSetTimeoutLater(System.ReadOnlySpan%7BSystem.Threading.CancellationToken%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.cs/#L89">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_CancellationTokenMultiplexer_CombineAndSetTimeoutLater_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.CombineAndSetTimeoutLater*"></a>
-  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_CombineAndSetTimeoutLater_System_ReadOnlySpan_System_Threading_CancellationToken__" data-uid="DotNext.Threading.CancellationTokenMultiplexer.CombineAndSetTimeoutLater(System.ReadOnlySpan{System.Threading.CancellationToken})">CombineAndSetTimeoutLater(ReadOnlySpan&lt;CancellationToken&gt;)</h4>
+  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_CombineAndSetTimeoutLater_System_ReadOnlySpan_System_Threading_CancellationToken__" data-uid="DotNext.Threading.CancellationTokenMultiplexer.CombineAndSetTimeoutLater(System.ReadOnlySpan{System.Threading.CancellationToken})">CombineAndSetTimeoutLater(params ReadOnlySpan&lt;CancellationToken&gt;)</h4>
   <div class="markdown level1 summary"><p>Combines the multiple tokens and sets the timeout later.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public CancellationTokenMultiplexer.ScopeWithTimeout CombineAndSetTimeoutLater(ReadOnlySpan&lt;CancellationToken&gt; tokens)</code></pre>
+    <pre><code class="lang-csharp hljs">public CancellationTokenMultiplexer.ScopeWithTimeout CombineAndSetTimeoutLater(params ReadOnlySpan&lt;CancellationToken&gt; tokens)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -319,21 +323,78 @@ the cancellation tokens.</p>
       </tr>
     </tbody>
   </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_CancellationTokenMultiplexer_WaitAnyAsync_" data-uid="DotNext.Threading.CancellationTokenMultiplexer.WaitAnyAsync*"></a>
+  <h4 id="DotNext_Threading_CancellationTokenMultiplexer_WaitAnyAsync_System_ReadOnlySpan_System_Threading_CancellationToken__" data-uid="DotNext.Threading.CancellationTokenMultiplexer.WaitAnyAsync(System.ReadOnlySpan{System.Threading.CancellationToken})">WaitAnyAsync(params ReadOnlySpan&lt;CancellationToken&gt;)</h4>
+  <div class="markdown level1 summary"><p>Waits for the cancellation of at least one provided token.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public ValueTask&lt;CancellationToken&gt; WaitAnyAsync(params ReadOnlySpan&lt;CancellationToken&gt; tokens)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>&gt;</td>
+        <td><span class="parametername">tokens</span></td>
+        <td><p>A set of tokens.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>&gt;</td>
+        <td><p>The first canceled token.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">tokens</code> is empty.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="extensionmethods">Extension Methods</h3>
-  <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
   </div>
 
 </article>
@@ -344,10 +405,7 @@ the cancellation tokens.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_CancellationTokenMultiplexer.md&amp;value=---%0Auid%3A%20DotNext.Threading.CancellationTokenMultiplexer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.Scope.cs/#L11" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Threading/Threading/CancellationTokenMultiplexer.CTS.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

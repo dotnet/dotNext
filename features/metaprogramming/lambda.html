@@ -95,7 +95,7 @@ using static DotNext.Linq.Expressions.ExpressionBuilder;
 Lambda&lt;Func&lt;int, int, int&gt;&gt;(fun =&gt; 
 {
   var (x, y) = fun;
-  Return(x.AsDynamic() + y);
+  Return(x + y);
 });
 </code></pre>
 <p>The last expression inside of lamda function is interpreted as return value. However, explicit return is supported.</p>
@@ -107,9 +107,9 @@ using static DotNext.Linq.Expressions.ExpressionBuilder;
 Func&lt;long, bool&gt; isZero = Lambda&lt;Func&lt;long, bool&gt;&gt;(fun =&gt; 
 {
     var arg = fun[0];
-    If((Expression)(arg.AsDynamic() != 0L))
-        .Then(() =&gt; Return(true))
-        .Else(() =&gt; Return(false))
+    If(arg != 0L.Quoted)
+        .Then(() =&gt; Return(true.Quoted))
+        .Else(() =&gt; Return(false.Quoted))
     .End();
 }).Compile();
 </code></pre>

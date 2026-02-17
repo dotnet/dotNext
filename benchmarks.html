@@ -73,7 +73,7 @@
 <tbody>
 <tr>
 <td>Runtime</td>
-<td>.NET 8.0.1 (8.0.123.58001), X64 RyuJIT AVX2</td>
+<td>.NET 10.0.0 (10.0.0, 10.0.25.52411), X64 RyuJIT x86-64-v3</td>
 </tr>
 <tr>
 <td>LaunchCount</td>
@@ -85,11 +85,11 @@
 </tr>
 <tr>
 <td>OS</td>
-<td>Ubuntu 22.04.3</td>
+<td>Ubuntu 24.04.3</td>
 </tr>
 <tr>
 <td>CPU</td>
-<td>Intel Core i7-6700HQ CPU 2.60GHz (Skylake)</td>
+<td>Intel Core Ultra 9 275HX 0.80GHz</td>
 </tr>
 <tr>
 <td>Number of CPUs</td>
@@ -97,21 +97,21 @@
 </tr>
 <tr>
 <td>Physical Cores</td>
-<td>4</td>
+<td>24</td>
 </tr>
 <tr>
 <td>Logical Cores</td>
-<td>8</td>
+<td>24</td>
 </tr>
 <tr>
 <td>RAM</td>
-<td>24 GB</td>
+<td>64 GB</td>
 </tr>
 </tbody>
 </table>
-<p>You can run benchmarks using <code>Bench</code> build configuration as follows:</p>
+<p>You can run benchmarks using <code>Release</code> build configuration as follows:</p>
 <pre><code class="lang-bash">cd &lt;dotnext-clone-path&gt;/src/DotNext.Benchmarks
-dotnet run -c Bench
+dotnet run -c Release
 </code></pre>
 <h1 id="bitwise-hash-code">Bitwise Hash Code</h1>
 <p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseHashCodeBenchmark.cs">This benchmark</a> compares performance of <a class="xref" href="api/DotNext.BitwiseComparer-1.html">BitwiseComparer&lt;T&gt;.GetHashCode</a> and <code>GetHashCode</code> instance method for the types <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
@@ -122,284 +122,41 @@ dotnet run -c Bench
 <th style="text-align: right;">Mean</th>
 <th style="text-align: right;">Error</th>
 <th style="text-align: right;">StdDev</th>
+<th style="text-align: right;">Median</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>Guid.GetHashCode</code></td>
-<td style="text-align: right;">0.6889 ns</td>
-<td style="text-align: right;">0.0085 ns</td>
-<td style="text-align: right;">0.0076 ns</td>
+<td>Guid.GetHashCode</td>
+<td style="text-align: right;">0.0003 ns</td>
+<td style="text-align: right;">0.0008 ns</td>
+<td style="text-align: right;">0.0007 ns</td>
+<td style="text-align: right;">0.0000 ns</td>
 </tr>
 <tr>
-<td><code>BitwiseComparer&lt;Guid&gt;.GetHashCode</code></td>
-<td style="text-align: right;">6.3194 ns</td>
-<td style="text-align: right;">0.0223 ns</td>
-<td style="text-align: right;">0.0209 ns</td>
+<td>BitwiseComparer<guid>.GetHashCode</guid></td>
+<td style="text-align: right;">2.5075 ns</td>
+<td style="text-align: right;">0.0606 ns</td>
+<td style="text-align: right;">0.0567 ns</td>
+<td style="text-align: right;">2.5228 ns</td>
 </tr>
 <tr>
-<td><code>BitwiseComparer&lt;LargeStructure&gt;.GetHashCode</code></td>
-<td style="text-align: right;">20.6265 ns</td>
-<td style="text-align: right;">0.0839 ns</td>
-<td style="text-align: right;">0.0785 ns</td>
+<td>BitwiseComparer<largestructure>.GetHashCode</largestructure></td>
+<td style="text-align: right;">7.9992 ns</td>
+<td style="text-align: right;">0.0674 ns</td>
+<td style="text-align: right;">0.0630 ns</td>
+<td style="text-align: right;">8.0176 ns</td>
 </tr>
 <tr>
-<td><code>LargeStructure.GetHashCode</code></td>
-<td style="text-align: right;">43.5677 ns</td>
-<td style="text-align: right;">0.1517 ns</td>
-<td style="text-align: right;">0.1419 ns</td>
+<td>LargeStructure.GetHashCode</td>
+<td style="text-align: right;">25.8393 ns</td>
+<td style="text-align: right;">0.2648 ns</td>
+<td style="text-align: right;">0.2477 ns</td>
+<td style="text-align: right;">25.8916 ns</td>
 </tr>
 </tbody>
 </table>
 <p>Bitwise hash code algorithm is slower than JIT optimizations introduced by .NET 6 but still convenient in complex cases.</p>
-<h1 id="bytes-to-hex">Bytes to Hex</h1>
-<p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/Buffers/Text/HexConversionBenchmark.cs">This benchmark</a> demonstrates performance of extension methods declared in <code>DotNext.Buffers.Text.Hex</code> class that allows to convert arbitrary set of bytes to hexadecimal form.</p>
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th>Bytes</th>
-<th style="text-align: right;">Mean</th>
-<th style="text-align: right;">Error</th>
-<th style="text-align: right;">StdDev</th>
-<th style="text-align: right;">Median</th>
-<th style="text-align: right;">Ratio</th>
-<th style="text-align: right;">RatioSD</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Convert.ToHexString</td>
-<td>1024 bytes</td>
-<td style="text-align: right;">674.47 ns</td>
-<td style="text-align: right;">13.196 ns</td>
-<td style="text-align: right;">12.343 ns</td>
-<td style="text-align: right;">674.80 ns</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr>
-<td>Hex.EncodeToUtf16</td>
-<td>1024 bytes</td>
-<td style="text-align: right;">656.28 ns</td>
-<td style="text-align: right;">6.336 ns</td>
-<td style="text-align: right;">5.617 ns</td>
-<td style="text-align: right;">655.19 ns</td>
-<td style="text-align: right;">0.97</td>
-<td style="text-align: right;">0.02</td>
-</tr>
-<tr>
-<td>Hex.EncodeToUtf8</td>
-<td>1024 bytes</td>
-<td style="text-align: right;">363.58 ns</td>
-<td style="text-align: right;">5.733 ns</td>
-<td style="text-align: right;">4.788 ns</td>
-<td style="text-align: right;">365.53 ns</td>
-<td style="text-align: right;">0.54</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-</tr>
-<tr>
-<td>Convert.ToHexString</td>
-<td>128 bytes</td>
-<td style="text-align: right;">95.06 ns</td>
-<td style="text-align: right;">4.340 ns</td>
-<td style="text-align: right;">12.798 ns</td>
-<td style="text-align: right;">100.99 ns</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr>
-<td>Hex.EncodeToUtf16</td>
-<td>128 bytes</td>
-<td style="text-align: right;">93.22 ns</td>
-<td style="text-align: right;">1.932 ns</td>
-<td style="text-align: right;">2.645 ns</td>
-<td style="text-align: right;">93.51 ns</td>
-<td style="text-align: right;">1.15</td>
-<td style="text-align: right;">0.18</td>
-</tr>
-<tr>
-<td>Hex.EncodeToUtf8</td>
-<td>128 bytes</td>
-<td style="text-align: right;">49.02 ns</td>
-<td style="text-align: right;">1.045 ns</td>
-<td style="text-align: right;">0.926 ns</td>
-<td style="text-align: right;">48.77 ns</td>
-<td style="text-align: right;">0.62</td>
-<td style="text-align: right;">0.08</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-</tr>
-<tr>
-<td>Convert.ToHexString</td>
-<td>16 bytes</td>
-<td style="text-align: right;">24.21 ns</td>
-<td style="text-align: right;">0.971 ns</td>
-<td style="text-align: right;">2.800 ns</td>
-<td style="text-align: right;">23.64 ns</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr>
-<td>Hex.EncodeToUtf16</td>
-<td>16 bytes</td>
-<td style="text-align: right;">26.29 ns</td>
-<td style="text-align: right;">1.050 ns</td>
-<td style="text-align: right;">3.096 ns</td>
-<td style="text-align: right;">25.79 ns</td>
-<td style="text-align: right;">1.10</td>
-<td style="text-align: right;">0.19</td>
-</tr>
-<tr>
-<td>Hex.EncodeToUtf8</td>
-<td>16 bytes</td>
-<td style="text-align: right;">20.44 ns</td>
-<td style="text-align: right;">0.264 ns</td>
-<td style="text-align: right;">0.234 ns</td>
-<td style="text-align: right;">20.39 ns</td>
-<td style="text-align: right;">0.71</td>
-<td style="text-align: right;">0.04</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-</tr>
-<tr>
-<td>Convert.ToHexString</td>
-<td>256 bytes</td>
-<td style="text-align: right;">169.86 ns</td>
-<td style="text-align: right;">2.322 ns</td>
-<td style="text-align: right;">2.172 ns</td>
-<td style="text-align: right;">169.59 ns</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr>
-<td>Hex.EncodeToUtf16</td>
-<td>256 bytes</td>
-<td style="text-align: right;">147.84 ns</td>
-<td style="text-align: right;">1.522 ns</td>
-<td style="text-align: right;">1.350 ns</td>
-<td style="text-align: right;">147.84 ns</td>
-<td style="text-align: right;">0.87</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td>Hex.EncodeToUtf8</td>
-<td>256 bytes</td>
-<td style="text-align: right;">73.90 ns</td>
-<td style="text-align: right;">0.732 ns</td>
-<td style="text-align: right;">0.649 ns</td>
-<td style="text-align: right;">73.99 ns</td>
-<td style="text-align: right;">0.44</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-</tr>
-<tr>
-<td>Convert.ToHexString</td>
-<td>512 bytes</td>
-<td style="text-align: right;">316.92 ns</td>
-<td style="text-align: right;">6.290 ns</td>
-<td style="text-align: right;">6.177 ns</td>
-<td style="text-align: right;">316.16 ns</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr>
-<td>Hex.EncodeToUtf16</td>
-<td>512 bytes</td>
-<td style="text-align: right;">297.29 ns</td>
-<td style="text-align: right;">5.743 ns</td>
-<td style="text-align: right;">5.372 ns</td>
-<td style="text-align: right;">297.34 ns</td>
-<td style="text-align: right;">0.94</td>
-<td style="text-align: right;">0.02</td>
-</tr>
-<tr>
-<td>Hex.EncodeToUtf8</td>
-<td>512 bytes</td>
-<td style="text-align: right;">137.94 ns</td>
-<td style="text-align: right;">2.712 ns</td>
-<td style="text-align: right;">2.537 ns</td>
-<td style="text-align: right;">137.76 ns</td>
-<td style="text-align: right;">0.44</td>
-<td style="text-align: right;">0.01</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-<td style="text-align: right;"></td>
-</tr>
-<tr>
-<td>Convert.ToHexString</td>
-<td>64 bytes</td>
-<td style="text-align: right;">43.90 ns</td>
-<td style="text-align: right;">0.947 ns</td>
-<td style="text-align: right;">1.955 ns</td>
-<td style="text-align: right;">43.11 ns</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
-</tr>
-<tr>
-<td>Hex.EncodeToUtf16</td>
-<td>64 bytes</td>
-<td style="text-align: right;">39.29 ns</td>
-<td style="text-align: right;">0.125 ns</td>
-<td style="text-align: right;">0.111 ns</td>
-<td style="text-align: right;">39.23 ns</td>
-<td style="text-align: right;">0.88</td>
-<td style="text-align: right;">0.03</td>
-</tr>
-<tr>
-<td>Hex.EncodeToUtf8</td>
-<td>64 bytes</td>
-<td style="text-align: right;">25.28 ns</td>
-<td style="text-align: right;">0.271 ns</td>
-<td style="text-align: right;">0.240 ns</td>
-<td style="text-align: right;">25.23 ns</td>
-<td style="text-align: right;">0.56</td>
-<td style="text-align: right;">0.02</td>
-</tr>
-</tbody>
-</table>
 <h1 id="atomic-access-to-arbitrary-value-type">Atomic Access to Arbitrary Value Type</h1>
 <p><a href="https://github.com/dotnet/DotNext/blob/master/src/DotNext.Benchmarks/Threading/AtomicContainerBenchmark.cs">This benchmark</a> compares performance of <a class="xref" href="api/DotNext.Threading.Atomic-1.html">Atomic&lt;T&gt;</a> and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.</p>
 <table>
@@ -415,24 +172,24 @@ dotnet run -c Bench
 <tbody>
 <tr>
 <td>Atomic</td>
-<td style="text-align: right;">589.5 us</td>
-<td style="text-align: right;">11.30 us</td>
-<td style="text-align: right;">105.0 us</td>
-<td style="text-align: right;">576.9 us</td>
+<td style="text-align: right;">307.0 us</td>
+<td style="text-align: right;">11.08 us</td>
+<td style="text-align: right;">96.53 us</td>
+<td style="text-align: right;">293.1 us</td>
 </tr>
 <tr>
 <td>Synchronized</td>
-<td style="text-align: right;">1,005.4 us</td>
-<td style="text-align: right;">12.59 us</td>
-<td style="text-align: right;">117.3 us</td>
-<td style="text-align: right;">981.7 us</td>
+<td style="text-align: right;">831.3 us</td>
+<td style="text-align: right;">24.76 us</td>
+<td style="text-align: right;">233.87 us</td>
+<td style="text-align: right;">801.6 us</td>
 </tr>
 <tr>
 <td>SpinLock</td>
-<td style="text-align: right;">1,359.3 us</td>
-<td style="text-align: right;">65.59 us</td>
-<td style="text-align: right;">628.4 us</td>
-<td style="text-align: right;">1,573.7 us</td>
+<td style="text-align: right;">1,056.5 us</td>
+<td style="text-align: right;">48.50 us</td>
+<td style="text-align: right;">453.64 us</td>
+<td style="text-align: right;">1,288.6 us</td>
 </tr>
 </tbody>
 </table>
@@ -455,43 +212,43 @@ dotnet run -c Bench
 <tbody>
 <tr>
 <td>'FileBufferingWriter, synchronous mode'</td>
-<td style="text-align: right;">934.7 us</td>
-<td style="text-align: right;">8.52 us</td>
-<td style="text-align: right;">7.97 us</td>
-<td style="text-align: right;">250.0000</td>
-<td style="text-align: right;">249.0234</td>
-<td style="text-align: right;">249.0234</td>
+<td style="text-align: right;">384.8 us</td>
+<td style="text-align: right;">5.10 us</td>
+<td style="text-align: right;">4.78 us</td>
+<td style="text-align: right;">249.5117</td>
+<td style="text-align: right;">249.5117</td>
+<td style="text-align: right;">249.5117</td>
 <td style="text-align: right;">1 MB</td>
 </tr>
 <tr>
 <td>'FileBufferingWriter, asynchronous mode'</td>
-<td style="text-align: right;">1,306.9 us</td>
-<td style="text-align: right;">25.69 us</td>
-<td style="text-align: right;">44.31 us</td>
-<td style="text-align: right;">195.3125</td>
-<td style="text-align: right;">195.3125</td>
-<td style="text-align: right;">195.3125</td>
+<td style="text-align: right;">474.6 us</td>
+<td style="text-align: right;">15.28 us</td>
+<td style="text-align: right;">44.81 us</td>
+<td style="text-align: right;">198.7305</td>
+<td style="text-align: right;">198.7305</td>
+<td style="text-align: right;">198.7305</td>
 <td style="text-align: right;">1 MB</td>
 </tr>
 <tr>
 <td>'FileBufferingWriteStream, synchronouse mode'</td>
-<td style="text-align: right;">3,548.1 us</td>
-<td style="text-align: right;">30.80 us</td>
-<td style="text-align: right;">25.72 us</td>
-<td style="text-align: right;">402.3438</td>
-<td style="text-align: right;">289.0625</td>
-<td style="text-align: right;">250.0000</td>
-<td style="text-align: right;">1.5 MB</td>
+<td style="text-align: right;">1,791.7 us</td>
+<td style="text-align: right;">34.71 us</td>
+<td style="text-align: right;">56.06 us</td>
+<td style="text-align: right;">246.0938</td>
+<td style="text-align: right;">246.0938</td>
+<td style="text-align: right;">246.0938</td>
+<td style="text-align: right;">1.01 MB</td>
 </tr>
 <tr>
 <td>'FileBufferingWriteStream, asynchronous mode'</td>
-<td style="text-align: right;">4,054.6 us</td>
-<td style="text-align: right;">42.32 us</td>
-<td style="text-align: right;">39.59 us</td>
-<td style="text-align: right;">375.0000</td>
-<td style="text-align: right;">289.0625</td>
-<td style="text-align: right;">242.1875</td>
-<td style="text-align: right;">1.5 MB</td>
+<td style="text-align: right;">1,886.5 us</td>
+<td style="text-align: right;">36.64 us</td>
+<td style="text-align: right;">54.84 us</td>
+<td style="text-align: right;">246.0938</td>
+<td style="text-align: right;">246.0938</td>
+<td style="text-align: right;">246.0938</td>
+<td style="text-align: right;">1.01 MB</td>
 </tr>
 </tbody>
 </table>
@@ -513,6 +270,7 @@ dotnet run -c Bench
 <th style="text-align: right;">Mean</th>
 <th style="text-align: right;">Error</th>
 <th style="text-align: right;">StdDev</th>
+<th style="text-align: right;">Median</th>
 <th style="text-align: right;">Ratio</th>
 <th style="text-align: right;">RatioSD</th>
 <th style="text-align: right;">Gen0</th>
@@ -526,76 +284,82 @@ dotnet run -c Bench
 <tr>
 <td>MemoryStream</td>
 <td>100</td>
-<td style="text-align: right;">67.96 ns</td>
-<td style="text-align: right;">0.603 ns</td>
-<td style="text-align: right;">0.564 ns</td>
+<td style="text-align: right;">17.16 ns</td>
+<td style="text-align: right;">0.227 ns</td>
+<td style="text-align: right;">0.212 ns</td>
+<td style="text-align: right;">17.20 ns</td>
 <td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
-<td style="text-align: right;">0.1097</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">0.0183</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">344 B</td>
 <td style="text-align: right;">1.00</td>
 </tr>
 <tr>
-<td>SparseBufferWriter<byte></byte></td>
-<td>100</td>
-<td style="text-align: right;">249.14 ns</td>
-<td style="text-align: right;">1.903 ns</td>
-<td style="text-align: right;">1.780 ns</td>
-<td style="text-align: right;">3.67</td>
-<td style="text-align: right;">0.04</td>
-<td style="text-align: right;">0.0610</td>
-<td style="text-align: right;">-</td>
-<td style="text-align: right;">-</td>
-<td style="text-align: right;">192 B</td>
-<td style="text-align: right;">0.56</td>
-</tr>
-<tr>
 <td>PoolingArrayBufferWriter<byte></byte></td>
 <td>100</td>
-<td style="text-align: right;">290.32 ns</td>
-<td style="text-align: right;">2.758 ns</td>
-<td style="text-align: right;">2.580 ns</td>
-<td style="text-align: right;">4.27</td>
-<td style="text-align: right;">0.06</td>
-<td style="text-align: right;">0.0787</td>
+<td style="text-align: right;">63.55 ns</td>
+<td style="text-align: right;">1.293 ns</td>
+<td style="text-align: right;">3.647 ns</td>
+<td style="text-align: right;">61.75 ns</td>
+<td style="text-align: right;">3.70</td>
+<td style="text-align: right;">0.22</td>
+<td style="text-align: right;">0.0166</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">248 B</td>
-<td style="text-align: right;">0.72</td>
+<td style="text-align: right;">312 B</td>
+<td style="text-align: right;">0.91</td>
 </tr>
 <tr>
-<td>RecyclableMemoryStream</td>
+<td>SparseBufferWriter<byte></byte></td>
 <td>100</td>
-<td style="text-align: right;">1,859.87 ns</td>
-<td style="text-align: right;">17.869 ns</td>
-<td style="text-align: right;">16.715 ns</td>
-<td style="text-align: right;">27.37</td>
-<td style="text-align: right;">0.37</td>
-<td style="text-align: right;">0.0839</td>
+<td style="text-align: right;">118.60 ns</td>
+<td style="text-align: right;">2.352 ns</td>
+<td style="text-align: right;">2.416 ns</td>
+<td style="text-align: right;">118.55 ns</td>
+<td style="text-align: right;">6.91</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">0.0139</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">264 B</td>
 <td style="text-align: right;">0.77</td>
 </tr>
 <tr>
+<td>RecyclableMemoryStream</td>
+<td>100</td>
+<td style="text-align: right;">341.81 ns</td>
+<td style="text-align: right;">3.508 ns</td>
+<td style="text-align: right;">2.929 ns</td>
+<td style="text-align: right;">342.14 ns</td>
+<td style="text-align: right;">19.92</td>
+<td style="text-align: right;">0.29</td>
+<td style="text-align: right;">0.0148</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">280 B</td>
+<td style="text-align: right;">0.81</td>
+</tr>
+<tr>
 <td>FileBufferingWriter</td>
 <td>100</td>
-<td style="text-align: right;">2,901.26 ns</td>
-<td style="text-align: right;">19.012 ns</td>
-<td style="text-align: right;">15.876 ns</td>
-<td style="text-align: right;">42.64</td>
-<td style="text-align: right;">0.37</td>
-<td style="text-align: right;">0.0801</td>
+<td style="text-align: right;">835.43 ns</td>
+<td style="text-align: right;">9.755 ns</td>
+<td style="text-align: right;">9.125 ns</td>
+<td style="text-align: right;">831.13 ns</td>
+<td style="text-align: right;">48.69</td>
+<td style="text-align: right;">0.78</td>
+<td style="text-align: right;">0.0286</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">256 B</td>
-<td style="text-align: right;">0.74</td>
+<td style="text-align: right;">552 B</td>
+<td style="text-align: right;">1.60</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
+<td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
@@ -610,76 +374,82 @@ dotnet run -c Bench
 <tr>
 <td>MemoryStream</td>
 <td>1000</td>
-<td style="text-align: right;">126.12 ns</td>
-<td style="text-align: right;">1.070 ns</td>
-<td style="text-align: right;">0.949 ns</td>
+<td style="text-align: right;">42.55 ns</td>
+<td style="text-align: right;">0.767 ns</td>
+<td style="text-align: right;">1.478 ns</td>
+<td style="text-align: right;">42.23 ns</td>
 <td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
-<td style="text-align: right;">0.3467</td>
-<td style="text-align: right;">-</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">0.0578</td>
+<td style="text-align: right;">0.0002</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">1088 B</td>
 <td style="text-align: right;">1.00</td>
 </tr>
 <tr>
-<td>SparseBufferWriter<byte></byte></td>
-<td>1000</td>
-<td style="text-align: right;">274.55 ns</td>
-<td style="text-align: right;">2.455 ns</td>
-<td style="text-align: right;">2.297 ns</td>
-<td style="text-align: right;">2.18</td>
-<td style="text-align: right;">0.03</td>
-<td style="text-align: right;">0.0610</td>
-<td style="text-align: right;">-</td>
-<td style="text-align: right;">-</td>
-<td style="text-align: right;">192 B</td>
-<td style="text-align: right;">0.18</td>
-</tr>
-<tr>
 <td>PoolingArrayBufferWriter<byte></byte></td>
 <td>1000</td>
-<td style="text-align: right;">523.82 ns</td>
-<td style="text-align: right;">2.064 ns</td>
-<td style="text-align: right;">1.724 ns</td>
-<td style="text-align: right;">4.15</td>
-<td style="text-align: right;">0.03</td>
-<td style="text-align: right;">0.0782</td>
+<td style="text-align: right;">96.78 ns</td>
+<td style="text-align: right;">0.266 ns</td>
+<td style="text-align: right;">0.236 ns</td>
+<td style="text-align: right;">96.78 ns</td>
+<td style="text-align: right;">2.28</td>
+<td style="text-align: right;">0.07</td>
+<td style="text-align: right;">0.0166</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">248 B</td>
-<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">312 B</td>
+<td style="text-align: right;">0.29</td>
 </tr>
 <tr>
-<td>RecyclableMemoryStream</td>
+<td>SparseBufferWriter<byte></byte></td>
 <td>1000</td>
-<td style="text-align: right;">1,863.53 ns</td>
-<td style="text-align: right;">11.036 ns</td>
-<td style="text-align: right;">10.323 ns</td>
-<td style="text-align: right;">14.78</td>
-<td style="text-align: right;">0.14</td>
-<td style="text-align: right;">0.0839</td>
+<td style="text-align: right;">100.16 ns</td>
+<td style="text-align: right;">0.834 ns</td>
+<td style="text-align: right;">0.739 ns</td>
+<td style="text-align: right;">100.11 ns</td>
+<td style="text-align: right;">2.36</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">0.0139</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">264 B</td>
 <td style="text-align: right;">0.24</td>
+</tr>
+<tr>
+<td>RecyclableMemoryStream</td>
+<td>1000</td>
+<td style="text-align: right;">349.89 ns</td>
+<td style="text-align: right;">2.460 ns</td>
+<td style="text-align: right;">2.181 ns</td>
+<td style="text-align: right;">350.15 ns</td>
+<td style="text-align: right;">8.23</td>
+<td style="text-align: right;">0.27</td>
+<td style="text-align: right;">0.0148</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">280 B</td>
+<td style="text-align: right;">0.26</td>
 </tr>
 <tr>
 <td>FileBufferingWriter</td>
 <td>1000</td>
-<td style="text-align: right;">2,935.07 ns</td>
-<td style="text-align: right;">14.906 ns</td>
-<td style="text-align: right;">13.943 ns</td>
-<td style="text-align: right;">23.28</td>
-<td style="text-align: right;">0.22</td>
-<td style="text-align: right;">0.0801</td>
+<td style="text-align: right;">821.75 ns</td>
+<td style="text-align: right;">9.333 ns</td>
+<td style="text-align: right;">8.730 ns</td>
+<td style="text-align: right;">827.28 ns</td>
+<td style="text-align: right;">19.33</td>
+<td style="text-align: right;">0.66</td>
+<td style="text-align: right;">0.0286</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">256 B</td>
-<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">552 B</td>
+<td style="text-align: right;">0.51</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
+<td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
@@ -694,55 +464,59 @@ dotnet run -c Bench
 <tr>
 <td>SparseBufferWriter<byte></byte></td>
 <td>10000</td>
-<td style="text-align: right;">780.10 ns</td>
-<td style="text-align: right;">7.312 ns</td>
-<td style="text-align: right;">6.106 ns</td>
-<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">194.10 ns</td>
+<td style="text-align: right;">0.510 ns</td>
+<td style="text-align: right;">0.452 ns</td>
+<td style="text-align: right;">194.18 ns</td>
+<td style="text-align: right;">0.20</td>
 <td style="text-align: right;">0.00</td>
-<td style="text-align: right;">0.0811</td>
+<td style="text-align: right;">0.0174</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">256 B</td>
-<td style="text-align: right;">0.008</td>
+<td style="text-align: right;">328 B</td>
+<td style="text-align: right;">0.011</td>
 </tr>
 <tr>
 <td>PoolingArrayBufferWriter<byte></byte></td>
 <td>10000</td>
-<td style="text-align: right;">1,553.56 ns</td>
-<td style="text-align: right;">18.831 ns</td>
-<td style="text-align: right;">17.614 ns</td>
-<td style="text-align: right;">0.60</td>
-<td style="text-align: right;">0.01</td>
-<td style="text-align: right;">0.0782</td>
+<td style="text-align: right;">285.20 ns</td>
+<td style="text-align: right;">2.702 ns</td>
+<td style="text-align: right;">2.527 ns</td>
+<td style="text-align: right;">284.50 ns</td>
+<td style="text-align: right;">0.29</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.0162</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">248 B</td>
-<td style="text-align: right;">0.008</td>
+<td style="text-align: right;">312 B</td>
+<td style="text-align: right;">0.010</td>
 </tr>
 <tr>
 <td>RecyclableMemoryStream</td>
 <td>10000</td>
-<td style="text-align: right;">2,330.93 ns</td>
-<td style="text-align: right;">28.111 ns</td>
-<td style="text-align: right;">31.246 ns</td>
-<td style="text-align: right;">0.90</td>
-<td style="text-align: right;">0.02</td>
-<td style="text-align: right;">0.0839</td>
+<td style="text-align: right;">437.91 ns</td>
+<td style="text-align: right;">4.131 ns</td>
+<td style="text-align: right;">3.865 ns</td>
+<td style="text-align: right;">439.25 ns</td>
+<td style="text-align: right;">0.44</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.0148</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">264 B</td>
+<td style="text-align: right;">280 B</td>
 <td style="text-align: right;">0.009</td>
 </tr>
 <tr>
 <td>MemoryStream</td>
 <td>10000</td>
-<td style="text-align: right;">2,587.38 ns</td>
-<td style="text-align: right;">47.665 ns</td>
-<td style="text-align: right;">39.802 ns</td>
+<td style="text-align: right;">992.58 ns</td>
+<td style="text-align: right;">2.860 ns</td>
+<td style="text-align: right;">2.536 ns</td>
+<td style="text-align: right;">991.66 ns</td>
 <td style="text-align: right;">1.00</td>
 <td style="text-align: right;">0.00</td>
-<td style="text-align: right;">9.8343</td>
-<td style="text-align: right;">-</td>
+<td style="text-align: right;">1.6384</td>
+<td style="text-align: right;">0.1354</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">30880 B</td>
 <td style="text-align: right;">1.000</td>
@@ -750,20 +524,22 @@ dotnet run -c Bench
 <tr>
 <td>FileBufferingWriter</td>
 <td>10000</td>
-<td style="text-align: right;">3,823.11 ns</td>
-<td style="text-align: right;">22.341 ns</td>
-<td style="text-align: right;">19.805 ns</td>
-<td style="text-align: right;">1.48</td>
-<td style="text-align: right;">0.02</td>
-<td style="text-align: right;">0.0763</td>
+<td style="text-align: right;">1,048.14 ns</td>
+<td style="text-align: right;">10.895 ns</td>
+<td style="text-align: right;">10.191 ns</td>
+<td style="text-align: right;">1,052.49 ns</td>
+<td style="text-align: right;">1.06</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.0286</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">256 B</td>
-<td style="text-align: right;">0.008</td>
+<td style="text-align: right;">552 B</td>
+<td style="text-align: right;">0.018</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
+<td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
@@ -778,76 +554,82 @@ dotnet run -c Bench
 <tr>
 <td>SparseBufferWriter<byte></byte></td>
 <td>100000</td>
-<td style="text-align: right;">4,594.99 ns</td>
-<td style="text-align: right;">36.754 ns</td>
-<td style="text-align: right;">28.695 ns</td>
-<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">1,432.00 ns</td>
+<td style="text-align: right;">11.107 ns</td>
+<td style="text-align: right;">10.389 ns</td>
+<td style="text-align: right;">1,434.84 ns</td>
+<td style="text-align: right;">0.04</td>
 <td style="text-align: right;">0.00</td>
-<td style="text-align: right;">0.1373</td>
+<td style="text-align: right;">0.0267</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">448 B</td>
+<td style="text-align: right;">520 B</td>
 <td style="text-align: right;">0.002</td>
 </tr>
 <tr>
 <td>RecyclableMemoryStream</td>
 <td>100000</td>
-<td style="text-align: right;">7,296.87 ns</td>
-<td style="text-align: right;">141.390 ns</td>
-<td style="text-align: right;">211.626 ns</td>
-<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">1,494.27 ns</td>
+<td style="text-align: right;">15.335 ns</td>
+<td style="text-align: right;">14.344 ns</td>
+<td style="text-align: right;">1,496.85 ns</td>
+<td style="text-align: right;">0.04</td>
 <td style="text-align: right;">0.00</td>
-<td style="text-align: right;">0.0839</td>
+<td style="text-align: right;">0.0134</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">264 B</td>
+<td style="text-align: right;">280 B</td>
 <td style="text-align: right;">0.001</td>
 </tr>
 <tr>
 <td>PoolingArrayBufferWriter<byte></byte></td>
 <td>100000</td>
-<td style="text-align: right;">9,591.01 ns</td>
-<td style="text-align: right;">190.970 ns</td>
-<td style="text-align: right;">187.558 ns</td>
-<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">3,315.54 ns</td>
+<td style="text-align: right;">16.855 ns</td>
+<td style="text-align: right;">15.766 ns</td>
+<td style="text-align: right;">3,308.98 ns</td>
+<td style="text-align: right;">0.09</td>
 <td style="text-align: right;">0.00</td>
-<td style="text-align: right;">0.0763</td>
+<td style="text-align: right;">0.0153</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">248 B</td>
+<td style="text-align: right;">312 B</td>
 <td style="text-align: right;">0.001</td>
-</tr>
-<tr>
-<td>MemoryStream</td>
-<td>100000</td>
-<td style="text-align: right;">87,218.01 ns</td>
-<td style="text-align: right;">725.528 ns</td>
-<td style="text-align: right;">678.660 ns</td>
-<td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
-<td style="text-align: right;">41.6260</td>
-<td style="text-align: right;">41.6260</td>
-<td style="text-align: right;">41.6260</td>
-<td style="text-align: right;">260356 B</td>
-<td style="text-align: right;">1.000</td>
 </tr>
 <tr>
 <td>FileBufferingWriter</td>
 <td>100000</td>
-<td style="text-align: right;">87,383.44 ns</td>
-<td style="text-align: right;">1,727.693 ns</td>
-<td style="text-align: right;">4,172.573 ns</td>
-<td style="text-align: right;">0.98</td>
-<td style="text-align: right;">0.04</td>
-<td style="text-align: right;">0.1221</td>
+<td style="text-align: right;">34,682.38 ns</td>
+<td style="text-align: right;">428.066 ns</td>
+<td style="text-align: right;">379.469 ns</td>
+<td style="text-align: right;">34,855.87 ns</td>
+<td style="text-align: right;">0.94</td>
+<td style="text-align: right;">0.01</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">568 B</td>
-<td style="text-align: right;">0.002</td>
+<td style="text-align: right;">-</td>
+<td style="text-align: right;">720 B</td>
+<td style="text-align: right;">0.003</td>
+</tr>
+<tr>
+<td>MemoryStream</td>
+<td>100000</td>
+<td style="text-align: right;">37,079.68 ns</td>
+<td style="text-align: right;">164.581 ns</td>
+<td style="text-align: right;">153.949 ns</td>
+<td style="text-align: right;">37,071.53 ns</td>
+<td style="text-align: right;">1.00</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">41.6260</td>
+<td style="text-align: right;">41.6260</td>
+<td style="text-align: right;">41.6260</td>
+<td style="text-align: right;">260342 B</td>
+<td style="text-align: right;">1.000</td>
 </tr>
 <tr>
 <td></td>
 <td></td>
+<td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
 <td style="text-align: right;"></td>
@@ -862,71 +644,76 @@ dotnet run -c Bench
 <tr>
 <td>SparseBufferWriter<byte></byte></td>
 <td>1000000</td>
-<td style="text-align: right;">50,406.77 ns</td>
-<td style="text-align: right;">994.858 ns</td>
-<td style="text-align: right;">1,916.754 ns</td>
-<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">14,920.93 ns</td>
+<td style="text-align: right;">133.721 ns</td>
+<td style="text-align: right;">125.083 ns</td>
+<td style="text-align: right;">14,960.18 ns</td>
+<td style="text-align: right;">0.03</td>
 <td style="text-align: right;">0.00</td>
-<td style="text-align: right;">0.1831</td>
+<td style="text-align: right;">0.0305</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">640 B</td>
+<td style="text-align: right;">712 B</td>
 <td style="text-align: right;">0.000</td>
 </tr>
 <tr>
 <td>RecyclableMemoryStream</td>
 <td>1000000</td>
-<td style="text-align: right;">57,416.33 ns</td>
-<td style="text-align: right;">1,143.944 ns</td>
-<td style="text-align: right;">1,361.784 ns</td>
-<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">16,109.54 ns</td>
+<td style="text-align: right;">180.702 ns</td>
+<td style="text-align: right;">169.029 ns</td>
+<td style="text-align: right;">16,195.58 ns</td>
+<td style="text-align: right;">0.03</td>
 <td style="text-align: right;">0.00</td>
-<td style="text-align: right;">0.2441</td>
+<td style="text-align: right;">0.0305</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">896 B</td>
+<td style="text-align: right;">912 B</td>
 <td style="text-align: right;">0.000</td>
 </tr>
 <tr>
 <td>PoolingArrayBufferWriter<byte></byte></td>
 <td>1000000</td>
-<td style="text-align: right;">82,694.54 ns</td>
-<td style="text-align: right;">624.704 ns</td>
-<td style="text-align: right;">833.962 ns</td>
+<td style="text-align: right;">30,926.47 ns</td>
+<td style="text-align: right;">90.040 ns</td>
+<td style="text-align: right;">84.223 ns</td>
+<td style="text-align: right;">30,930.63 ns</td>
 <td style="text-align: right;">0.06</td>
 <td style="text-align: right;">0.00</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">248 B</td>
+<td style="text-align: right;">312 B</td>
 <td style="text-align: right;">0.000</td>
 </tr>
 <tr>
 <td>FileBufferingWriter</td>
 <td>1000000</td>
-<td style="text-align: right;">514,998.40 ns</td>
-<td style="text-align: right;">9,839.591 ns</td>
-<td style="text-align: right;">10,936.679 ns</td>
-<td style="text-align: right;">0.39</td>
-<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">214,754.04 ns</td>
+<td style="text-align: right;">2,851.151 ns</td>
+<td style="text-align: right;">2,666.968 ns</td>
+<td style="text-align: right;">215,879.67 ns</td>
+<td style="text-align: right;">0.43</td>
+<td style="text-align: right;">0.01</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
 <td style="text-align: right;">-</td>
-<td style="text-align: right;">569 B</td>
+<td style="text-align: right;">720 B</td>
 <td style="text-align: right;">0.000</td>
 </tr>
 <tr>
 <td>MemoryStream</td>
 <td>1000000</td>
-<td style="text-align: right;">1,299,526.59 ns</td>
-<td style="text-align: right;">24,277.962 ns</td>
-<td style="text-align: right;">39,204.383 ns</td>
+<td style="text-align: right;">495,234.77 ns</td>
+<td style="text-align: right;">1,822.148 ns</td>
+<td style="text-align: right;">1,704.438 ns</td>
+<td style="text-align: right;">494,392.89 ns</td>
 <td style="text-align: right;">1.00</td>
 <td style="text-align: right;">0.00</td>
-<td style="text-align: right;">498.0469</td>
-<td style="text-align: right;">498.0469</td>
-<td style="text-align: right;">498.0469</td>
-<td style="text-align: right;">2095745 B</td>
+<td style="text-align: right;">499.0234</td>
+<td style="text-align: right;">499.0234</td>
+<td style="text-align: right;">499.0234</td>
+<td style="text-align: right;">2095576 B</td>
 <td style="text-align: right;">1.000</td>
 </tr>
 </tbody>
@@ -945,39 +732,39 @@ dotnet run -c Bench
 <tbody>
 <tr>
 <td>'TypeMap, Set + TryGetValue'</td>
-<td style="text-align: right;">3.647 ns</td>
-<td style="text-align: right;">0.0260 ns</td>
-<td style="text-align: right;">0.0243 ns</td>
+<td style="text-align: right;">0.2688 ns</td>
+<td style="text-align: right;">0.0306 ns</td>
+<td style="text-align: right;">0.0286 ns</td>
 </tr>
 <tr>
 <td>'Dictionary, Set + TryGetValue'</td>
-<td style="text-align: right;">33.777 ns</td>
-<td style="text-align: right;">0.1140 ns</td>
-<td style="text-align: right;">0.1010 ns</td>
+<td style="text-align: right;">5.0933 ns</td>
+<td style="text-align: right;">0.1059 ns</td>
+<td style="text-align: right;">0.0990 ns</td>
 </tr>
 <tr>
 <td>'ConcurrentTypeMap, Set + TryGetValue'</td>
-<td style="text-align: right;">21.542 ns</td>
-<td style="text-align: right;">0.1108 ns</td>
-<td style="text-align: right;">0.0982 ns</td>
+<td style="text-align: right;">0.5913 ns</td>
+<td style="text-align: right;">0.0308 ns</td>
+<td style="text-align: right;">0.0288 ns</td>
 </tr>
 <tr>
 <td>'ConcurrentDictionary, Set + TryGetValue'</td>
-<td style="text-align: right;">59.608 ns</td>
-<td style="text-align: right;">0.3600 ns</td>
-<td style="text-align: right;">0.3191 ns</td>
+<td style="text-align: right;">14.2216 ns</td>
+<td style="text-align: right;">0.0417 ns</td>
+<td style="text-align: right;">0.0326 ns</td>
 </tr>
 <tr>
 <td>'ConcurrentTypeMap, GetOrAdd'</td>
-<td style="text-align: right;">10.249 ns</td>
-<td style="text-align: right;">0.0435 ns</td>
-<td style="text-align: right;">0.0407 ns</td>
+<td style="text-align: right;">0.2125 ns</td>
+<td style="text-align: right;">0.0148 ns</td>
+<td style="text-align: right;">0.0139 ns</td>
 </tr>
 <tr>
 <td>'ConcurrentDictionary, GetOrAdd'</td>
-<td style="text-align: right;">16.019 ns</td>
-<td style="text-align: right;">0.0739 ns</td>
-<td style="text-align: right;">0.0692 ns</td>
+<td style="text-align: right;">2.1270 ns</td>
+<td style="text-align: right;">0.0064 ns</td>
+<td style="text-align: right;">0.0054 ns</td>
 </tr>
 </tbody>
 </table>
@@ -987,7 +774,7 @@ dotnet run -c Bench
 <thead>
 <tr>
 <th>Method</th>
-<th>Number of input tasks</th>
+<th>iterations</th>
 <th style="text-align: right;">Mean</th>
 <th style="text-align: right;">Error</th>
 <th style="text-align: right;">StdDev</th>
@@ -999,20 +786,20 @@ dotnet run -c Bench
 <tr>
 <td>ProduceConsumeCompletionPipe</td>
 <td>10</td>
-<td style="text-align: right;">9.420 us</td>
-<td style="text-align: right;">0.0787 us</td>
-<td style="text-align: right;">0.0736 us</td>
-<td style="text-align: right;">0.65</td>
-<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">7.656 us</td>
+<td style="text-align: right;">0.0617 us</td>
+<td style="text-align: right;">0.0577 us</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">0.01</td>
 </tr>
 <tr>
 <td>ProduceConsumeUnboundedChannel</td>
 <td>10</td>
-<td style="text-align: right;">14.449 us</td>
-<td style="text-align: right;">0.2887 us</td>
-<td style="text-align: right;">0.3651 us</td>
+<td style="text-align: right;">10.713 us</td>
+<td style="text-align: right;">0.2125 us</td>
+<td style="text-align: right;">0.2087 us</td>
 <td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.03</td>
 </tr>
 <tr>
 <td></td>
@@ -1026,20 +813,20 @@ dotnet run -c Bench
 <tr>
 <td>ProduceConsumeCompletionPipe</td>
 <td>100</td>
-<td style="text-align: right;">75.802 us</td>
-<td style="text-align: right;">1.4586 us</td>
-<td style="text-align: right;">1.4326 us</td>
-<td style="text-align: right;">0.62</td>
-<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">70.826 us</td>
+<td style="text-align: right;">1.1429 us</td>
+<td style="text-align: right;">1.0131 us</td>
+<td style="text-align: right;">0.93</td>
+<td style="text-align: right;">0.02</td>
 </tr>
 <tr>
 <td>ProduceConsumeUnboundedChannel</td>
 <td>100</td>
-<td style="text-align: right;">123.375 us</td>
-<td style="text-align: right;">0.7581 us</td>
-<td style="text-align: right;">0.6720 us</td>
+<td style="text-align: right;">76.471 us</td>
+<td style="text-align: right;">1.4577 us</td>
+<td style="text-align: right;">1.4316 us</td>
 <td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.03</td>
 </tr>
 <tr>
 <td></td>
@@ -1053,20 +840,20 @@ dotnet run -c Bench
 <tr>
 <td>ProduceConsumeCompletionPipe</td>
 <td>1000</td>
-<td style="text-align: right;">707.746 us</td>
-<td style="text-align: right;">9.2224 us</td>
-<td style="text-align: right;">8.6266 us</td>
-<td style="text-align: right;">0.66</td>
+<td style="text-align: right;">695.160 us</td>
+<td style="text-align: right;">5.4029 us</td>
+<td style="text-align: right;">4.7895 us</td>
+<td style="text-align: right;">0.99</td>
 <td style="text-align: right;">0.01</td>
 </tr>
 <tr>
 <td>ProduceConsumeUnboundedChannel</td>
 <td>1000</td>
-<td style="text-align: right;">1,073.418 us</td>
-<td style="text-align: right;">5.2448 us</td>
-<td style="text-align: right;">4.9060 us</td>
+<td style="text-align: right;">702.587 us</td>
+<td style="text-align: right;">8.6315 us</td>
+<td style="text-align: right;">7.2077 us</td>
 <td style="text-align: right;">1.00</td>
-<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.01</td>
 </tr>
 </tbody>
 </table>

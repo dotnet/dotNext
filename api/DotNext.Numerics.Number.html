@@ -81,25 +81,25 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Numerics.html">Numerics</a></h6>
@@ -110,21 +110,18 @@
   </div>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_FromBits__1_System_ReadOnlySpan_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.FromBits%60%601(System.ReadOnlySpan%7BSystem.Boolean%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.BitVector.cs/#L53">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Numerics/Number.BitVector.cs">View Source</a>
   </span>
   <a id="DotNext_Numerics_Number_FromBits_" data-uid="DotNext.Numerics.Number.FromBits*"></a>
-  <h4 id="DotNext_Numerics_Number_FromBits__1_System_ReadOnlySpan_System_Boolean__" data-uid="DotNext.Numerics.Number.FromBits``1(System.ReadOnlySpan{System.Boolean})">FromBits&lt;TResult&gt;(ReadOnlySpan&lt;bool&gt;)</h4>
-  <div class="markdown level1 summary"><p>Converts bit vector to a value of type <code class="typeparamref">TResult</code>.</p>
+  <h4 id="DotNext_Numerics_Number_FromBits__1_System_ReadOnlySpan_System_Boolean__" data-uid="DotNext.Numerics.Number.FromBits``1(System.ReadOnlySpan{System.Boolean})">FromBits&lt;T&gt;(ReadOnlySpan&lt;bool&gt;)</h4>
+  <div class="markdown level1 summary"><p>Converts bit vector to a value of type <code class="typeparamref">T</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static TResult FromBits&lt;TResult&gt;(this ReadOnlySpan&lt;bool&gt; bits) where TResult : struct, INumber&lt;TResult&gt;, IBitwiseOperators&lt;TResult, TResult, TResult&gt;, IShiftOperators&lt;TResult, int, TResult&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static T FromBits&lt;T&gt;(ReadOnlySpan&lt;bool&gt; bits) where T : unmanaged, IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -154,8 +151,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">TResult</span></td>
-        <td><p>A value of type <code class="typeparamref">TResult</code> restored from the vector of bits.</p>
+        <td><span class="xref">T</span></td>
+        <td><p>A value of type <code class="typeparamref">T</code> restored from the vector of bits.</p>
 </td>
       </tr>
     </tbody>
@@ -170,18 +167,14 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">TResult</span></td>
-        <td><p>The type of the result.</p>
-</td>
+        <td><span class="parametername">T</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_GetBits__1___0_System_Span_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.GetBits%60%601(%60%600%2CSystem.Span%7BSystem.Boolean%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.BitVector.cs/#L74">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Numerics/Number.BitVector.cs">View Source</a>
   </span>
   <a id="DotNext_Numerics_Number_GetBits_" data-uid="DotNext.Numerics.Number.GetBits*"></a>
   <h4 id="DotNext_Numerics_Number_GetBits__1___0_System_Span_System_Boolean__" data-uid="DotNext.Numerics.Number.GetBits``1(``0,System.Span{System.Boolean})">GetBits&lt;T&gt;(T, Span&lt;bool&gt;)</h4>
@@ -190,7 +183,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void GetBits&lt;T&gt;(this T value, Span&lt;bool&gt; bits) where T : unmanaged, INumber&lt;T&gt;, IBitwiseOperators&lt;T, T, T&gt;, IShiftOperators&lt;T, int, T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static void GetBits&lt;T&gt;(this T number, Span&lt;bool&gt; bits) where T : unmanaged, IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -204,9 +197,8 @@
     <tbody>
       <tr>
         <td><span class="xref">T</span></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The value to convert.</p>
-</td>
+        <td><span class="parametername">number</span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a>&gt;</td>
@@ -227,8 +219,7 @@
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the value to convert.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -248,61 +239,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_GetMaxByteCount__1.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.GetMaxByteCount%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.cs/#L30">View Source</a>
-  </span>
-  <a id="DotNext_Numerics_Number_GetMaxByteCount_" data-uid="DotNext.Numerics.Number.GetMaxByteCount*"></a>
-  <h4 id="DotNext_Numerics_Number_GetMaxByteCount__1" data-uid="DotNext.Numerics.Number.GetMaxByteCount``1">GetMaxByteCount&lt;T&gt;()</h4>
-  <div class="markdown level1 summary"><p>Gets maximum number of bytes that can be used by <code class="typeparamref">T</code> type
-when encoded in little-endian or big-endian format.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int GetMaxByteCount&lt;T&gt;() where T : IBinaryInteger&lt;T&gt;</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><p>The maximum numbers bytes that can be occupied by the value of <code class="typeparamref">T</code>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The integer type to check.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_IsBitSet__1___0_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.IsBitSet%60%601(%60%600%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.BitVector.cs/#L19">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Numerics/Number.BitVector.cs">View Source</a>
   </span>
   <a id="DotNext_Numerics_Number_IsBitSet_" data-uid="DotNext.Numerics.Number.IsBitSet*"></a>
   <h4 id="DotNext_Numerics_Number_IsBitSet__1___0_System_Int32_" data-uid="DotNext.Numerics.Number.IsBitSet``1(``0,System.Int32)">IsBitSet&lt;T&gt;(T, int)</h4>
@@ -311,7 +250,7 @@ when encoded in little-endian or big-endian format.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool IsBitSet&lt;T&gt;(this T number, int position) where T : struct, INumber&lt;T&gt;, IBitwiseOperators&lt;T, T, T&gt;, IShiftOperators&lt;T, int, T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool IsBitSet&lt;T&gt;(this T number, int position) where T : unmanaged, IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -326,13 +265,12 @@ when encoded in little-endian or big-endian format.</p>
       <tr>
         <td><span class="xref">T</span></td>
         <td><span class="parametername">number</span></td>
-        <td><p>The number to inspect.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
         <td><span class="parametername">position</span></td>
-        <td><p>The position of the bit within <code class="paramref">number</code>.</p>
+        <td><p>The position of the bit within the receiver.</p>
 </td>
       </tr>
     </tbody>
@@ -364,8 +302,7 @@ when encoded in little-endian or big-endian format.</p>
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the number.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -385,143 +322,9 @@ when encoded in little-endian or big-endian format.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_IsPrime__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.IsPrime%60%601(%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.cs/#L111">View Source</a>
-  </span>
-  <a id="DotNext_Numerics_Number_IsPrime_" data-uid="DotNext.Numerics.Number.IsPrime*"></a>
-  <h4 id="DotNext_Numerics_Number_IsPrime__1___0_" data-uid="DotNext.Numerics.Number.IsPrime``1(``0)">IsPrime&lt;T&gt;(T)</h4>
-  <div class="markdown level1 summary"><p>Determines whether the specified value is a prime number.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool IsPrime&lt;T&gt;(this T value) where T : struct, IBinaryNumber&lt;T&gt;, ISignedNumber&lt;T&gt;, IShiftOperators&lt;T, int, T&gt;</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The value to check.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if <code class="paramref">value</code> is a prime number; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The integer type.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">value</code> is negative or zero.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_IsSigned__1.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.IsSigned%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.cs/#L20">View Source</a>
-  </span>
-  <a id="DotNext_Numerics_Number_IsSigned_" data-uid="DotNext.Numerics.Number.IsSigned*"></a>
-  <h4 id="DotNext_Numerics_Number_IsSigned__1" data-uid="DotNext.Numerics.Number.IsSigned``1">IsSigned&lt;T&gt;()</h4>
-  <div class="markdown level1 summary"><p>Determines whether the specified numeric type is signed.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool IsSigned&lt;T&gt;() where T : INumberBase&lt;T&gt;</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if <code class="typeparamref">T</code> is a signed numeric type;
-otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type to check.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_Normalize_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.Normalize(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.cs/#L101">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Numerics/Number.cs">View Source</a>
   </span>
   <a id="DotNext_Numerics_Number_Normalize_" data-uid="DotNext.Numerics.Number.Normalize*"></a>
   <h4 id="DotNext_Numerics_Number_Normalize_System_Int32_" data-uid="DotNext.Numerics.Number.Normalize(System.Int32)">Normalize(int)</h4>
@@ -566,12 +369,9 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_Normalize_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.Normalize(System.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.cs/#L80">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Numerics/Number.cs">View Source</a>
   </span>
   <a id="DotNext_Numerics_Number_Normalize_" data-uid="DotNext.Numerics.Number.Normalize*"></a>
   <h4 id="DotNext_Numerics_Number_Normalize_System_Int64_" data-uid="DotNext.Numerics.Number.Normalize(System.Int64)">Normalize(long)</h4>
@@ -616,12 +416,9 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_Normalize_System_UInt32_.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.Normalize(System.UInt32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.cs/#L88">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Numerics/Number.cs">View Source</a>
   </span>
   <a id="DotNext_Numerics_Number_Normalize_" data-uid="DotNext.Numerics.Number.Normalize*"></a>
   <h4 id="DotNext_Numerics_Number_Normalize_System_UInt32_" data-uid="DotNext.Numerics.Number.Normalize(System.UInt32)">Normalize(uint)</h4>
@@ -667,12 +464,9 @@ public static float Normalize(this uint value)</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_Normalize_System_UInt64_.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.Normalize(System.UInt64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.cs/#L67">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Numerics/Number.cs">View Source</a>
   </span>
   <a id="DotNext_Numerics_Number_Normalize_" data-uid="DotNext.Numerics.Number.Normalize*"></a>
   <h4 id="DotNext_Numerics_Number_Normalize_System_UInt64_" data-uid="DotNext.Numerics.Number.Normalize(System.UInt64)">Normalize(ulong)</h4>
@@ -718,12 +512,9 @@ public static double Normalize(this ulong value)</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_Normalize__2___0___0___0_.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.Normalize%60%602(%60%600%2C%60%600%2C%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.cs/#L43">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Numerics/Number.cs">View Source</a>
   </span>
   <a id="DotNext_Numerics_Number_Normalize_" data-uid="DotNext.Numerics.Number.Normalize*"></a>
   <h4 id="DotNext_Numerics_Number_Normalize__2___0___0___0_" data-uid="DotNext.Numerics.Number.Normalize``2(``0,``0,``0)">Normalize&lt;TInput, TOutput&gt;(TInput, TInput, TInput)</h4>
@@ -801,12 +592,9 @@ public static double Normalize(this ulong value)</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_RoundDown__1___0___0_.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.RoundDown%60%601(%60%600%2C%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.cs/#L246">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Numerics/Number.cs">View Source</a>
   </span>
   <a id="DotNext_Numerics_Number_RoundDown_" data-uid="DotNext.Numerics.Number.RoundDown*"></a>
   <h4 id="DotNext_Numerics_Number_RoundDown__1___0___0_" data-uid="DotNext.Numerics.Number.RoundDown``1(``0,``0)">RoundDown&lt;T&gt;(T, T)</h4>
@@ -873,12 +661,9 @@ public static double Normalize(this ulong value)</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_RoundUp__1___0___0_.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.RoundUp%60%601(%60%600%2C%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.cs/#L232">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Numerics/Number.cs">View Source</a>
   </span>
   <a id="DotNext_Numerics_Number_RoundUp_" data-uid="DotNext.Numerics.Number.RoundUp*"></a>
   <h4 id="DotNext_Numerics_Number_RoundUp__1___0___0_" data-uid="DotNext.Numerics.Number.RoundUp``1(``0,``0)">RoundUp&lt;T&gt;(T, T)</h4>
@@ -945,12 +730,9 @@ public static double Normalize(this ulong value)</code></pre>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number_SetBit__1___0_System_Int32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number.SetBit%60%601(%60%600%2CSystem.Int32%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.BitVector.cs/#L36">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Numerics/Number.BitVector.cs">View Source</a>
   </span>
   <a id="DotNext_Numerics_Number_SetBit_" data-uid="DotNext.Numerics.Number.SetBit*"></a>
   <h4 id="DotNext_Numerics_Number_SetBit__1___0_System_Int32_System_Boolean_" data-uid="DotNext.Numerics.Number.SetBit``1(``0,System.Int32,System.Boolean)">SetBit&lt;T&gt;(T, int, bool)</h4>
@@ -959,7 +741,7 @@ public static double Normalize(this ulong value)</code></pre>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static T SetBit&lt;T&gt;(this T number, int position, bool value) where T : struct, INumber&lt;T&gt;, IBitwiseOperators&lt;T, T, T&gt;, IShiftOperators&lt;T, int, T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public static T SetBit&lt;T&gt;(this T number, int position, bool value) where T : unmanaged, IBinaryInteger&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -974,8 +756,7 @@ public static double Normalize(this ulong value)</code></pre>
       <tr>
         <td><span class="xref">T</span></td>
         <td><span class="parametername">number</span></td>
-        <td><p>The number to modify.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
@@ -1018,8 +799,7 @@ public static double Normalize(this ulong value)</code></pre>
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the number.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -1040,6 +820,173 @@ public static double Normalize(this ulong value)</code></pre>
     </tbody>
   </table>
 
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Numerics/Number.cs">View Source</a>
+  </span>
+  <a id="DotNext_Numerics_Number_get_IsPrime_" data-uid="DotNext.Numerics.Number.get_IsPrime*"></a>
+  <h4 id="DotNext_Numerics_Number_get_IsPrime__1___0_" data-uid="DotNext.Numerics.Number.get_IsPrime``1(``0)">get_IsPrime&lt;T&gt;(T)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the specified value is a prime number.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool get_IsPrime&lt;T&gt;(T value) where T : struct, IBinaryNumber&lt;T&gt;, ISignedNumber&lt;T&gt;, IShiftOperators&lt;T, int, T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if <code class="paramref">value</code> is a prime number; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">value</code> is negative or zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Numerics/Number.cs">View Source</a>
+  </span>
+  <a id="DotNext_Numerics_Number_get_IsSigned_" data-uid="DotNext.Numerics.Number.get_IsSigned*"></a>
+  <h4 id="DotNext_Numerics_Number_get_IsSigned__1" data-uid="DotNext.Numerics.Number.get_IsSigned``1">get_IsSigned&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Determines whether the specified numeric type is signed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool get_IsSigned&lt;T&gt;() where T : INumberBase&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if <code class="typeparamref">T</code> is a signed numeric type;
+otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Numerics/Number.cs">View Source</a>
+  </span>
+  <a id="DotNext_Numerics_Number_get_MaxByteCount_" data-uid="DotNext.Numerics.Number.get_MaxByteCount*"></a>
+  <h4 id="DotNext_Numerics_Number_get_MaxByteCount__1" data-uid="DotNext.Numerics.Number.get_MaxByteCount``1">get_MaxByteCount&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Gets maximum number of bytes that can be used by <code class="typeparamref">T</code> type
+when encoded in little-endian or big-endian format.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int get_MaxByteCount&lt;T&gt;() where T : IBinaryInteger&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td><p>The maximum numbers bytes that can be occupied by the value of <code class="typeparamref">T</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
 </article>
           </div>
 
@@ -1048,10 +995,7 @@ public static double Normalize(this ulong value)</code></pre>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Numerics_Number.md&amp;value=---%0Auid%3A%20DotNext.Numerics.Number%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Numerics/Number.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Numerics/Number.BitVector.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

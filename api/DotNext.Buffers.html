@@ -95,9 +95,6 @@ Classes
       <h4><a class="xref" href="DotNext.Buffers.PoolingBufferWriter-1.html">PoolingBufferWriter&lt;T&gt;</a></h4>
       <section><p>Represents memory writer that uses pooled memory.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Buffers.ReadOnlySequencePartitioner.html">ReadOnlySequencePartitioner</a></h4>
-      <section><p>Represents factory of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.concurrent.partitioner-1">Partitioner&lt;TSource&gt;</a> objects for <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a>.</p>
-</section>
       <h4><a class="xref" href="DotNext.Buffers.SequenceBuilder-1.html">SequenceBuilder&lt;T&gt;</a></h4>
       <section><p>Represents builder of non-contiguous memory buffer.</p>
 </section>
@@ -113,23 +110,34 @@ Classes
     <h3 id="structs">
 Structs
 </h3>
-      <h4><a class="xref" href="DotNext.Buffers.BufferConsumer-1.html">BufferConsumer&lt;T&gt;</a></h4>
-      <section><p>Represents implementation of <a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer&lt;T&gt;</a>
-in the form of the writer to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a>.</p>
+      <h4><a class="xref" href="DotNext.Buffers.BufferWriterReference-1.html">BufferWriterReference&lt;T&gt;</a></h4>
+      <section><p>Represents indirection layer for <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a> instance.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.BufferWriterSlim-1.html">BufferWriterSlim&lt;T&gt;</a></h4>
       <section><p>Represents stack-allocated buffer writer.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Buffers.DelegatingReadOnlySpanConsumer-2.html">DelegatingReadOnlySpanConsumer&lt;T, TArg&gt;</a></h4>
-      <section><p>Represents implementation of <a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer&lt;T&gt;</a> that delegates
-invocation to the delegate of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlyspanaction-2">ReadOnlySpanAction&lt;T, TArg&gt;</a>.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner&lt;T&gt;</a></h4>
       <section><p>Represents unified representation of the memory rented using various
 types of memory pools.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Buffers.ReadOnlySpanConsumer-2.html">ReadOnlySpanConsumer&lt;T, TArg&gt;</a></h4>
-      <section><p>Represents typed function pointer implementing <a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer&lt;T&gt;</a>.</p>
+      <h4><a class="xref" href="DotNext.Buffers.ReadOnlySpanConsumer-2.html">ReadOnlySpanConsumer&lt;T, TContext&gt;</a></h4>
+      <section><p>Represents implementation of <a class="xref" href="DotNext.IConsumer-1.html">IConsumer&lt;T&gt;</a> and <a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a> interfaces
+that delegates invocation to the delegate of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlyspanaction-2">ReadOnlySpanAction&lt;T, TArg&gt;</a>.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Buffers.SequenceReader.html">SequenceReader</a></h4>
+      <section><p>Represents binary reader for the sequence of bytes.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Buffers.SequenceReader.DecodingEnumerable.html">SequenceReader.DecodingEnumerable</a></h4>
+      <section><p>Represents decoding enumerable.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Buffers.SequenceReader.DecodingEnumerable.Enumerator.html">SequenceReader.DecodingEnumerable.Enumerator</a></h4>
+      <section><p>Represents enumerator over decoded characters.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Buffers.SequenceReader.SpanDecodingEnumerable.html">SequenceReader.SpanDecodingEnumerable</a></h4>
+      <section><p>Represents decoding enumerable.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Buffers.SequenceReader.SpanDecodingEnumerable.Enumerator.html">SequenceReader.SpanDecodingEnumerable.Enumerator</a></h4>
+      <section><p>Represents enumerator over decoded characters.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.SpanOwner-1.html">SpanOwner&lt;T&gt;</a></h4>
       <section><p>Represents the memory obtained from the pool or allocated
@@ -150,24 +158,11 @@ Interfaces
       <h4><a class="xref" href="DotNext.Buffers.IBufferReader.html">IBufferReader</a></h4>
       <section><p>Represents buffer reader.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Buffers.IBufferedChannel.html">IBufferedChannel</a></h4>
-      <section><p>Represents buffered reader or writer.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Buffers.IBufferedReader.html">IBufferedReader</a></h4>
-      <section><p>Represents buffered reader.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Buffers.IBufferedWriter.html">IBufferedWriter</a></h4>
-      <section><p>Represents the buffered writer.</p>
-</section>
       <h4><a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer&lt;T&gt;</a></h4>
       <section><p>Represents common interface for growable buffer writers.</p>
 </section>
       <h4><a class="xref" href="DotNext.Buffers.IReadOnlySequenceSource-1.html">IReadOnlySequenceSource&lt;T&gt;</a></h4>
       <section><p>Represents disposable source of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a>.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer&lt;T&gt;</a></h4>
-      <section><p>Represents functional interface returning no value
-and accepting the single argument of type <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan&lt;T&gt;</a>.</p>
 </section>
     <h3 id="enums">
 Enums
@@ -180,10 +175,6 @@ Delegates
 </h3>
       <h4><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator&lt;T&gt;</a></h4>
       <section><p>Represents memory allocator.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Buffers.ReadOnlySpanFunc-3.html">ReadOnlySpanFunc&lt;T, TArg, TResult&gt;</a></h4>
-      <section><p>Represents <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlyspanaction-2">ReadOnlySpanAction&lt;T, TArg&gt;</a> counterpart
-with return value.</p>
 </section>
 
 

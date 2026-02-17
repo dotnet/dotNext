@@ -79,22 +79,16 @@ interface.</p>
     <div><a class="xref" href="DotNext.Runtime.Serialization.ISerializable-1.html">ISerializable</a>&lt;<a class="xref" href="DotNext.Text.Json.JsonSerializable-1.html">JsonSerializable</a>&lt;T&gt;&gt;</div>
     <div><a class="xref" href="DotNext.IO.IDataTransferObject.html">IDataTransferObject</a></div>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;T&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;T&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Text.Json.JsonSerializable-1.html">JsonSerializable</a>&lt;T&gt;&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals">ValueType.Equals(object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
@@ -104,7 +98,7 @@ interface.</p>
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_Text_Json_JsonSerializable_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public record struct JsonSerializable&lt;T&gt; : ISerializable&lt;JsonSerializable&lt;T&gt;&gt;, IDataTransferObject, ISupplier&lt;T?&gt;, IFunctional&lt;Func&lt;T?&gt;&gt;, IEquatable&lt;JsonSerializable&lt;T&gt;&gt; where T : IJsonSerializable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public struct JsonSerializable&lt;T&gt; : ISerializable&lt;JsonSerializable&lt;T&gt;&gt;, IDataTransferObject, ISupplier&lt;T?&gt;, IFunctional, IEquatable&lt;JsonSerializable&lt;T&gt;&gt; where T : IJsonSerializable&lt;T&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -124,12 +118,9 @@ interface.</p>
   </table>
   <h3 id="fields">Fields
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Text_Json_JsonSerializable_1_Value.md&amp;value=---%0Auid%3A%20DotNext.Text.Json.JsonSerializable%601.Value%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Text/Json/JsonSerializable.cs/#L23">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/Text/Json/JsonSerializable.cs">View Source</a>
   </span>
   <h4 id="DotNext_Text_Json_JsonSerializable_1_Value" data-uid="DotNext.Text.Json.JsonSerializable`1.Value">Value</h4>
   <div class="markdown level1 summary"><p>Represents JSON serializable object.</p>
@@ -156,12 +147,9 @@ interface.</p>
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Text_Json_JsonSerializable_1_DeserializeAsync__1___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Text.Json.JsonSerializable%601.DeserializeAsync%60%601(%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Text/Json/JsonSerializable.cs/#L99">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/Text/Json/JsonSerializable.cs">View Source</a>
   </span>
   <a id="DotNext_Text_Json_JsonSerializable_1_DeserializeAsync_" data-uid="DotNext.Text.Json.JsonSerializable`1.DeserializeAsync*"></a>
   <h4 id="DotNext_Text_Json_JsonSerializable_1_DeserializeAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Text.Json.JsonSerializable`1.DeserializeAsync``1(``0,System.Threading.CancellationToken)">DeserializeAsync&lt;TReader&gt;(TReader, CancellationToken)</h4>
@@ -229,21 +217,17 @@ The input will be read to completion.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Text_Json_JsonSerializable_1_ReadFromAsync__1___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Text.Json.JsonSerializable%601.ReadFromAsync%60%601(%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/Text/Json/JsonSerializable.cs">View Source</a>
   </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Text/Json/JsonSerializable.cs/#L159">View Source</a>
-  </span>
-  <a id="DotNext_Text_Json_JsonSerializable_1_ReadFromAsync_" data-uid="DotNext.Text.Json.JsonSerializable`1.ReadFromAsync*"></a>
-  <h4 id="DotNext_Text_Json_JsonSerializable_1_ReadFromAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Text.Json.JsonSerializable`1.ReadFromAsync``1(``0,System.Threading.CancellationToken)">ReadFromAsync&lt;TReader&gt;(TReader, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Decodes the object of type <code class="typeparamref">TSelf</code> from its binary representation.</p>
-</div>
+  <a id="DotNext_Text_Json_JsonSerializable_1_Equals_" data-uid="DotNext.Text.Json.JsonSerializable`1.Equals*"></a>
+  <h4 id="DotNext_Text_Json_JsonSerializable_1_Equals_DotNext_Text_Json_JsonSerializable__0__" data-uid="DotNext.Text.Json.JsonSerializable`1.Equals(DotNext.Text.Json.JsonSerializable{`0})">Equals(JsonSerializable&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;JsonSerializable&lt;T&gt;&gt; ReadFromAsync&lt;TReader&gt;(TReader reader, CancellationToken token = default) where TReader : IAsyncBinaryReader</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly bool Equals(JsonSerializable&lt;T&gt; other)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -256,16 +240,9 @@ The input will be read to completion.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">TReader</span></td>
-        <td><span class="parametername">reader</span></td>
-        <td><p>The reader.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
+        <td><a class="xref" href="DotNext.Text.Json.JsonSerializable-1.html">JsonSerializable</a>&lt;T&gt;</td>
+        <td><span class="parametername">other</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -279,50 +256,89 @@ The input will be read to completion.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Text.Json.JsonSerializable-1.html">JsonSerializable</a>&lt;T&gt;&gt;</td>
-        <td><p>The decoded object.</p>
-</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 class="typeParameters">Type Parameters</h5>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/Text/Json/JsonSerializable.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_Json_JsonSerializable_1_Equals_" data-uid="DotNext.Text.Json.JsonSerializable`1.Equals*"></a>
+  <h4 id="DotNext_Text_Json_JsonSerializable_1_Equals_System_Object_" data-uid="DotNext.Text.Json.JsonSerializable`1.Equals(System.Object)">Equals(object)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override readonly bool Equals(object obj)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
     <thead>
       <tr>
+        <th>Type</th>
         <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">TReader</span></td>
-        <td><p>The type of the reader.</p>
-</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
+  <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Condition</th>
+        <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p>The operation has been canceled.</p>
-</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals">ValueType.Equals(object)</a></div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Text_Json_JsonSerializable_1_SerializeAsync__1___0__0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Text.Json.JsonSerializable%601.SerializeAsync%60%601(%60%600%2C%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/Text/Json/JsonSerializable.cs">View Source</a>
   </span>
+  <a id="DotNext_Text_Json_JsonSerializable_1_GetHashCode_" data-uid="DotNext.Text.Json.JsonSerializable`1.GetHashCode*"></a>
+  <h4 id="DotNext_Text_Json_JsonSerializable_1_GetHashCode" data-uid="DotNext.Text.Json.JsonSerializable`1.GetHashCode">GetHashCode()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override readonly int GetHashCode()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a></div>
+
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Text/Json/JsonSerializable.cs/#L39">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/Text/Json/JsonSerializable.cs">View Source</a>
   </span>
   <a id="DotNext_Text_Json_JsonSerializable_1_SerializeAsync_" data-uid="DotNext.Text.Json.JsonSerializable`1.SerializeAsync*"></a>
   <h4 id="DotNext_Text_Json_JsonSerializable_1_SerializeAsync__1___0__0_System_Threading_CancellationToken_" data-uid="DotNext.Text.Json.JsonSerializable`1.SerializeAsync``1(``0,`0,System.Threading.CancellationToken)">SerializeAsync&lt;TWriter&gt;(TWriter, T?, CancellationToken)</h4>
@@ -395,17 +411,13 @@ The input will be read to completion.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Text_Json_JsonSerializable_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Text.Json.JsonSerializable%601.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Text/Json/JsonSerializable.cs/#L164">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/Text/Json/JsonSerializable.cs">View Source</a>
   </span>
   <a id="DotNext_Text_Json_JsonSerializable_1_ToString_" data-uid="DotNext.Text.Json.JsonSerializable`1.ToString*"></a>
   <h4 id="DotNext_Text_Json_JsonSerializable_1_ToString" data-uid="DotNext.Text.Json.JsonSerializable`1.ToString">ToString()</h4>
-  <div class="markdown level1 summary"><p>Returns the fully qualified type name of this instance.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
@@ -422,19 +434,15 @@ The input will be read to completion.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><p>The fully qualified type name.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a></div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Text_Json_JsonSerializable_1_TransformAsync__1___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Text.Json.JsonSerializable%601.TransformAsync%60%601(%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Text/Json/JsonSerializable.cs/#L154">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/Text/Json/JsonSerializable.cs">View Source</a>
   </span>
   <a id="DotNext_Text_Json_JsonSerializable_1_TransformAsync_" data-uid="DotNext.Text.Json.JsonSerializable`1.TransformAsync*"></a>
   <h4 id="DotNext_Text_Json_JsonSerializable_1_TransformAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Text.Json.JsonSerializable`1.TransformAsync``1(``0,System.Threading.CancellationToken)">TransformAsync&lt;TInput&gt;(TInput, CancellationToken)</h4>
@@ -517,6 +525,193 @@ The input will be read to completion.</p>
       </tr>
     </tbody>
   </table>
+  <h3 id="operators">Operators
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/Text/Json/JsonSerializable.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_Json_JsonSerializable_1_op_Equality_" data-uid="DotNext.Text.Json.JsonSerializable`1.op_Equality*"></a>
+  <h4 id="DotNext_Text_Json_JsonSerializable_1_op_Equality_DotNext_Text_Json_JsonSerializable__0__DotNext_Text_Json_JsonSerializable__0__" data-uid="DotNext.Text.Json.JsonSerializable`1.op_Equality(DotNext.Text.Json.JsonSerializable{`0},DotNext.Text.Json.JsonSerializable{`0})">operator ==(JsonSerializable&lt;T&gt;, JsonSerializable&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator ==(JsonSerializable&lt;T&gt; left, JsonSerializable&lt;T&gt; right)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.Json.JsonSerializable-1.html">JsonSerializable</a>&lt;T&gt;</td>
+        <td><span class="parametername">left</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.Json.JsonSerializable-1.html">JsonSerializable</a>&lt;T&gt;</td>
+        <td><span class="parametername">right</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/Text/Json/JsonSerializable.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_Json_JsonSerializable_1_op_Inequality_" data-uid="DotNext.Text.Json.JsonSerializable`1.op_Inequality*"></a>
+  <h4 id="DotNext_Text_Json_JsonSerializable_1_op_Inequality_DotNext_Text_Json_JsonSerializable__0__DotNext_Text_Json_JsonSerializable__0__" data-uid="DotNext.Text.Json.JsonSerializable`1.op_Inequality(DotNext.Text.Json.JsonSerializable{`0},DotNext.Text.Json.JsonSerializable{`0})">operator !=(JsonSerializable&lt;T&gt;, JsonSerializable&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator !=(JsonSerializable&lt;T&gt; left, JsonSerializable&lt;T&gt; right)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.Json.JsonSerializable-1.html">JsonSerializable</a>&lt;T&gt;</td>
+        <td><span class="parametername">left</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.Json.JsonSerializable-1.html">JsonSerializable</a>&lt;T&gt;</td>
+        <td><span class="parametername">right</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="eii">Explicit Interface Implementations
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/Text/Json/JsonSerializable.cs">View Source</a>
+  </span>
+  <a id="DotNext_Text_Json_JsonSerializable_1_ReadFromAsync_" data-uid="DotNext.Text.Json.JsonSerializable`1.ReadFromAsync*"></a>
+  <h4 id="DotNext_Text_Json_JsonSerializable_1_ReadFromAsync__1___0_System_Threading_CancellationToken_" data-uid="DotNext.Text.Json.JsonSerializable`1.ReadFromAsync``1(``0,System.Threading.CancellationToken)">ReadFromAsync&lt;TReader&gt;(TReader, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Decodes the object of type <code class="typeparamref">TSelf</code> from its binary representation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">static ValueTask&lt;JsonSerializable&lt;T&gt;&gt; ReadFromAsync&lt;TReader&gt;(TReader reader, CancellationToken token = default) where TReader : IAsyncBinaryReader</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TReader</span></td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Text.Json.JsonSerializable-1.html">JsonSerializable</a>&lt;T&gt;&gt;</td>
+        <td><p>The decoded object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TReader</span></td>
+        <td><p>The type of the reader.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.Runtime.Serialization.ISerializable-1.html">ISerializable&lt;TSelf&gt;</a>
@@ -528,7 +723,7 @@ The input will be read to completion.</p>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a>
   </div>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a>
@@ -538,13 +733,7 @@ The input will be read to completion.</p>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerator__2___0_System_Threading_CancellationToken_">Collection.ToAsyncEnumerator&lt;TEnumerator, T&gt;(TEnumerator, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToClassicEnumerator__2___0_">Collection.ToClassicEnumerator&lt;TEnumerator, T&gt;(TEnumerator)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
@@ -573,9 +762,6 @@ The input will be read to completion.</p>
   <div>
       <a class="xref" href="DotNext.IO.DataTransferObject.html#DotNext_IO_DataTransferObject_WriteToAsync__1___0_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">DataTransferObject.WriteToAsync&lt;TObject&gt;(TObject, Stream, Memory&lt;byte&gt;, CancellationToken)</a>
   </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
 
 </article>
           </div>
@@ -585,10 +771,7 @@ The input will be read to completion.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Text_Json_JsonSerializable_1.md&amp;value=---%0Auid%3A%20DotNext.Text.Json.JsonSerializable%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/Text/Json/JsonSerializable.cs/#L16" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/Text/Json/JsonSerializable.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -83,10 +83,13 @@ which is eligible for garbage collection in Generation 2 only.</p>
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.IOptionMonad-1.html">IOptionMonad</a>&lt;T&gt;</div>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a>&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
     </div>
@@ -94,20 +97,17 @@ which is eligible for garbage collection in Generation 2 only.</p>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Runtime.html">Runtime</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Runtime_SoftReference_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class SoftReference&lt;T&gt; : IOptionMonad&lt;T&gt;, ISupplier&lt;object?&gt;, IFunctional&lt;Func&lt;object?&gt;&gt; where T : class</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class SoftReference&lt;T&gt; : IOptionMonad&lt;T&gt;, ISupplier&lt;object?&gt;, IFunctional where T : class</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -133,12 +133,9 @@ All public instance members of this type are thread-safe.</p>
 </div>
   <h3 id="constructors">Constructors
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_SoftReference_1__ctor__0_DotNext_Runtime_SoftReferenceOptions_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.SoftReference%601.%23ctor(%600%2CDotNext.Runtime.SoftReferenceOptions)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L67">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/SoftReference.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_SoftReference_1__ctor_" data-uid="DotNext.Runtime.SoftReference`1.#ctor*"></a>
   <h4 id="DotNext_Runtime_SoftReference_1__ctor__0_DotNext_Runtime_SoftReferenceOptions_" data-uid="DotNext.Runtime.SoftReference`1.#ctor(`0,DotNext.Runtime.SoftReferenceOptions)">SoftReference(T?, SoftReferenceOptions?)</h4>
@@ -175,12 +172,9 @@ All public instance members of this type are thread-safe.</p>
   </table>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_SoftReference_1_TargetAndState.md&amp;value=---%0Auid%3A%20DotNext.Runtime.SoftReference%601.TargetAndState%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L132">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/SoftReference.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_SoftReference_1_TargetAndState_" data-uid="DotNext.Runtime.SoftReference`1.TargetAndState*"></a>
   <h4 id="DotNext_Runtime_SoftReference_1_TargetAndState" data-uid="DotNext.Runtime.SoftReference`1.TargetAndState">TargetAndState</h4>
@@ -212,12 +206,9 @@ or <a class="xref" href="DotNext.Runtime.SoftReferenceState.html#DotNext_Runtime
 </div>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_SoftReference_1_Clear.md&amp;value=---%0Auid%3A%20DotNext.Runtime.SoftReference%601.Clear%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L105">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/SoftReference.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_SoftReference_1_Clear_" data-uid="DotNext.Runtime.SoftReference`1.Clear*"></a>
   <h4 id="DotNext_Runtime_SoftReference_1_Clear" data-uid="DotNext.Runtime.SoftReference`1.Clear">Clear()</h4>
@@ -232,12 +223,9 @@ or <a class="xref" href="DotNext.Runtime.SoftReferenceState.html#DotNext_Runtime
   <div class="markdown level1 remarks"><p>This method stops tracking the referenced object. Thus, the object
 will be reclaimable by GC even if it is not reached Generation 2.</p>
 </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_SoftReference_1_Finalize.md&amp;value=---%0Auid%3A%20DotNext.Runtime.SoftReference%601.Finalize%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L200">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/SoftReference.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_SoftReference_1_Finalize_" data-uid="DotNext.Runtime.SoftReference`1.Finalize*"></a>
   <h4 id="DotNext_Runtime_SoftReference_1_Finalize" data-uid="DotNext.Runtime.SoftReference`1.Finalize">~SoftReference()</h4>
@@ -248,17 +236,13 @@ will be reclaimable by GC even if it is not reached Generation 2.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">protected ~SoftReference()</code></pre>
   </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_SoftReference_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Runtime.SoftReference%601.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L180">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/SoftReference.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_SoftReference_1_ToString_" data-uid="DotNext.Runtime.SoftReference`1.ToString*"></a>
   <h4 id="DotNext_Runtime_SoftReference_1_ToString" data-uid="DotNext.Runtime.SoftReference`1.ToString">ToString()</h4>
-  <div class="markdown level1 summary"><p>Returns a string that represents the current object.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
@@ -275,19 +259,15 @@ will be reclaimable by GC even if it is not reached Generation 2.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><p>A string that represents the current object.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a></div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_SoftReference_1_TryGetTarget.md&amp;value=---%0Auid%3A%20DotNext.Runtime.SoftReference%601.TryGetTarget%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L123">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/SoftReference.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_SoftReference_1_TryGetTarget_" data-uid="DotNext.Runtime.SoftReference`1.TryGetTarget*"></a>
   <h4 id="DotNext_Runtime_SoftReference_1_TryGetTarget" data-uid="DotNext.Runtime.SoftReference`1.TryGetTarget">TryGetTarget()</h4>
@@ -314,12 +294,9 @@ will be reclaimable by GC even if it is not reached Generation 2.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_SoftReference_1_TryGetTarget__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.SoftReference%601.TryGetTarget(%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L116">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/SoftReference.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_SoftReference_1_TryGetTarget_" data-uid="DotNext.Runtime.SoftReference`1.TryGetTarget*"></a>
   <h4 id="DotNext_Runtime_SoftReference_1_TryGetTarget__0__" data-uid="DotNext.Runtime.SoftReference`1.TryGetTarget(`0@)">TryGetTarget(out T?)</h4>
@@ -366,12 +343,9 @@ will be reclaimable by GC even if it is not reached Generation 2.</p>
   </table>
   <h3 id="operators">Operators
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_SoftReference_1_op_Explicit_DotNext_Runtime_SoftReference__0___DotNext_Optional__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.SoftReference%601.op_Explicit(DotNext.Runtime.SoftReference%7B%600%7D)~DotNext.Optional%7B%600%7D%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L194">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/SoftReference.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_SoftReference_1_op_Explicit_" data-uid="DotNext.Runtime.SoftReference`1.op_Explicit*"></a>
   <h4 id="DotNext_Runtime_SoftReference_1_op_Explicit_DotNext_Runtime_SoftReference__0___DotNext_Optional__0_" data-uid="DotNext.Runtime.SoftReference`1.op_Explicit(DotNext.Runtime.SoftReference{`0})~DotNext.Optional{`0}">explicit operator Optional&lt;T&gt;(SoftReference&lt;T&gt;?)</h4>
@@ -416,12 +390,9 @@ will be reclaimable by GC even if it is not reached Generation 2.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_SoftReference_1_op_Explicit_DotNext_Runtime_SoftReference__0____0.md&amp;value=---%0Auid%3A%20DotNext.Runtime.SoftReference%601.op_Explicit(DotNext.Runtime.SoftReference%7B%600%7D)~%600%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L187">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/SoftReference.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_SoftReference_1_op_Explicit_" data-uid="DotNext.Runtime.SoftReference`1.op_Explicit*"></a>
   <h4 id="DotNext_Runtime_SoftReference_1_op_Explicit_DotNext_Runtime_SoftReference__0____0" data-uid="DotNext.Runtime.SoftReference`1.op_Explicit(DotNext.Runtime.SoftReference{`0})~`0">explicit operator T?(SoftReference&lt;T&gt;?)</h4>
@@ -474,23 +445,17 @@ will be reclaimable by GC even if it is not reached Generation 2.</p>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
 
 </article>
@@ -501,10 +466,7 @@ will be reclaimable by GC even if it is not reached Generation 2.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_SoftReference_1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.SoftReference%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/SoftReference.cs/#L17" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/SoftReference.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -82,10 +82,10 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
@@ -115,12 +115,9 @@
   </table>
   <h3 id="constructors">Constructors
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1__ctor_System_ReadOnlySpan__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.%23ctor(System.ReadOnlySpan%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L23">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1__ctor_" data-uid="DotNext.Buffers.SpanReader`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1__ctor_System_ReadOnlySpan__0__" data-uid="DotNext.Buffers.SpanReader`1.#ctor(System.ReadOnlySpan{`0})">SpanReader(ReadOnlySpan&lt;T&gt;)</h4>
@@ -149,70 +146,11 @@
       </tr>
     </tbody>
   </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1__ctor__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.%23ctor(%600%40%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L35">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_SpanReader_1__ctor_" data-uid="DotNext.Buffers.SpanReader`1.#ctor*"></a>
-  <h4 id="DotNext_Buffers_SpanReader_1__ctor__0__System_Int32_" data-uid="DotNext.Buffers.SpanReader`1.#ctor(`0@,System.Int32)">SpanReader(ref T, int)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new memory reader.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public SpanReader(ref T reference, int length)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">reference</span></td>
-        <td><p>Managed pointer to the memory block.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>The length of the elements referenced by the pointer.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">length</code> is negative.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_ConsumedCount.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.ConsumedCount%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L72">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_ConsumedCount_" data-uid="DotNext.Buffers.SpanReader`1.ConsumedCount*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_ConsumedCount" data-uid="DotNext.Buffers.SpanReader`1.ConsumedCount">ConsumedCount</h4>
@@ -238,12 +176,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_ConsumedSpan.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.ConsumedSpan%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L96">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_ConsumedSpan_" data-uid="DotNext.Buffers.SpanReader`1.ConsumedSpan*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_ConsumedSpan" data-uid="DotNext.Buffers.SpanReader`1.ConsumedSpan">ConsumedSpan</h4>
@@ -269,12 +204,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_Current.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.Current%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L54">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_Current_" data-uid="DotNext.Buffers.SpanReader`1.Current*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_Current" data-uid="DotNext.Buffers.SpanReader`1.Current">Current</h4>
@@ -317,12 +249,9 @@ underlying memory block.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_RemainingCount.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.RemainingCount%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L86">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_RemainingCount_" data-uid="DotNext.Buffers.SpanReader`1.RemainingCount*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_RemainingCount" data-uid="DotNext.Buffers.SpanReader`1.RemainingCount">RemainingCount</h4>
@@ -348,12 +277,9 @@ underlying memory block.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_RemainingSpan.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.RemainingSpan%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L101">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_RemainingSpan_" data-uid="DotNext.Buffers.SpanReader`1.RemainingSpan*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_RemainingSpan" data-uid="DotNext.Buffers.SpanReader`1.RemainingSpan">RemainingSpan</h4>
@@ -379,12 +305,9 @@ underlying memory block.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_Span.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.Span%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L91">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_Span_" data-uid="DotNext.Buffers.SpanReader`1.Span*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_Span" data-uid="DotNext.Buffers.SpanReader`1.Span">Span</h4>
@@ -412,12 +335,9 @@ underlying memory block.</p>
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_Advance_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.Advance(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L109">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_Advance_" data-uid="DotNext.Buffers.SpanReader`1.Advance*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_Advance_System_Int32_" data-uid="DotNext.Buffers.SpanReader`1.Advance(System.Int32)">Advance(int)</h4>
@@ -462,12 +382,9 @@ underlying memory block.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_Read.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.Read%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L199">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_Read_" data-uid="DotNext.Buffers.SpanReader`1.Read*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_Read" data-uid="DotNext.Buffers.SpanReader`1.Read">Read()</h4>
@@ -510,12 +427,9 @@ underlying memory block.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_Read_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.Read(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L213">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_Read_" data-uid="DotNext.Buffers.SpanReader`1.Read*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_Read_System_Int32_" data-uid="DotNext.Buffers.SpanReader`1.Read(System.Int32)">Read(int)</h4>
@@ -576,12 +490,9 @@ underlying memory block.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_Read_System_Span__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.Read(System.Span%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L187">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_Read_" data-uid="DotNext.Buffers.SpanReader`1.Read*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_Read_System_Span__0__" data-uid="DotNext.Buffers.SpanReader`1.Read(System.Span{`0})">Read(scoped Span&lt;T&gt;)</h4>
@@ -626,12 +537,9 @@ underlying memory block.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_ReadToEnd.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.ReadToEnd%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L273">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_ReadToEnd_" data-uid="DotNext.Buffers.SpanReader`1.ReadToEnd*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_ReadToEnd" data-uid="DotNext.Buffers.SpanReader`1.ReadToEnd">ReadToEnd()</h4>
@@ -658,12 +566,9 @@ underlying memory block.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_Read__1__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.Read%60%601(%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L234">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_Read_" data-uid="DotNext.Buffers.SpanReader`1.Read*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_Read__1__System_Int32_" data-uid="DotNext.Buffers.SpanReader`1.Read``1(,System.Int32)">Read&lt;TResult&gt;(delegate*&lt;ReadOnlySpan&lt;T&gt;, TResult&gt;, int)</h4>
@@ -752,12 +657,9 @@ public TResult Read&lt;TResult&gt;(delegate*&lt;ReadOnlySpan&lt;T&gt;, TResult&g
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_Reset.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.Reset%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L131">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_Reset_" data-uid="DotNext.Buffers.SpanReader`1.Reset*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_Reset" data-uid="DotNext.Buffers.SpanReader`1.Reset">Reset()</h4>
@@ -768,12 +670,9 @@ public TResult Read&lt;TResult&gt;(delegate*&lt;ReadOnlySpan&lt;T&gt;, TResult&g
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Reset()</code></pre>
   </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_Rewind_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.Rewind(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L121">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_Rewind_" data-uid="DotNext.Buffers.SpanReader`1.Rewind*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_Rewind_System_Int32_" data-uid="DotNext.Buffers.SpanReader`1.Rewind(System.Int32)">Rewind(int)</h4>
@@ -818,12 +717,9 @@ public TResult Read&lt;TResult&gt;(delegate*&lt;ReadOnlySpan&lt;T&gt;, TResult&g
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L284">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_ToString_" data-uid="DotNext.Buffers.SpanReader`1.ToString*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_ToString" data-uid="DotNext.Buffers.SpanReader`1.ToString">ToString()</h4>
@@ -852,12 +748,9 @@ public TResult Read&lt;TResult&gt;(delegate*&lt;ReadOnlySpan&lt;T&gt;, TResult&g
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a></div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_TryRead_System_Int32_System_ReadOnlySpan__0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.TryRead(System.Int32%2CSystem.ReadOnlySpan%7B%600%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L148">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_TryRead_" data-uid="DotNext.Buffers.SpanReader`1.TryRead*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_TryRead_System_Int32_System_ReadOnlySpan__0___" data-uid="DotNext.Buffers.SpanReader`1.TryRead(System.Int32,System.ReadOnlySpan{`0}@)">TryRead(int, out ReadOnlySpan&lt;T&gt;)</h4>
@@ -924,12 +817,9 @@ public TResult Read&lt;TResult&gt;(delegate*&lt;ReadOnlySpan&lt;T&gt;, TResult&g
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_TryRead_System_Span__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.TryRead(System.Span%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L138">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_TryRead_" data-uid="DotNext.Buffers.SpanReader`1.TryRead*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_TryRead_System_Span__0__" data-uid="DotNext.Buffers.SpanReader`1.TryRead(System.Span{`0})">TryRead(scoped Span&lt;T&gt;)</h4>
@@ -974,12 +864,9 @@ public TResult Read&lt;TResult&gt;(delegate*&lt;ReadOnlySpan&lt;T&gt;, TResult&g
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_TryRead__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.TryRead(%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L170">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_TryRead_" data-uid="DotNext.Buffers.SpanReader`1.TryRead*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_TryRead__0__" data-uid="DotNext.Buffers.SpanReader`1.TryRead(`0@)">TryRead(out T)</h4>
@@ -1024,12 +911,9 @@ public TResult Read&lt;TResult&gt;(delegate*&lt;ReadOnlySpan&lt;T&gt;, TResult&g
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1_TryRead__1__System_Int32___0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601.TryRead%60%601(%2CSystem.Int32%2C%60%600%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L254">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SpanReader_1_TryRead_" data-uid="DotNext.Buffers.SpanReader`1.TryRead*"></a>
   <h4 id="DotNext_Buffers_SpanReader_1_TryRead__1__System_Int32___0__" data-uid="DotNext.Buffers.SpanReader`1.TryRead``1(,System.Int32,``0@)">TryRead&lt;TResult&gt;(delegate*&lt;ReadOnlySpan&lt;T&gt;, TResult&gt;, int, out TResult)</h4>
@@ -1119,6 +1003,13 @@ public bool TryRead&lt;TResult&gt;(delegate*&lt;ReadOnlySpan&lt;T&gt;, TResult&g
       </tr>
     </tbody>
   </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
+  </div>
 
 </article>
           </div>
@@ -1128,10 +1019,7 @@ public bool TryRead&lt;TResult&gt;(delegate*&lt;ReadOnlySpan&lt;T&gt;, TResult&g
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SpanReader_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SpanReader%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SpanReader.cs/#L12" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SpanReader.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

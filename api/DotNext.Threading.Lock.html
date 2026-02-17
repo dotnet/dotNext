@@ -81,10 +81,10 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
@@ -101,12 +101,9 @@
 </div>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_Acquire.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.Acquire%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L174">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_Acquire_" data-uid="DotNext.Threading.Lock.Acquire*"></a>
   <h4 id="DotNext_Threading_Lock_Acquire" data-uid="DotNext.Threading.Lock.Acquire">Acquire()</h4>
@@ -115,7 +112,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly Lock.Holder Acquire()</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly Lock.Scope Acquire()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-condensed">
@@ -127,18 +124,15 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a>.<a class="xref" href="DotNext.Threading.Lock.Holder.html">Holder</a></td>
+        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a>.<a class="xref" href="DotNext.Threading.Lock.Scope.html">Scope</a></td>
         <td><p>The holder of the acquired lock.</p>
 </td>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_Acquire_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.Acquire(System.TimeSpan)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L271">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_Acquire_" data-uid="DotNext.Threading.Lock.Acquire*"></a>
   <h4 id="DotNext_Threading_Lock_Acquire_System_TimeSpan_" data-uid="DotNext.Threading.Lock.Acquire(System.TimeSpan)">Acquire(TimeSpan)</h4>
@@ -147,7 +141,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly Lock.Holder Acquire(TimeSpan timeout)</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly Lock.Scope Acquire(TimeSpan timeout)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -177,7 +171,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a>.<a class="xref" href="DotNext.Threading.Lock.Holder.html">Holder</a></td>
+        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a>.<a class="xref" href="DotNext.Threading.Lock.Scope.html">Scope</a></td>
         <td><p>The holder of the acquired lock.</p>
 </td>
       </tr>
@@ -199,12 +193,357 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.Dispose%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.Acquisition.cs">View Source</a>
   </span>
+  <a id="DotNext_Threading_Lock_AcquireReadLock_" data-uid="DotNext.Threading.Lock.AcquireReadLock*"></a>
+  <h4 id="DotNext_Threading_Lock_AcquireReadLock_System_Object_" data-uid="DotNext.Threading.Lock.AcquireReadLock(System.Object)">AcquireReadLock(object)</h4>
+  <div class="markdown level1 summary"><p>Acquires read lock for the specified object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Lock.Scope AcquireReadLock(object obj)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object to be locked.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a>.<a class="xref" href="DotNext.Threading.Lock.Scope.html">Scope</a></td>
+        <td><p>The acquired read lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L282">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.Acquisition.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Lock_AcquireReadLock_" data-uid="DotNext.Threading.Lock.AcquireReadLock*"></a>
+  <h4 id="DotNext_Threading_Lock_AcquireReadLock_System_Object_System_TimeSpan_" data-uid="DotNext.Threading.Lock.AcquireReadLock(System.Object,System.TimeSpan)">AcquireReadLock(object, TimeSpan)</h4>
+  <div class="markdown level1 summary"><p>Acquires read lock for the specified object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Lock.Scope AcquireReadLock(object obj, TimeSpan timeout)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object to be locked.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The amount of time to wait for the lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a>.<a class="xref" href="DotNext.Threading.Lock.Scope.html">Scope</a></td>
+        <td><p>The acquired read lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>The lock cannot be acquired during the specified amount of time.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.Acquisition.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Lock_AcquireUpgradeableReadLock_" data-uid="DotNext.Threading.Lock.AcquireUpgradeableReadLock*"></a>
+  <h4 id="DotNext_Threading_Lock_AcquireUpgradeableReadLock_System_Object_" data-uid="DotNext.Threading.Lock.AcquireUpgradeableReadLock(System.Object)">AcquireUpgradeableReadLock(object)</h4>
+  <div class="markdown level1 summary"><p>Acquires upgradeable read lock for the specified object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Lock.Scope AcquireUpgradeableReadLock(object obj)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object to be locked.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a>.<a class="xref" href="DotNext.Threading.Lock.Scope.html">Scope</a></td>
+        <td><p>The acquired upgradeable read lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.Acquisition.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Lock_AcquireUpgradeableReadLock_" data-uid="DotNext.Threading.Lock.AcquireUpgradeableReadLock*"></a>
+  <h4 id="DotNext_Threading_Lock_AcquireUpgradeableReadLock_System_Object_System_TimeSpan_" data-uid="DotNext.Threading.Lock.AcquireUpgradeableReadLock(System.Object,System.TimeSpan)">AcquireUpgradeableReadLock(object, TimeSpan)</h4>
+  <div class="markdown level1 summary"><p>Acquires upgradeable read lock for the specified object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Lock.Scope AcquireUpgradeableReadLock(object obj, TimeSpan timeout)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object to be locked.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The amount of time to wait for the lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a>.<a class="xref" href="DotNext.Threading.Lock.Scope.html">Scope</a></td>
+        <td><p>The acquired upgradeable read lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>The lock cannot be acquired during the specified amount of time.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.Acquisition.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Lock_AcquireWriteLock_" data-uid="DotNext.Threading.Lock.AcquireWriteLock*"></a>
+  <h4 id="DotNext_Threading_Lock_AcquireWriteLock_System_Object_" data-uid="DotNext.Threading.Lock.AcquireWriteLock(System.Object)">AcquireWriteLock(object)</h4>
+  <div class="markdown level1 summary"><p>Acquires write lock for the specified object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Lock.Scope AcquireWriteLock(object obj)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object to be locked.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a>.<a class="xref" href="DotNext.Threading.Lock.Scope.html">Scope</a></td>
+        <td><p>The acquired write lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.Acquisition.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Lock_AcquireWriteLock_" data-uid="DotNext.Threading.Lock.AcquireWriteLock*"></a>
+  <h4 id="DotNext_Threading_Lock_AcquireWriteLock_System_Object_System_TimeSpan_" data-uid="DotNext.Threading.Lock.AcquireWriteLock(System.Object,System.TimeSpan)">AcquireWriteLock(object, TimeSpan)</h4>
+  <div class="markdown level1 summary"><p>Acquires write lock for the specified object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Lock.Scope AcquireWriteLock(object obj, TimeSpan timeout)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
+        <td><span class="parametername">obj</span></td>
+        <td><p>The object to be locked.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>The amount of time to wait for the lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a>.<a class="xref" href="DotNext.Threading.Lock.Scope.html">Scope</a></td>
+        <td><p>The acquired write lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>The lock cannot be acquired during the specified amount of time.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_Dispose_" data-uid="DotNext.Threading.Lock.Dispose*"></a>
   <h4 id="DotNext_Threading_Lock_Dispose" data-uid="DotNext.Threading.Lock.Dispose">Dispose()</h4>
@@ -220,12 +559,9 @@
 otherwise, the underlying lock object will not be destroyed.
 As a result, this lock is not usable after calling of this method.</p>
 </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_Equals_DotNext_Threading_Lock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.Equals(DotNext.Threading.Lock)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L297">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_Equals_" data-uid="DotNext.Threading.Lock.Equals*"></a>
   <h4 id="DotNext_Threading_Lock_Equals_DotNext_Threading_Lock_" data-uid="DotNext.Threading.Lock.Equals(DotNext.Threading.Lock)">Equals(Lock)</h4>
@@ -270,12 +606,9 @@ As a result, this lock is not usable after calling of this method.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.Equals(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L304">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_Equals_" data-uid="DotNext.Threading.Lock.Equals*"></a>
   <h4 id="DotNext_Threading_Lock_Equals_System_Object_" data-uid="DotNext.Threading.Lock.Equals(System.Object)">Equals(object?)</h4>
@@ -322,12 +655,88 @@ As a result, this lock is not usable after calling of this method.</p>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.equals">ValueType.Equals(object)</a></div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.GetHashCode%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
+  <a id="DotNext_Threading_Lock_ExclusiveLock_" data-uid="DotNext.Threading.Lock.ExclusiveLock*"></a>
+  <h4 id="DotNext_Threading_Lock_ExclusiveLock" data-uid="DotNext.Threading.Lock.ExclusiveLock">ExclusiveLock()</h4>
+  <div class="markdown level1 summary"><p>Creates exclusive lock.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Lock ExclusiveLock()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
+        <td><p>The exclusive lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Lock_ExclusiveLock_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Constructed lock owns the <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.lock">Lock</a> instance.</p>
+</div>
+
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L310">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Lock_ExclusiveLock_" data-uid="DotNext.Threading.Lock.ExclusiveLock*"></a>
+  <h4 id="DotNext_Threading_Lock_ExclusiveLock_System_Threading_Lock_" data-uid="DotNext.Threading.Lock.ExclusiveLock(System.Threading.Lock)">ExclusiveLock(Lock)</h4>
+  <div class="markdown level1 summary"><p>Creates exclusive lock.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Lock ExclusiveLock(Lock locker)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.lock">Lock</a></td>
+        <td><span class="parametername">locker</span></td>
+        <td><p>The locker object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
+        <td><p>The exclusive lock.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_GetHashCode_" data-uid="DotNext.Threading.Lock.GetHashCode*"></a>
   <h4 id="DotNext_Threading_Lock_GetHashCode" data-uid="DotNext.Threading.Lock.GetHashCode">GetHashCode()</h4>
@@ -356,12 +765,9 @@ As a result, this lock is not usable after calling of this method.</p>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a></div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_Monitor.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.Monitor%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L131">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_Monitor_" data-uid="DotNext.Threading.Lock.Monitor*"></a>
   <h4 id="DotNext_Threading_Lock_Monitor" data-uid="DotNext.Threading.Lock.Monitor">Monitor()</h4>
@@ -391,12 +797,9 @@ As a result, this lock is not usable after calling of this method.</p>
   <h5 id="DotNext_Threading_Lock_Monitor_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Constructed lock owns the object instance used as a monitor.</p>
 </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_Monitor_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.Monitor(System.Object)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L122">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_Monitor_" data-uid="DotNext.Threading.Lock.Monitor*"></a>
   <h4 id="DotNext_Threading_Lock_Monitor_System_Object_" data-uid="DotNext.Threading.Lock.Monitor(System.Object)">Monitor(object)</h4>
@@ -436,17 +839,14 @@ As a result, this lock is not usable after calling of this method.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></td>
-        <td><p>The lock representing monitor.</p>
+        <td><p>The lock representing the monitor.</p>
 </td>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_ReadLock_System_Threading_ReaderWriterLockSlim_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.ReadLock(System.Threading.ReaderWriterLockSlim%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L139">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_ReadLock_" data-uid="DotNext.Threading.Lock.ReadLock*"></a>
   <h4 id="DotNext_Threading_Lock_ReadLock_System_Threading_ReaderWriterLockSlim_System_Boolean_" data-uid="DotNext.Threading.Lock.ReadLock(System.Threading.ReaderWriterLockSlim,System.Boolean)">ReadLock(ReaderWriterLockSlim, bool)</h4>
@@ -497,12 +897,9 @@ As a result, this lock is not usable after calling of this method.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_Semaphore_System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.Semaphore(System.Int32%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L115">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_Semaphore_" data-uid="DotNext.Threading.Lock.Semaphore*"></a>
   <h4 id="DotNext_Threading_Lock_Semaphore_System_Int32_System_Int32_" data-uid="DotNext.Threading.Lock.Semaphore(System.Int32,System.Int32)">Semaphore(int, int)</h4>
@@ -556,12 +953,9 @@ As a result, this lock is not usable after calling of this method.</p>
   <h5 id="DotNext_Threading_Lock_Semaphore_System_Int32_System_Int32__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>Constructed lock owns the semaphore instance.</p>
 </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_Semaphore_System_Threading_SemaphoreSlim_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.Semaphore(System.Threading.SemaphoreSlim)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L104">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_Semaphore_" data-uid="DotNext.Threading.Lock.Semaphore*"></a>
   <h4 id="DotNext_Threading_Lock_Semaphore_System_Threading_SemaphoreSlim_" data-uid="DotNext.Threading.Lock.Semaphore(System.Threading.SemaphoreSlim)">Semaphore(SemaphoreSlim)</h4>
@@ -606,12 +1000,9 @@ As a result, this lock is not usable after calling of this method.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_ToString.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L316">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_ToString_" data-uid="DotNext.Threading.Lock.ToString*"></a>
   <h4 id="DotNext_Threading_Lock_ToString" data-uid="DotNext.Threading.Lock.ToString">ToString()</h4>
@@ -640,21 +1031,18 @@ As a result, this lock is not usable after calling of this method.</p>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a></div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_TryAcquire_DotNext_Threading_Lock_Holder__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.TryAcquire(DotNext.Threading.Lock.Holder%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L220">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_TryAcquire_" data-uid="DotNext.Threading.Lock.TryAcquire*"></a>
-  <h4 id="DotNext_Threading_Lock_TryAcquire_DotNext_Threading_Lock_Holder__" data-uid="DotNext.Threading.Lock.TryAcquire(DotNext.Threading.Lock.Holder@)">TryAcquire(out Holder)</h4>
+  <h4 id="DotNext_Threading_Lock_TryAcquire_DotNext_Threading_Lock_Scope__" data-uid="DotNext.Threading.Lock.TryAcquire(DotNext.Threading.Lock.Scope@)">TryAcquire(out Scope)</h4>
   <div class="markdown level1 summary"><p>Attempts to acquire lock.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly bool TryAcquire(out Lock.Holder holder)</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly bool TryAcquire(out Lock.Scope scope)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -667,8 +1055,8 @@ As a result, this lock is not usable after calling of this method.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a>.<a class="xref" href="DotNext.Threading.Lock.Holder.html">Holder</a></td>
-        <td><span class="parametername">holder</span></td>
+        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a>.<a class="xref" href="DotNext.Threading.Lock.Scope.html">Scope</a></td>
+        <td><span class="parametername">scope</span></td>
         <td><p>The lock holder that can be used to release acquired lock.</p>
 </td>
       </tr>
@@ -690,21 +1078,18 @@ As a result, this lock is not usable after calling of this method.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_TryAcquire_System_TimeSpan_DotNext_Threading_Lock_Holder__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.TryAcquire(System.TimeSpan%2CDotNext.Threading.Lock.Holder%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L253">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_TryAcquire_" data-uid="DotNext.Threading.Lock.TryAcquire*"></a>
-  <h4 id="DotNext_Threading_Lock_TryAcquire_System_TimeSpan_DotNext_Threading_Lock_Holder__" data-uid="DotNext.Threading.Lock.TryAcquire(System.TimeSpan,DotNext.Threading.Lock.Holder@)">TryAcquire(TimeSpan, out Holder)</h4>
+  <h4 id="DotNext_Threading_Lock_TryAcquire_System_TimeSpan_DotNext_Threading_Lock_Scope__" data-uid="DotNext.Threading.Lock.TryAcquire(System.TimeSpan,DotNext.Threading.Lock.Scope@)">TryAcquire(TimeSpan, out Scope)</h4>
   <div class="markdown level1 summary"><p>Attempts to acquire lock.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly bool TryAcquire(TimeSpan timeout, out Lock.Holder holder)</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly bool TryAcquire(TimeSpan timeout, out Lock.Scope scope)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -723,8 +1108,8 @@ As a result, this lock is not usable after calling of this method.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a>.<a class="xref" href="DotNext.Threading.Lock.Holder.html">Holder</a></td>
-        <td><span class="parametername">holder</span></td>
+        <td><a class="xref" href="DotNext.Threading.Lock.html">Lock</a>.<a class="xref" href="DotNext.Threading.Lock.Scope.html">Scope</a></td>
+        <td><span class="parametername">scope</span></td>
         <td><p>The lock holder that can be used to release acquired lock.</p>
 </td>
       </tr>
@@ -746,107 +1131,9 @@ As a result, this lock is not usable after calling of this method.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_TryEnterMonitor_System_Object_System_TimeSpan_System_Threading_CancellationToken_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.TryEnterMonitor(System.Object%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L350">View Source</a>
-  </span>
-  <a id="DotNext_Threading_Lock_TryEnterMonitor_" data-uid="DotNext.Threading.Lock.TryEnterMonitor*"></a>
-  <h4 id="DotNext_Threading_Lock_TryEnterMonitor_System_Object_System_TimeSpan_System_Threading_CancellationToken_System_Boolean_" data-uid="DotNext.Threading.Lock.TryEnterMonitor(System.Object,System.TimeSpan,System.Threading.CancellationToken,System.Boolean)">TryEnterMonitor(object, TimeSpan, CancellationToken, bool)</h4>
-  <div class="markdown level1 summary"><p>Tries to acquire an exclusive lock on the specified object with cancellation support.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool TryEnterMonitor(object obj, TimeSpan timeout, CancellationToken token, bool throwOnCancellation = false)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></td>
-        <td><span class="parametername">obj</span></td>
-        <td><p>The object on which to acquire the lock.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
-        <td><span class="parametername">timeout</span></td>
-        <td><p>Time to wait for the lock.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><span class="parametername">throwOnCancellation</span></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to throw <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a> if <code class="paramref">token</code> is canceled during the lock acquisition;
-<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to return <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the monitor acquired successfully; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if timeout occurred or <code class="paramref">token</code> canceled.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code class="paramref">obj</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p><code class="paramref">timeout</code> is invalid.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
-        <td><p><code class="paramref">token</code> interrupts lock acquisition and <code class="paramref">throwOnCancellation</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_WriteLock_System_Threading_ReaderWriterLockSlim_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.WriteLock(System.Threading.ReaderWriterLockSlim)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L147">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_WriteLock_" data-uid="DotNext.Threading.Lock.WriteLock*"></a>
   <h4 id="DotNext_Threading_Lock_WriteLock_System_Threading_ReaderWriterLockSlim_" data-uid="DotNext.Threading.Lock.WriteLock(System.Threading.ReaderWriterLockSlim)">WriteLock(ReaderWriterLockSlim)</h4>
@@ -893,12 +1180,9 @@ As a result, this lock is not usable after calling of this method.</p>
   </table>
   <h3 id="operators">Operators
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_op_Equality_DotNext_Threading_Lock__DotNext_Threading_Lock__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.op_Equality(DotNext.Threading.Lock%40%2CDotNext.Threading.Lock%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L324">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_op_Equality_" data-uid="DotNext.Threading.Lock.op_Equality*"></a>
   <h4 id="DotNext_Threading_Lock_op_Equality_DotNext_Threading_Lock__DotNext_Threading_Lock__" data-uid="DotNext.Threading.Lock.op_Equality(DotNext.Threading.Lock@,DotNext.Threading.Lock@)">operator ==(in Lock, in Lock)</h4>
@@ -949,12 +1233,9 @@ As a result, this lock is not usable after calling of this method.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock_op_Inequality_DotNext_Threading_Lock__DotNext_Threading_Lock__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock.op_Inequality(DotNext.Threading.Lock%40%2CDotNext.Threading.Lock%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L333">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Threading/Lock.cs">View Source</a>
   </span>
   <a id="DotNext_Threading_Lock_op_Inequality_" data-uid="DotNext.Threading.Lock.op_Inequality*"></a>
   <h4 id="DotNext_Threading_Lock_op_Inequality_DotNext_Threading_Lock__DotNext_Threading_Lock__" data-uid="DotNext.Threading.Lock.op_Inequality(DotNext.Threading.Lock@,DotNext.Threading.Lock@)">operator !=(in Lock, in Lock)</h4>
@@ -1017,19 +1298,10 @@ As a result, this lock is not usable after calling of this method.</p>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerator__2___0_System_Threading_CancellationToken_">Collection.ToAsyncEnumerator&lt;TEnumerator, T&gt;(TEnumerator, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToClassicEnumerator__2___0_">Collection.ToClassicEnumerator&lt;TEnumerator, T&gt;(TEnumerator)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
 
 </article>
@@ -1040,10 +1312,7 @@ As a result, this lock is not usable after calling of this method.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Threading_Lock.md&amp;value=---%0Auid%3A%20DotNext.Threading.Lock%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Threading/Lock.cs/#L14" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Result.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

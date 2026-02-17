@@ -81,25 +81,25 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.IO.html">IO</a>.<a class="xref" href="DotNext.IO.Pipelines.html">Pipelines</a></h6>
@@ -110,12 +110,84 @@
   </div>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_CopyFromAsync_System_IO_Pipelines_PipeWriter_System_IO_Stream_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.CopyFromAsync(System.IO.Pipelines.PipeWriter%2CSystem.IO.Stream%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs">View Source</a>
   </span>
+  <a id="DotNext_IO_Pipelines_PipeExtensions_AsStream_" data-uid="DotNext.IO.Pipelines.PipeExtensions.AsStream*"></a>
+  <h4 id="DotNext_IO_Pipelines_PipeExtensions_AsStream_System_IO_Pipelines_IDuplexPipe_System_Boolean_System_Boolean_" data-uid="DotNext.IO.Pipelines.PipeExtensions.AsStream(System.IO.Pipelines.IDuplexPipe,System.Boolean,System.Boolean)">AsStream(IDuplexPipe, bool, bool)</h4>
+  <div class="markdown level1 summary"><p>Creates a duplex stream suitable for reading and writing from the duplex pipe.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Stream AsStream(this IDuplexPipe pipe, bool leaveInputOpen = false, bool leaveOutputOpen = false)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.pipelines.iduplexpipe">IDuplexPipe</a></td>
+        <td><span class="parametername">pipe</span></td>
+        <td><p>The duplex pipe.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">leaveInputOpen</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to leave <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.pipelines.iduplexpipe.input">Input</a> available for reads; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">leaveOutputOpen</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to leave <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.pipelines.iduplexpipe.output">Output</a> available for writes; otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><p>The stream that can be used to read from and write to the pipe.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">pipe</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Writers.cs/#L38">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_CopyFromAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.CopyFromAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_CopyFromAsync_System_IO_Pipelines_PipeWriter_System_IO_Stream_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.CopyFromAsync(System.IO.Pipelines.PipeWriter,System.IO.Stream,System.Int64,System.Threading.CancellationToken)">CopyFromAsync(PipeWriter, Stream, long, CancellationToken)</h4>
@@ -204,12 +276,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_CopyToAsync__1_System_IO_Pipelines_PipeReader___0_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.CopyToAsync%60%601(System.IO.Pipelines.PipeReader%2C%60%600%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L353">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_CopyToAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.CopyToAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_CopyToAsync__1_System_IO_Pipelines_PipeReader___0_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.CopyToAsync``1(System.IO.Pipelines.PipeReader,``0,System.Int64,System.Threading.CancellationToken)">CopyToAsync&lt;TConsumer&gt;(PipeReader, TConsumer, long, CancellationToken)</h4>
@@ -304,12 +373,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_CopyToAsync__1_System_IO_Pipelines_PipeReader___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.CopyToAsync%60%601(System.IO.Pipelines.PipeReader%2C%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L334">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_CopyToAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.CopyToAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_CopyToAsync__1_System_IO_Pipelines_PipeReader___0_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.CopyToAsync``1(System.IO.Pipelines.PipeReader,``0,System.Threading.CancellationToken)">CopyToAsync&lt;TConsumer&gt;(PipeReader, TConsumer, CancellationToken)</h4>
@@ -398,12 +464,151 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_DecodeAsync_System_IO_Pipelines_PipeReader_DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.DecodeAsync(System.IO.Pipelines.PipeReader%2CDotNext.Text.DecodingContext%2CDotNext.IO.LengthFormat%2CDotNext.Buffers.MemoryAllocator%7BSystem.Char%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs">View Source</a>
   </span>
+  <a id="DotNext_IO_Pipelines_PipeExtensions_Create_" data-uid="DotNext.IO.Pipelines.PipeExtensions.Create*"></a>
+  <h4 id="DotNext_IO_Pipelines_PipeExtensions_Create_System_IO_Pipelines_PipeReader_" data-uid="DotNext.IO.Pipelines.PipeExtensions.Create(System.IO.Pipelines.PipeReader)">Create(PipeReader)</h4>
+  <div class="markdown level1 summary"><p>Creates default implementation of binary reader for the specified pipe reader.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IAsyncBinaryReader Create(PipeReader reader)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.pipelines.pipereader">PipeReader</a></td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The pipe reader.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a></td>
+        <td><p>The binary reader.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_IO_Pipelines_PipeExtensions_Create_System_IO_Pipelines_PipeReader__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>It is recommended to use extension methods from <a class="xref" href="DotNext.IO.Pipelines.PipeExtensions.html">PipeExtensions</a> class
+for decoding data from the stream. This method is intended for situation
+when you need an object implementing <a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a> interface.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">reader</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L173">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.cs">View Source</a>
+  </span>
+  <a id="DotNext_IO_Pipelines_PipeExtensions_Create_" data-uid="DotNext.IO.Pipelines.PipeExtensions.Create*"></a>
+  <h4 id="DotNext_IO_Pipelines_PipeExtensions_Create_System_IO_Pipelines_PipeWriter_System_Int64_" data-uid="DotNext.IO.Pipelines.PipeExtensions.Create(System.IO.Pipelines.PipeWriter,System.Int64)">Create(PipeWriter, long)</h4>
+  <div class="markdown level1 summary"><p>Creates default implementation of binary writer for the pipe.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IAsyncBinaryWriter Create(PipeWriter output, long bufferSize = 0)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a></td>
+        <td><span class="parametername">output</span></td>
+        <td><p>The stream instance.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></td>
+        <td><span class="parametername">bufferSize</span></td>
+        <td><p>The maximum numbers of bytes that can be buffered in the memory without flushing.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.IAsyncBinaryWriter.html">IAsyncBinaryWriter</a></td>
+        <td><p>The binary writer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code class="paramref">output</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code class="paramref">bufferSize</code> or is less than or equal to zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_DecodeAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.DecodeAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_DecodeAsync_System_IO_Pipelines_PipeReader_DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.DecodeAsync(System.IO.Pipelines.PipeReader,DotNext.Text.DecodingContext,DotNext.IO.LengthFormat,DotNext.Buffers.MemoryAllocator{System.Char},System.Threading.CancellationToken)">DecodeAsync(PipeReader, DecodingContext, LengthFormat, MemoryAllocator&lt;char&gt;?, CancellationToken)</h4>
@@ -466,7 +671,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;&gt;</td>
         <td><p>The buffer of characters.</p>
 </td>
       </tr>
@@ -498,12 +703,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_DecodeAsync_System_IO_Pipelines_PipeReader_DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_System_Memory_System_Char__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.DecodeAsync(System.IO.Pipelines.PipeReader%2CDotNext.Text.DecodingContext%2CDotNext.IO.LengthFormat%2CSystem.Memory%7BSystem.Char%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L203">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_DecodeAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.DecodeAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_DecodeAsync_System_IO_Pipelines_PipeReader_DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_System_Memory_System_Char__System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.DecodeAsync(System.IO.Pipelines.PipeReader,DotNext.Text.DecodingContext,DotNext.IO.LengthFormat,System.Memory{System.Char},System.Threading.CancellationToken)">DecodeAsync(PipeReader, DecodingContext, LengthFormat, Memory&lt;char&gt;, CancellationToken)</h4>
@@ -598,12 +800,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_ParseAsync__1_System_IO_Pipelines_PipeReader_DotNext_IO_LengthFormat_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ParseAsync%60%601(System.IO.Pipelines.PipeReader%2CDotNext.IO.LengthFormat%2CSystem.Globalization.NumberStyles%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L316">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ParseAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ParseAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ParseAsync__1_System_IO_Pipelines_PipeReader_DotNext_IO_LengthFormat_System_Globalization_NumberStyles_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ParseAsync``1(System.IO.Pipelines.PipeReader,DotNext.IO.LengthFormat,System.Globalization.NumberStyles,System.IFormatProvider,System.Threading.CancellationToken)">ParseAsync&lt;T&gt;(PipeReader, LengthFormat, NumberStyles, IFormatProvider?, CancellationToken)</h4>
@@ -714,12 +913,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_ParseAsync__1_System_IO_Pipelines_PipeReader_DotNext_IO_LengthFormat_System_IFormatProvider_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ParseAsync%60%601(System.IO.Pipelines.PipeReader%2CDotNext.IO.LengthFormat%2CSystem.IFormatProvider%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L299">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ParseAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ParseAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ParseAsync__1_System_IO_Pipelines_PipeReader_DotNext_IO_LengthFormat_System_IFormatProvider_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ParseAsync``1(System.IO.Pipelines.PipeReader,DotNext.IO.LengthFormat,System.IFormatProvider,System.Threading.CancellationToken)">ParseAsync&lt;T&gt;(PipeReader, LengthFormat, IFormatProvider?, CancellationToken)</h4>
@@ -824,21 +1020,18 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_ParseAsync__2_System_IO_Pipelines_PipeReader___0_DotNext_Buffers_ReadOnlySpanFunc_System_Char___0___1__DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ParseAsync%60%602(System.IO.Pipelines.PipeReader%2C%60%600%2CDotNext.Buffers.ReadOnlySpanFunc%7BSystem.Char%2C%60%600%2C%60%601%7D%2CDotNext.Text.DecodingContext%2CDotNext.IO.LengthFormat%2CDotNext.Buffers.MemoryAllocator%7BSystem.Char%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L234">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ParseAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ParseAsync*"></a>
-  <h4 id="DotNext_IO_Pipelines_PipeExtensions_ParseAsync__2_System_IO_Pipelines_PipeReader___0_DotNext_Buffers_ReadOnlySpanFunc_System_Char___0___1__DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ParseAsync``2(System.IO.Pipelines.PipeReader,``0,DotNext.Buffers.ReadOnlySpanFunc{System.Char,``0,``1},DotNext.Text.DecodingContext,DotNext.IO.LengthFormat,DotNext.Buffers.MemoryAllocator{System.Char},System.Threading.CancellationToken)">ParseAsync&lt;TArg, TResult&gt;(PipeReader, TArg, ReadOnlySpanFunc&lt;char, TArg, TResult&gt;, DecodingContext, LengthFormat, MemoryAllocator&lt;char&gt;?, CancellationToken)</h4>
+  <h4 id="DotNext_IO_Pipelines_PipeExtensions_ParseAsync__2_System_IO_Pipelines_PipeReader___0_System_Func_System_ReadOnlySpan_System_Char____0___1__DotNext_Text_DecodingContext_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Char__System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ParseAsync``2(System.IO.Pipelines.PipeReader,``0,System.Func{System.ReadOnlySpan{System.Char},``0,``1},DotNext.Text.DecodingContext,DotNext.IO.LengthFormat,DotNext.Buffers.MemoryAllocator{System.Char},System.Threading.CancellationToken)">ParseAsync&lt;TArg, TResult&gt;(PipeReader, TArg, Func&lt;ReadOnlySpan&lt;char&gt;, TArg, TResult&gt;, DecodingContext, LengthFormat, MemoryAllocator&lt;char&gt;?, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Parses the sequence of characters.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueTask&lt;TResult&gt; ParseAsync&lt;TArg, TResult&gt;(this PipeReader reader, TArg arg, ReadOnlySpanFunc&lt;char, TArg, TResult&gt; parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator&lt;char&gt;? allocator = null, CancellationToken token = default)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;TResult&gt; ParseAsync&lt;TArg, TResult&gt;(this PipeReader reader, TArg arg, Func&lt;ReadOnlySpan&lt;char&gt;, TArg, TResult&gt; parser, DecodingContext context, LengthFormat lengthFormat, MemoryAllocator&lt;char&gt;? allocator = null, CancellationToken token = default)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -863,7 +1056,7 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="DotNext.Buffers.ReadOnlySpanFunc-3.html">ReadOnlySpanFunc</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>, TArg, TResult&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;, TArg, TResult&gt;</td>
         <td><span class="parametername">parser</span></td>
         <td><p>The parser of characters.</p>
 </td>
@@ -962,12 +1155,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadAllAsync_System_IO_Pipelines_PipeReader_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadAllAsync(System.IO.Pipelines.PipeReader%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L544">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadAllAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadAllAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadAllAsync_System_IO_Pipelines_PipeReader_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadAllAsync(System.IO.Pipelines.PipeReader,System.Threading.CancellationToken)">ReadAllAsync(PipeReader, CancellationToken)</h4>
@@ -1034,12 +1224,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadAsync_System_IO_Pipelines_PipeReader_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadAsync(System.IO.Pipelines.PipeReader%2CDotNext.IO.LengthFormat%2CDotNext.Buffers.MemoryAllocator%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L457">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadAsync_System_IO_Pipelines_PipeReader_DotNext_IO_LengthFormat_DotNext_Buffers_MemoryAllocator_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadAsync(System.IO.Pipelines.PipeReader,DotNext.IO.LengthFormat,DotNext.Buffers.MemoryAllocator{System.Byte},System.Threading.CancellationToken)">ReadAsync(PipeReader, LengthFormat, MemoryAllocator&lt;byte&gt;?, CancellationToken)</h4>
@@ -1096,7 +1283,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;&gt;</td>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">MemoryOwner</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;&gt;</td>
         <td><p>The decoded block of bytes.</p>
 </td>
       </tr>
@@ -1123,12 +1310,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadAsync_System_IO_Pipelines_PipeReader_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadAsync(System.IO.Pipelines.PipeReader%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L534">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadAsync_System_IO_Pipelines_PipeReader_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadAsync(System.IO.Pipelines.PipeReader,System.Memory{System.Byte},System.Threading.CancellationToken)">ReadAsync(PipeReader, Memory&lt;byte&gt;, CancellationToken)</h4>
@@ -1185,12 +1369,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadAsync__1_System_IO_Pipelines_PipeReader_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadAsync%60%601(System.IO.Pipelines.PipeReader%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L109">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadAsync__1_System_IO_Pipelines_PipeReader_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadAsync``1(System.IO.Pipelines.PipeReader,System.Threading.CancellationToken)">ReadAsync&lt;T&gt;(PipeReader, CancellationToken)</h4>
@@ -1278,12 +1459,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadAtLeastAsync_System_IO_Pipelines_PipeReader_System_Memory_System_Byte__System_Int32_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadAtLeastAsync(System.IO.Pipelines.PipeReader%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Int32%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L417">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadAtLeastAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadAtLeastAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadAtLeastAsync_System_IO_Pipelines_PipeReader_System_Memory_System_Byte__System_Int32_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadAtLeastAsync(System.IO.Pipelines.PipeReader,System.Memory{System.Byte},System.Int32,System.Threading.CancellationToken)">ReadAtLeastAsync(PipeReader, Memory&lt;byte&gt;, int, CancellationToken)</h4>
@@ -1372,12 +1550,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadBigEndianAsync__1_System_IO_Pipelines_PipeReader_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadBigEndianAsync%60%601(System.IO.Pipelines.PipeReader%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L144">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadBigEndianAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadBigEndianAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadBigEndianAsync__1_System_IO_Pipelines_PipeReader_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadBigEndianAsync``1(System.IO.Pipelines.PipeReader,System.Threading.CancellationToken)">ReadBigEndianAsync&lt;T&gt;(PipeReader, CancellationToken)</h4>
@@ -1465,12 +1640,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadExactlyAsync_System_IO_Pipelines_PipeReader_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadExactlyAsync(System.IO.Pipelines.PipeReader%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L584">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadExactlyAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadExactlyAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadExactlyAsync_System_IO_Pipelines_PipeReader_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadExactlyAsync(System.IO.Pipelines.PipeReader,System.Int64,System.Threading.CancellationToken)">ReadExactlyAsync(PipeReader, long, CancellationToken)</h4>
@@ -1553,12 +1725,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadExactlyAsync_System_IO_Pipelines_PipeReader_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadExactlyAsync(System.IO.Pipelines.PipeReader%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L403">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadExactlyAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadExactlyAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadExactlyAsync_System_IO_Pipelines_PipeReader_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadExactlyAsync(System.IO.Pipelines.PipeReader,System.Memory{System.Byte},System.Threading.CancellationToken)">ReadExactlyAsync(PipeReader, Memory&lt;byte&gt;, CancellationToken)</h4>
@@ -1636,12 +1805,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadLittleEndianAsync__1_System_IO_Pipelines_PipeReader_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadLittleEndianAsync%60%601(System.IO.Pipelines.PipeReader%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L126">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadLittleEndianAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadLittleEndianAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadLittleEndianAsync__1_System_IO_Pipelines_PipeReader_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadLittleEndianAsync``1(System.IO.Pipelines.PipeReader,System.Threading.CancellationToken)">ReadLittleEndianAsync&lt;T&gt;(PipeReader, CancellationToken)</h4>
@@ -1729,12 +1895,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_ReadUtf8Async_System_IO_Pipelines_PipeReader_System_Buffers_IBufferWriter_System_Char__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.ReadUtf8Async(System.IO.Pipelines.PipeReader%2CSystem.Buffers.IBufferWriter%7BSystem.Char%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L644">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_ReadUtf8Async_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadUtf8Async*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_ReadUtf8Async_System_IO_Pipelines_PipeReader_System_Buffers_IBufferWriter_System_Char__System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.ReadUtf8Async(System.IO.Pipelines.PipeReader,System.Buffers.IBufferWriter{System.Char},System.Threading.CancellationToken)">ReadUtf8Async(PipeReader, IBufferWriter&lt;char&gt;, CancellationToken)</h4>
@@ -1816,12 +1979,9 @@ or <code class="paramref">output</code> is <a href="https://learn.microsoft.com/
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_SkipAsync_System_IO_Pipelines_PipeReader_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.SkipAsync(System.IO.Pipelines.PipeReader%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L517">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_SkipAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.SkipAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_SkipAsync_System_IO_Pipelines_PipeReader_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.SkipAsync(System.IO.Pipelines.PipeReader,System.Int64,System.Threading.CancellationToken)">SkipAsync(PipeReader, long, CancellationToken)</h4>
@@ -1904,12 +2064,9 @@ or <code class="paramref">output</code> is <a href="https://learn.microsoft.com/
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_TryReadExactly_System_IO_Pipelines_PipeReader_System_Int64_System_IO_Pipelines_ReadResult__.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.TryReadExactly(System.IO.Pipelines.PipeReader%2CSystem.Int64%2CSystem.IO.Pipelines.ReadResult%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs/#L491">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_TryReadExactly_" data-uid="DotNext.IO.Pipelines.PipeExtensions.TryReadExactly*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_TryReadExactly_System_IO_Pipelines_PipeReader_System_Int64_System_IO_Pipelines_ReadResult__" data-uid="DotNext.IO.Pipelines.PipeExtensions.TryReadExactly(System.IO.Pipelines.PipeReader,System.Int64,System.IO.Pipelines.ReadResult@)">TryReadExactly(PipeReader, long, out ReadResult)</h4>
@@ -1971,12 +2128,9 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
   <h5 id="DotNext_IO_Pipelines_PipeExtensions_TryReadExactly_System_IO_Pipelines_PipeReader_System_Int64_System_IO_Pipelines_ReadResult___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method doesn't advance the reader position.</p>
 </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions_WriteAsync_System_IO_Pipelines_PipeWriter_System_Buffers_ReadOnlySequence_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions.WriteAsync(System.IO.Pipelines.PipeWriter%2CSystem.Buffers.ReadOnlySequence%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Writers.cs/#L17">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs">View Source</a>
   </span>
   <a id="DotNext_IO_Pipelines_PipeExtensions_WriteAsync_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteAsync*"></a>
   <h4 id="DotNext_IO_Pipelines_PipeExtensions_WriteAsync_System_IO_Pipelines_PipeWriter_System_Buffers_ReadOnlySequence_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.Pipelines.PipeExtensions.WriteAsync(System.IO.Pipelines.PipeWriter,System.Buffers.ReadOnlySequence{System.Byte},System.Threading.CancellationToken)">WriteAsync(PipeWriter, ReadOnlySequence&lt;byte&gt;, CancellationToken)</h4>
@@ -2058,10 +2212,7 @@ otherwise, <a href="https://learn.microsoft.com/dotnet/csharp/language-reference
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_Pipelines_PipeExtensions.md&amp;value=---%0Auid%3A%20DotNext.IO.Pipelines.PipeExtensions%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/Pipelines/PipeExtensions.Writers.cs/#L7" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/Pipelines/PipeExtensions.Readers.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

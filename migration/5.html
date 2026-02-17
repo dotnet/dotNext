@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Migration from 5.x | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Migration from 5.x | .NEXT ">
+    <meta name="generator" content="docfx ">
+  
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+  
+  
+  
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="migration-from-5x">Migration from 5.x</h1>
+
+<p>.NEXT 6.x requires .NET 10 SDK and C# 14 language features. <a href="https://learn.microsoft.com/en-us/dotnet/csharp/whats-new/csharp-14">C# 14</a> introduces <em>extension members</em> feature that changes the .NEXT API shape significantly. Now, the extensions can be expressed as extension members (properties and methods) for the existing classes.</p>
+<h1 id="core-library">Core library</h1>
+<p>The following obsolete members are removed:</p>
+<ul>
+<li><code>ConcurrentCache</code>, <code>CacheEvictionPolicy</code>. Replaced with <code>RandomAccessCache&lt;TKey, TValue&gt;</code> from <code>DotNext.Threading</code> library</li>
+<li><code>DotNext.Buffers.Text.Hex</code> static class. Use <a href="https://learn.microsoft.com/en-us/dotnet/api/system.convert">Convert</a> class for fast HEX conversion</li>
+<li><code>AsyncEnumerable</code> helpers removed in favor of <a href="https://learn.microsoft.com/en-us/dotnet/api/system.linq.asyncenumerable">AsyncEnumerable</a> class</li>
+</ul>
+<h2 id="user-data">User Data</h2>
+<p><code>GetUserData</code> extension method is refactored to <code>UserData</code> extension property:</p>
+<pre><code class="lang-csharp">UserData data = obj.GetUserData();  // 5.x
+UserData data = obj.UserData;       // 6.x
+</code></pre>
+<h2 id="array-extensions">Array Extensions</h2>
+<p><code>IsNullOrEmpty</code> extension method is converted to static extension method to provide a symmetry with <code>string.IsNullOrEmpty</code> static method:</p>
+<pre><code class="lang-csharp">int[] array;
+bool isNull = array.IsNullOrEmpty();        // 5.x
+bool isNull = Array.IsNullOrEmpty(array);   // 6.x
+</code></pre>
+<h2 id="optional-and-result-types">Optional and Result types</h2>
+<p><code>Optional.IsOptional</code> and <code>Result.IsResult</code> extension methods are converted to extension properties:</p>
+<pre><code class="lang-csharp">bool isOpt = typeof(Optional&lt;int&gt;).IsOptional();    // 5.x
+bool isOpt = typeof(Optional&lt;int&gt;).IsOptional;      // 6.x
+</code></pre>
+<h2 id="random-extensions">Random Extensions</h2>
+<p><code>NextString</code> is no longer availble in favor of <a href="https://learn.microsoft.com/en-us/dotnet/api/system.random.getstring">GetString</a> method. Also, extension methods for <a href="https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator">RandomNumberGenerator</a> instance are converted to static extension methods:</p>
+<pre><code class="lang-csharp">int rnd = RandomNumberGenerator.Create().Next();    // 5.x
+int rnd = RandomNumberGenerator.Next();             // 6.x
+</code></pre>
+<h2 id="delegate-helpers">Delegate Helpers</h2>
+<p><code>Converter</code>, <code>Func</code>, <code>Predicate</code> static classes are merge with <code>DelegateHelpers</code> static class. For instance, <code>Func.Constant</code> is a static extension method for <code>Func&lt;T&gt;</code> delegate type:</p>
+<pre><code class="lang-csharp">Func&lt;int&gt; f = Func.Constant&lt;int&gt;(42);   // 5.x
+Func&lt;int&gt; f = Func&lt;int&gt;.Constant(42);   // 6.x
+</code></pre>
+<p>The same true for methods in <code>Predicate</code> static class:</p>
+<pre><code class="lang-csharp">Predicate&lt;string&gt; notNull = Predicate.IsNotNull&lt;string&gt;();  // 5.x
+Predicate&lt;string&gt; notNull = Predicate&lt;string&gt;.IsNotNull;    // 6.x
+</code></pre>
+<p><code>DelegateHelpers.CreateDelegate</code> overloads are renamed to <code>FromPointer</code> and marked as static extension methods for appropriate delegate types.</p>
+<pre><code class="lang-csharp">Func&lt;int&gt; d = DelegateHelpers.CreateDelegate&lt;int&gt;(methodPtr);   // 5.x
+Func&lt;int&gt; d = Func&lt;int&gt;.FromPointer(methodPtr);                 // 6.x
+</code></pre>
+<h2 id="span-static-class">Span static class</h2>
+<p><code>void Span.CopyTo&lt;T&gt;(this Span&lt;T&gt; source, Span&lt;T&gt; destination, out int writtenCount)</code> is now available as the extension operator:</p>
+<pre><code class="lang-csharp">Span&lt;byte&gt; source, destination;
+int writtenCount = source &gt;&gt; destination;
+</code></pre>
+<h2 id="epoch-class">Epoch class</h2>
+<p><code>Epoch</code> class is now sealed. There is just one <code>Enter</code> method that doesn't provide reclamation. If you need to force a reclamation, you need to call <code>Reclaim</code> method on the scope returned by <code>Enter</code> method:</p>
+<pre><code class="lang-csharp">var epoch = new Epoch();
+Epoch.RecycleBin bin;
+using (var scope = epoch.Enter())
+{
+    bin = scope.Reclaim(true);
+}
+
+bin.Clear();
+</code></pre>
+<p>Also, the scope returned by <code>Enter</code> is now async-friendly.</p>
+<h2 id="intrinsics-class">Intrinsics class</h2>
+<p>Members of this class are moved to <code>DotNext.Runtime.CompilerServices.AdvancedHelpers</code> static class, and marked as static extension methods for <a href="https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafe">Unsafe</a> and <a href="https://learn.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.runtimehelpers">RuntimeHelpers</a> classes.</p>
+<pre><code class="lang-csharp">int alignment = Intrinsics.AlignOf&lt;int&gt;();  // 5.x
+int alignment = Unsafe.AlignOf&lt;int&gt;();      // 6.x
+int alignment = int.Alignment;              // 6.x
+</code></pre>
+<p><code>IsExactTypeOf</code> is converted into a static extension method within <code>BasicExtensions</code> class.</p>
+<h2 id="reflection">Reflection</h2>
+<p><code>List.Indexer&lt;T&gt;</code> and <code>Dictionary.Indexer&lt;TKey, TValue&gt;</code> inner classes are moved to <code>CollectionType</code> and <code>DictionaryType</code> as static extension methods:</p>
+<pre><code class="lang-csharp">Func&lt;IReadOnlyList&lt;string&gt;, int, string&gt; indexer = List.Indexer&lt;string&gt;.ReadOnly;   // 5.x
+Func&lt;IReadOnlyList&lt;string&gt;, int, string&gt; indexer = IReadOnlyList&lt;string&gt;.Indexer;   // 6.x
+</code></pre>
+<h2 id="streamsource-class">StreamSource class</h2>
+<p>Its factory methods are converted to static extension methods for <a href="https://learn.microsoft.com/en-us/dotnet/api/system.io.stream">Stream</a> class:</p>
+<pre><code class="lang-csharp">Stream s = StreamSource.AsStream(new byte[] { 10, 20 });    // 5.x
+Stream s = Stream.Create(new byte[] { 10, 20 });            // 6.x
+</code></pre>
+<h2 id="atomicboolean-type">Atomic.Boolean type</h2>
+<p>The type is no longer needed due to presence of necessary method in <a href="https://learn.microsoft.com/en-us/dotnet/api/system.threading.interlocked">Interlocked</a> class. <code>FalseToTrue</code> and <code>TrueToFalse</code> methods are exposed as static extension methods for <code>Interlocked</code> class.</p>
+<pre><code class="lang-csharp">bool value;
+Interlocked.FalseToTrue(ref value);
+</code></pre>
+<h2 id="serviceproviderfactory-class">ServiceProviderFactory class</h2>
+<p>To override the service from the underlying <a href="https://learn.microsoft.com/en-us/dotnet/api/system.iserviceprovider">IServiceProvider</a> instance, use <code>Override</code> extension method rather than <code>Create</code> factory method which is removed. <code>FromTuple</code> is converted to static extension method:</p>
+<pre><code class="lang-csharp">IServiceProvider provider = IServiceProvider.Create&lt;(string, int)&gt;((&quot;Service&quot;, 42));
+</code></pre>
+<h2 id="lockacquisition">LockAcquisition</h2>
+<p>All the methods are moved into <code>Lock</code> class.</p>
+<h2 id="enumconverter">EnumConverter</h2>
+<p><code>EnumConverter</code> is replaced with <code>DotNext.Numerics.Enum&lt;T&gt;</code> type.</p>
+<h2 id="range-endpoints">Range Endpoints</h2>
+<p><code>Enclosed()</code> and <code>Disclosed()</code> extension method are replaced with extension properties:</p>
+<pre><code class="lang-csharp">bool r = 42.IsBetween(40.Enclosed, 43.Disclosed);
+</code></pre>
+<h2 id="memoryallocator-delegate">MemoryAllocator<t> delegate</t></h2>
+<p><code>MemoryAllocator&lt;T&gt;</code> delegate has extension property <code>Default</code> that can be used to obtain the default allocator. <code>AllocateExactly</code> and <code>AllocateAtLeast</code> don't accept nullable allocator anymore. These methods expect non-nullable allocator. It's possible to use <code>DefaultIfNull</code> to fix the nullability issue:</p>
+<pre><code class="lang-csharp">static void M(MemoryAllocator&lt;byte&gt;? allocator)
+{
+    using MemoryOwner&lt;byte&gt; owner = allocator.DefaultIfNull.AllocateExactly(64);
+    // or
+    allocator ??= MemoryAllocator&lt;byte&gt;.Default;
+    using MemoryOwner&lt;byte&gt; owner = allocator.AllocateExactly(64);
+}
+</code></pre>
+<h1 id="threading">Threading</h1>
+<p>The following obsolete members are removed:</p>
+<ul>
+<li><code>LinkedTokenSourceFactory</code> static class and its extension methods. Use <code>CancellationTokenMultiplexer</code> instead.</li>
+</ul>
+<h2 id="asynclockacquisition">AsyncLockAcquisition</h2>
+<p>All the methods are moved into <code>AsyncLock</code> class.</p>
+<h2 id="asyncbridge-class">AsyncBridge class</h2>
+<p><code>AsyncBridge.WaitAnyAsync</code> is moved to <code>CancellationTokenMultiplexer</code> which is now a single entry point to work with combined cancellation tokens</p>
+<h2 id="indexpool-value-type">IndexPool value type</h2>
+<p><code>IndexPool</code> is no longer a value type. It's converted to class and the limitation on the maximum number to be returned from the pool is removed. The capacity of <code>IndexPool</code> is customizable. If you're using it to organize custom object pool, consider <code>BoundedObjectPool&lt;T&gt;</code> class instead, which is more convenient. <code>IndexPool</code> remains available for special situations, when you need to know whether the object is really taken from the pool or created on-the-fly.</p>
+<h2 id="cancellationtokenmultiplexer-class">CancellationTokenMultiplexer class</h2>
+<p><code>CancellationTokenMultiplexer</code> class is converted to value type. Also, it has new <code>WaitAnyAsync</code> method that utilizes internal pool of cancellation token sources.</p>
+<h1 id="io">IO</h1>
+<p>Encoding string interpolation helpers are moved to Core library, <code>DotNext.Text</code> namespace.</p>
+<p><code>DuplexStream</code> is no longer available, but can be construced by using <code>PipeExtensions.AsStream</code> extension method.</p>
+<h2 id="sequencereader-type">SequenceReader type</h2>
+<p>It's moved from <code>DotNext.IO</code> to <code>DotNext.Buffers</code> namespace. Also, it cannot be construced by using <code>IAsyncBinaryReader.Create</code> factory method. Instead, the constructor of <code>SequenceReader</code> must be used.</p>
+<h2 id="textstreamextensions-class">TextStreamExtensions class</h2>
+<p>Most of the factory methods exposed by <code>TextStreamExtensions</code> are converted to static extension methods:</p>
+<pre><code class="lang-csharp">ReadOnlySequence&lt;char&gt; sequence;
+TextReader reader = sequence.AsTextReader();        // 5.x
+TextReader reader = TextReader.Create(sequence);    // 6.x
+</code></pre>
+<h2 id="iasyncbinaryreader-and-iasyncbinarywriter">IAsyncBinaryReader and IAsyncBinaryWriter</h2>
+<p><code>IAsyncBinaryReader.Create</code> and <code>IAsyncBinaryWriter.Create</code> methods are transformed into static extension methods. To call <code>Create</code> overload with <code>PipeWriter</code> parameter type, it's required to import <code>DotNext.IO.Pipelines</code> namespace.</p>
+<h1 id="metaprogramming">Metaprogramming</h1>
+<p><code>Const()</code> extension method is renamed to <code>Quoted</code> extension property.</p>
+<h1 id="raft">Raft</h1>
+<p><code>MemoryBasedStateMachine</code> and <code>DiskBasedStateMachine</code> are removed in favor of high-performance and flexible <code>WriteAheadLog</code> class as announced <a href="https://github.com/dotnet/dotNext/discussions/263">here</a>. <code>WriteAheadLog</code> is no longer marked as experimental. These WALs are not binary-compatible. Moreover, <code>WriteAheadLog</code> from 5.x is not compatible with its counterpart in 6.x.</p>
+<h2 id="migration-from-memorybasedstatemachine">Migration from MemoryBasedStateMachine</h2>
+<p>To do that, you need to use version 5.x and write a migration of the log entries manually from the class that derives from <code>MemoryBasedStateMachine</code> and <code>WriteAheadLog</code> which is marked as experimental. Both classes implement the same <code>IPersistentState</code> interface. There are the steps to do a migration:</p>
+<ol>
+<li>Implement <code>IStateMachine</code> to provide a storage for the snapshot. Or you can reuse <code>SimpleStateMachine</code> as its base implementation</li>
+<li>Iterate over all log entries in <code>MemoryBasedStateMachine</code> and append them to <code>WriteAheadLog</code> instance</li>
+</ol>
+<p>Now you can migrate <code>WriteAheadLog</code> from 5.x to 6.x by following the steps in from the next chapter.</p>
+<h2 id="migration-from-experimental-writeaheadlog">Migration from experimental WriteAheadLog</h2>
+<p><code>WriteAheadLog</code> from 5.x and 6.x are almost identical except the timestamps associated with every log entry. In 6.x, for the performance reasons, the support of timestamps are removed. Therefore, these logs are binary icompatible. However, you can opt-in the compatibility with <code>DotNext.IO.WriteAheadLog.IgnoreTimestamp</code> feature switch. To do that, go to <strong>CSPROJ</strong> file and add the switch:</p>
+<pre><code class="lang-xml">&lt;ItemGroup&gt;
+  &lt;RuntimeHostConfigurationOption
+      Include=&quot;DotNext.IO.WriteAheadLog.IgnoreTimestamp&quot;
+      Value=&quot;false&quot; /&gt;
+&lt;/ItemGroup&gt;
+</code></pre>
+<p>The feature switch forces to interpret the space on the disk related to timestamps correctly. Thus, you can use a log created by <code>WriteAheadLog</code> class in 5.x. For a new log, this option is not recommended. By default, the log doesn't store or parse timestamps.</p>
+
+</article>
+          </div>
+
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/docs/migration/5.md/#L1" class="contribution-link">Edit this page</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="toggle-mode">
+                <div class="icon">
+                  <i aria-hidden="true">☀</i>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="switch-style">
+                  <span class="slider round"></span>
+                </label>
+                <div class="icon">
+                  <i aria-hidden="true">☾</i>
+                </div>
+              </div>
+
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <h5>In this article</h5>
+              <div></div>
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            <div class="pull-left">
+        Supported by the <a href="https://dotnetfoundation.org">.NET Foundation</a>
+        
+            </div>
+            <div class="toggle-mode pull-right visible-sm visible-xs">
+              <div class="icon">
+                <i aria-hidden="true">☀</i>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="switch-style-m">
+                <span class="slider round"></span>
+              </label>
+              <div class="icon">
+                <i aria-hidden="true">☾</i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="../styles/toggle-theme.js"></script>
+      </footer>    </div>
+
+    <script type="text/javascript" src="../styles/docfx.vendor.min.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

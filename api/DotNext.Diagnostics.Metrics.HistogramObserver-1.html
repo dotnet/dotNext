@@ -79,15 +79,19 @@
     <div class="level1"><a class="xref" href="DotNext.Diagnostics.Metrics.InstrumentObserver.html">InstrumentObserver</a></div>
     <div class="level2"><a class="xref" href="DotNext.Diagnostics.Metrics.InstrumentObserver-1.html">InstrumentObserver</a>&lt;TMeasurement&gt;</div>
     <div class="level3"><a class="xref" href="DotNext.Diagnostics.Metrics.InstrumentObserver-2.html">InstrumentObserver</a>&lt;TMeasurement, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.metrics.histogram-1">Histogram</a>&lt;TMeasurement&gt;&gt;</div>
-    <div class="level4"><span class="xref">HistogramObserver&lt;TMeasurement&gt;</span></div>
+    <div class="level4"><a class="xref" href="DotNext.Diagnostics.Metrics.InstantValueObserver-2.html">InstantValueObserver</a>&lt;TMeasurement, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.diagnostics.metrics.histogram-1">Histogram</a>&lt;TMeasurement&gt;&gt;</div>
+    <div class="level5"><span class="xref">HistogramObserver&lt;TMeasurement&gt;</span></div>
   </div>
   <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;TMeasurement&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;TMeasurement&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Diagnostics.Metrics.InstantValueObserver-2.html#DotNext_Diagnostics_Metrics_InstantValueObserver_2_Value">InstantValueObserver&lt;TMeasurement, Histogram&lt;TMeasurement&gt;&gt;.Value</a>
+    </div>
     <div>
       <a class="xref" href="DotNext.Diagnostics.Metrics.InstrumentObserver-2.html#DotNext_Diagnostics_Metrics_InstrumentObserver_2_Observe__1_System_Diagnostics_Metrics_MeterListener_">InstrumentObserver&lt;TMeasurement, Histogram&lt;TMeasurement&gt;&gt;.Observe(Histogram&lt;TMeasurement&gt;, MeterListener)</a>
     </div>
@@ -98,29 +102,29 @@
       <a class="xref" href="DotNext.Diagnostics.Metrics.InstrumentObserver.html#DotNext_Diagnostics_Metrics_InstrumentObserver_IsCompleted">InstrumentObserver.IsCompleted</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Diagnostics.html">Diagnostics</a>.<a class="xref" href="DotNext.Diagnostics.Metrics.html">Metrics</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Diagnostics_Metrics_HistogramObserver_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class HistogramObserver&lt;TMeasurement&gt; : InstrumentObserver&lt;TMeasurement, Histogram&lt;TMeasurement&gt;&gt;, ISupplier&lt;TMeasurement&gt;, IFunctional&lt;Func&lt;TMeasurement&gt;&gt; where TMeasurement : unmanaged, IBinaryInteger&lt;TMeasurement&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class HistogramObserver&lt;TMeasurement&gt; : InstantValueObserver&lt;TMeasurement, Histogram&lt;TMeasurement&gt;&gt;, ISupplier&lt;TMeasurement&gt;, IFunctional where TMeasurement : unmanaged, INumber&lt;TMeasurement&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -140,12 +144,9 @@
   </table>
   <h3 id="constructors">Constructors
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Metrics_HistogramObserver_1__ctor_DotNext_Diagnostics_Metrics_MeasurementFilter_System_Diagnostics_Metrics_Histogram__0___.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Metrics.HistogramObserver%601.%23ctor(DotNext.Diagnostics.Metrics.MeasurementFilter%7BSystem.Diagnostics.Metrics.Histogram%7B%600%7D%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Metrics/HistogramObserver.cs/#L11">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Diagnostics/Metrics/HistogramObserver.cs">View Source</a>
   </span>
   <a id="DotNext_Diagnostics_Metrics_HistogramObserver_1__ctor_" data-uid="DotNext.Diagnostics.Metrics.HistogramObserver`1.#ctor*"></a>
   <h4 id="DotNext_Diagnostics_Metrics_HistogramObserver_1__ctor_DotNext_Diagnostics_Metrics_MeasurementFilter_System_Diagnostics_Metrics_Histogram__0___" data-uid="DotNext.Diagnostics.Metrics.HistogramObserver`1.#ctor(DotNext.Diagnostics.Metrics.MeasurementFilter{System.Diagnostics.Metrics.Histogram{`0}})">HistogramObserver(MeasurementFilter&lt;Histogram&lt;TMeasurement&gt;&gt;?)</h4>
@@ -174,99 +175,22 @@
       </tr>
     </tbody>
   </table>
-  <h3 id="properties">Properties
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Metrics_HistogramObserver_1_Value.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Metrics.HistogramObserver%601.Value%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Metrics/HistogramObserver.cs/#L24">View Source</a>
-  </span>
-  <a id="DotNext_Diagnostics_Metrics_HistogramObserver_1_Value_" data-uid="DotNext.Diagnostics.Metrics.HistogramObserver`1.Value*"></a>
-  <h4 id="DotNext_Diagnostics_Metrics_HistogramObserver_1_Value" data-uid="DotNext.Diagnostics.Metrics.HistogramObserver`1.Value">Value</h4>
-  <div class="markdown level1 summary"><p>Gets instant value of the histogram instrument.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public TMeasurement Value { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TMeasurement</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="methods">Methods
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Metrics_HistogramObserver_1_Record__0_.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Metrics.HistogramObserver%601.Record(%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Metrics/HistogramObserver.cs/#L18">View Source</a>
-  </span>
-  <a id="DotNext_Diagnostics_Metrics_HistogramObserver_1_Record_" data-uid="DotNext.Diagnostics.Metrics.HistogramObserver`1.Record*"></a>
-  <h4 id="DotNext_Diagnostics_Metrics_HistogramObserver_1_Record__0_" data-uid="DotNext.Diagnostics.Metrics.HistogramObserver`1.Record(`0)">Record(TMeasurement)</h4>
-  <div class="markdown level1 summary"><p>Records the value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override void Record(TMeasurement value)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TMeasurement</span></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>The captured measurement.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="DotNext.Diagnostics.Metrics.InstrumentObserver-2.html#DotNext_Diagnostics_Metrics_InstrumentObserver_2_Record__0_">InstrumentObserver&lt;TMeasurement, Histogram&lt;TMeasurement&gt;&gt;.Record(TMeasurement)</a></div>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
 
 </article>
@@ -277,10 +201,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Diagnostics_Metrics_HistogramObserver_1.md&amp;value=---%0Auid%3A%20DotNext.Diagnostics.Metrics.HistogramObserver%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Diagnostics/Metrics/HistogramObserver.cs/#L11" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Diagnostics/Metrics/HistogramObserver.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

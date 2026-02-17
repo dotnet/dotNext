@@ -82,25 +82,25 @@ types implementing dispose pattern.</p>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Reflection.html">Reflection</a></h6>
@@ -111,21 +111,18 @@ types implementing dispose pattern.</p>
   </div>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_DisposableType_GetDisposeAsyncMethod_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.DisposableType.GetDisposeAsyncMethod(System.Type)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Reflection/DisposableType.cs">View Source</a>
   </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Reflection/DisposableType.cs/#L41">View Source</a>
-  </span>
-  <a id="DotNext_Reflection_DisposableType_GetDisposeAsyncMethod_" data-uid="DotNext.Reflection.DisposableType.GetDisposeAsyncMethod*"></a>
-  <h4 id="DotNext_Reflection_DisposableType_GetDisposeAsyncMethod_System_Type_" data-uid="DotNext.Reflection.DisposableType.GetDisposeAsyncMethod(System.Type)">GetDisposeAsyncMethod(Type)</h4>
+  <a id="DotNext_Reflection_DisposableType_get_DisposeAsyncMethod_" data-uid="DotNext.Reflection.DisposableType.get_DisposeAsyncMethod*"></a>
+  <h4 id="DotNext_Reflection_DisposableType_get_DisposeAsyncMethod_System_Type_" data-uid="DotNext.Reflection.DisposableType.get_DisposeAsyncMethod(System.Type)">get_DisposeAsyncMethod(Type)</h4>
   <div class="markdown level1 summary"><p>Gets <code>DisposeAsync</code> method implementing async dispose pattern.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static MethodInfo? GetDisposeAsyncMethod(this Type type)</code></pre>
+    <pre><code class="lang-csharp hljs">public static MethodInfo? get_DisposeAsyncMethod(Type type)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -140,8 +137,7 @@ types implementing dispose pattern.</p>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></td>
         <td><span class="parametername">type</span></td>
-        <td><p>The type to inspect.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -161,21 +157,18 @@ types implementing dispose pattern.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_DisposableType_GetDisposeMethod_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.DisposableType.GetDisposeMethod(System.Type)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Reflection/DisposableType.cs">View Source</a>
   </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Reflection/DisposableType.cs/#L33">View Source</a>
-  </span>
-  <a id="DotNext_Reflection_DisposableType_GetDisposeMethod_" data-uid="DotNext.Reflection.DisposableType.GetDisposeMethod*"></a>
-  <h4 id="DotNext_Reflection_DisposableType_GetDisposeMethod_System_Type_" data-uid="DotNext.Reflection.DisposableType.GetDisposeMethod(System.Type)">GetDisposeMethod(Type)</h4>
+  <a id="DotNext_Reflection_DisposableType_get_DisposeMethod_" data-uid="DotNext.Reflection.DisposableType.get_DisposeMethod*"></a>
+  <h4 id="DotNext_Reflection_DisposableType_get_DisposeMethod_System_Type_" data-uid="DotNext.Reflection.DisposableType.get_DisposeMethod(System.Type)">get_DisposeMethod(Type)</h4>
   <div class="markdown level1 summary"><p>Gets <code>Dispose</code> method which implements dispose pattern.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static MethodInfo? GetDisposeMethod(this Type type)</code></pre>
+    <pre><code class="lang-csharp hljs">public static MethodInfo? get_DisposeMethod(Type type)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -190,8 +183,7 @@ types implementing dispose pattern.</p>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Type</a></td>
         <td><span class="parametername">type</span></td>
-        <td><p>The type to inspect.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -211,7 +203,7 @@ types implementing dispose pattern.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Reflection_DisposableType_GetDisposeMethod_System_Type__remarks">Remarks</h5>
+  <h5 id="DotNext_Reflection_DisposableType_get_DisposeMethod_System_Type__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method checks whether the type implements <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>.
 If it is then return <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable.dispose">Dispose()</a> method. Otherwise,
 return public instance method with name Dispose.</p>
@@ -225,10 +217,7 @@ return public instance method with name Dispose.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Reflection_DisposableType.md&amp;value=---%0Auid%3A%20DotNext.Reflection.DisposableType%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Reflection/DisposableType.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Reflection/DisposableType.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

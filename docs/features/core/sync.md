@@ -9,7 +9,7 @@ Synchronization Enhancements
 * Writer lock
 * Semaphore
 
-This unification is implemented in the form of the single type [Lock](xref:DotNext.Threading.Lock). It exposes the same set of acquisition methods for each lock type described above. The acquired lock is represented by [lock holder](xref:DotNext.Threading.Lock.Holder). The only purpose of this object is to hold the acquired lock. The lock can be released using `Dispose` method of the holder.
+This unification is implemented in the form of the single type [Lock](xref:DotNext.Threading.Lock). It exposes the same set of acquisition methods for each lock type described above. The acquired lock is represented by [lock scope](xref:DotNext.Threading.Lock.Scope). The only purpose of this object is to hold the acquired lock. The lock can be released using `Dispose` method of the scope.
 
 ```csharp
 using DotNext.Threading;
@@ -25,8 +25,8 @@ using (@lock.Acquire())
 using var rwlock = new ReaderWriterLockSlim();
 using var @lock = Lock.WriteLock(rwLock);
 //acquires the writer lock
-if (@lock.TryAcquire(out Lock.Holder holder))
-    using (holder)
+if (@lock.TryAcquire(out Lock.Scope scope))
+    using (scope)
     {
 
     }

@@ -84,8 +84,8 @@ representing memory-mapped file content.</p>
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Buffers.IReadOnlySequenceSource-1.html">IReadOnlySequenceSource</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
-    <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;&gt;&gt;</div>
+    <div><a class="xref" href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/ISupplier0.cs">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.byte">byte</a>&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -96,13 +96,16 @@ representing memory-mapped file content.</p>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(IEnumerable&lt;IAsyncDisposable&gt;)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(params IEnumerable&lt;IAsyncDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;T&gt;(ReadOnlySpan&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;TDisposable&gt;(params ReadOnlySpan&lt;TDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_IAsyncDisposable___">Disposable.DisposeAsync(params IAsyncDisposable[])</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
@@ -111,23 +114,17 @@ representing memory-mapped file content.</p>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.IO.html">IO</a>.<a class="xref" href="DotNext.IO.MemoryMappedFiles.html">MemoryMappedFiles</a></h6>
   <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSource&lt;byte&gt;, IDisposable, ISupplier&lt;ReadOnlySequence&lt;byte&gt;&gt;, IFunctional&lt;Func&lt;ReadOnlySequence&lt;byte&gt;&gt;&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class ReadOnlySequenceAccessor : Disposable, IReadOnlySequenceSource&lt;byte&gt;, IDisposable, ISupplier&lt;ReadOnlySequence&lt;byte&gt;&gt;, IFunctional</code></pre>
   </div>
   <h5 id="DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>A sequence returned by <a class="xref" href="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.html#DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor_Sequence">Sequence</a> property should not be
@@ -138,12 +135,9 @@ every time when <a class="xref" href="https://learn.microsoft.com/dotnet/api/sys
 </div>
   <h3 id="constructors">Constructors
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor__ctor_System_IO_FileStream_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.%23ctor(System.IO.FileStream%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/MemoryMappedFiles/ReadOnlySequenceAccessor.cs/#L156">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/MemoryMappedFiles/ReadOnlySequenceAccessor.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor__ctor_" data-uid="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.#ctor*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor__ctor_System_IO_FileStream_System_Int32_" data-uid="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.#ctor(System.IO.FileStream,System.Int32)">ReadOnlySequenceAccessor(FileStream, int)</h4>
@@ -196,12 +190,9 @@ as contiguous block of memory. So this parameter defines actual amount of occupi
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor__ctor_System_IO_MemoryMappedFiles_MemoryMappedFile_System_Int32_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.%23ctor(System.IO.MemoryMappedFiles.MemoryMappedFile%2CSystem.Int32%2CSystem.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/MemoryMappedFiles/ReadOnlySequenceAccessor.cs/#L141">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/MemoryMappedFiles/ReadOnlySequenceAccessor.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor__ctor_" data-uid="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.#ctor*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor__ctor_System_IO_MemoryMappedFiles_MemoryMappedFile_System_Int32_System_Int64_" data-uid="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.#ctor(System.IO.MemoryMappedFiles.MemoryMappedFile,System.Int32,System.Int64)">ReadOnlySequenceAccessor(MemoryMappedFile, int, long)</h4>
@@ -264,12 +255,9 @@ or <code class="paramref">segmentSize</code> is greater than <code class="paramr
   </table>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor_Sequence.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Sequence%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/MemoryMappedFiles/ReadOnlySequenceAccessor.cs/#L184">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/MemoryMappedFiles/ReadOnlySequenceAccessor.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor_Sequence_" data-uid="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Sequence*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor_Sequence" data-uid="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Sequence">Sequence</h4>
@@ -317,12 +305,9 @@ concurrently.</p>
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/MemoryMappedFiles/ReadOnlySequenceAccessor.cs/#L222">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/MemoryMappedFiles/ReadOnlySequenceAccessor.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor_Dispose_" data-uid="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Dispose*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor_Dispose_System_Boolean_" data-uid="DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -364,23 +349,17 @@ concurrently.</p>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
 
 </article>
@@ -391,10 +370,7 @@ concurrently.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_ReadOnlySequenceAccessor.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.ReadOnlySequenceAccessor%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.IO/IO/MemoryMappedFiles/ReadOnlySequenceAccessor.cs/#L21" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.IO/IO/MemoryMappedFiles/ReadOnlySequenceAccessor.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -75,9 +75,9 @@ using System.Linq.Expressions;
 record class MyRecord(int X);
 
 Expression x = new MyRecord(42).Const();
-Expression mutation = x.With(new MemberBindings()
+Expression mutation = x.With(new()
 {
-    {&quot;X&quot;, 52.Const()}
+    { &quot;X&quot;, 52.Quoted }
 });
 </code></pre>
 <p><code>With</code> extension method generates the expression equivalent to the following C# expression:</p>

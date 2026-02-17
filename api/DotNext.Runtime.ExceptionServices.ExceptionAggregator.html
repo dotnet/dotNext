@@ -76,7 +76,7 @@
   <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a>&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a>&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -90,10 +90,10 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
@@ -103,16 +103,13 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Runtime_ExceptionServices_ExceptionAggregator_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct ExceptionAggregator : ISupplier&lt;Exception?&gt;, IFunctional&lt;Func&lt;Exception?&gt;&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public struct ExceptionAggregator : ISupplier&lt;Exception?&gt;, IFunctional</code></pre>
   </div>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ExceptionServices_ExceptionAggregator_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ExceptionServices.ExceptionAggregator.IsEmpty%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ExceptionServices/ExceptionAggregator.cs/#L17">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/ExceptionServices/ExceptionAggregator.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_ExceptionServices_ExceptionAggregator_IsEmpty_" data-uid="DotNext.Runtime.ExceptionServices.ExceptionAggregator.IsEmpty*"></a>
   <h4 id="DotNext_Runtime_ExceptionServices_ExceptionAggregator_IsEmpty" data-uid="DotNext.Runtime.ExceptionServices.ExceptionAggregator.IsEmpty">IsEmpty</h4>
@@ -140,12 +137,9 @@
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ExceptionServices_ExceptionAggregator_Add_System_Exception_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ExceptionServices.ExceptionAggregator.Add(System.Exception)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ExceptionServices/ExceptionAggregator.cs/#L23">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/ExceptionServices/ExceptionAggregator.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_ExceptionServices_ExceptionAggregator_Add_" data-uid="DotNext.Runtime.ExceptionServices.ExceptionAggregator.Add*"></a>
   <h4 id="DotNext_Runtime_ExceptionServices_ExceptionAggregator_Add_System_Exception_" data-uid="DotNext.Runtime.ExceptionServices.ExceptionAggregator.Add(System.Exception)">Add(Exception)</h4>
@@ -174,12 +168,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ExceptionServices_ExceptionAggregator_CreateException.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ExceptionServices.ExceptionAggregator.CreateException%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ExceptionServices/ExceptionAggregator.cs/#L51">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/ExceptionServices/ExceptionAggregator.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_ExceptionServices_ExceptionAggregator_CreateException_" data-uid="DotNext.Runtime.ExceptionServices.ExceptionAggregator.CreateException*"></a>
   <h4 id="DotNext_Runtime_ExceptionServices_ExceptionAggregator_CreateException" data-uid="DotNext.Runtime.ExceptionServices.ExceptionAggregator.CreateException">CreateException()</h4>
@@ -206,12 +197,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ExceptionServices_ExceptionAggregator_ThrowIfNeeded.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ExceptionServices.ExceptionAggregator.ThrowIfNeeded%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ExceptionServices/ExceptionAggregator.cs/#L66">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/ExceptionServices/ExceptionAggregator.cs">View Source</a>
   </span>
   <a id="DotNext_Runtime_ExceptionServices_ExceptionAggregator_ThrowIfNeeded_" data-uid="DotNext.Runtime.ExceptionServices.ExceptionAggregator.ThrowIfNeeded*"></a>
   <h4 id="DotNext_Runtime_ExceptionServices_ExceptionAggregator_ThrowIfNeeded" data-uid="DotNext.Runtime.ExceptionServices.ExceptionAggregator.ThrowIfNeeded">ThrowIfNeeded()</h4>
@@ -243,31 +231,55 @@
       </tr>
     </tbody>
   </table>
+  <h3 id="operators">Operators
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/ExceptionServices/ExceptionAggregator.cs">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_ExceptionServices_ExceptionAggregator_op_AdditionAssignment_" data-uid="DotNext.Runtime.ExceptionServices.ExceptionAggregator.op_AdditionAssignment*"></a>
+  <h4 id="DotNext_Runtime_ExceptionServices_ExceptionAggregator_op_AdditionAssignment_System_Exception_" data-uid="DotNext.Runtime.ExceptionServices.ExceptionAggregator.op_AdditionAssignment(System.Exception)">operator +=(Exception)</h4>
+  <div class="markdown level1 summary"><p>Aggregates exception.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void operator +=(Exception e)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.exception">Exception</a></td>
+        <td><span class="parametername">e</span></td>
+        <td><p>The exception to add.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerator__2___0_System_Threading_CancellationToken_">Collection.ToAsyncEnumerator&lt;TEnumerator, T&gt;(TEnumerator, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToClassicEnumerator__2___0_">Collection.ToClassicEnumerator&lt;TEnumerator, T&gt;(TEnumerator)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
 
 </article>
@@ -278,10 +290,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Runtime_ExceptionServices_ExceptionAggregator.md&amp;value=---%0Auid%3A%20DotNext.Runtime.ExceptionServices.ExceptionAggregator%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Runtime/ExceptionServices/ExceptionAggregator.cs/#L9" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Runtime/ExceptionServices/ExceptionAggregator.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

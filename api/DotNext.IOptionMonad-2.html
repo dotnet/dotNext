@@ -76,12 +76,6 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_HasValue">IOptionMonad&lt;T&gt;.HasValue</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_ValueOrDefault">IOptionMonad&lt;T&gt;.ValueOrDefault</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_Or__0_">IOptionMonad&lt;T&gt;.Or(T)</a>
     </div>
     <div>
@@ -91,20 +85,26 @@
       <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_TryGet__0__">IOptionMonad&lt;T&gt;.TryGet(out T)</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_HasValue">IOptionMonad&lt;T&gt;.HasValue</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IOptionMonad-1.html#DotNext_IOptionMonad_1_ValueOrDefault">IOptionMonad&lt;T&gt;.ValueOrDefault</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.ISupplier-1.html#DotNext_ISupplier_1_Invoke">ISupplier&lt;object&gt;.Invoke()</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.ISupplier-1.html#DotNext_ISupplier_1_NullOrDefault">ISupplier&lt;object&gt;.NullOrDefault</a>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html#DotNext_Runtime_CompilerServices_IFunctional_DynamicInvoke_DotNext_Runtime_Variant__System_Int32_DotNext_Runtime_Variant_">IFunctional.DynamicInvoke(scoped ref readonly Variant, int, scoped Variant)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html#DotNext_Runtime_CompilerServices_IFunctional_1_ToDelegate">IFunctional&lt;Func&lt;object&gt;&gt;.ToDelegate()</a>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html#DotNext_Runtime_CompilerServices_IFunctional_GetArgument__1_DotNext_Runtime_Variant__System_Int32_">IFunctional.GetArgument&lt;T&gt;(ref readonly Variant, int)</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_IOptionMonad_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IOptionMonad&lt;T, TSelf&gt; : IOptionMonad&lt;T&gt;, ISupplier&lt;object?&gt;, IFunctional&lt;Func&lt;object?&gt;&gt; where TSelf : struct, IOptionMonad&lt;T, TSelf&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IOptionMonad&lt;T, TSelf&gt; : IOptionMonad&lt;T&gt;, ISupplier&lt;object?&gt;, IFunctional where TSelf : struct, IOptionMonad&lt;T, TSelf&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -129,12 +129,9 @@
   </table>
   <h3 id="operators">Operators
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IOptionMonad_2_op_BitwiseOr__1___0_.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_BitwiseOr(%601%40%2C%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L104">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/IOptionMonad.cs">View Source</a>
   </span>
   <a id="DotNext_IOptionMonad_2_op_BitwiseOr_" data-uid="DotNext.IOptionMonad`2.op_BitwiseOr*"></a>
   <h4 id="DotNext_IOptionMonad_2_op_BitwiseOr__1___0_" data-uid="DotNext.IOptionMonad`2.op_BitwiseOr(`1@,`0)">operator |(in TSelf, T?)</h4>
@@ -185,12 +182,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IOptionMonad_2_op_BitwiseOr__1___1__.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_BitwiseOr(%601%40%2C%601%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L113">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/IOptionMonad.cs">View Source</a>
   </span>
   <a id="DotNext_IOptionMonad_2_op_BitwiseOr_" data-uid="DotNext.IOptionMonad`2.op_BitwiseOr*"></a>
   <h4 id="DotNext_IOptionMonad_2_op_BitwiseOr__1___1__" data-uid="DotNext.IOptionMonad`2.op_BitwiseOr(`1@,`1@)">operator |(in TSelf, in TSelf)</h4>
@@ -241,12 +235,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IOptionMonad_2_op_Explicit__1____0.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_Explicit(%601%40)~%600%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L74">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/IOptionMonad.cs">View Source</a>
   </span>
   <a id="DotNext_IOptionMonad_2_op_Explicit_" data-uid="DotNext.IOptionMonad`2.op_Explicit*"></a>
   <h4 id="DotNext_IOptionMonad_2_op_Explicit__1____0" data-uid="DotNext.IOptionMonad`2.op_Explicit(`1@)~`0">explicit operator T(in TSelf)</h4>
@@ -291,12 +282,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IOptionMonad_2_op_False__1__.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_False(%601%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L89">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/IOptionMonad.cs">View Source</a>
   </span>
   <a id="DotNext_IOptionMonad_2_op_False_" data-uid="DotNext.IOptionMonad`2.op_False*"></a>
   <h4 id="DotNext_IOptionMonad_2_op_False__1__" data-uid="DotNext.IOptionMonad`2.op_False(`1@)">operator false(in TSelf)</h4>
@@ -341,12 +329,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IOptionMonad_2_op_Implicit__0___1.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_Implicit(%600)~%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L67">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/IOptionMonad.cs">View Source</a>
   </span>
   <a id="DotNext_IOptionMonad_2_op_Implicit_" data-uid="DotNext.IOptionMonad`2.op_Implicit*"></a>
   <h4 id="DotNext_IOptionMonad_2_op_Implicit__0___1" data-uid="DotNext.IOptionMonad`2.op_Implicit(`0)~`1">implicit operator TSelf(T)</h4>
@@ -391,12 +376,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IOptionMonad_2_op_LogicalNot__1__.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_LogicalNot(%601%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L96">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/IOptionMonad.cs">View Source</a>
   </span>
   <a id="DotNext_IOptionMonad_2_op_LogicalNot_" data-uid="DotNext.IOptionMonad`2.op_LogicalNot*"></a>
   <h4 id="DotNext_IOptionMonad_2_op_LogicalNot__1__" data-uid="DotNext.IOptionMonad`2.op_LogicalNot(`1@)">operator !(in TSelf)</h4>
@@ -441,12 +423,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IOptionMonad_2_op_True__1__.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602.op_True(%601%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L81">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/IOptionMonad.cs">View Source</a>
   </span>
   <a id="DotNext_IOptionMonad_2_op_True_" data-uid="DotNext.IOptionMonad`2.op_True*"></a>
   <h4 id="DotNext_IOptionMonad_2_op_True__1__" data-uid="DotNext.IOptionMonad`2.op_True(`1@)">operator true(in TSelf)</h4>
@@ -500,10 +479,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IOptionMonad_2.md&amp;value=---%0Auid%3A%20DotNext.IOptionMonad%602%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IOptionMonad.cs/#L59" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/IOptionMonad.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

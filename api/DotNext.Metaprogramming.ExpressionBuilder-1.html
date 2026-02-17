@@ -84,20 +84,11 @@
   </div>
   <div class="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;TExpression&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;TExpression&gt;&gt;</div>
+    <div><a class="xref" href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/ISupplier0.cs">ISupplier</a>&lt;TExpression&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
-    </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
@@ -105,17 +96,26 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Metaprogramming.html">Metaprogramming</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Metaprogramming.dll</h6>
   <h5 id="DotNext_Metaprogramming_ExpressionBuilder_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class ExpressionBuilder&lt;TExpression&gt; : ISupplier&lt;TExpression&gt;, IFunctional&lt;Func&lt;TExpression&gt;&gt; where TExpression : Expression</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class ExpressionBuilder&lt;TExpression&gt; : ISupplier&lt;TExpression&gt;, IFunctional where TExpression : Expression</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -139,12 +139,9 @@ be shared between threads.</p>
 </div>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Metaprogramming_ExpressionBuilder_1_End.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.ExpressionBuilder%601.End%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/ExpressionBuilder.cs/#L68">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Metaprogramming/ExpressionBuilder.cs">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_ExpressionBuilder_1_End_" data-uid="DotNext.Metaprogramming.ExpressionBuilder`1.End*"></a>
   <h4 id="DotNext_Metaprogramming_ExpressionBuilder_1_End" data-uid="DotNext.Metaprogramming.ExpressionBuilder`1.End">End()</h4>
@@ -172,12 +169,9 @@ and adds constructed expression as statement to the entire lexical scope.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Metaprogramming_ExpressionBuilder_1_OfType_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.ExpressionBuilder%601.OfType(System.Type)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/ExpressionBuilder.cs/#L42">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Metaprogramming/ExpressionBuilder.cs">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_ExpressionBuilder_1_OfType_" data-uid="DotNext.Metaprogramming.ExpressionBuilder`1.OfType*"></a>
   <h4 id="DotNext_Metaprogramming_ExpressionBuilder_1_OfType_System_Type_" data-uid="DotNext.Metaprogramming.ExpressionBuilder`1.OfType(System.Type)">OfType(Type)</h4>
@@ -225,12 +219,9 @@ and adds constructed expression as statement to the entire lexical scope.</p>
   <h5 id="DotNext_Metaprogramming_ExpressionBuilder_1_OfType_System_Type__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>By default, type of expression is <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.void">void</a>.</p>
 </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Metaprogramming_ExpressionBuilder_1_OfType__1.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.ExpressionBuilder%601.OfType%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/ExpressionBuilder.cs/#L54">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Metaprogramming/ExpressionBuilder.cs">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_ExpressionBuilder_1_OfType_" data-uid="DotNext.Metaprogramming.ExpressionBuilder`1.OfType*"></a>
   <h4 id="DotNext_Metaprogramming_ExpressionBuilder_1_OfType__1" data-uid="DotNext.Metaprogramming.ExpressionBuilder`1.OfType``1">OfType&lt;T&gt;()</h4>
@@ -278,23 +269,17 @@ and adds constructed expression as statement to the entire lexical scope.</p>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
 
 </article>
@@ -305,10 +290,7 @@ and adds constructed expression as statement to the entire lexical scope.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Metaprogramming_ExpressionBuilder_1.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.ExpressionBuilder%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/ExpressionBuilder.cs/#L13" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Metaprogramming/Metaprogramming/ExpressionBuilder.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

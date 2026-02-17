@@ -81,25 +81,25 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
-    </div>
-    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Buffers.html">Buffers</a></h6>
@@ -110,21 +110,18 @@
   </div>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_AllocateAtLeast__1_DotNext_Buffers_MemoryAllocator___0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.AllocateAtLeast%60%601(DotNext.Buffers.MemoryAllocator%7B%60%600%7D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.Allocator.cs/#L51">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.Allocator.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_AllocateAtLeast_" data-uid="DotNext.Buffers.Memory.AllocateAtLeast*"></a>
-  <h4 id="DotNext_Buffers_Memory_AllocateAtLeast__1_DotNext_Buffers_MemoryAllocator___0__System_Int32_" data-uid="DotNext.Buffers.Memory.AllocateAtLeast``1(DotNext.Buffers.MemoryAllocator{``0},System.Int32)">AllocateAtLeast&lt;T&gt;(MemoryAllocator&lt;T&gt;?, int)</h4>
+  <h4 id="DotNext_Buffers_Memory_AllocateAtLeast__1_DotNext_Buffers_MemoryAllocator___0__System_Int32_" data-uid="DotNext.Buffers.Memory.AllocateAtLeast``1(DotNext.Buffers.MemoryAllocator{``0},System.Int32)">AllocateAtLeast&lt;T&gt;(MemoryAllocator&lt;T&gt;, int)</h4>
   <div class="markdown level1 summary"><p>Allocates memory of at least <code class="paramref">length</code> size.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;T&gt; AllocateAtLeast&lt;T&gt;(this MemoryAllocator&lt;T&gt;? allocator, int length)</code></pre>
+    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;T&gt; AllocateAtLeast&lt;T&gt;(this MemoryAllocator&lt;T&gt; allocator, int length)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -139,8 +136,7 @@
       <tr>
         <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;T&gt;</td>
         <td><span class="parametername">allocator</span></td>
-        <td><p>The memory allocator.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
@@ -177,93 +173,22 @@
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the items in the memory pool.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_AllocateAtLeast__1_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.AllocateAtLeast%60%601(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.Allocator.cs/#L126">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Memory_AllocateAtLeast_" data-uid="DotNext.Buffers.Memory.AllocateAtLeast*"></a>
-  <h4 id="DotNext_Buffers_Memory_AllocateAtLeast__1_System_Int32_" data-uid="DotNext.Buffers.Memory.AllocateAtLeast``1(System.Int32)">AllocateAtLeast&lt;T&gt;(int)</h4>
-  <div class="markdown level1 summary"><p>Rents a block of memory of at least
-<code class="paramref">length</code> size from <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared">Shared</a> pool.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;T&gt; AllocateAtLeast&lt;T&gt;(int length)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>The number of items in the rented memory.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;T&gt;</td>
-        <td><p>The allocated memory.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the items in the memory pool.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_AllocateExactly__1_DotNext_Buffers_MemoryAllocator___0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.AllocateExactly%60%601(DotNext.Buffers.MemoryAllocator%7B%60%600%7D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.Allocator.cs/#L75">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.Allocator.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_AllocateExactly_" data-uid="DotNext.Buffers.Memory.AllocateExactly*"></a>
-  <h4 id="DotNext_Buffers_Memory_AllocateExactly__1_DotNext_Buffers_MemoryAllocator___0__System_Int32_" data-uid="DotNext.Buffers.Memory.AllocateExactly``1(DotNext.Buffers.MemoryAllocator{``0},System.Int32)">AllocateExactly&lt;T&gt;(MemoryAllocator&lt;T&gt;?, int)</h4>
+  <h4 id="DotNext_Buffers_Memory_AllocateExactly__1_DotNext_Buffers_MemoryAllocator___0__System_Int32_" data-uid="DotNext.Buffers.Memory.AllocateExactly``1(DotNext.Buffers.MemoryAllocator{``0},System.Int32)">AllocateExactly&lt;T&gt;(MemoryAllocator&lt;T&gt;, int)</h4>
   <div class="markdown level1 summary"><p>Allocates memory of <code class="paramref">length</code> size.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;T&gt; AllocateExactly&lt;T&gt;(this MemoryAllocator&lt;T&gt;? allocator, int length)</code></pre>
+    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;T&gt; AllocateExactly&lt;T&gt;(this MemoryAllocator&lt;T&gt; allocator, int length)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -278,8 +203,7 @@
       <tr>
         <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;T&gt;</td>
         <td><span class="parametername">allocator</span></td>
-        <td><p>The memory allocator.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
@@ -316,92 +240,22 @@
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the items in the memory pool.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_AllocateExactly__1_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.AllocateExactly%60%601(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.Allocator.cs/#L136">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Memory_AllocateExactly_" data-uid="DotNext.Buffers.Memory.AllocateExactly*"></a>
-  <h4 id="DotNext_Buffers_Memory_AllocateExactly__1_System_Int32_" data-uid="DotNext.Buffers.Memory.AllocateExactly``1(System.Int32)">AllocateExactly&lt;T&gt;(int)</h4>
-  <div class="markdown level1 summary"><p>Rents a block of memory of the specified size from <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared">Shared</a> pool.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static MemoryOwner&lt;T&gt; AllocateExactly&lt;T&gt;(int length)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>The number of items in the rented memory.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;T&gt;</td>
-        <td><p>The allocated memory.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the items in the memory pool.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_Concat__1_System_ReadOnlyMemory___0__System_ReadOnlyMemory___0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.Concat%60%601(System.ReadOnlyMemory%7B%60%600%7D%2CSystem.ReadOnlyMemory%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L186">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.ReadOnlySequence.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_Concat_" data-uid="DotNext.Buffers.Memory.Concat*"></a>
-  <h4 id="DotNext_Buffers_Memory_Concat__1_System_ReadOnlyMemory___0__System_ReadOnlyMemory___0__" data-uid="DotNext.Buffers.Memory.Concat``1(System.ReadOnlyMemory{``0},System.ReadOnlyMemory{``0})">Concat&lt;T&gt;(ReadOnlyMemory&lt;T&gt;, ReadOnlyMemory&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Converts two memory blocks to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> data type.</p>
+  <h4 id="DotNext_Buffers_Memory_Concat_System_Collections_Generic_IEnumerable_System_String__" data-uid="DotNext.Buffers.Memory.Concat(System.Collections.Generic.IEnumerable{System.String})">Concat(IEnumerable&lt;string?&gt;?)</h4>
+  <div class="markdown level1 summary"><p>Constructs a sequence of characters from a collection of strings.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ReadOnlySequence&lt;T&gt; Concat&lt;T&gt;(this ReadOnlyMemory&lt;T&gt; first, ReadOnlyMemory&lt;T&gt; second)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ReadOnlySequence&lt;char&gt; Concat(this IEnumerable&lt;string?&gt;? strings)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -414,15 +268,56 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;</td>
-        <td><span class="parametername">first</span></td>
-        <td><p>The first memory block.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
+        <td><span class="parametername">strings</span></td>
+        <td><p>A collection of strings.</p>
 </td>
       </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;</td>
-        <td><span class="parametername">second</span></td>
-        <td><p>The second memory block.</p>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
+        <td><p>A sequence of characters representing concatenated strings.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.ReadOnlySequence.cs">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_Memory_Concat_" data-uid="DotNext.Buffers.Memory.Concat*"></a>
+  <h4 id="DotNext_Buffers_Memory_Concat__1_System_Collections_Generic_IEnumerable_System_ReadOnlyMemory___0___" data-uid="DotNext.Buffers.Memory.Concat``1(System.Collections.Generic.IEnumerable{System.ReadOnlyMemory{``0}})">Concat&lt;T&gt;(IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;?)</h4>
+  <div class="markdown level1 summary"><p>Converts the sequence of memory blocks to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> data type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ReadOnlySequence&lt;T&gt; Concat&lt;T&gt;(this IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;? chunks)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;</td>
+        <td><span class="parametername">chunks</span></td>
+        <td><p>The sequence of memory blocks.</p>
 </td>
       </tr>
     </tbody>
@@ -459,12 +354,71 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_CopyTo__1_System_Buffers_ReadOnlySequence___0___System_Span___0__System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.CopyTo%60%601(System.Buffers.ReadOnlySequence%7B%60%600%7D%40%2CSystem.Span%7B%60%600%7D%2CSystem.Int32%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.ReadOnlySequence.cs">View Source</a>
   </span>
+  <a id="DotNext_Buffers_Memory_Concat_" data-uid="DotNext.Buffers.Memory.Concat*"></a>
+  <h4 id="DotNext_Buffers_Memory_Concat__1_System_ReadOnlySpan_System_ReadOnlyMemory___0___" data-uid="DotNext.Buffers.Memory.Concat``1(System.ReadOnlySpan{System.ReadOnlyMemory{``0}})">Concat&lt;T&gt;(params ReadOnlySpan&lt;ReadOnlyMemory&lt;T&gt;&gt;)</h4>
+  <div class="markdown level1 summary"><p>Converts the sequence of memory blocks to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> data type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ReadOnlySequence&lt;T&gt; Concat&lt;T&gt;(params ReadOnlySpan&lt;ReadOnlyMemory&lt;T&gt;&gt; chunks)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;</td>
+        <td><span class="parametername">chunks</span></td>
+        <td><p>The sequence of memory blocks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;</td>
+        <td><p>The constructed <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> instance containing memory blocks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L207">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.ReadOnlySequence.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_CopyTo_" data-uid="DotNext.Buffers.Memory.CopyTo*"></a>
   <h4 id="DotNext_Buffers_Memory_CopyTo__1_System_Buffers_ReadOnlySequence___0___System_Span___0__System_Int32__" data-uid="DotNext.Buffers.Memory.CopyTo``1(System.Buffers.ReadOnlySequence{``0}@,System.Span{``0},System.Int32@)">CopyTo&lt;T&gt;(in ReadOnlySequence&lt;T&gt;, Span&lt;T&gt;, out int)</h4>
@@ -488,8 +442,7 @@
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;</td>
         <td><span class="parametername">source</span></td>
-        <td><p>Source sequence.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
@@ -516,17 +469,13 @@
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the elements in the sequence.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_CopyTo__1_System_Buffers_ReadOnlySequence___0___System_Span___0__System_SequencePosition__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.CopyTo%60%601(System.Buffers.ReadOnlySequence%7B%60%600%7D%40%2CSystem.Span%7B%60%600%7D%2CSystem.SequencePosition%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L234">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.ReadOnlySequence.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_CopyTo_" data-uid="DotNext.Buffers.Memory.CopyTo*"></a>
   <h4 id="DotNext_Buffers_Memory_CopyTo__1_System_Buffers_ReadOnlySequence___0___System_Span___0__System_SequencePosition__" data-uid="DotNext.Buffers.Memory.CopyTo``1(System.Buffers.ReadOnlySequence{``0}@,System.Span{``0},System.SequencePosition@)">CopyTo&lt;T&gt;(in ReadOnlySequence&lt;T&gt;, Span&lt;T&gt;, out SequencePosition)</h4>
@@ -550,8 +499,7 @@
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;</td>
         <td><span class="parametername">source</span></td>
-        <td><p>Source sequence.</p>
-</td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
@@ -562,7 +510,7 @@
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.sequenceposition">SequencePosition</a></td>
         <td><span class="parametername">consumed</span></td>
-        <td><p>The position within <code class="paramref">source</code> that represents the end of <code class="paramref">destination</code>.</p>
+        <td><p>The position within the receiver that represents the end of <code class="paramref">destination</code>.</p>
 </td>
       </tr>
     </tbody>
@@ -594,122 +542,22 @@
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the elements in the sequence.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_GetArrayAllocator__1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.GetArrayAllocator%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.ReadOnlySequence.cs">View Source</a>
   </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.Allocator.cs/#L97">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Memory_GetArrayAllocator_" data-uid="DotNext.Buffers.Memory.GetArrayAllocator*"></a>
-  <h4 id="DotNext_Buffers_Memory_GetArrayAllocator__1" data-uid="DotNext.Buffers.Memory.GetArrayAllocator``1">GetArrayAllocator&lt;T&gt;()</h4>
-  <div class="markdown level1 summary"><p>Returns array allocator.</p>
+  <a id="DotNext_Buffers_Memory_CreatePartitioner_" data-uid="DotNext.Buffers.Memory.CreatePartitioner*"></a>
+  <h4 id="DotNext_Buffers_Memory_CreatePartitioner__1_System_Buffers_ReadOnlySequence___0___System_Boolean_" data-uid="DotNext.Buffers.Memory.CreatePartitioner``1(System.Buffers.ReadOnlySequence{``0}@,System.Boolean)">CreatePartitioner&lt;T&gt;(in ReadOnlySequence&lt;T&gt;, bool)</h4>
+  <div class="markdown level1 summary"><p>Creates partitioner for the sequence of elements.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static MemoryAllocator&lt;T&gt; GetArrayAllocator&lt;T&gt;()</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;T&gt;</td>
-        <td><p>The array allocator.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of elements in the array.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_GetPinnedArrayAllocator__1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.GetPinnedArrayAllocator%60%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.Allocator.cs/#L110">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Memory_GetPinnedArrayAllocator_" data-uid="DotNext.Buffers.Memory.GetPinnedArrayAllocator*"></a>
-  <h4 id="DotNext_Buffers_Memory_GetPinnedArrayAllocator__1" data-uid="DotNext.Buffers.Memory.GetPinnedArrayAllocator``1">GetPinnedArrayAllocator&lt;T&gt;()</h4>
-  <div class="markdown level1 summary"><p>Returns an allocator of pinned arrays.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static MemoryAllocator&lt;T&gt; GetPinnedArrayAllocator&lt;T&gt;() where T : unmanaged</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;T&gt;</td>
-        <td><p>The array allocator.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of elements in the array.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_GetReference__1_DotNext_Buffers_MemoryOwner___0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.GetReference%60%601(DotNext.Buffers.MemoryOwner%7B%60%600%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.cs/#L60">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Memory_GetReference_" data-uid="DotNext.Buffers.Memory.GetReference*"></a>
-  <h4 id="DotNext_Buffers_Memory_GetReference__1_DotNext_Buffers_MemoryOwner___0___" data-uid="DotNext.Buffers.Memory.GetReference``1(DotNext.Buffers.MemoryOwner{``0}@)">GetReference&lt;T&gt;(in MemoryOwner&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Gets managed pointer to the first element in the rented memory block.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ref T GetReference&lt;T&gt;(in MemoryOwner&lt;T&gt; owner)</code></pre>
+    <pre><code class="lang-csharp hljs">public static OrderablePartitioner&lt;T&gt; CreatePartitioner&lt;T&gt;(this in ReadOnlySequence&lt;T&gt; source, bool splitOnSegments = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -722,9 +570,15 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Buffers.MemoryOwner-1.html">MemoryOwner</a>&lt;T&gt;</td>
-        <td><span class="parametername">owner</span></td>
-        <td><p>The rented memory block.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;</td>
+        <td><span class="parametername">source</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
+        <td><span class="parametername">splitOnSegments</span></td>
+        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> to split the sequence to the number of partitions equals to the number of the segments within the sequence;
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> to split the sequence dynamically to balance the workload.</p>
 </td>
       </tr>
     </tbody>
@@ -739,8 +593,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>A managed pointer to the first element; or <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.compilerservices.unsafe.nullref">NullRef&lt;T&gt;()</a> if memory block is empty.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.concurrent.orderablepartitioner-1">OrderablePartitioner</a>&lt;T&gt;</td>
+        <td><p>The partitioner for the sequence.</p>
 </td>
       </tr>
     </tbody>
@@ -756,17 +610,13 @@
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the elements in the memory block.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_ReleaseAll__1_DotNext_Buffers_MemoryOwner___0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.ReleaseAll%60%601(DotNext.Buffers.MemoryOwner%7B%60%600%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.cs/#L19">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_ReleaseAll_" data-uid="DotNext.Buffers.Memory.ReleaseAll*"></a>
   <h4 id="DotNext_Buffers_Memory_ReleaseAll__1_DotNext_Buffers_MemoryOwner___0___" data-uid="DotNext.Buffers.Memory.ReleaseAll``1(DotNext.Buffers.MemoryOwner{``0}@)">ReleaseAll&lt;T&gt;(ref MemoryOwner&lt;T&gt;)</h4>
@@ -815,21 +665,18 @@
   <div class="markdown level1 remarks"><p>This method calls <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable.dispose">Dispose()</a> for each
 object in the rented block.</p>
 </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_Resize__1_DotNext_Buffers_MemoryOwner___0___System_Int32_DotNext_Buffers_MemoryAllocator___0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.Resize%60%601(DotNext.Buffers.MemoryOwner%7B%60%600%7D%40%2CSystem.Int32%2CDotNext.Buffers.MemoryAllocator%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.cs/#L71">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_Resize_" data-uid="DotNext.Buffers.Memory.Resize*"></a>
-  <h4 id="DotNext_Buffers_Memory_Resize__1_DotNext_Buffers_MemoryOwner___0___System_Int32_DotNext_Buffers_MemoryAllocator___0__" data-uid="DotNext.Buffers.Memory.Resize``1(DotNext.Buffers.MemoryOwner{``0}@,System.Int32,DotNext.Buffers.MemoryAllocator{``0})">Resize&lt;T&gt;(ref MemoryOwner&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?)</h4>
+  <h4 id="DotNext_Buffers_Memory_Resize__1_DotNext_Buffers_MemoryOwner___0___System_Int32_DotNext_Buffers_MemoryAllocator___0__" data-uid="DotNext.Buffers.Memory.Resize``1(DotNext.Buffers.MemoryOwner{``0}@,System.Int32,DotNext.Buffers.MemoryAllocator{``0})">Resize&lt;T&gt;(ref MemoryOwner&lt;T&gt;, int, MemoryAllocator&lt;T&gt;)</h4>
   <div class="markdown level1 summary"><p>Resizes the buffer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Resize&lt;T&gt;(this ref MemoryOwner&lt;T&gt; owner, int newLength, MemoryAllocator&lt;T&gt;? allocator = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public static void Resize&lt;T&gt;(this ref MemoryOwner&lt;T&gt; owner, int newLength, MemoryAllocator&lt;T&gt; allocator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -893,12 +740,9 @@ object in the rented block.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_ToAllocator__1_System_Buffers_ArrayPool___0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.ToAllocator%60%601(System.Buffers.ArrayPool%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.Allocator.cs/#L17">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.Allocator.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_ToAllocator_" data-uid="DotNext.Buffers.Memory.ToAllocator*"></a>
   <h4 id="DotNext_Buffers_Memory_ToAllocator__1_System_Buffers_ArrayPool___0__" data-uid="DotNext.Buffers.Memory.ToAllocator``1(System.Buffers.ArrayPool{``0})">ToAllocator&lt;T&gt;(ArrayPool&lt;T&gt;)</h4>
@@ -922,8 +766,7 @@ object in the rented block.</p>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1">ArrayPool</a>&lt;T&gt;</td>
         <td><span class="parametername">pool</span></td>
-        <td><p>The array pool.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -954,17 +797,13 @@ object in the rented block.</p>
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the items in the memory pool.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_ToAllocator__1_System_Buffers_MemoryPool___0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.ToAllocator%60%601(System.Buffers.MemoryPool%7B%60%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.Allocator.cs/#L29">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.Allocator.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_ToAllocator_" data-uid="DotNext.Buffers.Memory.ToAllocator*"></a>
   <h4 id="DotNext_Buffers_Memory_ToAllocator__1_System_Buffers_MemoryPool___0__" data-uid="DotNext.Buffers.Memory.ToAllocator``1(System.Buffers.MemoryPool{``0})">ToAllocator&lt;T&gt;(MemoryPool&lt;T&gt;)</h4>
@@ -988,8 +827,7 @@ object in the rented block.</p>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.memorypool-1">MemoryPool</a>&lt;T&gt;</td>
         <td><span class="parametername">pool</span></td>
-        <td><p>The memory pool.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -1020,17 +858,13 @@ object in the rented block.</p>
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the items in the memory pool.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_ToAllocator__1_System_Func_System_Int32_System_Buffers_IMemoryOwner___0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.ToAllocator%60%601(System.Func%7BSystem.Int32%2CSystem.Buffers.IMemoryOwner%7B%60%600%7D%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.Allocator.cs/#L41">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.Allocator.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_ToAllocator_" data-uid="DotNext.Buffers.Memory.ToAllocator*"></a>
   <h4 id="DotNext_Buffers_Memory_ToAllocator__1_System_Func_System_Int32_System_Buffers_IMemoryOwner___0___" data-uid="DotNext.Buffers.Memory.ToAllocator``1(System.Func{System.Int32,System.Buffers.IMemoryOwner{``0}})">ToAllocator&lt;T&gt;(Func&lt;int, IMemoryOwner&lt;T&gt;&gt;)</h4>
@@ -1054,8 +888,7 @@ object in the rented block.</p>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.imemoryowner-1">IMemoryOwner</a>&lt;T&gt;&gt;</td>
         <td><span class="parametername">provider</span></td>
-        <td><p>The memory provider.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -1086,26 +919,22 @@ object in the rented block.</p>
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the items in the memory pool.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_ToReadOnlySequence_System_Collections_Generic_IEnumerable_System_String__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.ToReadOnlySequence(System.Collections.Generic.IEnumerable%7BSystem.String%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.ReadOnlySequence.cs">View Source</a>
   </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L94">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Memory_ToReadOnlySequence_" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence*"></a>
-  <h4 id="DotNext_Buffers_Memory_ToReadOnlySequence_System_Collections_Generic_IEnumerable_System_String__" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence(System.Collections.Generic.IEnumerable{System.String})">ToReadOnlySequence(IEnumerable&lt;string?&gt;?)</h4>
-  <div class="markdown level1 summary"><p>Constructs a sequence of characters from a collection of strings.</p>
+  <a id="DotNext_Buffers_Memory_ToEnumerator_" data-uid="DotNext.Buffers.Memory.ToEnumerator*"></a>
+  <h4 id="DotNext_Buffers_Memory_ToEnumerator__1_System_Buffers_ReadOnlySequence___0___" data-uid="DotNext.Buffers.Memory.ToEnumerator``1(System.Buffers.ReadOnlySequence{``0}@)">ToEnumerator&lt;T&gt;(in ReadOnlySequence&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Gets enumerator over all elements in the sequence.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ReadOnlySequence&lt;char&gt; ToReadOnlySequence(this IEnumerable&lt;string?&gt;? strings)</code></pre>
+    <pre><code class="lang-csharp hljs">public static IEnumerator&lt;T&gt; ToEnumerator&lt;T&gt;(in ReadOnlySequence&lt;T&gt; sequence)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1118,9 +947,9 @@ object in the rented block.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
-        <td><span class="parametername">strings</span></td>
-        <td><p>A collection of strings.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;</td>
+        <td><span class="parametername">sequence</span></td>
+        <td><p>The sequence to be converted.</p>
 </td>
       </tr>
     </tbody>
@@ -1135,27 +964,40 @@ object in the rented block.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
-        <td><p>A sequence of characters representing concatenated strings.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerator-1">IEnumerator</a>&lt;T&gt;</td>
+        <td><p>The enumerator over all elements in the sequence.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of elements in the sequence.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_ToReadOnlySequence_System_ReadOnlySpan_System_String__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.ToReadOnlySequence(System.ReadOnlySpan%7BSystem.String%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.ReadOnlySequence.cs">View Source</a>
   </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L130">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Memory_ToReadOnlySequence_" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence*"></a>
-  <h4 id="DotNext_Buffers_Memory_ToReadOnlySequence_System_ReadOnlySpan_System_String__" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence(System.ReadOnlySpan{System.String})">ToReadOnlySequence(ReadOnlySpan&lt;string?&gt;)</h4>
-  <div class="markdown level1 summary"><p>Constructs a sequence of characters from a collection of strings.</p>
+  <a id="DotNext_Buffers_Memory_ToEnumerator_" data-uid="DotNext.Buffers.Memory.ToEnumerator*"></a>
+  <h4 id="DotNext_Buffers_Memory_ToEnumerator__1_System_ReadOnlyMemory___0__" data-uid="DotNext.Buffers.Memory.ToEnumerator``1(System.ReadOnlyMemory{``0})">ToEnumerator&lt;T&gt;(ReadOnlyMemory&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Gets enumerator over all elements in the memory.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ReadOnlySequence&lt;char&gt; ToReadOnlySequence(ReadOnlySpan&lt;string?&gt; strings)</code></pre>
+    <pre><code class="lang-csharp hljs">public static IEnumerator&lt;T&gt; ToEnumerator&lt;T&gt;(ReadOnlyMemory&lt;T&gt; memory)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1168,9 +1010,9 @@ object in the rented block.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a>&gt;</td>
-        <td><span class="parametername">strings</span></td>
-        <td><p>A collection of strings.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;</td>
+        <td><span class="parametername">memory</span></td>
+        <td><p>The memory block to be converted.</p>
 </td>
       </tr>
     </tbody>
@@ -1185,27 +1027,44 @@ object in the rented block.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.char">char</a>&gt;</td>
-        <td><p>A sequence of characters representing concatenated strings.</p>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerator-1">IEnumerator</a>&lt;T&gt;</td>
+        <td><p>The enumerator over all elements in the memory.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of elements in the memory.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Buffers_Memory_ToEnumerator__1_System_ReadOnlyMemory___0___seealso">See Also</h5>
+  <div class="seealso">
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.runtime.interopservices.memorymarshal.toenumerable">ToEnumerable</a>&lt;T&gt;(<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;)</div>
+  </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_ToReadOnlySequence_System_Text_StringBuilder_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.ToReadOnlySequence(System.Text.StringBuilder)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.ReadOnlySequence.cs">View Source</a>
   </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L159">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Memory_ToReadOnlySequence_" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence*"></a>
-  <h4 id="DotNext_Buffers_Memory_ToReadOnlySequence_System_Text_StringBuilder_" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence(System.Text.StringBuilder)">ToReadOnlySequence(StringBuilder)</h4>
+  <a id="DotNext_Buffers_Memory_ToSequence_" data-uid="DotNext.Buffers.Memory.ToSequence*"></a>
+  <h4 id="DotNext_Buffers_Memory_ToSequence_System_Text_StringBuilder_" data-uid="DotNext.Buffers.Memory.ToSequence(System.Text.StringBuilder)">ToSequence(StringBuilder)</h4>
   <div class="markdown level1 summary"><p>Gets a sequence of characters written to the builder.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ReadOnlySequence&lt;char&gt; ToReadOnlySequence(this StringBuilder builder)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ReadOnlySequence&lt;char&gt; ToSequence(this StringBuilder builder)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1241,144 +1100,9 @@ object in the rented block.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_ToReadOnlySequence__1_System_Collections_Generic_IEnumerable_System_ReadOnlyMemory___0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.ToReadOnlySequence%60%601(System.Collections.Generic.IEnumerable%7BSystem.ReadOnlyMemory%7B%60%600%7D%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L15">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Memory_ToReadOnlySequence_" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence*"></a>
-  <h4 id="DotNext_Buffers_Memory_ToReadOnlySequence__1_System_Collections_Generic_IEnumerable_System_ReadOnlyMemory___0___" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence``1(System.Collections.Generic.IEnumerable{System.ReadOnlyMemory{``0}})">ToReadOnlySequence&lt;T&gt;(IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;?)</h4>
-  <div class="markdown level1 summary"><p>Converts the sequence of memory blocks to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> data type.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ReadOnlySequence&lt;T&gt; ToReadOnlySequence&lt;T&gt;(this IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;? chunks)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;</td>
-        <td><span class="parametername">chunks</span></td>
-        <td><p>The sequence of memory blocks.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;</td>
-        <td><p>The constructed <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> instance containing memory blocks.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of elements in the memory blocks.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_ToReadOnlySequence__1_System_ReadOnlySpan_System_ReadOnlyMemory___0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.ToReadOnlySequence%60%601(System.ReadOnlySpan%7BSystem.ReadOnlyMemory%7B%60%600%7D%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L65">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_Memory_ToReadOnlySequence_" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence*"></a>
-  <h4 id="DotNext_Buffers_Memory_ToReadOnlySequence__1_System_ReadOnlySpan_System_ReadOnlyMemory___0___" data-uid="DotNext.Buffers.Memory.ToReadOnlySequence``1(System.ReadOnlySpan{System.ReadOnlyMemory{``0}})">ToReadOnlySequence&lt;T&gt;(ReadOnlySpan&lt;ReadOnlyMemory&lt;T&gt;&gt;)</h4>
-  <div class="markdown level1 summary"><p>Converts the sequence of memory blocks to <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> data type.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ReadOnlySequence&lt;T&gt; ToReadOnlySequence&lt;T&gt;(ReadOnlySpan&lt;ReadOnlyMemory&lt;T&gt;&gt; chunks)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;</td>
-        <td><span class="parametername">chunks</span></td>
-        <td><p>The sequence of memory blocks.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;</td>
-        <td><p>The constructed <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;T&gt;</a> instance containing memory blocks.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of elements in the memory blocks.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_TrimLength__1_System_Memory___0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.TrimLength%60%601(System.Memory%7B%60%600%7D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.cs/#L51">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_TrimLength_" data-uid="DotNext.Buffers.Memory.TrimLength*"></a>
   <h4 id="DotNext_Buffers_Memory_TrimLength__1_System_Memory___0__System_Int32_" data-uid="DotNext.Buffers.Memory.TrimLength``1(System.Memory{``0},System.Int32)">TrimLength&lt;T&gt;(Memory&lt;T&gt;, int)</h4>
@@ -1446,12 +1170,9 @@ If length is less that <code class="paramref">maxLength</code> then the original
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_TrimLength__1_System_ReadOnlyMemory___0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.TrimLength%60%601(System.ReadOnlyMemory%7B%60%600%7D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.cs/#L40">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_TrimLength_" data-uid="DotNext.Buffers.Memory.TrimLength*"></a>
   <h4 id="DotNext_Buffers_Memory_TrimLength__1_System_ReadOnlyMemory___0__System_Int32_" data-uid="DotNext.Buffers.Memory.TrimLength``1(System.ReadOnlyMemory{``0},System.Int32)">TrimLength&lt;T&gt;(ReadOnlyMemory&lt;T&gt;, int)</h4>
@@ -1519,12 +1240,9 @@ If length is less that <code class="paramref">maxLength</code> then the original
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory_TryGetBlock__1_System_Buffers_ReadOnlySequence___0___System_Int32_System_ReadOnlyMemory___0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory.TryGetBlock%60%601(System.Buffers.ReadOnlySequence%7B%60%600%7D%40%2CSystem.Int32%2CSystem.ReadOnlyMemory%7B%60%600%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L273">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.ReadOnlySequence.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_Memory_TryGetBlock_" data-uid="DotNext.Buffers.Memory.TryGetBlock*"></a>
   <h4 id="DotNext_Buffers_Memory_TryGetBlock__1_System_Buffers_ReadOnlySequence___0___System_Int32_System_ReadOnlyMemory___0___" data-uid="DotNext.Buffers.Memory.TryGetBlock``1(System.Buffers.ReadOnlySequence{``0}@,System.Int32,System.ReadOnlyMemory{``0}@)">TryGetBlock&lt;T&gt;(in ReadOnlySequence&lt;T&gt;, int, out ReadOnlyMemory&lt;T&gt;)</h4>
@@ -1533,7 +1251,7 @@ If length is less that <code class="paramref">maxLength</code> then the original
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool TryGetBlock&lt;T&gt;(this in ReadOnlySequence&lt;T&gt; sequence, int count, out ReadOnlyMemory&lt;T&gt; span)</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool TryGetBlock&lt;T&gt;(this in ReadOnlySequence&lt;T&gt; source, int count, out ReadOnlyMemory&lt;T&gt; span)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -1547,9 +1265,8 @@ If length is less that <code class="paramref">maxLength</code> then the original
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;</td>
-        <td><span class="parametername">sequence</span></td>
-        <td><p>The sequence of elements to read from.</p>
-</td>
+        <td><span class="parametername">source</span></td>
+        <td></td>
       </tr>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int32">int</a></td>
@@ -1592,8 +1309,198 @@ If length is less that <code class="paramref">maxLength</code> then the original
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The type of the elements in the block.</p>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.Allocator.cs">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_Memory_get_Array_" data-uid="DotNext.Buffers.Memory.get_Array*"></a>
+  <h4 id="DotNext_Buffers_Memory_get_Array__1" data-uid="DotNext.Buffers.Memory.get_Array``1">get_Array&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Gets the array allocator.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static MemoryAllocator&lt;T&gt; get_Array&lt;T&gt;()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;T&gt;</td>
+        <td><p>The array allocator.</p>
 </td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.Allocator.cs">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_Memory_get_DefaultIfNull_" data-uid="DotNext.Buffers.Memory.get_DefaultIfNull*"></a>
+  <h4 id="DotNext_Buffers_Memory_get_DefaultIfNull__1_DotNext_Buffers_MemoryAllocator___0__" data-uid="DotNext.Buffers.Memory.get_DefaultIfNull``1(DotNext.Buffers.MemoryAllocator{``0})">get_DefaultIfNull&lt;T&gt;(MemoryAllocator&lt;T&gt;?)</h4>
+  <div class="markdown level1 summary"><p>Gets <a class="xref" href="DotNext.Buffers.Memory.html#DotNext_Buffers_Memory_get_Default__1">get_Default&lt;T&gt;()</a> allocator if the current is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static MemoryAllocator&lt;T&gt; get_DefaultIfNull&lt;T&gt;(MemoryAllocator&lt;T&gt;? allocator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;T&gt;</td>
+        <td><span class="parametername">allocator</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.Allocator.cs">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_Memory_get_Default_" data-uid="DotNext.Buffers.Memory.get_Default*"></a>
+  <h4 id="DotNext_Buffers_Memory_get_Default__1" data-uid="DotNext.Buffers.Memory.get_Default``1">get_Default&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Gets the default allocator that uses <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared">Shared</a> pool.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static MemoryAllocator&lt;T&gt; get_Default&lt;T&gt;()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.Allocator.cs">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_Memory_get_Pinned_" data-uid="DotNext.Buffers.Memory.get_Pinned*"></a>
+  <h4 id="DotNext_Buffers_Memory_get_Pinned__1" data-uid="DotNext.Buffers.Memory.get_Pinned``1">get_Pinned&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Returns an allocator of pinned arrays.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static MemoryAllocator&lt;T&gt; get_Pinned&lt;T&gt;() where T : unmanaged</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator</a>&lt;T&gt;</td>
+        <td><p>The array allocator.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -1606,10 +1513,7 @@ If length is less that <code class="paramref">maxLength</code> then the original
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_Memory.md&amp;value=---%0Auid%3A%20DotNext.Buffers.Memory%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/Memory.ReadOnlySequence.cs/#L7" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/Memory.Allocator.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

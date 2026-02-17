@@ -79,9 +79,8 @@ types of memory pools.</p>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.imemoryowner-1">IMemoryOwner</a>&lt;T&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;T&gt;&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;T&gt;&gt;&gt;</div>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -92,10 +91,10 @@ types of memory pools.</p>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.gethashcode">ValueType.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
@@ -105,7 +104,7 @@ types of memory pools.</p>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_MemoryOwner_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct MemoryOwner&lt;T&gt; : IMemoryOwner&lt;T&gt;, IDisposable, ISupplier&lt;Memory&lt;T&gt;&gt;, IFunctional&lt;Func&lt;Memory&lt;T&gt;&gt;&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;&gt;&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public struct MemoryOwner&lt;T&gt; : IMemoryOwner&lt;T&gt;, IDisposable, ISupplier&lt;Memory&lt;T&gt;&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;&gt;, IFunctional</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -125,12 +124,9 @@ types of memory pools.</p>
   </table>
   <h3 id="constructors">Constructors
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_MemoryOwner_1__ctor_System_Buffers_ArrayPool__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.%23ctor(System.Buffers.ArrayPool%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L55">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1__ctor_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1__ctor_System_Buffers_ArrayPool__0__System_Int32_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor(System.Buffers.ArrayPool{`0},System.Int32)">MemoryOwner(ArrayPool&lt;T&gt;, int)</h4>
@@ -165,12 +161,9 @@ types of memory pools.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_MemoryOwner_1__ctor_System_Buffers_MemoryPool__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.%23ctor(System.Buffers.MemoryPool%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L65">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1__ctor_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1__ctor_System_Buffers_MemoryPool__0__System_Int32_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor(System.Buffers.MemoryPool{`0},System.Int32)">MemoryOwner(MemoryPool&lt;T&gt;, int)</h4>
@@ -205,12 +198,9 @@ types of memory pools.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_MemoryOwner_1__ctor_System_Func_System_Buffers_IMemoryOwner__0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.%23ctor(System.Func%7BSystem.Buffers.IMemoryOwner%7B%600%7D%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L122">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1__ctor_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1__ctor_System_Func_System_Buffers_IMemoryOwner__0___" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor(System.Func{System.Buffers.IMemoryOwner{`0}})">MemoryOwner(Func&lt;IMemoryOwner&lt;T&gt;&gt;)</h4>
@@ -239,12 +229,9 @@ types of memory pools.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_MemoryOwner_1__ctor_System_Func_System_Int32_System_Buffers_IMemoryOwner__0___System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.%23ctor(System.Func%7BSystem.Int32%2CSystem.Buffers.IMemoryOwner%7B%600%7D%7D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L92">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1__ctor_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1__ctor_System_Func_System_Int32_System_Buffers_IMemoryOwner__0___System_Int32_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor(System.Func{System.Int32,System.Buffers.IMemoryOwner{`0}},System.Int32)">MemoryOwner(Func&lt;int, IMemoryOwner&lt;T&gt;&gt;, int)</h4>
@@ -279,12 +266,9 @@ types of memory pools.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_MemoryOwner_1__ctor__0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.%23ctor(%600%5B%5D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L157">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1__ctor_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1__ctor__0___" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor(`0[])">MemoryOwner(T[])</h4>
@@ -313,12 +297,9 @@ types of memory pools.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_MemoryOwner_1__ctor__0___System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.%23ctor(%600%5B%5D%2CSystem.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L144">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1__ctor_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1__ctor__0___System_Int32_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor(`0[],System.Int32)">MemoryOwner(T[], int)</h4>
@@ -371,12 +352,37 @@ types of memory pools.</p>
   </table>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_MemoryOwner_1_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.IsEmpty%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">View Source</a>
   </span>
+  <a id="DotNext_Buffers_MemoryOwner_1_DataRef_" data-uid="DotNext.Buffers.MemoryOwner`1.DataRef*"></a>
+  <h4 id="DotNext_Buffers_MemoryOwner_1_DataRef" data-uid="DotNext.Buffers.MemoryOwner`1.DataRef">DataRef</h4>
+  <div class="markdown level1 summary"><p>Gets managed pointer to the first element in the rented memory block.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public readonly ref T DataRef { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L225">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1_IsEmpty_" data-uid="DotNext.Buffers.MemoryOwner`1.IsEmpty*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1_IsEmpty" data-uid="DotNext.Buffers.MemoryOwner`1.IsEmpty">IsEmpty</h4>
@@ -402,12 +408,9 @@ types of memory pools.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_MemoryOwner_1_Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.Item(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L289">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1_Item_" data-uid="DotNext.Buffers.MemoryOwner`1.Item*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1_Item_System_Int32_" data-uid="DotNext.Buffers.MemoryOwner`1.Item(System.Int32)">this[int]</h4>
@@ -468,12 +471,9 @@ types of memory pools.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_MemoryOwner_1_Length.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.Length%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L165">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1_Length_" data-uid="DotNext.Buffers.MemoryOwner`1.Length*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1_Length" data-uid="DotNext.Buffers.MemoryOwner`1.Length">Length</h4>
@@ -499,12 +499,9 @@ types of memory pools.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_MemoryOwner_1_Memory.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.Memory%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L231">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1_Memory_" data-uid="DotNext.Buffers.MemoryOwner`1.Memory*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1_Memory" data-uid="DotNext.Buffers.MemoryOwner`1.Memory">Memory</h4>
@@ -531,12 +528,9 @@ types of memory pools.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_MemoryOwner_1_Span.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.Span%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L247">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1_Span_" data-uid="DotNext.Buffers.MemoryOwner`1.Span*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1_Span" data-uid="DotNext.Buffers.MemoryOwner`1.Span">Span</h4>
@@ -565,12 +559,9 @@ types of memory pools.</p>
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_MemoryOwner_1_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.Dispose%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L321">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1_Dispose_" data-uid="DotNext.Buffers.MemoryOwner`1.Dispose*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1_Dispose" data-uid="DotNext.Buffers.MemoryOwner`1.Dispose">Dispose()</h4>
@@ -581,17 +572,13 @@ types of memory pools.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
   </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_MemoryOwner_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L328">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1_ToString_" data-uid="DotNext.Buffers.MemoryOwner`1.ToString*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1_ToString" data-uid="DotNext.Buffers.MemoryOwner`1.ToString">ToString()</h4>
-  <div class="markdown level1 summary"><p>Returns the fully qualified type name of this instance.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
@@ -608,19 +595,15 @@ types of memory pools.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></td>
-        <td><p>The fully qualified type name.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a></div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_MemoryOwner_1_TryResize_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.TryResize(System.Int32)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L201">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1_TryResize_" data-uid="DotNext.Buffers.MemoryOwner`1.TryResize*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1_TryResize_System_Int32_" data-uid="DotNext.Buffers.MemoryOwner`1.TryResize(System.Int32)">TryResize(int)</h4>
@@ -696,35 +679,23 @@ or equal to <a class="xref" href="DotNext.Buffers.MemoryOwner-1.html#DotNext_Buf
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.Memory.html#DotNext_Buffers_Memory_Resize__1_DotNext_Buffers_MemoryOwner___0___System_Int32_DotNext_Buffers_MemoryAllocator___0__">Memory.Resize&lt;T&gt;(ref MemoryOwner&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerator__2___0_System_Threading_CancellationToken_">Collection.ToAsyncEnumerator&lt;TEnumerator, T&gt;(TEnumerator, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToClassicEnumerator__2___0_">Collection.ToClassicEnumerator&lt;TEnumerator, T&gt;(TEnumerator)</a>
+      <a class="xref" href="DotNext.Buffers.Memory.html#DotNext_Buffers_Memory_Resize__1_DotNext_Buffers_MemoryOwner___0___System_Int32_DotNext_Buffers_MemoryAllocator___0__">Memory.Resize&lt;T&gt;(ref MemoryOwner&lt;T&gt;, int, MemoryAllocator&lt;T&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
 
 </article>
@@ -735,10 +706,7 @@ or equal to <a class="xref" href="DotNext.Buffers.MemoryOwner-1.html#DotNext_Buf
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_MemoryOwner_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L14" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/MemoryOwner.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

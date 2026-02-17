@@ -71,17 +71,16 @@
 <h1 id="randomization">Randomization</h1>
 <p>Related class: <a class="xref" href="../../api/DotNext.RandomExtensions.html">RandomExtensions</a></p>
 <p>Extension methods for random data generation extends both classes <a href="https://docs.microsoft.com/en-us/dotnet/api/system.random">Random</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator">RandomNumberGenerator</a>.</p>
-<h2 id="random-string-generation">Random string generation</h2>
-<p>Provides a way to generate random string of the given length and set of allowed characters.</p>
+<h2 id="random-blittable-values">Random blittable values</h2>
+<p>Provides a way to generate random values of arbitrary types:</p>
 <pre><code class="lang-csharp">using DotNext;
 using System;
+using System.Security.Cryptography;
 
 var rand = new Random();
-var password = rand.NextString(&quot;abc123&quot;, 10);   
-//now password has 10 characters
-//each character is equal to 'a', 'b', 'c', '1', '2' or '3'
+Int128 password = rand.Next&lt;Int128&gt;();
+password = RandomNumberGenerator.Next&lt;Int128&gt;();
 </code></pre>
-<p>The same extension method is provided for class <a href="https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator">RandomNumberGenerator</a>.</p>
 <h2 id="random-boolean-generation">Random boolean generation</h2>
 <p>Provides a way to generate boolean value with the given probability</p>
 <pre><code class="lang-csharp">using DotNext;
@@ -91,7 +90,7 @@ var b = rand.NextBoolean(0.3D); //0.3 is a probability of TRUE value
 </code></pre>
 <p>The same extension method is provided for class <a href="https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator">RandomNumberGenerator</a>.</p>
 <h1 id="string-extensions">String extensions</h1>
-<p>Related class: <a class="xref" href="../../api/DotNext.StringExtensions.html">StringExtensions</a>.</p>
+<p>Related class: <a class="xref" href="../../api/DotNext.StringExtensions.html">StringExtensions</a>, <a class="xref" href="../../api/DotNext.Span.html">Span</a></p>
 <h2 id="reverse-string">Reverse string</h2>
 <p>Extension method <em>Reverse</em> allows to reverse string characters and returns a new string:</p>
 <pre><code class="lang-csharp">using DotNext;
@@ -109,7 +108,7 @@ Span&lt;int&gt; array = new int[] { 10, 20, 30 };
 array = array.TrimLength(2);    //array is { 10, 20 }
 </code></pre>
 <h1 id="delegates">Delegates</h1>
-<p>Related classes: <a class="xref" href="../../api/DotNext.DelegateHelpers.html">DelegateHelpers</a>, <a class="xref" href="../../api/DotNext.Func.html">Func</a>, <a class="xref" href="../../api/DotNext.Converter.html">Converter</a>, <a class="xref" href="../../api/DotNext.Predicate.html">Predicate</a>.</p>
+<p>Related classes: <a class="xref" href="../../api/DotNext.DelegateHelpers.html">DelegateHelpers</a>.</p>
 <h2 id="change-type-of-delegate">Change type of delegate</h2>
 <p>Different types of delegates can refer to the same method. For instance, <code>Func&lt;string, string&gt;</code> represents the same signature as <code>Converter&lt;string, string&gt;</code>. It means that the delegate instance can be converted into another delegate type if signature matches.</p>
 <pre><code class="lang-csharp">using DotNext;
@@ -117,33 +116,25 @@ array = array.TrimLength(2);    //array is { 10, 20 }
 Func&lt;string, int&gt; lengthOf = str =&gt; str.Length;
 Converter&lt;string, int&gt; lengthOf2 = lengthOf.ChangeType&lt;Converter&lt;string, int&gt;&gt;();
 </code></pre>
-<h2 id="specialized-delegate-converters">Specialized delegate converters</h2>
-<p>Conversion between mostly used delegate types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1">Predicate&lt;T&gt;</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.func-2">Func&lt;T, TResult&gt;</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.converter-2">Converter&lt;TInput, TOutput&gt;</a>.</p>
-<pre><code class="lang-csharp">using DotNext;
-
-Predicate&lt;string&gt; isEmpty = str =&gt; str is { Length: 0 };
-Func&lt;string, bool&gt; isEmptyFunc = isEmpty.AsFunc();
-Converter&lt;string, bool&gt; isEmptyConv = isEmpty.AsConverter();
-</code></pre>
 <h2 id="predefined-delegates">Predefined delegates</h2>
-<p>Cached delegate instances for mostly used delegate types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1">Predicate&lt;T&gt;</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.func-2">Func&lt;T, TResult&gt;</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.converter-2">Converter&lt;TInput, TOutput&gt;</a>.</p>
+<p>Cached delegate instances for mostly used delegate types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1">Predicate&lt;T&gt;</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.func-2">Func&lt;T, TResult&gt;</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.action">Action</a>.</p>
 <pre><code class="lang-csharp">using DotNext;
 
-Func&lt;int, int&gt; identity = Func.Identity&lt;int&gt;(); //identity delegate which returns input argument without any changes
-Predicate&lt;bool&gt; truePredicate = Predicate.Constant&lt;bool&gt;(true); // predicate which always returns true
-Predicate&lt;bool&gt; falsePredicate = Predicate.Constant&lt;bool&gt;(false); //predicate which always returns false
-Predicate&lt;string&gt; nullCheck = Predicate.IsNull&lt;string&gt;(); //predicate checking whether the input argument is null
-Predicate&lt;string&gt; notNullCheck = Predicate.IsNotNull&lt;string&gt;(); //predicate checking whether the input argument is not null
+Func&lt;int, int&gt; identity = Func&lt;int&gt;.Identity; //identity delegate which returns input argument without any changes
+Predicate&lt;bool&gt; truePredicate = Predicate&lt;bool&gt;.Constant(true); // predicate which always returns true
+Predicate&lt;bool&gt; falsePredicate = Predicate&lt;bool&gt;.Constant(false); //predicate which always returns false
+Predicate&lt;string&gt; nullCheck = Predicate&lt;string&gt;.IsNull; //predicate checking whether the input argument is null
+Predicate&lt;string&gt; notNullCheck = Predicate&lt;string&gt;.IsNotNull; //predicate checking whether the input argument is not null
 </code></pre>
 <h2 id="logical-operators-for-predicate">Logical operators for Predicate</h2>
 <p>Extension methods implementation logical operators for Predicate delegate instances:</p>
 <pre><code class="lang-csharp">using DotNext;
 
 Predicate&lt;string&gt; predicate = str =&gt; str.Length == 0;
-predicate = predicate.Negate();
-predicate = predicate.And(str =&gt; str.Length &gt; 2);
-predicate = predicate.Or(str =&gt; str.Length % 2 == 0);
-predicate = predicate.Xor(Predicate.IsNull&lt;string&gt;());
+predicate = !predicate;
+predicate = predicate &amp; new Predicate&lt;string&gt;(str =&gt; str.Length &gt; 2);
+predicate = predicate | new Predicate&lt;string&gt;(str =&gt; str.Length % 2 == 0);
+predicate = predicate ^ new Predicate&lt;string&gt;(Predicate&lt;string&gt;.IsNull);
 </code></pre>
 <h2 id="delegate-factories">Delegate Factories</h2>
 <p>C# 9 introduces typed function pointers. However, conversion between regular delegates and function pointers is not supported. <code>DelegateHelpers</code> offers factory methods allowing creation of delegate instances from function pointers. These factory methods support implicit capturing of the first argument as well:</p>
@@ -154,29 +145,39 @@ static int GetHashCode(string s)
 }
 
 delegate*&lt;string, int&gt; hashCode = &amp;GetHashCode;
-Func&lt;string, int&gt; openDelegate = DelegateHelpers.CreateDelegate&lt;string, int&gt;(hashCode);
-Func&lt;int&gt; closedDelegate = DelegateHelpers.CreateDelegate&lt;string, int&gt;(hashCode, &quot;Hello, world!&quot;);
+Func&lt;string, int&gt; openDelegate = Func&lt;string, int&gt;.FromPointer(hashCode);
+Func&lt;int&gt; closedDelegate = Func&lt;int&gt;.FromPointer&lt;string, int&gt;(hashCode, &quot;Hello, world!&quot;);
 </code></pre>
-<h2 id="range-check">Range check</h2>
+<h2 id="binding">Binding</h2>
+<p>The delegate instance is a combination of the implicit first argument and the target method. Binding is a way to associate the implicit first argument with the delegate. This concept is used widely in <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind">JavaScript</a>. .NEXT exposes this functionality through <code>Bind</code> extension method or <code>&lt;&lt;</code> operator. The binding can be chained.</p>
+<pre><code class="lang-csharp">Func&lt;int, int, int&gt; sum = (x, y) =&gt; x + y;
+Func&lt;int, int&gt; f = sum &lt;&lt; 42; // bind 42 to x
+f.Invoke(12); // returns 42 + 12
+
+Func&lt;int&gt; f2 = sum &lt;&lt; 42 &lt;&lt; 12; // bind 42 to x and 12 to y, and produce Func&lt;int&gt;
+f.Invoke(); // returns 42 + 12
+</code></pre>
+<p><code>sum &lt;&lt; 42</code> can be replaced with <code>sum.Bind(42)</code> call that has the same effect.</p>
+<h1 id="range-check">Range check</h1>
 <p>Checks whether the given value is in specific range.</p>
 <pre><code class="lang-csharp">using DotNext;
 
-var b = 10.IsBetween(5.Enclosed(), 11.Enclosed()); //b == true
-b = 10.IsBetween(0.Disclosed(), 4.Disclosed()); //b == false
+var b = 10.IsBetween(5.Enclosed, 11.Enclosed); //b == true
+b = 10.IsBetween(0.Disclosed, 4.Disclosed); //b == false
 </code></pre>
 <h1 id="equality-check">Equality check</h1>
 <p>Related classes: <a class="xref" href="../../api/DotNext.BasicExtensions.html">BasicExtensions</a>.</p>
 <p>Extension method <em>IsOneOf</em> allows to check whether the value is equal to one of the given values.</p>
 <pre><code class="lang-csharp">using DotNext;
 
-var b = 42.IsOneOf([0, 5, 42, 3]); //b == true
+var b = 42.IsOneOf(0, 5, 42, 3); //b == true
 
-b = &quot;a&quot;.IsOneOf([&quot;b&quot;, &quot;c&quot;, &quot;d&quot;]); //b == false
+b = &quot;a&quot;.IsOneOf(&quot;b&quot;, &quot;c&quot;, &quot;d&quot;); //b == false
 </code></pre>
 <h2 id="equality-check-1">Equality check</h2>
 <p><em>BitwiseEquals</em> extension method performs bitwise equality between two regions of memory referenced by the arrays. Element type of these arrays should be of unmanaged value type, e.g. <code>int</code>, <code>long</code>, <code>System.Guid</code>.</p>
 <pre><code class="lang-csharp">var array2 = new int[] { 1, 2, 3 };
-Span.BitwiseEquals(new [] {1, 2, 4}, array2);    //false
+array2.BitwiseEquals(new [] {1, 2, 4});    //false
 </code></pre>
 <h1 id="timestamp">Timestamp</h1>
 <p><a class="xref" href="../../api/DotNext.Diagnostics.Timestamp.html">Timestamp</a> value type can be used as allocation-free alternative to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch">Stopwatch</a> when you need to measure time intervals.</p>
@@ -210,32 +211,12 @@ Result&lt;dynamic&gt; result = t.GetResult(CancellationToken.None);
 //obtain result asynchronously
 dynamic result = await t.AsDynamic();
 </code></pre>
-<h1 id="hex-converter">Hex Converter</h1>
-<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.convert.tohexstring">Convert.ToHexString</a> method from .NET standard library allow to convert array of bytes to its hexadecimal representation. However, it doesn't support <code>Span&lt;char&gt;</code> as a destination buffer. Moreover, the method produces UTF-16 encoded hex characters only.</p>
-<p><a class="xref" href="../../api/DotNext.Buffers.Text.Hex.html">Hex</a> static class exposes static methods for fast hexadecimal conversion:</p>
-<ul>
-<li><code>EncodeToUtf16</code> allows to convert <code>ReadOnlySpan&lt;byte&gt;</code> to hexadecimal representation and places result to <code>Span&lt;char&gt;</code></li>
-<li><code>EncodeToUtf8</code> allows to convert <code>ReadOnlySpan&lt;byte&gt;</code> to hexadecimal representation and places result to <code>Span&lt;byte&gt;</code></li>
-<li><code>DecodeFromUtf16</code> allows to convert hexadecimal UTF-16 encoded string in the from of <code>ReadOnlySpan&lt;char&gt;</code> to bytes and places result to <code>Span&lt;byte&gt;</code></li>
-<li><code>DecodeFromUtf8</code> allows to convert hexadecimal UTF-8 encoded string in the from of <code>ReadOnlySpan&lt;byte&gt;</code> to bytes and places result to <code>Span&lt;byte&gt;</code></li>
-</ul>
-<pre><code class="lang-csharp">using DotNext.Buffers.Text;
-
-ReadOnlySpan&lt;byte&gt; bytes = stackalloc byte[] {8, 16, 24};
-Span&lt;char&gt; hex = stackalloc char[bytes.Length * 2];
-Hex.EncodeToUtf16(bytes, hex); //now hex == 081018
+<h1 id="ref-like-structs-in-generic-context">Ref-like structs in generic context</h1>
+<p><a class="xref" href="../../api/DotNext.LocalReference-1.html">LocalReference&lt;T&gt;</a> is a simple wrapper by-ref struct that allows to encapsulate the managed pointer to any arbitrary type, including other by-ref structs. This type allows to pass typed managed pointers as generic arguments, as well as holding the managed pointer to by-ref struct within another by-ref struct, which is currently restricted by C# compiler.</p>
+<pre><code class="lang-csharp">int i = 42;
+LocalReference&lt;int&gt; reference = new(ref i);
 </code></pre>
-<h1 id="polling-of-concurrent-collections">Polling of Concurrent Collections</h1>
-<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.concurrent.iproducerconsumercollection-1">IProducerConsumerCollection&lt;T&gt;</a> is a common interface for concurrent collections in .NET library. Consumer of such collection uses <code>TryTake</code> or more specialized method provided by subclasses to obtain elements from the collection. For convenience, <a class="xref" href="../../api/DotNext.Collections.Generic.Collection.html">Collection</a> static class offers <code>GetConsumer</code> extension method to obtain consuming enumerable collection over the elements in the concurrent collection so you can use classic <strong>foreach</strong> loop:</p>
-<pre><code class="lang-csharp">using DotNext.Collections.Concurrent;
-using System.Collections.Concurrent;
-
-var queue = new ConcurrentQueue&lt;int&gt;();
-foreach (int item in queue.GetConsumer())
-{
-    // collection enumerator will call .TryDequeue(out int result) for each iteration of this loop
-}
-</code></pre>
+<p>Under the hood, <a class="xref" href="../../api/DotNext.LocalReference-1.html">LocalReference&lt;T&gt;</a> type is the same as <code>ref T</code> type. <a class="xref" href="../../api/DotNext.ReadOnlyLocalReference-1.html">ReadOnlyLocalReference&lt;T&gt;</a> type is the same as <code>ref readonly T</code> type.</p>
 
 </article>
           </div>

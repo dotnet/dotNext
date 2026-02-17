@@ -78,8 +78,6 @@ to its virtual memory.</p>
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
-    <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a>&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a>&gt;&gt;</div>
     <div><a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a></div>
   </div>
   <div class="inheritedMembers">
@@ -94,10 +92,10 @@ to its virtual memory.</p>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
@@ -107,16 +105,13 @@ to its virtual memory.</p>
   <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
   <h5 id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct MemoryMappedDirectAccessor : IUnmanagedMemory, IDisposable, ISupplier&lt;Stream&gt;, IFunctional&lt;Func&lt;Stream&gt;&gt;, IFlushable</code></pre>
+    <pre><code class="lang-csharp hljs">public struct MemoryMappedDirectAccessor : IUnmanagedMemory, IDisposable, IFlushable</code></pre>
   </div>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Bytes.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Bytes%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs/#L62">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Bytes_" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Bytes*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Bytes" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Bytes">Bytes</h4>
@@ -143,12 +138,9 @@ to its virtual memory.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.IsEmpty%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs/#L37">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_IsEmpty_" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.IsEmpty*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_IsEmpty" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.IsEmpty">IsEmpty</h4>
@@ -174,12 +166,9 @@ to its virtual memory.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Offset.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Offset%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs/#L42">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Offset_" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Offset*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Offset" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Offset">Offset</h4>
@@ -205,12 +194,9 @@ to its virtual memory.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Pointer.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Pointer%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs/#L48">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Pointer_" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Pointer*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Pointer" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Pointer">Pointer</h4>
@@ -237,12 +223,9 @@ to its virtual memory.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Size.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Size%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs/#L53">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Size_" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Size*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Size" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Size">Size</h4>
@@ -270,12 +253,9 @@ to its virtual memory.</p>
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_AsStream.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.AsStream%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs/#L32">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_AsStream_" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.AsStream*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_AsStream" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.AsStream">AsStream()</h4>
@@ -305,12 +285,9 @@ to its virtual memory.</p>
   <h5 id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_AsStream_remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The caller is responsible for disposing of the returned stream.</p>
 </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Clear.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Clear%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs/#L68">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Clear_" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Clear*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Clear" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Clear">Clear()</h4>
@@ -337,12 +314,9 @@ to its virtual memory.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Dispose.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Dispose%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs/#L83">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Dispose_" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Dispose*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Dispose" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Dispose">Dispose()</h4>
@@ -353,12 +327,9 @@ to its virtual memory.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
   </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Flush.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Flush%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs/#L78">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs">View Source</a>
   </span>
   <a id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Flush_" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Flush*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor_Flush" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.Flush">Flush()</h4>
@@ -377,12 +348,6 @@ to its virtual memory.</p>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.IO.IFlushable.html">IFlushable</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
@@ -390,19 +355,10 @@ to its virtual memory.</p>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerator__2___0_System_Threading_CancellationToken_">Collection.ToAsyncEnumerator&lt;TEnumerator, T&gt;(TEnumerator, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToClassicEnumerator__2___0_">Collection.ToClassicEnumerator&lt;TEnumerator, T&gt;(TEnumerator)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
 
 </article>
@@ -413,10 +369,7 @@ to its virtual memory.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_IO_MemoryMappedFiles_MemoryMappedDirectAccessor.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs/#L12" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedDirectAccessor.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

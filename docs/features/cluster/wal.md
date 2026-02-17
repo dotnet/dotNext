@@ -7,9 +7,6 @@ Persistent Write Ahead Log
 * Parallel reads
 * Automatic replays
 
-> [!IMPORTANT]
-> [WriteAheadLog](xref:DotNext.Net.Cluster.Consensus.Raft.StateMachine.WriteAheadLog) is a long-term replacement of the [PersistentState](xref:DotNext.Net.Cluster.Consensus.Raft.PersistentState) class, which accepts only bug fixes. In the next major version of .NEXT, it will be removed. Its documentation is available [here](./old-wal.md).
-
 Persistent WAL is not used as default audit trail by Raft implementation. You need to register it explicitly.
 
 # Basics

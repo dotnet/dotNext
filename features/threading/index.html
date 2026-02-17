@@ -121,7 +121,7 @@ using (await asyncLock.AcquireAsync(CancellationToken.None))
 </ul>
 <p>These methods allow to turn any thread-unsafe object into thread-safe object with precise control in context of multithreading access.</p>
 <pre><code class="lang-csharp">using System.Text;
-using static DotNext.Threading.AsyncLockAcquisition;
+using static DotNext.Threading.AsyncLock;
 
 var builder = new StringBuilder();
 
@@ -137,7 +137,7 @@ using (AcquireWriteLockAsync(builder, CancellationToken.None))
     builder.Append(&quot;Hello, world!&quot;);
 }
 </code></pre>
-<p>For more information check extension methods inside the <a class="xref" href="../../api/DotNext.Threading.AsyncLockAcquisition.html">AsyncLockAcquisition</a> class.</p>
+<p>For more information check extension methods inside the <a class="xref" href="../../api/DotNext.Threading.AsyncLock.html">AsyncLock</a> class.</p>
 <h1 id="custom-synchronization-primitive">Custom synchronization primitive</h1>
 <p><a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer-1.html">QueuedSynchronizer&lt;TContext&gt;</a> provides low-level infrastructure for writing custom synchronization primitives for asynchronous code. It uses the same <a class="xref" href="../../api/DotNext.Threading.QueuedSynchronizer.html">synchronization engine</a> as other primitives shipped with the library: <a class="xref" href="../../api/DotNext.Threading.AsyncExclusiveLock.html">AsyncExclusiveLock</a>, <a class="xref" href="../../api/DotNext.Threading.AsyncReaderWriterLock.html">AsyncReaderWriterLock</a>, etc. The following example demonstrates how to write custom async-aware reader-writer lock:</p>
 <pre><code class="lang-csharp">using DotNext.Threading;

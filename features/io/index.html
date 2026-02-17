@@ -112,10 +112,9 @@ await foreach (ReadOnlyMemory&lt;byte&gt; chunk in fs.ReadAllAsync(bufferSize: 5
 using System.IO;
 
 var fs = new FileStream(&quot;content.bin&quot;, FileMode.Open, FileAccess.Read, FileShare.Read);
-using var segment = new StreamSegment(fs);
 foreach(Action&lt;Stream&gt; consumer in consumers)
 {
-    segment.Adjust(10L, 1024L); //fs is limited to the segment limited by the offset of 10 from the beginning of the stream and length of 1024 bytes
+    using Stream segment = fs.Slice(10L, 1024L); //fs is limited to the segment limited by the offset of 10 from the beginning of the stream and length of 1024 bytes
     consumer(segment);
 }
 </code></pre>
@@ -127,7 +126,7 @@ using DotNext.IO;
 using var ms1 = new MemoryStream();
 using var ms2 = new MemoryStream();
 
-using var stream = ms1.Combine([ms2]);
+using var stream = Stream.Combine([ms1, ms2]);
 </code></pre>
 <p>Note that the result stream is read-only and not seekable.</p>
 <h1 id="pipelines">Pipelines</h1>
@@ -152,8 +151,8 @@ await foreach (ReadOnlyMemory&lt;byte&gt; chunk in pipe.Reader.ReadAllAsync())
 }
 </code></pre>
 <h1 id="decoding-data-from-readonlysequence">Decoding Data from ReadOnlySequence</h1>
-<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;byte&gt;</a> is a convenient way to read from non-contiguous blocks of memory. However, this API is too low-level and doesn't provide high-level methods for parsing strings and primitives. <a class="xref" href="../../api/DotNext.IO.SequenceReader.html">SequenceReader</a> value type is a wrapper for the sequence of memory blocks that provides high-level decoding methods:</p>
-<pre><code class="lang-csharp">using DotNext.IO;
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;byte&gt;</a> is a convenient way to read from non-contiguous blocks of memory. However, this API is too low-level and doesn't provide high-level methods for parsing strings and primitives. <a class="xref" href="../../api/DotNext.Buffers.SequenceReader.html">SequenceReader</a> value type is a wrapper for the sequence of memory blocks that provides high-level decoding methods:</p>
+<pre><code class="lang-csharp">using DotNext.Buffers;
 using System;
 using System.Buffers;
 using System.Text;
@@ -277,13 +276,13 @@ writer.RemainingSpan.TryWrite($&quot;{x} + {y} = {x + y}&quot;, out int writtenC
 writer.Advance(writtenCount);
 </code></pre>
 <h1 id="text-reader-for-readonlysequence">Text Reader for ReadOnlySequence</h1>
-<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;char&gt;</a> can be wrapped as an instance of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader">TextReader</a> class to read strings and characters in more convenient way. To do that, you need to call <code>AsTextReader</code> extension method:</p>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence&lt;char&gt;</a> can be wrapped as an instance of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.textreader">TextReader</a> class to read strings and characters in more convenient way. To do that, you need to call <code>TextReader.Create</code> extension method:</p>
 <pre><code class="lang-csharp">using DotNext.IO;
 using System.Buffers;
 using System.IO;
 
 ReadOnlySequence&lt;char&gt; sequence = ...;
-using TextReader reader = sequence.AsTextReader();
+using TextReader reader = TextReader.Create(sequence);
 </code></pre>
 
 </article>

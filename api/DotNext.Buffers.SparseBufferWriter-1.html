@@ -83,33 +83,20 @@
   <div class="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer</a>&lt;T&gt;</div>
-    <div><a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer</a>&lt;T&gt;</div>
+    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;T&gt;</div>
+    <div><a class="xref" href="DotNext.IConsumer-1.html">IConsumer</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;&gt;</div>
     <div><a class="xref" href="DotNext.ISupplier-3.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a>&gt;&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     <div><a class="xref" href="DotNext.IResettable.html">IResettable</a></div>
     <div><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;&gt;</div>
-    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.readonlysequence-1">ReadOnlySequence</a>&lt;T&gt;&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a></div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;T&gt;&gt;</div>
     <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
-    <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter</a>&lt;T&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposing">Disposable.IsDisposing</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_CreateException">Disposable.CreateException()</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposedTask">Disposable.DisposedTask</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_GetDisposedTask__1">Disposable.GetDisposedTask&lt;T&gt;()</a>
@@ -136,22 +123,22 @@
       <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(IEnumerable&lt;IAsyncDisposable&gt;)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_Collections_Generic_IEnumerable_System_IAsyncDisposable__">Disposable.DisposeAsync(params IEnumerable&lt;IAsyncDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;T&gt;(ReadOnlySpan&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose__1_System_ReadOnlySpan___0__">Disposable.Dispose&lt;TDisposable&gt;(params ReadOnlySpan&lt;TDisposable&gt;)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposeAsync_System_IAsyncDisposable___">Disposable.DisposeAsync(params IAsyncDisposable[])</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposing">Disposable.IsDisposing</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposingOrDisposed">Disposable.IsDisposingOrDisposed</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_DisposedTask">Disposable.DisposedTask</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
@@ -160,14 +147,23 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.memberwiseclone">object.MemberwiseClone()</a>
     </div>
     <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Buffers.html">Buffers</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_SparseBufferWriter_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class SparseBufferWriter&lt;T&gt; : Disposable, IGrowableBuffer&lt;T&gt;, IReadOnlySpanConsumer&lt;T&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IFunctional&lt;Func&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;&gt;, IDisposable, IResettable, ISupplier&lt;ReadOnlySequence&lt;T&gt;&gt;, IFunctional&lt;Func&lt;ReadOnlySequence&lt;T&gt;&gt;&gt;, IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;, IEnumerable, IBufferWriter&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public class SparseBufferWriter&lt;T&gt; : Disposable, IGrowableBuffer&lt;T&gt;, IBufferWriter&lt;T&gt;, IConsumer&lt;ReadOnlySpan&lt;T&gt;&gt;, ISupplier&lt;ReadOnlyMemory&lt;T&gt;, CancellationToken, ValueTask&gt;, IDisposable, IResettable, ISupplier&lt;ReadOnlySequence&lt;T&gt;&gt;, IFunctional, IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;, IEnumerable</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -191,12 +187,9 @@ usage can produce holes in the sparse buffer. To avoid holes, use public members
 </div>
   <h3 id="constructors">Constructors
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1__ctor.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.%23ctor%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L76">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1__ctor_" data-uid="DotNext.Buffers.SparseBufferWriter`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1__ctor" data-uid="DotNext.Buffers.SparseBufferWriter`1.#ctor">SparseBufferWriter()</h4>
@@ -208,12 +201,9 @@ as a default allocator of buffers.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public SparseBufferWriter()</code></pre>
   </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1__ctor_System_Buffers_MemoryPool__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.%23ctor(System.Buffers.MemoryPool%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L62">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1__ctor_" data-uid="DotNext.Buffers.SparseBufferWriter`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1__ctor_System_Buffers_MemoryPool__0__" data-uid="DotNext.Buffers.SparseBufferWriter`1.#ctor(System.Buffers.MemoryPool{`0})">SparseBufferWriter(MemoryPool&lt;T&gt;)</h4>
@@ -243,12 +233,9 @@ chunk size.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1__ctor_System_Int32_DotNext_Buffers_SparseBufferGrowth_DotNext_Buffers_MemoryAllocator__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.%23ctor(System.Int32%2CDotNext.Buffers.SparseBufferGrowth%2CDotNext.Buffers.MemoryAllocator%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L39">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1__ctor_" data-uid="DotNext.Buffers.SparseBufferWriter`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1__ctor_System_Int32_DotNext_Buffers_SparseBufferGrowth_DotNext_Buffers_MemoryAllocator__0__" data-uid="DotNext.Buffers.SparseBufferWriter`1.#ctor(System.Int32,DotNext.Buffers.SparseBufferGrowth,DotNext.Buffers.MemoryAllocator{`0})">SparseBufferWriter(int, SparseBufferGrowth, MemoryAllocator&lt;T&gt;?)</h4>
@@ -307,12 +294,9 @@ chunk size.</p>
   </table>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_End.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.End%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.Reader.cs/#L53">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.Reader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_End_" data-uid="DotNext.Buffers.SparseBufferWriter`1.End*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_End" data-uid="DotNext.Buffers.SparseBufferWriter`1.End">End</h4>
@@ -347,12 +331,9 @@ property remains unchanged between invocations of read-only operations.</p>
   <div class="seealso">
       <div><a class="xref" href="DotNext.Buffers.SparseBufferWriter-1.html#DotNext_Buffers_SparseBufferWriter_1_Read_System_SequencePosition__System_Int64_">Read(ref SequencePosition, long)</a></div>
   </div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_IsSingleSegment.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.IsSingleSegment%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L99">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_IsSingleSegment_" data-uid="DotNext.Buffers.SparseBufferWriter`1.IsSingleSegment*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_IsSingleSegment" data-uid="DotNext.Buffers.SparseBufferWriter`1.IsSingleSegment">IsSingleSegment</h4>
@@ -378,12 +359,9 @@ property remains unchanged between invocations of read-only operations.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_Start.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.Start%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.Reader.cs/#L58">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.Reader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_Start_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Start*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_Start" data-uid="DotNext.Buffers.SparseBufferWriter`1.Start">Start</h4>
@@ -409,12 +387,9 @@ property remains unchanged between invocations of read-only operations.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_WrittenCount.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.WrittenCount%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L87">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_WrittenCount_" data-uid="DotNext.Buffers.SparseBufferWriter`1.WrittenCount*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_WrittenCount" data-uid="DotNext.Buffers.SparseBufferWriter`1.WrittenCount">WrittenCount</h4>
@@ -458,12 +433,9 @@ property remains unchanged between invocations of read-only operations.</p>
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_Add__0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.Add(%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L196">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_Add_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Add*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_Add__0_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Add(`0)">Add(T)</h4>
@@ -508,12 +480,9 @@ property remains unchanged between invocations of read-only operations.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_Clear.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.Clear%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L274">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_Clear_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Clear*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_Clear" data-uid="DotNext.Buffers.SparseBufferWriter`1.Clear">Clear()</h4>
@@ -540,12 +509,9 @@ property remains unchanged between invocations of read-only operations.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_CopyTo_System_Span__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.CopyTo(System.Span%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L255">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_CopyTo_" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_CopyTo_System_Span__0__" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo(System.Span{`0})">CopyTo(Span&lt;T&gt;)</h4>
@@ -606,12 +572,9 @@ property remains unchanged between invocations of read-only operations.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_CopyTo_System_Span__0__System_SequencePosition__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.CopyTo(System.Span%7B%600%7D%2CSystem.SequencePosition%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.Reader.cs/#L159">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.Reader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_CopyTo_" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_CopyTo_System_Span__0__System_SequencePosition__" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo(System.Span{`0},System.SequencePosition@)">CopyTo(scoped Span&lt;T&gt;, scoped ref SequencePosition)</h4>
@@ -679,12 +642,9 @@ and advances the position.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_CopyTo__1_System_Buffers_ReadOnlySpanAction__0___0____0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.CopyTo%60%601(System.Buffers.ReadOnlySpanAction%7B%600%2C%60%600%7D%2C%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L246">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_CopyTo_" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_CopyTo__1_System_Buffers_ReadOnlySpanAction__0___0____0_" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo``1(System.Buffers.ReadOnlySpanAction{`0,``0},``0)">CopyTo&lt;TArg&gt;(ReadOnlySpanAction&lt;T, TArg&gt;, TArg)</h4>
@@ -751,12 +711,9 @@ and advances the position.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_CopyTo__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.CopyTo%60%601(%60%600)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L219">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_CopyTo_" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_CopyTo__1___0_" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo``1(``0)">CopyTo&lt;TConsumer&gt;(TConsumer)</h4>
@@ -765,7 +722,7 @@ and advances the position.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void CopyTo&lt;TConsumer&gt;(TConsumer consumer) where TConsumer : IReadOnlySpanConsumer&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public void CopyTo&lt;TConsumer&gt;(TConsumer consumer) where TConsumer : IConsumer&lt;ReadOnlySpan&lt;T&gt;&gt;, allows ref struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -817,12 +774,9 @@ and advances the position.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_CopyTo__1___0_System_SequencePosition_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.CopyTo%60%601(%60%600%2CSystem.SequencePosition)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.Reader.cs/#L181">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.Reader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_CopyTo_" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_CopyTo__1___0_System_SequencePosition_" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo``1(``0,System.SequencePosition)">CopyTo&lt;TConsumer&gt;(TConsumer, SequencePosition)</h4>
@@ -831,7 +785,7 @@ and advances the position.</p>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void CopyTo&lt;TConsumer&gt;(TConsumer consumer, SequencePosition start) where TConsumer : IReadOnlySpanConsumer&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public void CopyTo&lt;TConsumer&gt;(TConsumer consumer, SequencePosition start) where TConsumer : IConsumer&lt;ReadOnlySpan&lt;T&gt;&gt;, allows ref struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -889,22 +843,19 @@ and advances the position.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_CopyTo__1___0_System_SequencePosition__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.CopyTo%60%601(%60%600%2CSystem.SequencePosition%40%2CSystem.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.Reader.cs/#L204">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.Reader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_CopyTo_" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo*"></a>
-  <h4 id="DotNext_Buffers_SparseBufferWriter_1_CopyTo__1___0_System_SequencePosition__System_Int64_" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo``1(``0,System.SequencePosition@,System.Int64)">CopyTo&lt;TConsumer&gt;(TConsumer, scoped ref SequencePosition, long)</h4>
+  <h4 id="DotNext_Buffers_SparseBufferWriter_1_CopyTo__1___0_System_SequencePosition__System_Int64_" data-uid="DotNext.Buffers.SparseBufferWriter`1.CopyTo``1(``0,System.SequencePosition@,System.Int64)">CopyTo&lt;TConsumer&gt;(TConsumer, ref SequencePosition, long)</h4>
   <div class="markdown level1 summary"><p>Passes the elements from this buffer to the specified consumer, starting at the specified position,
 and advances the position.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public long CopyTo&lt;TConsumer&gt;(TConsumer consumer, scoped ref SequencePosition position, long count) where TConsumer : IReadOnlySpanConsumer&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public long CopyTo&lt;TConsumer&gt;(TConsumer consumer, ref SequencePosition position, long count) where TConsumer : IConsumer&lt;ReadOnlySpan&lt;T&gt;&gt;, allows ref struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -989,12 +940,9 @@ and advances the position.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.Dispose(System.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L297">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_Dispose_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Dispose*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_Dispose_System_Boolean_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Dispose(System.Boolean)">Dispose(bool)</h4>
@@ -1025,12 +973,9 @@ and advances the position.</p>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(bool)</a></div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.GetEnumerator%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.Reader.cs/#L226">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.Reader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_GetEnumerator_" data-uid="DotNext.Buffers.SparseBufferWriter`1.GetEnumerator*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_GetEnumerator" data-uid="DotNext.Buffers.SparseBufferWriter`1.GetEnumerator">GetEnumerator()</h4>
@@ -1073,12 +1018,9 @@ and advances the position.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_GetPosition_System_Int64_System_SequencePosition_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.GetPosition(System.Int64%2CSystem.SequencePosition)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.Reader.cs/#L67">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.Reader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_GetPosition_" data-uid="DotNext.Buffers.SparseBufferWriter`1.GetPosition*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_GetPosition_System_Int64_System_SequencePosition_" data-uid="DotNext.Buffers.SparseBufferWriter`1.GetPosition(System.Int64,System.SequencePosition)">GetPosition(long, SequencePosition)</h4>
@@ -1145,12 +1087,9 @@ and advances the position.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_Read_System_SequencePosition__System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.Read(System.SequencePosition%40%2CSystem.Int64)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.Reader.cs/#L132">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.Reader.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_Read_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Read*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_Read_System_SequencePosition__System_Int64_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Read(System.SequencePosition@,System.Int64)">Read(ref SequencePosition, long)</h4>
@@ -1227,12 +1166,9 @@ and advances the position.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.ToString%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L311">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_ToString_" data-uid="DotNext.Buffers.SparseBufferWriter`1.ToString*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_ToString" data-uid="DotNext.Buffers.SparseBufferWriter`1.ToString">ToString()</h4>
@@ -1261,12 +1197,9 @@ and advances the position.</p>
   </table>
   <h5 class="overrides">Overrides</h5>
   <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a></div>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_TryGetWrittenContent_System_ReadOnlyMemory__0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.TryGetWrittenContent(System.ReadOnlyMemory%7B%600%7D%40)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L107">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_TryGetWrittenContent_" data-uid="DotNext.Buffers.SparseBufferWriter`1.TryGetWrittenContent*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_TryGetWrittenContent_System_ReadOnlyMemory__0___" data-uid="DotNext.Buffers.SparseBufferWriter`1.TryGetWrittenContent(System.ReadOnlyMemory{`0}@)">TryGetWrittenContent(out ReadOnlyMemory&lt;T&gt;)</h4>
@@ -1327,12 +1260,9 @@ and advances the position.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_Write_System_Buffers_ReadOnlySequence__0___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.Write(System.Buffers.ReadOnlySequence%7B%600%7D%40%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L207">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_Write_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Write*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_Write_System_Buffers_ReadOnlySequence__0___System_Boolean_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Write(System.Buffers.ReadOnlySequence{`0}@,System.Boolean)">Write(in ReadOnlySequence&lt;T&gt;, bool)</h4>
@@ -1383,12 +1313,9 @@ and advances the position.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_Write_System_ReadOnlyMemory__0__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.Write(System.ReadOnlyMemory%7B%600%7D%2CSystem.Boolean)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L168">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_Write_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Write*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_Write_System_ReadOnlyMemory__0__System_Boolean_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Write(System.ReadOnlyMemory{`0},System.Boolean)">Write(ReadOnlyMemory&lt;T&gt;, bool)</h4>
@@ -1439,12 +1366,9 @@ and advances the position.</p>
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1_Write_System_ReadOnlySpan__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601.Write(System.ReadOnlySpan%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.cs/#L144">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
   </span>
   <a id="DotNext_Buffers_SparseBufferWriter_1_Write_" data-uid="DotNext.Buffers.SparseBufferWriter`1.Write*"></a>
   <h4 id="DotNext_Buffers_SparseBufferWriter_1_Write_System_ReadOnlySpan__0__" data-uid="DotNext.Buffers.SparseBufferWriter`1.Write(System.ReadOnlySpan{`0})">Write(ReadOnlySpan&lt;T&gt;)</h4>
@@ -1489,18 +1413,67 @@ and advances the position.</p>
       </tr>
     </tbody>
   </table>
+  <h3 id="operators">Operators
+</h3>
+
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.cs">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_SparseBufferWriter_1_op_AdditionAssignment_" data-uid="DotNext.Buffers.SparseBufferWriter`1.op_AdditionAssignment*"></a>
+  <h4 id="DotNext_Buffers_SparseBufferWriter_1_op_AdditionAssignment__0_" data-uid="DotNext.Buffers.SparseBufferWriter`1.op_AdditionAssignment(`0)">operator +=(T)</h4>
+  <div class="markdown level1 summary"><p>Adds a single item to the buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="declaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void operator +=(T item)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">item</span></td>
+        <td><p>The item to add.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>The builder has been disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.Buffers.IGrowableBuffer-1.html">IGrowableBuffer&lt;T&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Buffers.IReadOnlySpanConsumer-1.html">IReadOnlySpanConsumer&lt;T&gt;</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IConsumer-1.html">IConsumer&lt;T&gt;</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ISupplier-3.html">ISupplier&lt;T1, T2, TResult&gt;</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
   </div>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>
@@ -1512,7 +1485,7 @@ and advances the position.</p>
       <a class="xref" href="DotNext.ISupplier-1.html">ISupplier&lt;TResult&gt;</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html">IFunctional&lt;TDelegate&gt;</a>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html">IFunctional</a>
   </div>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable&lt;T&gt;</a>
@@ -1520,39 +1493,24 @@ and advances the position.</p>
   <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a>
   </div>
-  <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.buffers.ibufferwriter-1">IBufferWriter&lt;T&gt;</a>
-  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Buffers.BufferWriter.html#DotNext_Buffers_BufferWriter_Write__1_System_Buffers_IBufferWriter___0__System_Buffers_ReadOnlySequence___0___">BufferWriter.Write&lt;T&gt;(IBufferWriter&lt;T&gt;, in ReadOnlySequence&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Buffers.Memory.html#DotNext_Buffers_Memory_ToReadOnlySequence__1_System_Collections_Generic_IEnumerable_System_ReadOnlyMemory___0___">Memory.ToReadOnlySequence&lt;T&gt;(IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;?)</a>
+      <a class="xref" href="DotNext.Buffers.Memory.html#DotNext_Buffers_Memory_Concat__1_System_Collections_Generic_IEnumerable_System_ReadOnlyMemory___0___">Memory.Concat&lt;T&gt;(IEnumerable&lt;ReadOnlyMemory&lt;T&gt;&gt;?)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Append__1_System_Collections_Generic_IEnumerable___0____0___">Collection.Append&lt;T&gt;(IEnumerable&lt;T&gt;, params T[])</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Copy__1_System_Collections_Generic_IEnumerable___0__System_Int32_DotNext_Buffers_MemoryAllocator___0__">Collection.Copy&lt;T&gt;(IEnumerable&lt;T&gt;, int, MemoryAllocator&lt;T&gt;?)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Collection.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, int, out T)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_FirstOrNone__1_System_Collections_Generic_IEnumerable___0__">Collection.FirstOrNone&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
@@ -1578,9 +1536,6 @@ and advances the position.</p>
   <div>
       <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Collection.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, string, string)</a>
   </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_GetAsyncEnumerator__1_System_Collections_Generic_IEnumerable___0__System_Threading_CancellationToken_">Enumerator.GetAsyncEnumerator&lt;T&gt;(IEnumerable&lt;T&gt;, CancellationToken)</a>
-  </div>
   <h3 id="seealso">See Also</h3>
   <div class="seealso">
       <div><a class="xref" href="DotNext.Buffers.PoolingArrayBufferWriter-1.html">PoolingArrayBufferWriter</a>&lt;T&gt;</div>
@@ -1595,10 +1550,7 @@ and advances the position.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Buffers_SparseBufferWriter_1.md&amp;value=---%0Auid%3A%20DotNext.Buffers.SparseBufferWriter%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Buffers/SparseBufferWriter.Writer.cs/#L5" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Buffers/SparseBufferWriter.MemoryChunk.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

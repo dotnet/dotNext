@@ -80,7 +80,7 @@
 <pre><code class="lang-csharp">using DotNext.Linq.Expressions;
 using System.Linq.Expressions;
 
-Expression stringValue = &quot;Hello, world&quot;.Const();
+Expression stringValue = &quot;Hello, world&quot;.Quoted;
 var character = stringValue.ElementAt(2.Index(false));
 var slice = stringValue.Slice(start: 0.Index(false), end: 1.Index(true));
 

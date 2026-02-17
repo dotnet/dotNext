@@ -74,11 +74,17 @@
 and prevent the compiler to generate <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable.dispose">Dispose()</a> call.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.IResettable.html#DotNext_IResettable_Reset">IResettable.Reset()</a>
+    </div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a>.<a class="xref" href="DotNext.Collections.html">Collections</a>.<a class="xref" href="DotNext.Collections.Generic.html">Generic</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Collections_Generic_IEnumerator_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IEnumerator&lt;in TSelf, out T&gt; where TSelf : struct, IEnumerator&lt;in TSelf, out T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IEnumerator&lt;TSelf, out T&gt; : IResettable where TSelf : struct, IEnumerator&lt;TSelf, out T&gt; where T : allows ref struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -106,17 +112,13 @@ but can be converted to it by using regular type cast.</p>
 </div>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_IEnumerator_2_Current.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.IEnumerator%602.Current%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/IEnumerator.cs/#L24">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Collections/Generic/IEnumerator.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_IEnumerator_2_Current_" data-uid="DotNext.Collections.Generic.IEnumerator`2.Current*"></a>
   <h4 id="DotNext_Collections_Generic_IEnumerator_2_Current" data-uid="DotNext.Collections.Generic.IEnumerator`2.Current">Current</h4>
-  <div class="markdown level1 summary"><p>Gets the element in the collection at the current position of the enumerator.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
@@ -133,24 +135,19 @@ but can be converted to it by using regular type cast.</p>
     <tbody>
       <tr>
         <td><span class="xref">T</span></td>
-        <td><p>The element in the collection at the current position of the enumerator.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_IEnumerator_2_MoveNext.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.IEnumerator%602.MoveNext%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/IEnumerator.cs/#L21">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Collections/Generic/IEnumerator.cs">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_IEnumerator_2_MoveNext_" data-uid="DotNext.Collections.Generic.IEnumerator`2.MoveNext*"></a>
   <h4 id="DotNext_Collections_Generic_IEnumerator_2_MoveNext" data-uid="DotNext.Collections.Generic.IEnumerator`2.MoveNext">MoveNext()</h4>
-  <div class="markdown level1 summary"><p>Advances the enumerator to the next element of the collection.</p>
-</div>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="declaration">Declaration</h5>
   <div class="codewrapper">
@@ -167,61 +164,7 @@ but can be converted to it by using regular type cast.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></td>
-        <td><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> if the enumerator was successfully advanced to the next element; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> if the enumerator has passed the end of the collection.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>The collection was modified after the enumerator was created.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_IEnumerator_2_Reset.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.IEnumerator%602.Reset%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/IEnumerator.cs/#L27">View Source</a>
-  </span>
-  <a id="DotNext_Collections_Generic_IEnumerator_2_Reset_" data-uid="DotNext.Collections.Generic.IEnumerator`2.Reset*"></a>
-  <h4 id="DotNext_Collections_Generic_IEnumerator_2_Reset" data-uid="DotNext.Collections.Generic.IEnumerator`2.Reset">Reset()</h4>
-  <div class="markdown level1 summary"><p>Sets the enumerator to its initial position, which is before the first element in the collection.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void Reset()</code></pre>
-  </div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>The collection was modified after the enumerator was created.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.notsupportedexception">NotSupportedException</a></td>
-        <td><p>The enumerator does not support being reset.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -230,16 +173,10 @@ but can be converted to it by using regular type cast.</p>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
 
 </article>
@@ -250,10 +187,7 @@ but can be converted to it by using regular type cast.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_Collections_Generic_IEnumerator_2.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.IEnumerator%602%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/IEnumerator.cs/#L16" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/Collections/Generic/IEnumerator.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

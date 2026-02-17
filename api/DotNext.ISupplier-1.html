@@ -76,14 +76,17 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional-1.html#DotNext_Runtime_CompilerServices_IFunctional_1_ToDelegate">IFunctional&lt;Func&lt;TResult&gt;&gt;.ToDelegate()</a>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html#DotNext_Runtime_CompilerServices_IFunctional_DynamicInvoke_DotNext_Runtime_Variant__System_Int32_DotNext_Runtime_Variant_">IFunctional.DynamicInvoke(scoped ref readonly Variant, int, scoped Variant)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Runtime.CompilerServices.IFunctional.html#DotNext_Runtime_CompilerServices_IFunctional_GetArgument__1_DotNext_Runtime_Variant__System_Int32_">IFunctional.GetArgument&lt;T&gt;(ref readonly Variant, int)</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_ISupplier_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface ISupplier&lt;out TResult&gt; : IFunctional&lt;Func&lt;TResult&gt;&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface ISupplier&lt;out TResult&gt; : IFunctional where TResult : allows ref struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -108,47 +111,11 @@ contrast to regular delegates. Additionally, implementation
 of functional interface may have encapsulated data acting
 as closure which is not allocated on the heap.</p>
 </div>
-  <h3 id="properties">Properties
-</h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_ISupplier_1_NullOrDefault.md&amp;value=---%0Auid%3A%20DotNext.ISupplier%601.NullOrDefault%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier0.cs/#L32">View Source</a>
-  </span>
-  <a id="DotNext_ISupplier_1_NullOrDefault_" data-uid="DotNext.ISupplier`1.NullOrDefault*"></a>
-  <h4 id="DotNext_ISupplier_1_NullOrDefault" data-uid="DotNext.ISupplier`1.NullOrDefault">NullOrDefault</h4>
-  <div class="markdown level1 summary"><p>Gets a supplier of default value for type <code class="typeparamref">TResult</code>.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="declaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ISupplier&lt;out TResult?&gt; NullOrDefault { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.ISupplier-1.html">ISupplier</a>&lt;TResult&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="methods">Methods
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_ISupplier_1_Invoke.md&amp;value=---%0Auid%3A%20DotNext.ISupplier%601.Invoke%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier0.cs/#L24">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/ISupplier0.cs">View Source</a>
   </span>
   <a id="DotNext_ISupplier_1_Invoke_" data-uid="DotNext.ISupplier`1.Invoke*"></a>
   <h4 id="DotNext_ISupplier_1_Invoke" data-uid="DotNext.ISupplier`1.Invoke">Invoke()</h4>
@@ -180,16 +147,10 @@ as closure which is not allocated on the heap.</p>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_As__1___0_">BasicExtensions.As&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_GetUserData__1___0_">BasicExtensions.GetUserData&lt;T&gt;(T)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, params ReadOnlySpan&lt;T&gt;)</a>
   </div>
 
 </article>
@@ -200,10 +161,7 @@ as closure which is not allocated on the heap.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_ISupplier_1.md&amp;value=---%0Auid%3A%20DotNext.ISupplier%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/ISupplier0.cs/#L18" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/ISupplier0.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

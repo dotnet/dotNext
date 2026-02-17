@@ -90,10 +90,10 @@
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.valuetype.tostring">ValueType.ToString()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
@@ -103,7 +103,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_EnclosedEndpoint_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public readonly struct EnclosedEndpoint&lt;T&gt; : IFiniteRangeEndpoint&lt;T&gt;, IRangeEndpoint&lt;T&gt; where T : IComparable&lt;T&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public readonly ref struct EnclosedEndpoint&lt;T&gt; : IFiniteRangeEndpoint&lt;T&gt;, IRangeEndpoint&lt;T&gt; where T : IComparable&lt;T&gt;, allows ref struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-condensed">
@@ -123,12 +123,9 @@
   </table>
   <h3 id="properties">Properties
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_EnclosedEndpoint_1_Value.md&amp;value=---%0Auid%3A%20DotNext.EnclosedEndpoint%601.Value%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IRangeEndpoint.cs/#L55">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/IRangeEndpoint.cs">View Source</a>
   </span>
   <a id="DotNext_EnclosedEndpoint_1_Value_" data-uid="DotNext.EnclosedEndpoint`1.Value*"></a>
   <h4 id="DotNext_EnclosedEndpoint_1_Value" data-uid="DotNext.EnclosedEndpoint`1.Value">Value</h4>
@@ -156,12 +153,9 @@
   </table>
   <h3 id="operators">Operators
 </h3>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_EnclosedEndpoint_1_op_Implicit__0__DotNext_EnclosedEndpoint__0_.md&amp;value=---%0Auid%3A%20DotNext.EnclosedEndpoint%601.op_Implicit(%600)~DotNext.EnclosedEndpoint%7B%600%7D%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IRangeEndpoint.cs/#L79">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/IRangeEndpoint.cs">View Source</a>
   </span>
   <a id="DotNext_EnclosedEndpoint_1_op_Implicit_" data-uid="DotNext.EnclosedEndpoint`1.op_Implicit*"></a>
   <h4 id="DotNext_EnclosedEndpoint_1_op_Implicit__0__DotNext_EnclosedEndpoint__0_" data-uid="DotNext.EnclosedEndpoint`1.op_Implicit(`0)~DotNext.EnclosedEndpoint{`0}">implicit operator EnclosedEndpoint&lt;T&gt;(T)</h4>
@@ -205,12 +199,9 @@
       </tr>
     </tbody>
   </table>
+
   <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_EnclosedEndpoint_1_op_OnesComplement_DotNext_EnclosedEndpoint__0__.md&amp;value=---%0Auid%3A%20DotNext.EnclosedEndpoint%601.op_OnesComplement(DotNext.EnclosedEndpoint%7B%600%7D)%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Edit this page</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IRangeEndpoint.cs/#L72">View Source</a>
+    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/IRangeEndpoint.cs">View Source</a>
   </span>
   <a id="DotNext_EnclosedEndpoint_1_op_OnesComplement_" data-uid="DotNext.EnclosedEndpoint`1.op_OnesComplement*"></a>
   <h4 id="DotNext_EnclosedEndpoint_1_op_OnesComplement_DotNext_EnclosedEndpoint__0__" data-uid="DotNext.EnclosedEndpoint`1.op_OnesComplement(DotNext.EnclosedEndpoint{`0})">operator ~(EnclosedEndpoint&lt;T&gt;)</h4>
@@ -267,19 +258,7 @@
       <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsBetween__3___0___1___2_">BasicExtensions.IsBetween&lt;T, TLowerBound, TUpperBound&gt;(T, TLowerBound, TUpperBound)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.BasicExtensions.html#DotNext_BasicExtensions_IsOneOf__1___0_System_ReadOnlySpan___0__">BasicExtensions.IsOneOf&lt;T&gt;(T, ReadOnlySpan&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToAsyncEnumerator__2___0_System_Threading_CancellationToken_">Collection.ToAsyncEnumerator&lt;TEnumerator, T&gt;(TEnumerator, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_ToClassicEnumerator__2___0_">Collection.ToClassicEnumerator&lt;TEnumerator, T&gt;(TEnumerator)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.Collections.Generic.Enumerator.html#DotNext_Collections_Generic_Enumerator_Skip__2___0__System_Int32_">Enumerator.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, int)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
   </div>
 
 </article>
@@ -290,10 +269,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/dotnet/dotNext/new/gh-pages/docs/api/new?filename=DotNext_EnclosedEndpoint_1.md&amp;value=---%0Auid%3A%20DotNext.EnclosedEndpoint%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Edit this page</a>
-                  </li>
-                  <li>
-                    <a href="https://github.com/dotnet/dotNext/blob/gh-pages/src/DotNext/IRangeEndpoint.cs/#L49" class="contribution-link">View Source</a>
+                    <a href="https://github.com/dotnet/dotNext/blob/148f6c5144e5af98428c1a1b074563e8739abc2f/src/DotNext/IRangeEndpoint.cs" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

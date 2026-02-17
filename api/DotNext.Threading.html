@@ -106,9 +106,6 @@ within pairs.</p>
       <h4><a class="xref" href="DotNext.Threading.AsyncLazy-1.html">AsyncLazy&lt;T&gt;</a></h4>
       <section><p>Provides support for asynchronous lazy initialization.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html">AsyncLockAcquisition</a></h4>
-      <section><p>Provides a set of methods to acquire different types of asynchronous lock.</p>
-</section>
       <h4><a class="xref" href="DotNext.Threading.AsyncManualResetEvent.html">AsyncManualResetEvent</a></h4>
       <section><p>Represents asynchronous version of <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.manualresetevent">ManualResetEvent</a>.</p>
 </section>
@@ -125,9 +122,6 @@ concurrent flows.</p>
       <h4><a class="xref" href="DotNext.Threading.Atomic.html">Atomic</a></h4>
       <section><p>Exposes atomic operations for thread-safe scenarios.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Threading.CancellationTokenMultiplexer.html">CancellationTokenMultiplexer</a></h4>
-      <section><p>Represents cancellation token multiplexer.</p>
-</section>
       <h4><a class="xref" href="DotNext.Threading.ConcurrencyLimitReachedException.html">ConcurrencyLimitReachedException</a></h4>
       <section><p>Indicates that the internal queue of the synchronization primitive is full.</p>
 </section>
@@ -141,15 +135,11 @@ concurrent flows.</p>
       <section><p>Indicates that the exchange has been terminated by the one of
 participants.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Threading.LinkedCancellationTokenSource.html">LinkedCancellationTokenSource</a></h4>
-      <section><p>Gets cancellation token source that allows to obtain the token that causes
-cancellation.</p>
+      <h4><a class="xref" href="DotNext.Threading.LockExtensions.html">LockExtensions</a></h4>
+      <section><p>Extends <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.monitor">Monitor</a> and <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.lock">Lock</a> types.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Threading.LinkedTokenSourceFactory.html">LinkedTokenSourceFactory</a></h4>
-      <section><p>Represents helper methods for working with linked cancellation tokens.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Threading.LockAcquisition.html">LockAcquisition</a></h4>
-      <section><p>Provides a set of methods to acquire different types of lock.</p>
+      <h4><a class="xref" href="DotNext.Threading.MultiplexedCancellationTokenSource.html">MultiplexedCancellationTokenSource</a></h4>
+      <section><p>Provides extension methods for <a class="xref" href="DotNext.Threading.IMultiplexedCancellationTokenSource.html">IMultiplexedCancellationTokenSource</a></p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.PendingTaskInterruptedException.html">PendingTaskInterruptedException</a></h4>
       <section><p>The exception thrown when pending asynchronous task is interrupted while
@@ -160,6 +150,9 @@ it is in waiting state.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.QueuedSynchronizer-1.html">QueuedSynchronizer&lt;TContext&gt;</a></h4>
       <section><p>Provides low-level infrastructure for writing custom synchronization primitives.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Threading.QueuedSynchronizer-1.ExceptionFactory.html">QueuedSynchronizer&lt;TContext&gt;.ExceptionFactory</a></h4>
+      <section><p>Represents the exception factory.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.Scheduler.html">Scheduler</a></h4>
       <section><p>Represents timer-based scheduler.</p>
@@ -177,8 +170,8 @@ the scheduled callback.</p>
       <h4><a class="xref" href="DotNext.Threading.ThreadPoolWorkItemFactory.html">ThreadPoolWorkItemFactory</a></h4>
       <section><p>Represents factory of thread pool work items.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Threading.TimeoutSource.html">TimeoutSource</a></h4>
-      <section><p>Represents reusable timeout tracker that is linked to the root cancellation token.</p>
+      <h4><a class="xref" href="DotNext.Threading.TimeoutExtensions.html">TimeoutExtensions</a></h4>
+      <section><p>Provides extension for <a class="xref" href="DotNext.Threading.Timeout.html">Timeout</a> type.</p>
 </section>
     <h3 id="structs">
 Structs
@@ -192,17 +185,17 @@ Structs
       <h4><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></h4>
       <section><p>Unified representation of asynchronous exclusive lock, semaphore lock, read lock, write lock or upgradeable read lock.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a></h4>
+      <h4><a class="xref" href="DotNext.Threading.AsyncLock.Scope.html">AsyncLock.Scope</a></h4>
       <section><p>Represents acquired asynchronous lock.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.AsyncReaderWriterLock.LockStamp.html">AsyncReaderWriterLock.LockStamp</a></h4>
       <section><p>Represents lock stamp used for optimistic reading.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Threading.Atomic.Boolean.html">Atomic.Boolean</a></h4>
-      <section><p>Represents atomic boolean.</p>
-</section>
       <h4><a class="xref" href="DotNext.Threading.Atomic-1.html">Atomic&lt;T&gt;</a></h4>
       <section><p>Provides atomic access to non-primitive data type.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Threading.CancellationTokenMultiplexer.html">CancellationTokenMultiplexer</a></h4>
+      <section><p>Represents cancellation token multiplexer.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.CancellationTokenMultiplexer.Scope.html">CancellationTokenMultiplexer.Scope</a></h4>
       <section><p>Represents a scope that controls the lifetime of the multiplexed cancellation token.</p>
@@ -219,14 +212,11 @@ Structs
       <h4><a class="xref" href="DotNext.Threading.Lock.html">Lock</a></h4>
       <section><p>Unified representation of monitor lock, semaphore lock, read lock, write lock or upgradeable read lock.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Threading.Lock.Holder.html">Lock.Holder</a></h4>
+      <h4><a class="xref" href="DotNext.Threading.Lock.Scope.html">Lock.Scope</a></h4>
       <section><p>Represents acquired lock holder.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.ReaderWriterSpinLock.html">ReaderWriterSpinLock</a></h4>
       <section><p>Represents lightweight reader-writer lock based on spin loop.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Threading.ReaderWriterSpinLock.LockStamp.html">ReaderWriterSpinLock.LockStamp</a></h4>
-      <section><p>Represents lock stamp used for optimistic reading.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.Timeout.html">Timeout</a></h4>
       <section><p>Helps to compute timeout for asynchronous operations.</p>
@@ -239,9 +229,6 @@ Interfaces
 </section>
       <h4><a class="xref" href="DotNext.Threading.IAsyncResetEvent.html">IAsyncResetEvent</a></h4>
       <section><p>Represents asynchronous flow synchronization event.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Threading.IInterlockedOperations-1.html">IInterlockedOperations&lt;T&gt;</a></h4>
-      <section><p>Represents interlocked operations.</p>
 </section>
       <h4><a class="xref" href="DotNext.Threading.IMultiplexedCancellationTokenSource.html">IMultiplexedCancellationTokenSource</a></h4>
       <section><p>Represents multiplexed cancellation token source.</p>
