@@ -26,14 +26,10 @@ stages:
             inputs:
               command: test
               projects: $(TestProject)
-              arguments: --configuration Debug --collect "XPlat Code Coverage"
+              arguments: --configuration Debug --report-xunit-trx
               nobuild: false
               testRunTitle: 'Debug on Windows'
               publishTestResults: true
-          - task: PublishCodeCoverageResults@2
-            displayName: 'Publish code coverage'
-            inputs:
-              summaryFileLocation: $(Agent.TempDirectory)/*/coverage.cobertura.xml
       - job: Linux
         pool:
           vmImage: ubuntu-latest
