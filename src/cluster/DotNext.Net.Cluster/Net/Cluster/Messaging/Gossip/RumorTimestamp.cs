@@ -133,7 +133,7 @@ public readonly struct RumorTimestamp : IEquatable<RumorTimestamp>, IBinaryForma
     {
         Span<byte> bytes = stackalloc byte[Size];
 
-        if (Convert.FromHexString(timestamp, bytes, out _, out _) is OperationStatus.Done)
+        if (Convert.FromHexString(timestamp, bytes, out _, out var bytesWritten) is OperationStatus.Done && bytesWritten == Size)
         {
             result = new(bytes);
             return true;

@@ -199,11 +199,12 @@ public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, IBinaryFor
     {
         Span<byte> bytes = stackalloc byte[Size];
 
-        bool result;
-        value = (result = Convert.FromHexString(identifier, bytes, out _, out _) is OperationStatus.Done)
+        var parsed = Convert.FromHexString(identifier, bytes, out _, out var bytesWritten) is OperationStatus.Done
+                     && bytesWritten == Size;
+        value = parsed
             ? new(bytes)
             : default;
-        return result;
+        return parsed;
     }
 
     /// <summary>

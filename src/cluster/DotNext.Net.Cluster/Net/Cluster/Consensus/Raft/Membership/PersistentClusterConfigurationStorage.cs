@@ -23,12 +23,12 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
 
         // first 8 bytes reserved for fingerprint
         private readonly FileStream fs;
-        private readonly MemoryAllocator<byte>? allocator;
+        private readonly MemoryAllocator<byte> allocator;
         private readonly int bufferSize;
 
         internal ClusterConfiguration(string fileName, int fileBufferSize, MemoryAllocator<byte>? allocator)
         {
-            this.allocator = allocator;
+            this.allocator = allocator.DefaultIfNull;
             bufferSize = fileBufferSize;
             fs = new(fileName, new FileStreamOptions
             {
@@ -152,8 +152,7 @@ public abstract class PersistentClusterConfigurationStorage<TAddress> : ClusterC
         proposed.Fingerprint = configuration.Fingerprint;
         await proposed.UpdateAsync(writer.WrittenMemory, token).ConfigureAwait(false);
 
-        proposedCache.Clear();
-        var builder = proposedCache.ToBuilder();
+        var builder = ImmutableHashSet.CreateBuilder<TAddress>();
         Decode(builder, writer.WrittenMemory.Slice(ClusterConfiguration.PayloadOffset));
         proposedCache = builder.ToImmutable();
         Interlocked.MemoryBarrierProcessWide();

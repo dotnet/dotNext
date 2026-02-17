@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Connections;
 
 namespace DotNext.Net.Cluster;
 
-using Buffers;
-
 public sealed class ClusterMemberIdTests : Test
 {
     [Fact]
