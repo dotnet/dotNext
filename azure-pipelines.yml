@@ -14,10 +14,6 @@ stages:
         pool:
           vmImage: windows-latest
         steps:
-          - task: UseDotNet@2
-            inputs:
-              packageType: sdk
-              version: '10.0.x'
           - task: DotNetCoreCLI@2
             displayName: Restore Packages
             inputs:
@@ -30,8 +26,7 @@ stages:
             inputs:
               command: test
               projects: $(TestProject)
-              arguments: --configuration Debug
-              nobuild: false
+              arguments: --configuration Debug --no-build --report-trx
               testRunTitle: 'Debug on Windows'
               publishTestResults: true
       - job: Linux
