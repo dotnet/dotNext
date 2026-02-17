@@ -21,12 +21,15 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.0" />
     <PackageVersion Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
-    <PackageVersion Include="Microsoft.Testing.Platform.MSBuild" Version="2.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <!--Test packages-->
+    <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
+    <PackageVersion Include="Microsoft.Testing.Extensions.TrxReport" Version="2.1.0" />
   </ItemGroup>
   <ItemGroup>
     <!--Misc packages-->
     <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
     <PackageVersion Include="FastMember.Signed" Version="1.5.0" />
-    <PackageVersion Include="xunit.v3" Version="3.2.0" />
   </ItemGroup>
 </Project>
