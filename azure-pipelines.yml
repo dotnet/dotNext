@@ -1,5 +1,5 @@
 variables:
-  Solution: src/DotNext.sln
+  Solution: src/DotNext.slnx
   TestFolder: src/DotNext.Tests
   TestProject: $(TestFolder)/DotNext.Tests.csproj
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: false
