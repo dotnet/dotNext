@@ -152,23 +152,5 @@ public partial class WriteAheadLog
             
             base.Dispose(disposing);
         }
-
-        Memory<byte> IAsyncBinaryWriter.Buffer => GetOrAdd(out var offset).Memory.Slice(offset);
-        
-        ValueTask IAsyncBinaryWriter.AdvanceAsync(int bytesWritten, CancellationToken token)
-        {
-            ValueTask task;
-            if (bytesWritten < 0)
-            {
-                task = ValueTask.FromException(new ArgumentOutOfRangeException(nameof(bytesWritten)));
-            }
-            else
-            {
-                task = ValueTask.CompletedTask;
-                LastWrittenAddress += (uint)bytesWritten;
-            }
-
-            return task;
-        }
     }
 }

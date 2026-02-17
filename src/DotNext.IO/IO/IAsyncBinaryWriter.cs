@@ -446,16 +446,3 @@ public interface IAsyncBinaryWriter : ISupplier<ReadOnlyMemory<byte>, Cancellati
             => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
     }
 }
-
-file static class LengthFormatExtensions
-{
-    internal static int GetMaxByteCount(this LengthFormat format) => format switch
-    {
-        LengthFormat.BigEndian or LengthFormat.LittleEndian => sizeof(int),
-        LengthFormat.Compressed => Leb128<int>.MaxSizeInBytes,
-        _ => throw new ArgumentOutOfRangeException(nameof(format)),
-    };
-
-    internal static bool HasFixedSize(this LengthFormat format)
-        => format is LengthFormat.BigEndian or LengthFormat.LittleEndian;
-}

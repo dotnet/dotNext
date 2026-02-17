@@ -13,3 +13,4 @@ launchSettings.json
 *.user
 *.coverage
 TestResults/
+dotnet-tools.json
