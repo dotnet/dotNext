@@ -26,7 +26,7 @@ stages:
             inputs:
               command: test
               projects: $(TestProject)
-              arguments: --configuration Debug --no-build --report-trx
+              arguments: '--configuration Debug --report-trx'
               testRunTitle: 'Debug on Windows'
               publishTestResults: true
       - job: Linux
